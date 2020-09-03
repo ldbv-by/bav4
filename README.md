@@ -7,7 +7,7 @@
   - Data objects from service classes => *Model*
   - DOM => *View*
   - CustomElements (Web Components)  =>  *ViewModel*
-- Built-in Dependency Injection
+- Built-in dependency injection
 - Tools
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 
   - [redux](https://redux.js.org/): application state container 
@@ -26,13 +26,13 @@
 | command | what it does |
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output). |
-| `npm run build:dev` | Compiles all file without bundling and minification |
+| `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
-| `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Therefore both browsers must be installed locally.|
+| `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
-| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently es9 is allowed.
-|
+| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently es9 is allowed |
+
 
 
 ## Pending
@@ -43,6 +43,6 @@
 ## Links
 
 - lit-html Guide: https://lit-html.polymer-project.org/guide
-- Redux Tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
-- webpack Intro: https://ui.dev/webpack/ 
+- Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
+- Webpack intro: https://ui.dev/webpack/ 
 - Redux Query-Param Sync: https://github.com/Treora/redux-query-sync
