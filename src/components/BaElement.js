@@ -52,9 +52,6 @@ class BaElement extends HTMLElement {
         this.state = {};
     }
 
-    // log(methodName) {
-    //     return `${this.constructor.name}.${methodName}`;
-    // }
 
     log(message) {
         return console.log(`${this.constructor.name}: ` + message);
@@ -186,7 +183,7 @@ class BaElement extends HTMLElement {
 
 
     /**
-     * Returns the HTML-name of this CustomElement.
+     * Returns the Html tag name of this CustomElement.
      * @abstract
      */
     static get tag() {
@@ -201,13 +198,7 @@ class BaElement extends HTMLElement {
             throw new TypeError("Do not call static abstract method #tag from child.");
         }
     }
-    // /**
-    //  * Returns the state 
-    //  * @
-    //  */
-    // getState() {
-    //     return this.state;
-    // }
+
 
 
 }
