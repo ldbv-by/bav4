@@ -12,21 +12,6 @@ export class TestUtils {
     return TestUtils._waitForComponentToRender(tag);
   }
 
-  // static createIframeAndRender(HTMLElementClass, tag, attributes = {}) {
-
-  //   var iframe = document.createElement('iframe');
-  //   // var html = `<body></body>`;
-  //   // iframe.src = 'data:text/html;charset=utf-8,' + encodeURI(html);
-  //   document.body.appendChild(iframe);
-  //   iframe.contentWindow.customElements.define(tag, HTMLElementClass);
-
-  //   const htmlAttributes = TestUtils._mapObjectToHTMLAttributes(attributes);
-  //   iframe.contentWindow.document.body.innerHTML = `<${tag} ${htmlAttributes}></${tag}>`;
-
-  //   return TestUtils._waitForComponentToRender(tag, iframe.contentWindow.document, iframe.contentWindow);
-
-
-  // }
 
   /**
    * Replaces document's body with provided element
