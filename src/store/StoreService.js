@@ -1,19 +1,16 @@
-// import { createStore, combineReducers } from 'redux';
 import { createStore } from 'redux';
 import events from './map/MapReducer.js';
 import { ZOOM_CHANGED, POSITION_CHANGED } from './map/MapReducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 
-// https://redux-toolkit.js.org/usage/usage-guide
-// https://github.com/Treora/redux-query-sync
-
-// const store = {};
-// const store = createStore(copyingReducer,initialState,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-// export default store;
 
 
-
+/**
+ * Service which holds the redux store.
+ * @class
+ * @author aul
+ */
 export class StoreService {
 
         constructor() {
@@ -65,39 +62,11 @@ export class StoreService {
 
         }
 
+        /**
+         * Returns the store.
+         */
         getStore() {
                 return this.store;
 
         }
 }
-
-
-
-// const positionReducer = (state, action) => {
-
-//         // const { type, payload } = action;
-
-//         // if (typeof state === 'undefined') {
-//         //         return 0
-//         // }
-
-//         // switch (type) {
-//         //         case 'ZOOM_CHANGED':
-//         //                 return { zoom: payload }
-
-//         // }
-
-//         return state;
-// }
-
-// const store = createStore(events, initialState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-// const store = createStore(events, initialState);
-
-
-
-// let getStore = () => {
-//         return store;
-// };
-
-
-// export { getStore };
