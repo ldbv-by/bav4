@@ -32,7 +32,7 @@ module.exports = {
 
     // OPTIONAL
     // Reload On File Change
-    watch: true,
+    watch: false,
     devServer: {
         contentBase: './dist',
     },
