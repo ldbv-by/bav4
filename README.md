@@ -4,9 +4,9 @@
 
 - Use of Web Standards as far as possible
 - Model-View-ViewModel (MVVM) structuring:
-  - Data objects from service classes => *Model*
-  - DOM => *View*
-  - CustomElements (Web Components)  =>  *ViewModel*
+  - Data objects from service classes => *model*
+  - DOM => *view*
+  - CustomElements (WebComponents)  =>  *view model*
 - Built-in dependency injection
 - Tools
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 
@@ -25,13 +25,14 @@
 
 | command | what it does |
 |----|----|
-| `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output). |
+| `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 | `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently es9 is allowed |
+| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomable treemap |
 
 
 
