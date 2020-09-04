@@ -2,8 +2,8 @@ import { render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
 
 /**
- * Base-Class for all Ba -Elements.
- * BaElement-Classes represent the ViewModel within the MVVM-Pattern.
+ * Base-Class for all ba elements.
+ * BaElement classes represent the view model within the MVVM pattern.
  * 
  * Lifecycle:<br>
  * 
@@ -23,6 +23,7 @@ import { $injector } from '../injection';
  * 
  * @abstract
  * @class
+ * @author aul
  */
 class BaElement extends HTMLElement {
 
@@ -125,7 +126,7 @@ class BaElement extends HTMLElement {
 
 
     /**
-     * (Re-) renders the HTML-View.
+     * (Re-) renders the HTML view.
      * @protected
      */
     render() {
@@ -183,7 +184,7 @@ class BaElement extends HTMLElement {
 
 
     /**
-     * Returns the Html tag name of this CustomElement.
+     * Returns the Html tag name of this element.
      * @abstract
      */
     static get tag() {

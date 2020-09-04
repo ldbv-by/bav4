@@ -4,7 +4,7 @@ import './zoomButtons.css';
 import { increaseZoom, decreaseZoom } from '../../../store/map/MapActions';
 
 /**
- * Buttons to change the zoom level of the map.
+ * Buttons which change the zoom level of the map.
  * @class
  * @author aul
  */

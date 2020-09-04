@@ -9,6 +9,7 @@ import { $injector } from '../../injection';
 /**
  * Demo-Element to show some information and do some action on the map
  * @class 
+ * @author aul
  */
 export class MapInfoElement extends BaElement {
 

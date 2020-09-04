@@ -3,8 +3,9 @@ import BaElement from '../BaElement';
 import './headerElement.css';
 
 /**
- * Container Element for header stuff. 
+ * Container element for header stuff. 
  * @class
+ * @author aul
  */
 export class HeaderElement extends BaElement {
 

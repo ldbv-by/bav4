@@ -3,8 +3,9 @@ import BaElement from '../BaElement';
 import './footerElement.css';
 
 /**
- * Container Element for footer stuff. 
+ * Container element for footer stuff. 
  * @class
+ * @author aul
  */
 export class FooterElement extends BaElement {
 

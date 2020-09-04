@@ -11,8 +11,9 @@ import { changeZoomAndPosition, updatePointerPosition } from '../../store/map/Ma
 
 
 /**
- * Element which renders the ol Map.
+ * Element which renders the ol map.
  * @class
+ * @author aul
  */
 export class OlMapElement extends BaElement {
 

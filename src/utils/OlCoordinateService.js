@@ -5,6 +5,7 @@ import { createStringXY } from 'ol/coordinate';
 /**
  * Utilities for coordinates like transformation based on ol.
  * @class
+ * @author aul
  */
 export class OlCoordinateService {
 
