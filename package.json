@@ -7,6 +7,7 @@
     "redux-query-sync": "^0.1.10"
   },
   "devDependencies": {
+    "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "css-loader": "^4.2.2",
     "es-check": "^5.1.0",
     "eslint": "^7.8.1",
@@ -21,6 +22,7 @@
     "jsdoc": "^3.6.5",
     "karma": "^5.2.1",
     "karma-chrome-launcher": "^3.1.0",
+    "karma-coverage-istanbul-reporter": "^3.0.3",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^4.0.1",
     "karma-spec-reporter": "^0.0.32",
@@ -41,6 +43,6 @@
     "lint": "eslint --fix 'src/**/*.js'",
     "test": "karma start --single-run",
     "es-check": "es-check --module es9 './src/**/*.js'",
-    "analyze-bundle" : "webpack --profile --json > stats.json && webpack-bundle-analyzer ./stats.json"
+    "analyze-bundle": "webpack --profile --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
 }

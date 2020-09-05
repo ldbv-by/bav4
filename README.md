@@ -28,7 +28,7 @@
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
-| `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally |
+| `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently es9 is allowed |

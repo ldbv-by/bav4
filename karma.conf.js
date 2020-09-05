@@ -11,7 +11,7 @@ module.exports = function (config) {
     preprocessors: {
       'test/**/*.test.js': ['webpack'],
     },
-    reporters: ['spec'],
+    reporters: ['spec', 'coverage-istanbul'],
     // port: 9876,
     // colors: true,
     // logLevel: config.LOG_INFO,
@@ -20,5 +20,9 @@ module.exports = function (config) {
     // singleRun: true,
     concurrency: Infinity,
     webpack: webpackConfig,
+    coverageIstanbulReporter: {
+      dir: 'coverage/%browser%',
+      reports: ['text-summary', 'html']
+    },
   });
 };
