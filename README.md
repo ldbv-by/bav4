@@ -2,11 +2,11 @@
 
 ## Concept
 
-- Use of Web Standards as far as possible
-- Model-View-ViewModel (MVVM) structuring:
+- Use of web standards as far as possible
+- Model–view–viewmodel (MVVM) structuring:
   - Data objects from service classes => *model*
   - DOM => *view*
-  - CustomElements (WebComponents)  =>  *view model*
+  - CustomElements (webcomponents)  =>  *viewmodel*
 - Built-in dependency injection
 - Tools
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 
@@ -43,7 +43,7 @@
 
 ## Links
 
-- lit-html Guide: https://lit-html.polymer-project.org/guide
+- lit-html guide: https://lit-html.polymer-project.org/guide
 - Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
 - Webpack intro: https://ui.dev/webpack/ 
-- Redux Query-Param Sync: https://github.com/Treora/redux-query-sync
+- Redux query-param sync: https://github.com/Treora/redux-query-sync
