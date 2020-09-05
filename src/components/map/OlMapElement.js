@@ -60,7 +60,13 @@ export class OlMapElement extends BaElement {
 
         this.map.on('moveend', () => {
             if (this.view) {
-                this.updateStore(this.view.getZoom(), this.view.getCenter());
+                this.log('updating store');
+
+                changeZoomAndPosition({
+                    zoom: this.view.getZoom(),
+                    position: this.view.getCenter()
+
+                });
             }
         });
 
@@ -92,18 +98,6 @@ export class OlMapElement extends BaElement {
         this.view = null;
     }
 
-    updateStore(zoom, position) {
-
-        this.log('updating store');
-
-        changeZoomAndPosition({
-            zoom: zoom,
-            position: position
-
-        });
-    }
-
-
     /**
      * @override
      * @param {Object} store 
@@ -130,10 +124,16 @@ export class OlMapElement extends BaElement {
 
     }
 
+    /**
+     * @override
+     */
     onAfterRender() {
         this.map.setTarget('ol-map');
     }
 
+    /**
+     * @override
+     */
     static get tag() {
         return 'ba-ol-map';
     }
