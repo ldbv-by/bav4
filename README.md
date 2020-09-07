@@ -1,5 +1,7 @@
 # BAv4 (#nomigration)
 
+Next generation web-mapviewer based on web standards.
+
 ## Concept
 
 - Use of web standards as far as possible
@@ -9,7 +11,9 @@
   - DOM => *view*
   - CustomElements (webcomponents)  =>  *viewmodel*
 - Built-in dependency injection
+- Decoupling map state from map implementation
 - Tools
+  - [openlayers](https://openlayers.org/): mapping api
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 
   - [redux](https://redux.js.org/): application state container 
   - [webpack](https://webpack.js.org): bundler
