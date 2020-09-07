@@ -11,7 +11,7 @@ Next generation web-mapviewer based on web standards.
   - DOM => *view*
   - CustomElements (webcomponents)  =>  *viewmodel*
 - Built-in dependency injection
-- Decoupling map state from map implementation
+- Map state is decoupled from map implementation
 - Tools
   - [openlayers](https://openlayers.org/): mapping api
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 
@@ -34,7 +34,7 @@ Next generation web-mapviewer based on web standards.
 | `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) and disabled host checking, so that it is reachable from another device|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
-| `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
+| `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
