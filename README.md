@@ -3,6 +3,7 @@
 ## Concept
 
 - Use of web standards as far as possible
+- modern Js (ES9), currently no transpiler
 - Model–view–viewmodel (MVVM) structuring:
   - Data objects from service classes => *model*
   - DOM => *view*
@@ -13,7 +14,7 @@
   - [redux](https://redux.js.org/): application state container 
   - [webpack](https://webpack.js.org): bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): tests
-- inspired by Adam Bien (https://airhacks.io/)
+- basic concept inspired by Adam Bien (https://airhacks.io/)
 
 
 ## Install
@@ -31,7 +32,7 @@
 | `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
-| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently es9 is allowed |
+| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
 | `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomable treemap |
 
 
