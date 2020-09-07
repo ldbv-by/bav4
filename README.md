@@ -31,6 +31,7 @@ Next generation web-mapviewer based on web standards.
 | command | what it does |
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
+| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) and disabled host checking, so that it is reachable from another device|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 | `npm run test` | Runs unit and component tests headless against Chrome and Firefox. Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
