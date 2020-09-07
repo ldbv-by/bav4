@@ -150,7 +150,7 @@ class BaElement extends HTMLElement {
 
     /**
      * Called once after the view has beenn rendered the first time.
-     * Js-Setup should be done here.
+     * Js setup should be done here.
      * @abstract
      */
     initialize() { }
@@ -162,7 +162,7 @@ class BaElement extends HTMLElement {
     onAfterRender() { }
 
     /**
-    * Called after ethe lements state has been changed. View should be updated here. 
+    * Called after the elements state has been changed. View should be updated here. 
     * @see {@link BaElement#render}
     * @abstract
     */
