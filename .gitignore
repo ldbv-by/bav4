@@ -4,3 +4,4 @@ dist
 docs
 stats.json
 coverage
+.vscode/launch.json
