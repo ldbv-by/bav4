@@ -5,7 +5,7 @@ Next generation web-mapviewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-- modern Js (ES9), currently no transpiler
+- Modern Js (ES9), currently no transpiler
 - Model–view–viewmodel (MVVM) structuring:
   - Data objects from service classes => *model*
   - DOM => *view*
@@ -18,7 +18,7 @@ Next generation web-mapviewer based on web standards.
   - [redux](https://redux.js.org/): application state container 
   - [webpack](https://webpack.js.org): bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): tests
-- basic concept inspired by Adam Bien (https://airhacks.io/)
+- Basic concept inspired by Adam Bien (https://airhacks.io/)
 
 
 ## Install
