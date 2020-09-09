@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import './headerElement.css';
+import './style.css';
 
 /**
  * Container element for header stuff. 
@@ -11,7 +11,7 @@ export class HeaderElement extends BaElement {
 
 
 
-    createView() {
+    createView(){
 
         return html`
          <div class="header">BAv4 (#nomigration)</div>

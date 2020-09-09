@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import './footerElement.css';
+import './style.css';
 
 /**
  * Container element for footer stuff. 

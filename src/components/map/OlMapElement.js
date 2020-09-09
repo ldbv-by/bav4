@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import 'ol/ol.css';
-import './olMapElement.css';
+import './style.css';
 import { Map, View } from 'ol';
 import TileLayer from "ol/layer/Tile";
 import OSM from 'ol/source/OSM';
