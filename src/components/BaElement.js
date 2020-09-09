@@ -2,7 +2,7 @@ import { render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
 
 /**
- * Base-Class for all ba elements.
+ * Base-Class for all ba-elements.
  * BaElement classes represent the view model within the MVVM pattern.
  * 
  * Lifecycle:<br>
@@ -71,7 +71,6 @@ class BaElement extends HTMLElement {
 		this.initialize();
 		this.onBeforeRender();
 		this.render();
-		this.onAfterRender();
 	}
 
 	/**
@@ -114,14 +113,14 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-       * Extract and returns the state of this element from the application-wide store.
+       * Extract and returns the state of this element from the application-wide state.
        * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
        * 
        * @see {@link BaElement#onStateChanged}
        * @protected
        * @returns state of the elements {Object}
        */
-	extractState(/*eslint-disable no-unused-vars */store) {
+	extractState(/*eslint-disable no-unused-vars */state) {
 		return {};
 	}
 
@@ -138,7 +137,7 @@ class BaElement extends HTMLElement {
 
 	/**
        * Called before the view is rendered.
-       * @abstract
+	   * @protected
        */
 	onBeforeRender() { }
 
@@ -147,30 +146,40 @@ class BaElement extends HTMLElement {
        * @abstract
        * @returns html template as tagged template literal
        */
-	createView() { }
+	createView() {
+		if (this === BaElement) {
+			// The child has not implemented this method.
+			throw new TypeError('Please implement static abstract method #tag.');
+		}
+		else {
+			// The child has implemented this method but also called `super.foo()`.
+			throw new TypeError('Do not call static abstract method #tag from child.');
+		}
+
+	}
 
 	/**
        * Called once after the view has beenn rendered the first time.
        * Js setup should be done here.
-       * @abstract
+       * @protected
        */
 	initialize() { }
 
 	/**
       * Called after the view has been rendered.
-      * @abstract
+      * @protected
       */
 	onAfterRender() { }
 
 	/**
       * Called after the elements state has been changed. View should be updated here. 
       * @see {@link BaElement#render}
-      * @abstract
+      * @protected
       */
 	onStateChanged() { }
 
 	/**
-       * @abstract
+       * @protected
        */
 	onDisconnect() { }
 
