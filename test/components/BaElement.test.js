@@ -49,15 +49,15 @@ let store;
 
 const INDEX_CHANGED = 'CHANGE_INDEX';
 
-const changeApplicationStoreIndexReducer = (state = [], action) => {
+const changeApplicationStoreIndexReducer = (state, action) => {
 	switch (action.type) {
-	case INDEX_CHANGED:
-		return {
-			...state,
-			applicationStateIndex: action.payload
-		};
-	default:
-		return state;
+		case INDEX_CHANGED:
+			return {
+				...state,
+				applicationStateIndex: action.payload
+			};
+		default:
+			return state;
 	}
 };
 const setupStoreAndDi = () => {

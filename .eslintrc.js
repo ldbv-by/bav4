@@ -13,7 +13,7 @@ module.exports = {
 	},
 	rules: {
 		'semi': ['error', 'always'],
-		'indent': ['error', 'tab'],
+		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
 		'quotes': ['error', 'single'],
 		'object-curly-spacing': ['error', 'always'],
 		'brace-style': ['error', 'stroustrup'],
