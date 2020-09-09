@@ -80,7 +80,7 @@ const _register = (injector, keyOrPOJO, object, isSingleton = false) => {
 
 
 	// Called as one registration with key and object.
-	if (typeof (keyOrPOJO) === "string") {
+	if (typeof (keyOrPOJO) === 'string') {
 
 		const key = keyOrPOJO;
 		if (injector._dependencies[key]) {

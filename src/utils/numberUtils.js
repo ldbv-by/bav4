@@ -5,14 +5,14 @@
  * @returns {number} value rounded
  */
 export function round(value, decimals=0) {
-    if (!isNumber(value)) {
-        return undefined;
-    }
-    if (decimals === 0) {
-        return Math.round(value);
-    }
-    const pow = Math.pow(10, decimals);
-    return Math.round(value * pow) / pow;
+	if (!isNumber(value)) {
+		return undefined;
+	}
+	if (decimals === 0) {
+		return Math.round(value);
+	}
+	const pow = Math.pow(10, decimals);
+	return Math.round(value * pow) / pow;
 }
 
 /**
@@ -21,7 +21,7 @@ export function round(value, decimals=0) {
  * @returns {boolean}
  */
 export function isNumber(value) {
-    return value !== null
+	return value !== null
         && value !== undefined
         && !Number.isNaN(Number(value))
         && (typeof value !== 'string' || value.length !== 0);

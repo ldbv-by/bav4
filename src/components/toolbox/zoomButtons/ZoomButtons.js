@@ -12,17 +12,17 @@ export class ZoomButtons extends BaElement {
 
 
 
-    createView() {
+	createView() {
 
-        return html`
+		return html`
         <div class="zoom-buttons">
             <a class="button" @click="${increaseZoom}"><span class="icon zoom-in"></a>
             <a class="button" @click="${decreaseZoom}">  <span class="icon zoom-out"></a>
         </div>
         `;
-    }
+	}
 
-    static get tag() {
-        return 'ba-zoom-buttons';
-    }
+	static get tag() {
+		return 'ba-zoom-buttons';
+	}
 }

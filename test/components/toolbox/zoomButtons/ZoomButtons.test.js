@@ -16,72 +16,72 @@ window.customElements.define(ZoomButtons.tag, ZoomButtons);
 let mockedStore;
 
 const setupStoreAndDi = (initialMapState) => {
-  const state = {
-      map: initialMapState
-  };
-  mockedStore = createStore(events, state);
+	const state = {
+		map: initialMapState
+	};
+	mockedStore = createStore(events, state);
 
-  const storeService = {
-    getStore: function () {
-      return mockedStore;
-    }
-  };
+	const storeService = {
+		getStore: function () {
+			return mockedStore;
+		}
+	};
 
 
-  $injector
-    .reset()
-    .registerSingleton('StoreService', storeService);
+	$injector
+		.reset()
+		.registerSingleton('StoreService', storeService);
 };
 
 
 describe('ZoomButtons', () => {
-  let element;
+	let element;
 
-  beforeAll(() => {
-    window.classUnderTest = ZoomButtons.name;
+	beforeAll(() => {
+		window.classUnderTest = ZoomButtons.name;
 
-  });
+	});
 
-  afterAll(() => {
-    window.classUnderTest = undefined;
+	afterAll(() => {
+		window.classUnderTest = undefined;
 
-  });
-
-
-  beforeEach(async () => {
-
-    setupStoreAndDi({
-      zoom: 10
-    });
-
-    element = await TestUtils.render(ZoomButtons.tag);
-  });
+	});
 
 
-  describe('when initialized', () => {
-    it('adds a div which shows two zoom buttons', async () => {
+	beforeEach(async () => {
 
-      expect(element.querySelector('.zoom-in')).toBeTruthy();
-      expect(element.querySelector('.zoom-out')).toBeTruthy();
+		setupStoreAndDi({
+			zoom: 10
+		});
 
-    });
+		element = await TestUtils.render(ZoomButtons.tag);
+	});
 
-  });
-  describe('when clicked', () => {
 
-    it('decreases the current zoom level by one', () => {
+	describe('when initialized', () => {
+		it('adds a div which shows two zoom buttons', async () => {
 
-      element.querySelector('.zoom-out').click();
-      expect(mockedStore.getState().map.zoom).toBe(9);
+			expect(element.querySelector('.zoom-in')).toBeTruthy();
+			expect(element.querySelector('.zoom-out')).toBeTruthy();
 
-    });
+		});
 
-    it('increases the current zoom level by one', () => {
+	});
+	describe('when clicked', () => {
 
-      element.querySelector('.zoom-in').click();
-      expect(mockedStore.getState().map.zoom).toBe(11);
+		it('decreases the current zoom level by one', () => {
 
-    });
+			element.querySelector('.zoom-out').click();
+			expect(mockedStore.getState().map.zoom).toBe(9);
 
-  });
+		});
+
+		it('increases the current zoom level by one', () => {
+
+			element.querySelector('.zoom-in').click();
+			expect(mockedStore.getState().map.zoom).toBe(11);
+
+		});
+
+	});
 });

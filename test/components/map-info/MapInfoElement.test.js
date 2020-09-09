@@ -22,114 +22,114 @@ window.customElements.define(MapInfoElement.tag, MapInfoElement);
 let mockedStore;
 
 const setupStoreAndDi = (initialState) => {
-  const state = {
-    map: initialState
-  };
-  mockedStore = createStore(events, state);
+	const state = {
+		map: initialState
+	};
+	mockedStore = createStore(events, state);
 
-  const storeService = {
-    getStore: function () {
-      return mockedStore;
-    }
-  };
+	const storeService = {
+		getStore: function () {
+			return mockedStore;
+		}
+	};
 
 
-  $injector
-    .reset()
-    .register('CoordinateService', OlCoordinateService)
-    .registerSingleton('StoreService', storeService);
+	$injector
+		.reset()
+		.register('CoordinateService', OlCoordinateService)
+		.registerSingleton('StoreService', storeService);
 };
 
 
 describe('MapInfoElement', () => {
-  beforeAll(() => {
-    window.classUnderTest = MapInfoElement.name;
+	beforeAll(() => {
+		window.classUnderTest = MapInfoElement.name;
 
-  });
+	});
 
-  afterAll(() => {
-    window.classUnderTest = undefined;
+	afterAll(() => {
+		window.classUnderTest = undefined;
 
-  });
-
-
-
-  let element;
-  beforeEach(async () => {
-
-    // element = await TestUtils.render(MapInfoElement.tag);
-    // shadowRoot = element.shadowRoot;
-    // document.body.append(element);
-  });
+	});
 
 
-  describe('when initialized', () => {
-    it('adds a div which shows the initial zoom level 5', async () => {
 
-      setupStoreAndDi({
-        zoom: 5,
-        pointerPosition: [1288239.2412306187, 6130212.561641981]
-      });
+	let element;
+	beforeEach(async () => {
 
-      element = await TestUtils.render(MapInfoElement.tag);
+		// element = await TestUtils.render(MapInfoElement.tag);
+		// shadowRoot = element.shadowRoot;
+		// document.body.append(element);
+	});
 
-      expect(element.querySelector('.zoomLabel')).toBeTruthy();
-      expect(element.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
 
-    });
+	describe('when initialized', () => {
+		it('adds a div which shows the initial zoom level 5', async () => {
 
-    it('adds a div which shows the initial zoom level 10', async () => {
+			setupStoreAndDi({
+				zoom: 5,
+				pointerPosition: [1288239.2412306187, 6130212.561641981]
+			});
 
-      setupStoreAndDi({
-        zoom: 10,
-        pointerPosition: [1288239.2412306187, 6130212.561641981]
-      });
+			element = await TestUtils.render(MapInfoElement.tag);
 
-      element = await TestUtils.render(MapInfoElement.tag);
+			expect(element.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
 
-      expect(element.querySelector('.zoomLabel')).toBeTruthy();
-      expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
+		});
 
-    });
-  });
-  describe('when updated', () => {
+		it('adds a div which shows the initial zoom level 10', async () => {
 
-    it('updates the div which shows the current zoom level', async () => {
-      setupStoreAndDi({
-        zoom: 10,
-        pointerPosition: [1288239.2412306187, 6130212.561641981]
-      });
+			setupStoreAndDi({
+				zoom: 10,
+				pointerPosition: [1288239.2412306187, 6130212.561641981]
+			});
 
-      element = await TestUtils.render(MapInfoElement.tag);
-      expect(element.querySelector('.zoomLabel')).toBeTruthy();
-      expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
+			element = await TestUtils.render(MapInfoElement.tag);
 
-      // trigger zoom event
-      changeZoom(11);
+			expect(element.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
 
-      expect(element.innerHTML.includes('ZoomLevel: 11')).toBeTruthy();
+		});
+	});
+	describe('when updated', () => {
 
-    });
+		it('updates the div which shows the current zoom level', async () => {
+			setupStoreAndDi({
+				zoom: 10,
+				pointerPosition: [1288239.2412306187, 6130212.561641981]
+			});
 
-  });
+			element = await TestUtils.render(MapInfoElement.tag);
+			expect(element.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
 
-  describe('when map click event fired', () => {
+			// trigger zoom event
+			changeZoom(11);
 
-    it('shows an alert', async () => {
-      setupStoreAndDi({
-        zoom: 10,
-        pointerPosition: [1288239.2412306187, 6130212.561641981]
-      });
+			expect(element.innerHTML.includes('ZoomLevel: 11')).toBeTruthy();
+
+		});
+
+	});
+
+	describe('when map click event fired', () => {
+
+		it('shows an alert', async () => {
+			setupStoreAndDi({
+				zoom: 10,
+				pointerPosition: [1288239.2412306187, 6130212.561641981]
+			});
       
-      element = await TestUtils.render(MapInfoElement.tag);
+			element = await TestUtils.render(MapInfoElement.tag);
       
-      spyOn(window, 'alert');
-      // trigger map_clicked event
-      window.dispatchEvent(new CustomEvent('map_clicked', { detail: [1288239.2412306187, 6130212.561641981], bubbles: true }));
+			spyOn(window, 'alert');
+			// trigger map_clicked event
+			window.dispatchEvent(new CustomEvent('map_clicked', { detail: [1288239.2412306187, 6130212.561641981], bubbles: true }));
 
-      expect(window.alert).toHaveBeenCalledWith('click @ 11.572, 48.140');
-    });
+			expect(window.alert).toHaveBeenCalledWith('click @ 11.572, 48.140');
+		});
 
-  });
+	});
 
 });

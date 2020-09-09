@@ -15,51 +15,51 @@ let mockedStore;
 
 const setupStoreAndDi = () => {
 
-  mockedStore = createStore(() => { }, {});
+	mockedStore = createStore(() => { }, {});
 
-  const storeService = {
-    getStore: function () {
-      return mockedStore;
-    }
-  };
+	const storeService = {
+		getStore: function () {
+			return mockedStore;
+		}
+	};
 
 
-  $injector
-    .reset()
-    .registerSingleton('StoreService', storeService);
+	$injector
+		.reset()
+		.registerSingleton('StoreService', storeService);
 };
 
 
 describe('FooterElement', () => {
-  let element;
+	let element;
 
-  beforeAll(() => {
-    window.classUnderTest = FooterElement.name;
+	beforeAll(() => {
+		window.classUnderTest = FooterElement.name;
     
-    //we don't want to test child element
-    FooterElement.prototype.createChildrenView = () => html``;
-  });
+		//we don't want to test child element
+		FooterElement.prototype.createChildrenView = () => html``;
+	});
 
-  afterAll(() => {
-    window.classUnderTest = undefined;
+	afterAll(() => {
+		window.classUnderTest = undefined;
 
-  });
-
-
-  beforeEach(async () => {
-
-    setupStoreAndDi();
-    element = await TestUtils.render(FooterElement.tag);
-  });
+	});
 
 
-  describe('when initialized', () => {
-    it('adds footer css class', () => {
+	beforeEach(async () => {
 
-      expect(element.querySelector('.footer')).toBeTruthy();
+		setupStoreAndDi();
+		element = await TestUtils.render(FooterElement.tag);
+	});
 
-    });
 
-  });
+	describe('when initialized', () => {
+		it('adds footer css class', () => {
+
+			expect(element.querySelector('.footer')).toBeTruthy();
+
+		});
+
+	});
 
 });

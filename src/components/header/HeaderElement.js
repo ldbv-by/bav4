@@ -11,14 +11,14 @@ export class HeaderElement extends BaElement {
 
 
 
-    createView(){
+	createView() {
 
-        return html`
+		return html`
          <div class="header">BAv4 (#nomigration)</div>
         `;
-    }
+	}
 
-    static get tag() {
-        return 'ba-header';
-    }
+	static get tag() {
+		return 'ba-header';
+	}
 }
