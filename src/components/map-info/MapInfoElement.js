@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import { changeZoomAndPosition } from '../../store/map/MapActions';
+import { changeZoomAndPosition } from '../../store/map/actions';
 import { round } from '../../utils/numberUtils';
 import { $injector } from '../../injection';
 

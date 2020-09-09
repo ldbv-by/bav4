@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
-import events from './map/MapReducer.js';
-import { ZOOM_CHANGED, POSITION_CHANGED } from './map/MapReducer';
+import events from './map/reducer.js';
+import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 

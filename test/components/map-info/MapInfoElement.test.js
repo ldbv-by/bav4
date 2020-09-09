@@ -5,11 +5,11 @@ import { MapInfoElement } from '../../../src/components/map-info/MapInfoElement'
 import { createStore } from 'redux';
 
 // import { createStore } from 'redux';
-import events from '../../../src/store/map/MapReducer';
+import events from '../../../src/store/map/reducer';
 
 import { $injector } from '../../../src/injection';
 import { OlCoordinateService } from '../../../src/utils/OlCoordinateService';
-import { changeZoom } from '../../../src/store/map/MapActions';
+import { changeZoom } from '../../../src/store/map/actions';
 
 
 

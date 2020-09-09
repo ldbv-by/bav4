@@ -1,4 +1,4 @@
-import { ZOOM_CHANGED, POSITION_CHANGED, ZOOM_POSITION_CHANGED, POINTER_POSITION_CHANGED } from "./MapReducer";
+import { ZOOM_CHANGED, POSITION_CHANGED, ZOOM_POSITION_CHANGED, POINTER_POSITION_CHANGED } from "./reducer";
 import { $injector } from '../../injection';
 
 const getStore = () => {

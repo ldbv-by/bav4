@@ -5,7 +5,7 @@ import { ZoomButtons } from '../../../../src/components/toolbox/zoomButtons/Zoom
 import { createStore } from 'redux';
 
 // import { createStore } from 'redux';
-import events from '../../../../src/store/map/MapReducer';
+import events from '../../../../src/store/map/reducer';
 
 import { $injector } from '../../../../src/injection';
 
