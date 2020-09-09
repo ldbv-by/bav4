@@ -5,6 +5,7 @@ import './style.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from '../../store/map/actions';
 
@@ -37,6 +38,7 @@ export class OlMapElement extends BaElement {
     */
 	initialize() {
 
+		const BACKGROUND_LAYER_ID = 'g_atkis';
 		const { zoom, position } = this.state;
 
 
@@ -48,8 +50,18 @@ export class OlMapElement extends BaElement {
 		this.map = new Map({
 			layers: [
 				new TileLayer({
-					source: new OSM(),
-				})],
+					id: BACKGROUND_LAYER_ID,
+					source: new XYZ({
+						projection: 'EPSG:3857',
+						url: `https://intergeo37.bayernwolke.de/betty/${BACKGROUND_LAYER_ID}/{z}/{x}/{y}`,
+						attributions: '&#169; ' +
+							'<a href="https://www.geodaten.bayern.de" target="_blank">Bayerische Vermessungsverwaltung</a> ',
+
+						attributionsCollapsible: false
+					})
+				})
+
+			],
 			// target: 'ol-map',
 			view: this.view,
 			controls: defaultControls({
