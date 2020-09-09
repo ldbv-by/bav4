@@ -32,10 +32,6 @@ class BaElementImpl extends BaElement {
 		this.onAfterRenderCalled = this.callOrderIndex++;
 	}
 
-	onStateChanged() {
-		this.render();
-	}
-
 
 	createView() {
 		return html`<div class='ba-element-impl'> ${this.state.elementStateIndex}</div>`;
@@ -107,7 +103,7 @@ describe('BaElement', () => {
 			expect(element.innerHTML.includes('21')).toBeTruthy();
 		});
 
-		it('call hooks in correct order', () => {
+		it('calls hooks in correct order', () => {
 
 			expect(element.extractStateCalled).toBe(0);
 			expect(element.initializeCalled).toBe(1);
@@ -117,7 +113,7 @@ describe('BaElement', () => {
 	});
 
 	describe('when state changed', () => {
-		it('calls #onStateChanged', () => {
+		it('calls #onStateChanged, #render and updates the view', () => {
 
 			expect(element.querySelector('.ba-element-impl')).toBeTruthy();
 

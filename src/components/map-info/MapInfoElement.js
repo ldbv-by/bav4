@@ -61,10 +61,6 @@ export class MapInfoElement extends BaElement {
 		return { zoom, pointerPosition };
 	}
 
-	onStateChanged() {
-		this.render();
-	}
-
 	static get tag() {
 		return 'ba-map-info';
 	}

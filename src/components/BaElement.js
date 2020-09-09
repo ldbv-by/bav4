@@ -7,7 +7,7 @@ import { $injector } from '../injection';
  * 
  * Lifecycle:<br>
  * 
- * {@link BaElement#extractState}<br>
+ *  {@link BaElement#extractState}<br>
  *      &darr;<br>
  *  {@link BaElement#initialize}<br>
  *      &darr;<br>
@@ -19,6 +19,13 @@ import { $injector } from '../injection';
  *      &darr;<br>
  *  {@link BaElement#onDisconnect}<br>
  * 
+ * Model (state) change loop:<br>
+ * 
+ *  {@link BaElement#extractState}<br>
+ *      &darr;<br>
+ *  {@link BaElement#onStateChanged}<br>
+ *      &darr;<br>
+ *  {@link BaElement#render}<br>
  * 
  * 
  * 
@@ -173,11 +180,13 @@ class BaElement extends HTMLElement {
 	onAfterRender() { }
 
 	/**
-      * Called after the elements state has been changed. View should be updated here. 
-      * @see {@link BaElement#render}
+      * Called after the elements state has been changed. 
+	  * Per default {@link BaElement#render} is called. 
       * @protected
       */
-	onStateChanged() { }
+	onStateChanged() {
+		this.render();
+	}
 
 	/**
        * @protected
