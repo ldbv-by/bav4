@@ -11,7 +11,7 @@ module.exports = function (config) {
 		preprocessors: {
 			'test/**/*.test.js': ['webpack'],
 		},
-		reporters: ['spec', 'coverage-istanbul'],
+		reporters: ['progress', 'coverage-istanbul'],
 		// port: 9876,
 		// colors: true,
 		// logLevel: config.LOG_INFO,
