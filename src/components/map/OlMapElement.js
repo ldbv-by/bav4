@@ -4,7 +4,6 @@ import 'ol/ol.css';
 import './style.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from '../../store/map/actions';
