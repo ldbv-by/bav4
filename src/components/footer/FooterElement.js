@@ -9,35 +9,18 @@ import './style.css';
  */
 export class FooterElement extends BaElement {
 
-	constructor() {
-		super();
-		// this.root = this.attachShadow({ mode: "open" });
-	}
-
-
 	createView() {
 
-		const children = this.createChildrenView();
-
 		return html`
-         <div class="footer">${children}</div>
+         	<div class="footer">${this.createChildrenView()}</div>
         `;
 	}
 
-
 	createChildrenView() {
-		// return this.isUnderTest() ? html`` : html`<ba-map-info></ba-map-info>`;
 		return html`<ba-map-info></ba-map-info>`;
-		// return html``;
 	}
-	// if we want Shadow DOM
-	// getRenderTarget() {
-	//     return this.root;
-	// }
 
 	static get tag() {
 		return 'ba-footer';
 	}
-
-
 }
