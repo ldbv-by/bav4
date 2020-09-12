@@ -56,7 +56,7 @@ describe('FooterElement', () => {
 	describe('when initialized', () => {
 		it('adds footer css class', () => {
 
-			expect(element.querySelector('.footer')).toBeTruthy();
+			expect(element.querySelector('.some')).toBeTruthy();
 
 		});
 

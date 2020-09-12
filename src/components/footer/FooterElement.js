@@ -12,7 +12,7 @@ export class FooterElement extends BaElement {
 	createView() {
 
 		return html`
-         	<div class="footer">${this.createChildrenView()}</div>
+         	<div class="some">${this.createChildrenView()}</div>
         `;
 	}
 

@@ -14,7 +14,7 @@ export class HeaderElement extends BaElement {
 	createView() {
 
 		return html`
-         <div class="header">BAv4 (#nomigration)</div>
+         <div class="some">BAv4 (#nomigration)</div>
         `;
 	}
 

@@ -1,50 +1,56 @@
 
+ba-zoom-buttons {
 
-.zoom-buttons {
-        position: absolute;
-        right: 30px;
-        top: 100px;
-        display: inline-block;
-        vertical-align: top;
-        width: 20px;
-        height: 20px;
-}
+  & .zoom-buttons {
+    position: absolute;
+    right: 30px;
+    top: 100px;
+    display: inline-block;
+    vertical-align: top;
+    width: 20px;
+    height: 20px;
+  }
+  
+  
+  & .zoom-in {
+    mask: url('assets/plus-circle-fill.svg');
+    -webkit-mask-image: url('assets/plus-circle-fill.svg');
+    
+  }
+  
+  & .zoom-out {
+    mask: url('assets/dash-circle-fill.svg');
+    -webkit-mask-image: url('assets/dash-circle-fill.svg');
+  }
 
+  & .icon {
+    background: var(--main-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    cursor: pointer;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+  }
 
-.zoom-in {
-  mask: url('assets/plus-circle-fill.svg');
-  -webkit-mask-image: url('assets/plus-circle-fill.svg');
-
-}
-.zoom-out {
-  mask: url('assets/dash-circle-fill.svg');
-  -webkit-mask-image: url('assets/dash-circle-fill.svg');
-}   
-.icon {
-  background: rgb(9, 157, 218);
-  mask-size: cover;
-  -webkit-mask-size: cover;
-  cursor: pointer;
-  display: inline-block;
-  height: 40px;
-  width: 40px;
-}
-.icon:hover,
-.icon:focus {
-  background: rgb(9, 157, 218)
-}
-.icon:hover{
-  transform: scale(1.1);
-}
-
-.icon:active{
+  & .icon:hover,
+  & .icon:focus {
+    background: var(--main-color);
+  }
+  & .icon:hover{
+    transform: scale(1.1);
+  }
+  
+  & .icon:active{
     transform: scale(1.15);
-}
-
-.zoom-buttons .button{
-  background-color: white;
-  display: inline-block;
-  height: 40px;
-  width: 40px;
-  border-radius:  50%;
+  }
+  
+  & .zoom-buttons .button{
+    background-color: white;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    border-radius:  50%;
+  }
+  
 }

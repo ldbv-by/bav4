@@ -12,6 +12,7 @@ Next generation web-mapviewer based on web standards.
   - CustomElements (webcomponents)  =>  *viewmodel*
 - Built-in dependency injection
 - Map state is decoupled from map implementation
+- Vanilla Css. Scoping via nested rules (https://drafts.csswg.org/css-nesting-1/), which are unwrapped within postprocessing 
 - Tools
   - [openlayers](https://openlayers.org/): mapping api
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 

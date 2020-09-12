@@ -1,9 +1,12 @@
-.header{
-    position: absolute; 
-    top:0px; 
-    z-index: 100;
-    color: #099dda;
-    background-color: white;
-    padding-left: 5px;
-    font-size: 1em;
+ba-header {
+
+    & .some{
+        position: absolute; 
+        top:0px; 
+        z-index: 100;
+        background-color: white;
+        padding-left: 5px;
+        font-size: 1em;
+        color: var(--main-color);
+    }
 }

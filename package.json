@@ -27,6 +27,8 @@
     "karma-jasmine": "^4.0.1",
     "karma-spec-reporter": "^0.0.32",
     "karma-webpack": "^4.0.2",
+    "postcss-loader": "^4.0.1",
+    "postcss-nesting": "^7.0.1",
     "redux-test-utils": "^1.0.0",
     "style-loader": "^1.2.1",
     "svg-url-loader": "^6.0.0",

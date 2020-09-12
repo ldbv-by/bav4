@@ -55,7 +55,7 @@ describe('HeaderElement', () => {
 	describe('when initialized', () => {
 		it('adds header css class', () => {
 
-			expect(element.querySelector('.header')).toBeTruthy();
+			expect(element.querySelector('.some')).toBeTruthy();
 
 		});
 
