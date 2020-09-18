@@ -52,6 +52,10 @@ class BaElement extends HTMLElement {
 			throw new TypeError('Please implement abstract method #createView.');
 		}
 		const { StoreService } = $injector.inject('StoreService');
+		/**
+		 * Do not access the store in child classes. Always use {@link BaElement#state} in child classes.
+		 * @private
+		 */
 		this.storeService = StoreService;
 
 		/** 
