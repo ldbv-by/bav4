@@ -57,9 +57,11 @@ describe('MapInfoElement', () => {
 	let element;
 	beforeEach(async () => {
 
-		// element = await TestUtils.render(MapInfoElement.tag);
-		// shadowRoot = element.shadowRoot;
-		// document.body.append(element);
+		/*
+		 * element = await TestUtils.render(MapInfoElement.tag);
+		 * shadowRoot = element.shadowRoot;
+		 * document.body.append(element);
+		 */
 	});
 
 

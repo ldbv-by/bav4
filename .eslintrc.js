@@ -14,12 +14,12 @@ module.exports = {
 	rules: {
 		'semi': ['error', 'always'],
 		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+		'multiline-comment-style' : ['error', 'starred-block'],
 		'quotes': ['error', 'single'],
 		'object-curly-spacing': ['error', 'always'],
 		'brace-style': ['error', 'stroustrup'],
 		'lines-between-class-members': ['error', 'always'],
 		'curly': ['error', 'all'],
 		'space-before-blocks': ['error', 'always'],
-		// "indent": ["error", 2]
 	}
 };

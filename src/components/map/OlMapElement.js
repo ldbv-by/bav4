@@ -20,21 +20,23 @@ export class OlMapElement extends BaElement {
 
 	constructor() {
 		super();
-		//if we want Shadow DOM
-		// this.root = this.attachShadow({ mode: "open" });
+		/*
+		 * if we want Shadow DOM
+		 *  this.root = this.attachShadow({ mode: "open" });
+		 */
 	}
 
 
 	/**
-    * @override
-    */
+	 * @override
+	 */
 	createView() {
 		return html`<div id="ol-map"></div>`;
 	}
 
 	/**
-    * @override
-    */
+	 * @override
+	 */
 	initialize() {
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
@@ -97,30 +99,32 @@ export class OlMapElement extends BaElement {
 			this.emitEvent('map_clicked', coord);
 		});
 
-		//if we want Shadow DOM
-		// this.map.setTarget(this.root.firstElementChild); 
+		/*
+		 * if we want Shadow DOM
+		 *  this.map.setTarget(this.root.firstElementChild); 
+		 */
 	}
 
 	/**
-    * @override
-    */
+	 * @override
+	 */
 	onDisconnect() {
 		this.map = null;
 		this.view = null;
 	}
 
 	/**
-     * @override
-     * @param {Object} store 
-     */
+	 * @override
+	 * @param {Object} store 
+	 */
 	extractState(store) {
 		const { map: { zoom, position } } = store;
 		return { zoom, position };
 	}
 
 	/**
-    * @override
-    */
+	 * @override
+	 */
 	onStateChanged() {
 		const { zoom, position } = this.state;
 
@@ -136,22 +140,24 @@ export class OlMapElement extends BaElement {
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	onAfterRender() {
 		this.map.setTarget('ol-map');
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	static get tag() {
 		return 'ba-ol-map';
 	}
 
-	//if we want Shadow DOM
-	// getRenderTarget(){
-	//     return this.root;
-	// }
+	/*
+	 * if we want Shadow DOM
+	 *  getRenderTarget(){
+	 *      return this.root;
+	 *  }
+	 */
 
 }

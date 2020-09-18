@@ -29,15 +29,19 @@ export class StoreService {
 					selector: state => state.map.zoom,
 					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
-					// Cast the parameter value to a number (we map invalid values to 1, which will then
-					// hide the parameter).
+					/*
+					 * Cast the parameter value to a number (we map invalid values to 1, which will then
+					 * hide the parameter).
+					 */
 					stringToValue: (string) => Number.parseFloat(string) || initialState.map.zoom,
 
 					// We then also specify the inverse function (this example one is the default)
 					valueToString: value => `${value}`,
 
-					// When state.pageNumber equals 1, the parameter p is hidden (and vice versa).
-					// defaultValue: initialState.map.zoom,
+					/*
+					 * When state.pageNumber equals 1, the parameter p is hidden (and vice versa).
+					 * defaultValue: initialState.map.zoom,
+					 */
 					defaultValue: initialState.map.zoom,
 				},
 				position: {
@@ -56,8 +60,10 @@ export class StoreService {
 			},
 			initialTruth: 'location',
 
-			// Use replaceState so the browser's back/forward button will skip over these page changes.
-			// replaceState: true,
+			/*
+			 * Use replaceState so the browser's back/forward button will skip over these page changes.
+			 * replaceState: true,
+			 */
 		});
 
 		this.store = createStore(events, initialState, storeEnhancer);
@@ -65,8 +71,8 @@ export class StoreService {
 	}
 
 	/**
-         * Returns the store.
-         */
+	 * Returns the store.
+	 */
 	getStore() {
 		return this.store;
 

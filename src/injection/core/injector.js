@@ -72,9 +72,11 @@ export class Injector {
 	}
 }
 
-// const  _regExInsideParentheses = /[(][^)]*[)]/;
-// const _regExParenthesesAndSpaces = /[()\s]/g;
-// const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
+/*
+ * const  _regExInsideParentheses = /[(][^)]*[)]/;
+ * const _regExParenthesesAndSpaces = /[()\s]/g;
+ * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
+ */
 const _register = (injector, keyOrPOJO, object, isSingleton = false) => {
 
 

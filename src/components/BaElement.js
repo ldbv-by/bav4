@@ -43,8 +43,10 @@ class BaElement extends HTMLElement {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
 		}
-		//else (called from child)
-		// Check if all instance methods are implemented.
+		/*
+		 * else (called from child)
+		 *  Check if all instance methods are implemented.
+		 */
 		if (this.createView === BaElement.prototype.createView) {
 			// Child has not implemented this abstract method.
 			throw new TypeError('Please implement abstract method #createView.');
@@ -53,12 +55,13 @@ class BaElement extends HTMLElement {
 		this.storeService = StoreService;
 
 		/** 
-             * The state of this Element. Usually the state object is an extract of the application-wide store.
-             * Local state should be managed individually in subclasses.
-             * @see {@link BaElement#extractState}
-             * @see {@link BaElement#onStateChanged}
-             * @member  {Object}  
-             * */
+		 * The state of this Element. Usually the state object is an extract of the application-wide store.
+		 * Local state should be managed individually in subclasses.
+		 * @see {@link BaElement#extractState}
+		 * @see {@link BaElement#onStateChanged}
+		 * @member  {Object}  
+		 * 
+		 */
 		this.state = {};
 	}
 
@@ -69,8 +72,8 @@ class BaElement extends HTMLElement {
 
 
 	/**
-       * @private
-       */
+	 * @private
+	 */
 	connectedCallback() {
 		const store = this.storeService.getStore();
 		this.unsubscribe = store.subscribe(() => this.updateState());
@@ -82,8 +85,8 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-       * @private
-       */
+	 * @private
+	 */
 	disconnectedCallback() {
 		this.unsubscribe();
 
@@ -93,8 +96,8 @@ class BaElement extends HTMLElement {
 
 
 	/**
-      * @private
-      */
+	 * @private
+	 */
 	updateState() {
 
 		//workaround until karma allows isolated tests (https://github.com/karma-runner/karma/issues/412)
@@ -114,29 +117,29 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-       * @protected
-       */
+	 * @protected
+	 */
 	getRenderTarget() {
 		return this;
 	}
 
 	/**
-       * Extract and returns the state of this element from the application-wide state.
-       * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
-       * 
-       * @see {@link BaElement#onStateChanged}
-       * @protected
-       * @returns state of the elements {Object}
-       */
+	 * Extract and returns the state of this element from the application-wide state.
+	 * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
+	 * 
+	 * @see {@link BaElement#onStateChanged}
+	 * @protected
+	 * @returns state of the elements {Object}
+	 */
 	extractState(/*eslint-disable no-unused-vars */state) {
 		return {};
 	}
 
 
 	/**
-       * (Re-) renders the HTML view.
-       * @protected
-       */
+	 * (Re-) renders the HTML view.
+	 * @protected
+	 */
 	render() {
 		const template = this.createView();
 		renderLitHtml(template, this.getRenderTarget());
@@ -144,16 +147,16 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-       * Called before the view is rendered.
-	   * @protected
-       */
+	 * Called before the view is rendered.
+	 * @protected
+	 */
 	onBeforeRender() { }
 
 	/**
-       * Creates the html template.
-       * @abstract
-       * @returns html template as tagged template literal
-       */
+	 * Creates the html template.
+	 * @abstract
+	 * @returns html template as tagged template literal
+	 */
 	createView() {
 		if (this === BaElement) {
 			// The child has not implemented this method.
@@ -167,46 +170,46 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-       * Called once after the view has beenn rendered the first time.
-       * Js setup should be done here.
-       * @protected
-       */
+	 * Called once after the view has beenn rendered the first time.
+	 * Js setup should be done here.
+	 * @protected
+	 */
 	initialize() { }
 
 	/**
-      * Called after the view has been rendered.
-      * @protected
-      */
+	 * Called after the view has been rendered.
+	 * @protected
+	 */
 	onAfterRender() { }
 
 	/**
-      * Called after the elements state has been changed. 
-	  * Per default {@link BaElement#render} is called. 
-      * @protected
-      */
+	 * Called after the elements state has been changed. 
+	 * Per default {@link BaElement#render} is called. 
+	 * @protected
+	 */
 	onStateChanged() {
 		this.render();
 	}
 
 	/**
-       * @protected
-       */
+	 * @protected
+	 */
 	onDisconnect() { }
 
 	/**
-       * Fires an event.
-       * @param {*} name the event name
-       * @param {*} payload the paylod of the event
-       */
+	 * Fires an event.
+	 * @param {*} name the event name
+	 * @param {*} payload the paylod of the event
+	 */
 	emitEvent(name, payload) {
 		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
 	}
 
 
 	/**
-       * Returns the Html tag name of this element.
-       * @abstract
-       */
+	 * Returns the Html tag name of this element.
+	 * @abstract
+	 */
 	static get tag() {
 		if (this === BaElement) {
 			// Abstract methods can not be called directly.

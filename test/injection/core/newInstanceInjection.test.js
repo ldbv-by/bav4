@@ -1,7 +1,9 @@
 import { $injector } from './testsConfig';
 
-//This will overwrite the current keys "HttpServer" and "RouterService" that are already registered as
-//singletons with instance dependencies.
+/*
+ * This will overwrite the current keys "HttpServer" and "RouterService" that are already registered as
+ * singletons with instance dependencies.
+ */
 var instanceHttp  = function() {
 	this.get = 'I\'m a http service.'; 
 };
