@@ -53,7 +53,7 @@ class BaElement extends HTMLElement {
 		}
 		const { StoreService } = $injector.inject('StoreService');
 		/**
-		 * Do not access the store in child classes. Always use {@link BaElement#state} in child classes.
+		 * Do not access the store in child classes. Always use {@link BaElement#state}.
 		 * @private
 		 */
 		this.storeService = StoreService;
@@ -93,7 +93,6 @@ class BaElement extends HTMLElement {
 	 */
 	disconnectedCallback() {
 		this.unsubscribe();
-
 		this.onDisconnect();
 	}
 
@@ -170,7 +169,6 @@ class BaElement extends HTMLElement {
 			// The child has implemented this method but also called `super.foo()`.
 			throw new TypeError('Do not call static abstract method #tag from child.');
 		}
-
 	}
 
 	/**
@@ -229,9 +227,6 @@ class BaElement extends HTMLElement {
 		}
 	}
 
-
-
 }
-
 
 export default BaElement;
