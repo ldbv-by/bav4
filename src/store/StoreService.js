@@ -1,5 +1,5 @@
-import { createStore } from 'redux';
-import events from './map/reducer.js';
+import { combineReducers, createStore } from 'redux';
+import mapReducer, { initialState as initialMapState } from './map/reducer.js';
 import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
@@ -14,26 +14,20 @@ import ReduxQuerySync from 'redux-query-sync';
 export class StoreService {
 
 	constructor() {
-		const initialState = {
-			map: {
-
-				zoom: 12,
-				position: [1288239.2412306187, 6130212.561641981]
-
-			}
-		};
 
 		const storeEnhancer = ReduxQuerySync.enhancer({
 			params: {
 				zoom: {
-					selector: state => state.map.zoom,
+					selector: state => {
+						console.log(state); return state.map.zoom;
+					},
 					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
 					/*
 					 * Cast the parameter value to a number (we map invalid values to 1, which will then
 					 * hide the parameter).
 					 */
-					stringToValue: (string) => Number.parseFloat(string) || initialState.map.zoom,
+					stringToValue: (string) => Number.parseFloat(string) || initialMapState.zoom,
 
 					// We then also specify the inverse function (this example one is the default)
 					valueToString: value => `${value}`,
@@ -42,7 +36,7 @@ export class StoreService {
 					 * When state.pageNumber equals 1, the parameter p is hidden (and vice versa).
 					 * defaultValue: initialState.map.zoom,
 					 */
-					defaultValue: initialState.map.zoom,
+					defaultValue: initialMapState.zoom,
 				},
 				position: {
 					selector: state => state.map.position,
@@ -52,22 +46,27 @@ export class StoreService {
 					stringToValue: (string) => string.split(',').map(Number.parseFloat),
 
 					valueToString: value => {
-						return value.join(','); 
+						if (value) {
+							return value.join(',');
+						}
 					},
 
-					defaultValue: initialState.map.position,
+					defaultValue: initialMapState.position,
 				},
 			},
 			initialTruth: 'location',
 
-			/*
-			 * Use replaceState so the browser's back/forward button will skip over these page changes.
-			 * replaceState: true,
-			 */
 		});
 
-		this.store = createStore(events, initialState, storeEnhancer);
+		const rootReducer = combineReducers({
+			/*
+			 * must be named like the field name of the state
+			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state
+			 */
+			map: mapReducer
+		});
 
+		this.store = createStore(rootReducer, storeEnhancer);
 	}
 
 	/**

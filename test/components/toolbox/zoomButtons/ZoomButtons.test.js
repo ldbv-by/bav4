@@ -2,10 +2,8 @@
 
 import { ZoomButtons } from '../../../../src/components/toolbox/zoomButtons/ZoomButtons';
 // import { createMockStore } from 'redux-test-utils';
-import { createStore } from 'redux';
-
-// import { createStore } from 'redux';
-import events from '../../../../src/store/map/reducer';
+import { combineReducers, createStore } from 'redux';
+import mapReducer from '../../../../src/store/map/reducer';
 
 import { $injector } from '../../../../src/injection';
 
@@ -13,17 +11,23 @@ import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(ZoomButtons.tag, ZoomButtons);
 
-let mockedStore;
+let store;
 
 const setupStoreAndDi = (initialMapState) => {
 	const state = {
 		map: initialMapState
 	};
-	mockedStore = createStore(events, state);
+
+
+	store = createStore(
+		combineReducers({
+			map: mapReducer
+		}),
+		state);
 
 	const storeService = {
 		getStore: function () {
-			return mockedStore;
+			return store;
 		}
 	};
 
@@ -72,14 +76,14 @@ describe('ZoomButtons', () => {
 		it('decreases the current zoom level by one', () => {
 
 			element.querySelector('.zoom-out').click();
-			expect(mockedStore.getState().map.zoom).toBe(9);
+			expect(store.getState().map.zoom).toBe(9);
 
 		});
 
 		it('increases the current zoom level by one', () => {
 
 			element.querySelector('.zoom-in').click();
-			expect(mockedStore.getState().map.zoom).toBe(11);
+			expect(store.getState().map.zoom).toBe(11);
 
 		});
 
