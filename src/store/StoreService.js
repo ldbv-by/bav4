@@ -61,7 +61,7 @@ export class StoreService {
 		const rootReducer = combineReducers({
 			/*
 			 * must be named like the field of the state
-			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state
+			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
 			 */
 			map: mapReducer,
 			ui: uireducer

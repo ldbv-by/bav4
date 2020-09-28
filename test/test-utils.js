@@ -67,7 +67,7 @@ export class TestUtils {
 	/**
 	 * Sets up the store and registers the store service at the injector.
 	 * @param {object} state
-	 * @param {object | object[] | undefined} reducer as reducer object, array of reducer objects or undefined
+	 * @param {object | object[] | undefined} reducer as reducer object, array of reducer objects or undefined (see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers)
 	 * @returns the store
 	 */
 	static setupStoreAndDi(state = {}, reducer) {
