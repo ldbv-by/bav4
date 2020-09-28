@@ -3,7 +3,6 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import BaElement from '../BaElement';
 import './style.css';
 import { closeSidePanel } from '../../store/ui/actions';
-// import { increaseZoom, decreaseZoom } from '../../../store/map/actions';
 
 /**
  *  
