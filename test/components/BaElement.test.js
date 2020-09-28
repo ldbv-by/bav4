@@ -1,7 +1,5 @@
 import BaElement from '../../src/components/BaElement';
 import { html } from 'lit-html';
-import { createStore } from 'redux';
-import { $injector } from '../../src/injection';
 import { TestUtils } from '../test-utils.js';
 
 
@@ -13,10 +11,10 @@ class BaElementImpl extends BaElement {
 
 	}
 
-	extractState(state) {
+	extractState(store) {
 		this.extractStateCalled = this.callOrderIndex++;
-		//here we extract the local state from the application state
-		const { applicationStateIndex } = state;
+		//here we extract the local state from the application store
+		const { root: { applicationStateIndex } } = store;
 		return { elementStateIndex: applicationStateIndex };
 	}
 
@@ -49,7 +47,8 @@ let store;
 
 const INDEX_CHANGED = 'CHANGE_INDEX';
 
-const changeApplicationStoreIndexReducer = (state, action) => {
+//reducer with default state
+const changeApplicationStoreIndexReducer = (state = { applicationStateIndex: -1 }, action) => {
 	switch (action.type) {
 		case INDEX_CHANGED:
 			return {
@@ -61,19 +60,9 @@ const changeApplicationStoreIndexReducer = (state, action) => {
 	}
 };
 const setupStoreAndDi = () => {
-
-	store = createStore(changeApplicationStoreIndexReducer, { applicationStateIndex: 21 });
-
-	const storeService = {
-		getStore: function () {
-			return store;
-		}
-	};
-
-
-	$injector
-		.reset()
-		.registerSingleton('StoreService', storeService);
+	//Reducer as Object, state field is 'root'
+	//see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
+	store = TestUtils.setupStoreAndDi({ root: { applicationStateIndex: 21 } }, { root: changeApplicationStoreIndexReducer });
 };
 
 
