@@ -14,7 +14,6 @@ module.exports = {
 	rules: {
 		'semi': ['error', 'always'],
 		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
-		'multiline-comment-style' : ['error', 'starred-block'],
 		'quotes': ['error', 'single'],
 		'object-curly-spacing': ['error', 'always'],
 		'brace-style': ['error', 'stroustrup'],
