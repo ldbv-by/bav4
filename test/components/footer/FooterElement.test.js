@@ -2,32 +2,8 @@
 
 import { FooterElement } from '../../../src/components/footer/FooterElement';
 import { html } from 'lit-html';
-import { createStore } from 'redux';
-
-
-import { $injector } from '../../../src/injection';
-
-
 import { TestUtils } from '../../test-utils.js';
 window.customElements.define(FooterElement.tag, FooterElement);
-
-let mockedStore;
-
-const setupStoreAndDi = () => {
-
-	mockedStore = createStore(() => { }, {});
-
-	const storeService = {
-		getStore: function () {
-			return mockedStore;
-		}
-	};
-
-
-	$injector
-		.reset()
-		.registerSingleton('StoreService', storeService);
-};
 
 
 describe('FooterElement', () => {
@@ -48,7 +24,8 @@ describe('FooterElement', () => {
 
 	beforeEach(async () => {
 
-		setupStoreAndDi();
+		TestUtils.setupStoreAndDi();
+
 		element = await TestUtils.render(FooterElement.tag);
 	});
 

@@ -1,42 +1,11 @@
 /* eslint-disable no-undef */
 
 import { ZoomButtons } from '../../../../src/components/toolbox/zoomButtons/ZoomButtons';
-// import { createMockStore } from 'redux-test-utils';
-import { combineReducers, createStore } from 'redux';
 import mapReducer from '../../../../src/store/map/reducer';
-
-import { $injector } from '../../../../src/injection';
-
-
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(ZoomButtons.tag, ZoomButtons);
 
 let store;
-
-const setupStoreAndDi = (initialMapState) => {
-	const state = {
-		map: initialMapState
-	};
-
-
-	store = createStore(
-		combineReducers({
-			map: mapReducer
-		}),
-		state);
-
-	const storeService = {
-		getStore: function () {
-			return store;
-		}
-	};
-
-
-	$injector
-		.reset()
-		.registerSingleton('StoreService', storeService);
-};
-
 
 describe('ZoomButtons', () => {
 	let element;
@@ -54,10 +23,13 @@ describe('ZoomButtons', () => {
 
 	beforeEach(async () => {
 
-		setupStoreAndDi({
-			zoom: 10
-		});
+		const state = {
+			map: {
+				zoom: 10
+			}
+		};
 
+		store = TestUtils.setupStoreAndDi(state, { map:mapReducer });
 		element = await TestUtils.render(ZoomButtons.tag);
 	});
 

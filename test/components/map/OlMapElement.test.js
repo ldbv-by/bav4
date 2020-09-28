@@ -1,14 +1,8 @@
 /* eslint-disable no-undef */
 import { OlMapElement } from '../../../src/components/map/OlMapElement';
-import { createMockStore } from 'redux-test-utils';
-import { $injector } from '../../../src/injection';
 import { fromLonLat } from 'ol/proj';
-
-
-
-
-
 import { TestUtils } from '../../test-utils.js';
+import mapReducer from '../../../src/store/map/reducer';
 window.customElements.define(OlMapElement.tag, OlMapElement);
 
 
@@ -27,8 +21,8 @@ describe('OlMapElement', () => {
 	});
 
 
-	const setupDi = () => {
-
+	let element;
+	beforeEach(async () => {
 
 		const state = {
 			map: {
@@ -36,35 +30,17 @@ describe('OlMapElement', () => {
 				position: initialPosition
 			}
 		};
-		const mockedStore = createMockStore(state);
 
-		const storeService = {
-			getStore: function () {
-				return mockedStore;
-			}
-		};
-
-
-		$injector
-			.reset()
-			.registerSingleton('StoreService', storeService);
-	};
-
-	let element;
-	beforeEach(async () => {
-		setupDi();
+		TestUtils.setupStoreAndDi(state, { map: mapReducer });
 
 		element = await TestUtils.render(OlMapElement.tag);
 	});
 
 	describe('when initialized', () => {
-		it('configures the map and add a div which contains the ol-map', async () => {
+		it('configures the map and adds a div which contains the ol-map', async () => {
 			expect(element.view.getZoom()).toBe(10);
 			expect(element.view.getCenter()).toEqual(initialPosition);
-
 			expect(element.querySelector('#ol-map')).toBeTruthy();
 		});
-
-
 	});
 });

@@ -1,11 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MapInfoElement } from '../../../src/components/map-info/MapInfoElement';
-// import { createMockStore } from 'redux-test-utils';
-import { combineReducers, createStore } from 'redux';
-// import { createStore } from 'redux';
 import mapReducer from '../../../src/store/map/reducer';
-
 import { $injector } from '../../../src/injection';
 import { OlCoordinateService } from '../../../src/utils/OlCoordinateService';
 import { changeZoom } from '../../../src/store/map/actions';
@@ -18,29 +14,12 @@ import { changeZoom } from '../../../src/store/map/actions';
 import { TestUtils } from '../../test-utils.js';
 window.customElements.define(MapInfoElement.tag, MapInfoElement);
 
-let store;
 
-const setupStoreAndDi = (initialState) => {
-	const state = {
-		map: initialState
-	};
-	store = createStore(
-		combineReducers({
-			map: mapReducer
-		}),
-		state);
-
-	const storeService = {
-		getStore: function () {
-			return store;
-		}
-	};
-
+const setupStoreAndDi = (state) => {
+	TestUtils.setupStoreAndDi(state, { map: mapReducer });
 
 	$injector
-		.reset()
-		.register('CoordinateService', OlCoordinateService)
-		.registerSingleton('StoreService', storeService);
+		.register('CoordinateService', OlCoordinateService);
 };
 
 
@@ -72,8 +51,10 @@ describe('MapInfoElement', () => {
 		it('adds a div which shows the initial zoom level 5', async () => {
 
 			setupStoreAndDi({
-				zoom: 5,
-				pointerPosition: [1288239.2412306187, 6130212.561641981]
+				map: {
+					zoom: 5,
+					pointerPosition: [1288239.2412306187, 6130212.561641981]
+				}
 			});
 
 			element = await TestUtils.render(MapInfoElement.tag);
@@ -86,8 +67,11 @@ describe('MapInfoElement', () => {
 		it('adds a div which shows the initial zoom level 10', async () => {
 
 			setupStoreAndDi({
-				zoom: 10,
-				pointerPosition: [1288239.2412306187, 6130212.561641981]
+				map: {
+
+					zoom: 10,
+					pointerPosition: [1288239.2412306187, 6130212.561641981]
+				}
 			});
 
 			element = await TestUtils.render(MapInfoElement.tag);
@@ -101,8 +85,10 @@ describe('MapInfoElement', () => {
 
 		it('updates the div which shows the current zoom level', async () => {
 			setupStoreAndDi({
-				zoom: 10,
-				pointerPosition: [1288239.2412306187, 6130212.561641981]
+				map: {
+					zoom: 10,
+					pointerPosition: [1288239.2412306187, 6130212.561641981]
+				}
 			});
 
 			element = await TestUtils.render(MapInfoElement.tag);
@@ -122,12 +108,14 @@ describe('MapInfoElement', () => {
 
 		it('shows an alert', async () => {
 			setupStoreAndDi({
-				zoom: 10,
-				pointerPosition: [1288239.2412306187, 6130212.561641981]
+				map: {
+					zoom: 10,
+					pointerPosition: [1288239.2412306187, 6130212.561641981]
+				}
 			});
-      
+
 			element = await TestUtils.render(MapInfoElement.tag);
-      
+
 			spyOn(window, 'alert');
 			// trigger map_clicked event
 			window.dispatchEvent(new CustomEvent('map_clicked', { detail: [1288239.2412306187, 6130212.561641981], bubbles: true }));
