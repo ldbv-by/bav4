@@ -66,8 +66,8 @@ export class TestUtils {
 
 	/**
 	 * Sets up the store and registers the store service at the injector.
-	 * @param {object} state initial state
-	 * @param {*} reducer Reducer as named reducer or array of named reducers
+	 * @param {object} state
+	 * @param {*} reducer mapped reducer or array of mapped reducers
 	 * @param {object} injector 
 	 * @returns the store
 	 */
