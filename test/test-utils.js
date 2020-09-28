@@ -67,15 +67,17 @@ export class TestUtils {
 	/**
 	 * Sets up the store and registers the store service at the injector.
 	 * @param {object} state
-	 * @param {*} reducer mapped reducer or array of mapped reducers
-	 * @param {object} injector 
+	 * @param {object | object[] | undefined} reducer as reducer object, array of reducer objects or undefined
 	 * @returns the store
 	 */
-	static setupStoreAndDi(state, reducer) {
+	static setupStoreAndDi(state = {}, reducer) {
 
-		const store = createStore(
-			combineReducers(reducer),
-			state);
+		const store = reducer
+			? createStore(
+				combineReducers(reducer),
+				state)
+			//noop reducer
+			: createStore(state => state, state);
 
 		$injector
 			.reset()
