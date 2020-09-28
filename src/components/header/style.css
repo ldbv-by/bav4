@@ -3,10 +3,44 @@ ba-header {
     & .some{
         position: absolute; 
         top:0px; 
+        left: 0px;
         z-index: 100;
         background-color: white;
-        padding-left: 5px;
+        padding-left: 10px;
+        padding-top: 10px;
         font-size: 1em;
         color: var(--main-color);
+        height:40px;
+        width: 400px;
     }
+
+    & h3{
+      display: block;
+      float: right;
+      padding-right: 80px;
+      padding-top: 5px;
+    }
+
+
+    & .toggle-side-panel {
+          position: relative;
+          mask: url('assets/list.svg');
+          -webkit-mask-image: url('assets/list.svg');
+        }
+      
+      & .icon {
+          background: var(--main-color);
+          mask-size: cover;
+          -webkit-mask-size: cover;
+          cursor: pointer;
+          display: inline-block;
+          height: 35px;
+          width: 35px;
+          
+        }
+      
+      & .icon:hover{
+          filter: brightness(.8);
+        }
+
 }

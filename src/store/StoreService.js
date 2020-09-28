@@ -1,5 +1,6 @@
 import { combineReducers, createStore } from 'redux';
 import mapReducer, { initialState as initialMapState } from './map/reducer.js';
+import uireducer from './ui/reducer.js';
 import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
@@ -18,9 +19,8 @@ export class StoreService {
 		const storeEnhancer = ReduxQuerySync.enhancer({
 			params: {
 				zoom: {
-					selector: state => {
-						console.log(state); return state.map.zoom;
-					},
+					selector: state => state.map.zoom,
+					
 					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
 					/*
@@ -63,7 +63,8 @@ export class StoreService {
 			 * must be named like the field of the state
 			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state
 			 */
-			map: mapReducer
+			map: mapReducer,
+			ui: uireducer
 		});
 
 		this.store = createStore(rootReducer, storeEnhancer);

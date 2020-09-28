@@ -7,4 +7,6 @@ import './components/footer';
 import './components/map';
 import './components/map-info';
 import './components/toolbox/zoomButtons';
+import './components/sidePanel';
+
 
