@@ -1,3 +1,7 @@
+import { combineReducers, createStore } from 'redux';
+import { $injector } from '../src/injection';
+
+
 export class TestUtils {
 	/**
 	 * Renders a given element with provided attributes
@@ -59,4 +63,27 @@ export class TestUtils {
 			requestComponent();
 		});
 	}
+
+	/**
+	 * Sets up the store and registers the store service at the injector.
+	 * @param {object} state initial state
+	 * @param {*} reducer Reducer as named reducer or array of named reducers
+	 * @param {object} injector 
+	 * @returns the store
+	 */
+	static setupStoreAndDi(state, reducer) {
+
+		const store = createStore(
+			combineReducers(reducer),
+			state);
+
+		$injector
+			.reset()
+			.registerSingleton('StoreService', {
+				getStore: () => store
+			});
+
+		return store;
+	}
+
 }
