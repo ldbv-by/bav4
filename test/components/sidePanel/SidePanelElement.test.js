@@ -33,7 +33,7 @@ describe('SidePanelElement', () => {
 
 
 	describe('when initialized', () => {
-		it('adds a div which holds the sidepanel content and a close icon', async () => {
+		it('adds a div which holds the sidepanel content and a close icon', () => {
 			expect(element.querySelector('.sidePanel').style.width).toBe('410px');
 			expect(element.querySelector('.close')).toBeTruthy();
 		});
