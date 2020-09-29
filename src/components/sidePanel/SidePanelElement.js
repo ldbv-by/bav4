@@ -22,7 +22,7 @@ export class SidePanelElement extends BaElement {
         
 		return html`
             <div class="sidePanel overlay" style=${styleMap(styles)} >
-				<a @click="${closeSidePanel}" title="Menü schließen"><span class="icon close"></a>
+				<a @click="${closeSidePanel}" title="Close menue"><span class="icon close"></a>
 				
                 <!-- Overlay content -->
                 <div class="overlay-content">
