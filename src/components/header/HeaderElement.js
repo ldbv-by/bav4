@@ -11,7 +11,7 @@ import './style.css';
  */
 export class HeaderElement extends BaElement {
 
-	
+
 	createView() {
 
 		const getTitle = () => {
@@ -20,7 +20,12 @@ export class HeaderElement extends BaElement {
 		};
 
 		return html`
-			<div class="some"><a title="${getTitle()}" @click="${toggleSidePanel}"><span class="icon toggle-side-panel"></span></a><h3> BAv4 (#nomigration)</h3></div>
+			<div class="some">
+				<a title="${getTitle()}" @click="${toggleSidePanel}">
+					<span class="icon toggle-side-panel"></span>
+				</a>
+				<h3> BAv4 (#nomigration)</h3>
+			</div>
 		`;
 	}
 
@@ -32,7 +37,7 @@ export class HeaderElement extends BaElement {
 		const { ui: { sidePanel: { open } } } = store;
 		return { sidePanelIsOpen: open };
 	}
-	
+
 	static get tag() {
 		return 'ba-header';
 	}
