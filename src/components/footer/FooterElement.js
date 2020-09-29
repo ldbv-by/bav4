@@ -12,8 +12,8 @@ export class FooterElement extends BaElement {
 	createView() {
 
 		return html`
-         	<div class="some">${this.createChildrenView()}</div>
-        `;
+			<div class="some">${this.createChildrenView()}</div>
+		`;
 	}
 
 	createChildrenView() {

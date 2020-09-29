@@ -52,8 +52,8 @@ export class MapInfoElement extends BaElement {
 
 
 		return html`
-        <div class='zoomLabel' >ZoomLevel: ${zoomRounded} <button  @click=${onFlyToButtonClicked}>home</button> ${pointerPosition4326}</div>
-        `;
+			<div class='zoomLabel' >ZoomLevel: ${zoomRounded} <button  @click=${onFlyToButtonClicked}>home</button> ${pointerPosition4326}</div>
+		`;
 	}
 
 	extractState(store) {

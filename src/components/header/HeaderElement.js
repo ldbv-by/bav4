@@ -20,8 +20,8 @@ export class HeaderElement extends BaElement {
 		};
 
 		return html`
-		 <div class="some"><a title="${getTitle()}" @click="${toggleSidePanel}"><span class="icon toggle-side-panel"></span></a><h3> BAv4 (#nomigration)</h3></div>
-        `;
+			<div class="some"><a title="${getTitle()}" @click="${toggleSidePanel}"><span class="icon toggle-side-panel"></span></a><h3> BAv4 (#nomigration)</h3></div>
+		`;
 	}
 
 	/**

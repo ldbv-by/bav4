@@ -19,17 +19,17 @@ export class SidePanelElement extends BaElement {
 		const styles = {
 			width: open ? '410px' : '0px'
 		};
-        
+
 		return html`
-            <div class="sidePanel overlay" style=${styleMap(styles)} >
+			<div class="sidePanel overlay" style=${styleMap(styles)} >
 				<a @click="${closeSidePanel}" title="Close menue"><span class="icon close"></a>
-				
-                <!-- Overlay content -->
-                <div class="overlay-content">
+
+				<!-- Overlay content -->
+				<div class="overlay-content">
 					#content
-                </div>
-            </div>
-        `;
+				</div>
+			</div>
+		`;
 	}
 
 	/**
