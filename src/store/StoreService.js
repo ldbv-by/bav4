@@ -1,6 +1,6 @@
 import { combineReducers, createStore } from 'redux';
-import mapReducer, { initialState as initialMapState } from './map/reducer.js';
-import uireducer from './ui/reducer.js';
+import mapReducer, { initialState as initialMapState } from './map/reducer';
+import uireducer from './ui/reducer';
 import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
