@@ -1,7 +1,6 @@
 import { combineReducers, createStore } from 'redux';
-import mapReducer, { initialState as initialMapState } from './map/reducer';
+import mapReducer, { initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../components/map/store/olMap.reducer';
 import sidePanelReducer from '../components/sidePanel/store/sidePanel.reducer';
-import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 

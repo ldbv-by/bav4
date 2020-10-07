@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../../BaElement';
 import './style.css';
-import { increaseZoom, decreaseZoom } from '../../../store/map/actions';
+import { increaseZoom, decreaseZoom } from '../../map/store/olMap.action';
 
 /**
  * Buttons which change the zoom level of the map.

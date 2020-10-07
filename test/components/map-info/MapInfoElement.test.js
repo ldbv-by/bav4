@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
 import { MapInfoElement } from '../../../src/components/map-info/MapInfoElement';
-import mapReducer from '../../../src/store/map/reducer';
+import mapReducer from '../../../src/components/map/store/olMap.reducer';
 import { $injector } from '../../../src/injection';
 import { OlCoordinateService } from '../../../src/utils/OlCoordinateService';
-import { changeZoom } from '../../../src/store/map/actions';
+import { changeZoom } from '../../../src/components/map/store/olMap.action';
 
 
 

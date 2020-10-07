@@ -2,7 +2,7 @@
 import { OlMap } from '../../../src/components/map/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../test-utils.js';
-import mapReducer from '../../../src/store/map/reducer';
+import mapReducer from '../../../src/components/map/store/olMap.reducer';
 window.customElements.define(OlMap.tag, OlMap);
 
 

@@ -6,7 +6,7 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndPosition, updatePointerPosition } from '../../store/map/actions';
+import { changeZoomAndPosition, updatePointerPosition } from './store/olMap.action';
 
 
 
