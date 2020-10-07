@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import { toggleSidePanel } from '../../store/ui/actions';
+import { toggleSidePanel } from '../sidePanel/store/sidePanel.action';
 import './style.css';
 
 
@@ -34,7 +34,7 @@ export class HeaderElement extends BaElement {
 	 * @param {@override} store 
 	 */
 	extractState(store) {
-		const { ui: { sidePanel: { open } } } = store;
+		const { sidePanel: { open } } = store;
 		return { sidePanelIsOpen: open };
 	}
 

@@ -1,6 +1,6 @@
 import { combineReducers, createStore } from 'redux';
 import mapReducer, { initialState as initialMapState } from './map/reducer';
-import uireducer from './ui/reducer';
+import sidePanelReducer from '../components/sidePanel/store/sidePanel.reducer';
 import { ZOOM_CHANGED, POSITION_CHANGED } from './map/reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
@@ -64,7 +64,7 @@ export class StoreService {
 			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
 			 */
 			map: mapReducer,
-			ui: uireducer
+			sidePanel: sidePanelReducer
 		});
 
 		this.store = createStore(rootReducer, storeEnhancer);

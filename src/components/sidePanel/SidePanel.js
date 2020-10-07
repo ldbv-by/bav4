@@ -1,15 +1,15 @@
 import { html } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import BaElement from '../BaElement';
-import './style.css';
-import { closeSidePanel } from '../../store/ui/actions';
+import './sidePanel.css';
+import { closeSidePanel } from './store/sidePanel.action';
 
 /**
  *  
  * @class
  * @author aul
  */
-export class SidePanelElement extends BaElement {
+export class SidePanel extends BaElement {
 
 
 	createView() {
@@ -37,7 +37,7 @@ export class SidePanelElement extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { ui: { sidePanel: { open } } } = store;
+		const { sidePanel: { open } } = store;
 		return { open };
 	}
 

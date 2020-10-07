@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { HeaderElement } from '../../../src/components/header/HeaderElement';
-import uiReducer from '../../../src/store/ui/reducer';
+import sidePanelReducer from '../../../src/components/sidePanel/store/sidePanel.reducer';
 import { TestUtils } from '../../test-utils.js';
 window.customElements.define(HeaderElement.tag, HeaderElement);
 
@@ -24,13 +24,11 @@ describe('HeaderElement', () => {
 	beforeEach(async () => {
 
 		const state = {
-			ui: {
-				sidePanel: {
-					open: false
-				}
+			sidePanel: {
+				open: false
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { ui: uiReducer });
+		store = TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
 
 		element = await TestUtils.render(HeaderElement.tag);
 	});
@@ -48,12 +46,12 @@ describe('HeaderElement', () => {
 	describe('when menue button clicked', () => {
 
 		it('it updates the store andtitle attribute', () => {
-			expect(store.getState().ui.sidePanel.open).toBe(false);
+			expect(store.getState().sidePanel.open).toBe(false);
 			element.querySelector('.toggle-side-panel').click();
-			expect(store.getState().ui.sidePanel.open).toBe(true);
+			expect(store.getState().sidePanel.open).toBe(true);
 			expect(element.querySelector('.some').children[0].title).toBe('Close menue');
 			element.querySelector('.toggle-side-panel').click();
-			expect(store.getState().ui.sidePanel.open).toBe(false);
+			expect(store.getState().sidePanel.open).toBe(false);
 			expect(element.querySelector('.some').children[0].title).toBe('Open menue');
 		});
 

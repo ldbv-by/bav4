@@ -1,4 +1,4 @@
-import { OlMapElement } from './OlMapElement';
-if (!window.customElements.get(OlMapElement.tag)) {
-	window.customElements.define(OlMapElement.tag, OlMapElement);
+import { OlMap } from './OlMap';
+if (!window.customElements.get(OlMap.tag)) {
+	window.customElements.define(OlMap.tag, OlMap);
 }

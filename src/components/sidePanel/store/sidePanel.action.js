@@ -1,5 +1,5 @@
-import { OPEN_CLOSED_CHANGED } from './reducer';
-import { $injector } from '../../injection';
+import { OPEN_CLOSED_CHANGED } from './sidePanel.reducer';
+import { $injector } from '../../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -23,7 +23,7 @@ export const closeSidePanel = () => {
 };
 
 export const toggleSidePanel = () => {
-	const { ui: { sidePanel: { open } } } = getStore().getState();
+	const { sidePanel: { open } }  = getStore().getState();
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open

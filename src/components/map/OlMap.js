@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import 'ol/ol.css';
-import './style.css';
+import './olMap.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -15,7 +15,7 @@ import { changeZoomAndPosition, updatePointerPosition } from '../../store/map/ac
  * @class
  * @author aul
  */
-export class OlMapElement extends BaElement {
+export class OlMap extends BaElement {
 
 
 	constructor() {

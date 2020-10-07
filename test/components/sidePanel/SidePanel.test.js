@@ -1,16 +1,16 @@
 /* eslint-disable no-undef */
 
-import { SidePanelElement } from '../../../src/components/sidePanel/SidePanelElement';
-import uiReducer from '../../../src/store/ui/reducer';
+import { SidePanel } from '../../../src/components/sidePanel/SidePanel';
+import sidePanelReducer from '../../../src/components/sidePanel/store/sidePanel.reducer';
 import { TestUtils } from '../../test-utils';
-window.customElements.define(SidePanelElement.tag, SidePanelElement);
+window.customElements.define(SidePanel.tag, SidePanel);
 
 
 describe('SidePanelElement', () => {
 	let element;
 
 	beforeAll(() => {
-		window.classUnderTest = SidePanelElement.name;
+		window.classUnderTest = SidePanel.name;
 	});
 
 	afterAll(() => {
@@ -21,14 +21,12 @@ describe('SidePanelElement', () => {
 	beforeEach(async () => {
 
 		const state = {
-			ui: {
-				sidePanel: {
-					open: true
-				}
+			sidePanel: {
+				open: true
 			}
 		};
-		TestUtils.setupStoreAndDi(state, { ui: uiReducer });
-		element = await TestUtils.render(SidePanelElement.tag);
+		TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
+		element = await TestUtils.render(SidePanel.tag);
 	});
 
 

@@ -1,17 +1,17 @@
 /* eslint-disable no-undef */
-import { OlMapElement } from '../../../src/components/map/OlMapElement';
+import { OlMap } from '../../../src/components/map/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../test-utils.js';
 import mapReducer from '../../../src/store/map/reducer';
-window.customElements.define(OlMapElement.tag, OlMapElement);
+window.customElements.define(OlMap.tag, OlMap);
 
 
-describe('OlMapElement', () => {
+describe('OlMap', () => {
 
 	const initialPosition = fromLonLat([11.57245, 48.14021]);
 
 	beforeAll(() => {
-		window.classUnderTest = OlMapElement.name;
+		window.classUnderTest = OlMap.name;
 
 	});
 
@@ -33,7 +33,7 @@ describe('OlMapElement', () => {
 
 		TestUtils.setupStoreAndDi(state, { map: mapReducer });
 
-		element = await TestUtils.render(OlMapElement.tag);
+		element = await TestUtils.render(OlMap.tag);
 	});
 
 	describe('when initialized', () => {
