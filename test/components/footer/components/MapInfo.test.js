@@ -1,18 +1,18 @@
 /* eslint-disable no-undef */
 
-import { MapInfoElement } from '../../../src/components/map-info/MapInfoElement';
-import mapReducer from '../../../src/components/map/store/olMap.reducer';
-import { $injector } from '../../../src/injection';
-import { OlCoordinateService } from '../../../src/utils/OlCoordinateService';
-import { changeZoom } from '../../../src/components/map/store/olMap.action';
+import { MapInfo } from '../../../../src/components/footer/components/mapInfo/MapInfo';
+import mapReducer from '../../../../src/components/map/store/olMap.reducer';
+import { $injector } from '../../../../src/injection';
+import { OlCoordinateService } from '../../../../src/utils/OlCoordinateService';
+import { changeZoom } from '../../../../src/components/map/store/olMap.action';
 
 
 
 
 
 
-import { TestUtils } from '../../test-utils.js';
-window.customElements.define(MapInfoElement.tag, MapInfoElement);
+import { TestUtils } from '../../../test-utils.js';
+window.customElements.define(MapInfo.tag, MapInfo);
 
 
 const setupStoreAndDi = (state) => {
@@ -23,9 +23,9 @@ const setupStoreAndDi = (state) => {
 };
 
 
-describe('MapInfoElement', () => {
+describe('MapInfo', () => {
 	beforeAll(() => {
-		window.classUnderTest = MapInfoElement.name;
+		window.classUnderTest = MapInfo.name;
 
 	});
 
@@ -57,7 +57,7 @@ describe('MapInfoElement', () => {
 				}
 			});
 
-			element = await TestUtils.render(MapInfoElement.tag);
+			element = await TestUtils.render(MapInfo.tag);
 
 			expect(element.querySelector('.zoomLabel')).toBeTruthy();
 			expect(element.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
@@ -74,7 +74,7 @@ describe('MapInfoElement', () => {
 				}
 			});
 
-			element = await TestUtils.render(MapInfoElement.tag);
+			element = await TestUtils.render(MapInfo.tag);
 
 			expect(element.querySelector('.zoomLabel')).toBeTruthy();
 			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
@@ -91,7 +91,7 @@ describe('MapInfoElement', () => {
 				}
 			});
 
-			element = await TestUtils.render(MapInfoElement.tag);
+			element = await TestUtils.render(MapInfo.tag);
 			expect(element.querySelector('.zoomLabel')).toBeTruthy();
 			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
 
@@ -114,7 +114,7 @@ describe('MapInfoElement', () => {
 				}
 			});
 
-			element = await TestUtils.render(MapInfoElement.tag);
+			element = await TestUtils.render(MapInfo.tag);
 
 			spyOn(window, 'alert');
 			// trigger map_clicked event

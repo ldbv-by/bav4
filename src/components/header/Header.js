@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import { toggleSidePanel } from '../sidePanel/store/sidePanel.action';
-import './style.css';
+import './header.css';
 
 
 /**
@@ -9,7 +9,7 @@ import './style.css';
  * @class
  * @author aul
  */
-export class HeaderElement extends BaElement {
+export class Header extends BaElement {
 
 
 	createView() {

@@ -1,18 +1,18 @@
 /* eslint-disable no-undef */
 
-import { HeaderElement } from '../../../src/components/header/HeaderElement';
+import { Header } from '../../../src/components/header/Header';
 import sidePanelReducer from '../../../src/components/sidePanel/store/sidePanel.reducer';
 import { TestUtils } from '../../test-utils.js';
-window.customElements.define(HeaderElement.tag, HeaderElement);
+window.customElements.define(Header.tag, Header);
 
 let store;
 
 
-describe('HeaderElement', () => {
+describe('Header', () => {
 	let element;
 
 	beforeAll(() => {
-		window.classUnderTest = HeaderElement.name;
+		window.classUnderTest = Header.name;
 	});
 
 	afterAll(() => {
@@ -30,7 +30,7 @@ describe('HeaderElement', () => {
 		};
 		store = TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
 
-		element = await TestUtils.render(HeaderElement.tag);
+		element = await TestUtils.render(Header.tag);
 	});
 
 

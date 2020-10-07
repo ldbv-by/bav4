@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../../BaElement';
-import './style.css';
+import './zoomButtons.css';
 import { increaseZoom, decreaseZoom } from '../../map/store/olMap.action';
 
 /**

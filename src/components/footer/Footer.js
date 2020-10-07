@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import './style.css';
+import './footer.css';
 
 /**
  * Container element for footer stuff. 
  * @class
  * @author aul
  */
-export class FooterElement extends BaElement {
+export class Footer extends BaElement {
 
 	createView() {
 

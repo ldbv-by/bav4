@@ -1,4 +1,4 @@
-import { HeaderElement } from './HeaderElement';
-if (!window.customElements.get(HeaderElement.tag)) {
-	window.customElements.define(HeaderElement.tag, HeaderElement);
+import { Header } from './Header';
+if (!window.customElements.get(Header.tag)) {
+	window.customElements.define(Header.tag, Header);
 }

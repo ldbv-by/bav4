@@ -1,4 +1,4 @@
-import { FooterElement } from './FooterElement';
-if (!window.customElements.get(FooterElement.tag)) {
-	window.customElements.define(FooterElement.tag, FooterElement);
+import { Footer } from './Footer';
+if (!window.customElements.get(Footer.tag)) {
+	window.customElements.define(Footer.tag, Footer);
 }

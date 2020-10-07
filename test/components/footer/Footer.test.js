@@ -1,19 +1,19 @@
 /* eslint-disable no-undef */
 
-import { FooterElement } from '../../../src/components/footer/FooterElement';
+import { Footer } from '../../../src/components/footer/Footer';
 import { html } from 'lit-html';
 import { TestUtils } from '../../test-utils.js';
-window.customElements.define(FooterElement.tag, FooterElement);
+window.customElements.define(Footer.tag, Footer);
 
 
-describe('FooterElement', () => {
+describe('Footer', () => {
 	let element;
 
 	beforeAll(() => {
-		window.classUnderTest = FooterElement.name;
+		window.classUnderTest = Footer.name;
     
 		//we don't want to test child element
-		FooterElement.prototype.createChildrenView = () => html``;
+		Footer.prototype.createChildrenView = () => html``;
 	});
 
 	afterAll(() => {
@@ -26,7 +26,7 @@ describe('FooterElement', () => {
 
 		TestUtils.setupStoreAndDi();
 
-		element = await TestUtils.render(FooterElement.tag);
+		element = await TestUtils.render(Footer.tag);
 	});
 
 

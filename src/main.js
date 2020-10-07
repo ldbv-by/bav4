@@ -5,7 +5,7 @@ import * as config from './injection/config';
 import './components/header';
 import './components/footer';
 import './components/map';
-import './components/map-info';
+import './components/footer/components/mapInfo';
 import './components/toolbox/zoomButtons';
 import './components/sidePanel';
 
