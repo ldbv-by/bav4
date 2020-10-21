@@ -1,4 +1,4 @@
-export const OPEN_CLOSED_CHANGED = 'components/sidePanel/open';
+export const OPEN_CLOSED_CHANGED = 'components/menue/sidePanel/open';
 
 export const initialState = {
 	open: false
