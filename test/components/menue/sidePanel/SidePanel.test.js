@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 
-import { SidePanel } from '../../../src/components/sidePanel/SidePanel';
-import sidePanelReducer from '../../../src/components/sidePanel/store/sidePanel.reducer';
-import { TestUtils } from '../../test-utils';
+import { SidePanel } from '../../../../src/components/menue/sidePanel/SidePanel';
+import sidePanelReducer from '../../../../src/components/menue/sidePanel/store/sidePanel.reducer';
+
+import { TestUtils } from '../../../test-utils';
 window.customElements.define(SidePanel.tag, SidePanel);
 
 

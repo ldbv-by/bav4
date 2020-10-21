@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import { toggleSidePanel } from '../sidePanel/store/sidePanel.action';
+import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
 import './header.css';
 
 

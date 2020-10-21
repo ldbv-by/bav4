@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import BaElement from '../BaElement';
+import BaElement from '../../BaElement';
 import './sidePanel.css';
 import { closeSidePanel } from './store/sidePanel.action';
 
@@ -14,11 +14,18 @@ export class SidePanel extends BaElement {
 
 	createView() {
 
+		window.addEventListener('orientationchange', function (event) {
+			console.log('the orientation of the device is now ' + event.target.screen.orientation.angle);
+			
+		});
+
 		const { open } = this.state;
 
 		const styles = {
 			width: open ? '410px' : '0px'
 		};
+
+		// return '';
 
 		return html`
 			<div class="sidePanel overlay" style=${styleMap(styles)} >

@@ -1,5 +1,5 @@
 import { OPEN_CLOSED_CHANGED } from './sidePanel.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
