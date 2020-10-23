@@ -2,7 +2,6 @@ import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
 import { $injector } from '../../injection';
-import { classMap } from 'lit-html/directives/class-map.js';
 import './header.css';
 
 
