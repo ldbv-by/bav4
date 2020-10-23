@@ -60,8 +60,22 @@
     filter: brightness(.8);
   }
 
-  & .tab-bar{
+  & .header-desktop {
+    width:100%;
+  }
+
+  & .header-mobile {
+    width:100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  & .tab-bar-desktop{
     width: calc(100% - 50px);
+  }
+  
+  & .tab-bar-mobile{
+    width: 80%;
   }
 
   & .tablink {

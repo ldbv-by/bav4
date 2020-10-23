@@ -36,7 +36,9 @@ export class SidePanel extends BaElement {
 
 		const { open } = this.state;
 		const { mobile } = this.environmentService;
-		const getOverlayClass = () => (mobile ? 'overlay-mobile' : 'overlay-desktop');
+		const getOverlayClass = () => mobile ? 'overlay-mobile' : 'overlay-desktop';
+		const getTabBarClass = () => mobile ? 'tab-bar-mobile' : 'tab-bar-desktop';
+		const getHeaderClass = () => mobile ? 'header-mobile' : 'header-desktop';
 		const styles = {};
 		if (mobile) {
 			Object.assign(styles, {
@@ -69,11 +71,12 @@ export class SidePanel extends BaElement {
 
 		return html`
 			<div class="sidePanel overlay ${getOverlayClass()}" style=${styleMap(styles)} >
-				<div class="tab-bar">
-					${items.map((item, index) => html`<button class="tablink" @click=${() => onItemClicked(index)}>${item.name}</button>`)}
+				<div class="${getHeaderClass()}">
+					<div class="${getTabBarClass()}">
+						${items.map((item, index) => html`<button class="tablink" @click=${() => onItemClicked(index)}>${item.name}</button>`)}
+					</div>	
+					<a @click="${closeSidePanel}" title="Close menue"><span class="icon close"></a>
 				</div>	
-				<a @click="${closeSidePanel}" title="Close menue"><span class="icon close"></a>
-
 				<!-- Overlay content -->
 				<div class="overlay-content">
 					${items.map(item => html`

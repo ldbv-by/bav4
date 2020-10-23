@@ -43,6 +43,11 @@ describe('SidePanelElement', () => {
 			expect(element.querySelector('.sidePanel.overlay.overlay-desktop').style.width).toBe('410px');
 			expect(element.querySelector('.sidePanel.overlay.overlay-desktop').style.height).toBe('100%');
 			expect(element.querySelector('.close')).toBeTruthy();
+
+			expect(element.querySelector('.header-desktop')).toBeTruthy();
+			expect(element.querySelector('.tab-bar-desktop')).toBeTruthy();
+
+
 			expect(element.getElementsByClassName('tabcontent').length).toBe(5);
 			expect(element.getElementsByClassName('tablink').length).toBe(5);
 
@@ -58,6 +63,10 @@ describe('SidePanelElement', () => {
 			expect(element.querySelector('.sidePanel.overlay.overlay-mobile').style.width).toBe('100%');
 			expect(element.querySelector('.sidePanel.overlay.overlay-mobile').style.height).toBe('410px');
 			expect(element.querySelector('.close')).toBeTruthy();
+
+			expect(element.querySelector('.header-mobile')).toBeTruthy();
+			expect(element.querySelector('.tab-bar-mobile')).toBeTruthy();
+
 			expect(element.getElementsByClassName('tabcontent').length).toBe(5);
 			expect(element.getElementsByClassName('tablink').length).toBe(5);
 
