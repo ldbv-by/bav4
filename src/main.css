@@ -11,4 +11,5 @@
 }
 body {
     color: var(--color);
+    font-family: "Courier New", Courier, monospace;
 }
