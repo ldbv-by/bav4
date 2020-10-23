@@ -1,14 +1,16 @@
  ba-footer {
 
-     & .some{
-         
-         position: absolute; 
-         bottom:0px; 
-         z-index: 100;
-         height: 30px;
-         background: white;
-         padding: 2px 10px;
-         background-color: white;
-         width: 390px;
+    & .footer {
+        position: absolute; 
+        bottom: 0px; 
+        z-index: 100;
+        height: 35px;
+        background-color: var(--bg-color);
+        width: 100%;
+    }
+
+    & .content {
+        padding: 4px 10px;
+        font-size: 12px;
     }
 }

@@ -3,40 +3,50 @@
 import { Footer } from '../../../src/components/footer/Footer';
 import { html } from 'lit-html';
 import { TestUtils } from '../../test-utils.js';
+import { $injector } from '../../../src/injection';
+
 window.customElements.define(Footer.tag, Footer);
 
 
 describe('Footer', () => {
-	let element;
 
 	beforeAll(() => {
 		window.classUnderTest = Footer.name;
-    
+
 		//we don't want to test child element
 		Footer.prototype.createChildrenView = () => html``;
 	});
 
 	afterAll(() => {
 		window.classUnderTest = undefined;
-
 	});
 
-
-	beforeEach(async () => {
+	const setup = (config) => {
+		const { mobile } = config;
 
 		TestUtils.setupStoreAndDi();
+		$injector.registerSingleton('EnvironmentService', {
+			mobile: mobile
+		});
 
-		element = await TestUtils.render(Footer.tag);
-	});
-
+		return TestUtils.render(Footer.tag);
+	};
 
 	describe('when initialized', () => {
-		it('adds footer css class', () => {
+		it('adds footer elements and css classes for dektop', async () => {
 
-			expect(element.querySelector('.some')).toBeTruthy();
+			const element = await setup({ mobile: false });
 
+			expect(element.querySelector('.footer')).toBeTruthy();
+			expect(element.querySelector('.content')).toBeTruthy();
+		});
+
+		it('adds nothing for mobile', async () => {
+
+			const element = await setup({ mobile: true });
+
+			expect(element.childElementCount).toBe(0);
 		});
 
 	});
-
 });

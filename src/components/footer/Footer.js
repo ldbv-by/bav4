@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
+import { $injector } from '../../injection';
 import './footer.css';
 
 /**
@@ -9,10 +10,23 @@ import './footer.css';
  */
 export class Footer extends BaElement {
 
+	constructor() {
+		super();
+
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		this.environmentService = EnvironmentService;
+	}
+
 	createView() {
 
-		return html`
-			<div class="some">${this.createChildrenView()}</div>
+		const { mobile } = this.environmentService;
+
+		return mobile ? html`` : html`
+			<div class="footer">
+				<div class="content">	
+					${this.createChildrenView()}
+				</div>
+			</div>
 		`;
 	}
 
