@@ -10,14 +10,15 @@ import { increaseZoom, decreaseZoom } from '../../map/store/olMap.action';
  */
 export class ZoomButtons extends BaElement {
 
-
-
+	/**
+	 * @override
+	 */
 	createView() {
 
 		return html`
 			<div class="zoom-buttons">
 				<a class="button" @click="${increaseZoom}"><span class="icon zoom-in"></a>
-				<a class="button" @click="${decreaseZoom}">  <span class="icon zoom-out"></a>
+				<a class="button" @click="${decreaseZoom}"><span class="icon zoom-out"></a>
 			</div>
 		`;
 	}
