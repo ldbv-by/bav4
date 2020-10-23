@@ -11,7 +11,6 @@ ba-zoom-buttons {
     height: 20px;
   }
   
-  
   & .zoom-in {
     mask: url('assets/plus-circle-fill.svg');
     -webkit-mask-image: url('assets/plus-circle-fill.svg');
@@ -37,6 +36,7 @@ ba-zoom-buttons {
   & .icon:focus {
     background:  var(--bg-color);
   }
+
   & .icon:hover{
     transform: scale(1.1);
   }
@@ -52,5 +52,4 @@ ba-zoom-buttons {
     width: 40px;
     border-radius:  50%;
   }
-  
 }
