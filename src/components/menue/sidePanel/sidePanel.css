@@ -2,38 +2,52 @@
 
  /* The Overlay (background) */
   & .overlay {
+    position: fixed; /* Stay in place */
+    background-color:  var(--bg-color);
+  }
+
+  & .overlay-desktop {
+    /* Height & width depends on how you want to reveal the overlay (see JS below) */   
     height: 100%;
     width: 0%;
-    position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;
     top: 50px;
-    background-color: rgb(255,255,255); /* White fallback color */
-    background-color: rgba(255,255,255, 0.75); 
-    border-top: solid 1px var(--main-color);
     overflow-x: hidden; /* Disable horizontal scroll */
-    transition: 0.3s; /* 0.3 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
   }
+
+  & .overlay-mobile {
+    height: 0%;
+    width: 100%%;
+    z-index: 1; /* Sit on top */
+    bottom: 0;
+    left:0;
+    overflow-y: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+  }
+  
+
 
   & .overlay-content {
     position: relative;
-    top: 25%; 
-    width: 100%; 
-    text-align: center;
-    margin-top: 30px; 
+    top: 25%; /* 25% from the top */
+    width: 100%; /* 100% width */
+    text-align: center; /* Centered text/links */
+    margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
   }
   
   
   & .close {
     position: absolute;
-    top: 20px;
+    top: 12px;
     right: 10px;
     mask: url('assets/x-square.svg');
     -webkit-mask-image: url('assets/x-square.svg');
   }
 
   & .icon {
-    background: var(--main-color);
+    background: var(--primary-color);
     mask-size: cover;
     -webkit-mask-size: cover;
     cursor: pointer;
@@ -45,4 +59,36 @@
   & .icon:hover{
     filter: brightness(.8);
   }
+
+  & .tab-bar{
+    width: calc(100% - 50px);
+  }
+
+  & .tablink {
+    background-color: var(--bg-color);
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 10px;
+    font-size: 13.5px;
+    width: 20%;
+  }
+
+  & .tablink-active{
+    border-bottom: 3px solid var(--primary-color);
+  }
+
+  & .tablink:hover {
+    background-color: #777;
+  }
+
+  & .tabcontent {
+    color: white;
+    display: none;
+    padding: 50px;
+    text-align: center;
+  }
+
 }
