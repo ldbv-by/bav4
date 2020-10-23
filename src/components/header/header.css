@@ -1,46 +1,67 @@
 ba-header {
 
-    & .some{
-        position: absolute; 
-        top:0px; 
-        left: 0px;
-        z-index: 100;
-        background-color: white;
-        padding-left: 10px;
-        padding-top: 10px;
-        font-size: 1em;
-        color: var(--main-color);
-        height:40px;
-        width: 400px;
-    }
+  & .header{
+    position: absolute; 
+    top:0px; 
+    left: 0px;
+    z-index: 100;
+    font-size: 1em;
+    color: var(--primary-color);
+    height:50px;
+    width: 100%;
+    background-color: var(--bg-color);
+  }
 
-    & h3{
-      display: block;
-      float: right;
-      padding-right: 80px;
-      padding-top: 5px;
-    }
+  & .content{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+  }
+
+  & h3{
+    display: block;
+    padding-top: 5px;
+  }
+
+  & .h3-desktop {
+    float: right;
+    padding-right: 60px;
+  }
+
+  & .h3-mobile {
+    float: left;
+    padding-left: 80px;
+  }
 
 
-    & .toggle-side-panel {
-          position: relative;
-          mask: url('assets/list.svg');
-          -webkit-mask-image: url('assets/list.svg');
-        }
+  & .toggle-side-panel {
+    position: relative;
+    mask: url('assets/list.svg');
+    -webkit-mask-image: url('assets/list.svg');
+  }
       
-      & .icon {
-          background: var(--main-color);
-          mask-size: cover;
-          -webkit-mask-size: cover;
-          cursor: pointer;
-          display: inline-block;
-          height: 35px;
-          width: 35px;
+  & .icon {
+    background: var(--primary-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    cursor: pointer;
+    display: inline-block;
+    height: 35px;
+    width: 35px;
           
-        }
+  }
+
+  & .icon-desktop {
+    float: left;
+  }
       
-      & .icon:hover{
-          filter: brightness(.8);
-        }
+  & .icon-mobile{
+    float:right
+        
+  }
+      
+  & .icon:hover{
+    filter: brightness(.8);
+  }
 
 }

@@ -1,6 +1,8 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
+import { $injector } from '../../injection';
+import { classMap } from 'lit-html/directives/class-map.js';
 import './header.css';
 
 
@@ -11,8 +13,20 @@ import './header.css';
  */
 export class Header extends BaElement {
 
+	constructor() {
+		super();
+
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		this.environmentService = EnvironmentService;
+	}
 
 	createView() {
+
+		const { mobile } = this.environmentService;
+
+		const getH3Class = () => (mobile ? 'h3-mobile' : 'h3-desktop');
+		const getIconClass = () => (mobile ? 'icon-mobile' : 'icon-desktop');
+	
 
 		const getTitle = () => {
 			const { sidePanelIsOpen } = this.state;
@@ -20,11 +34,13 @@ export class Header extends BaElement {
 		};
 
 		return html`
-			<div class="some">
-				<a title="${getTitle()}" @click="${toggleSidePanel}">
-					<span class="icon toggle-side-panel"></span>
-				</a>
-				<h3> BAv4 (#nomigration)</h3>
+			<div class="header header-desktop">
+				<div class="content">
+					<a title="${getTitle()}" @click="${toggleSidePanel}">
+						<span class="icon ${getIconClass()} toggle-side-panel"></span>
+					</a>
+					<h3 class="${getH3Class()}">BAv4 (#nomigration)</h3>
+				</div>
 			</div>
 		`;
 	}
