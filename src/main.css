@@ -5,5 +5,10 @@
 
 /* global variables (custom properties) */
 :root {
-    --main-color: #099dda;
+    --primary-color: #099dda;
+    --bg-color: #212f3d;
+    --color:  #fcf3cf;
+}
+body {
+    color: var(--color);
 }
