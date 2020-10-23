@@ -24,7 +24,7 @@ ba-zoom-buttons {
   }
 
   & .icon {
-    background: var(--primary-color);
+    background: var(--bg-color);
     mask-size: cover;
     -webkit-mask-size: cover;
     cursor: pointer;
@@ -35,7 +35,7 @@ ba-zoom-buttons {
 
   & .icon:hover,
   & .icon:focus {
-    background: var(--primary-color);
+    background:  var(--bg-color);
   }
   & .icon:hover{
     transform: scale(1.1);
@@ -46,7 +46,7 @@ ba-zoom-buttons {
   }
   
   & .zoom-buttons .button{
-    background-color: white;
+    background-color: var(--primary-color);
     display: inline-block;
     height: 40px;
     width: 40px;
