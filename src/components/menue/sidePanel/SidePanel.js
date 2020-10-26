@@ -1,5 +1,4 @@
 import { html } from 'lit-html';
-import { styleMap } from 'lit-html/directives/style-map.js';
 import BaElement from '../../BaElement';
 import './sidePanel.css';
 import { closeSidePanel } from './store/sidePanel.action';
@@ -36,22 +35,16 @@ export class SidePanel extends BaElement {
 
 		const { open } = this.state;
 		const { mobile } = this.environmentService;
-		const getOverlayClass = () => mobile ? 'overlay-mobile' : 'overlay-desktop';
+		const getOverlayClass = () => {
+			if (mobile) {
+				return open ? 'overlay-mobile overlay-mobile-open' : 'overlay-mobile overlay-mobile-closed';
+			}
+			else {
+				return open ? 'overlay-desktop overlay-desktop-open' : 'overlay-desktop overlay-desktop-closed';
+			}
+		};
 		const getTabBarClass = () => mobile ? 'tab-bar-mobile' : 'tab-bar-desktop';
 		const getHeaderClass = () => mobile ? 'header-mobile' : 'header-desktop';
-		const styles = {};
-		if (mobile) {
-			Object.assign(styles, {
-				height: open ? '410px' : '0px',
-				width: '100%'
-			});
-		}
-		else {
-			Object.assign(styles, {
-				width: open ? '410px' : '0px',
-				height: '100%'
-			});
-		}
 
 		const items = [
 			{ name: 'Share', description: 'Let\'s share' },
@@ -70,7 +63,7 @@ export class SidePanel extends BaElement {
 
 
 		return html`
-			<div class="sidePanel overlay ${getOverlayClass()}" style=${styleMap(styles)} >
+			<div class="sidePanel overlay ${getOverlayClass()}">
 				<div class="${getHeaderClass()}">
 					<div class="${getTabBarClass()}">
 						${items.map((item, index) => html`<button class="tablink" @click=${() => onItemClicked(index)}>${item.name}</button>`)}

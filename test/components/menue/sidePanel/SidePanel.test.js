@@ -39,9 +39,7 @@ describe('SidePanelElement', () => {
 
 			const element = await setup({ mobile: false });
 			
-			expect(element.querySelector('.sidePanel.overlay.overlay-desktop')).toBeTruthy();
-			expect(element.querySelector('.sidePanel.overlay.overlay-desktop').style.width).toBe('410px');
-			expect(element.querySelector('.sidePanel.overlay.overlay-desktop').style.height).toBe('100%');
+			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
 			expect(element.querySelector('.close')).toBeTruthy();
 
 			expect(element.querySelector('.header-desktop')).toBeTruthy();
@@ -59,9 +57,7 @@ describe('SidePanelElement', () => {
 
 			const element = await setup({ mobile: true });
 			
-			expect(element.querySelector('.sidePanel.overlay.overlay-mobile')).toBeTruthy();
-			expect(element.querySelector('.sidePanel.overlay.overlay-mobile').style.width).toBe('100%');
-			expect(element.querySelector('.sidePanel.overlay.overlay-mobile').style.height).toBe('410px');
+			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
 			expect(element.querySelector('.close')).toBeTruthy();
 
 			expect(element.querySelector('.header-mobile')).toBeTruthy();
@@ -80,15 +76,15 @@ describe('SidePanelElement', () => {
 		it('it closes the sidepanel (desktop)', async () => {
 			const element = await setup({ mobile: false });
 			element.querySelector('.close').click();
-			expect(element.querySelector('.sidePanel').style.width).toBe('0px');
-			expect(element.querySelector('.sidePanel').style.height).toBe('100%');
+			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
+			expect(element.querySelector('.overlay-desktop-open')).toBeFalsy();
 		});
-
+		
 		it('it closes the sidepanel (mobile)', async () => {
 			const element = await setup({ mobile: true });
 			element.querySelector('.close').click();
-			expect(element.querySelector('.sidePanel').style.width).toBe('100%');
-			expect(element.querySelector('.sidePanel').style.height).toBe('0px');
+			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-closed')).toBeTruthy();
+			expect(element.querySelector('.overlay-mobile-open')).toBeFalsy();
 		});
 	});
 });
