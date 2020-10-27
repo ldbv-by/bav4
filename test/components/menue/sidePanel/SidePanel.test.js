@@ -2,6 +2,7 @@
 
 import { SidePanel } from '../../../../src/components/menue/sidePanel/SidePanel';
 import sidePanelReducer from '../../../../src/components/menue/sidePanel/store/sidePanel.reducer';
+import { toggleSidePanel } from '../../../../src/components/menue/sidePanel//store/sidePanel.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 
@@ -35,10 +36,10 @@ describe('SidePanelElement', () => {
 	};
 
 	describe('when initialized', () => {
-		it('adds a div which holds the sidepanel content and a close icon for desktop layout', async() => {
+		it('adds a div which holds the sidepanel content and a close icon for desktop layout', async () => {
 
 			const element = await setup({ mobile: false });
-			
+
 			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
 			expect(element.querySelector('.close')).toBeTruthy();
 
@@ -53,10 +54,10 @@ describe('SidePanelElement', () => {
 			expect(element.getElementsByClassName('tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
-		it('adds a div which holds the sidepanel content and a close icon for mobile layout', async() => {
+		it('adds a div which holds the sidepanel content and a close icon for mobile layout', async () => {
 
 			const element = await setup({ mobile: true });
-			
+
 			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
 			expect(element.querySelector('.close')).toBeTruthy();
 
@@ -79,12 +80,44 @@ describe('SidePanelElement', () => {
 			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
 			expect(element.querySelector('.overlay-desktop-open')).toBeFalsy();
 		});
-		
+
 		it('it closes the sidepanel (mobile)', async () => {
 			const element = await setup({ mobile: true });
 			element.querySelector('.close').click();
 			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-closed')).toBeTruthy();
 			expect(element.querySelector('.overlay-mobile-open')).toBeFalsy();
+		});
+	});
+
+	describe('when tab clicked', () => {
+		it('it displays the current tab and its content and preserves the index', async () => {
+			const element = await setup({ mobile: false });
+			const firstTab = element.getElementsByClassName('tablink')[0];
+			const secondTab = element.getElementsByClassName('tablink')[1];
+			const firstContent = element.getElementsByClassName('tabcontent')[0];
+			const secondContent = element.getElementsByClassName('tabcontent')[1];
+			
+			expect(firstTab.classList.contains('tablink-active')).toBeTrue();
+			expect(secondTab.classList.contains('tablink-active')).toBeFalse();
+			expect(firstContent.style.display).toBe('block');
+			expect(secondContent.style.display).toBe('none');
+
+
+			//activate the second tab
+			secondTab.click();
+
+			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
+			expect(secondTab.classList.contains('tablink-active')).toBeTrue();
+			expect(firstContent.style.display).toBe('none');
+			expect(secondContent.style.display).toBe('block');
+
+			// now we want to see, if the active tab is preserved after re-rendering the view
+			toggleSidePanel();
+
+			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
+			expect(secondTab.classList.contains('tablink-active')).toBeTrue();
+			expect(firstContent.style.display).toBe('none');
+			expect(secondContent.style.display).toBe('block');
 		});
 	});
 });

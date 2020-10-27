@@ -17,16 +17,22 @@ export class SidePanel extends BaElement {
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this.environmentService = EnvironmentService;
+		this.activeTab = 0;
+	}
+
+	activateTab(index) {
+		const tabcontents = [...this.getElementsByClassName('tabcontent')];
+		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
+		const tablinks = [...this.getElementsByClassName('tablink')];
+		tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
 	}
 
 	/**
-	 * @override
-	 */
+	* @override
+	*/
 	onAfterRender() {
-		this.getElementsByClassName('tabcontent')[0].style.display = 'block';
-		this.getElementsByClassName('tablink')[0].classList.add('tablink-active');
+		this.activateTab(this.activeTab);
 	}
-
 
 	/**
 	 * @override
@@ -55,10 +61,7 @@ export class SidePanel extends BaElement {
 		];
 
 		const onItemClicked = (index) => {
-			const tabcontents = [...this.getElementsByClassName('tabcontent')];
-			tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
-			const tablinks = [...this.getElementsByClassName('tablink')];
-			tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
+			this.activateTab(this.activeTab = index);
 		};
 
 
