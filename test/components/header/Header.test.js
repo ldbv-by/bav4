@@ -21,7 +21,7 @@ describe('Header', () => {
 
 	});
 
-	const setup =  (config) => {
+	const setup = (config) => {
 		const { mobile } = config;
 		const state = {
 			sidePanel: {
@@ -61,17 +61,28 @@ describe('Header', () => {
 	describe('when menue button clicked', () => {
 
 		it('it updates the store and title attribute', async () => {
+			spyOn(window, 'setTimeout');
 			const element = await setup({ mobile: false });
+			
+			expect(element.menueButtonLocked).toBeFalse();
 
 			expect(store.getState().sidePanel.open).toBe(false);
 			element.querySelector('.toggle-side-panel').click();
 			expect(store.getState().sidePanel.open).toBe(true);
+			expect(element.menueButtonLocked).toBeTrue();
 			expect(element.querySelector('.content').children[0].title).toBe('Close menue');
-			element.querySelector('.toggle-side-panel').click();
-			expect(store.getState().sidePanel.open).toBe(false);
-			expect(element.querySelector('.content').children[0].title).toBe('Open menue');
-		});
+			// we check if the menue button was locked via setTimeout
+			expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), Header.menueButtonLockDuration);
 
+			// we wait 500ms in order to unlock the menue button
+			window.setTimeout(() => {
+				expect(element.menueButtonLocked).toBeFalse();
+
+				element.querySelector('.toggle-side-panel').click();
+				expect(store.getState().sidePanel.open).toBe(false);
+				expect(element.querySelector('.content').children[0].title).toBe('Open menue');
+			}, Header.menueButtonLockDuration);
+		});
 	});
 
 });

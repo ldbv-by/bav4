@@ -17,6 +17,7 @@ export class Header extends BaElement {
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this.environmentService = EnvironmentService;
+		this.menueButtonLocked = false;
 	}
 
 	createView() {
@@ -25,17 +26,25 @@ export class Header extends BaElement {
 
 		const getH3Class = () => (mobile ? 'h3-mobile' : 'h3-desktop');
 		const getIconClass = () => (mobile ? 'icon-mobile' : 'icon-desktop');
-	
 
 		const getTitle = () => {
 			const { sidePanelIsOpen } = this.state;
 			return sidePanelIsOpen ? 'Close menue' : 'Open menue';
 		};
 
+		const toggleSidePanelGuarded = () => {
+
+			if (!this.menueButtonLocked) {
+				this.menueButtonLocked = true;
+				toggleSidePanel();
+				window.setTimeout(() => this.menueButtonActive = false, Header.menueButtonLockDuration);
+			}
+		};
+
 		return html`
 			<div class="header header-desktop">
 				<div class="content">
-					<a title="${getTitle()}" @click="${toggleSidePanel}">
+					<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
 						<span class="icon ${getIconClass()} toggle-side-panel"></span>
 					</a>
 					<h3 class="${getH3Class()}">BAv4 (#nomigration)</h3>
@@ -55,5 +64,9 @@ export class Header extends BaElement {
 
 	static get tag() {
 		return 'ba-header';
+	}
+
+	static get menueButtonLockDuration() {
+		return 500;
 	}
 }
