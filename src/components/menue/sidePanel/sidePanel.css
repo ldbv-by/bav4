@@ -102,10 +102,17 @@
 
   & .tablink-active{
     border-bottom: 3px solid var(--primary-color);
+    color:  var(--primary-color);
   }
 
   & .tablink:hover {
     background-color: var(--primary-color)
+  }
+
+  @media (hover: none) {
+    & .tablink:hover {
+    background-color: inherit;
+    }
   }
 
   & .tabcontent {
