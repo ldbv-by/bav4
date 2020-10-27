@@ -59,11 +59,17 @@ describe('Header', () => {
 	});
 
 	describe('when menue button clicked', () => {
+		beforeEach(function () {
+			jasmine.clock().install();
+		});
+
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
 
 		it('it updates the store and title attribute', async () => {
-			spyOn(window, 'setTimeout');
 			const element = await setup({ mobile: false });
-			
+
 			expect(element.menueButtonLocked).toBeFalse();
 
 			expect(store.getState().sidePanel.open).toBe(false);
@@ -71,17 +77,14 @@ describe('Header', () => {
 			expect(store.getState().sidePanel.open).toBe(true);
 			expect(element.menueButtonLocked).toBeTrue();
 			expect(element.querySelector('.content').children[0].title).toBe('Close menue');
-			// we check if the menue button was locked via setTimeout
-			expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), Header.menueButtonLockDuration);
 
-			// we wait 500ms in order to unlock the menue button
-			window.setTimeout(() => {
-				expect(element.menueButtonLocked).toBeFalse();
+			// we wait 500ms in order to have an unlocked menue button
+			jasmine.clock().tick(500);
+			expect(element.menueButtonLocked).toBeFalse();
 
-				element.querySelector('.toggle-side-panel').click();
-				expect(store.getState().sidePanel.open).toBe(false);
-				expect(element.querySelector('.content').children[0].title).toBe('Open menue');
-			}, Header.menueButtonLockDuration);
+			element.querySelector('.toggle-side-panel').click();
+			expect(store.getState().sidePanel.open).toBe(false);
+			expect(element.querySelector('.content').children[0].title).toBe('Open menue');
 		});
 	});
 
