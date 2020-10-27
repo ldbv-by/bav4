@@ -100,9 +100,16 @@
     width: 20%;
   }
 
-  & .tablink-active{
+  & .tablink-active {
     border-bottom: 3px solid var(--primary-color);
-    color:  var(--primary-color);
+    color:  var(--color);
+  }
+
+  @media (hover: none) {
+    & .tablink-active {
+      border-bottom: 3px solid var(--primary-color);
+      color:  var(--primary-color);
+    }
   }
 
   & .tablink:hover {
@@ -111,7 +118,7 @@
 
   @media (hover: none) {
     & .tablink:hover {
-    background-color: inherit;
+      background-color: inherit;
     }
   }
 
