@@ -37,7 +37,7 @@ export class Header extends BaElement {
 			if (!this.menueButtonLocked) {
 				this.menueButtonLocked = true;
 				toggleSidePanel();
-				window.setTimeout(() => this.menueButtonActive = false, Header.menueButtonLockDuration);
+				window.setTimeout(() => this.menueButtonLocked = false, Header.menueButtonLockDuration);
 			}
 		};
 
