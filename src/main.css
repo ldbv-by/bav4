@@ -7,7 +7,7 @@
 :root {
     --primary-color: #099dda;
     --bg-color: #212f3d;
-    --color:  #fcf3cf;
+    --color: white;
 }
 body {
     color: var(--color);
