@@ -97,23 +97,26 @@ describe('SidePanelElement', () => {
 			const firstContent = element.getElementsByClassName('tabcontent')[0];
 			const secondContent = element.getElementsByClassName('tabcontent')[1];
 			
+			expect(element.activeTabIndex).toBe(0);
 			expect(firstTab.classList.contains('tablink-active')).toBeTrue();
 			expect(secondTab.classList.contains('tablink-active')).toBeFalse();
 			expect(firstContent.style.display).toBe('block');
 			expect(secondContent.style.display).toBe('none');
-
-
+			
+			
 			//activate the second tab
 			secondTab.click();
-
+			
+			expect(element.activeTabIndex).toBe(1);
 			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
 			expect(secondTab.classList.contains('tablink-active')).toBeTrue();
 			expect(firstContent.style.display).toBe('none');
 			expect(secondContent.style.display).toBe('block');
-
+			
 			// now we want to see, if the active tab is preserved after re-rendering the view
 			toggleSidePanel();
-
+			
+			expect(element.activeTabIndex).toBe(1);
 			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
 			expect(secondTab.classList.contains('tablink-active')).toBeTrue();
 			expect(firstContent.style.display).toBe('none');

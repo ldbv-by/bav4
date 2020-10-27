@@ -17,7 +17,7 @@ export class SidePanel extends BaElement {
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this.environmentService = EnvironmentService;
-		this.activeTab = 0;
+		this.activeTabIndex = 0;
 	}
 
 	activateTab(index) {
@@ -31,7 +31,7 @@ export class SidePanel extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		this.activateTab(this.activeTab);
+		this.activateTab(this.activeTabIndex);
 	}
 
 	/**
@@ -61,7 +61,7 @@ export class SidePanel extends BaElement {
 		];
 
 		const onItemClicked = (index) => {
-			this.activateTab(this.activeTab = index);
+			this.activateTab(this.activeTabIndex = index);
 		};
 
 
