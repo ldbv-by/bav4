@@ -70,8 +70,8 @@ export class SidePanel extends BaElement {
 				<div class="${getHeaderClass()}">
 					<div class="${getTabBarClass()}">
 						${items.map((item, index) => html`<button class="tablink" @click=${() => onItemClicked(index)}>${item.name}</button>`)}
-					</div>	
-					<a @click="${closeSidePanel}" title="Close menue"><span class="icon close"></a>
+					</div>
+					${mobile ? html`` : html`<a @click="${closeSidePanel}" title = "Close menue" > <span class="icon close"></a>`}
 				</div>	
 				<!-- Overlay content -->
 				<div class="overlay-content">

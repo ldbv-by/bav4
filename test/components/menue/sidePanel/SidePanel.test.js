@@ -54,12 +54,12 @@ describe('SidePanelElement', () => {
 			expect(element.getElementsByClassName('tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
-		it('adds a div which holds the sidepanel content and a close icon for mobile layout', async () => {
+		it('adds a div which holds the sidepanel content and no close icon for mobile layout', async () => {
 
 			const element = await setup({ mobile: true });
 
 			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
-			expect(element.querySelector('.close')).toBeTruthy();
+			expect(element.querySelector('.close')).toBeFalsy();
 
 			expect(element.querySelector('.header-mobile')).toBeTruthy();
 			expect(element.querySelector('.tab-bar-mobile')).toBeTruthy();
@@ -79,13 +79,6 @@ describe('SidePanelElement', () => {
 			element.querySelector('.close').click();
 			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
 			expect(element.querySelector('.overlay-desktop-open')).toBeFalsy();
-		});
-
-		it('it closes the sidepanel (mobile)', async () => {
-			const element = await setup({ mobile: true });
-			element.querySelector('.close').click();
-			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-closed')).toBeTruthy();
-			expect(element.querySelector('.overlay-mobile-open')).toBeFalsy();
 		});
 	});
 
