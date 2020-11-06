@@ -45,6 +45,7 @@ describe('Header', () => {
 			expect(element.querySelector('a').title).toBe('Open menue');
 			expect(element.querySelector('a').children[0].className).toBe('icon icon-desktop toggle-side-panel');
 			expect(element.querySelector('h3.h3-desktop')).toBeTruthy();
+			expect(element.querySelector('.logo.logo-desktop')).toBeTruthy();
 		});
 
 		it('adds header css class and a icon with title attribute for mobile', async () => {
@@ -54,6 +55,7 @@ describe('Header', () => {
 			expect(element.querySelector('a').title).toBe('Open menue');
 			expect(element.querySelector('a').children[0].className).toBe('icon icon-mobile toggle-side-panel');
 			expect(element.querySelector('h3.h3-mobile')).toBeTruthy();
+			expect(element.querySelector('.logo.logo-mobile')).toBeTruthy();
 		});
 
 	});

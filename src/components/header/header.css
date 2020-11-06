@@ -25,12 +25,12 @@ ba-header {
 
   & .h3-desktop {
     float: right;
-    padding-right: 60px;
+    padding-right: 10px;
   }
 
   & .h3-mobile {
     float: left;
-    padding-left: 80px;
+    padding-left: 10px;
   }
 
 
@@ -64,4 +64,17 @@ ba-header {
     filter: brightness(.8);
   }
 
+  & .logo {
+    background: url('assets/logo.svg') no-repeat center;
+    width: 61px;
+    height: 32px;
+  }
+
+  & .logo-desktop {
+    float: right;
+  }
+
+  & .logo-mobile {
+    float: left;
+  }
 }

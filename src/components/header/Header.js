@@ -24,8 +24,7 @@ export class Header extends BaElement {
 
 		const { mobile } = this.environmentService;
 
-		const getH3Class = () => (mobile ? 'h3-mobile' : 'h3-desktop');
-		const getIconClass = () => (mobile ? 'icon-mobile' : 'icon-desktop');
+		const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 
 		const getTitle = () => {
 			const { sidePanelIsOpen } = this.state;
@@ -45,9 +44,10 @@ export class Header extends BaElement {
 			<div class="header header-desktop">
 				<div class="content">
 					<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
-						<span class="icon ${getIconClass()} toggle-side-panel"></span>
+						<span class="icon ${getDeviceClass('icon')} toggle-side-panel"></span>
 					</a>
-					<h3 class="${getH3Class()}">BAv4 (#nomigration)</h3>
+					<div class="logo ${getDeviceClass('logo')}"></div>
+					<h3 class="${getDeviceClass('h3')}">BAv4 (#nomigration)</h3>
 				</div>
 			</div>
 		`;
