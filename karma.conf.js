@@ -16,7 +16,7 @@ module.exports = function (config) {
 		// colors: true,
 		// logLevel: config.LOG_INFO,
 		// autoWatch: true,
-		browsers: ['ChromeHeadless', 'FirefoxHeadless', 'Epiphany'],
+		browsers: ['ChromeHeadless', 'FirefoxHeadless'],
 		// singleRun: true,
 		concurrency: Infinity,
 		webpack: webpackConfig,
