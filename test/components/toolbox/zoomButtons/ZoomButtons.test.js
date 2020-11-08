@@ -10,17 +10,6 @@ let store;
 describe('ZoomButtons', () => {
 	let element;
 
-	beforeAll(() => {
-		window.classUnderTest = ZoomButtons.name;
-
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-
-	});
-
-
 	beforeEach(async () => {
 
 		const state = {

@@ -11,15 +11,10 @@ window.customElements.define(Footer.tag, Footer);
 describe('Footer', () => {
 
 	beforeAll(() => {
-		window.classUnderTest = Footer.name;
-
 		//we don't want to test child element
 		Footer.prototype.createChildrenView = () => html``;
 	});
 
-	afterAll(() => {
-		window.classUnderTest = undefined;
-	});
 
 	const setup = (config) => {
 		const { mobile } = config;

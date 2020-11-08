@@ -10,16 +10,6 @@ describe('OlMap', () => {
 
 	const initialPosition = fromLonLat([11.57245, 48.14021]);
 
-	beforeAll(() => {
-		window.classUnderTest = OlMap.name;
-
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-
-	});
-
 
 	let element;
 	beforeEach(async () => {

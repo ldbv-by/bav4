@@ -69,15 +69,6 @@ const setupStoreAndDi = () => {
 describe('BaElement', () => {
 	let element;
 
-	beforeAll(() => {
-		window.classUnderTest = BaElementImpl.name;
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-	});
-
-
 	beforeEach(async () => {
 
 		setupStoreAndDi();

@@ -24,17 +24,6 @@ const setupStoreAndDi = (state) => {
 
 
 describe('MapInfo', () => {
-	beforeAll(() => {
-		window.classUnderTest = MapInfo.name;
-
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-
-	});
-
-
 
 	let element;
 	beforeEach(async () => {

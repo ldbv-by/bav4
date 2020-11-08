@@ -12,15 +12,6 @@ let store;
 
 describe('Header', () => {
 
-	beforeAll(() => {
-		window.classUnderTest = Header.name;
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-
-	});
-
 	const setup = (config) => {
 		const { mobile } = config;
 		const state = {

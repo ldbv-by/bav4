@@ -11,14 +11,7 @@ window.customElements.define(SidePanel.tag, SidePanel);
 
 describe('SidePanelElement', () => {
 
-	beforeAll(() => {
-		window.classUnderTest = SidePanel.name;
-	});
-
-	afterAll(() => {
-		window.classUnderTest = undefined;
-	});
-
+	
 	const setup = async (config) => {
 
 		const { mobile } = config;

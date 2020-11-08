@@ -103,19 +103,12 @@ class BaElement extends HTMLElement {
 	 */
 	updateState() {
 
-		//workaround until karma allows isolated tests (https://github.com/karma-runner/karma/issues/412)
-		let allowed = true;
-		if (window.classUnderTest && window.classUnderTest !== this.constructor.name) {
-			allowed = false;
-		}
-		if (allowed) {
-			const extractedState = this.extractState(this.storeService.getStore().getState());
+		const extractedState = this.extractState(this.storeService.getStore().getState());
 
-			// maybe we should use Lo.isEqual later, but for now it does the job
-			if (JSON.stringify(this.state) !== JSON.stringify(extractedState)) {
-				this.state = extractedState;
-				this.onStateChanged();
-			}
+		// maybe we should use Lo.isEqual later, but for now it does the job
+		if (JSON.stringify(this.state) !== JSON.stringify(extractedState)) {
+			this.state = extractedState;
+			this.onStateChanged();
 		}
 	}
 
