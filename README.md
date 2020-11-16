@@ -1,4 +1,4 @@
-# BAv4 (#nomigration)
+# BAv4 (#nomigration) [![Build Status](https://travis-ci.com/taulinger/bav4-nomigration.svg?branch=master)](https://travis-ci.com/taulinger/bav4-nomigration)
 
 Next generation web-mapviewer based on web standards.
 
