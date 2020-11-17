@@ -9,10 +9,10 @@ Next generation web-mapviewer based on web standards.
 - Model–view–viewmodel (MVVM) structuring:
   - Data objects from service classes => *model*
   - DOM => *view*
-  - Custom elements (shadow dom when needed)  =>  *viewmodel*
+  - Web components  =>  *viewmodel*
 - Built-in dependency injection
 - Map state is decoupled from map implementation
-- Vanilla Css. Scoping via nested rules (https://drafts.csswg.org/css-nesting-1/), which are unwrapped within postprocessing 
+- Vanilla Css 
 - Tools
   - [openlayers](https://openlayers.org/): mapping api
   - [lit-html](https://lit-html.polymer-project.org/): template rendering 

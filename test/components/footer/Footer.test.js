@@ -32,15 +32,15 @@ describe('Footer', () => {
 
 			const element = await setup({ mobile: false });
 
-			expect(element.querySelector('.footer')).toBeTruthy();
-			expect(element.querySelector('.content')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.footer')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 		});
 
 		it('adds nothing for mobile', async () => {
 
 			const element = await setup({ mobile: true });
 
-			expect(element.childElementCount).toBe(0);
+			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 
 	});

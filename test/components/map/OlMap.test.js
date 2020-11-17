@@ -65,7 +65,7 @@ describe('OlMap', () => {
 			// assert
 			expect(element.view.getZoom()).toBe(10);
 			expect(element.view.getCenter()).toEqual(initialPosition);
-			expect(element.querySelector('#ol-map')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 		});
 	});
 

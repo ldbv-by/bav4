@@ -1,80 +1,75 @@
-ba-header {
+.header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 100;
+  font-size: 1em;
+  color: var(--primary-color);
+  height: 50px;
+  width: 100%;
+  background-color: var(--bg-color);
+}
 
-  & .header{
-    position: absolute; 
-    top:0px; 
-    left: 0px;
-    z-index: 100;
-    font-size: 1em;
-    color: var(--primary-color);
-    height:50px;
-    width: 100%;
-    background-color: var(--bg-color);
-  }
+.content {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+}
 
-  & .content{
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
-  }
+h3 {
+  display: block;
+  padding-top: 5px;
+  margin: 0;
+}
 
-  & h3{
-    display: block;
-    padding-top: 5px;
-  }
+.h3-desktop {
+  float: right;
+  padding-right: 10px;
+}
 
-  & .h3-desktop {
-    float: right;
-    padding-right: 10px;
-  }
+.h3-mobile {
+  float: left;
+  padding-left: 10px;
+}
 
-  & .h3-mobile {
-    float: left;
-    padding-left: 10px;
-  }
+.toggle-side-panel {
+  position: relative;
+  mask: url('assets/list.svg');
+  -webkit-mask-image: url('assets/list.svg');
+}
 
+.icon {
+  background: var(--primary-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 35px;
+  width: 35px;
+}
 
-  & .toggle-side-panel {
-    position: relative;
-    mask: url('assets/list.svg');
-    -webkit-mask-image: url('assets/list.svg');
-  }
-      
-  & .icon {
-    background: var(--primary-color);
-    mask-size: cover;
-    -webkit-mask-size: cover;
-    cursor: pointer;
-    display: inline-block;
-    height: 35px;
-    width: 35px;
-          
-  }
+.icon-desktop {
+  float: left;
+}
 
-  & .icon-desktop {
-    float: left;
-  }
-      
-  & .icon-mobile{
-    float:right
-        
-  }
-      
-  & .icon:hover{
-    filter: brightness(.8);
-  }
+.icon-mobile {
+  float: right
+}
 
-  & .logo {
-    background: url('assets/logo.svg') no-repeat center;
-    width: 61px;
-    height: 32px;
-  }
+.icon:hover {
+  filter: brightness(.8);
+}
 
-  & .logo-desktop {
-    float: right;
-  }
+.logo {
+  background: url('assets/logo.svg') no-repeat center;
+  width: 61px;
+  height: 32px;
+}
 
-  & .logo-mobile {
-    float: left;
-  }
+.logo-desktop {
+  float: right;
+}
+
+.logo-mobile {
+  float: left;
 }

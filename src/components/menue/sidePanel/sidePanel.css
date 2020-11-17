@@ -1,132 +1,127 @@
- ba-side-panel {
+.overlay {
+  position: fixed;
+  background-color: var(--bg-color);
+}
 
-  & .overlay {
-    position: fixed; 
-    background-color:  var(--bg-color);
-  }
+.overlay-desktop {
+  height: 100%;
+  width: 410px;
+  z-index: 1;
+  left: -410px;
+  top: 50px;
+  transition: transform 0.5s ease-out;
+}
 
-  & .overlay-desktop {
-    height: 100%;
-    width: 410px;
-    z-index: 1; 
-    left: -410px;
-    top: 50px;
-    transition: transform 0.5s ease-out;
-  }
+.overlay-desktop-closed {
+  transform: translate(-410px, 0px);
+}
 
-  & .overlay-desktop-closed {
-    transform: translate(-410px, 0px);
-  }
+.overlay-desktop-open {
+  transform: translate(410px, 0px);
+}
 
-  & .overlay-desktop-open {
-    transform: translate(410px, 0px);
-  }
+.overlay-mobile {
+  height: 410px;
+  width: 100%;
+  z-index: 1;
+  bottom: 0px;
+  left: 0;
+  transition: transform 0.5s ease-out;
+}
 
-  & .overlay-mobile {
-    height: 410px;
-    width: 100%;
-    z-index: 1;
-    bottom: 0px;
-    left:0;
-    transition: transform 0.5s ease-out;
-  }
+.overlay-mobile-closed {
+  transform: translate( 0px, 410px);
+}
 
-  & .overlay-mobile-closed {
-    transform: translate( 0px, 410px);
-  }
+.overlay-mobile-open {
+  transform: translate(0px, -410px, );
+}
 
-  & .overlay-mobile-open {
-    transform: translate(0px, -410px, );
-  }
+.overlay-content {
+  position: relative;
+  top: 25%;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+}
 
-  & .overlay-content {
-    position: relative;
-    top: 25%; 
-    width: 100%;
-    text-align: center;
-    margin-top: 30px; 
-  }
-  
+.close {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  mask: url('assets/x-square.svg');
+  -webkit-mask-image: url('assets/x-square.svg');
+}
 
-  & .close {
-    position: absolute;
-    top: 12px;
-    right: 10px;
-    mask: url('assets/x-square.svg');
-    -webkit-mask-image: url('assets/x-square.svg');
-  }
+.icon {
+  background: var(--primary-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+}
 
-  & .icon {
-    background: var(--primary-color);
-    mask-size: cover;
-    -webkit-mask-size: cover;
-    cursor: pointer;
-    display: inline-block;
-    height: 25px;
-    width: 25px;
-  }
+.icon:hover {
+  filter: brightness(.8);
+}
 
-  & .icon:hover{
-    filter: brightness(.8);
-  }
+.header-desktop {
+  width: 100%;
+}
 
-  & .header-desktop {
-    width:100%;
-  }
+.header-mobile {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
-  & .header-mobile {
-    width:100%;
-    display: flex;
-    justify-content: center;
-  }
+.tab-bar-desktop {
+  width: calc(100% - 50px);
+}
 
-  & .tab-bar-desktop{
-    width: calc(100% - 50px);
-  }
-  
-  & .tab-bar-mobile{
-    width: 80%;
-  }
+.tab-bar-mobile {
+  width: 80%;
+}
 
-  & .tablink {
-    background-color: var(--bg-color);
-    color: white;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 10px 10px;
-    font-size: 13.5px;
-    width: 20%;
-  }
+.tablink {
+  background-color: var(--bg-color);
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 10px;
+  font-size: 13.5px;
+  width: 20%;
+}
 
-  & .tablink-active {
+.tablink-active {
+  border-bottom: 3px solid var(--primary-color);
+  color: var(--color);
+}
+
+@media (hover: none) {
+  .tablink-active {
     border-bottom: 3px solid var(--primary-color);
-    color:  var(--color);
+    color: var(--primary-color);
   }
+}
 
-  @media (hover: none) {
-    & .tablink-active {
-      border-bottom: 3px solid var(--primary-color);
-      color:  var(--primary-color);
-    }
+.tablink:hover {
+  background-color: var(--primary-color)
+}
+
+@media (hover: none) {
+  .tablink:hover {
+    background-color: inherit;
   }
+}
 
-  & .tablink:hover {
-    background-color: var(--primary-color)
-  }
-
-  @media (hover: none) {
-    & .tablink:hover {
-      background-color: inherit;
-    }
-  }
-
-  & .tabcontent {
-    color: white;
-    display: none;
-    padding: 50px;
-    text-align: center;
-  }
-
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 50px;
+  text-align: center;
 }

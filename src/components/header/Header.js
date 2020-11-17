@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
 import { $injector } from '../../injection';
-import './header.css';
+import css from './header.css';
 
 
 /**
@@ -41,6 +41,7 @@ export class Header extends BaElement {
 		};
 
 		return html`
+			<style>${css.toString()}</style>
 			<div class="header header-desktop">
 				<div class="content">
 					<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">

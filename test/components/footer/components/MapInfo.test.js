@@ -28,11 +28,6 @@ describe('MapInfo', () => {
 	let element;
 	beforeEach(async () => {
 
-		/*
-		 * element = await TestUtils.render(MapInfoElement.tag);
-		 * shadowRoot = element.shadowRoot;
-		 * document.body.append(element);
-		 */
 	});
 
 
@@ -48,8 +43,8 @@ describe('MapInfo', () => {
 
 			element = await TestUtils.render(MapInfo.tag);
 
-			expect(element.querySelector('.zoomLabel')).toBeTruthy();
-			expect(element.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
 
 		});
 
@@ -65,8 +60,8 @@ describe('MapInfo', () => {
 
 			element = await TestUtils.render(MapInfo.tag);
 
-			expect(element.querySelector('.zoomLabel')).toBeTruthy();
-			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
 
 		});
 	});
@@ -81,13 +76,13 @@ describe('MapInfo', () => {
 			});
 
 			element = await TestUtils.render(MapInfo.tag);
-			expect(element.querySelector('.zoomLabel')).toBeTruthy();
-			expect(element.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.zoomLabel')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 10')).toBeTruthy();
 
 			// trigger zoom event
 			changeZoom(11);
 
-			expect(element.innerHTML.includes('ZoomLevel: 11')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 11')).toBeTruthy();
 
 		});
 

@@ -79,8 +79,8 @@ describe('BaElement', () => {
 	describe('when initialized', () => {
 		it('renders the view', () => {
 
-			expect(element.querySelector('.ba-element-impl')).toBeTruthy();
-			expect(element.innerHTML.includes('21')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('21')).toBeTruthy();
 		});
 
 		it('calls hooks in correct order', () => {
@@ -95,14 +95,14 @@ describe('BaElement', () => {
 	describe('when state changed', () => {
 		it('calls #onStateChanged, #render and updates the view', () => {
 
-			expect(element.querySelector('.ba-element-impl')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 
 			store.dispatch({
 				type: INDEX_CHANGED,
 				payload: 42
 			});
 
-			expect(element.innerHTML.includes('42')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('42')).toBeTruthy();
 
 		});
 	});
