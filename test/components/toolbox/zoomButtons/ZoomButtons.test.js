@@ -26,8 +26,8 @@ describe('ZoomButtons', () => {
 	describe('when initialized', () => {
 		it('adds a div which shows two zoom buttons', async () => {
 
-			expect(element.querySelector('.zoom-in')).toBeTruthy();
-			expect(element.querySelector('.zoom-out')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.zoom-in')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.zoom-out')).toBeTruthy();
 
 		});
 
@@ -36,14 +36,14 @@ describe('ZoomButtons', () => {
 
 		it('decreases the current zoom level by one', () => {
 
-			element.querySelector('.zoom-out').click();
+			element.shadowRoot.querySelector('.zoom-out').click();
 			expect(store.getState().map.zoom).toBe(9);
 
 		});
 
 		it('increases the current zoom level by one', () => {
 
-			element.querySelector('.zoom-in').click();
+			element.shadowRoot.querySelector('.zoom-in').click();
 			expect(store.getState().map.zoom).toBe(11);
 
 		});

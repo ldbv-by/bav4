@@ -33,35 +33,35 @@ describe('SidePanelElement', () => {
 
 			const element = await setup({ mobile: false });
 
-			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
-			expect(element.querySelector('.close')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.close')).toBeTruthy();
 
-			expect(element.querySelector('.header-desktop')).toBeTruthy();
-			expect(element.querySelector('.tab-bar-desktop')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header-desktop')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tab-bar-desktop')).toBeTruthy();
 
 
-			expect(element.getElementsByClassName('tabcontent').length).toBe(5);
-			expect(element.getElementsByClassName('tablink').length).toBe(5);
+			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
+			expect(element.shadowRoot.querySelectorAll('.tablink').length).toBe(5);
 
-			expect(element.getElementsByClassName('tabcontent')[0].style.display).toBe('block');
-			expect(element.getElementsByClassName('tablink')[0].classList.contains('tablink-active')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
 		it('adds a div which holds the sidepanel content and no close icon for mobile layout', async () => {
 
 			const element = await setup({ mobile: true });
 
-			expect(element.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
-			expect(element.querySelector('.close')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.close')).toBeFalsy();
 
-			expect(element.querySelector('.header-mobile')).toBeTruthy();
-			expect(element.querySelector('.tab-bar-mobile')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header-mobile')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tab-bar-mobile')).toBeTruthy();
 
-			expect(element.getElementsByClassName('tabcontent').length).toBe(5);
-			expect(element.getElementsByClassName('tablink').length).toBe(5);
+			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
+			expect(element.shadowRoot.querySelectorAll('.tablink').length).toBe(5);
 
-			expect(element.getElementsByClassName('tabcontent')[0].style.display).toBe('block');
-			expect(element.getElementsByClassName('tablink')[0].classList.contains('tablink-active')).toBeTrue();
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
 	});
@@ -69,19 +69,19 @@ describe('SidePanelElement', () => {
 	describe('when close button clicked', () => {
 		it('it closes the sidepanel (desktop)', async () => {
 			const element = await setup({ mobile: false });
-			element.querySelector('.close').click();
-			expect(element.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
-			expect(element.querySelector('.overlay-desktop-open')).toBeFalsy();
+			element.shadowRoot.querySelector('.close').click();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.overlay-desktop-open')).toBeFalsy();
 		});
 	});
 
 	describe('when tab clicked', () => {
 		it('it displays the current tab and its content and preserves the index', async () => {
 			const element = await setup({ mobile: false });
-			const firstTab = element.getElementsByClassName('tablink')[0];
-			const secondTab = element.getElementsByClassName('tablink')[1];
-			const firstContent = element.getElementsByClassName('tabcontent')[0];
-			const secondContent = element.getElementsByClassName('tabcontent')[1];
+			const firstTab = element.shadowRoot.querySelectorAll('.tablink')[0];
+			const secondTab = element.shadowRoot.querySelectorAll('.tablink')[1];
+			const firstContent = element.shadowRoot.querySelectorAll('.tabcontent')[0];
+			const secondContent = element.shadowRoot.querySelectorAll('.tabcontent')[1];
 			
 			expect(element.activeTabIndex).toBe(0);
 			expect(firstTab.classList.contains('tablink-active')).toBeTrue();

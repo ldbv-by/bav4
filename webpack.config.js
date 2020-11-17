@@ -13,9 +13,13 @@ module.exports = {
 			{
 				test: /\.css$/,
 				use: [
-					'style-loader',
-					'css-loader',
-					'postcss-loader'
+					'to-string-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							esModule: false,
+						},
+					},
 				],
 			},
 			{

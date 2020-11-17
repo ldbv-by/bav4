@@ -51,6 +51,7 @@ class BaElement extends HTMLElement {
 			// Child has not implemented this abstract method.
 			throw new TypeError('Please implement abstract method #createView.');
 		}
+		this.root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
 		 * Do not access the store in child classes. Always use {@link BaElement#state}.
@@ -116,7 +117,7 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	getRenderTarget() {
-		return this;
+		return this.root;
 	}
 
 	/**

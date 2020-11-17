@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import BaElement from '../../BaElement';
-import './sidePanel.css';
+import css from './sidePanel.css';
 import { closeSidePanel } from './store/sidePanel.action';
 import { $injector } from '../../../injection';
 
@@ -21,9 +21,9 @@ export class SidePanel extends BaElement {
 	}
 
 	activateTab(index) {
-		const tabcontents = [...this.getElementsByClassName('tabcontent')];
+		const tabcontents = [...this.root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
-		const tablinks = [...this.getElementsByClassName('tablink')];
+		const tablinks = [...this.root.querySelectorAll('.tablink')];
 		tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
 	}
 
@@ -66,6 +66,7 @@ export class SidePanel extends BaElement {
 
 
 		return html`
+			<style>${css}</style>
 			<div class="sidePanel overlay ${getOverlayClass()}">
 				<div class="${getHeaderClass()}">
 					<div class="${getTabBarClass()}">

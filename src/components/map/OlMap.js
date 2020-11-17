@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
-import 'ol/ol.css';
-import './olMap.css';
+import olCss from 'ol/ol.css';
+import css from './olMap.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -20,10 +20,6 @@ export class OlMap extends BaElement {
 
 	constructor() {
 		super();
-		/*
-		 * if we want Shadow DOM
-		 *  this.root = this.attachShadow({ mode: "open" });
-		 */
 	}
 
 
@@ -31,7 +27,10 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	createView() {
-		return html`<div id="ol-map"></div>`;
+		return html`
+			<style>${olCss + css}</style>
+			<div id="ol-map"></div>
+		`;
 	}
 
 	/**
@@ -41,7 +40,6 @@ export class OlMap extends BaElement {
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
 		const { zoom, position } = this.state;
-
 
 		this.view = new View({
 			center: position,
@@ -98,11 +96,6 @@ export class OlMap extends BaElement {
 			const coord = this.map.getEventCoordinate(evt.originalEvent);
 			this.emitEvent('map_clicked', coord);
 		});
-
-		/*
-		 * if we want Shadow DOM
-		 *  this.map.setTarget(this.root.firstElementChild); 
-		 */
 	}
 
 	/**
@@ -143,7 +136,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onAfterRender() {
-		this.map.setTarget('ol-map');
+		this.map.setTarget(this.shadowRoot.getElementById('ol-map'));
 	}
 
 	/**
@@ -153,11 +146,5 @@ export class OlMap extends BaElement {
 		return 'ba-ol-map';
 	}
 
-	/*
-	 * if we want Shadow DOM
-	 *  getRenderTarget(){
-	 *      return this.root;
-	 *  }
-	 */
 
 }

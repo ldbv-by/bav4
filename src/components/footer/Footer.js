@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import BaElement from '../BaElement';
 import { $injector } from '../../injection';
-import './footer.css';
+import css from './footer.css';
 
 /**
  * Container element for footer stuff. 
@@ -22,6 +22,7 @@ export class Footer extends BaElement {
 		const { mobile } = this.environmentService;
 
 		return mobile ? html`` : html`
+			<style>${css}</style>
 			<div class="footer">
 				<div class="content">	
 					${this.createChildrenView()}

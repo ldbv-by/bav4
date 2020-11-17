@@ -1,16 +1,13 @@
- ba-footer {
+.footer {
+    position: absolute;
+    bottom: 0px;
+    z-index: 100;
+    height: 35px;
+    background-color: var(--bg-color);
+    width: 100%;
+}
 
-    & .footer {
-        position: absolute; 
-        bottom: 0px; 
-        z-index: 100;
-        height: 35px;
-        background-color: var(--bg-color);
-        width: 100%;
-    }
-
-    & .content {
-        padding: 4px 10px;
-        font-size: 12px;
-    }
+.content {
+    padding: 4px 10px;
+    font-size: 12px;
 }
