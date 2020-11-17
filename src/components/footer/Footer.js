@@ -22,7 +22,7 @@ export class Footer extends BaElement {
 		const { mobile } = this.environmentService;
 
 		return mobile ? html`` : html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="footer">
 				<div class="content">	
 					${this.createChildrenView()}

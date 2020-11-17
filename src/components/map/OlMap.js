@@ -28,7 +28,7 @@ export class OlMap extends BaElement {
 	 */
 	createView() {
 		return html`
-			<style>${olCss.toString() + css.toString()}</style>
+			<style>${olCss + css}</style>
 			<div id="ol-map"></div>
 		`;
 	}

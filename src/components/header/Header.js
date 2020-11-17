@@ -41,7 +41,7 @@ export class Header extends BaElement {
 		};
 
 		return html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="header header-desktop">
 				<div class="content">
 					<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">

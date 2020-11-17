@@ -66,7 +66,7 @@ export class SidePanel extends BaElement {
 
 
 		return html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="sidePanel overlay ${getOverlayClass()}">
 				<div class="${getHeaderClass()}">
 					<div class="${getTabBarClass()}">

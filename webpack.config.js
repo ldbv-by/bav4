@@ -11,9 +11,15 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.css$/i,
+				test: /\.css$/,
 				use: [
-					'css-loader'
+					'to-string-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							esModule: false,
+						},
+					},
 				],
 			},
 			{
