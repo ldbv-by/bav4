@@ -87,6 +87,7 @@ class BaElement extends HTMLElement {
 		this.initialize();
 		this.onBeforeRender();
 		this.render();
+		this.onAfterRender();
 	}
 
 	/**
@@ -140,11 +141,10 @@ class BaElement extends HTMLElement {
 	render() {
 		const template = this.createView();
 		renderLitHtml(template, this.getRenderTarget());
-		this.onAfterRender();
 	}
 
 	/**
-	 * Called before the view is rendered.
+	 * Called before the view is rendered for the first time.
 	 * @protected
 	 */
 	onBeforeRender() { }
@@ -173,7 +173,7 @@ class BaElement extends HTMLElement {
 	initialize() { }
 
 	/**
-	 * Called after the view has been rendered.
+	 * Called after the view has been rendered for the first time.
 	 * @protected
 	 */
 	onAfterRender() { }

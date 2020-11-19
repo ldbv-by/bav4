@@ -26,6 +26,11 @@ class BaElementImpl extends BaElement {
 		this.onBeforeRenderCalled = this.callOrderIndex++;
 	}
 
+	render() {
+		super.render();
+		this.onRenderCalled = this.callOrderIndex++;
+	}
+
 	onAfterRender() {
 		this.onAfterRenderCalled = this.callOrderIndex++;
 	}
@@ -88,7 +93,8 @@ describe('BaElement', () => {
 			expect(element.extractStateCalled).toBe(0);
 			expect(element.initializeCalled).toBe(1);
 			expect(element.onBeforeRenderCalled).toBe(2);
-			expect(element.onAfterRenderCalled).toBe(3);
+			expect(element.onRenderCalled).toBe(3);
+			expect(element.onAfterRenderCalled).toBe(4);
 		});
 	});
 
@@ -102,6 +108,8 @@ describe('BaElement', () => {
 				payload: 42
 			});
 
+			expect(element.extractStateCalled).toBe(5);
+			expect(element.onRenderCalled).toBe(6);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTruthy();
 
 		});
