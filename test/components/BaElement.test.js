@@ -35,6 +35,10 @@ class BaElementImpl extends BaElement {
 		this.onAfterRenderCalled = this.callOrderIndex++;
 	}
 
+	onWindowLoad() {
+		this.onWindowLoadCalled = this.callOrderIndex++;
+	}
+
 
 	createView() {
 		return html`<div class='ba-element-impl'> ${this.state.elementStateIndex}</div>`;
@@ -95,6 +99,7 @@ describe('BaElement', () => {
 			expect(element.onBeforeRenderCalled).toBe(2);
 			expect(element.onRenderCalled).toBe(3);
 			expect(element.onAfterRenderCalled).toBe(4);
+			expect(element.onWindowLoadCalled).toBe(5);
 		});
 	});
 
@@ -108,10 +113,9 @@ describe('BaElement', () => {
 				payload: 42
 			});
 
-			expect(element.extractStateCalled).toBe(5);
-			expect(element.onRenderCalled).toBe(6);
+			expect(element.extractStateCalled).toBe(6);
+			expect(element.onRenderCalled).toBe(7);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTruthy();
-
 		});
 	});
 });

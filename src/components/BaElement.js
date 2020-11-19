@@ -2,7 +2,7 @@ import { render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
 
 /**
- * Base-Class for all ba-elements.
+ * Abstract Base-Class for all BaElements.
  * BaElement classes represent the view model within the MVVM pattern.
  * 
  * Lifecycle:<br>
@@ -16,6 +16,8 @@ import { $injector } from '../injection';
  *  {@link BaElement#render}<br>
  *      &darr;<br>
  *  {@link BaElement#onAfterRender}<br>
+ *      &darr;<br>
+ *  {@link BaElement#onWindowLoad}<br>
  *      &darr;<br>
  *  {@link BaElement#onDisconnect}<br>
  * 
@@ -83,6 +85,10 @@ class BaElement extends HTMLElement {
 		const store = this.storeService.getStore();
 		this.unsubscribe = store.subscribe(() => this.updateState());
 		this.state = this.extractState(store.getState());
+
+		window.addEventListener('load', () => {
+			this.onWindowLoad();
+		});
 
 		this.initialize();
 		this.onBeforeRender();
@@ -177,6 +183,13 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	onAfterRender() { }
+
+	/**
+	 * Called when the load event of the window is fired.
+	 * Access on properties of nested web components is now possible. 
+	 * @protected
+	 */
+	onWindowLoad() { }
 
 	/**
 	 * Called after the elements state has been changed. 
