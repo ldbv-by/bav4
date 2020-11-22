@@ -7,6 +7,7 @@ import { $injector } from '../injection';
  * 
  * Lifecycle:<br>
  * 
+ * <center>
  *  {@link BaElement#extractState}<br>
  *      &darr;<br>
  *  {@link BaElement#initialize}<br>
@@ -21,14 +22,20 @@ import { $injector } from '../injection';
  *      &darr;<br>
  *  {@link BaElement#onDisconnect}<br>
  * 
+ * </center>
  * Model (state) change loop:<br>
+ * <center>
  * 
  *  {@link BaElement#extractState}<br>
- *      &darr;<br>
+ * 		&darr;<br>
  *  {@link BaElement#onStateChanged}<br>
  *      &darr;<br>
+ *  {@link BaElement#onBeforeRender}<br>
+ *      &darr;<br>
  *  {@link BaElement#render}<br>
- * 
+ *      &darr;<br>
+ *  {@link BaElement#onAfterRender}<br>
+ * </center>
  * 
  * 
  * @abstract
@@ -91,9 +98,8 @@ class BaElement extends HTMLElement {
 		});
 
 		this.initialize();
-		this.onBeforeRender();
+
 		this.render();
-		this.onAfterRender();
 	}
 
 	/**
@@ -145,15 +151,11 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	render() {
+		this.onBeforeRender();
 		const template = this.createView();
 		renderLitHtml(template, this.getRenderTarget());
+		this.onAfterRender();
 	}
-
-	/**
-	 * Called before the view is rendered for the first time.
-	 * @protected
-	 */
-	onBeforeRender() { }
 
 	/**
 	 * Creates the html template.
@@ -172,17 +174,23 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Called once after the view has beenn rendered the first time.
+	 * Called after after the component is connected to the dom.
 	 * Js setup should be done here.
 	 * @protected
 	 */
 	initialize() { }
 
 	/**
-	 * Called after the view has been rendered for the first time.
+	 * Called after the view has been rendered.
 	 * @protected
 	 */
 	onAfterRender() { }
+
+	/**
+	 * Called before the view is rendered.
+	 * @protected
+	 */
+	onBeforeRender() { }
 
 	/**
 	 * Called when the load event of the window is fired.

@@ -24,12 +24,10 @@ class BaElementImpl extends BaElement {
 
 	onBeforeRender() {
 		this.onBeforeRenderCalled = this.callOrderIndex++;
-	}
-
-	render() {
-		super.render();
+		//to preserve the correct order, we are called from the render method
 		this.onRenderCalled = this.callOrderIndex++;
 	}
+
 
 	onAfterRender() {
 		this.onAfterRenderCalled = this.callOrderIndex++;
@@ -89,10 +87,10 @@ describe('BaElement', () => {
 		it('renders the view', () => {
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
-			expect(element.shadowRoot.innerHTML.includes('21')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
 		});
 
-		it('calls hooks in correct order', () => {
+		it('calls lifecycle callbacks in correct order', () => {
 
 			expect(element.extractStateCalled).toBe(0);
 			expect(element.initializeCalled).toBe(1);
@@ -104,7 +102,7 @@ describe('BaElement', () => {
 	});
 
 	describe('when state changed', () => {
-		it('calls #onStateChanged, #render and updates the view', () => {
+		it('calls state change callback in correct order', () => {
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 
@@ -114,8 +112,10 @@ describe('BaElement', () => {
 			});
 
 			expect(element.extractStateCalled).toBe(6);
-			expect(element.onRenderCalled).toBe(7);
-			expect(element.shadowRoot.innerHTML.includes('42')).toBeTruthy();
+			expect(element.onBeforeRenderCalled).toBe(7);
+			expect(element.onRenderCalled).toBe(8);
+			expect(element.onAfterRenderCalled).toBe(9);
+			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
 		});
 	});
 });
