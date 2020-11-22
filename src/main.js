@@ -14,4 +14,4 @@ import './components/map';
 import './components/footer/components/mapInfo';
 import './components/toolbox/zoomButtons';
 import './components/menue/sidePanel';
-
+import './components/toolbox/button';

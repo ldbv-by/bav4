@@ -1,0 +1,29 @@
+.button {
+    padding: 8px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    /* font-size: 16px; */
+}
+
+.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--primary-color)
+}
+
+.secondary {
+    background-color: var(--bg-color);
+    color: white;
+    border: 2px solid var(--primary-color)
+}
+
+.button:hover:enabled {
+    filter: brightness(1.2);
+}
+
+.disabled {
+    /* opacity: 0.8; */
+    filter: brightness(0.8);
+    cursor: not-allowed;
+}
