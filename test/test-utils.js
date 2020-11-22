@@ -55,7 +55,7 @@ export class TestUtils {
 				const element = _document.querySelector(tag);
 				if (element) {
 					//we have to fire this event manually
-					if(element.onWindowLoad) {
+					if (element.onWindowLoad) {
 						element.onWindowLoad();
 					}
 					resolve(element);
