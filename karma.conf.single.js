@@ -48,15 +48,6 @@ module.exports = function (config) {
 		// logLevel: config.LOG_INFO,
 		// autoWatch: true,
 		browsers: ['FirefoxHeadless'],
-		customLaunchers: {
-			TravisHeadlessChrome: {
-				base: 'ChromeHeadless',
-				flags: ['--disable-translate', '--disable-extensions',
-					'--no-first-run', '--disable-background-networking',
-					'--remote-debugging-port=9223']
-			}
-		},
-		// singleRun: true,
 		concurrency: Infinity,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
