@@ -19,7 +19,7 @@ export class Button extends BaElement {
 		//properties 'onClick' and 'disabled' are exposed via getter and setter
 		this._onClick = () => { };
 		this._disabled = this.getAttribute('disabled') === 'true';
-		//properties 'label' 'type' are not exposed
+		//properties 'label' and 'type' are not exposed
 		this._label = this.getAttribute('label') || 'label';
 		this._type = this.getAttribute('type') || 'secondary';
 	}
