@@ -1,0 +1,9 @@
+.labels {
+    display: inline-block;
+    margin-top: 12px;
+}
+
+.buttons {
+    display: inline-block;
+    float:right;
+}
