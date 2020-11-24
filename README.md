@@ -48,7 +48,7 @@ Next generation web-mapviewer based on web standards.
 ## Pending
 
 - Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
-- Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412
+- Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
 
 ## Links
 
@@ -57,3 +57,13 @@ Next generation web-mapviewer based on web standards.
 - Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
 - Webpack intro: https://ui.dev/webpack/ 
 - Redux query-param sync: https://github.com/Treora/redux-query-sync
+
+### Various topics relating web components
+- https://www.thinktecture.com/de/articles/web-components/
+
+
+### Data handling
+- https://alligator.io/web-components/attributes-properties/
+- https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
+
+*USE THE PLATFORM*
