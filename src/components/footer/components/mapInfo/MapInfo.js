@@ -3,6 +3,7 @@ import BaElement from '../../../BaElement';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
 import { round } from '../../../../utils/numberUtils';
 import { $injector } from '../../../../injection';
+import css from './mapInfo.css';
 
 
 
@@ -27,6 +28,25 @@ export class MapInfo extends BaElement {
 			alert('click @ ' + this.coordinateService.stringifyYX(
 				this.coordinateService.toLonLat(evt.detail), 3));
 		});
+
+	}
+
+
+	onWindowLoad() {
+		// register callback on ba-button element
+		this.root.getElementById('button0').onClick = () => {
+			console.log('CLICK');
+			changeZoomAndPosition({
+				zoom: 13,
+				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
+			});
+		};
+		this.root.getElementById('button1').onClick = () => {
+			changeZoomAndPosition({
+				zoom: 11,
+				position: this.coordinateService.fromLonLat([11.081, 49.449])
+			});
+		};
 	}
 
 	createView() {
@@ -42,17 +62,15 @@ export class MapInfo extends BaElement {
 			: '';
 
 
-		const onFlyToButtonClicked = () => {
-
-			changeZoomAndPosition({
-				zoom: 13,
-				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
-			});
-		};
-
-
 		return html`
-			<div class='zoomLabel' >ZoomLevel: ${zoomRounded} <button  @click=${onFlyToButtonClicked}>home</button> ${pointerPosition4326}</div>
+			<style>${css}</style> 
+			<div class='labels' >ZoomLevel: ${zoomRounded} ${pointerPosition4326}</div>
+			<div class='buttons'>
+				<ba-button id='button0' label='primary style' type="primary"></ba-button>
+				<ba-button id='button1' label='secondary style'></ba-button>
+				<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
+				<ba-button id='button3' label='disabled' disabled=true></ba-button>
+			</div>
 		`;
 	}
 
