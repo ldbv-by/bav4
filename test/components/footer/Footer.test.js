@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 import { Footer } from '../../../src/components/footer/Footer';
-import { html } from 'lit-html';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -37,6 +36,5 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
-
 	});
 });
