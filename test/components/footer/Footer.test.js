@@ -10,12 +10,6 @@ window.customElements.define(Footer.tag, Footer);
 
 describe('Footer', () => {
 
-	beforeAll(() => {
-		//we don't want to test child element
-		Footer.prototype.createChildrenView = () => html``;
-	});
-
-
 	const setup = (config) => {
 		const { mobile } = config;
 
@@ -34,6 +28,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelector('.footer')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 		});
 
 		it('adds nothing for mobile', async () => {
