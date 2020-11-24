@@ -26,7 +26,7 @@ describe('Button', () => {
 		});
 
 		it('add the a default label when attibute is missing', async () => {
-			
+
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 			expect(button.innerText).toBe('label');
@@ -107,5 +107,31 @@ describe('Button', () => {
 			expect(button).toBeTruthy();
 			expect(button.className).toBe('button primary');
 		});
+	});
+
+	describe('when clicked', () => {
+
+		it('call the onClick Callback', async () => {
+
+			const element = await TestUtils.render(Button.tag);
+			element.onClick = jasmine.createSpy();
+
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			expect(element.onClick).toHaveBeenCalled();
+		});
+
+		it('does nothing when disabled', async () => {
+			const element = await TestUtils.render(Button.tag, { disabled: true });
+
+			element.onClick = jasmine.createSpy();
+
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			expect(element.onClick).not.toHaveBeenCalled();
+		});
+
 	});
 });
