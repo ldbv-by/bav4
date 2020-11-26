@@ -53,8 +53,8 @@ export class SidePanel extends BaElement {
 		const getHeaderClass = () => mobile ? 'header-mobile' : 'header-desktop';
 
 		const items = [
-			{ name: 'Share', description: 'Let\'s share' },
-			{ name: 'Print', description: '...print' },
+			{ name: 'Data', description: 'Let\'s view geodata' },
+			{ name: 'Share', description: '...share' },
 			{ name: 'Draw', description: '...draw and measure on the map' },
 			{ name: 'Routing', description: '...get a route' },
 			{ name: 'Tools', description: '...and do other fancy stuff!' },
