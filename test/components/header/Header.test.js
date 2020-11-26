@@ -63,17 +63,17 @@ describe('Header', () => {
 		it('it updates the store and title attribute', async () => {
 			const element = await setup({ mobile: false });
 
-			expect(element.menueButtonLocked).toBeFalse();
+			expect(element._menueButtonLocked).toBeFalse();
 
 			expect(store.getState().sidePanel.open).toBe(false);
 			element.shadowRoot.querySelector('.toggle-side-panel').click();
 			expect(store.getState().sidePanel.open).toBe(true);
-			expect(element.menueButtonLocked).toBeTrue();
+			expect(element._menueButtonLocked).toBeTrue();
 			expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Close menue');
 
 			// we wait 500ms in order to have an unlocked menue button
 			jasmine.clock().tick(500);
-			expect(element.menueButtonLocked).toBeFalse();
+			expect(element._menueButtonLocked).toBeFalse();
 
 			element.shadowRoot.querySelector('.toggle-side-panel').click();
 			expect(store.getState().sidePanel.open).toBe(false);

@@ -39,7 +39,7 @@ class BaElementImpl extends BaElement {
 
 
 	createView() {
-		return html`<div class='ba-element-impl'> ${this.state.elementStateIndex}</div>`;
+		return html`<div class='ba-element-impl'> ${this._state.elementStateIndex}</div>`;
 	}
 
 	static get tag() {

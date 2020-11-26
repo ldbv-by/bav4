@@ -39,14 +39,14 @@ export class OlMap extends BaElement {
 	initialize() {
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
-		const { zoom, position } = this.state;
+		const { zoom, position } = this._state;
 
-		this.view = new View({
+		this._view = new View({
 			center: position,
 			zoom: zoom,
 		});
 
-		this.map = new Map({
+		this._map = new Map({
 			layers: [
 				new TileLayer({
 					id: BACKGROUND_LAYER_ID,
@@ -62,38 +62,38 @@ export class OlMap extends BaElement {
 
 			],
 			// target: 'ol-map',
-			view: this.view,
+			view: this._view,
 			controls: defaultControls({
 				// attribution: false,
 				zoom: false,
 			}),
 		});
 
-		this.map.on('moveend', () => {
-			if (this.view) {
+		this._map.on('moveend', () => {
+			if (this._view) {
 				this.log('updating store');
 
 				changeZoomAndPosition({
-					zoom: this.view.getZoom(),
-					position: this.view.getCenter()
+					zoom: this._view.getZoom(),
+					position: this._view.getCenter()
 
 				});
 			}
 		});
 
 
-		this.map.on('pointermove', (evt) => {
+		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
 				// the event is a drag gesture, this is handled by openlayers (map move)
 				return;
 			}
-			const coord = this.map.getEventCoordinate(evt.originalEvent);
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			updatePointerPosition(coord);
 		});
 
 
-		this.map.on('singleclick', (evt) => {
-			const coord = this.map.getEventCoordinate(evt.originalEvent);
+		this._map.on('singleclick', (evt) => {
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			this.emitEvent('map_clicked', coord);
 		});
 	}
@@ -102,8 +102,8 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onDisconnect() {
-		this.map = null;
-		this.view = null;
+		this._map = null;
+		this._view = null;
 	}
 
 	/**
@@ -119,12 +119,12 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		const { zoom, position } = this.state;
+		const { zoom, position } = this._state;
 
 		this.log('map state changed by store');
 
 
-		this.view.animate({
+		this._view.animate({
 			zoom: zoom,
 			center: position,
 			duration: 500
@@ -136,7 +136,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onAfterRender() {
-		this.map.setTarget(this.shadowRoot.getElementById('ol-map'));
+		this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
 	}
 
 	/**

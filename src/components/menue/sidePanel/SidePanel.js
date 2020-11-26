@@ -16,14 +16,14 @@ export class SidePanel extends BaElement {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
-		this.activeTabIndex = 0;
+		this._environmentService = EnvironmentService;
+		this._activeTabIndex = 0;
 	}
 
 	activateTab(index) {
-		const tabcontents = [...this.root.querySelectorAll('.tabcontent')];
+		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
-		const tablinks = [...this.root.querySelectorAll('.tablink')];
+		const tablinks = [...this._root.querySelectorAll('.tablink')];
 		tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
 	}
 
@@ -31,7 +31,7 @@ export class SidePanel extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		this.activateTab(this.activeTabIndex);
+		this.activateTab(this._activeTabIndex);
 	}
 
 	/**
@@ -39,8 +39,8 @@ export class SidePanel extends BaElement {
 	 */
 	createView() {
 
-		const { open } = this.state;
-		const { mobile } = this.environmentService;
+		const { open } = this._state;
+		const { mobile } = this._environmentService;
 		const getOverlayClass = () => {
 			if (mobile) {
 				return open ? 'overlay-mobile overlay-mobile-open' : 'overlay-mobile overlay-mobile-closed';
@@ -61,7 +61,7 @@ export class SidePanel extends BaElement {
 		];
 
 		const onItemClicked = (index) => {
-			this.activateTab(this.activeTabIndex = index);
+			this.activateTab(this._activeTabIndex = index);
 		};
 
 

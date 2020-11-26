@@ -35,7 +35,7 @@ describe('OlMap', () => {
 	});
 
 	function simulateMouseEvent(type, x, y, dragging) {
-		const map = element.map;
+		const map = element._map;
 		const eventType = type;
 
 		const event = new Event(eventType);
@@ -52,7 +52,7 @@ describe('OlMap', () => {
 	}
 
 	function simulateMapEvent(type) {
-		const map = element.map;
+		const map = element._map;
 		const mapEvent = new MapEvent(type, map, map.frameState);
 
 		map.dispatchEvent(mapEvent);
@@ -63,8 +63,8 @@ describe('OlMap', () => {
 			// nothing for arrange and act
 
 			// assert
-			expect(element.view.getZoom()).toBe(10);
-			expect(element.view.getCenter()).toEqual(initialPosition);
+			expect(element._view.getZoom()).toBe(10);
+			expect(element._view.getCenter()).toEqual(initialPosition);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 		});
 	});
@@ -86,7 +86,7 @@ describe('OlMap', () => {
 	describe('when map move', () => {
 		it('change state from view properties', async () => {
 			// arange
-			const view = element.view;
+			const view = element._view;
 			spyOn(view, 'getZoom');
 			spyOn(view, 'getCenter');
 
@@ -102,7 +102,7 @@ describe('OlMap', () => {
 	describe('when pointer move', () => {
 		it('pointer position store is updated', async () => {
 			// arrange
-			const map = element.map;
+			const map = element._map;
 			const pointerPosition = ['foo', 'bar'];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
@@ -117,7 +117,7 @@ describe('OlMap', () => {
 	describe('when mouse is dragging', () => {
 		it('do NOT store pointerPosition', async () => {
 			// arrange
-			const map = element.map;
+			const map = element._map;
 			const pointerPosition = [99, 99];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 

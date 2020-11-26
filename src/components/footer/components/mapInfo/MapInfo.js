@@ -34,14 +34,14 @@ export class MapInfo extends BaElement {
 
 	onWindowLoad() {
 		// register callback on ba-button element
-		this.root.getElementById('button0').onClick = () => {
+		this._root.getElementById('button0').onClick = () => {
 			console.log('CLICK');
 			changeZoomAndPosition({
 				zoom: 13,
 				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
-		this.root.getElementById('button1').onClick = () => {
+		this._root.getElementById('button1').onClick = () => {
 			changeZoomAndPosition({
 				zoom: 11,
 				position: this.coordinateService.fromLonLat([11.081, 49.449])
@@ -50,7 +50,7 @@ export class MapInfo extends BaElement {
 	}
 
 	createView() {
-		const { zoom, pointerPosition } = this.state;
+		const { zoom, pointerPosition } = this._state;
 
 
 		const zoomRounded = round(zoom, 3);

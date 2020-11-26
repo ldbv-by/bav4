@@ -14,12 +14,12 @@ export class Footer extends BaElement {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
+		this._environmentService = EnvironmentService;
 	}
 
 	createView() {
 
-		const { mobile } = this.environmentService;
+		const { mobile } = this._environmentService;
 
 		return mobile ? html`` : html`
 			<style>${css}</style>

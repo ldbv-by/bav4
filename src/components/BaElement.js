@@ -60,13 +60,13 @@ class BaElement extends HTMLElement {
 			// Child has not implemented this abstract method.
 			throw new TypeError('Please implement abstract method #createView.');
 		}
-		this.root = this.attachShadow({ mode: 'open' });
+		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
 		 * Do not access the store in child classes. Always use {@link BaElement#state}.
 		 * @private
 		 */
-		this.storeService = StoreService;
+		this._storeService = StoreService;
 
 		/** 
 		 * The state of this Element. Usually the state object is an extract of the application-wide store.
@@ -76,7 +76,7 @@ class BaElement extends HTMLElement {
 		 * @member  {Object}  
 		 * 
 		 */
-		this.state = {};
+		this._state = {};
 	}
 
 
@@ -89,9 +89,9 @@ class BaElement extends HTMLElement {
 	 * @private
 	 */
 	connectedCallback() {
-		const store = this.storeService.getStore();
+		const store = this._storeService.getStore();
 		this.unsubscribe = store.subscribe(() => this.updateState());
-		this.state = this.extractState(store.getState());
+		this._state = this.extractState(store.getState());
 
 		window.addEventListener('load', () => {
 			this.onWindowLoad();
@@ -117,11 +117,11 @@ class BaElement extends HTMLElement {
 	 */
 	updateState() {
 
-		const extractedState = this.extractState(this.storeService.getStore().getState());
+		const extractedState = this.extractState(this._storeService.getStore().getState());
 
 		// maybe we should use Lo.isEqual later, but for now it does the job
-		if (JSON.stringify(this.state) !== JSON.stringify(extractedState)) {
-			this.state = extractedState;
+		if (JSON.stringify(this._state) !== JSON.stringify(extractedState)) {
+			this._state = extractedState;
 			this.onStateChanged();
 		}
 	}
@@ -130,7 +130,7 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	getRenderTarget() {
-		return this.root;
+		return this._root;
 	}
 
 	/**

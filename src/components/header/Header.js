@@ -16,27 +16,27 @@ export class Header extends BaElement {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
-		this.menueButtonLocked = false;
+		this._environmentService = EnvironmentService;
+		this._menueButtonLocked = false;
 	}
 
 	createView() {
 
-		const { mobile } = this.environmentService;
+		const { mobile } = this._environmentService;
 
 		const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 
 		const getTitle = () => {
-			const { sidePanelIsOpen } = this.state;
+			const { sidePanelIsOpen } = this._state;
 			return sidePanelIsOpen ? 'Close menue' : 'Open menue';
 		};
 
 		const toggleSidePanelGuarded = () => {
 
-			if (!this.menueButtonLocked) {
-				this.menueButtonLocked = true;
+			if (!this._menueButtonLocked) {
+				this._menueButtonLocked = true;
 				toggleSidePanel();
-				window.setTimeout(() => this.menueButtonLocked = false, Header.menueButtonLockDuration);
+				window.setTimeout(() => this._menueButtonLocked = false, Header.menueButtonLockDuration);
 			}
 		};
 
