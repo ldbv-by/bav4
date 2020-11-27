@@ -35,7 +35,6 @@ export class MapInfo extends BaElement {
 	onWindowLoad() {
 		// register callback on ba-button element
 		this._root.getElementById('button0').onClick = () => {
-			console.log('CLICK');
 			changeZoomAndPosition({
 				zoom: 13,
 				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
