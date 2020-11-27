@@ -19,14 +19,14 @@ export class MapInfo extends BaElement {
 		super();
 
 		const { CoordinateService } = $injector.inject('CoordinateService');
-		this.coordinateService = CoordinateService;
+		this._coordinateService = CoordinateService;
 	}
 
 	initialize() {
 		// let's listen for map_clicked -events
 		window.addEventListener('map_clicked', (evt) => {
-			alert('click @ ' + this.coordinateService.stringifyYX(
-				this.coordinateService.toLonLat(evt.detail), 3));
+			alert('click @ ' + this._coordinateService.stringifyYX(
+				this._coordinateService.toLonLat(evt.detail), 3));
 		});
 
 	}
@@ -37,13 +37,13 @@ export class MapInfo extends BaElement {
 		this._root.getElementById('button0').onClick = () => {
 			changeZoomAndPosition({
 				zoom: 13,
-				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
+				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
 		this._root.getElementById('button1').onClick = () => {
 			changeZoomAndPosition({
 				zoom: 11,
-				position: this.coordinateService.fromLonLat([11.081, 49.449])
+				position: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
 		};
 	}
@@ -56,8 +56,8 @@ export class MapInfo extends BaElement {
 
 
 		const pointerPosition4326 = pointerPosition
-			? this.coordinateService.stringifyYX(
-				this.coordinateService.toLonLat(pointerPosition), 3)
+			? this._coordinateService.stringifyYX(
+				this._coordinateService.toLonLat(pointerPosition), 3)
 			: '';
 
 
