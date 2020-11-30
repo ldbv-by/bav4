@@ -11,7 +11,8 @@ $injector
 	.registerSingleton('RouterService', router)
 	.register('CoordinateService', OlCoordinateService)
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
-	.registerSingleton('StoreService', new StoreService());
+	.registerSingleton('StoreService', new StoreService())
+	.registerSingleton('SearchService', { getData : async () => [] });
 
 
 export let init = true;
