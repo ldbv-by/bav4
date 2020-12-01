@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { ZoomButtons } from '../../../../src/components/toolbox/zoomButtons/ZoomButtons';
-import mapReducer from '../../../../src/components/map/store/olMap.reducer';
+import { mapReducer } from '../../../../src/components/map/store/olMap.reducer';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(ZoomButtons.tag, ZoomButtons);
 

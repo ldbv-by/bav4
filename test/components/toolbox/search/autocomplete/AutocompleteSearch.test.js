@@ -3,7 +3,7 @@
 import { AutocompleteSearch } from '../../../../../src/components/toolbox/search/autocomplete/AutocompleteSearch';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
-import SearchResult from '../../../../../src/components/toolbox/search/autocomplete/service/SearchResult';
+import { SearchResult } from '../../../../../src/components/toolbox/search/autocomplete/service/SearchResult';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
 

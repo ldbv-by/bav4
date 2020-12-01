@@ -5,7 +5,8 @@ module.exports = {
 		'jasmine': true
 	},
 	extends: [
-		'eslint:recommended'
+		'eslint:recommended',
+		'plugin:import/errors'
 	],
 	parserOptions: {
 		ecmaVersion: 11,
@@ -20,5 +21,6 @@ module.exports = {
 		'lines-between-class-members': ['error', 'always'],
 		'curly': ['error', 'all'],
 		'space-before-blocks': ['error', 'always'],
+		'import/no-default-export': ['error'],
 	}
 };

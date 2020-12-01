@@ -4,7 +4,7 @@ export const initialState = {
 	open: false
 };
 
-const sidePanelReducer = (state = initialState, action) => {
+export const sidePanelReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case OPEN_CLOSED_CHANGED: {
@@ -18,5 +18,3 @@ const sidePanelReducer = (state = initialState, action) => {
 
 	return state;
 };
-
-export default sidePanelReducer;

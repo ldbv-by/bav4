@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MapInfo } from '../../../../src/components/footer/components/mapInfo/MapInfo';
-import mapReducer from '../../../../src/components/map/store/olMap.reducer';
+import { mapReducer } from '../../../../src/components/map/store/olMap.reducer';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/utils/OlCoordinateService';
 import { changeZoom } from '../../../../src/components/map/store/olMap.action';
@@ -64,7 +64,7 @@ describe('MapInfo', () => {
 			expect(element.shadowRoot.querySelector('#button3')).toBeTruthy();
 		});
 	});
-	
+
 	describe('when updated', () => {
 
 		it('updates the div which shows the current zoom level', async () => {

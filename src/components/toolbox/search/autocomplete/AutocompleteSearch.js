@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../../../BaElement';
+import { BaElement } from '../../../BaElement';
 import { debounced } from '../../../../utils/timer';
 import { $injector } from '../../../../injection';
 import css from './autocompleteSearch.css';

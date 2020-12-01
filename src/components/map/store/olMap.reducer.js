@@ -9,7 +9,7 @@ export const initialState = {
 	position: [1288239.2412306187, 6130212.561641981]
 };
 
-const mapReducer = (state = initialState, action) => {
+export const mapReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
 	switch (type) {
@@ -49,5 +49,3 @@ const mapReducer = (state = initialState, action) => {
 
 	return state;
 };
-
-export default mapReducer;

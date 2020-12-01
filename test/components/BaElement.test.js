@@ -1,4 +1,4 @@
-import BaElement from '../../src/components/BaElement';
+import { BaElement } from '../../src/components/BaElement';
 import { html } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 

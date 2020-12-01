@@ -1,4 +1,4 @@
-import ProcessEnvConfigService from '../../src/utils/ProcessEnvConfigService';
+import { ProcessEnvConfigService } from '../../src/utils/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
 	describe('test getValue()', () => {

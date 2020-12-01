@@ -4,7 +4,7 @@
  * @class
  * @author aul
  */
-export default class ProcessEnvConfigService {
+export class ProcessEnvConfigService {
 
 	getValue(key) {
 		// eslint-disable-next-line no-undef

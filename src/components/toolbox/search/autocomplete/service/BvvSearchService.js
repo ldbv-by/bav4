@@ -1,5 +1,5 @@
 
-import SearchResult from './SearchResult';
+import { SearchResult } from './SearchResult';
 import { $injector } from '../../../../../injection';
 
 /**
@@ -8,7 +8,7 @@ import { $injector } from '../../../../../injection';
  * @class
  * @author aul
  */
-export default class BvvSearchService {
+export class BvvSearchService {
 
 	constructor() {
 		const { ConfigService } = $injector.inject('ConfigService');

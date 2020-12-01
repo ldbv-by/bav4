@@ -42,7 +42,7 @@ import { $injector } from '../injection';
  * @class
  * @author aul
  */
-class BaElement extends HTMLElement {
+export class BaElement extends HTMLElement {
 
 
 	constructor() {
@@ -243,5 +243,3 @@ class BaElement extends HTMLElement {
 	}
 
 }
-
-export default BaElement;

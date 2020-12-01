@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../BaElement';
+import { BaElement } from '../BaElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map, View } from 'ol';

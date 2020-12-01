@@ -2,8 +2,8 @@ import { $injector } from '.';
 import { StoreService } from '../store/StoreService';
 import { OlCoordinateService } from '../utils/OlCoordinateService';
 import { EnvironmentService } from '../utils/EnvironmentService';
-import BvvSearchService from '../components/toolbox/search/autocomplete/service/BvvSearchService';
-import ProcessEnvConfigService from '../utils/ProcessEnvConfigService';
+import { BvvSearchService } from '../components/toolbox/search/autocomplete/service/BvvSearchService';
+import { ProcessEnvConfigService } from '../utils/ProcessEnvConfigService';
 
 const http = { get: 'I\'m a http service.' };
 const router = { get: 'I\'m a router.' };

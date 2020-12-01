@@ -1,4 +1,4 @@
-import BvvSearchService from '../../../../../../src/components/toolbox/search/autocomplete/service/BvvSearchService';
+import { BvvSearchService } from '../../../../../../src/components/toolbox/search/autocomplete/service/BvvSearchService';
 import { $injector } from '../../../../../../src/injection';
 
 

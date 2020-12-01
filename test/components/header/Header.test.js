@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { Header } from '../../../src/components/header/Header';
-import sidePanelReducer from '../../../src/components/menue/sidePanel/store/sidePanel.reducer';
+import { sidePanelReducer } from '../../../src/components/menue/sidePanel/store/sidePanel.reducer';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 import { OlCoordinateService } from '../../../src/utils/OlCoordinateService';

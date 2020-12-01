@@ -3,7 +3,7 @@
  * @class
  * @author aul
  */
-export default class SearchResult {
+export class SearchResult {
 
 	constructor(label, labelFormated, type, center, extent = []) {
 		this._label = label;

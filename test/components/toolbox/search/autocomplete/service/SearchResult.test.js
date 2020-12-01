@@ -1,4 +1,4 @@
-import SearchResult from '../../../../../../src/components/toolbox/search/autocomplete/service/SearchResult';
+import { SearchResult } from '../../../../../../src/components/toolbox/search/autocomplete/service/SearchResult';
 
 describe('Unit tests for class SearchResult', () => {
 

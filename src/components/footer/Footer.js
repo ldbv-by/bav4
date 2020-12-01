@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../BaElement';
+import { BaElement } from '../BaElement';
 import { $injector } from '../../injection';
 import css from './footer.css';
 

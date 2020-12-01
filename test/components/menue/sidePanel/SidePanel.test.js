@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { SidePanel } from '../../../../src/components/menue/sidePanel/SidePanel';
-import sidePanelReducer from '../../../../src/components/menue/sidePanel/store/sidePanel.reducer';
+import { sidePanelReducer } from '../../../../src/components/menue/sidePanel/store/sidePanel.reducer';
 import { toggleSidePanel } from '../../../../src/components/menue/sidePanel//store/sidePanel.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
@@ -11,7 +11,7 @@ window.customElements.define(SidePanel.tag, SidePanel);
 
 describe('SidePanelElement', () => {
 
-	
+
 	const setup = async (config) => {
 
 		const { mobile } = config;
@@ -82,26 +82,26 @@ describe('SidePanelElement', () => {
 			const secondTab = element.shadowRoot.querySelectorAll('.tablink')[1];
 			const firstContent = element.shadowRoot.querySelectorAll('.tabcontent')[0];
 			const secondContent = element.shadowRoot.querySelectorAll('.tabcontent')[1];
-			
+
 			expect(element._activeTabIndex).toBe(0);
 			expect(firstTab.classList.contains('tablink-active')).toBeTrue();
 			expect(secondTab.classList.contains('tablink-active')).toBeFalse();
 			expect(firstContent.style.display).toBe('block');
 			expect(secondContent.style.display).toBe('none');
-			
-			
+
+
 			//activate the second tab
 			secondTab.click();
-			
+
 			expect(element._activeTabIndex).toBe(1);
 			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
 			expect(secondTab.classList.contains('tablink-active')).toBeTrue();
 			expect(firstContent.style.display).toBe('none');
 			expect(secondContent.style.display).toBe('block');
-			
+
 			// now we want to see, if the active tab is preserved after re-rendering the view
 			toggleSidePanel();
-			
+
 			expect(element._activeTabIndex).toBe(1);
 			expect(firstTab.classList.contains('tablink-active')).toBeFalse();
 			expect(secondTab.classList.contains('tablink-active')).toBeTrue();

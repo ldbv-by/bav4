@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../BaElement';
+import { BaElement } from '../BaElement';
 import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
 import { $injector } from '../../injection';
 import { changeZoomAndPosition } from '../map/store/olMap.action';

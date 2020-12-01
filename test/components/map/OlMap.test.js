@@ -2,8 +2,8 @@
 import { OlMap } from '../../../src/components/map/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../test-utils.js';
-import mapReducer from '../../../src/components/map/store/olMap.reducer';
-import { MapBrowserEvent,MapEvent } from 'ol';
+import { mapReducer } from '../../../src/components/map/store/olMap.reducer';
+import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
@@ -14,7 +14,7 @@ window.customElements.define(OlMap.tag, OlMap);
 describe('OlMap', () => {
 
 	const initialPosition = fromLonLat([11.57245, 48.14021]);
-	
+
 	let store;
 	let element;
 
@@ -43,7 +43,7 @@ describe('OlMap', () => {
 		event.clientX = x;
 		event.clientY = y;
 		event.shiftKey = false;
-		event.preventDefault = function () {};
+		event.preventDefault = function () { };
 
 
 		let mapEvent = new MapBrowserEvent(eventType, map, event);

@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../../BaElement';
+import { BaElement } from '../../BaElement';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
