@@ -27,10 +27,6 @@ const setupStoreAndDi = (state) => {
 describe('MapInfo', () => {
 
 	let element;
-	beforeEach(async () => {
-
-	});
-
 
 	describe('when initialized', () => {
 		it('adds a div which shows the initial zoom level 5', async () => {
