@@ -8,7 +8,7 @@ import { $injector } from '../../../../../injection';
  * @class
  * @author aul
  */
-export default class BaSearchService {
+export default class BvvSearchService {
 
 	constructor() {
 		const { ConfigService } = $injector.inject('ConfigService');
