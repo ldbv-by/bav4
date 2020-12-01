@@ -66,4 +66,7 @@ Next generation web-mapviewer based on web standards.
 - https://alligator.io/web-components/attributes-properties/
 - https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
 
+### CSS
+-  A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
 *USE THE PLATFORM*
