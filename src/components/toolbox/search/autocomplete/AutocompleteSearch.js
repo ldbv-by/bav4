@@ -71,7 +71,7 @@ export class AutocompleteSearch extends BaElement {
 		/*execute a function presses a key on the keyboard:*/
 		input.addEventListener('keydown', (e) => {
 			// var x = document.getElementById(this.id + 'autocomplete-list');
-			let x = this._root.querySelector('#' + e.target.id + 'autocomplete-list');
+			let x = this._root.querySelector('#autocomplete-list');
 			if (x) {
 				x = x.querySelectorAll('div');
 			}
