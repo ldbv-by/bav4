@@ -88,4 +88,51 @@ describe('Button', () => {
 			});
 		});
 	});
+
+	describe('on keydown', () => {
+
+		it('navigates through the list  and calls the callback method', async () => {
+			const element = await TestUtils.render(AutocompleteSearch.tag);
+			element.onSelect = jasmine.createSpy();
+			const input = element.shadowRoot.querySelector('input');
+
+			input.value = 'some';
+			input.dispatchEvent(new Event('input'));
+			//AutocompleteSearch uses debounce from timer.js
+			jasmine.clock().tick(300);
+
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				const arrowDownEvent = new KeyboardEvent('keydown', {
+					keyCode: 40
+				});
+				const arrowUpEvent = new KeyboardEvent('keydown', {
+					keyCode: 38
+				});
+				const enterEvent = new KeyboardEvent('keydown', {
+					keyCode: 13
+				});
+				const firstListItemElement = element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div')[0];
+				const secondListItemElement = element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div')[1];
+
+				expect(firstListItemElement.classList.contains('autocomplete-active')).toBeFalse();
+				expect(secondListItemElement.classList.contains('autocomplete-active')).toBeFalse();
+
+				//twice
+				input.dispatchEvent(arrowDownEvent);
+				input.dispatchEvent(arrowDownEvent);
+
+				expect(firstListItemElement.classList.contains('autocomplete-active')).toBeFalse();
+				expect(secondListItemElement.classList.contains('autocomplete-active')).toBeTrue();
+
+				input.dispatchEvent(arrowUpEvent);
+				expect(firstListItemElement.classList.contains('autocomplete-active')).toBeTrue();
+				expect(secondListItemElement.classList.contains('autocomplete-active')).toBeFalse();
+
+				input.dispatchEvent(enterEvent);
+				expect(element.onSelect).toHaveBeenCalled();
+			});
+		});
+	});
 });
