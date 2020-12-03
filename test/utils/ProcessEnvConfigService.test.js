@@ -1,6 +1,10 @@
 import { ProcessEnvConfigService } from '../../src/utils/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
+	beforeEach(function () {
+		// eslint-disable-next-line no-undef
+		process.env = undefined;
+	});
 	describe('test getValue()', () => {
 
 		it('provides a value for an existing key', () => {
@@ -13,6 +17,8 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 
 		it('throws an exception for a non-existing key', () => {
+			// eslint-disable-next-line no-undef
+			process.env = { 'myKey': 'myValue' };
 			const configService = new ProcessEnvConfigService();
 
 			expect(() => configService.getValue('unknown')).toThrow('No value found for \'unknown\'');
