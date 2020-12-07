@@ -5,26 +5,22 @@
  * @author aul
  */
 export class ProcessEnvConfigService {
+	constructor() {
+		this._properties = new Map();
+		// eslint-disable-next-line no-undef
+		this._properties.set('SEARCH_SERVICE_API_KEY', process.env.SEARCH_SERVICE_API_KEY);
+	}
 
 	getValue(key) {
 		// eslint-disable-next-line no-undef
-		if (!process.env) {
-			throw 'Env object not present, maybe .env-file is missing';
-		}
-		// eslint-disable-next-line no-undef
-		else if (process.env[key]) {
+		if (this.hasKey(key)) {
 			// eslint-disable-next-line no-undef
-			return process.env[key];
+			return this._properties.get(key);
 		}
 		throw 'No value found for \'' + key + '\'';
 	}
 
 	hasKey(key) {
-		// eslint-disable-next-line no-undef
-		if (process.env) {
-			// eslint-disable-next-line no-undef
-			return Object.prototype.hasOwnProperty.call(process.env, key);
-		}
-		return false;
+		return !!this._properties.get(key);
 	}
 }
