@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../BaElement';
+import { BaElement } from '../BaElement';
 import { $injector } from '../../injection';
 import css from './footer.css';
 
@@ -14,15 +14,15 @@ export class Footer extends BaElement {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
+		this._environmentService = EnvironmentService;
 	}
 
 	createView() {
 
-		const { mobile } = this.environmentService;
+		const { mobile } = this._environmentService;
 
 		return mobile ? html`` : html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="footer">
 				<div class="content">	
 					${this.createChildrenView()}

@@ -1,8 +1,9 @@
 import { html } from 'lit-html';
-import BaElement from '../../../BaElement';
+import { BaElement } from '../../../BaElement';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
 import { round } from '../../../../utils/numberUtils';
 import { $injector } from '../../../../injection';
+import css from './mapInfo.css';
 
 
 
@@ -18,41 +19,57 @@ export class MapInfo extends BaElement {
 		super();
 
 		const { CoordinateService } = $injector.inject('CoordinateService');
-		this.coordinateService = CoordinateService;
+		this._coordinateService = CoordinateService;
 	}
 
 	initialize() {
 		// let's listen for map_clicked -events
 		window.addEventListener('map_clicked', (evt) => {
-			alert('click @ ' + this.coordinateService.stringifyYX(
-				this.coordinateService.toLonLat(evt.detail), 3));
+			alert('click @ ' + this._coordinateService.stringifyYX(
+				this._coordinateService.toLonLat(evt.detail), 3));
 		});
+
+	}
+
+
+	onWindowLoad() {
+		// register callback on ba-button element
+		this._root.getElementById('button0').onClick = () => {
+			changeZoomAndPosition({
+				zoom: 13,
+				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
+			});
+		};
+		this._root.getElementById('button1').onClick = () => {
+			changeZoomAndPosition({
+				zoom: 11,
+				position: this._coordinateService.fromLonLat([11.081, 49.449])
+			});
+		};
 	}
 
 	createView() {
-		const { zoom, pointerPosition } = this.state;
+		const { zoom, pointerPosition } = this._state;
 
 
 		const zoomRounded = round(zoom, 3);
 
 
 		const pointerPosition4326 = pointerPosition
-			? this.coordinateService.stringifyYX(
-				this.coordinateService.toLonLat(pointerPosition), 3)
+			? this._coordinateService.stringifyYX(
+				this._coordinateService.toLonLat(pointerPosition), 3)
 			: '';
 
 
-		const onFlyToButtonClicked = () => {
-
-			changeZoomAndPosition({
-				zoom: 13,
-				position: this.coordinateService.fromLonLat([11.57245, 48.14021])
-			});
-		};
-
-
 		return html`
-			<div class='zoomLabel' >ZoomLevel: ${zoomRounded} <button  @click=${onFlyToButtonClicked}>home</button> ${pointerPosition4326}</div>
+			<style>${css}</style> 
+			<div class='labels' >ZoomLevel: ${zoomRounded} ${pointerPosition4326}</div>
+			<div class='buttons'>
+				<ba-button id='button0' label='primary style' type="primary"></ba-button>
+				<ba-button id='button1' label='secondary style'></ba-button>
+				<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
+				<ba-button id='button3' label='disabled' disabled=true></ba-button>
+			</div>
 		`;
 	}
 

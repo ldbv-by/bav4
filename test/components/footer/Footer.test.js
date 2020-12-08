@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 import { Footer } from '../../../src/components/footer/Footer';
-import { html } from 'lit-html';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -9,12 +8,6 @@ window.customElements.define(Footer.tag, Footer);
 
 
 describe('Footer', () => {
-
-	beforeAll(() => {
-		//we don't want to test child element
-		Footer.prototype.createChildrenView = () => html``;
-	});
-
 
 	const setup = (config) => {
 		const { mobile } = config;
@@ -34,6 +27,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelector('.footer')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 		});
 
 		it('adds nothing for mobile', async () => {
@@ -42,6 +36,5 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
-
 	});
 });

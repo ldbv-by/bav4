@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import BaElement from '../../BaElement';
+import { BaElement } from '../../BaElement';
 import css from './sidePanel.css';
 import { closeSidePanel } from './store/sidePanel.action';
 import { $injector } from '../../../injection';
@@ -16,14 +16,14 @@ export class SidePanel extends BaElement {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
-		this.activeTabIndex = 0;
+		this._environmentService = EnvironmentService;
+		this._activeTabIndex = 0;
 	}
 
 	activateTab(index) {
-		const tabcontents = [...this.root.querySelectorAll('.tabcontent')];
+		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
-		const tablinks = [...this.root.querySelectorAll('.tablink')];
+		const tablinks = [...this._root.querySelectorAll('.tablink')];
 		tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
 	}
 
@@ -31,7 +31,7 @@ export class SidePanel extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		this.activateTab(this.activeTabIndex);
+		this.activateTab(this._activeTabIndex);
 	}
 
 	/**
@@ -39,8 +39,8 @@ export class SidePanel extends BaElement {
 	 */
 	createView() {
 
-		const { open } = this.state;
-		const { mobile } = this.environmentService;
+		const { open } = this._state;
+		const { mobile } = this._environmentService;
 		const getOverlayClass = () => {
 			if (mobile) {
 				return open ? 'overlay-mobile overlay-mobile-open' : 'overlay-mobile overlay-mobile-closed';
@@ -53,20 +53,20 @@ export class SidePanel extends BaElement {
 		const getHeaderClass = () => mobile ? 'header-mobile' : 'header-desktop';
 
 		const items = [
-			{ name: 'Share', description: 'Let\'s share' },
-			{ name: 'Print', description: '...print' },
+			{ name: 'Data', description: 'Let\'s view geodata' },
+			{ name: 'Share', description: '...share' },
 			{ name: 'Draw', description: '...draw and measure on the map' },
 			{ name: 'Routing', description: '...get a route' },
 			{ name: 'Tools', description: '...and do other fancy stuff!' },
 		];
 
 		const onItemClicked = (index) => {
-			this.activateTab(this.activeTabIndex = index);
+			this.activateTab(this._activeTabIndex = index);
 		};
 
 
 		return html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="sidePanel overlay ${getOverlayClass()}">
 				<div class="${getHeaderClass()}">
 					<div class="${getTabBarClass()}">

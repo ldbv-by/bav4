@@ -8,8 +8,10 @@
     --primary-color: #099dda;
     --bg-color: #212f3d;
     --color: white;
+    --input-bg-color: #354453;
+    --font-family: "Courier New", Courier, monospace;
 }
 body {
     color: var(--color);
-    font-family: "Courier New", Courier, monospace;
+    font-family: var(--font-family);
 }

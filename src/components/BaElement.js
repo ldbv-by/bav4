@@ -2,11 +2,12 @@ import { render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
 
 /**
- * Base-Class for all ba-elements.
+ * Abstract Base-Class for all BaElements.
  * BaElement classes represent the view model within the MVVM pattern.
  * 
  * Lifecycle:<br>
  * 
+ * <center>
  *  {@link BaElement#extractState}<br>
  *      &darr;<br>
  *  {@link BaElement#initialize}<br>
@@ -17,23 +18,31 @@ import { $injector } from '../injection';
  *      &darr;<br>
  *  {@link BaElement#onAfterRender}<br>
  *      &darr;<br>
+ *  {@link BaElement#onWindowLoad}<br>
+ *      &darr;<br>
  *  {@link BaElement#onDisconnect}<br>
  * 
+ * </center>
  * Model (state) change loop:<br>
+ * <center>
  * 
  *  {@link BaElement#extractState}<br>
- *      &darr;<br>
+ * 		&darr;<br>
  *  {@link BaElement#onStateChanged}<br>
  *      &darr;<br>
+ *  {@link BaElement#onBeforeRender}<br>
+ *      &darr;<br>
  *  {@link BaElement#render}<br>
- * 
+ *      &darr;<br>
+ *  {@link BaElement#onAfterRender}<br>
+ * </center>
  * 
  * 
  * @abstract
  * @class
  * @author aul
  */
-class BaElement extends HTMLElement {
+export class BaElement extends HTMLElement {
 
 
 	constructor() {
@@ -51,13 +60,13 @@ class BaElement extends HTMLElement {
 			// Child has not implemented this abstract method.
 			throw new TypeError('Please implement abstract method #createView.');
 		}
-		this.root = this.attachShadow({ mode: 'open' });
+		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
 		 * Do not access the store in child classes. Always use {@link BaElement#state}.
 		 * @private
 		 */
-		this.storeService = StoreService;
+		this._storeService = StoreService;
 
 		/** 
 		 * The state of this Element. Usually the state object is an extract of the application-wide store.
@@ -67,7 +76,7 @@ class BaElement extends HTMLElement {
 		 * @member  {Object}  
 		 * 
 		 */
-		this.state = {};
+		this._state = {};
 	}
 
 
@@ -80,12 +89,16 @@ class BaElement extends HTMLElement {
 	 * @private
 	 */
 	connectedCallback() {
-		const store = this.storeService.getStore();
+		const store = this._storeService.getStore();
 		this.unsubscribe = store.subscribe(() => this.updateState());
-		this.state = this.extractState(store.getState());
+		this._state = this.extractState(store.getState());
+
+		window.addEventListener('load', () => {
+			this.onWindowLoad();
+		});
 
 		this.initialize();
-		this.onBeforeRender();
+
 		this.render();
 	}
 
@@ -104,11 +117,11 @@ class BaElement extends HTMLElement {
 	 */
 	updateState() {
 
-		const extractedState = this.extractState(this.storeService.getStore().getState());
+		const extractedState = this.extractState(this._storeService.getStore().getState());
 
 		// maybe we should use Lo.isEqual later, but for now it does the job
-		if (JSON.stringify(this.state) !== JSON.stringify(extractedState)) {
-			this.state = extractedState;
+		if (JSON.stringify(this._state) !== JSON.stringify(extractedState)) {
+			this._state = extractedState;
 			this.onStateChanged();
 		}
 	}
@@ -117,7 +130,7 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	getRenderTarget() {
-		return this.root;
+		return this._root;
 	}
 
 	/**
@@ -138,16 +151,11 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	render() {
+		this.onBeforeRender();
 		const template = this.createView();
 		renderLitHtml(template, this.getRenderTarget());
 		this.onAfterRender();
 	}
-
-	/**
-	 * Called before the view is rendered.
-	 * @protected
-	 */
-	onBeforeRender() { }
 
 	/**
 	 * Creates the html template.
@@ -166,7 +174,7 @@ class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Called once after the view has beenn rendered the first time.
+	 * Called after after the component is connected to the dom.
 	 * Js setup should be done here.
 	 * @protected
 	 */
@@ -177,6 +185,19 @@ class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	onAfterRender() { }
+
+	/**
+	 * Called before the view is rendered.
+	 * @protected
+	 */
+	onBeforeRender() { }
+
+	/**
+	 * Called when the load event of the window is fired.
+	 * Access on properties of nested web components is now possible. 
+	 * @protected
+	 */
+	onWindowLoad() { }
 
 	/**
 	 * Called after the elements state has been changed. 
@@ -222,5 +243,3 @@ class BaElement extends HTMLElement {
 	}
 
 }
-
-export default BaElement;

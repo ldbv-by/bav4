@@ -1,7 +1,8 @@
 import { html } from 'lit-html';
-import BaElement from '../BaElement';
+import { BaElement } from '../BaElement';
 import { toggleSidePanel } from '../menue/sidePanel/store/sidePanel.action';
 import { $injector } from '../../injection';
+import { changeZoomAndPosition } from '../map/store/olMap.action';
 import css from './header.css';
 
 
@@ -15,43 +16,57 @@ export class Header extends BaElement {
 	constructor() {
 		super();
 
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this.environmentService = EnvironmentService;
-		this.menueButtonLocked = false;
+		const { CoordinateService } = $injector.inject('CoordinateService');
+		this._coordinateService = CoordinateService;
+		this._menueButtonLocked = false;
 	}
 
 	createView() {
-
-		const { mobile } = this.environmentService;
-
-		const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
-
+		// const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 		const getTitle = () => {
-			const { sidePanelIsOpen } = this.state;
+			const { sidePanelIsOpen } = this._state;
 			return sidePanelIsOpen ? 'Close menue' : 'Open menue';
 		};
 
 		const toggleSidePanelGuarded = () => {
 
-			if (!this.menueButtonLocked) {
-				this.menueButtonLocked = true;
+			if (!this._menueButtonLocked) {
+				this._menueButtonLocked = true;
 				toggleSidePanel();
-				window.setTimeout(() => this.menueButtonLocked = false, Header.menueButtonLockDuration);
+				window.setTimeout(() => this._menueButtonLocked = false, Header.menueButtonLockDuration);
 			}
 		};
 
 		return html`
-			<style>${css.toString()}</style>
+			<style>${css}</style>
 			<div class="header header-desktop">
 				<div class="content">
-					<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
-						<span class="icon ${getDeviceClass('icon')} toggle-side-panel"></span>
-					</a>
-					<div class="logo ${getDeviceClass('logo')}"></div>
-					<h3 class="${getDeviceClass('h3')}">BAv4 (#nomigration)</h3>
+					<div class="item0">
+						<div class='ci'>
+							<h3 class='ci-text'>BAv4 (#nomigration)</h3>
+							<div class='ci-logo'></div>
+						</div>
+					</div>
+					<ba-autocomplete-search class="item1"></ba-autocomplete-search>
+					<div class="item2">
+						<div class='menue-button'>
+							<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
+								<span class='icon toggle-side-panel'></span>
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		`;
+	}
+
+	onWindowLoad() {
+		this._root.querySelector('ba-autocomplete-search').onSelect = (data) => {
+			changeZoomAndPosition({
+				zoom: 16,
+				position: this._coordinateService.fromLonLat([data.center[0], data.center[1]])
+			});
+		};
 	}
 
 	/**

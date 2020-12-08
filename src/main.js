@@ -2,7 +2,7 @@ import globalCss from './main.css';
 
 //import global css
 const style = document.createElement('style');
-style.innerHTML = globalCss.toString();
+style.innerHTML = globalCss;
 document.head.appendChild(style);
 
 // eslint-disable-next-line no-unused-vars
@@ -14,4 +14,5 @@ import './components/map';
 import './components/footer/components/mapInfo';
 import './components/toolbox/zoomButtons';
 import './components/menue/sidePanel';
-
+import './components/toolbox/button';
+import './components/toolbox/search/autocomplete';

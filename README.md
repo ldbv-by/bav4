@@ -36,6 +36,7 @@ Next generation web-mapviewer based on web standards.
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 | `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
+| `npm run test:single` | Runs a single test against Firefox (headless). Usage `npm run test:single --spec=MyTest.test.js`  |
 | `npm run test:webkit` | Runs unit and component tests against the Gnome Web Browser (Epiphany), which is based on WebKit. The browser must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
@@ -47,7 +48,7 @@ Next generation web-mapviewer based on web standards.
 ## Pending
 
 - Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
-- Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412
+- Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
 
 ## Links
 
@@ -56,3 +57,16 @@ Next generation web-mapviewer based on web standards.
 - Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
 - Webpack intro: https://ui.dev/webpack/ 
 - Redux query-param sync: https://github.com/Treora/redux-query-sync
+
+### Various topics relating web components
+- https://www.thinktecture.com/de/articles/web-components/
+
+
+### Data handling
+- https://alligator.io/web-components/attributes-properties/
+- https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
+
+### CSS
+-  A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+*USE THE PLATFORM*

@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
 	entry: './src/main.js',
@@ -11,9 +12,15 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.css$/i,
+				test: /\.css$/,
 				use: [
-					'css-loader'
+					'to-string-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							esModule: false,
+						},
+					},
 				],
 			},
 			{
@@ -26,7 +33,8 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',
-		})
+		}),
+		new Dotenv()
 	],
 
 	// OPTIONAL

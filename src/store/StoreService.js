@@ -1,6 +1,6 @@
 import { combineReducers, createStore } from 'redux';
-import mapReducer, { initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../components/map/store/olMap.reducer';
-import sidePanelReducer from '../components/menue/sidePanel/store/sidePanel.reducer';
+import { mapReducer, initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../components/map/store/olMap.reducer';
+import { sidePanelReducer } from '../components/menue/sidePanel/store/sidePanel.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 
@@ -19,7 +19,7 @@ export class StoreService {
 			params: {
 				zoom: {
 					selector: state => state.map.zoom,
-					
+
 					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
 					/*

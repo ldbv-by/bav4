@@ -1,4 +1,4 @@
-import BaElement from '../../src/components/BaElement';
+import { BaElement } from '../../src/components/BaElement';
 import { html } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
@@ -24,15 +24,22 @@ class BaElementImpl extends BaElement {
 
 	onBeforeRender() {
 		this.onBeforeRenderCalled = this.callOrderIndex++;
+		//to preserve the correct order, we are called from the render method
+		this.onRenderCalled = this.callOrderIndex++;
 	}
+
 
 	onAfterRender() {
 		this.onAfterRenderCalled = this.callOrderIndex++;
 	}
 
+	onWindowLoad() {
+		this.onWindowLoadCalled = this.callOrderIndex++;
+	}
+
 
 	createView() {
-		return html`<div class='ba-element-impl'> ${this.state.elementStateIndex}</div>`;
+		return html`<div class='ba-element-impl'> ${this._state.elementStateIndex}</div>`;
 	}
 
 	static get tag() {
@@ -80,20 +87,22 @@ describe('BaElement', () => {
 		it('renders the view', () => {
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
-			expect(element.shadowRoot.innerHTML.includes('21')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
 		});
 
-		it('calls hooks in correct order', () => {
+		it('calls lifecycle callbacks in correct order', () => {
 
 			expect(element.extractStateCalled).toBe(0);
 			expect(element.initializeCalled).toBe(1);
 			expect(element.onBeforeRenderCalled).toBe(2);
-			expect(element.onAfterRenderCalled).toBe(3);
+			expect(element.onRenderCalled).toBe(3);
+			expect(element.onAfterRenderCalled).toBe(4);
+			expect(element.onWindowLoadCalled).toBe(5);
 		});
 	});
 
 	describe('when state changed', () => {
-		it('calls #onStateChanged, #render and updates the view', () => {
+		it('calls state change callback in correct order', () => {
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 
@@ -102,8 +111,11 @@ describe('BaElement', () => {
 				payload: 42
 			});
 
-			expect(element.shadowRoot.innerHTML.includes('42')).toBeTruthy();
-
+			expect(element.extractStateCalled).toBe(6);
+			expect(element.onBeforeRenderCalled).toBe(7);
+			expect(element.onRenderCalled).toBe(8);
+			expect(element.onAfterRenderCalled).toBe(9);
+			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
 		});
 	});
 });
