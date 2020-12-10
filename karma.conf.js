@@ -25,7 +25,7 @@ module.exports = function (config) {
 					'--remote-debugging-port=9223']
 			}
 		},
-		// singleRun: true,
+		singleRun: true,
 		concurrency: Infinity,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
