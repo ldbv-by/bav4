@@ -19,9 +19,9 @@ export class Footer extends BaElement {
 
 	createView() {
 
-		const { mobile } = this._environmentService;
+		const { portrait } = this._environmentService.getScreenOrientation();
 
-		return mobile ? html`` : html`
+		return portrait ? html`` : html`
 			<style>${css}</style>
 			<div class="footer">
 				<div class="content">	

@@ -40,17 +40,17 @@ export class SidePanel extends BaElement {
 	createView() {
 
 		const { open } = this._state;
-		const { mobile } = this._environmentService;
+		const { portrait } = this._environmentService.getScreenOrientation();
 		const getOverlayClass = () => {
-			if (mobile) {
+			if (portrait) {
 				return open ? 'overlay-mobile overlay-mobile-open' : 'overlay-mobile overlay-mobile-closed';
 			}
 			else {
 				return open ? 'overlay-desktop overlay-desktop-open' : 'overlay-desktop overlay-desktop-closed';
 			}
 		};
-		const getTabBarClass = () => mobile ? 'tab-bar-mobile' : 'tab-bar-desktop';
-		const getHeaderClass = () => mobile ? 'header-mobile' : 'header-desktop';
+		const getTabBarClass = () => portrait ? 'tab-bar-mobile' : 'tab-bar-desktop';
+		const getHeaderClass = () => portrait ? 'header-mobile' : 'header-desktop';
 
 		const items = [
 			{ name: 'Data', description: 'Let\'s view geodata' },
@@ -72,7 +72,7 @@ export class SidePanel extends BaElement {
 					<div class="${getTabBarClass()}">
 						${items.map((item, index) => html`<button class="tablink" @click=${() => onItemClicked(index)}>${item.name}</button>`)}
 					</div>
-					${mobile ? html`` : html`<a @click="${closeSidePanel}" title = "Close menue" > <span class="icon close"></a>`}
+					${portrait ? html`` : html`<a @click="${closeSidePanel}" title = "Close menue" > <span class="icon close"></a>`}
 				</div>	
 				<!-- Overlay content -->
 				<div class="overlay-content">

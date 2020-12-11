@@ -14,7 +14,7 @@ describe('SidePanelElement', () => {
 
 	const setup = async (config) => {
 
-		const { mobile } = config;
+		const { portrait } = config;
 
 		const state = {
 			sidePanel: {
@@ -23,7 +23,9 @@ describe('SidePanelElement', () => {
 		};
 		TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
 		$injector.registerSingleton('EnvironmentService', {
-			mobile: mobile
+			getScreenOrientation: () => {
+				return { portrait: portrait };
+			}
 		});
 		return TestUtils.render(SidePanel.tag);
 	};
@@ -31,7 +33,7 @@ describe('SidePanelElement', () => {
 	describe('when initialized', () => {
 		it('adds a div which holds the sidepanel content and a close icon for desktop layout', async () => {
 
-			const element = await setup({ mobile: false });
+			const element = await setup({ portrait: false });
 
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.close')).toBeTruthy();
@@ -49,7 +51,7 @@ describe('SidePanelElement', () => {
 
 		it('adds a div which holds the sidepanel content and no close icon for mobile layout', async () => {
 
-			const element = await setup({ mobile: true });
+			const element = await setup({ portrait: true });
 
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.close')).toBeFalsy();
@@ -68,7 +70,7 @@ describe('SidePanelElement', () => {
 
 	describe('when close button clicked', () => {
 		it('it closes the sidepanel (desktop)', async () => {
-			const element = await setup({ mobile: false });
+			const element = await setup({ portrait: false });
 			element.shadowRoot.querySelector('.close').click();
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.overlay-desktop-open')).toBeFalsy();
@@ -77,7 +79,7 @@ describe('SidePanelElement', () => {
 
 	describe('when tab clicked', () => {
 		it('it displays the current tab and its content and preserves the index', async () => {
-			const element = await setup({ mobile: false });
+			const element = await setup({ portrait: false });
 			const firstTab = element.shadowRoot.querySelectorAll('.tablink')[0];
 			const secondTab = element.shadowRoot.querySelectorAll('.tablink')[1];
 			const firstContent = element.shadowRoot.querySelectorAll('.tabcontent')[0];
