@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from './store/olMap.action';
-import{ addContextMenueCommand } from '../contextMenue/store/contextMenue.action'; 
+import { contextMenueOpen, contextMenueClose } from '../contextMenue/store/contextMenue.action';
 
 
 
@@ -46,6 +46,7 @@ export class OlMap extends BaElement {
 			center: position,
 			zoom: zoom,
 		});
+		this._contextMenuToggle = false;
 
 		this._map = new Map({
 			layers: [
@@ -95,11 +96,33 @@ export class OlMap extends BaElement {
 
 		this._map.on('singleclick', (evt) => {
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			this._contextMenuToggle = false;
+			contextMenueClose();
 			this.emitEvent('map_clicked', coord);
 		});
-		const firstCommand ={ label:'Koordinate kopieren', action: ()=> console.log('I would copy the coordinate if i know how to do it!') }; 
-		const secondCommand ={ label:'Hallo', action: ()=> console.log('Hello World!') }; 
-		addContextMenueCommand(OlMap.tag,[firstCommand, secondCommand] );
+
+		this._map.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+			this._contextMenuToggle = !this._contextMenuToggle;
+			if (this._contextMenuToggle) {
+				const contextMenueData = this._buildContextMenueData(e);
+				contextMenueOpen(contextMenueData);
+			}
+			else {
+				contextMenueClose();
+			}
+
+		});
+	}
+
+	_buildContextMenueData(evt) {
+		const firstCommand = { label: 'Koordinate kopieren', action: () => console.log('I would copy the coordinate if i know how to do it!') };
+		const secondCommand = { label: 'Hallo', action: () => console.log('Hello World!') };
+
+		return {
+			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
+			commands: [firstCommand, secondCommand]
+		};
 	}
 
 	/**

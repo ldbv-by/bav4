@@ -1,7 +1,7 @@
-export const CONTEXT_ADD_MENUE_COMMANDS = 'components/contextMenue/addCommands';
+export const CONTEXT_MENUE_CLICK = 'components/contextMenue/click';
 
 export const initialState = {
-	commands: {}
+	data: { pointer: false, commands: false }
 };
 
 export const contextMenueReducer = (state = initialState, action) => {
@@ -10,16 +10,10 @@ export const contextMenueReducer = (state = initialState, action) => {
 		payload
 	} = action;
 	switch (type) {
-		case CONTEXT_ADD_MENUE_COMMANDS: {
-			const {
-				contextTarget,
-				commands
-			} = payload;
+		case CONTEXT_MENUE_CLICK: {
 			return {
 				...state,
-				commands:{
-					...state.commands,[contextTarget]:commands
-				}
+				data: payload,
 			};
 		}
 	}

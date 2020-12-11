@@ -1,9 +1,5 @@
-import {
-	html
-} from 'lit-html';
-import {
-	BaElement
-} from '../BaElement';
+import { html } from 'lit-html';
+import { BaElement } from '../BaElement';
 import css from './contextMenue.css';
 
 
@@ -13,119 +9,55 @@ import css from './contextMenue.css';
  * @author schle_th
  */
 export class ContextMenue extends BaElement {
-	
-    
+
+
 	constructor() {
 		super();
-		this._menuState = 0;
 	}
 
-	_init(context) {
-		const {
-			commands
-		} = this._state;
+	_buildContextMenue(pointer, commands) {
+		console.log('try to build ContextMenu-Entries');
+		this._view.style.left = pointer.x + 'px';
+		this._view.style.top = pointer.y + 'px';
+		console.log(pointer);
 
-		const buildContextMenue = (e) => {
-			const currentTarget = e.target;			
+		this._clearContextItems();
+		let ulElement = document.createElement('ul');
+		ulElement.setAttribute('id', 'context-menue__items');
+		ulElement.setAttribute('class', 'context-menue__items');
+		this._view.appendChild(ulElement);
 
-			let menuItems = [];
-			for (const [ contextTarget,	contextCommands ] of Object.entries(commands)) {				
-				const contextTargetTagName = contextTarget.toUpperCase();
-				if (currentTarget.tagName == contextTargetTagName) {
-					menuItems.push(...contextCommands) ;
-				}
-			}
+		commands.forEach((command) => {
+			let liElement = document.createElement('li');
+			liElement.setAttribute('class', 'context-menu__item');
+			liElement.setAttribute('id', 'context-menu__item');
+			liElement.insertAdjacentText('beforeend', command.label);
+			liElement.addEventListener('click', command.action);
 
-			if (menuItems.length < 1) {
-				return;
-			}
-
-			const menuPosition = this._getPosition(e);
-			const menuPositionX= menuPosition.x + 'px';
-			const menuPositionY=menuPosition.y + 'px';
-
-			context.style.left = menuPositionX;
-			context.style.top = menuPositionY;
-
-			let ulElement = document.createElement('ul');
-			ulElement.setAttribute('id', 'context-menue__items');
-			ulElement.setAttribute('class', 'context-menue__items');
-			context.appendChild(ulElement);
-
-			menuItems.forEach((command) => { 
-				let liElement = document.createElement('li');
-				liElement.setAttribute('class', 'context-menu__item');
-				liElement.setAttribute('id', 'context-menu__item');
-				liElement.insertAdjacentText('beforeend', command.label);
-				liElement.addEventListener('click', command.action);
-
-				ulElement.appendChild(liElement);
-			});
-
-			context.classList.add('context-menu--active');
-			this._menuState = 1;
-		};
-
-		const closeContextMenue = () => {
-			if (this._menuState !== 0) {
-				context.classList.remove('context-menu--active');
-				const child = context.querySelector('.context-menue__items');
-				context.removeChild(child);
-				this._menuState = 0;
-			}
-
-		};
-
-		document.addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-			if (this._menuState !== 0) {
-				closeContextMenue();
-			}
-			else{
-				buildContextMenue(e);
-			} 
-			
+			ulElement.appendChild(liElement);
 		});
-		document.addEventListener('click', (e) => {
-			var button = e.which || e.button;
-			if (button === 1) {
-				closeContextMenue();
-			}
-		});
+
+		this._view.classList.add('context-menu--active');
 	}
 
+	_closeContextMenu() {
+		console.log('try to close ContextMenu');
+		this._view.classList.remove('context-menu--active');
+		this._clearContextItems();
+	}
 
-
-	_getPosition(e) {
-		let posX = 0;
-		let posY = 0;
-
-		if (!e) {
-			e = window.event;
+	_clearContextItems() {
+		const menuItems = this._view.querySelector('.context-menue__items');
+		if (menuItems) {
+			this._view.removeChild(menuItems);
 		}
-
-		if (e.pageX || e.pageY) {
-			posX = e.pageX;
-			posY = e.pageY;
-		}
-		else if (e.clientX || e.clientY) {
-			posX = e.clientX + document.body.scrollLeft +
-				document.documentElement.scrollLeft;
-			posY = e.clientY + document.body.scrollTop +
-				document.documentElement.scrollTop;
-		}
-
-		return {
-			x: posX,
-			y: posY
-		};
 	}
 
 	/**
 	 * @override
 	 */
 	onWindowLoad() {
-		this._init(this._root.querySelector('.context-menu'));
+		this._view = this._root.querySelector('.context-menu');
 	}
 
 	/**
@@ -145,12 +77,24 @@ export class ContextMenue extends BaElement {
 	extractState(store) {
 		const {
 			contextMenue: {
-				commands
+				data
 			}
 		} = store;
-		return {
-			commands
-		};
+		return data;
+	}
+
+	/**
+	 * @override
+	 */
+	onStateChanged() {
+		const { pointer, commands } = this._state;
+		this.log('contextmenu state changed by store');
+		if (pointer) {
+			this._buildContextMenue(pointer, commands);
+		}
+		else {
+			this._closeContextMenu();
+		}
 	}
 
 	static get tag() {

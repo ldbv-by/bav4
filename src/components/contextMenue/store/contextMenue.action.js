@@ -1,8 +1,5 @@
-import { CONTEXT_ADD_MENUE_COMMANDS
-} from './contextMenue.reducer';
-import {
-	$injector
-} from '../../../injection';
+import { CONTEXT_MENUE_CLICK } from './contextMenue.reducer';
+import { $injector } from '../../../injection';
 
 const getStore = () => {
 	const {
@@ -11,12 +8,16 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-export const addContextMenueCommand = (target, commands) => {
+export const contextMenueOpen = (contextMenuData) => {
 	getStore().dispatch({
-		type: CONTEXT_ADD_MENUE_COMMANDS,
-		payload: {
-			contextTarget: target,
-			commands: commands
-		}
+		type: CONTEXT_MENUE_CLICK,
+		payload: contextMenuData
+	});
+};
+
+export const contextMenueClose = () => {
+	getStore().dispatch({
+		type: CONTEXT_MENUE_CLICK,
+		payload: { pointer: false, commands: false }
 	});
 };
