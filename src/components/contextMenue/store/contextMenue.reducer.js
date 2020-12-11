@@ -1,4 +1,4 @@
-export const CONTEXT_ADD_MENUE_COMMAND = 'components/contextMenue/addCommand';
+export const CONTEXT_ADD_MENUE_COMMANDS = 'components/contextMenue/addCommands';
 
 export const initialState = {
 	commands: {}
@@ -10,14 +10,16 @@ export const contextMenueReducer = (state = initialState, action) => {
 		payload
 	} = action;
 	switch (type) {
-		case CONTEXT_ADD_MENUE_COMMAND: {
+		case CONTEXT_ADD_MENUE_COMMANDS: {
 			const {
 				contextTarget,
-				command
+				commands
 			} = payload;
 			return {
 				...state,
-				commands: state.commands[contextTarget] = command
+				commands:{
+					...state.commands,[contextTarget]:commands
+				}
 			};
 		}
 	}

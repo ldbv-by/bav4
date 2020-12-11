@@ -97,8 +97,9 @@ export class OlMap extends BaElement {
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			this.emitEvent('map_clicked', coord);
 		});
-		const command ={ label:'Koordinate koopieren', action: ()=> console.log('Hello World! I would copy the coordinate if i know how to do it!') }; 
-		addContextMenueCommand(this._view, command);
+		const firstCommand ={ label:'Koordinate kopieren', action: ()=> console.log('I would copy the coordinate if i know how to do it!') }; 
+		const secondCommand ={ label:'Hallo', action: ()=> console.log('Hello World!') }; 
+		addContextMenueCommand(OlMap.tag,[firstCommand, secondCommand] );
 	}
 
 	/**

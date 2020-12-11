@@ -1,4 +1,4 @@
-import { CONTEXT_ADD_MENUE_COMMAND
+import { CONTEXT_ADD_MENUE_COMMANDS
 } from './contextMenue.reducer';
 import {
 	$injector
@@ -11,12 +11,12 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-export const addContextMenueCommand = (target, command) => {
+export const addContextMenueCommand = (target, commands) => {
 	getStore().dispatch({
-		type: CONTEXT_ADD_MENUE_COMMAND,
+		type: CONTEXT_ADD_MENUE_COMMANDS,
 		payload: {
 			contextTarget: target,
-			command: command
+			commands: commands
 		}
 	});
 };

@@ -26,20 +26,13 @@ export class ContextMenue extends BaElement {
 		} = this._state;
 
 		const buildContextMenue = (e) => {
-			const currentTarget = e.target;
-
-			
-			if (this._menuState !== 1) {
-				return;
-			}
+			const currentTarget = e.target;			
 
 			let menuItems = [];
-			for (const {
-				contextTarget,
-				command
-			} in commands) {
-				if (currentTarget === contextTarget) {
-					menuItems.push(command);
+			for (const [ contextTarget,	contextCommands ] of Object.entries(commands)) {				
+				const contextTargetTagName = contextTarget.toUpperCase();
+				if (currentTarget.tagName == contextTargetTagName) {
+					menuItems.push(...contextCommands) ;
 				}
 			}
 
@@ -59,7 +52,7 @@ export class ContextMenue extends BaElement {
 			ulElement.setAttribute('class', 'context-menue__items');
 			context.appendChild(ulElement);
 
-			for (const command in menuItems) {
+			menuItems.forEach((command) => { 
 				let liElement = document.createElement('li');
 				liElement.setAttribute('class', 'context-menu__item');
 				liElement.setAttribute('id', 'context-menu__item');
@@ -67,7 +60,7 @@ export class ContextMenue extends BaElement {
 				liElement.addEventListener('click', command.action);
 
 				ulElement.appendChild(liElement);
-			}
+			});
 
 			context.classList.add('context-menu--active');
 			this._menuState = 1;
@@ -84,10 +77,14 @@ export class ContextMenue extends BaElement {
 		};
 
 		document.addEventListener('contextmenu', (e) => {
-			console.log(e);
 			e.preventDefault();
-
-			buildContextMenue(e);
+			if (this._menuState !== 0) {
+				closeContextMenue();
+			}
+			else{
+				buildContextMenue(e);
+			} 
+			
 		});
 		document.addEventListener('click', (e) => {
 			var button = e.which || e.button;
