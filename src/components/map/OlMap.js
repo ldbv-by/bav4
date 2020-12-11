@@ -7,6 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from './store/olMap.action';
+import{ addContextMenueCommand } from '../contextMenue/store/contextMenue.action'; 
 
 
 
@@ -96,6 +97,8 @@ export class OlMap extends BaElement {
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			this.emitEvent('map_clicked', coord);
 		});
+		const command ={ label:'Koordinate koopieren', action: ()=> console.log('Hello World! I would copy the coordinate if i know how to do it!') }; 
+		addContextMenueCommand(this._view, command);
 	}
 
 	/**

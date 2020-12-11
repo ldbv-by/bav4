@@ -1,6 +1,19 @@
-import { combineReducers, createStore } from 'redux';
-import { mapReducer, initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../components/map/store/olMap.reducer';
-import { sidePanelReducer } from '../components/menue/sidePanel/store/sidePanel.reducer';
+import {
+	combineReducers,
+	createStore
+} from 'redux';
+import {
+	mapReducer,
+	initialState as initialMapState,
+	ZOOM_CHANGED,
+	POSITION_CHANGED
+} from '../components/map/store/olMap.reducer';
+import {
+	sidePanelReducer
+} from '../components/menue/sidePanel/store/sidePanel.reducer';
+import {
+	contextMenueReducer
+} from '../components/contextMenue/store/contextMenue.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 
@@ -20,7 +33,10 @@ export class StoreService {
 				zoom: {
 					selector: state => state.map.zoom,
 
-					action: value => ({ type: ZOOM_CHANGED, payload: value }),
+					action: value => ({
+						type: ZOOM_CHANGED,
+						payload: value
+					}),
 
 					/*
 					 * Cast the parameter value to a number (we map invalid values to 1, which will then
@@ -39,7 +55,10 @@ export class StoreService {
 				},
 				position: {
 					selector: state => state.map.position,
-					action: value => ({ type: POSITION_CHANGED, payload: value }),
+					action: value => ({
+						type: POSITION_CHANGED,
+						payload: value
+					}),
 
 					//TODO: handler non parseable string
 					stringToValue: (string) => string.split(',').map(Number.parseFloat),
@@ -63,7 +82,8 @@ export class StoreService {
 			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
 			 */
 			map: mapReducer,
-			sidePanel: sidePanelReducer
+			sidePanel: sidePanelReducer,
+			contextMenue: contextMenueReducer
 		});
 
 		this.store = createStore(rootReducer, storeEnhancer);
