@@ -12,10 +12,8 @@ export class ContextMenue extends BaElement {
 
 
 	_buildContextMenue(pointer, commands) {
-		console.log('try to build ContextMenu-Entries');
 		this._view.style.left = pointer.x + 'px';
 		this._view.style.top = pointer.y + 'px';
-		console.log(pointer);
 
 		this._clearContextItems();
 		let ulElement = document.createElement('ul');
@@ -37,7 +35,6 @@ export class ContextMenue extends BaElement {
 	}
 
 	_closeContextMenu() {
-		console.log('try to close ContextMenu');
 		this._view.classList.remove('context-menu--active');
 		this._clearContextItems();
 	}
@@ -80,7 +77,6 @@ export class ContextMenue extends BaElement {
 	 */
 	onStateChanged() {
 		const { pointer, commands } = this._state;
-		this.log('contextmenu state changed by store');
 		if (pointer) {
 			this._buildContextMenue(pointer, commands);
 		}
