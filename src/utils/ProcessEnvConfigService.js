@@ -19,7 +19,7 @@ export class ProcessEnvConfigService {
 			// eslint-disable-next-line no-undef
 			return this._properties.get(key);
 		}
-		if(defaultValue) {
+		if(defaultValue !== undefined) {
 			return defaultValue;
 		}
 		throw 'No value found for \'' + key + '\'';
