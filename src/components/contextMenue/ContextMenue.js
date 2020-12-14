@@ -23,8 +23,8 @@ export class ContextMenue extends BaElement {
 
 		this._clearContextItems();
 		let ulElement = document.createElement('ul');
-		ulElement.setAttribute('id', 'context-menue__items');
-		ulElement.setAttribute('class', 'context-menue__items');
+		ulElement.setAttribute('id', 'context-menu__items');
+		ulElement.setAttribute('class', 'context-menu__items');
 		this._view.appendChild(ulElement);
 
 		commands.forEach((command) => {
@@ -47,7 +47,7 @@ export class ContextMenue extends BaElement {
 	}
 
 	_clearContextItems() {
-		const menuItems = this._view.querySelector('.context-menue__items');
+		const menuItems = this._view.querySelector('.context-menu__items');
 		if (menuItems) {
 			this._view.removeChild(menuItems);
 		}
