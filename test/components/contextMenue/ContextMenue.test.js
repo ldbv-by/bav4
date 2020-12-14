@@ -48,7 +48,7 @@ describe('ContextMenue', () => {
                 }
             };
 
-            store = TestUtils.setupStoreAndDi(state, {
+            TestUtils.setupStoreAndDi(state, {
                 contextMenue: contextMenueReducer
             });
 

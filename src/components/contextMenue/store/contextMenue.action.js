@@ -2,9 +2,7 @@ import { CONTEXT_MENUE_CLICK } from './contextMenue.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
-	const {
-		StoreService
-	} = $injector.inject('StoreService');
+	const { StoreService } = $injector.inject('StoreService');
 	return StoreService.getStore();
 };
 

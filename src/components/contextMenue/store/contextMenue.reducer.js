@@ -5,10 +5,7 @@ export const initialState = {
 };
 
 export const contextMenueReducer = (state = initialState, action) => {
-	const {
-		type,
-		payload
-	} = action;
+	const { type, payload } = action;
 	switch (type) {
 		case CONTEXT_MENUE_CLICK: {
 			return {

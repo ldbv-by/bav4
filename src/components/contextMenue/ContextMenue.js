@@ -6,7 +6,7 @@ import css from './contextMenue.css';
 /**
  * 
  * @class
- * @author schle_th
+ * @author thiloSchlemmer
  */
 export class ContextMenue extends BaElement {
 
@@ -75,11 +75,7 @@ export class ContextMenue extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const {
-			contextMenue: {
-				data
-			}
-		} = store;
+		const { contextMenue: { data } } = store;
 		return data;
 	}
 
