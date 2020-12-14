@@ -7,10 +7,8 @@ import { contextMenueClose, contextMenueOpen } from '../../../src/components/con
 import { TestUtils } from '../../test-utils';
 window.customElements.define(ContextMenue.tag, ContextMenue);
 
-let store;
-
 const setupStoreAndDi = (state) => {
-    store = TestUtils.setupStoreAndDi(state, { contextMenue: contextMenueReducer });
+    TestUtils.setupStoreAndDi(state, { contextMenue: contextMenueReducer });
 
 };
 
