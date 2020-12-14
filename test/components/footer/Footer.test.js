@@ -23,7 +23,7 @@ describe('Footer', () => {
 	};
 
 	describe('when initialized', () => {
-		it('adds footer elements and css classes for dektop', async () => {
+		it('adds footer elements and css classes for landscape mode', async () => {
 
 			const element = await setup({ portrait: false });
 
@@ -32,7 +32,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 		});
 
-		it('adds nothing for mobile', async () => {
+		it('adds nothing for portrait mode', async () => {
 
 			const element = await setup({ portrait: true });
 
