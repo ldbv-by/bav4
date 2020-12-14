@@ -9,10 +9,13 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('provides a value for required keys', () => {
 			// eslint-disable-next-line no-undef
+			process.env = { 'NODE_ENV': 'development' };
+			// eslint-disable-next-line no-undef
 			process.env = { 'SEARCH_SERVICE_API_KEY': 'myValue' };
 
 			const configService = new ProcessEnvConfigService();
 
+			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('myValue');
 		});
 
@@ -22,6 +25,14 @@ describe('tests for ProcessEnvConfigService', () => {
 			const configService = new ProcessEnvConfigService();
 
 			expect(() => configService.getValue('unknown')).toThrow('No value found for \'unknown\'');
+		});
+
+		it('provides the the default value for a non-existing key', () => {
+			// eslint-disable-next-line no-undef
+			process.env = {};
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService.getValue('unknown', 42)).toBe(42);
 		});
 	});
 
