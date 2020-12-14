@@ -94,37 +94,5 @@ describe('ContextMenue', () => {
             expect(element.shadowRoot.querySelector('.context-menu__item')).toBeFalsy();
         });
 
-        it('adds a webcombonent as data-content to context-menu', () => {
-            // arrange
-            let button = document.createElement('button');
-            button.setAttribute('class', 'thebutton');
-            button.innerHTML = 'Test';
-            button.addEventListener('click', () => alert('This is a test'));
-
-            let component = document.createElement('div');
-            component.setAttribute('class', 'thecomponent');
-            component.appendChild(button);
-
-            const command = () => alert('This is another test');
-            const alternateCommand = () => {
-                alert('This is the alternate test');
-            };
-            component.querySelector('.thebutton').addEventListener('click', alternateCommand);
-            const contextMenueData = {
-                pointer: { x: 0, y: 0 },
-                commands: [
-                    { label: component, action: command }]
-            };
-
-            // act
-            spyOn(window, 'alert');
-            contextMenueOpen(contextMenueData);
-            button.click();
-
-            // assert
-            expect(window.alert).toHaveBeenCalledWith('This is a test');
-            expect(window.alert).toHaveBeenCalledWith('This is another test');
-            expect(window.alert).toHaveBeenCalledWith('This is the alternate test');
-        });
     });
 });

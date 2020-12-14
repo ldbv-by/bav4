@@ -21,10 +21,7 @@ export class StoreService {
 				zoom: {
 					selector: state => state.map.zoom,
 
-					action: value => ({
-						type: ZOOM_CHANGED,
-						payload: value
-					}),
+					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
 					/*
 					 * Cast the parameter value to a number (we map invalid values to 1, which will then
@@ -43,10 +40,7 @@ export class StoreService {
 				},
 				position: {
 					selector: state => state.map.position,
-					action: value => ({
-						type: POSITION_CHANGED,
-						payload: value
-					}),
+					action: value => ({ type: POSITION_CHANGED, payload: value }),
 
 					//TODO: handler non parseable string
 					stringToValue: (string) => string.split(',').map(Number.parseFloat),

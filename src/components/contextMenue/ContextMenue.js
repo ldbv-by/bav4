@@ -25,15 +25,17 @@ export class ContextMenue extends BaElement {
 			let liElement = document.createElement('li');
 			liElement.setAttribute('class', 'context-menu__item');
 			liElement.setAttribute('id', 'context-menu__item');
-			if (command.label instanceof HTMLElement) {
-				liElement.insertAdjacentElement('beforeend', command.label);
-			}
-			else {
+			if (typeof command.label === 'string' || command.label instanceof String) {
 				liElement.insertAdjacentText('beforeend', command.label);
 			}
+			else {
+				liElement.insertAdjacentText('beforeend', command.label.toString());
+			}
 
-			liElement.addEventListener('click', command.action);
-
+			liElement.addEventListener('click', () => {
+				command.action();
+				this._closeContextMenu();
+			});
 			ulElement.appendChild(liElement);
 		});
 
