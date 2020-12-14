@@ -4,12 +4,12 @@ import { OlCoordinateService } from '../utils/OlCoordinateService';
 import { EnvironmentService } from '../utils/EnvironmentService';
 import { BvvSearchService } from '../components/toolbox/search/autocomplete/service/BvvSearchService';
 import { ProcessEnvConfigService } from '../utils/ProcessEnvConfigService';
+import { HttpService } from '../utils/HttpService';
 
-const http = { get: 'I\'m a http service.' };
 const router = { get: 'I\'m a router.' };
 
 $injector
-	.registerSingleton('HttpService', http)
+	.register('HttpService', HttpService)
 	.registerSingleton('RouterService', router)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.register('CoordinateService', OlCoordinateService)
