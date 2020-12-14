@@ -3,8 +3,6 @@ import { ContextMenue } from '../../../src/components/contextMenue/ContextMenue'
 import { contextMenueReducer } from '../../../src/components/contextMenue/store/contextMenue.reducer';
 import { contextMenueClose, contextMenueOpen } from '../../../src/components/contextMenue/store/contextMenue.action';
 
-
-import { html, render } from 'lit-html';
 import { TestUtils } from '../../test-utils';
 window.customElements.define(ContextMenue.tag, ContextMenue);
 
