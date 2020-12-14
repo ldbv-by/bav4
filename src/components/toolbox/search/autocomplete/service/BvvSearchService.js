@@ -13,6 +13,8 @@ export class BvvSearchService {
 	constructor() {
 		const { ConfigService } = $injector.inject('ConfigService');
 		this._configService = ConfigService;
+		const { HttpService } = $injector.inject('HttpService');
+		this._httpService = HttpService;
 	}
 
 	async getData(query) {
@@ -20,7 +22,7 @@ export class BvvSearchService {
 
 			const api_key = this._configService.getValue('SEARCH_SERVICE_API_KEY');
 			const regex = /(<([^>]+)>)/ig;
-			const source = await fetch(`https://geoservices.bayern.de/services/ortssuche/v1/adressen/${query}?srid=4326&api_key=${api_key}`);
+			const source = await this._httpService.fetch(`https://geoservices.bayern.de/services/ortssuche/v1/adressen/${query}?srid=4326&api_key=${api_key}`);
 			const raw = await source.json();
 			const data = raw.results.map(o => {
 				return new SearchResult(o.attrs.label.replace(regex, ''), o.attrs.label, 'adress', [o.attrs.x, o.attrs.y]);
