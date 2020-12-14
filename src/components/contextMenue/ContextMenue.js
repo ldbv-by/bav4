@@ -11,10 +11,6 @@ import css from './contextMenue.css';
 export class ContextMenue extends BaElement {
 
 
-	constructor() {
-		super();
-	}
-
 	_buildContextMenue(pointer, commands) {
 		console.log('try to build ContextMenu-Entries');
 		this._view.style.left = pointer.x + 'px';
