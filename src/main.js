@@ -16,4 +16,5 @@ import './components/toolbox/zoomButtons';
 import './components/menue/sidePanel';
 import './components/toolbox/button';
 import './components/toolbox/search/autocomplete';
+import './components/contextMenue';
 import './components/utils/dev/devInfo';

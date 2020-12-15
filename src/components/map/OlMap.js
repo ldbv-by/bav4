@@ -7,6 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from './store/olMap.action';
+import { contextMenueOpen, contextMenueClose } from '../contextMenue/store/contextMenue.action';
 
 
 
@@ -45,6 +46,7 @@ export class OlMap extends BaElement {
 			center: position,
 			zoom: zoom,
 		});
+		this._contextMenuToggle = false;
 
 		this._map = new Map({
 			layers: [
@@ -94,8 +96,26 @@ export class OlMap extends BaElement {
 
 		this._map.on('singleclick', (evt) => {
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			this._contextMenuToggle = false;
+			contextMenueClose();
 			this.emitEvent('map_clicked', coord);
 		});
+
+		this._map.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+			const contextMenueData = this._buildContextMenueData(e);
+			contextMenueOpen(contextMenueData);
+		});
+	}
+
+	_buildContextMenueData(evt) {
+		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => console.log('I would copy the coordinate if i know how to do it!') };
+		const secondCommand = { label: 'Hello', action: () => console.log('Hello World!') };
+
+		return {
+			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
+			commands: [firstCommand, secondCommand]
+		};
 	}
 
 	/**
