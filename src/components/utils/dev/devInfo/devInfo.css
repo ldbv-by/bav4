@@ -1,0 +1,16 @@
+.container {
+    position: absolute;
+    padding: 5px;
+    padding-left: 10px;
+    color: var(--primary-color);
+    font-size: 11px;
+}
+.container-landscape{
+    bottom: 45px;
+    left: 0;
+}
+
+.container-portrait{
+    top: 50px;
+    left: 0;
+}
