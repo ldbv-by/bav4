@@ -103,20 +103,13 @@ export class OlMap extends BaElement {
 
 		this._map.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
-			this._contextMenuToggle = !this._contextMenuToggle;
-			if (this._contextMenuToggle) {
-				const contextMenueData = this._buildContextMenueData(e);
-				contextMenueOpen(contextMenueData);
-			}
-			else {
-				contextMenueClose();
-			}
-
+			const contextMenueData = this._buildContextMenueData(e);
+			contextMenueOpen(contextMenueData);
 		});
 	}
 
 	_buildContextMenueData(evt) {
-		const firstCommand = { label: 'Copy Coordinates', action: () => console.log('I would copy the coordinate if i know how to do it!') };
+		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => console.log('I would copy the coordinate if i know how to do it!') };
 		const secondCommand = { label: 'Hello', action: () => console.log('Hello World!') };
 
 		return {

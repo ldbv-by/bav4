@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../BaElement';
+import { contextMenueClose } from './store/contextMenue.action';
 import css from './contextMenue.css';
 
 
@@ -16,35 +17,70 @@ export class ContextMenue extends BaElement {
 		this._view.style.top = pointer.y + 'px';
 
 		this._clearContextItems();
-		let ulElement = document.createElement('ul');
-		ulElement.setAttribute('id', 'context-menu__items');
-		ulElement.setAttribute('class', 'context-menu__items');
-		this._view.appendChild(ulElement);
+
+		const menu = this._createContextMenu();
+		this._view.appendChild(menu);
 
 		commands.forEach((command) => {
-			let liElement = document.createElement('li');
-			liElement.setAttribute('class', 'context-menu__item');
-			liElement.setAttribute('id', 'context-menu__item');
-			if (typeof command.label === 'string' || command.label instanceof String) {
-				liElement.insertAdjacentText('beforeend', command.label);
-			}
-			else {
-				liElement.insertAdjacentText('beforeend', command.label.toString());
-			}
-
-			liElement.addEventListener('click', () => {
+			const menuItem = this._createContextMenuItem(command);
+			menuItem.addEventListener('click', () => {
 				command.action();
 				this._closeContextMenu();
 			});
-			ulElement.appendChild(liElement);
+			menu.appendChild(menuItem);
 		});
+		document.addEventListener('click', () => this._closeContextMenu());
 
 		this._view.classList.add('context-menu--active');
+	}
+
+	_createContextMenuItem(command) {
+		const label = command.label;
+		const shortCut = command.shortCut;
+		let liElement = document.createElement('li');
+		liElement.setAttribute('class', 'context-menu__item');
+		liElement.setAttribute('id', 'context-menu__item');
+
+		let labelElement = document.createElement('div');
+		labelElement.setAttribute('class', 'context-menu__label');
+
+		if (typeof label === 'string' || label instanceof String) {
+			labelElement.insertAdjacentText('beforeend', label);
+		}
+		else {
+			labelElement.insertAdjacentText('beforeend', label.toString());
+		}
+
+		let shortCutElement = document.createElement('div');
+		shortCutElement.setAttribute('class', 'context-menu__shortCut');
+		if (shortCut) {
+			shortCutElement.insertAdjacentText('beforeend', shortCut);
+		}
+		else {
+			shortCutElement.insertAdjacentText('beforeend', '');
+		}
+
+		liElement.appendChild(labelElement);
+		liElement.appendChild(shortCutElement);
+		return liElement;
+	}
+
+	_createContextMenu() {
+		let ulElement = document.createElement('ul');
+		ulElement.setAttribute('id', 'context-menu__items');
+		ulElement.setAttribute('class', 'context-menu__items');
+
+		return ulElement;
+	}
+
+	_isOpen() {
+		return this._view.querySelector('.context-menu--active') !== null;
 	}
 
 	_closeContextMenu() {
 		this._view.classList.remove('context-menu--active');
 		this._clearContextItems();
+		contextMenueClose();
 	}
 
 	_clearContextItems() {
@@ -85,7 +121,7 @@ export class ContextMenue extends BaElement {
 	 */
 	onStateChanged() {
 		const { pointer, commands } = this._state;
-		if (pointer) {
+		if (pointer && !this._isOpen()) {
 			this._buildContextMenue(pointer, commands);
 		}
 		else {
