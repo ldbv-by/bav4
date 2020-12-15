@@ -11,7 +11,15 @@ import css from './contextMenue.css';
  */
 export class ContextMenue extends BaElement {
 
-
+	/**
+	  * Builds the content of the contextmenu based on the commands 
+	  * @param {object {x: number, y: number}} pointer the pointer where user has clicked (rightclick)
+	  * @param { Array { 
+	  * 			label: string, 
+	  * 			shortCut: string,
+	  * 			action: function
+	  * 		} } commands the list of command-objects
+	  */
 	_buildContextMenue(pointer, commands) {
 		this._view.style.left = pointer.x + 'px';
 		this._view.style.top = pointer.y + 'px';
@@ -34,6 +42,11 @@ export class ContextMenue extends BaElement {
 		this._view.classList.add('context-menu--active');
 	}
 
+	/**
+	 * Creates a ListItem-Element with label and shortcut Sub-Element (div) 
+	 * @param {object {label: string, shortCut: string, action: function}} command   the command-object
+	 * @returns {HTMLElement}
+	 */
 	_createContextMenuItem(command) {
 		const label = command.label;
 		const shortCut = command.shortCut;
@@ -65,6 +78,10 @@ export class ContextMenue extends BaElement {
 		return liElement;
 	}
 
+	/**
+	 * Creates a UnorderedList-Element
+	 * @returns {HTMLElement}
+	 */
 	_createContextMenu() {
 		let ulElement = document.createElement('ul');
 		ulElement.setAttribute('id', 'context-menu__items');
@@ -73,16 +90,27 @@ export class ContextMenue extends BaElement {
 		return ulElement;
 	}
 
+	/**
+	 * Tests whether or not, the context menu is open
+	 * @returns {boolean}
+	 */
 	_isOpen() {
 		return this._view.querySelector('.context-menu--active') !== null;
 	}
 
+
+	/**
+	 * Closed the context menu by removing class-name and inner content 
+	 */
 	_closeContextMenu() {
 		this._view.classList.remove('context-menu--active');
 		this._clearContextItems();
 		contextMenueClose();
 	}
 
+	/**
+	 * Removes the inner content (menu items)
+	 */
 	_clearContextItems() {
 		const menuItems = this._view.querySelector('.context-menu__items');
 		if (menuItems) {
