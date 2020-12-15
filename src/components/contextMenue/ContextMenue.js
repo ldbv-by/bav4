@@ -21,8 +21,9 @@ export class ContextMenue extends BaElement {
 	  * 		} } commands the list of command-objects
 	  */
 	_buildContextMenue(pointer, commands) {
-		this._view.style.left = pointer.x + 'px';
-		this._view.style.top = pointer.y + 'px';
+		const offset = 5;
+		this._view.style.left = pointer.x + offset + 'px';
+		this._view.style.top = pointer.y + offset + 'px';
 
 		this._clearContextItems();
 
