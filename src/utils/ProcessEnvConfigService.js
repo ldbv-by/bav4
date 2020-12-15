@@ -13,6 +13,8 @@ export class ProcessEnvConfigService {
 		this._properties.set('SEARCH_SERVICE_API_KEY', process.env.SEARCH_SERVICE_API_KEY);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SOFTWARE_INFO', process.env.SOFTWARE_INFO);
+		// eslint-disable-next-line no-undef
+		this._properties.set('DEFAULT_LANG', process.env.DEFAULT_LANG);
 	}
 
 	getValue(key, defaultValue) {

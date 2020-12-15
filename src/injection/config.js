@@ -5,13 +5,13 @@ import { EnvironmentService } from '../utils/EnvironmentService';
 import { BvvSearchService } from '../components/toolbox/search/autocomplete/service/BvvSearchService';
 import { ProcessEnvConfigService } from '../utils/ProcessEnvConfigService';
 import { HttpService } from '../utils/HttpService';
+import { TranslationService } from '../utils/TranslationService';
 
-const router = { get: 'I\'m a router.' };
 
 $injector
 	.register('HttpService', HttpService)
-	.registerSingleton('RouterService', router)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
+	.registerSingleton('TranslationService', new TranslationService)
 	.register('CoordinateService', OlCoordinateService)
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
 	.registerSingleton('StoreService', new StoreService())
