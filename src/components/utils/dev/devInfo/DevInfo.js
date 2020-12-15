@@ -25,7 +25,7 @@ export class DevInfo extends BaElement {
 		const info = this._configService.getValue('SOFTWARE_INFO', false);
 		const getDevInfoClass = () => portrait ? 'container-portrait' : 'container-landscape';
 
-		return this._configService.getValue('RUNTIME_MODE') !== 'development' || !info
+		return !info
 			? html``
 			: html`
 			<style>${css}</style>
