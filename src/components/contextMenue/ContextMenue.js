@@ -3,6 +3,7 @@ import { BaElement } from '../BaElement';
 import { contextMenueClose } from './store/contextMenue.action';
 import css from './contextMenue.css';
 
+const NO_CONTENT = '';
 
 /**
  * 
@@ -10,6 +11,7 @@ import css from './contextMenue.css';
  * @author thiloSchlemmer
  */
 export class ContextMenue extends BaElement {
+
 
 	/**
 	  * Builds the content of the contextmenu based on the commands 
@@ -96,7 +98,8 @@ export class ContextMenue extends BaElement {
 	 * @returns {boolean}
 	 */
 	_isOpen() {
-		return this._view.querySelector('.context-menu--active') !== null;
+		const { pointer } = this._state;
+		return pointer !== false;
 	}
 
 
@@ -113,17 +116,14 @@ export class ContextMenue extends BaElement {
 	 * Removes the inner content (menu items)
 	 */
 	_clearContextItems() {
-		const menuItems = this._view.querySelector('.context-menu__items');
-		if (menuItems) {
-			this._view.removeChild(menuItems);
-		}
+		this._view.textContent = NO_CONTENT;
 	}
 
 	/**
 	 * @override
 	 */
 	onWindowLoad() {
-		this._view = this._root.querySelector('.context-menu');
+		this._view = this.shadowRoot.getElementById('context-menu');
 	}
 
 	/**
@@ -132,7 +132,7 @@ export class ContextMenue extends BaElement {
 	createView() {
 		return html`
         <style>${css}</style>
-        <nav class="context-menu">
+        <nav id=context-menu class="context-menu">
         </nav>`;
 	}
 
@@ -149,8 +149,8 @@ export class ContextMenue extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		const { pointer, commands } = this._state;
-		if (pointer && !this._isOpen()) {
+		if (this._isOpen()) {
+			const { pointer, commands } = this._state;
 			this._buildContextMenue(pointer, commands);
 		}
 		else {

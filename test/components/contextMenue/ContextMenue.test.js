@@ -117,14 +117,14 @@ describe('ContextMenue', () => {
 
 			// act
 			contextMenueOpen(contextMenueData);
-			const wasOpen = element.shadowRoot.querySelector('.context-menu--active') !== null;
+			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
 
 			contextMenueClose();
-			const isOpen = element.shadowRoot.querySelector('.context-menu--active') !== null;
+			const isOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
 
 			// assert
-			expect(wasOpen).toBeTruthy();
-			expect(isOpen).toBeFalsy();
+			expect(wasOpen).toBe(true);
+			expect(isOpen).toBe(false);
 		});
 	});
 });
