@@ -1,0 +1,36 @@
+import { html } from 'lit-html';
+import { BaElement } from '../../../BaElement';
+import { $injector } from '../../../../injection';
+
+/**
+ * Displays a hint if the app is in embedded mode, but not used within an iframe
+ * @class 
+ * @author aul
+ */
+export class NonEmbeddedHint extends BaElement {
+
+	constructor() {
+		super();
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = EnvironmentService;
+	}
+
+	onWindowLoad() {
+		if (this._environmentService.getUrlParams().get('embedded') === 'true'
+            && this._environmentService.getWindow().location == this._environmentService.getWindow().parent.location) {
+			document.body.innerHTML = '<div style="text-align: center; color:#099dda; padding: 20px">The embedded version must be used in an iframe.</div>';
+		}
+	}
+
+	/**
+     * @override
+     */
+	createView() {
+		return html``;
+	}
+
+	static get tag() {
+		return 'ba-nonembedded-hint';
+	}
+
+}
