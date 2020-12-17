@@ -127,4 +127,90 @@ describe('ContextMenue', () => {
 			expect(isOpen).toBe(false);
 		});
 	});
+
+	describe('when called with coordinates near boundingRect', () => {
+		beforeEach(async () => {
+
+			const state = {
+				contextMenue: {
+					data: { pointer: false, commands: false }
+				}
+			};
+
+			TestUtils.setupStoreAndDi(state, {
+				contextMenue: contextMenueReducer
+			});
+
+			element = await TestUtils.render(ContextMenue.tag);
+		});
+
+		it('places the menu left of pointer', () => {
+			// arrange
+			const offset = 4;
+			const placementRect = {
+				left: window.screenLeft,
+				top: window.screenTop,
+				width: window.innerWidth,
+				height: window.innerHeight,
+				right: window.screenLeft + window.innerWidth,
+				bottom: window.screenTop + window.innerHeight
+			};
+
+			const pointerNearRightBorder = {
+				x: window.screenLeft + window.innerWidth - offset,
+				y: window.screenTop
+			};
+			const contextMenueData = {
+				pointer: pointerNearRightBorder,
+				boundingRect: placementRect,
+				commands: [
+					{ label: 'foo', action: () => { } },
+					{ label: 'bar', action: () => { } }]
+			};
+
+			// act
+			contextMenueOpen(contextMenueData);
+			const actualRect = element.shadowRoot.getElementById('context-menu').getBoundingClientRect();
+
+			// assert
+			expect(actualRect.left).toBeLessThan(pointerNearRightBorder.x);
+			// expect(actualRect.right).toBeLessThan(window.screenLeft + window.innerWidth);
+			expect(actualRect.top).toBe(pointerNearRightBorder.y);
+
+		});
+
+		it('places the menu top of pointer', () => {
+			// arrange
+			const offset = 4;
+			const placementRect = {
+				left: window.screenLeft,
+				top: window.screenTop,
+				width: window.innerWidth,
+				height: window.innerHeight,
+				right: window.screenLeft + window.innerWidth,
+				bottom: window.screenTop + window.innerHeight
+			};
+
+			const pointerNearBottomBorder = {
+				x: window.screenLeft,
+				y: window.screenTop + window.innerHeight - offset
+			};
+			const contextMenueData = {
+				pointer: pointerNearBottomBorder,
+				boundingRect: placementRect,
+				commands: [
+					{ label: 'foo', action: () => { } },
+					{ label: 'bar', action: () => { } }]
+			};
+
+			// act
+			contextMenueOpen(contextMenueData);
+			const actualRect = element.shadowRoot.getElementById('context-menu').getBoundingClientRect();
+
+			// assert
+			expect(actualRect.top).toBeLessThan(pointerNearBottomBorder.y);
+			expect(actualRect.left).toBe(pointerNearBottomBorder.x);
+
+		});
+	});
 });
