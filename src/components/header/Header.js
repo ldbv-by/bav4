@@ -22,10 +22,11 @@ export class Header extends BaElement {
 		this._menueButtonLocked = false;
 	}
 
+	isRenderingSkipped() {
+		return this._environmentService.isEmbedded();
+	}
+
 	createView() {
-		if (this._environmentService.isEmbedded()) {
-			return html``;
-		}
 
 		// const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 		const getTitle = () => {
