@@ -109,11 +109,32 @@ export class OlMap extends BaElement {
 	}
 
 	_buildContextMenueData(evt) {
+		const footerHeight = 45;
 		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => console.log('I would copy the coordinate if i know how to do it!') };
 		const secondCommand = { label: 'Hello', action: () => console.log('Hello World!') };
+		const mapBoundingRect = this._map.getTargetElement().getBoundingClientRect();
 
+		/*
+		// base solution 
+		let boundingRect = {
+			top: mapBoundingRect.top,
+			left: mapBoundingRect.left,
+			right: mapBoundingRect.right,
+			bottom: mapBoundingRect.bottom,
+			x: mapBoundingRect.x,
+			y: mapBoundingRect.y,
+			width: mapBoundingRect.width,
+			height: mapBoundingRect.height
+		};
+		
+		boundingRect.bottom = boundingRect.bottom - footerHeight;
+		boundingRect.height = boundingRect.height - footerHeight; 
+		*/
+		// experimental solution @see  https://developer.mozilla.org/en-US/docs/Web/API/DOMRectReadOnly/fromRect
+		const boundingRect = DOMRectReadOnly.fromRect({ x: mapBoundingRect.x, y: mapBoundingRect.y, width: mapBoundingRect.width, height: mapBoundingRect.height - footerHeight });
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
+			boundingRect: boundingRect,
 			commands: [firstCommand, secondCommand]
 		};
 	}

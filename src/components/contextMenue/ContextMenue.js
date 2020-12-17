@@ -22,11 +22,7 @@ export class ContextMenue extends BaElement {
 	  * 			action: function
 	  * 		} } commands the list of command-objects
 	  */
-	_buildContextMenue(pointer, commands) {
-		const offset = 5;
-		this._view.style.left = pointer.x + offset + 'px';
-		this._view.style.top = pointer.y + offset + 'px';
-
+	_buildContextMenue(pointer, boundingRect, commands) {
 		this._clearContextItems();
 
 		const menu = this._createContextMenu();
@@ -42,7 +38,49 @@ export class ContextMenue extends BaElement {
 		});
 		document.addEventListener('click', () => this._closeContextMenu());
 
+		const menuPlacement = this._calculateMenuPlacement(pointer, boundingRect);
+
+		this._view.style.left = menuPlacement.left;
+		this._view.style.top = menuPlacement.top;
 		this._view.classList.add('context-menu--active');
+	}
+
+	/**
+	 * Calculates the placement of the menu inside the window.
+	 * If the needed space of the menu is in conflict with the
+	 * existing space on the bottom or on the right side of the 
+	 * click-coordinate, then the placement will be adjusted accordingly.
+	 * @param {x:number, y:number} baseCoordinate the coordinate where the menu 
+	 * should be place
+	 * @param {DOMRectReadOnly} boundingRect the Rectangle which defines 
+	 * the bounded area of placement   
+	 * @returns {left:number, top:number}    
+	 */
+	_calculateMenuPlacement(baseCoordinate, boundingRect) {
+		const offset = 5;
+		const menuWidth = this._view.offsetWidth + offset;
+		const menuHeight = this._view.offsetHeight + offset;
+
+		let placement = { left: undefined, top: undefined };
+
+
+		if (!boundingRect) {
+			boundingRect = { right: window.screenLeft + window.innerWidth, bottom: window.screenTop + window.innerHeight };
+			console.log('boundingRect:', boundingRect);
+		}
+		if (boundingRect.right < (baseCoordinate.x + menuWidth)) {
+			placement.left = baseCoordinate.x - menuWidth + 'px';
+		}
+		else {
+			placement.left = baseCoordinate.x + 'px';
+		}
+		if (boundingRect.bottom < (baseCoordinate.y + menuHeight)) {
+			placement.top = baseCoordinate.y - menuHeight + 'px';
+		}
+		else {
+			placement.top = baseCoordinate.y + 'px';
+		}
+		return placement;
 	}
 
 	/**
@@ -109,6 +147,7 @@ export class ContextMenue extends BaElement {
 	_closeContextMenu() {
 		this._view.classList.remove('context-menu--active');
 		this._clearContextItems();
+		document.removeEventListener('click', () => this._closeContextMenu());
 		contextMenueClose();
 	}
 
@@ -150,8 +189,8 @@ export class ContextMenue extends BaElement {
 	 */
 	onStateChanged() {
 		if (this._isOpen()) {
-			const { pointer, commands } = this._state;
-			this._buildContextMenue(pointer, commands);
+			const { pointer, boundingRect, commands } = this._state;
+			this._buildContextMenue(pointer, boundingRect, commands);
 		}
 		else {
 			this._closeContextMenu();
