@@ -3,12 +3,13 @@ import { html } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
 
+let skipRendering = false;
+
 class BaElementImpl extends BaElement {
 
 	constructor() {
 		super();
 		this.callOrderIndex = 0;
-
 	}
 
 	extractState(store) {
@@ -20,6 +21,10 @@ class BaElementImpl extends BaElement {
 
 	initialize() {
 		this.initializeCalled = this.callOrderIndex++;
+	}
+
+	isRenderingSkipped() {
+		return skipRendering;
 	}
 
 	onBeforeRender() {
@@ -74,23 +79,24 @@ const setupStoreAndDi = () => {
 
 
 describe('BaElement', () => {
-	let element;
 
-	beforeEach(async () => {
+	beforeEach(() => {
 
 		setupStoreAndDi();
-		element = await TestUtils.render(BaElementImpl.tag);
+		skipRendering = false;
 	});
 
-
 	describe('when initialized', () => {
-		it('renders the view', () => {
+		it('renders the view', async () => {
+
+			const element = await TestUtils.render(BaElementImpl.tag);
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
 		});
 
-		it('calls lifecycle callbacks in correct order', () => {
+		it('calls lifecycle callbacks in correct order', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
 
 			expect(element.extractStateCalled).toBe(0);
 			expect(element.initializeCalled).toBe(1);
@@ -99,10 +105,20 @@ describe('BaElement', () => {
 			expect(element.onAfterRenderCalled).toBe(4);
 			expect(element.onWindowLoadCalled).toBe(5);
 		});
+
+		it('calls lifecycle callbacks in correct order when rendering is skipped', async () => {
+			skipRendering = true;
+			const element = await TestUtils.render(BaElementImpl.tag);
+
+			expect(element.extractStateCalled).toBe(0);
+			expect(element.initializeCalled).toBe(1);
+			expect(element.onWindowLoadCalled).toBe(2);
+		});
 	});
 
 	describe('when state changed', () => {
-		it('calls state change callback in correct order', () => {
+		it('calls state change callback in correct order', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 

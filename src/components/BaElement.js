@@ -52,14 +52,6 @@ export class BaElement extends HTMLElement {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
 		}
-		/*
-		 * else (called from child)
-		 *  Check if all instance methods are implemented.
-		 */
-		if (this.createView === BaElement.prototype.createView) {
-			// Child has not implemented this abstract method.
-			throw new TypeError('Please implement abstract method #createView.');
-		}
 		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
@@ -110,7 +102,17 @@ export class BaElement extends HTMLElement {
 		this.onDisconnect();
 	}
 
-
+	/**
+	 * Hook, which makes it possible to skip the rendering phases
+	 * @protected
+	 * @see {@link BaElement#onBeforeRender}
+	 * @see {@link BaElement#render}
+	 * @see {@link BaElement#onAfterRender}
+	 * @returns {boolean} <code>true</code> if rendering should be done.
+	 */
+	isRenderingSkipped() {
+		return false;
+	}
 
 	/**
 	 * @private
@@ -151,10 +153,12 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	render() {
-		this.onBeforeRender();
-		const template = this.createView();
-		renderLitHtml(template, this.getRenderTarget());
-		this.onAfterRender();
+		if (!this.isRenderingSkipped()) {
+			this.onBeforeRender();
+			const template = this.createView();
+			renderLitHtml(template, this.getRenderTarget());
+			this.onAfterRender();
+		}
 	}
 
 	/**
@@ -165,11 +169,11 @@ export class BaElement extends HTMLElement {
 	createView() {
 		if (this === BaElement) {
 			// The child has not implemented this method.
-			throw new TypeError('Please implement static abstract method #tag.');
+			throw new TypeError('Please implement abstract method #createView.');
 		}
 		else {
 			// The child has implemented this method but also called `super.foo()`.
-			throw new TypeError('Do not call static abstract method #tag from child.');
+			throw new TypeError('Do not call abstract method #createView from child.');
 		}
 	}
 
