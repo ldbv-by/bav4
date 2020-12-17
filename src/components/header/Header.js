@@ -16,12 +16,17 @@ export class Header extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService } = $injector.inject('CoordinateService');
+		const { CoordinateService, EnvironmentService } = $injector.inject('CoordinateService', 'EnvironmentService');
 		this._coordinateService = CoordinateService;
+		this._environmentService = EnvironmentService;
 		this._menueButtonLocked = false;
 	}
 
 	createView() {
+		if (this._environmentService.isEmbedded()) {
+			return html``;
+		}
+
 		// const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 		const getTitle = () => {
 			const { sidePanelIsOpen } = this._state;
@@ -61,6 +66,10 @@ export class Header extends BaElement {
 	}
 
 	onWindowLoad() {
+		if (this._environmentService.isEmbedded()) {
+			return;
+		}
+
 		this._root.querySelector('ba-autocomplete-search').onSelect = (data) => {
 			changeZoomAndPosition({
 				zoom: 16,
