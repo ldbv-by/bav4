@@ -8,30 +8,21 @@ window.customElements.define(NonEmbeddedHint.tag, NonEmbeddedHint);
 describe('NonEmbeddedHint', () => {
 
 	const setup = (config) => {
-		const { urlParams, window } = config;
+		const { embed, window } = config;
 
 		TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('EnvironmentService', {
-			getUrlParams: () => {
-				return urlParams;
-			},
-			getWindow: () => window
+			getWindow: () => window,
+			isEmbedded: () => embed
 		});
 		return TestUtils.render(NonEmbeddedHint.tag);
 	};
 
 	describe('when initialized', () => {
 		it('does nothing when embedded version is not requested', async () => {
-			const mockWindow = {
-			};
 
-			await setup({ urlParams: new URLSearchParams('?foo=bar'), window: mockWindow });
-			
-			expect(document.body.innerHTML).toBe('<ba-nonembedded-hint></ba-nonembedded-hint>');
+			await setup({ embed: false, window: {} });
 
-
-			await setup({ urlParams: new URLSearchParams('?embedded=false'), window: mockWindow });
-			
 			expect(document.body.innerHTML).toBe('<ba-nonembedded-hint></ba-nonembedded-hint>');
 		});
 
@@ -43,8 +34,8 @@ describe('NonEmbeddedHint', () => {
 				}
 			};
 
-			await setup({ urlParams: new URLSearchParams('?embedded=true'), window: mockWindow });
-			
+			await setup({ embed: true, window: mockWindow });
+
 			expect(document.body.innerHTML).toBe('<ba-nonembedded-hint></ba-nonembedded-hint>');
 		});
 
@@ -56,8 +47,8 @@ describe('NonEmbeddedHint', () => {
 				}
 			};
 
-			await setup({ urlParams: new URLSearchParams('?embedded=true'), window: mockWindow });
-			
+			await setup({ embed: true, window: mockWindow });
+
 			expect(document.body.textContent).toBe('The embedded version must be used in an iframe.');
 		});
 	});

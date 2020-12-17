@@ -16,7 +16,7 @@ export class NonEmbeddedHint extends BaElement {
 	}
 
 	onWindowLoad() {
-		if (this._environmentService.getUrlParams().get('embedded') === 'true'
+		if (this._environmentService.isEmbedded()
             && this._environmentService.getWindow().location == this._environmentService.getWindow().parent.location) {
 			document.body.innerHTML = '<div style="text-align: center; color:#099dda; padding: 20px">The embedded version must be used in an iframe.</div>';
 		}
