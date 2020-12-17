@@ -90,7 +90,7 @@ export class BaElement extends HTMLElement {
 	 */
 	connectedCallback() {
 		const store = this._storeService.getStore();
-		this.unsubscribe = store.subscribe(() => this.updateState());
+		this.unsubscribe = store.subscribe(() => this._updateState());
 		this._state = this.extractState(store.getState());
 
 		window.addEventListener('load', () => {
@@ -115,7 +115,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * @private
 	 */
-	updateState() {
+	_updateState() {
 
 		const extractedState = this.extractState(this._storeService.getStore().getState());
 
