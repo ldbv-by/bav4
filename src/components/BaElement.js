@@ -167,14 +167,8 @@ export class BaElement extends HTMLElement {
 	 * @returns html template as tagged template literal
 	 */
 	createView() {
-		if (this === BaElement) {
-			// The child has not implemented this method.
-			throw new TypeError('Please implement abstract method #createView.');
-		}
-		else {
-			// The child has implemented this method but also called `super.foo()`.
-			throw new TypeError('Do not call abstract method #createView from child.');
-		}
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
 	}
 
 	/**
@@ -236,13 +230,10 @@ export class BaElement extends HTMLElement {
 			// Abstract methods can not be called directly.
 			throw new TypeError('Can not call static abstract method #tag.');
 		}
-		else if (this.tag === BaElement.tag) {
-			// The child has not implemented this method.
-			throw new TypeError('Please implement static abstract method #tag.');
-		}
+		
 		else {
 			// The child has implemented this method but also called `super.foo()`.
-			throw new TypeError('Do not call static abstract method #tag from child.');
+			throw new TypeError('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 		}
 	}
 

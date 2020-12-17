@@ -52,8 +52,13 @@ class BaElementImpl extends BaElement {
 	}
 }
 
+class BaElementNoImpl extends BaElement {
+}
 
 window.customElements.define(BaElementImpl.tag, BaElementImpl);
+window.customElements.define('ba-element', BaElement);
+window.customElements.define('ba-element-noimpl', BaElementNoImpl);
+
 
 let store;
 
@@ -85,14 +90,50 @@ describe('BaElement', () => {
 		setupStoreAndDi();
 		skipRendering = false;
 	});
+	describe('expected errors', () => {
 
-	describe('when initialized', () => {
+		describe('constructor', () => {
+			it('throws excepetion when instantiated without inheritance', () => {
+				expect(() => new BaElement()).toThrowError(TypeError, 'Can not construct abstract class.');
+			});
+		});
+
+		describe('methods', () => {
+			it('throws excepetion when abstract #createView is called without overriding', () => {
+				expect(() => new BaElementNoImpl().createView()).toThrowError(TypeError, 'Please implement abstract method #createView or do not call super.createView from child.');
+			});
+
+			it('throws excepetion when abstract static method #tag is called directly', () => {
+				expect(() => BaElement.tag).toThrowError(TypeError, 'Can not call static abstract method #tag.');
+			});
+
+			it('throws excepetion when abstract static method #tag is called without overriding', () => {
+				expect(() => BaElementNoImpl.tag).toThrowError(TypeError, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+			});
+		});
+
+	});
+
+	describe('events', () => {
+
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(BaElementImpl.tag);
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
+		});
+
+	});
+
+	describe('when initialized', () => {
+		it('renders the view', async () => {
+			const myFunction = jasmine.createSpy();
+			const element = await TestUtils.render(BaElementImpl.tag);
+			window.addEventListener('some_event', myFunction);
+
+			element.emitEvent('some_event', 42);
+
+			expect(myFunction).toHaveBeenCalled();
 		});
 
 		it('calls lifecycle callbacks in correct order', async () => {
