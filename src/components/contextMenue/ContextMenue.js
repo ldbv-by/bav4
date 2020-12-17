@@ -22,7 +22,7 @@ export class ContextMenue extends BaElement {
 	  * 			action: function
 	  * 		} } commands the list of command-objects
 	  */
-	_buildContextMenue(pointer, boundingRect, commands) {
+	_buildContextMenue(pointer, commands) {
 		this._clearContextItems();
 
 		const menu = this._createContextMenu();
@@ -38,7 +38,7 @@ export class ContextMenue extends BaElement {
 		});
 		document.addEventListener('click', () => this._closeContextMenu());
 
-		const menuPlacement = this._calculateMenuPlacement(pointer, boundingRect);
+		const menuPlacement = this._calculateMenuPlacement(pointer);
 
 		this._view.style.left = menuPlacement.left;
 		this._view.style.top = menuPlacement.top;
@@ -52,29 +52,26 @@ export class ContextMenue extends BaElement {
 	 * click-coordinate, then the placement will be adjusted accordingly.
 	 * @param {x:number, y:number} baseCoordinate the coordinate where the menu 
 	 * should be place
-	 * @param {DOMRectReadOnly} boundingRect the Rectangle which defines 
-	 * the bounded area of placement   
 	 * @returns {left:number, top:number}    
 	 */
-	_calculateMenuPlacement(baseCoordinate, boundingRect) {
+	_calculateMenuPlacement(baseCoordinate) {
 		const offset = 5;
+		const offsetBorderInPercent = 0.2;
 		const menuWidth = this._view.offsetWidth + offset;
 		const menuHeight = this._view.offsetHeight + offset;
 
 		let placement = { left: undefined, top: undefined };
 
+		const windowWidth = window.innerWidth - (window.innerWidth * offsetBorderInPercent);
+		const windowHeight = window.innerHeight - (window.innerHeight * offsetBorderInPercent);
 
-		if (!boundingRect) {
-			boundingRect = { right: window.screenLeft + window.innerWidth, bottom: window.screenTop + window.innerHeight };
-			console.log('boundingRect:', boundingRect);
-		}
-		if (boundingRect.right < (baseCoordinate.x + menuWidth)) {
+		if ((windowWidth - baseCoordinate.x) < menuWidth) {
 			placement.left = baseCoordinate.x - menuWidth + 'px';
 		}
 		else {
 			placement.left = baseCoordinate.x + 'px';
 		}
-		if (boundingRect.bottom < (baseCoordinate.y + menuHeight)) {
+		if ((windowHeight - baseCoordinate.y) < menuHeight) {
 			placement.top = baseCoordinate.y - menuHeight + 'px';
 		}
 		else {
@@ -189,8 +186,8 @@ export class ContextMenue extends BaElement {
 	 */
 	onStateChanged() {
 		if (this._isOpen()) {
-			const { pointer, boundingRect, commands } = this._state;
-			this._buildContextMenue(pointer, boundingRect, commands);
+			const { pointer, commands } = this._state;
+			this._buildContextMenue(pointer, commands);
 		}
 		else {
 			this._closeContextMenu();
