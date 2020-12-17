@@ -10,13 +10,14 @@ window.customElements.define(Footer.tag, Footer);
 describe('Footer', () => {
 
 	const setup = (config) => {
-		const { portrait } = config;
+		const { portrait = false,  embed = false  } = config;
 
 		TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('EnvironmentService', {
 			getScreenOrientation: () => {
 				return { portrait: portrait };
-			}
+			},
+			isEmbedded : () => embed
 		});
 
 		return TestUtils.render(Footer.tag);
@@ -32,11 +33,16 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 		});
 
-		it('adds nothing for portrait mode', async () => {
+		it('renders nothing when portrait mode', async () => {
 
 			const element = await setup({ portrait: true });
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
+		});
+
+		it('renders nothing when embedded', async () => {
+			const element = await setup({ embed: true });
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 });
