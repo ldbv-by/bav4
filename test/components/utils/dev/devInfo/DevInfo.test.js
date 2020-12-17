@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
-import { DevInfo } from '../../../../src/components/utils/dev/devInfo/DevInfo';
-import { TestUtils } from '../../../test-utils';
-import { $injector } from '../../../../src/injection';
+import { DevInfo } from '../../../../../src/components/utils/dev/devInfo/DevInfo';
+import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(DevInfo.tag, DevInfo);
 
