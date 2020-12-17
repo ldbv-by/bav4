@@ -1,4 +1,3 @@
-import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 
@@ -22,15 +21,11 @@ export class NonEmbeddedHint extends BaElement {
 		}
 	}
 
-	/**
-     * @override
-     */
-	createView() {
-		return html``;
+	isRenderingSkipped() {
+		return true;
 	}
 
 	static get tag() {
 		return 'ba-nonembedded-hint';
 	}
-
 }
