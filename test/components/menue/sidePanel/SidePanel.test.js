@@ -14,7 +14,7 @@ describe('SidePanelElement', () => {
 
 	const setup = async (config) => {
 
-		const { portrait } = config;
+		const { portrait = false, embed = false } = config;
 
 		const state = {
 			sidePanel: {
@@ -25,7 +25,8 @@ describe('SidePanelElement', () => {
 		$injector.registerSingleton('EnvironmentService', {
 			getScreenOrientation: () => {
 				return { portrait: portrait };
-			}
+			},
+			isEmbedded : () => embed 
 		});
 		return TestUtils.render(SidePanel.tag);
 	};
@@ -66,6 +67,10 @@ describe('SidePanelElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
+		it('renders nothing when embedded', async () => {
+			const element = await setup({ embed: true });
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
 	});
 
 	describe('when close button clicked', () => {
