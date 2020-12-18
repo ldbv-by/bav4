@@ -18,3 +18,4 @@ import './components/toolbox/button';
 import './components/toolbox/search/autocomplete';
 import './components/contextMenue';
 import './components/utils/dev/devInfo';
+import './components/utils/iframe/hint';
