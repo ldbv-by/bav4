@@ -13,7 +13,9 @@ let store;
 
 describe('Header', () => {
 
-	const setup = () => {
+	const setup = (config = {}) => {
+		const { embed = false } = config;
+
 		const state = {
 			sidePanel: {
 				open: false
@@ -21,12 +23,12 @@ describe('Header', () => {
 		};
 		store = TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
 		$injector
-			.register('CoordinateService', OlCoordinateService);
+			.register('CoordinateService', OlCoordinateService)
+			.registerSingleton('EnvironmentService', { isEmbedded : () => embed });
 
 
 		return TestUtils.render(Header.tag);
 	};
-
 
 	describe('when initialized', () => {
 		it('adds header bar', async () => {
@@ -38,9 +40,12 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.ci-text')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ci-logo')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('ba-autocomplete-search')).toBeTruthy();
-
 		});
 
+		it('renders nothing when embedded', async () => {
+			const element = await setup({ embed: true });
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
 	});
 
 	describe('when menue button clicked', () => {
@@ -72,5 +77,4 @@ describe('Header', () => {
 			// expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Open menue');
 		});
 	});
-
 });

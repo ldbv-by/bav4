@@ -3,6 +3,28 @@ import { EnvironmentService } from '../../src/utils/EnvironmentService';
 
 describe('EnvironmentService', () => {
 
+	describe('window object', () => {
+
+		it('provides the global window object', () => {
+
+			const mockWindow = {
+				location: {
+					search: '?foo=bar'
+				}
+			};
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
+			expect(instanceUnderTest.getWindow().location.search).toBe('?foo=bar');
+		});
+
+		it('provides the global window object from default param', () => {
+			
+			const instanceUnderTest = new EnvironmentService();
+
+			expect(instanceUnderTest.getWindow()).toBeDefined();
+		});
+	});
+
 	describe('url parameter', () => {
 
 		it('provides current url parameter', () => {
@@ -136,6 +158,27 @@ describe('EnvironmentService', () => {
 			orientation = instanceUnderTest.getScreenOrientation();
 			expect(orientation.portrait).toBeTrue();
 			expect(orientation.landscape).toBeFalse();
+		});
+	});
+
+	describe('embedded', () => {
+		it('detects embedded flag via query parameter', () => {
+			let mockWindow = {
+				location: {
+					search: '?foo=bar'
+				}
+			};
+			let instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeFalse();
+
+			mockWindow = {
+				location: {
+					search: '?embed=true'
+				}
+			};
+
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 		});
 	});
 });
