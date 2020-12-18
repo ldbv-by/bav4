@@ -47,14 +47,14 @@ export class SidePanel extends BaElement {
 		const { portrait } = this._environmentService.getScreenOrientation();
 		const getOverlayClass = () => {
 			if (portrait) {
-				return open ? 'overlay-mobile overlay-mobile-open' : 'overlay-mobile overlay-mobile-closed';
+				return open ? 'overlay-portrait overlay-portrait-open' : 'overlay-portrait overlay-portrait-closed';
 			}
 			else {
-				return open ? 'overlay-desktop overlay-desktop-open' : 'overlay-desktop overlay-desktop-closed';
+				return open ? 'overlay-landscape overlay-landscape-open' : 'overlay-landscape overlay-landscape-closed';
 			}
 		};
-		const getTabBarClass = () => portrait ? 'tab-bar-mobile' : 'tab-bar-desktop';
-		const getHeaderClass = () => portrait ? 'header-mobile' : 'header-desktop';
+		const getTabBarClass = () => portrait ? 'tab-bar-portrait' : 'tab-bar-landscape';
+		const getHeaderClass = () => portrait ? 'header-portrait' : 'header-landscape';
 
 		const items = [
 			{ name: 'Data', description: 'Let\'s view geodata' },

@@ -32,15 +32,15 @@ describe('SidePanelElement', () => {
 	};
 
 	describe('when initialized', () => {
-		it('adds a div which holds the sidepanel content and a close icon for desktop layout', async () => {
+		it('adds a div which holds the sidepanel content and a close icon for landscape layout', async () => {
 
 			const element = await setup({ portrait: false });
 
-			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-landscape.overlay-landscape-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.close')).toBeTruthy();
 
-			expect(element.shadowRoot.querySelector('.header-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tab-bar-desktop')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header-landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tab-bar-landscape')).toBeTruthy();
 
 
 			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
@@ -50,15 +50,15 @@ describe('SidePanelElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tablink')[0].classList.contains('tablink-active')).toBeTrue();
 		});
 
-		it('adds a div which holds the sidepanel content and no close icon for mobile layout', async () => {
+		it('adds a div which holds the sidepanel content and no close icon for portrait layout', async () => {
 
 			const element = await setup({ portrait: true });
 
-			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-mobile.overlay-mobile-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-portrait.overlay-portrait-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.close')).toBeFalsy();
 
-			expect(element.shadowRoot.querySelector('.header-mobile')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tab-bar-mobile')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header-portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tab-bar-portrait')).toBeTruthy();
 
 			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
 			expect(element.shadowRoot.querySelectorAll('.tablink').length).toBe(5);
@@ -74,11 +74,11 @@ describe('SidePanelElement', () => {
 	});
 
 	describe('when close button clicked', () => {
-		it('it closes the sidepanel (desktop)', async () => {
+		it('it closes the sidepanel (landscape)', async () => {
 			const element = await setup({ portrait: false });
 			element.shadowRoot.querySelector('.close').click();
-			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-desktop.overlay-desktop-closed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.overlay-desktop-open')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-landscape.overlay-landscape-closed')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.overlay-landscape-open')).toBeFalsy();
 		});
 	});
 
