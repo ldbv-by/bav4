@@ -1,4 +1,4 @@
-const webpackConfig = require('./webpack.test.config.js');
+var baseConfig = require('./karma.conf.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -34,28 +34,20 @@ else if (files.length > 1) {
 }
 
 module.exports = function (config) {
+
+	// Load base config
+	baseConfig(config);
+
 	config.set({
 		frameworks: ['jasmine'],
 		// list of files / patterns to load in the browser
 		files: [
-			// { pattern: 'test/components/toolbox/button/*.test.js', watched: false },
 			{ pattern: files[0], watched: false },
 		],
 		// preprocess matching files before serving them to the browser
 		preprocessors: {
 			'test/**/*.test.js': ['webpack'],
 		},
-		reporters: ['progress', 'coverage-istanbul'],
-		// port: 9876,
-		// colors: true,
-		// logLevel: config.LOG_INFO,
-		// autoWatch: true,
 		browsers: ['FirefoxHeadless'],
-		concurrency: Infinity,
-		webpack: webpackConfig,
-		coverageIstanbulReporter: {
-			dir: 'coverage/%browser%',
-			reports: ['text-summary', 'html']
-		},
 	});
 };
