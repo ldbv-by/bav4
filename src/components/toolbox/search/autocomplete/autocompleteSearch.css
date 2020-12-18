@@ -20,7 +20,6 @@ input:focus {
 }
 
 .autocomplete-items {
-    position: absolute;
     z-index: 99;
     /*position the autocomplete items to be the same width as the container:*/
     top: 100%;
@@ -28,6 +27,9 @@ input:focus {
     right: 0;
     width: calc(100% + 10px);
     font-size: 14x;
+    overflow-x: hidden;
+    overflow-y: scoll;
+    max-height: 75vh;
 }
 
 .autocomplete-items div {
