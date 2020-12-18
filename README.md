@@ -37,6 +37,7 @@ Next generation web-mapviewer based on web standards.
 | `npm run build:prod` | Compiles and minifies for production |
 | `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run test:single` | Runs a single test against Firefox (headless). Usage `npm run test:single --spec=MyTest.test.js`  |
+| `npm run test:debug` | Runs unit and component tests against Chrome (headless) with remote debugging enabled. Usage `npm run test:debug` | 
 | `npm run test:webkit` | Runs unit and component tests against the Gnome Web Browser (Epiphany), which is based on WebKit. The browser must be installed locally. A code coverage report can be found under  `./coverage`  |
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |

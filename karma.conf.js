@@ -23,6 +23,10 @@ module.exports = function (config) {
 				flags: ['--disable-translate', '--disable-extensions',
 					'--no-first-run', '--disable-background-networking',
 					'--remote-debugging-port=9223']
+			},
+			ChromeDebugging: {
+				base: 'ChromeHeadless',
+				flags: ['--remote-debugging-port=9222']
 			}
 		},
 		singleRun: true,
