@@ -27,6 +27,10 @@ export class SidePanel extends BaElement {
 		tablinks.forEach((tablink, i) => (i === index) ? tablink.classList.add('tablink-active') : tablink.classList.remove('tablink-active'));
 	}
 
+	isRenderingSkipped() {
+		return this._environmentService.isEmbedded();
+	}
+
 	/**
 	* @override
 	*/
