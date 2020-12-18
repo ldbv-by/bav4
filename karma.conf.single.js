@@ -1,6 +1,4 @@
 const webpackConfig = require('./webpack.test.config.js');
-const testFolder = 'test/';
-
 const fs = require('fs');
 const path = require('path');
 
@@ -13,7 +11,8 @@ function findInDir(dir, filter, fileList = []) {
 
 		if (fileStat.isDirectory()) {
 			findInDir(filePath, filter, fileList);
-		} else if (filter.test(filePath)) {
+		}
+		else if (filter.test(filePath)) {
 			fileList.push(filePath);
 		}
 	});
@@ -22,12 +21,16 @@ function findInDir(dir, filter, fileList = []) {
 }
 
 const files = findInDir('./test', /\.test.js$/).filter(file => {
-	return file.split('\/').pop() === process.env.KARMA_SPEC;
+	// eslint-disable-next-line no-undef
+	return file.split('/').pop() === process.env.KARMA_SPEC;
 });
 if (files.length < 1) {
+	// eslint-disable-next-line no-undef
 	throw new Error('Designated test file "' + process.env.KARMA_SPEC + '" not found');
-} else if (files.length > 1) {
-	throw new Error('More than one test file found for "' + rocess.env.KARMA_SPEC + '"');
+}
+else if (files.length > 1) {
+	// eslint-disable-next-line no-undef
+	throw new Error('More than one test file found for "' + process.env.KARMA_SPEC + '"');
 }
 
 module.exports = function (config) {
