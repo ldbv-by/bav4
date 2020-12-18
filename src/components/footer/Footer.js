@@ -17,11 +17,14 @@ export class Footer extends BaElement {
 		this._environmentService = EnvironmentService;
 	}
 
+	isRenderingSkipped() {
+		const { portrait } = this._environmentService.getScreenOrientation();
+		return this._environmentService.isEmbedded() || portrait;
+	}
+
 	createView() {
 
-		const { portrait } = this._environmentService.getScreenOrientation();
-
-		return portrait ? html`` : html`
+		return  html`
 			<style>${css}</style>
 			<div class="footer">
 				<div class="content">	

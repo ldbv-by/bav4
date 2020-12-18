@@ -11,6 +11,13 @@ export class EnvironmentService {
 		return new URLSearchParams(this._window.location.search);
 	}
 
+	/**
+	 * @returns the global window object
+	 */
+	getWindow() {
+		return this._window;
+	}
+
 	isTouch() {
 		const navigator = this._window.navigator;
 		const window = this._window;
@@ -57,5 +64,9 @@ export class EnvironmentService {
 			portrait: orientation.startsWith('portrait'),
 			landscape: orientation.startsWith('landscape'),
 		};
+	}
+
+	isEmbedded() {
+		return this.getUrlParams().get('embed') === 'true';
 	}
 }
