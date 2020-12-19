@@ -2,6 +2,14 @@
 
 Next generation web-mapviewer based on web standards.
 
+#### Table of Contents
+1. [Concept](#concept)
+2. [Structure](#structure)
+3. [Setup](#setup)
+4. [Pending Questions](#pending-questions)
+5. [Links](#links)
+
+
 ## Concept
 
 - Use of web standards as far as possible
@@ -21,12 +29,61 @@ Next generation web-mapviewer based on web standards.
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): tests
 - Basic concept inspired by Adam Bien (https://airhacks.io/)
 
+## Structure
 
-## Install
+The projects source code is located under `src`, unit and component tests under `test`.
+
+The source code is distributed among following directories:
+
+###  `src/injection`
+
+The app-wide configuration of the internal Dependency Injection is done within the `config.js`.
+
+
+### `src/modules`
+
+Modules are single and independent code units with a concrete context and focus on one or more use cases of the application. 
+
+Modules meet the following conventions: 
+
+1. Each module must have an `index.js`  as an entry point, which states all of its dependencies.
+
+2. Each module must be registered within the `main.js`.
+
+3. Each module may contains further directories:
+- a `/components` folder, which constains viewmodel classes and all of their dependencies like css, assets, ...
+- a `/store` folder, which constains all redux related files like reducers and actions
+- a `/service` folder, which contains the service and domain classes of the module
+
+
+### `src/services`
+All global services like the `HttpService` are located here.
+
+### `src/utils`
+Contains global utilities.
+
+### Overview
+Here's a overview of what project folder structure looks like:
+```
+    .
+    + -- src # source code
+    |    + -- index.html # here's where you should declare your top-level web components
+    |    + -- main.js # here's where you should import your modules  to the app
+    |    + -- injection
+    |    + -- modules
+    |    |    + -- moduleName
+    |    |    |    + -- index.js
+    |    |    |    # other moduleName related files such as a components folder, a store folder or a service folder
+    |    + -- services
+    |    + -- utils
+    + -- test # test code
+```
+
+## Setup
 `npm i`
 
 
-## List of npm scripts
+### List of npm scripts
 
 
 | command | what it does |
@@ -46,7 +103,7 @@ Next generation web-mapviewer based on web standards.
 
 
 
-## Pending
+## Pending Questions
 
 - Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
 - Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
