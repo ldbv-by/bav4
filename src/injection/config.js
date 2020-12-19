@@ -2,7 +2,7 @@ import { $injector } from '.';
 import { StoreService } from '../store/StoreService';
 import { OlCoordinateService } from '../utils/OlCoordinateService';
 import { EnvironmentService } from '../utils/EnvironmentService';
-import { BvvSearchService } from '../components/toolbox/search/autocomplete/service/BvvSearchService';
+import { BvvSearchService } from '../modules/search/services/BvvSearchService';
 import { ProcessEnvConfigService } from '../utils/ProcessEnvConfigService';
 import { HttpService } from '../utils/HttpService';
 import { TranslationService } from '../utils/TranslationService';
