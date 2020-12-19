@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { OlCoordinateService } from '../../src/utils/OlCoordinateService';
+import { OlCoordinateService } from '../../src/services/OlCoordinateService';
 import { fromLonLat, toLonLat } from 'ol/proj';
 
 

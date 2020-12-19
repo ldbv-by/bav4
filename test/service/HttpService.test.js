@@ -1,4 +1,4 @@
-import { HttpService } from '../../src/utils/HttpService';
+import { HttpService } from '../../src/services/HttpService';
 
 
 

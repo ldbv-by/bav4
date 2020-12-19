@@ -1,4 +1,4 @@
-import { ProcessEnvConfigService } from '../../src/utils/ProcessEnvConfigService';
+import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
 

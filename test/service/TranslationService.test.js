@@ -1,4 +1,4 @@
-import { TranslationService } from '../../src/utils/TranslationService';
+import { TranslationService } from '../../src/services/TranslationService';
 import { $injector } from '../../src/injection';
 
 

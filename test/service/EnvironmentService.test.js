@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { EnvironmentService } from '../../src/utils/EnvironmentService';
+import { EnvironmentService } from '../../src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
 

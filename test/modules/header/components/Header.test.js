@@ -4,7 +4,7 @@ import { Header } from '../../../../src/modules/header/components/Header';
 import { sidePanelReducer } from '../../../../src/modules/menue/store/sidePanel.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { OlCoordinateService } from '../../../../src/utils/OlCoordinateService';
+import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
 
 window.customElements.define(Header.tag, Header);
 

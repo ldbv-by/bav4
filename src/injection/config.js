@@ -1,11 +1,11 @@
 import { $injector } from '.';
-import { StoreService } from '../store/StoreService';
-import { OlCoordinateService } from '../utils/OlCoordinateService';
-import { EnvironmentService } from '../utils/EnvironmentService';
+import { StoreService } from '../services/StoreService';
+import { OlCoordinateService } from '../services/OlCoordinateService';
+import { EnvironmentService } from '../services/EnvironmentService';
 import { BvvSearchService } from '../modules/search/services/BvvSearchService';
-import { ProcessEnvConfigService } from '../utils/ProcessEnvConfigService';
-import { HttpService } from '../utils/HttpService';
-import { TranslationService } from '../utils/TranslationService';
+import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
+import { HttpService } from '../services/HttpService';
+import { TranslationService } from '../services/TranslationService';
 
 
 $injector

@@ -3,7 +3,7 @@
 import { MapInfo } from '../../../../../src/modules/footer/components/mapInfo/MapInfo';
 import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
 import { $injector } from '../../../../../src/injection';
-import { OlCoordinateService } from '../../../../../src/utils/OlCoordinateService';
+import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { changeZoom } from '../../../../../src/modules/map/store/olMap.action';
 
 
