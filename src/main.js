@@ -8,14 +8,13 @@ document.head.appendChild(style);
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
 
-import './components/header';
-import './components/footer';
-import './components/map';
-import './components/footer/components/mapInfo';
-import './components/toolbox/zoomButtons';
-import './components/menue/sidePanel';
-import './components/toolbox/button';
-import './components/toolbox/search/autocomplete';
-import './components/contextMenue';
-import './components/utils/dev/devInfo';
-import './components/utils/iframe/hint';
+// register modules
+import './modules/header';
+import './modules/footer';
+import './modules/map';
+import './modules/menue';
+import './modules/commons';
+import './modules/search';
+import './modules/contextMenue';
+import './modules/utils';
+import './modules/iframe';
