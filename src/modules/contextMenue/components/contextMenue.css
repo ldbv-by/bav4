@@ -18,7 +18,7 @@
 .context-menu__item {
   display: flex;
   justify-content: space-between;
-  background-color: var(--input-bg-color);
+  background-color: var(--secondary-bg-color);
   color: var(--primary-color);
   padding: 5px;
   font-size: smaller;

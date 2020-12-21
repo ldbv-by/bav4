@@ -6,12 +6,34 @@
 /* global variables (custom properties) */
 :root {
     --primary-color: #099dda;
-    --bg-color: #212f3d;
-    --color: white;
-    --input-bg-color: #354453;
     --font-family: "Courier New", Courier, monospace;
 }
-body {
-    color: var(--color);
-    font-family: var(--font-family);
+
+.light-theme {
+    --primary-bg-color: white;
+    --secondary-bg-color: #F8F8F8;
+    --bg-color: var(--primary-bg-color);
+    --color: #696969;
+    --hover-color: var(--primary-bg-color);
+
+    --map-button-bg-color: var(--primary-color);
+    --map-button-color: var(--primary-bg-color);
+  }
+  
+.dark-theme {
+    --primary-bg-color: #212f3d;
+    --secondary-bg-color: #354453;
+    --color: white;
+    --hover-color: var(--color);
+    
+    --map-button-bg-color: var(--primary-bg-color);
+    --map-button-color: var(--primary-color);
 }
+
+* {
+    color: var(--color);
+    bg-color: var(--primary-bg-color);
+    font-family: var(--font-family);
+    transition: background-color 0.6s ease, color 1s ease;
+}
+  
