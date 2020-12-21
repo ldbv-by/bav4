@@ -1,8 +1,3 @@
-* {
-    margin: 0;
-    padding: 0;
-}
-
 /* global variables (custom properties) */
 :root {
     --primary-color: #099dda;
@@ -31,6 +26,9 @@
 }
 
 * {
+    margin: 0;
+    padding: 0;
+
     color: var(--color);
     bg-color: var(--primary-bg-color);
     font-family: var(--font-family);
