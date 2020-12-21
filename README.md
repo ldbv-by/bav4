@@ -37,12 +37,12 @@ The source code is distributed among following directories:
 
 ###  `src/injection`
 
-The app-wide configuration of the internal Dependency Injection is done within the `config.js`.
+Contains the built-in dependency injection. The central configuration is done in `config.js`.
 
 
 ### `src/modules`
 
-Modules are single and independent code units with a concrete context and focus on one or more use cases of the application. 
+Modules are single and independent (as far as possible) units of code. They have a concrete context and focus on one or more use cases of the application. 
 
 Modules meet the following conventions: 
 
@@ -51,9 +51,11 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contains further directories:
-- a `/components` folder, which constains viewmodel classes and all of their dependencies like css, assets, ...
-- a `/store` folder, which constains all redux related files like reducers and actions
-- a `/service` folder, which contains the service and domain classes of the module
+   - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
+   - `/store` : all redux related files like reducers and actions
+   - `/service` : the service and domain classes of the module
+
+4. Modules are allowed to use actions from other modules
 
 
 ### `src/services`
