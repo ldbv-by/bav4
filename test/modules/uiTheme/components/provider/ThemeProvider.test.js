@@ -29,14 +29,15 @@ describe('ThemeProvider', () => {
 
 	describe('when initialized', () => {
 		it('sets the correct theme class, a listener and renders nothing', async () => {
-
-			const toggleSpy = jasmine.createSpy();
+			const addSpy = jasmine.createSpy();
+			const removeSpy = jasmine.createSpy();
 			const addEventListenerSpy = jasmine.createSpy();
 			const mockWindow = {
 				document: {
 					body: {
 						classList: {
-							toggle: toggleSpy
+							add: addSpy,
+							remove: removeSpy,
 						}
 					}
 				},
@@ -48,19 +49,22 @@ describe('ThemeProvider', () => {
 			await setup({ window: mockWindow });
 
 			expect(document.body.innerHTML).toBe('<ba-theme-provider></ba-theme-provider>');
-			expect(toggleSpy).toHaveBeenCalledWith('dark-theme');
+			expect(addSpy).toHaveBeenCalledWith('dark-theme');
+			expect(removeSpy).toHaveBeenCalledWith('light-theme');
 			expect(addEventListenerSpy).toHaveBeenCalled;
 		});
 	});
 
 	describe('when theme changed', () => {
 		it('updates the css class', async () => {
-			const toggleSpy = jasmine.createSpy();
+			const addSpy = jasmine.createSpy();
+			const removeSpy = jasmine.createSpy();
 			const mockWindow = {
 				document: {
 					body: {
 						classList: {
-							toggle: toggleSpy
+							add: addSpy,
+							remove: removeSpy,
 						}
 					}
 				},
@@ -71,12 +75,15 @@ describe('ThemeProvider', () => {
 
 			await setup({ window: mockWindow });
 			expect(document.body.innerHTML).toBe('<ba-theme-provider></ba-theme-provider>');
-			expect(toggleSpy).toHaveBeenCalledWith('dark-theme');
+			expect(addSpy).toHaveBeenCalledWith('dark-theme');
+			expect(removeSpy).toHaveBeenCalledWith('light-theme');
 
 			changeTheme('light');
 
-			expect(toggleSpy).toHaveBeenCalledWith('light-theme');
-			expect(toggleSpy).toHaveBeenCalledTimes(2);
+			expect(addSpy).toHaveBeenCalledTimes(2);
+			expect(removeSpy).toHaveBeenCalledTimes(2);
+			expect(addSpy).toHaveBeenCalledWith('light-theme');
+			expect(removeSpy).toHaveBeenCalledWith('dark-theme');
 		});
 	});
 });

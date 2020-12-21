@@ -29,9 +29,12 @@ export class ThemeProvider extends BaElement {
 	_updateCss() {
 		
 		const { theme } = this._state;
-		const cssClass = theme === 'dark' ? 'dark-theme' : 'light-theme';
+		const cssClassToAdd = theme === 'dark' ? 'dark-theme' : 'light-theme';
+		const cssClassToRemove = theme === 'light' ? 'dark-theme' : 'light-theme';
 		this._environmentService.getWindow()
-			.document.body.classList.toggle(cssClass);
+			.document.body.classList.add(cssClassToAdd);
+		this._environmentService.getWindow()
+			.document.body.classList.remove(cssClassToRemove);
 	}
 
 	isRenderingSkipped() {
