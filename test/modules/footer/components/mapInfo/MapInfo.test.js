@@ -40,6 +40,7 @@ describe('MapInfo', () => {
 
 			element = await TestUtils.render(MapInfo.tag);
 
+			expect(element.shadowRoot.querySelector('ba-theme-toggle')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.labels')).toBeTruthy();
 			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
 		});

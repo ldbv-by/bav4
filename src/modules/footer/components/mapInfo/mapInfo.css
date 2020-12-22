@@ -1,9 +1,23 @@
+.content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+
 .labels {
-    display: inline-block;
-    margin-top: 12px;
+    padding-top: 15px;
+    /* flex-grow: 100; */
+    display: block;
+}
+
+.theme-toggle {
+    padding-top: 10px;
+    /* flex-grow: 100; */
+    display: block;
 }
 
 .buttons {
-    display: inline-block;
-    float:right;
+    /* flex-grow: 200; */
+    display: block;
 }

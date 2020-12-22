@@ -62,13 +62,16 @@ export class MapInfo extends BaElement {
 
 
 		return html`
-			<style>${css}</style> 
-			<div class='labels' >ZoomLevel: ${zoomRounded} ${pointerPosition4326}</div>
-			<div class='buttons'>
-				<ba-button id='button0' label='primary style' type="primary"></ba-button>
-				<ba-button id='button1' label='secondary style'></ba-button>
-				<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
-				<ba-button id='button3' label='disabled' disabled=true></ba-button>
+			<style>${css}</style>
+			<div class='content'>
+				<div class='theme-toggle'><ba-theme-toggle></ba-theme-toggle></div> 
+				<div class='labels' >ZoomLevel: ${zoomRounded} | ${pointerPosition4326}</div>
+				<div class='buttons'>
+					<ba-button id='button0' label='primary style' type="primary"></ba-button>
+					<ba-button id='button1' label='secondary style'></ba-button>
+					<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
+					<ba-button id='button3' label='disabled' disabled=true></ba-button>
+				</div>
 			</div>
 		`;
 	}
