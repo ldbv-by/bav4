@@ -50,7 +50,7 @@ Modules meet the following conventions:
 
 2. Each module must be registered within the `main.js`.
 
-3. Each module may contains further directories:
+3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
    - `/store` : all redux related files like reducers and actions
    - `/service` : the service and domain classes of the module
