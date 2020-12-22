@@ -1,5 +1,6 @@
 
 import { $injector } from '../injection';
+import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 
 /**
  *  Service for I18n.
@@ -41,8 +42,10 @@ export class TranslationService {
 			case 'en':
 				return new Map(Object.entries(
 					{
-						zoom_in_button: 'Zoom in',
-						zoom_out_button: 'Zoom out'
+						//the first space of the key should be the name of the releated module
+						map_zoom_in_button: 'Zoom in',
+						map_zoom_out_button: 'Zoom out',
+
 					}
 				));
 
@@ -50,8 +53,9 @@ export class TranslationService {
 			case 'de':
 				return new Map(Object.entries(
 					{
-						zoom_in_button: 'Vergrößere Kartenausschnitt',
-						zoom_out_button: 'Verkleinere Kartenausschnitt'
+						//the first space of the key should be the name of the releated module
+						map_zoom_in_button: 'Vergrößere Kartenausschnitt',
+						map_zoom_out_button: 'Verkleinere Kartenausschnitt'
 					}
 				));
 		}
