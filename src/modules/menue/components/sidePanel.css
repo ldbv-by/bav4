@@ -1,0 +1,129 @@
+.overlay {
+  position: fixed;
+  background-color: var(--bg-color);
+}
+
+.overlay-landscape {
+  height: 100%;
+  width: 410px;
+  z-index: 1;
+  left: -410px;
+  top: 50px;
+  transition: transform 0.5s ease-out;
+}
+
+.overlay-landscape-closed {
+  transform: translate(-410px, 0px);
+}
+
+.overlay-landscape-open {
+  transform: translate(410px, 0px);
+}
+
+.overlay-portrait {
+  height: 410px;
+  width: 100%;
+  z-index: 1;
+  bottom: 0px;
+  left: 0;
+  transition: transform 0.5s ease-out;
+}
+
+.overlay-portrait-closed {
+  transform: translate( 0px, 410px);
+}
+
+.overlay-portrait-open {
+  transform: translate(0px, -410px, );
+}
+
+.overlay-content {
+  /* position: relative; */
+  top: 25%;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  mask: url('assets/x-square.svg');
+  -webkit-mask-image: url('assets/x-square.svg');
+}
+
+.icon {
+  background: var(--primary-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+}
+
+.icon:hover {
+  filter: brightness(.8);
+}
+
+.header-landscape {
+  width: 100%;
+}
+
+.header-portrait {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.tab-bar-landscape {
+  width: calc(100% - 50px);
+}
+
+.tab-bar-portrait {
+  width: 80%;
+}
+
+.tablink {
+  background-color: var(--bg-color);
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 10px;
+  font-size: 13.5px;
+  width: 20%;
+}
+
+.tablink-active {
+  border-bottom: 3px solid var(--primary-color);
+  color: var(--color);
+}
+
+@media (hover: none) {
+  .tablink-active {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+}
+
+.tablink:hover {
+  background-color: var(--primary-color)
+}
+
+@media (hover: none) {
+  .tablink:hover {
+    background-color: inherit;
+  }
+}
+
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 50px;
+  text-align: center;
+  height: 100%;
+}
