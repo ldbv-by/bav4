@@ -13,8 +13,8 @@
 }
 
 .secondary {
-    background-color: var(--bg-color);
-    color: white;
+    background-color: var(--primary-bg-color);
+    color: var(--color);
     border: 2px solid var(--primary-color)
 }
 

@@ -5,7 +5,7 @@ import { $injector } from '../../src/injection';
 
 
 describe('TranslationService', () => {
-	const expectedSize = 2;
+	const expectedSize = 4;
 
 	const configService = {
 		getValue: () => {}
@@ -23,8 +23,11 @@ describe('TranslationService', () => {
 		const translationService = new TranslationService();
         
 		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('zoom_in_button')).toBe('Zoom in');
-		expect(translationService.translate('zoom_out_button')).toBe('Zoom out');
+		expect(translationService.translate('map_zoom_in_button')).toBe('Zoom in');
+		expect(translationService.translate('map_zoom_out_button')).toBe('Zoom out');
+
+		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Enable contrast mode');
+		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Disable contrast mode');
 	});
     
 	it('provides translation for de',  () => {
@@ -34,8 +37,11 @@ describe('TranslationService', () => {
 		const translationService = new TranslationService();
         
 		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('zoom_in_button')).toBe('Vergrößere Kartenausschnitt');
-		expect(translationService.translate('zoom_out_button')).toBe('Verkleinere Kartenausschnitt');
+		expect(translationService.translate('map_zoom_in_button')).toBe('Vergrößere Kartenausschnitt');
+		expect(translationService.translate('map_zoom_out_button')).toBe('Verkleinere Kartenausschnitt');
+
+		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Kontrastmodus aktivieren');
+		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Kontrastmodus deaktivieren');
 	});
 
 	it('provides the requested key when unknown and logs a warn statement',  () => {

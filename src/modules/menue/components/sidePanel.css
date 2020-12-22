@@ -1,6 +1,6 @@
 .overlay {
   position: fixed;
-  background-color: var(--bg-color);
+  background-color: var(--primary-bg-color);
 }
 
 .overlay-landscape {
@@ -87,8 +87,8 @@
 }
 
 .tablink {
-  background-color: var(--bg-color);
-  color: white;
+  background-color: var(--primary-bg-color);
+  color: var(--color);
   float: left;
   border: none;
   outline: none;
@@ -111,6 +111,7 @@
 }
 
 .tablink:hover {
+  color: var(--hover-color);
   background-color: var(--primary-color)
 }
 
@@ -121,7 +122,7 @@
 }
 
 .tabcontent {
-  color: white;
+  color: var(--color);
   display: none;
   padding: 50px;
   text-align: center;

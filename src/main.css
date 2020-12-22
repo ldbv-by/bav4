@@ -1,17 +1,36 @@
-* {
-    margin: 0;
-    padding: 0;
-}
-
 /* global variables (custom properties) */
 :root {
     --primary-color: #099dda;
-    --bg-color: #212f3d;
-    --color: white;
-    --input-bg-color: #354453;
     --font-family: "Courier New", Courier, monospace;
 }
-body {
+
+.light-theme {
+    --primary-bg-color: white;
+    --secondary-bg-color: #e8e8e8;
+    --bg-color: var(--primary-bg-color);
+    --color: #696969;
+    --hover-color: var(--primary-bg-color);
+
+    --map-button-bg-color: var(--primary-color);
+    --map-button-color: var(--primary-bg-color);
+  }
+  
+.dark-theme {
+    --primary-bg-color: #212f3d;
+    --secondary-bg-color: #354453;
+    --color: white;
+    --hover-color: var(--color);
+    
+    --map-button-bg-color: var(--primary-bg-color);
+    --map-button-color: var(--primary-color);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
     color: var(--color);
+    bg-color: var(--primary-bg-color);
     font-family: var(--font-family);
 }
+  
