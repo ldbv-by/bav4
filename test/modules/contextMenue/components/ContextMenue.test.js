@@ -174,8 +174,7 @@ describe('ContextMenue', () => {
 
 			// assert
 			expect(actualRect.left).toBeLessThan(pointerNearRightBorder.x);
-			// expect(actualRect.right).toBeLessThan(window.screenLeft + window.innerWidth);
-			expect(actualRect.top).toBe(pointerNearRightBorder.y);
+			expect(actualRect.top).toBeGreaterThan(pointerNearRightBorder.y);
 
 		});
 
@@ -209,7 +208,7 @@ describe('ContextMenue', () => {
 
 			// assert
 			expect(actualRect.top).toBeLessThan(pointerNearBottomBorder.y);
-			expect(actualRect.left).toBe(pointerNearBottomBorder.x);
+			expect(actualRect.left).toBeGreaterThan(pointerNearBottomBorder.x);
 
 		});
 	});
