@@ -12,3 +12,13 @@ export const changeTheme = (theme) => {
 		payload: theme
 	});
 };
+
+export const toggleTheme = () => {
+	const { uiTheme: { theme } } = getStore().getState();
+	const newTheme = (theme === 'dark') ? 'light' : 'dark';
+
+	getStore().dispatch({
+		type: THEME_CHANGED,
+		payload: newTheme
+	});
+};

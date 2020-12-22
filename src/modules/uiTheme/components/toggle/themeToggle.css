@@ -1,0 +1,54 @@
+.switch {
+    width: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .switch div {
+    position: relative;
+    display: block;
+    background: var(--secondary-bg-color);
+    width: 36px;
+    border-radius: 50px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+
+  .adjust {
+    position: relative;
+    mask: url('assets/adjust.svg');
+    -webkit-mask-image: url('assets/adjust.svg');
+    /* transform: rotate(180deg); */
+  }
+  
+  .icon {
+    background: var(--primary-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    cursor: pointer;
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+  }
+  
+  .switch input {
+    display: none;
+  }
+  
+  .slider {
+    background-color: var(--primary-color);
+    transition: 0.4s;
+    border-radius: 34px;
+    height: 12px;
+    width: 12px;
+    display: inline-block;
+    position: relative;
+    margin-top: 3px;
+  }
+  
+  input:checked + .slider {
+    transform: translateX(15px);
+  }

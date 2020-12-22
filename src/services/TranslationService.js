@@ -1,6 +1,5 @@
 
 import { $injector } from '../injection';
-import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 
 /**
  *  Service for I18n.
@@ -42,10 +41,12 @@ export class TranslationService {
 			case 'en':
 				return new Map(Object.entries(
 					{
-						//the first space of the key should be the name of the releated module
+						//the first part of the snake_case key should be the name of the related module
 						map_zoom_in_button: 'Zoom in',
 						map_zoom_out_button: 'Zoom out',
 
+						uiTheme_toggle_tooltip_dark: 'Enable contrast mode',
+						uiTheme_toggle_tooltip_light: 'Disable contrast mode'
 					}
 				));
 
@@ -53,9 +54,12 @@ export class TranslationService {
 			case 'de':
 				return new Map(Object.entries(
 					{
-						//the first space of the key should be the name of the releated module
+						//the first part of the snake_case key should be the name of the related module
 						map_zoom_in_button: 'Vergrößere Kartenausschnitt',
-						map_zoom_out_button: 'Verkleinere Kartenausschnitt'
+						map_zoom_out_button: 'Verkleinere Kartenausschnitt',
+
+						uiTheme_toggle_tooltip_dark: 'Kontrastmodus aktivieren',
+						uiTheme_toggle_tooltip_light: 'Kontrastmodus deaktivieren'
 					}
 				));
 		}
