@@ -23,8 +23,8 @@ describe('TranslationService', () => {
 		const translationService = new TranslationService();
         
 		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('zoom_in_button')).toBe('Zoom in');
-		expect(translationService.translate('zoom_out_button')).toBe('Zoom out');
+		expect(translationService.translate('map_zoom_in_button')).toBe('Zoom in');
+		expect(translationService.translate('map_zoom_out_button')).toBe('Zoom out');
 	});
     
 	it('provides translation for de',  () => {
@@ -34,8 +34,8 @@ describe('TranslationService', () => {
 		const translationService = new TranslationService();
         
 		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('zoom_in_button')).toBe('Vergrößere Kartenausschnitt');
-		expect(translationService.translate('zoom_out_button')).toBe('Verkleinere Kartenausschnitt');
+		expect(translationService.translate('map_zoom_in_button')).toBe('Vergrößere Kartenausschnitt');
+		expect(translationService.translate('map_zoom_out_button')).toBe('Verkleinere Kartenausschnitt');
 	});
 
 	it('provides the requested key when unknown and logs a warn statement',  () => {
