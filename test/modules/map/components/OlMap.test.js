@@ -7,6 +7,7 @@ import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
+import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -42,6 +43,8 @@ describe('OlMap', () => {
 		event.target = map.getViewport().firstChild;
 		event.clientX = x;
 		event.clientY = y;
+		event.pageX = x;
+		event.pageY = y;
 		event.shiftKey = false;
 		event.preventDefault = function () { };
 
@@ -126,6 +129,42 @@ describe('OlMap', () => {
 
 			// assert
 			expect(store.getState().map.pointerPosition).toBeUndefined();
+		});
+	});
+
+	describe('when contextmenu (i.e. with right-click) is performed', () => {
+
+
+		it('do store valid contextMenuData', async () => {
+			// arrange
+			const customEventType = 'contextmenu';
+			const state = {
+				map: {
+					zoom: 10,
+					position: initialPosition
+				},
+				contextMenue: { data: { pointer: false, commands: false } }
+			};
+
+			store = TestUtils.setupStoreAndDi(state, {
+				map: mapReducer,
+				contextMenue: contextMenueReducer
+			});
+
+			// act
+			simulateMouseEvent(customEventType, 10, 0);
+			const actualCommands = store.getState().contextMenue.data.commands;
+			const actualPointer = store.getState().contextMenue.data.pointer;
+
+			// assert
+			expect(actualPointer).toEqual({ x: 10, y: 0 });
+			expect(actualCommands.length).toBe(2);
+			expect(actualCommands[0].label).toBe('Copy Coordinates');
+			expect(actualCommands[0].action).not.toBeUndefined();
+			expect(actualCommands[0].shortCut).toBe('[CTRL] + C');
+			expect(actualCommands[1].label).toBe('Hello');
+			expect(actualCommands[1].action).not.toBeUndefined();
+			expect(actualCommands[1].shortCut).toBeUndefined();
 		});
 	});
 });
