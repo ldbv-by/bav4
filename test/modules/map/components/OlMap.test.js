@@ -7,7 +7,7 @@ import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
-import { contextMenueReducer } from '../../../src/components/contextMenue/store/contextMenue.reducer';
+import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
