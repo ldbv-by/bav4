@@ -14,35 +14,8 @@ export class ContextMenue extends BaElement {
 
 
 	/**
-	  * A Object to store X- and Y-Value of a point coordinate
-	  * @typedef {Object} Point  
-	  * @param {number} x the x-value
-	  * @param {number} y the y-value   
-	 */
-
-	/**
-	 * A Object to store X- and Y-Value of a point coordinate
-	 * @typedef {Object} Placement  
-	 * @param {number} left the left-value
-	 * @param {number} top the top-value   
-	*/
-
-	/**
-	  * Action which have to be executed
-	  * @typedef {method()} Action  
-	  */
-
-	/**
-	  * @typedef {Object} Command  
-	  * @param {string} label the label for the command 
-	  * @param {string=} shortCut the optional shortCut
-	  * @param {Action} action the command-action    
-	  */
-	/**
 	  * Builds the content of the contextmenu based on the commands 
 	  * @private 
-	  * @param {Point} pointer the pointer where user has clicked (rightclick)
-	  * @param {Command[]} commands the list of command-objects
 	  */
 	_buildContextMenue(pointer, commands) {
 		this._clearContextItems();
@@ -72,10 +45,7 @@ export class ContextMenue extends BaElement {
 	 * If the needed space of the menu is in conflict with the
 	 * existing space on the bottom or on the right side of the 
 	 * baseCoordinate, then the placement will be adjusted accordingly.
-	 * @private 
-	 * @param {Point} baseCoordinate the coordinate where the menu 
-	 * should be place
-	 * @returns {Placement}    
+	 * @private   
 	 */
 	_calculateMenuPlacement(baseCoordinate) {
 		const offset = 5;
@@ -92,13 +62,13 @@ export class ContextMenue extends BaElement {
 			placement.left = baseCoordinate.x - menuWidth + 'px';
 		}
 		else {
-			placement.left = baseCoordinate.x + 'px';
+			placement.left = baseCoordinate.x + offset + 'px';
 		}
 		if ((windowHeight - baseCoordinate.y) < menuHeight) {
 			placement.top = baseCoordinate.y - menuHeight + 'px';
 		}
 		else {
-			placement.top = baseCoordinate.y + 'px';
+			placement.top = baseCoordinate.y + offset + 'px';
 		}
 		return placement;
 	}
@@ -106,8 +76,6 @@ export class ContextMenue extends BaElement {
 	/**
 	 * Creates a ListItem-Element with label and shortcut Sub-Element (div) 
 	 * @private 
-	 * @param {Command} command   the command-object
-	 * @returns {HTMLElement}
 	 */
 	_createContextMenuItem(command) {
 		const label = command.label;
@@ -143,7 +111,6 @@ export class ContextMenue extends BaElement {
 	/**
 	 * Creates a UnorderedList-Element
 	 * @private 
-	 * @returns {HTMLElement}
 	 */
 	_createContextMenu() {
 		let ulElement = document.createElement('ul');
@@ -156,7 +123,6 @@ export class ContextMenue extends BaElement {
 	/**
 	 * Tests whether or not, the context menu is open
 	 * @private 
-	 * @returns {boolean}
 	 */
 	_isOpen() {
 		const { pointer } = this._state;
@@ -215,7 +181,7 @@ export class ContextMenue extends BaElement {
 	onStateChanged() {
 		if (this._isOpen()) {
 			const { pointer, commands } = this._state;
-			this._buildContextMenue(pointer, commands);
+			this._buildContextMenue(pointer, commands);			
 		}
 		else {
 			this._closeContextMenu();
