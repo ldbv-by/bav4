@@ -6,7 +6,7 @@
 
 .light-theme {
     --primary-bg-color: white;
-    --secondary-bg-color: #F8F8F8;
+    --secondary-bg-color: #e8e8e8;
     --bg-color: var(--primary-bg-color);
     --color: #696969;
     --hover-color: var(--primary-bg-color);
@@ -32,6 +32,5 @@
     color: var(--color);
     bg-color: var(--primary-bg-color);
     font-family: var(--font-family);
-    transition: background-color 0.6s ease, color 1s ease;
 }
   
