@@ -11,7 +11,7 @@ module.exports = function (config) {
 		preprocessors: {
 			'test/**/*.test.js': ['webpack', 'iframes'],
 		},
-		reporters: ['progress', 'coverage-istanbul'],
+		reporters: ['progress', 'coverage-istanbul', 'coveralls'],
 		// port: 9876,
 		// colors: true,
 		// logLevel: config.LOG_INFO,
@@ -34,7 +34,7 @@ module.exports = function (config) {
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
 			dir: 'coverage/%browser%',
-			reports: ['text-summary', 'html']
-		},
+			reports: ['text-summary', 'html', 'lcov']
+		}
 	});
 };
