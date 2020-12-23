@@ -53,7 +53,7 @@ Modules meet the following conventions:
 3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
    - `/store` : all redux related files like reducers and actions
-   - `/service` : the service and domain classes of the module
+   - `/services` : the service and domain classes of the module
 
 4. Modules are allowed to use actions from other modules
 
@@ -75,7 +75,7 @@ Here's a overview of what project folder structure looks like:
     |    + -- modules
     |    |    + -- moduleName
     |    |    |    + -- index.js
-    |    |    |    # other moduleName related files such as a components folder, a store folder or a service folder
+    |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
     |    + -- services
     |    + -- utils
     + -- test # test code
