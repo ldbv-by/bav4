@@ -24,6 +24,7 @@
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage-istanbul-reporter": "^3.0.3",
+    "karma-coveralls": "^2.1.0",
     "karma-epiphany-launcher": "^0.1.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-iframes": "^1.2.2",
@@ -52,7 +53,7 @@
     "test:single": "env KARMA_SPEC=$npm_config_spec karma start karma.conf.single.js --single-run",
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:webkit": "karma start --single-run --browsers Epiphany",
-    "test:travis": "karma start --single-run --browsers TravisHeadlessChrome",
+    "test:travis": "karma start karma.conf.travis.js --single-run --browsers TravisHeadlessChrome",
     "es-check": "es-check --module es9 './src/**/*.js'",
     "analyze-bundle": "webpack --profile --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
