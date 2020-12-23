@@ -11,19 +11,13 @@ module.exports = function (config) {
 		preprocessors: {
 			'test/**/*.test.js': ['webpack', 'iframes'],
 		},
-		reporters: ['progress', 'coverage-istanbul', 'coveralls'],
+		reporters: ['progress', 'coverage-istanbul'],
 		// port: 9876,
 		// colors: true,
 		// logLevel: config.LOG_INFO,
 		// autoWatch: true,
 		browsers: ['ChromeHeadless', 'FirefoxHeadless'],
 		customLaunchers: {
-			TravisHeadlessChrome: {
-				base: 'ChromeHeadless',
-				flags: ['--disable-translate', '--disable-extensions',
-					'--no-first-run', '--disable-background-networking',
-					'--remote-debugging-port=9223']
-			},
 			ChromeDebugging: {
 				base: 'ChromeHeadless',
 				flags: ['--remote-debugging-port=9222']
@@ -34,7 +28,7 @@ module.exports = function (config) {
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
 			dir: 'coverage',
-			reports: ['text-summary', 'html', 'lcov']
+			reports: ['text-summary', 'html']
 		}
 	});
 };
