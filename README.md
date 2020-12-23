@@ -1,4 +1,4 @@
-# BAv4 (#nomigration) [![Build Status](https://travis-ci.com/ldbv-by/bav4-nomigration.svg?branch=master)](https://travis-ci.com/ldbv-by/bav4-nomigration) [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg)](https://coveralls.io/github/ldbv-by/bav4-nomigration)
+# BAv4 (#nomigration) [![Build Status](https://travis-ci.com/ldbv-by/bav4-nomigration.svg?branch=master)](https://travis-ci.com/ldbv-by/bav4-nomigration) [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 
 Next generation web-mapviewer based on web standards.
 
