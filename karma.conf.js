@@ -33,7 +33,7 @@ module.exports = function (config) {
 		concurrency: Infinity,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
-			dir: 'coverage/%browser%',
+			dir: 'coverage',
 			reports: ['text-summary', 'html', 'lcov']
 		}
 	});
