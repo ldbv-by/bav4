@@ -33,12 +33,12 @@ describe('OlCoordinateService', () => {
 
 		it('transforms from EPSG:3857 to EPSG:25832', () => {
 
-			expect(() => instanceUnderTest.to25832([1288239.2412306187, 6130212.561641981])).toThrowError(/Not yet implemented/)
+			expect(() => instanceUnderTest.to25832([1288239.2412306187, 6130212.561641981])).toThrowError(/Not yet implemented/);
 		});
 
 		it('transforms from EPSG:25832 to EPSG:3857', () => {
 
-			expect(() => instanceUnderTest.from25832([676696, 5367913])).toThrowError(/Not yet implemented/)
+			expect(() => instanceUnderTest.from25832([676696, 5367913])).toThrowError(/Not yet implemented/);
 		});
 
 	});
