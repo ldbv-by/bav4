@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
 import { modalClose } from '../store/modal.action';
 import css from './modal.css';
+import { $injector } from '../../../injection';
 
 export const NO_CONTENT = '';
 /**
@@ -10,6 +11,11 @@ export const NO_CONTENT = '';
  */
 export class Modal extends BaElement {
 
+	constructor() {
+		super();
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
+	}
 
 	_buildModal(title, content) {
 		if(title) {
@@ -64,6 +70,8 @@ export class Modal extends BaElement {
 	 * @override
 	 */
 	createView() {
+
+		const translate = (key) => this._translationService.translate(key);
 		return html`
         <style>${css}</style>
 		<div id="modal" class="modal">
@@ -73,7 +81,7 @@ export class Modal extends BaElement {
 				</div>
 				<div id="modal-body" class="modal-body"></div>
 				<div class="modal-footer">
-					<ba-button id='modal-close' label='close'></ba-button>
+					<ba-button id='modal-close' label="${translate('modal_close_button')}"></ba-button>
 				</div>
 			</div>
         </div>`;

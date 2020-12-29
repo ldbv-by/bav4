@@ -46,7 +46,9 @@ export class TranslationService {
 						map_zoom_out_button: 'Zoom out',
 
 						uiTheme_toggle_tooltip_dark: 'Enable contrast mode',
-						uiTheme_toggle_tooltip_light: 'Disable contrast mode'
+						uiTheme_toggle_tooltip_light: 'Disable contrast mode',
+
+						modal_close_button:'Close'
 					}
 				));
 
@@ -59,7 +61,9 @@ export class TranslationService {
 						map_zoom_out_button: 'Verkleinere Kartenausschnitt',
 
 						uiTheme_toggle_tooltip_dark: 'Kontrastmodus aktivieren',
-						uiTheme_toggle_tooltip_light: 'Kontrastmodus deaktivieren'
+						uiTheme_toggle_tooltip_light: 'Kontrastmodus deaktivieren',
+
+						modal_close_button:'Schließen'
 					}
 				));
 		}
