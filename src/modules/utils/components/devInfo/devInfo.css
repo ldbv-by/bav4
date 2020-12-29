@@ -2,15 +2,18 @@
     position: absolute;
     padding: 5px;
     padding-left: 10px;
-    color: var(--primary-color);
+    color: var(--color);
+    background: var(--primary-bg-color);
     font-size: 11px;
+    border-top-right-radius: 5px;
 }
+
 .container-landscape{
     bottom: 45px;
     left: 0;
 }
 
 .container-portrait{
-    top: 50px;
+    bottom: 0px;
     left: 0;
 }

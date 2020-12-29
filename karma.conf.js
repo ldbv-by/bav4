@@ -18,12 +18,6 @@ module.exports = function (config) {
 		// autoWatch: true,
 		browsers: ['ChromeHeadless', 'FirefoxHeadless'],
 		customLaunchers: {
-			TravisHeadlessChrome: {
-				base: 'ChromeHeadless',
-				flags: ['--disable-translate', '--disable-extensions',
-					'--no-first-run', '--disable-background-networking',
-					'--remote-debugging-port=9223']
-			},
 			ChromeDebugging: {
 				base: 'ChromeHeadless',
 				flags: ['--remote-debugging-port=9222']
@@ -33,8 +27,8 @@ module.exports = function (config) {
 		concurrency: Infinity,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
-			dir: 'coverage/%browser%',
+			dir: 'coverage',
 			reports: ['text-summary', 'html']
-		},
+		}
 	});
 };

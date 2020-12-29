@@ -1,4 +1,8 @@
-# BAv4 (#nomigration) [![Build Status](https://travis-ci.com/ldbv-by/bav4-nomigration.svg?branch=master)](https://travis-ci.com/ldbv-by/bav4-nomigration)
+# BAv4 (#nomigration)
+
+[![Build Status](https://travis-ci.com/ldbv-by/bav4-nomigration.svg?branch=master)](https://travis-ci.com/ldbv-by/bav4-nomigration) 
+[![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
+[![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Next generation web-mapviewer based on web standards.
 
@@ -53,7 +57,7 @@ Modules meet the following conventions:
 3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
    - `/store` : all redux related files like reducers and actions
-   - `/service` : the service and domain classes of the module
+   - `/services` : the service and domain classes of the module
 
 4. Modules are allowed to use actions from other modules
 
@@ -75,7 +79,7 @@ Here's a overview of what project folder structure looks like:
     |    + -- modules
     |    |    + -- moduleName
     |    |    |    + -- index.js
-    |    |    |    # other moduleName related files such as a components folder, a store folder or a service folder
+    |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
     |    + -- services
     |    + -- utils
     + -- test # test code
