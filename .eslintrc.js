@@ -20,9 +20,10 @@ module.exports = {
 		'brace-style': ['error', 'stroustrup'],
 		'lines-between-class-members': ['error', 'always'],
 		'comma-spacing': ['error', { 'before': false, 'after': true }],
-		"array-bracket-spacing": [2, "never"],
+		"array-bracket-spacing": ['error', "never"],
 		'curly': ['error', 'all'],
 		'space-before-blocks': ['error', 'always'],
+		'no-console': ['error', { allow: ["warn", "error"] }],
 		'import/no-default-export': ['error'],
 	}
 };
