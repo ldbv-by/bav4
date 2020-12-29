@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
 import { toggleSidePanel } from '../../menue/store/sidePanel.action';
+import { modalOpen } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import { changeZoomAndPosition } from '../../map/store/olMap.action';
 import css from './header.css';
@@ -43,6 +44,11 @@ export class Header extends BaElement {
 			}
 		};
 
+		const showModalInfo = ()=> {
+			const payload = { title:'Info',content:'<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>' };
+			modalOpen(payload);
+		};
+
 		return html`
 			<style>${css}</style>
 			<div class="header header-desktop">
@@ -50,7 +56,7 @@ export class Header extends BaElement {
 					<div class="item0">
 						<div class='ci'>
 							<h3 class='ci-text'>BAv4 (#nomigration)</h3>
-							<div class='ci-logo'></div>
+							<div class='ci-logo' @click="${showModalInfo}"></div>
 						</div>
 					</div>
 					<ba-autocomplete-search class="item1"></ba-autocomplete-search>
