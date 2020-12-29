@@ -73,6 +73,7 @@ export class BaElement extends HTMLElement {
 
 
 	log(message) {
+		// eslint-disable-next-line no-console
 		return console.log(`${this.constructor.name}: ` + message);
 	}
 
@@ -230,7 +231,7 @@ export class BaElement extends HTMLElement {
 			// Abstract methods can not be called directly.
 			throw new TypeError('Can not call static abstract method #tag.');
 		}
-		
+
 		else {
 			// The child has implemented this method but also called `super.foo()`.
 			throw new TypeError('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
