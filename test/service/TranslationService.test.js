@@ -5,7 +5,7 @@ import { $injector } from '../../src/injection';
 
 
 describe('TranslationService', () => {
-	const expectedSize = 4;
+	const expectedSize = 5;
 
 	const configService = {
 		getValue: () => {}

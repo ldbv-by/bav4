@@ -1,6 +1,7 @@
 import { NO_CONTENT, Modal } from '../../../../src/modules/modal/components/Modal';
 import { modalClose, modalOpen } from '../../../../src/modules/modal/store/modal.action';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
+import { $injector } from '../../../../src/injection';
 
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(Modal.tag, Modal);
@@ -18,6 +19,9 @@ describe('Modal', () => {
 			setupStoreAndDi({
 				modal: { title: false, content: false }
 			});
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key });
+
 				
 			element = await TestUtils.render(Modal.tag);
 				
@@ -37,6 +41,9 @@ describe('Modal', () => {
 			TestUtils.setupStoreAndDi(state, {
 				modal: modalReducer
 			});
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key });
+
 
 			element = await TestUtils.render(Modal.tag);
 		});
@@ -99,6 +106,9 @@ describe('Modal', () => {
 			store=	TestUtils.setupStoreAndDi(state, {
 				modal: modalReducer
 			});
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key });
+
 
 			element = await TestUtils.render(Modal.tag);
 		});
