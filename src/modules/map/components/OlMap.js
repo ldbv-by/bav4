@@ -109,8 +109,8 @@ export class OlMap extends BaElement {
 	}
 
 	_buildContextMenueData(evt) {
-		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => console.log('I would copy the coordinate if i know how to do it!') };
-		const secondCommand = { label: 'Hello', action: () => console.log('Hello World!') };
+		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => this.log('I would copy the coordinate if i know how to do it!') };
+		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
 			commands: [firstCommand, secondCommand]

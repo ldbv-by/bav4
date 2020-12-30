@@ -12,7 +12,7 @@ describe('Unit tests for class SearchResult', () => {
 		expect(searchResult.extent).toEqual([]);
 
 
-		const searchResult2 = new SearchResult('label', 'labelFormated', 'type', [0, 0], [0, 0, 1, 1,]);
+		const searchResult2 = new SearchResult('label', 'labelFormated', 'type', [0, 0], [0, 0, 1, 1]);
 		expect(searchResult2.extent).toEqual([0, 0, 1, 1]);
 	});
 });
