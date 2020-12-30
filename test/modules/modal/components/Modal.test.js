@@ -1,7 +1,8 @@
-import { NO_CONTENT, Modal } from '../../../../src/modules/modal/components/Modal';
-import { modalClose, modalOpen } from '../../../../src/modules/modal/store/modal.action';
+import { Modal } from '../../../../src/modules/modal/components/Modal';
+import { closeModal, openModal } from '../../../../src/modules/modal/store/modal.action';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { $injector } from '../../../../src/injection';
+import { html } from 'lit-html';
 
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(Modal.tag, Modal);
@@ -25,9 +26,7 @@ describe('Modal', () => {
 				
 			element = await TestUtils.render(Modal.tag);
 				
-			expect(element.shadowRoot.querySelector('.modal--active')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();        
-	
+			expect(element.innerText).toBeFalsy();
 		});
 	});
 
@@ -49,49 +48,42 @@ describe('Modal', () => {
 		});
 
 		it('adds content to modal', () => {
-			const modalContent = { title:'foo', content:'<p class=\'bar\'>bar<p/>' };
+			const modalContent = { title:'foo', content: html `<p class=\'bar\'>bar<p/>` };
 
-			modalOpen(modalContent);
+			openModal(modalContent);
 
-			expect(element.shadowRoot.querySelector('.modal--active')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.bar').innerText).toBe('bar');			
 		});
 
 		it('adds title to modal', () => {
-			const modalContent = { title:'foo', content:'bar' };
+			const modalContent = { title:'foo', content: html `bar` };
 
-			modalOpen(modalContent);
+			openModal(modalContent);
 
-			expect(element.shadowRoot.querySelector('.modal--active')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe('foo');		
 		});
 		
 		it('adds no title to modal', () => {
 			const modalContent = { title:undefined, content:'bar' };
 
-			modalOpen(modalContent);
+			openModal(modalContent);
 
-			expect(element.shadowRoot.querySelector('.modal--active')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe(NO_CONTENT);		
+			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe('');		
 		});
 		
 		it('resets modal to default after close-action', () => {
-			const modalContent = { title:'foo', content:'<p class=\'bar\'>bar<p/>' };
+			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
 
-			modalOpen(modalContent);
-			const wasActive=element.shadowRoot.querySelector('.modal--active')!==undefined;
+			openModal(modalContent);
 			const hadTitle=element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
 			const hadContent=element.shadowRoot.querySelector('.bar').innerText == 'bar';
 
-			modalClose();
+			closeModal();
 
-			expect(wasActive).toBe(true);
 			expect(hadTitle).toBe(true);
 			expect(hadContent).toBe(true);
-			expect(element.shadowRoot.querySelector('.modal--active')).toBeFalsy();			
-			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe(NO_CONTENT);
-			expect(element.shadowRoot.querySelector('.modal-body').innerText).toBe(NO_CONTENT);		
+			expect(element.innerText).toBeFalsy();
 		});		
 	});
 
@@ -114,15 +106,14 @@ describe('Modal', () => {
 		});
 
 		it('resets modal to default after close-button is clicked', async () => {
-			const modalContent = { title:'foo', content:'<p class=\'bar\'>bar<p/>' };
+			const modalContent = { title:'foo', content: html `<p class='bar'>bar<p/>` };
 
-			modalOpen(modalContent);			
-			const wasActive=element.shadowRoot.querySelector('.modal--active')!==undefined;
+			openModal(modalContent);			
 			const hadTitle=element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
 			const hadContent=element.shadowRoot.querySelector('.bar').innerText == 'bar';
-			element.shadowRoot.querySelector('#modal-close').onClick.call();
-
-			expect(wasActive).toBe(true);
+			const btn = element.shadowRoot.querySelector('#modalclose');
+			btn.onClick.call();
+			
 			expect(hadTitle).toBe(true);
 			expect(hadContent).toBe(true);
 			expect(store.getState().modal.title).toBe(false);

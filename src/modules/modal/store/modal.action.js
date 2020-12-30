@@ -1,4 +1,4 @@
-import { MODAL_CLICK } from './modal.reducer';
+import { MODAL_CHANGED } from './modal.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -6,17 +6,16 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-export const modalOpen = (payload) => {	
+export const openModal = (payload) => {	
 	getStore().dispatch({
-		type: MODAL_CLICK,
+		type: MODAL_CHANGED,
 		payload: payload
 	});
-	console.log('store',getStore().getState());
 };
 
-export const modalClose = () => {
+export const closeModal = () => {
 	getStore().dispatch({
-		type: MODAL_CLICK,
+		type: MODAL_CHANGED,
 		payload: { title:false, content:false }
 	});
 };

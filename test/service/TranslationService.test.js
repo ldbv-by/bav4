@@ -28,6 +28,8 @@ describe('TranslationService', () => {
 
 		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Enable contrast mode');
 		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Disable contrast mode');
+
+		expect(translationService.translate('modal_close_button')).toBe('Close');
 	});
     
 	it('provides translation for de',  () => {
@@ -42,6 +44,8 @@ describe('TranslationService', () => {
 
 		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Kontrastmodus aktivieren');
 		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Kontrastmodus deaktivieren');
+
+		expect(translationService.translate('modal_close_button')).toBe('Schließen');
 	});
 
 	it('provides the requested key when unknown and logs a warn statement',  () => {
