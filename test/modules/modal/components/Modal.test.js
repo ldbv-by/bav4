@@ -86,38 +86,4 @@ describe('Modal', () => {
 			expect(element.innerText).toBeFalsy();
 		});		
 	});
-
-	describe('when state is changed ', () => {
-		let store;
-		beforeEach(async () => {
-
-			const state = {
-				modal: { title: false, content: false }
-			};
-
-			store=	TestUtils.setupStoreAndDi(state, {
-				modal: modalReducer
-			});
-			$injector
-				.registerSingleton('TranslationService', { translate: (key) => key });
-
-
-			element = await TestUtils.render(Modal.tag);
-		});
-
-		it('resets modal to default after close-button is clicked', async () => {
-			const modalContent = { title:'foo', content: html `<p class='bar'>bar<p/>` };
-
-			openModal(modalContent);			
-			const hadTitle=element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
-			const hadContent=element.shadowRoot.querySelector('.bar').innerText == 'bar';
-			const btn = element.shadowRoot.querySelector('#modalclose');
-			btn.onClick.call();
-			
-			expect(hadTitle).toBe(true);
-			expect(hadContent).toBe(true);
-			expect(store.getState().modal.title).toBe(false);
-			expect(store.getState().modal.content).toBe(false);        	
-		});
-	});
 });

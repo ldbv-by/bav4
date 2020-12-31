@@ -22,34 +22,26 @@ export class Modal extends BaElement {
 	createView() {
 		const { title, content, visible } = this._state;
 		const translate = (key) => this._translationService.translate(key);
-		let classes = 'modal';
 
 		if (visible) {
-			classes = classes + ' modal--active';
-		}
-		return html`
+			return html`
         		<style>${css}</style>
-				<div class='${classes}'>
+				<div class='modal modal--active'>
 					<div class='modal-content'>
 						<div class='modal-header'>
 							<h4  class='modal-title'>${title}</h4>
 						</div>
 						<div class='modal-body'>${content}</div>
 						<div class='modal-footer'>
-						<ba-button id='modalclose' label='${translate('modal_close_button')}' @click='${close()}'></ba-button>
+						<ba-button id='modalclose' label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
 						</div>
 					</div>
     			</div>`;
+		}	
+		return html``;	
 	}	
 
-	/**
-	 * @override
-	 */
-	onWindowLoad() {
-		// register callback on ba-button element
-		this._root.getElementById('modalclose').onClick = () => closeModal();
-	}
-
+	
 	/**
  * @override
  * @param {Object} store 
