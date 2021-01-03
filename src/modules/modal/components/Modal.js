@@ -5,6 +5,7 @@ import css from './modal.css';
 import { $injector } from '../../../injection';
 
 /**
+ * Global modal window element, to show information, which the user must interact with.
  * @class
  * @author thiloSchlemmer
  */

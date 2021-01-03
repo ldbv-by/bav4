@@ -9,7 +9,6 @@ window.customElements.define(Modal.tag, Modal);
 
 const setupStoreAndDi = (state) => {
 	TestUtils.setupStoreAndDi(state, { modal: modalReducer });
-
 };
 
 describe('Modal', () => {
@@ -86,7 +85,7 @@ describe('Modal', () => {
 			expect(element.innerText).toBeFalsy();
 		});		
 
-		it('closes the modal on close-button -click', async () => {
+		it('closes the modal on close-button click', async () => {
 			
 			const modalContent = { title: 'foo', content: html `<p class="bar">bar<p/>` };
 
@@ -94,8 +93,8 @@ describe('Modal', () => {
 			const hadTitle=element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
 			const hadContent=element.shadowRoot.querySelector('.bar').innerText == 'bar';
 
-			const btn = element.shadowRoot.querySelector('ba-button');
-			btn.click();
+			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			closeBtn.click();
 			
 			expect(hadTitle).toBe(true);
 			expect(hadContent).toBe(true);
