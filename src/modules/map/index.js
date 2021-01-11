@@ -1,3 +1,4 @@
+import './i18n';
 import './components/zoomButtons';
 import { OlMap } from './components/OlMap';
 if (!window.customElements.get(OlMap.tag)) {
