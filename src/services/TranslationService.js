@@ -1,4 +1,3 @@
-
 import { $injector } from '../injection';
 
 /**
@@ -9,18 +8,43 @@ import { $injector } from '../injection';
 export class TranslationService {
 
 	constructor() {
-		const { ConfigService } = $injector.inject('ConfigService');
-		this._language = ConfigService.getValue('DEFAULT_LANG', 'en');
-		this._translations = new Map();
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		this._language = configService.getValue('DEFAULT_LANG', 'en');
+		this._provider = new Map();
+	}
 
-		this._translations.set(this._language, this._load(this._language));
+	/**
+	* @public
+	*/
+	register(name, provider) {
+
+		if (this._provider.has(name)) {
+			throw new Error('Provider ' + name + ' already registered');
+		}
+		this._provider.set(name, provider);
+	}
+
+	_get(lang) {
+
+		const langMap = new Map();
+		this._provider.forEach(provider => {
+			Object
+				.entries(provider(lang))
+				.forEach(([key, value]) => {
+					if (langMap.has(key)) {
+						throw new Error('Key ' + key + ' already registered');
+					}
+					langMap.set(key, value);
+				});
+		});
+		return langMap;
 	}
 
 	/**
 	 * @public
 	 */
 	translate(key) {
-		const langMap = this._translations.get(this._language);
+		const langMap = this._get(this._language);
 		if (langMap.has(key)) {
 			return langMap.get(key);
 		}
@@ -31,38 +55,7 @@ export class TranslationService {
 	/**
 	 * @protected
 	 */
-	getMap(key) {
-		return this._translations.get(key);
-	}
-
-	_load(lang) {
-		switch (lang) {
-
-			case 'en':
-				return new Map(Object.entries(
-					{
-						//the first part of the snake_case key should be the name of the related module
-						map_zoom_in_button: 'Zoom in',
-						map_zoom_out_button: 'Zoom out',
-
-						uiTheme_toggle_tooltip_dark: 'Enable contrast mode',
-						uiTheme_toggle_tooltip_light: 'Disable contrast mode'
-					}
-				));
-
-
-			case 'de':
-				return new Map(Object.entries(
-					{
-						//the first part of the snake_case key should be the name of the related module
-						map_zoom_in_button: 'Vergrößere Kartenausschnitt',
-						map_zoom_out_button: 'Verkleinere Kartenausschnitt',
-
-						uiTheme_toggle_tooltip_dark: 'Kontrastmodus aktivieren',
-						uiTheme_toggle_tooltip_light: 'Kontrastmodus deaktivieren'
-					}
-				));
-		}
-		return new Map();
+	getMap(lang) {
+		return this._get(lang);
 	}
 }
