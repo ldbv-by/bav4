@@ -10,7 +10,8 @@ export class TranslationService {
 	constructor() {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
 		this._language = configService.getValue('DEFAULT_LANG', 'en');
-		this._provider = new Map();
+		this._providers = new Map();
+		this._translations = new Map();
 	}
 
 	/**
@@ -18,35 +19,42 @@ export class TranslationService {
 	*/
 	register(name, provider) {
 
-		if (this._provider.has(name)) {
+		if (this._providers.has(name)) {
 			throw new Error('Provider ' + name + ' already registered');
 		}
-		this._provider.set(name, provider);
+		this._providers.set(name, provider);
+		this._load(provider);
 	}
 
-	_get(lang) {
+	_load(provider) {
+		Object
+			.entries(provider(this._language))
+			.forEach(([key, value]) => {
+				if (this._translations.has(key)) {
+					throw new Error('Key ' + key + ' already registered');
+				}
+				this._translations.set(key, value);
+			});
+	}
 
-		const langMap = new Map();
-		this._provider.forEach(provider => {
-			Object
-				.entries(provider(lang))
-				.forEach(([key, value]) => {
-					if (langMap.has(key)) {
-						throw new Error('Key ' + key + ' already registered');
-					}
-					langMap.set(key, value);
-				});
+	/**
+	* @public
+	*/
+	reload(lang) {
+		this._language = lang;
+		this._translations.clear();
+
+		this._providers.forEach(provider => {
+			this._load(provider);
 		});
-		return langMap;
 	}
 
 	/**
 	 * @public
 	 */
 	translate(key) {
-		const langMap = this._get(this._language);
-		if (langMap.has(key)) {
-			return langMap.get(key);
+		if (this._translations.has(key)) {
+			return this._translations.get(key);
 		}
 		console.warn('No value found for ' + this._language + '.' + key);
 		return key;
@@ -55,7 +63,7 @@ export class TranslationService {
 	/**
 	 * @protected
 	 */
-	getMap(lang) {
-		return this._get(lang);
+	getMap() {
+		return new Map(this._translations);
 	}
 }
