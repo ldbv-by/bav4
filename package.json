@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "css-loader": "^4.3.0",
+    "css-loader": "^5.0.1",
     "dotenv-webpack": "^6.0.0",
     "es-check": "^5.1.4",
     "eslint": "^7.16.0",
