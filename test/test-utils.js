@@ -11,8 +11,8 @@ export class TestUtils {
 	 * @param {object} attributes
 	 * @returns {Promise<HTMLElement>}
 	 */
-	static render(tag, attributes = {}) {
-		TestUtils._renderToDocument(tag, attributes);
+	static render(tag, attributes = {}, slotContent = '') {
+		TestUtils._renderToDocument(tag, attributes, slotContent);
 		return TestUtils._waitForComponentToRender(tag);
 	}
 
@@ -23,9 +23,9 @@ export class TestUtils {
 	 * @param {string} tag
 	 * @param {object} attributes
 	 */
-	static _renderToDocument(tag, attributes) {
+	static _renderToDocument(tag, attributes, slotContent) {
 		const htmlAttributes = TestUtils._mapObjectToHTMLAttributes(attributes);
-		document.body.innerHTML = `<${tag} ${htmlAttributes}></${tag}>`;
+		document.body.innerHTML = `<${tag} ${htmlAttributes}>${slotContent}</${tag}>`;
 	}
 
 	/**
