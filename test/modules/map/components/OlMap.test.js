@@ -75,28 +75,22 @@ describe('OlMap', () => {
 
 	describe('when clicked', () => {
 		it('emits event', async () => {
-			// arrange
 			spyOn(element, 'emitEvent');
 
-			// act
 			simulateMouseEvent(MapBrowserEventType.SINGLECLICK, 0, 0);
 
-			// assert
 			expect(element.emitEvent).toHaveBeenCalledWith('map_clicked', null);
 		});
 	});
 
 	describe('when map move', () => {
 		it('change state from view properties', async () => {
-			// arange
 			const view = element._view;
 			spyOn(view, 'getZoom');
 			spyOn(view, 'getCenter');
 
-			// act
 			simulateMapEvent(MapEventType.MOVEEND);
 
-			// assert
 			expect(view.getZoom).toHaveBeenCalledTimes(1);
 			expect(view.getCenter).toHaveBeenCalledTimes(1);
 		});
@@ -104,30 +98,24 @@ describe('OlMap', () => {
 
 	describe('when pointer move', () => {
 		it('pointer position store is updated', async () => {
-			// arrange
 			const map = element._map;
 			const pointerPosition = ['foo', 'bar'];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			// act
 			simulateMouseEvent(MapBrowserEventType.POINTERMOVE, 10, 0);
 
-			// assert
 			expect(store.getState().map.pointerPosition).toBe(pointerPosition);
 		});
 	});
 
 	describe('when mouse is dragging', () => {
 		it('do NOT store pointerPosition', async () => {
-			// arrange
 			const map = element._map;
 			const pointerPosition = [99, 99];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			// act
 			simulateMouseEvent(MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			// assert
 			expect(store.getState().map.pointerPosition).toBeUndefined();
 		});
 	});
@@ -136,7 +124,6 @@ describe('OlMap', () => {
 
 
 		it('do store valid contextMenuData', async () => {
-			// arrange
 			const customEventType = 'contextmenu';
 			const state = {
 				map: {
@@ -151,12 +138,10 @@ describe('OlMap', () => {
 				contextMenue: contextMenueReducer
 			});
 
-			// act
 			simulateMouseEvent(customEventType, 10, 0);
 			const actualCommands = store.getState().contextMenue.data.commands;
 			const actualPointer = store.getState().contextMenue.data.pointer;
 
-			// assert
 			expect(actualPointer).toEqual({ x: 10, y: 0 });
 			expect(actualCommands.length).toBe(2);
 			expect(actualCommands[0].label).toBe('Copy Coordinates');
