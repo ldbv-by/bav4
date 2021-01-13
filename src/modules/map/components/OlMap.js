@@ -21,8 +21,8 @@ export class OlMap extends BaElement {
 
 	constructor() {
 		super();
-		const { ShareService } = $injector.inject('ShareService');
-		this._shareService = ShareService;
+		const { ShareService: shareService } = $injector.inject('ShareService');
+		this._shareService = shareService;
 	}
 
 
