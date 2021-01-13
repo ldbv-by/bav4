@@ -6,6 +6,7 @@ import { BvvSearchService } from '../modules/search/services/BvvSearchService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
+import { ShareService } from '../services/ShareService';
 
 
 $injector
@@ -15,7 +16,8 @@ $injector
 	.register('CoordinateService', OlCoordinateService)
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
 	.registerSingleton('StoreService', new StoreService())
-	.registerSingleton('SearchService', new BvvSearchService());
+	.registerSingleton('SearchService', new BvvSearchService())
+	.registerSingleton('ShareService', new ShareService(navigator));
 
 
 export let init = true;

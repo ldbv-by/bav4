@@ -8,6 +8,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
 import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
+import { $injector } from '../../../../src/injection';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -30,6 +31,10 @@ describe('OlMap', () => {
 
 		store = TestUtils.setupStoreAndDi(state, {
 			map: mapReducer
+		});
+
+		$injector.registerSingleton('ShareService', {
+			copyToClipboard: () => { }
 		});
 
 		element = await TestUtils.render(OlMap.tag);
