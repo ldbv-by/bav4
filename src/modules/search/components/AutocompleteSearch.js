@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../BaElement';
 import { debounced } from '../../../utils/timer';
 import { $injector } from '../../../injection';
@@ -18,8 +19,17 @@ export class AutocompleteSearch extends BaElement {
 
 		//field '_onSelect' is exposed via getter and setter
 		this._onSelect = () => { };
+		this._candidates = [];
 	}
 
+	_updateCandidates(candidates) {
+		this._candidates = candidates;
+		this.render();
+	}
+
+	_clearCandidates() {
+		this._updateCandidates([]);
+	}
 
 	/**
 	 * Ported from https://www.w3schools.com/howto/howto_js_autocomplete.asp
@@ -27,47 +37,11 @@ export class AutocompleteSearch extends BaElement {
 	 * @param {*} arr 
 	 */
 	_autocomplete(input) {
-		let currentData = [];
-
-		const requestAndShowData = () => {
-			let a, b, i, val = input.value;
-			/*close any already open lists of autocompleted values*/
-			closeAllLists();
-			if (!val) {
-				return false;
-			}
-			currentFocus = -1;
-			/*create a DIV element that will contain the items (values):*/
-			a = document.createElement('DIV');
-			a.setAttribute('id', 'autocomplete-list');
-			a.setAttribute('class', 'autocomplete-items');
-			/*append the DIV element as a child of the autocomplete container:*/
-			input.parentNode.appendChild(a);
-			/*for each item in the array...*/
-			this._searchService.getData(val)
-				.then((data) => {
-					currentData = data;
-					for (i = 0; i < currentData.length; i++) {
-						b = document.createElement('DIV');
-						b.insertAdjacentHTML('beforeend', currentData[i].labelFormated);
-						b.setAttribute('index', i);
-						b.addEventListener('click', (e) => {
-							const selected = currentData[e.target.closest('div').getAttribute('index')];
-							input.value = selected.label;
-							this._onSelect(selected);
-							closeAllLists();
-						});
-						a.appendChild(b);
-					}
-				});
-
-		};
-
 		/*the autocomplete function takes two arguments,
 		the text field element and an array of possible autocompleted values:*/
-		let currentFocus;
+		let currentFocus = -1;
 		/*execute a function when someone writes in the text field:*/
-		input.addEventListener('input', debounced(200, requestAndShowData));
+		//input.addEventListener('input', debounced(200, requestData));
 		/*execute a function presses a key on the keyboard:*/
 		input.addEventListener('keydown', (e) => {
 			// var x = document.getElementById(this.id + 'autocomplete-list');
@@ -122,18 +96,9 @@ export class AutocompleteSearch extends BaElement {
 				x[i].classList.remove('autocomplete-active');
 			}
 		};
-		const closeAllLists = (elmnt) => {
-			/*close all autocomplete lists in the document,
-			except the one passed as an argument:*/
-			var x = this._root.querySelectorAll('.autocomplete-items');
-			for (var i = 0; i < x.length; i++) {
-				if (elmnt != x[i] && elmnt != input) {
-					x[i].parentNode.removeChild(x[i]);
-				}
-			}
-		};
-		document.addEventListener('click', (e) => {
-			closeAllLists(e.target);
+
+		document.addEventListener('click', () => {
+			this._clearCandidates();
 		});
 	}
 
@@ -150,12 +115,47 @@ export class AutocompleteSearch extends BaElement {
 	 * @override
 	 */
 	createView() {
+		let inputText = this._onSelect.label ? this._onSelect.label : '';
+		const requestData = (e) => {
+			let val = e.target.value;
+			if (!val) {
+				this._clearCandidates();
+				return false;
+			}
+
+			this._searchService.getData(val)
+				.then((data) => {
+					if (data) {
+						this._updateCandidates(data);
+					}
+				});
+		};
+
+		const onInput = (e) => debounced(200, requestData(e));
+		const getAutoCompleteList = () => {
+			if (this._candidates) {
+				const itemTemplates = [];
+				const selectSuggestion = (e) => {
+					const selected = this._candidates[e.target.closest('div').getAttribute('index')];
+					this._onSelect(selected);
+					this._clearCandidates();
+				};
+				for (let i = 0; i < this._candidates.length; i++) {
+					itemTemplates.push(html`<div index=${i} @click=${selectSuggestion} >${unsafeHTML(this._candidates[i].labelFormated)}</div>`);
+				}
+				return html`<div id='autocomplete-list' class='autocomplete-items'>${itemTemplates}</div>`;
+			}
+			return html``;
+		};
+
 		return html`
 		 <style>${css}</style>
 		 <div class="autocomplete">
-			<input id='autoComplete'/>
+			<input id='autoComplete' .value=${inputText} @input=${onInput}/>
+			${getAutoCompleteList()} 
 		 </div>
 		`;
+
 	}
 
 	set onSelect(callback) {
