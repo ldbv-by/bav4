@@ -7,16 +7,16 @@ describe('i18n for map module', () => {
 
 		const map = provide('de');
 
-		expect(map.uiTheme_toggle_tooltip_dark).toBe('Kontrastmodus aktivieren');
-		expect(map.uiTheme_toggle_tooltip_light).toBe('Kontrastmodus deaktivieren');
+		expect(map.uiTheme_toggle_tooltip_dark).toBe('Kontrastmodus deaktivieren');
+		expect(map.uiTheme_toggle_tooltip_light).toBe('Kontrastmodus aktivieren');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.uiTheme_toggle_tooltip_dark).toBe('Enable contrast mode');
-		expect(map.uiTheme_toggle_tooltip_light).toBe('Disable contrast mode');
+		expect(map.uiTheme_toggle_tooltip_dark).toBe('Disable contrast mode');
+		expect(map.uiTheme_toggle_tooltip_light).toBe('Enable contrast mode');
 	});
 
 	it('provides an empty map for a unknown lang', () => {
