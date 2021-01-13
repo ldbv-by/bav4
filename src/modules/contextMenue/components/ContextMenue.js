@@ -3,6 +3,7 @@ import { BaElement } from '../../BaElement';
 import { contextMenueClose } from '../store/contextMenue.action';
 import css from './contextMenue.css';
 
+const NO_CONTENT = '';
 
 /**
  * 
@@ -11,20 +12,12 @@ import css from './contextMenue.css';
  */
 export class ContextMenue extends BaElement {
 
+
 	/**
 	  * Builds the content of the contextmenu based on the commands 
-	  * @param {object {x: number, y: number}} pointer the pointer where user has clicked (rightclick)
-	  * @param { Array { 
-	  * 			label: string, 
-	  * 			shortCut: string,
-	  * 			action: function
-	  * 		} } commands the list of command-objects
+	  * @private 
 	  */
 	_buildContextMenue(pointer, commands) {
-		const offset = 5;
-		this._view.style.left = pointer.x + offset + 'px';
-		this._view.style.top = pointer.y + offset + 'px';
-
 		this._clearContextItems();
 
 		const menu = this._createContextMenu();
@@ -40,13 +33,49 @@ export class ContextMenue extends BaElement {
 		});
 		document.addEventListener('click', () => this._closeContextMenu());
 
+		const menuPlacement = this._calculateMenuPlacement(pointer);
+
+		this._view.style.left = menuPlacement.left;
+		this._view.style.top = menuPlacement.top;
 		this._view.classList.add('context-menu--active');
 	}
 
 	/**
+	 * Calculates the placement of the menu inside the window.
+	 * If the needed space of the menu is in conflict with the
+	 * existing space on the bottom or on the right side of the 
+	 * baseCoordinate, then the placement will be adjusted accordingly.
+	 * @private   
+	 */
+	_calculateMenuPlacement(baseCoordinate) {
+		const offset = 5;
+		const offsetBorderInPercent = 0.2;
+		const menuWidth = this._view.offsetWidth + offset;
+		const menuHeight = this._view.offsetHeight + offset;
+
+		let placement = { left: undefined, top: undefined };
+
+		const windowWidth = window.innerWidth - (window.innerWidth * offsetBorderInPercent);
+		const windowHeight = window.innerHeight - (window.innerHeight * offsetBorderInPercent);
+
+		if ((windowWidth - baseCoordinate.x) < menuWidth) {
+			placement.left = baseCoordinate.x - menuWidth + 'px';
+		}
+		else {
+			placement.left = baseCoordinate.x + offset + 'px';
+		}
+		if ((windowHeight - baseCoordinate.y) < menuHeight) {
+			placement.top = baseCoordinate.y - menuHeight + 'px';
+		}
+		else {
+			placement.top = baseCoordinate.y + offset + 'px';
+		}
+		return placement;
+	}
+
+	/**
 	 * Creates a ListItem-Element with label and shortcut Sub-Element (div) 
-	 * @param {object {label: string, shortCut: string, action: function}} command   the command-object
-	 * @returns {HTMLElement}
+	 * @private 
 	 */
 	_createContextMenuItem(command) {
 		const label = command.label;
@@ -81,7 +110,7 @@ export class ContextMenue extends BaElement {
 
 	/**
 	 * Creates a UnorderedList-Element
-	 * @returns {HTMLElement}
+	 * @private 
 	 */
 	_createContextMenu() {
 		let ulElement = document.createElement('ul');
@@ -93,37 +122,38 @@ export class ContextMenue extends BaElement {
 
 	/**
 	 * Tests whether or not, the context menu is open
-	 * @returns {boolean}
+	 * @private 
 	 */
 	_isOpen() {
-		return this._view.querySelector('.context-menu--active') !== null;
+		const { pointer } = this._state;
+		return pointer !== false;
 	}
 
 
 	/**
 	 * Closed the context menu by removing class-name and inner content 
+	 * @private
 	 */
 	_closeContextMenu() {
 		this._view.classList.remove('context-menu--active');
 		this._clearContextItems();
+		document.removeEventListener('click', () => this._closeContextMenu());
 		contextMenueClose();
 	}
 
 	/**
 	 * Removes the inner content (menu items)
+	 * @private
 	 */
 	_clearContextItems() {
-		const menuItems = this._view.querySelector('.context-menu__items');
-		if (menuItems) {
-			this._view.removeChild(menuItems);
-		}
+		this._view.textContent = NO_CONTENT;
 	}
 
 	/**
 	 * @override
 	 */
 	onWindowLoad() {
-		this._view = this._root.querySelector('.context-menu');
+		this._view = this.shadowRoot.getElementById('context-menu');
 	}
 
 	/**
@@ -132,7 +162,7 @@ export class ContextMenue extends BaElement {
 	createView() {
 		return html`
         <style>${css}</style>
-        <nav class="context-menu">
+        <nav id=context-menu class="context-menu">
         </nav>`;
 	}
 
@@ -149,9 +179,9 @@ export class ContextMenue extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		const { pointer, commands } = this._state;
-		if (pointer && !this._isOpen()) {
-			this._buildContextMenue(pointer, commands);
+		if (this._isOpen()) {
+			const { pointer, commands } = this._state;
+			this._buildContextMenue(pointer, commands);			
 		}
 		else {
 			this._closeContextMenu();

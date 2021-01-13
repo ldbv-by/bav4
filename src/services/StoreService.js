@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 import { mapReducer, initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../modules/map/store/olMap.reducer';
 import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
+import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 import ReduxQuerySync from 'redux-query-sync';
@@ -67,6 +68,7 @@ export class StoreService {
 			map: mapReducer,
 			sidePanel: sidePanelReducer,
 			contextMenue: contextMenueReducer,
+			modal:modalReducer,
 			uiTheme: uiThemeReducer 
 		});
 

@@ -12,7 +12,7 @@ describe('Button', () => {
 	});
 
 
-	describe('when initialized with label attibute', () => {
+	describe('when initialized with label attribute', () => {
 		it('renders the view', async () => {
 
 			const element = await TestUtils.render(Button.tag, { label: 'some' });
@@ -25,7 +25,7 @@ describe('Button', () => {
 			expect(button.innerText).toBe('some');
 		});
 
-		it('add the a default label when attibute is missing', async () => {
+		it('add the a default label when attribute is missing', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');

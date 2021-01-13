@@ -19,3 +19,5 @@ import './modules/contextMenue';
 import './modules/utils';
 import './modules/iframe';
 import './modules/uiTheme';
+import './modules/modal';
+
