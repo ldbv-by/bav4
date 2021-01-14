@@ -31,23 +31,6 @@ export class MapInfo extends BaElement {
 
 	}
 
-
-	onWindowLoad() {
-		// register callback on ba-button element
-		this._root.getElementById('button0').onClick = () => {
-			changeZoomAndPosition({
-				zoom: 13,
-				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
-			});
-		};
-		this._root.getElementById('button1').onClick = () => {
-			changeZoomAndPosition({
-				zoom: 11,
-				position: this._coordinateService.fromLonLat([11.081, 49.449])
-			});
-		};
-	}
-
 	createView() {
 		const { zoom, pointerPosition } = this._state;
 
@@ -65,13 +48,7 @@ export class MapInfo extends BaElement {
 			<style>${css}</style>
 			<div class='content'>
 				<div class='theme-toggle'><ba-theme-toggle></ba-theme-toggle></div> 
-				<div class='labels' >ZoomLevel: ${zoomRounded} | ${pointerPosition4326}</div>
-				<div class='buttons'>
-					<ba-button id='button0' label='primary style' type="primary"></ba-button>
-					<ba-button id='button1' label='secondary style'></ba-button>
-					<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
-					<ba-button id='button3' label='disabled' disabled=true></ba-button>
-				</div>
+				<div class='labels' >ZoomLevel: ${zoomRounded} | ${pointerPosition4326}</div>				
 			</div>
 		`;
 	}
