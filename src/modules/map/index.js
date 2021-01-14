@@ -1,3 +1,4 @@
+import './i18n';
 import './components/zoomButtons';
 import './components/infoButton'
 import { OlMap } from './components/OlMap';

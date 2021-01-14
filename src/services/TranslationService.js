@@ -1,4 +1,3 @@
-
 import { $injector } from '../injection';
 
 /**
@@ -9,20 +8,53 @@ import { $injector } from '../injection';
 export class TranslationService {
 
 	constructor() {
-		const { ConfigService } = $injector.inject('ConfigService');
-		this._language = ConfigService.getValue('DEFAULT_LANG', 'en');
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		this._language = configService.getValue('DEFAULT_LANG', 'en');
+		this._providers = new Map();
 		this._translations = new Map();
+	}
 
-		this._translations.set(this._language, this._load(this._language));
+	/**
+	* @public
+	*/
+	register(name, provider) {
+
+		if (this._providers.has(name)) {
+			throw new Error('Provider ' + name + ' already registered');
+		}
+		this._providers.set(name, provider);
+		this._load(provider);
+	}
+
+	_load(provider) {
+		Object
+			.entries(provider(this._language))
+			.forEach(([key, value]) => {
+				if (this._translations.has(key)) {
+					throw new Error('Key ' + key + ' already registered');
+				}
+				this._translations.set(key, value);
+			});
+	}
+
+	/**
+	* @public
+	*/
+	reload(lang) {
+		this._language = lang;
+		this._translations.clear();
+
+		this._providers.forEach(provider => {
+			this._load(provider);
+		});
 	}
 
 	/**
 	 * @public
 	 */
 	translate(key) {
-		const langMap = this._translations.get(this._language);
-		if (langMap.has(key)) {
-			return langMap.get(key);
+		if (this._translations.has(key)) {
+			return this._translations.get(key);
 		}
 		console.warn('No value found for ' + this._language + '.' + key);
 		return key;
@@ -31,38 +63,7 @@ export class TranslationService {
 	/**
 	 * @protected
 	 */
-	getMap(key) {
-		return this._translations.get(key);
-	}
-
-	_load(lang) {
-		switch (lang) {
-
-			case 'en':
-				return new Map(Object.entries(
-					{
-						//the first part of the snake_case key should be the name of the related module
-						map_zoom_in_button: 'Zoom in',
-						map_zoom_out_button: 'Zoom out',
-
-						uiTheme_toggle_tooltip_dark: 'Enable contrast mode',
-						uiTheme_toggle_tooltip_light: 'Disable contrast mode'
-					}
-				));
-
-
-			case 'de':
-				return new Map(Object.entries(
-					{
-						//the first part of the snake_case key should be the name of the related module
-						map_zoom_in_button: 'Vergrößere Kartenausschnitt',
-						map_zoom_out_button: 'Verkleinere Kartenausschnitt',
-
-						uiTheme_toggle_tooltip_dark: 'Kontrastmodus aktivieren',
-						uiTheme_toggle_tooltip_light: 'Kontrastmodus deaktivieren'
-					}
-				));
-		}
-		return new Map();
+	getMap() {
+		return new Map(this._translations);
 	}
 }

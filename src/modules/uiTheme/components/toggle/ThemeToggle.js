@@ -23,19 +23,22 @@ export class ThemeToggle extends BaElement {
 		return { theme };
 	}
 
+
+	onWindowLoad() {
+		// register callback on toggle
+		this._root.querySelector('ba-toggle').onChange = () => {
+			toggleTheme();
+		};
+	}
+
+
 	createView() {
 		const isChecked = (this._state.theme === 'dark');
 		const title = this._translationService.translate('uiTheme_toggle_tooltip_' + this._state.theme);
 
 		return html`
-        <style>${css}</style>
-		<label title='${title}' class='switch'>
-			<i class='icon adjust'></i>
-			<div>
-		  		<input type='checkbox' @change=${toggleTheme} ?checked=${isChecked}>
-		  		<span class='slider round'></span>
-			</div>
-	  	</label>
+		<style>${css}</style>
+		<ba-toggle title='${title}' checked=${isChecked} ><div class='container'><i class='icon adjust'></i></div></ba-toggle>
 		`;
 	}
 

@@ -8,7 +8,7 @@ import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from '../store/olMap.action';
 import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
-
+import { $injector } from '../../../injection';
 
 
 /**
@@ -21,6 +21,8 @@ export class OlMap extends BaElement {
 
 	constructor() {
 		super();
+		const { ShareService: shareService } = $injector.inject('ShareService');
+		this._shareService = shareService;
 	}
 
 
@@ -109,7 +111,9 @@ export class OlMap extends BaElement {
 	}
 
 	_buildContextMenueData(evt) {
-		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: () => this.log('I would copy the coordinate if i know how to do it!') };
+		const coord = this._map.getEventCoordinate(evt.originalEvent);
+		const copyToClipboard = () => this._shareService.copyToClipboard(coord).catch(() => this.log('Cannot copy the coordinate to clipboard.'));
+		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: copyToClipboard };
 		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },

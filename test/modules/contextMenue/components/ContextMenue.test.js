@@ -53,7 +53,6 @@ describe('ContextMenue', () => {
 		});
 
 		it('adds data-content to context-menu', () => {
-			// arrange
 			const contextMenueData = {
 				pointer: { x: 0, y: 0 },
 				commands: [
@@ -61,10 +60,8 @@ describe('ContextMenue', () => {
 					{ label: 'bar', action: () => { } }]
 			};
 
-			// act
 			contextMenueOpen(contextMenueData);
 
-			// assert
 			expect(element.shadowRoot.querySelector('.context-menu--active')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeTruthy();
@@ -72,7 +69,6 @@ describe('ContextMenue', () => {
 		});
 
 		it('adds data-content with object as label to context-menu', () => {
-			// arrange
 			const obj = { foo: 'bar' };
 			class SimpleClass {
 
@@ -93,10 +89,8 @@ describe('ContextMenue', () => {
 					{ label: obj, action: () => { } }]
 			};
 
-			// act
 			contextMenueOpen(contextMenueData);
 
-			// assert
 			expect(element.shadowRoot.querySelector('.context-menu--active')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeTruthy();
@@ -107,7 +101,6 @@ describe('ContextMenue', () => {
 
 
 		it('removes data-content from context-menu', () => {
-			// arrange
 			const contextMenueData = {
 				pointer: { x: 0, y: 0 },
 				commands: [
@@ -115,14 +108,12 @@ describe('ContextMenue', () => {
 					{ label: 'bar', action: () => { } }]
 			};
 
-			// act
 			contextMenueOpen(contextMenueData);
 			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
 
 			contextMenueClose();
 			const isOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
 
-			// assert
 			expect(wasOpen).toBe(true);
 			expect(isOpen).toBe(false);
 		});
@@ -145,7 +136,6 @@ describe('ContextMenue', () => {
 		});
 
 		it('places the menu left of pointer', () => {
-			// arrange
 			const offset = 4;
 			const placementRect = {
 				left: window.screenLeft,
@@ -168,18 +158,15 @@ describe('ContextMenue', () => {
 					{ label: 'bar', action: () => { } }]
 			};
 
-			// act
 			contextMenueOpen(contextMenueData);
 			const actualRect = element.shadowRoot.getElementById('context-menu').getBoundingClientRect();
 
-			// assert
 			expect(actualRect.left).toBeLessThan(pointerNearRightBorder.x);
 			expect(actualRect.top).toBeGreaterThan(pointerNearRightBorder.y);
 
 		});
 
 		it('places the menu top of pointer', () => {
-			// arrange
 			const offset = 4;
 			const placementRect = {
 				left: window.screenLeft,
@@ -202,11 +189,9 @@ describe('ContextMenue', () => {
 					{ label: 'bar', action: () => { } }]
 			};
 
-			// act
 			contextMenueOpen(contextMenueData);
 			const actualRect = element.shadowRoot.getElementById('context-menu').getBoundingClientRect();
 
-			// assert
 			expect(actualRect.top).toBeLessThan(pointerNearBottomBorder.y);
 			expect(actualRect.left).toBeGreaterThan(pointerNearBottomBorder.x);
 

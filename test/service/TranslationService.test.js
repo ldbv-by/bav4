@@ -2,56 +2,103 @@ import { TranslationService } from '../../src/services/TranslationService';
 import { $injector } from '../../src/injection';
 
 
-
-
 describe('TranslationService', () => {
-	const expectedSize = 4;
 
+	let instanceUnderTest;
 	const configService = {
-		getValue: () => {}
+		getValue: () => { }
 	};
-   
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService);
 	});
-    
-	it('provides translation for en',  () => {
+
+	beforeEach(() => {
+		instanceUnderTest = new TranslationService();
+	});
+
+	it('provides translations from a provider', () => {
 		const lang = 'en';
 		spyOn(configService, 'getValue').and.returnValue(lang);
-        
-		const translationService = new TranslationService();
-        
-		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('map_zoom_in_button')).toBe('Zoom in');
-		expect(translationService.translate('map_zoom_out_button')).toBe('Zoom out');
 
-		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Enable contrast mode');
-		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Disable contrast mode');
-	});
-    
-	it('provides translation for de',  () => {
-		const lang = 'de';
-		spyOn(configService, 'getValue').and.returnValue(lang);
-        
-		const translationService = new TranslationService();
-        
-		expect(translationService.getMap(lang).size).toBe(expectedSize);
-		expect(translationService.translate('map_zoom_in_button')).toBe('Vergrößere Kartenausschnitt');
-		expect(translationService.translate('map_zoom_out_button')).toBe('Verkleinere Kartenausschnitt');
+		instanceUnderTest.register('testProvider', () => {
+			return {
+				'key0': 'value0',
+				'key1': 'value1',
+			};
+		});
 
-		expect(translationService.translate('uiTheme_toggle_tooltip_dark')).toBe('Kontrastmodus aktivieren');
-		expect(translationService.translate('uiTheme_toggle_tooltip_light')).toBe('Kontrastmodus deaktivieren');
+		expect(instanceUnderTest.getMap().size).toBe(2);
+		expect(instanceUnderTest.translate('key0')).toBe('value0');
+		expect(instanceUnderTest.translate('key1')).toBe('value1');
 	});
 
-	it('provides the requested key when unknown and logs a warn statement',  () => {
-		const lang = 'de';
-		spyOn(configService, 'getValue').and.returnValue(lang);
-		const warnSpy =spyOn(console, 'warn');
-        
-		const translationService = new TranslationService();
-        
-		expect(translationService.translate('unknown_key')).toBe('unknown_key');
+	it('provides updated translations from a provider', () => {
+		spyOn(configService, 'getValue').and.returnValue('en');
+
+		instanceUnderTest.register('testProvider', (lang) => {
+			return lang === 'de'
+				?
+				{
+					'key0': 'value0_de',
+				}
+				:
+				{
+					'key0': 'value0_en'
+				};
+		});
+
+		expect(instanceUnderTest.translate('key0')).toBe('value0_en');
+
+		instanceUnderTest.reload('de');
+
+		expect(instanceUnderTest.translate('key0')).toBe('value0_de');
+	});
+
+	it('throws an error when provider already registered', () => {
+		spyOn(configService, 'getValue').and.returnValue('en');
+
+		instanceUnderTest.register('testProvider', () => {
+			return {
+				'key0': 'value0',
+			};
+		});
+
+		expect(() => instanceUnderTest.register('testProvider', () => {
+			return {
+				'key0': 'value0',
+			};
+		}))
+			.toThrowError(/Provider testProvider already registered/);
+	});
+
+	it('throws an error when a key is already registered', () => {
+		spyOn(configService, 'getValue').and.returnValue('en');
+
+		instanceUnderTest.register('testProvider0', () => {
+			return {
+				'key0': 'value0',
+				'key1': 'value1',
+			};
+		});
+
+		expect(() => {
+			instanceUnderTest.register('testProvider1', () => {
+				return {
+					'key0': 'value0',
+				};
+			});
+		})
+			.toThrowError(/Key key0 already registered/);
+	});
+
+	it('provides the requested key when unknown and logs a warn statement', () => {
+		spyOn(configService, 'getValue').and.returnValue('de');
+		const warnSpy = spyOn(console, 'warn');
+
+
+		expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 		expect(warnSpy).toHaveBeenCalled();
 	});
 });
