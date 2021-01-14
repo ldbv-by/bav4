@@ -60,10 +60,10 @@ export class Toggle extends BaElement {
 	attributeChangedCallback(name, oldValue, newValue) {
 		switch (name) {
 			case 'disabled':
-				this.disabled = newValue;
+				this.disabled = (newValue === 'true');
 				break;
 			case 'checked':
-				this.checked = newValue;
+				this.checked = (newValue === 'true');
 				break;
 			case 'title':
 				this.title = newValue;

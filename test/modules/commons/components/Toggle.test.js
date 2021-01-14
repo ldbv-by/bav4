@@ -68,6 +68,7 @@ describe('Toggle', () => {
 
 			element.setAttribute('disabled', 'true');
 
+			expect(element.disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.switch').classList.contains('disabled')).toBeTrue();
 		});
 	});
@@ -112,6 +113,7 @@ describe('Toggle', () => {
 
 			element.setAttribute('checked', 'true');
 
+			expect(element.checked).toBeTrue();
 			expect(input.checked).toBeTrue();
 		});
 	});
