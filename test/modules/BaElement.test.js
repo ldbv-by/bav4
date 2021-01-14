@@ -116,17 +116,7 @@ describe('BaElement', () => {
 
 	describe('events', () => {
 
-		it('renders the view', async () => {
-			const element = await TestUtils.render(BaElementImpl.tag);
-
-			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
-			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
-		});
-
-	});
-
-	describe('when initialized', () => {
-		it('renders the view', async () => {
+		it('is able to emit an event', async () => {
 			const myFunction = jasmine.createSpy();
 			const element = await TestUtils.render(BaElementImpl.tag);
 			window.addEventListener('some_event', myFunction);
@@ -134,6 +124,16 @@ describe('BaElement', () => {
 			element.emitEvent('some_event', 42);
 
 			expect(myFunction).toHaveBeenCalled();
+		});
+	});
+
+	describe('when initialized', () => {
+		
+		it('renders the view', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+
+			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
+			expect(element.shadowRoot.innerHTML.includes('21')).toBeTrue();
 		});
 
 		it('calls lifecycle callbacks in correct order', async () => {
