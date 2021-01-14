@@ -79,6 +79,7 @@ describe('Toggle', () => {
 
 			const element = await TestUtils.render(Toggle.tag, { checked: false });
 
+			expect(element.shadowRoot.querySelector('.switch').classList.contains('active')).toBeFalse();
 			const input = element.shadowRoot.querySelector('input');
 			expect(input.checked).toBeFalse();
 		});
@@ -87,6 +88,7 @@ describe('Toggle', () => {
 
 			const element = await TestUtils.render(Toggle.tag, { checked: true });
 
+			expect(element.shadowRoot.querySelector('.switch').classList.contains('active')).toBeTrue();
 			const input = element.shadowRoot.querySelector('input');
 			expect(input.checked).toBeTrue();
 		});

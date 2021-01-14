@@ -34,7 +34,8 @@ export class Toggle extends BaElement {
 		};
 
 		const classes = {
-			disabled: this._disabled
+			disabled: this._disabled,
+			active: this._checked,
 		};
 
 		return html`
