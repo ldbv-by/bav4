@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../BaElement';
 import { debounced } from '../../../utils/timer';
 import { $injector } from '../../../injection';
@@ -20,6 +21,7 @@ export class AutocompleteSearch extends BaElement {
 		//field '_onSelect' is exposed via getter and setter
 		this._onSelect = () => { };
 		this._candidates = [];
+		this._currentFocus=-1;
 	}
 
 	_updateCandidates(candidates) {
@@ -28,7 +30,13 @@ export class AutocompleteSearch extends BaElement {
 	}
 
 	_clearCandidates() {
+		this._currentFocus=-1;
 		this._updateCandidates([]);
+	}
+
+	_setSearchValue(value) {
+		const input = this._root.querySelector('#autoComplete');
+		input.value = value;
 	}
 
 	/**
@@ -39,7 +47,6 @@ export class AutocompleteSearch extends BaElement {
 	_autocomplete(input) {
 		/*the autocomplete function takes two arguments,
 		the text field element and an array of possible autocompleted values:*/
-		let currentFocus = -1;
 		/*execute a function when someone writes in the text field:*/
 		//input.addEventListener('input', debounced(200, requestData));
 		/*execute a function presses a key on the keyboard:*/
@@ -52,24 +59,24 @@ export class AutocompleteSearch extends BaElement {
 			if (e.keyCode == 40) {
 				/*If the arrow DOWN key is pressed,
 				increase the currentFocus variable:*/
-				currentFocus++;
+				this._currentFocus++;
 				/*and and make the current item more visible:*/
 				addActive(x);
 			}
 			else if (e.keyCode == 38) { //up
 				/*If the arrow UP key is pressed,
 				decrease the currentFocus variable:*/
-				currentFocus--;
+				this._currentFocus--;
 				/*and and make the current item more visible:*/
 				addActive(x);
 			}
 			else if (e.keyCode == 13) {
 				/*If the ENTER key is pressed, prevent the form from being submitted,*/
 				e.preventDefault();
-				if (currentFocus > -1) {
+				if (this._currentFocus > -1) {
 					/*and simulate a click on the "active" item:*/
 					if (x) {
-						x[currentFocus].click();
+						x[this._currentFocus].click();
 					}
 				}
 			}
@@ -81,14 +88,14 @@ export class AutocompleteSearch extends BaElement {
 			}
 			/*start by removing the "active" class on all items:*/
 			removeActive(x);
-			if (currentFocus >= x.length) {
-				currentFocus = 0;
+			if (this._currentFocus >= x.length) {
+				this._currentFocus= 0;
 			}
-			if (currentFocus < 0) {
-				currentFocus = (x.length - 1);
+			if (this._currentFocus < 0) {
+				this._currentFocus= (x.length - 1);
 			}
 			/*add class "autocomplete-active":*/
-			x[currentFocus].classList.add('autocomplete-active');
+			x[this._currentFocus].classList.add('autocomplete-active');
 		};
 		const removeActive = (x) => {
 			/*a function to remove the "active" class from all autocomplete items:*/
@@ -130,29 +137,22 @@ export class AutocompleteSearch extends BaElement {
 					}
 				});
 		};
-
 		const onInput = (e) => debounced(200, requestData(e));
-		const getAutoCompleteList = () => {
-			if (this._candidates) {
-				const itemTemplates = [];
-				const selectSuggestion = (e) => {
-					const selected = this._candidates[e.target.closest('div').getAttribute('index')];
-					this._onSelect(selected);
-					this._clearCandidates();
-				};
-				for (let i = 0; i < this._candidates.length; i++) {
-					itemTemplates.push(html`<div index=${i} @click=${selectSuggestion} >${unsafeHTML(this._candidates[i].labelFormated)}</div>`);
-				}
-				return html`<div id='autocomplete-list' class='autocomplete-items'>${itemTemplates}</div>`;
-			}
-			return html``;
-		};
 
+		const onClickCandidate = (e) => {
+			const selected = this._candidates[e.target.closest('div').getAttribute('index')];
+			this._onSelect(selected);
+			this._setSearchValue(selected.label);
+			this._clearCandidates();
+		};
+		
 		return html`
 		 <style>${css}</style>
 		 <div class="autocomplete">
 			<input id='autoComplete' .value=${inputText} @input=${onInput}/>
-			${getAutoCompleteList()} 
+			${this._candidates ? html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
+			<div index=${index} @click=${onClickCandidate} >${unsafeHTML(candidate.labelFormated)}</div>
+		  `)}</div>`: html`` } 
 		 </div>
 		`;
 
