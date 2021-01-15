@@ -4,6 +4,7 @@ import { $injector } from '../../src/injection';
 
 describe('TranslationService', () => {
 
+	let instanceUnderTest;
 	const configService = {
 		getValue: () => { }
 	};
@@ -13,63 +14,91 @@ describe('TranslationService', () => {
 			.registerSingleton('ConfigService', configService);
 	});
 
-	it('provides translation', () => {
+	beforeEach(() => {
+		instanceUnderTest = new TranslationService();
+	});
+
+	it('provides translations from a provider', () => {
 		const lang = 'en';
 		spyOn(configService, 'getValue').and.returnValue(lang);
 
-		const translationService = new TranslationService();
-
-		translationService.register('testProvider', () => {
+		instanceUnderTest.register('testProvider', () => {
 			return {
 				'key0': 'value0',
 				'key1': 'value1',
 			};
 		});
 
-		expect(translationService.getMap(lang).size).toBe(2);
-		expect(translationService.translate('key0')).toBe('value0');
-		expect(translationService.translate('key1')).toBe('value1');
+		expect(instanceUnderTest.getMap().size).toBe(2);
+		expect(instanceUnderTest.translate('key0')).toBe('value0');
+		expect(instanceUnderTest.translate('key1')).toBe('value1');
+	});
+
+	it('provides updated translations from a provider', () => {
+		spyOn(configService, 'getValue').and.returnValue('en');
+
+		instanceUnderTest.register('testProvider', (lang) => {
+			return lang === 'de'
+				?
+				{
+					'key0': 'value0_de',
+				}
+				:
+				{
+					'key0': 'value0_en'
+				};
+		});
+
+		expect(instanceUnderTest.translate('key0')).toBe('value0_en');
+
+		instanceUnderTest.reload('de');
+
+		expect(instanceUnderTest.translate('key0')).toBe('value0_de');
 	});
 
 	it('throws an error when provider already registered', () => {
-		const lang = 'en';
-		spyOn(configService, 'getValue').and.returnValue(lang);
+		spyOn(configService, 'getValue').and.returnValue('en');
 
-		const translationService = new TranslationService();
-		translationService.register('testProvider', () => { });
+		instanceUnderTest.register('testProvider', () => {
+			return {
+				'key0': 'value0',
+			};
+		});
 
-		expect(() => translationService.register('testProvider', () => { }))
+		expect(() => instanceUnderTest.register('testProvider', () => {
+			return {
+				'key0': 'value0',
+			};
+		}))
 			.toThrowError(/Provider testProvider already registered/);
 	});
 
 	it('throws an error when a key is already registered', () => {
-		const lang = 'en';
-		spyOn(configService, 'getValue').and.returnValue(lang);
+		spyOn(configService, 'getValue').and.returnValue('en');
 
-		const translationService = new TranslationService();
-		translationService.register('testProvider0', () => {
+		instanceUnderTest.register('testProvider0', () => {
 			return {
 				'key0': 'value0',
 				'key1': 'value1',
 			};
 		});
-		translationService.register('testProvider1', () => {
-			return {
-				'key0': 'value0',
-			};
-		});
-		expect(() => translationService.getMap())
+
+		expect(() => {
+			instanceUnderTest.register('testProvider1', () => {
+				return {
+					'key0': 'value0',
+				};
+			});
+		})
 			.toThrowError(/Key key0 already registered/);
 	});
 
 	it('provides the requested key when unknown and logs a warn statement', () => {
-		const lang = 'de';
-		spyOn(configService, 'getValue').and.returnValue(lang);
+		spyOn(configService, 'getValue').and.returnValue('de');
 		const warnSpy = spyOn(console, 'warn');
 
-		const translationService = new TranslationService();
 
-		expect(translationService.translate('unknown_key')).toBe('unknown_key');
+		expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 		expect(warnSpy).toHaveBeenCalled();
 	});
 });
