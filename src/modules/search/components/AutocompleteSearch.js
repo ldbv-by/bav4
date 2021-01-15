@@ -137,12 +137,11 @@ export class AutocompleteSearch extends BaElement {
 					}
 				});
 		};
+		
 		const onInput = (e) => debounced(200, requestData(e));
-
-		const onClickCandidate = (e) => {
-			const selected = this._candidates[e.target.closest('div').getAttribute('index')];
-			this._onSelect(selected);
-			this._setSearchValue(selected.label);
+		const onClick = (candidate) => {			
+			this._onSelect(candidate);
+			this._setSearchValue(candidate.label);
 			this._clearCandidates();
 		};
 		
@@ -151,7 +150,7 @@ export class AutocompleteSearch extends BaElement {
 		 <div class="autocomplete">
 			<input id='autoComplete' .value=${inputText} @input=${onInput}/>
 			${this._candidates ? html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
-			<div index=${index} @click=${onClickCandidate} >${unsafeHTML(candidate.labelFormated)}</div>
+			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
 		  `)}</div>`: html`` } 
 		 </div>
 		`;
