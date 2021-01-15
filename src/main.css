@@ -1,6 +1,7 @@
 /* global variables (custom properties) */
 :root {
     --primary-color: #099dda;
+    --secondary-color: #2c5a92;
     --font-family: "Courier New", Courier, monospace;
 }
 

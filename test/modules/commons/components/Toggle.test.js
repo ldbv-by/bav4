@@ -68,6 +68,7 @@ describe('Toggle', () => {
 
 			element.setAttribute('disabled', 'true');
 
+			expect(element.disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.switch').classList.contains('disabled')).toBeTrue();
 		});
 	});
@@ -78,6 +79,7 @@ describe('Toggle', () => {
 
 			const element = await TestUtils.render(Toggle.tag, { checked: false });
 
+			expect(element.shadowRoot.querySelector('.switch').classList.contains('active')).toBeFalse();
 			const input = element.shadowRoot.querySelector('input');
 			expect(input.checked).toBeFalse();
 		});
@@ -86,6 +88,7 @@ describe('Toggle', () => {
 
 			const element = await TestUtils.render(Toggle.tag, { checked: true });
 
+			expect(element.shadowRoot.querySelector('.switch').classList.contains('active')).toBeTrue();
 			const input = element.shadowRoot.querySelector('input');
 			expect(input.checked).toBeTrue();
 		});
@@ -112,6 +115,7 @@ describe('Toggle', () => {
 
 			element.setAttribute('checked', 'true');
 
+			expect(element.checked).toBeTrue();
 			expect(input.checked).toBeTrue();
 		});
 	});

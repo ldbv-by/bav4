@@ -34,7 +34,8 @@ export class Toggle extends BaElement {
 		};
 
 		const classes = {
-			disabled: this._disabled
+			disabled: this._disabled,
+			active: this._checked,
 		};
 
 		return html`
@@ -60,10 +61,10 @@ export class Toggle extends BaElement {
 	attributeChangedCallback(name, oldValue, newValue) {
 		switch (name) {
 			case 'disabled':
-				this.disabled = newValue;
+				this.disabled = (newValue === 'true');
 				break;
 			case 'checked':
-				this.checked = newValue;
+				this.checked = (newValue === 'true');
 				break;
 			case 'title':
 				this.title = newValue;
