@@ -9,42 +9,40 @@ import { $injector } from '../../../../injection';
  *@author bakir_en  
  */
 
-export class InfoButton extends BaElement{
+export class InfoButton extends BaElement {
 
-    constructor(){
-        super();
-        const { TranslationService } = $injector.inject('TranslationService');
-        this._translationService = TranslationService;  
-    } 
+	constructor() {
+		super();
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;  
+	} 
 
-    /**
+	/**
      *@override 
      */
-    createView(){
-        const translate = (key) => this._translationService.translate(key);
+	createView() {
+		const translate = (key) => this._translationService.translate(key);
 
-        const openPopup = () => {
+		const openPopup = () => {
 
-            // set created popup visible
-            var popup = this.shadowRoot.getElementById("info-popup");
-            popup.classList.toggle("show");
-        };
+			// set created popup visible
+			var popup = this.shadowRoot.getElementById('info-popup');
+			popup.classList.toggle('show');
+		};
 
-        return html`
+		return html`
             <style>${css}</style>
             <div class="info-button">
                 <a class="button" title="${translate('map_zoom_in_button')}" @click="${openPopup}"><span class="icon info-icon"></a>
             </div>
-            <ba-popup id="info-popup"></ba-popup>
+            <ba-popup class="popup" id="info-popup-container">
+                <span class="popuptext" id="info-popup">I'm a popup !</span>
+            </ba-popup>
             
         `;
-    } 
+	} 
 
-    // <div class="popup" >
-    //             <span class="popuptext" id="info-popup">I'm a popup !</span>
-    //         </div>
-
-    static get tag(){
-        return 'ba-info-button';
-    } 
+	static get tag() {
+		return 'ba-info-button';
+	} 
 } 

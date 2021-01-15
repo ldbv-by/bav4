@@ -8,7 +8,7 @@
 }
 
 /* The actual popup (appears on top) */
-.popup .popuptext {
+.popup {
   visibility: hidden;
   width: 160px;
   background-color: #555;

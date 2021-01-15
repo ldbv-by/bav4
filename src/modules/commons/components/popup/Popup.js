@@ -11,27 +11,26 @@ import css from './popup.css';
 export class Popup extends BaElement {
 
 
-    /**
+	/**
      *@override  
      */
-    initialize(){
-        // TODO
-    } 
+	// initialize() {
+	// 	// TODO
+	// } 
 
-    /**
+	/**
      *@override 
      */
-    createView(){
-        return html`
+	createView() {
+		return html`
         <style>${css}</style>
         <div class=popup>
-        <span class="popuptext> I'm a reuseable Popup ... </span>
         </div>  
-        `
-    } 
+        `;
+	} 
 
-    static get tag(){
-        return 'ba-popup'
-    } 
+	static get tag() {
+		return 'ba-popup';
+	} 
 
 } 
