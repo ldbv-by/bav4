@@ -16,6 +16,10 @@
   box-sizing: border-box;
 }
 
+.active div{
+  background: var(--secondary-color);
+}
+
 .switch input {
   display: none;
 }
