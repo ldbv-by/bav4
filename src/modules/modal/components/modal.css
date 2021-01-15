@@ -27,10 +27,11 @@
   /* Modal Body */
   .modal-content {    
     background-color: var(--primary-bg-color);
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 10% auto; /* 15% from the top and centered */
     padding: 2px;
     border: 1px solid var(--primary-color);
     width: 80%; /* Could be more or less, depending on screen size */
+    overflow: auto;
   }
   
   /* Modal Footer */
