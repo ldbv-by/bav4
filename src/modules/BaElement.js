@@ -71,12 +71,19 @@ export class BaElement extends HTMLElement {
 		this._state = {};
 	}
 
-
 	log(message) {
 		// eslint-disable-next-line no-console
 		return console.log(`${this.constructor.name}: ` + message);
 	}
 
+	/**
+	 * Fires an event.
+	 * @param {*} name the event name
+	 * @param {*} payload the paylod of the event
+	 */
+	emitEvent(name, payload) {
+		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
+	}
 
 	/**
 	 * @private
@@ -138,6 +145,16 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
+	 * Creates the html template.
+	 * @abstract
+	 * @returns html template as tagged template literal
+	 */
+	createView() {
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
+	}
+
+	/**
 	 * Extract and returns the state of this element from the application-wide state.
 	 * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
 	 * 
@@ -149,6 +166,18 @@ export class BaElement extends HTMLElement {
 		return {};
 	}
 
+	/**
+	 * Called after after the component is connected to the dom.
+	 * Js setup should be done here.
+	 * @protected
+	 */
+	initialize() { }
+
+	/**
+	 * Called before the view is rendered.
+	 * @protected
+	 */
+	onBeforeRender() { }
 
 	/**
 	 * (Re-) renders the HTML view.
@@ -164,33 +193,10 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the html template.
-	 * @abstract
-	 * @returns html template as tagged template literal
-	 */
-	createView() {
-		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
-	}
-
-	/**
-	 * Called after after the component is connected to the dom.
-	 * Js setup should be done here.
-	 * @protected
-	 */
-	initialize() { }
-
-	/**
 	 * Called after the view has been rendered.
 	 * @protected
 	 */
 	onAfterRender() { }
-
-	/**
-	 * Called before the view is rendered.
-	 * @protected
-	 */
-	onBeforeRender() { }
 
 	/**
 	 * Called when the load event of the window is fired.
@@ -212,16 +218,6 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	onDisconnect() { }
-
-	/**
-	 * Fires an event.
-	 * @param {*} name the event name
-	 * @param {*} payload the paylod of the event
-	 */
-	emitEvent(name, payload) {
-		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
-	}
-
 
 	/**
 	 * Returns the Html tag name of this element.
