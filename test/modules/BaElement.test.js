@@ -170,6 +170,26 @@ describe('BaElement', () => {
 			expect(instance.onBeforeRender).toHaveBeenCalledTimes(1);
 		});
 
+		it('calls render callbacks with argument', async () => {
+			const instance = new BaElementImpl();
+			const onBeforeRenderSpy = spyOn(instance, 'onBeforeRender');
+			const onAfterRenderSpy = spyOn(instance, 'onAfterRender');
+			
+			//let's initialize the component
+			instance.connectedCallback();
+			instance.render();
+			
+			expect(instance.onBeforeRender).toHaveBeenCalledWith(true);
+			expect(instance.onAfterRender).toHaveBeenCalledWith(true);
+
+			onBeforeRenderSpy.calls.reset();
+			onAfterRenderSpy.calls.reset();
+			instance.render();
+
+			expect(instance.onBeforeRender).toHaveBeenCalledWith(false);
+			expect(instance.onAfterRender).toHaveBeenCalledWith(false);
+		});
+
 	});
 
 	describe('when state changed', () => {
