@@ -57,11 +57,11 @@ export class Header extends BaElement {
 					<ba-button id='button3' label='disabled' disabled=true></ba-button>
 		</div>
 		<p>Toggle-Button</p>
-		<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle title="Toggle"><span>Toggle</span></ba-toggle></div>
+		<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle title="Toggle"><span>Toggle me!</span></ba-toggle></div>
 		<hr>
 		<h3>Specific components</h3>
 		<p>Theme-Toggle</p>
-		<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+		<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle><span><i>Note:While this component shown here is lazy loaded, the callback to change the theme will not work. Use the placed instance instead.</i></span></div>
 		`;
 	}
 
