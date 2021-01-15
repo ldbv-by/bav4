@@ -69,6 +69,8 @@ export class BaElement extends HTMLElement {
 		 * 
 		 */
 		this._state = {};
+
+		this._rendered = false;
 	}
 
 	log(message) {
@@ -177,7 +179,7 @@ export class BaElement extends HTMLElement {
 	 * Called before the view is rendered.
 	 * @protected
 	 */
-	onBeforeRender() { }
+	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
 
 	/**
 	 * (Re-) renders the HTML view.
@@ -185,10 +187,13 @@ export class BaElement extends HTMLElement {
 	 */
 	render() {
 		if (this._initialized && !this.isRenderingSkipped()) {
-			this.onBeforeRender();
+
+			const initialRendering = !this._rendered;
+			this.onBeforeRender(initialRendering);
 			const template = this.createView();
 			renderLitHtml(template, this.getRenderTarget());
-			this.onAfterRender();
+			this._rendered = true;
+			this.onAfterRender(initialRendering);
 		}
 	}
 
@@ -196,7 +201,7 @@ export class BaElement extends HTMLElement {
 	 * Called after the view has been rendered.
 	 * @protected
 	 */
-	onAfterRender() { }
+	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) { }
 
 	/**
 	 * Called when the load event of the window is fired.
