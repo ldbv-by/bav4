@@ -205,7 +205,10 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 * Called when the load event of the window is fired.
-	 * Access on properties of nested web components is now possible. 
+	 * Access on properties of nested web components is now possible.
+	 * <br>
+	 * Attention: Will not be called, if the element being loaded lazily!
+	 * In this case use: {@link BaElement#onAfterRender}
 	 * @protected
 	 */
 	onWindowLoad() { }
