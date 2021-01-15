@@ -91,6 +91,7 @@ export class BaElement extends HTMLElement {
 		});
 
 		this.initialize();
+		this._initialized = true;
 
 		this.render();
 	}
@@ -154,7 +155,7 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	render() {
-		if (!this.isRenderingSkipped()) {
+		if (this._initialized && !this.isRenderingSkipped()) {
 			this.onBeforeRender();
 			const template = this.createView();
 			renderLitHtml(template, this.getRenderTarget());
