@@ -155,6 +155,21 @@ describe('BaElement', () => {
 			expect(element.initializeCalled).toBe(1);
 			expect(element.onWindowLoadCalled).toBe(2);
 		});
+
+		it('does not call render() as long as not initialized', async () => {
+			const instance = new BaElementImpl();
+			spyOn(instance, 'onBeforeRender');
+			
+			instance.render();
+			
+			expect(instance.onBeforeRender).not.toHaveBeenCalled();
+			
+			//let's initialize the component
+			instance.connectedCallback();
+			
+			expect(instance.onBeforeRender).toHaveBeenCalledTimes(1);
+		});
+
 	});
 
 	describe('when state changed', () => {
