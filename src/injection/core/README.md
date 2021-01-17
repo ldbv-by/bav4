@@ -1,6 +1,6 @@
 # Vanilla JS Dependency Injection
 
-based on  Injector.js (https://github.com/jamesmh/Injector.js/)
+based on  Injector.js (https://github.com/jamesmh/Injector.js/). All code from this folder is licensed under the MIT License.
 
 ## Usage Installation
 
