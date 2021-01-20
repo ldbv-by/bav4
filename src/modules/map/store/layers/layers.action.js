@@ -69,7 +69,7 @@ export const removeLayer = (layerConfig) => {
 };
 
 /**
- * updates the current background layer
+ * Updates the current background layer
  * @function
  * @param {string} id Id of the layer
  */
