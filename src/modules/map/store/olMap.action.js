@@ -1,3 +1,7 @@
+/**
+ * Action creators to change/update the properties of a map.
+ * @module map/action
+ */
 import { ZOOM_CHANGED, POSITION_CHANGED, ZOOM_POSITION_CHANGED, POINTER_POSITION_CHANGED } from './olMap.reducer';
 import { $injector } from '../../../injection';
 
@@ -8,6 +12,10 @@ const getStore = () => {
 
 
 
+/**
+ * Changes zoom level and the position.
+ * @function
+ */
 export const changeZoomAndPosition = (zoomPosition) => {
 	getStore().dispatch({
 		type: ZOOM_POSITION_CHANGED,
@@ -15,7 +23,10 @@ export const changeZoomAndPosition = (zoomPosition) => {
 	});
 };
 
-
+/**
+ * Changes zoom level.
+ * @function
+ */
 export const changeZoom = (zoom) => {
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
@@ -24,6 +35,11 @@ export const changeZoom = (zoom) => {
 	});
 };
 
+
+/**
+ * Increases zoom level by one.
+ * @function
+ */
 export const increaseZoom = () => {
 
 	const { map: { zoom } } = getStore().getState();
@@ -34,6 +50,10 @@ export const increaseZoom = () => {
 	});
 };
 
+/**
+ * Decreases zoom level by one.
+ * @function
+ */
 export const decreaseZoom = () => {
 
 	const { map: { zoom } } = getStore().getState();
@@ -44,6 +64,10 @@ export const decreaseZoom = () => {
 	});
 };
 
+/**
+ * Changes the position.
+ * @function
+ */
 export const changePosition = (position) => {
 	getStore().dispatch({
 		type: POSITION_CHANGED,
@@ -51,6 +75,10 @@ export const changePosition = (position) => {
 	});
 };
 
+/**
+ * Updates the pointer position.
+ * @function
+ */
 export const updatePointerPosition = (position) => {
 	getStore().dispatch({
 		type: POINTER_POSITION_CHANGED,
