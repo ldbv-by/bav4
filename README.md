@@ -132,6 +132,9 @@ Here's a overview of what project folder structure looks like:
 - https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
 
 ### CSS
--  A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+- A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+### Redux
+- Few Ways to Update a State Array in Redux Reducer https://medium.com/swlh/few-ways-to-update-a-state-array-in-redux-reducer-f2621ae8061
 
 *USE THE PLATFORM*

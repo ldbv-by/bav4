@@ -9,8 +9,6 @@ export const initialState = {
 	background: null
 };
 
-// https://medium.com/swlh/few-ways-to-update-a-state-array-in-redux-reducer-f2621ae8061
-
 
 export const index = (list) => {
 	list.forEach((element, index) => {
