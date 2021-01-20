@@ -1,5 +1,5 @@
 /**
- * Actions Creators to change the list of active layers, update properties of a layer and change the background layer.
+ * Action creators to change the list of active layers, update properties of a layer and change the background layer.
  * @module modules/map/store/layers/action
  */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from './layers.reducer';
