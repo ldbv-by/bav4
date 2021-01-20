@@ -1,0 +1,27 @@
+.share {
+    background-color: var(--primary-color);
+    mask: url('assets/share_invert.svg');
+    -webkit-mask-image: url('assets/share_invert.svg');
+  }
+
+.list {    
+    background-color: var(--primary-color);
+    mask: url('assets/list.svg');
+    -webkit-mask-image: url('assets/list.svg');    
+}
+
+.icon {        
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+}
+  
+.icon:hover {
+    transform: scale(1.1);
+}
+  
+.icon:active {
+    transform: scale(1.15);
+}

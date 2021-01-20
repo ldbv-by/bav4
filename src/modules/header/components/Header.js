@@ -5,6 +5,7 @@ import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import { changeZoomAndPosition } from '../../map/store/olMap.action';
 import css from './header.css';
+import showCaseCss from './showCase.css';
 
 
 /**
@@ -55,6 +56,25 @@ export class Header extends BaElement {
 					<ba-button id='button1' label='secondary style' @click=${onClick1}></ba-button>
 					<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
 					<ba-button id='button3' label='disabled' disabled=true></ba-button>
+		</div>
+		<p>ba-icon-buttons</p>
+		<div class='buttons'>		
+		<ba-icon-button id='button0' title='Share this!' @click=${onClick0}>
+						<style>${showCaseCss}</style>
+						<span class='icon list'>
+					</ba-icon-button>
+					<ba-icon-button id='button1' title='disabled'  disabled=true>
+						<style>${showCaseCss}</style>
+						<span class='icon list'>
+					</ba-icon-button>
+					<ba-icon-button id='button2' title='Share this!' @click=${onClick0}>
+						<style>${showCaseCss}</style>
+						<span class='icon share'>
+					</ba-icon-button>
+					<ba-icon-button id='button3' title='disabled' disabled=true>
+						<style>${showCaseCss}</style>
+						<span class='icon share'>
+					</ba-icon-button>
 		</div>
 		<p>Toggle-Button</p>
 		<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle title="Toggle"><span>Toggle me!</span></ba-toggle></div>

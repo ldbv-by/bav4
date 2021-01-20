@@ -1,0 +1,16 @@
+.button {
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button {
+    background-color: transparent;
+    display: inline-block;
+    border: none;
+  }
+
+.disabled {
+    filter: brightness(0.8) ;
+    cursor: not-allowed;    
+}
