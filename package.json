@@ -48,13 +48,13 @@
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --devtool=none",
     "doc": "jsdoc -c jsdoc.conf.json",
-    "lint": "eslint --fix 'src/**/*.js' 'test/**/*.js'",
+    "lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\"",
     "test": "karma start --single-run",
     "test:single": "env KARMA_SPEC=$npm_config_spec karma start karma.conf.single.js --single-run",
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:webkit": "karma start --single-run --browsers Epiphany",
     "test:travis": "karma start karma.conf.travis.js --single-run --browsers TravisHeadlessChrome",
-    "es-check": "es-check --module es9 './src/**/*.js'",
+    "es-check": "es-check --module es9 \"./src/**/*.js\"",
     "analyze-bundle": "webpack --profile --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
 }
