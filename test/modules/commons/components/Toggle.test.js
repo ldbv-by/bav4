@@ -156,25 +156,32 @@ describe('Toggle', () => {
 	});
 	describe('when clicked', () => {
 
-		it('calls the onChange callback', async () => {
+		it('calls the onToggle callback via property callback', async () => {
 
 			const element = await TestUtils.render(Toggle.tag);
-			element.onChange = jasmine.createSpy();
+			element.onToggle = jasmine.createSpy();
 
+			element.click();
 
-			const label = element.shadowRoot.querySelector('label');
-			label.click();
+			expect(element.onToggle).toHaveBeenCalled();
+		});
 
-			expect(element.onChange).toHaveBeenCalled();
+		it('calls the onToggle callback via attribute callback', async () => {
+
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
+			element.onToggle = jasmine.createSpy();
+
+			element.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
 		});
 
 		it('does nothing when disabled', async () => {
 			const element = await TestUtils.render(Toggle.tag, { disabled: true });
-
 			element.onClick = jasmine.createSpy();
 
-			const label = element.shadowRoot.querySelector('label');
-			label.click();
+			element.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
 		});
