@@ -1,0 +1,42 @@
+.layermanager {
+    padding: 0px;    
+    background-color: var(--secondary-bg-color);
+    border: 1px solid var(--primary-color);
+}
+
+.title {
+    text-decoration-color: var(--secondary-color);
+    background-color: var(--secondary-bg-color);       
+    border-bottom: 1px solid var(--primary-color); 
+}
+
+ul {
+    padding:0 px;
+    padding-inline-start: 10px;
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 0px;
+    list-style:none;    
+}
+
+.overflow-container{
+    overflow:auto;
+}
+
+.layer {
+    padding: 2px;
+    margin:2px;
+    display: flex;
+    justify-content: space-evenly;
+    text-decoration-color: var(--secondary-color);
+    background-color:var(--primary-bg-color);
+    border: 1px solid var(--primary-color);
+}
+
+.layer-label {
+    padding:0px 10px
+}
+
+li {
+    flex: 0 0 auto;
+}

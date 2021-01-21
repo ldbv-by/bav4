@@ -62,6 +62,9 @@ export class Header extends BaElement {
 		<h3>Specific components</h3>
 		<p>Theme-Toggle</p>
 		<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+		<p>LayerManager</p>
+		<div class='layer-manager' style="display: flex;justify-content: flex-start;"><ba-layer-manager></ba-layer-manager></div>
+
 		`;
 	}
 
