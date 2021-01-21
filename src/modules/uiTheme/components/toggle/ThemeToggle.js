@@ -27,7 +27,7 @@ export class ThemeToggle extends BaElement {
 	onAfterRender(firsttime) {
 		if (firsttime) {
 			// register callback on toggle
-			this._root.querySelector('ba-toggle').onChange = () => {
+			this._root.querySelector('ba-toggle').onToggle = () => {
 				toggleTheme();
 			};
 		}

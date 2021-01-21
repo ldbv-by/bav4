@@ -43,7 +43,7 @@ describe('ThemeToggle', () => {
 		it('changes the theme', async () => {
 			const element = await setup();
 			
-			element.shadowRoot.querySelector('ba-toggle').shadowRoot.querySelector('input').click();
+			element.shadowRoot.querySelector('ba-toggle').click();
 
 			expect(store.getState().uiTheme.theme).toBe('light');
 			expect(element.shadowRoot.querySelector('ba-toggle').getAttribute('checked')).toBe('false');

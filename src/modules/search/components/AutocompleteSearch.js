@@ -21,7 +21,7 @@ export class AutocompleteSearch extends BaElement {
 		//field '_onSelect' is exposed via getter and setter
 		this._onSelect = () => { };
 		this._candidates = [];
-		this._currentFocus=-1;
+		this._currentFocus = -1;
 	}
 
 	/**
@@ -36,7 +36,7 @@ export class AutocompleteSearch extends BaElement {
 	 * @private
 	 */
 	_clearCandidates() {
-		this._currentFocus=-1;
+		this._currentFocus = -1;
 		this._updateCandidates([]);
 	}
 
@@ -87,10 +87,10 @@ export class AutocompleteSearch extends BaElement {
 			/*start by removing the "active" class on all items:*/
 			removeActive(x);
 			if (this._currentFocus >= x.length) {
-				this._currentFocus= 0;
+				this._currentFocus = 0;
 			}
 			if (this._currentFocus < 0) {
-				this._currentFocus= (x.length - 1);
+				this._currentFocus = (x.length - 1);
 			}
 			/*add class "autocomplete-active":*/
 			x[this._currentFocus].classList.add('autocomplete-active');
@@ -146,7 +146,7 @@ export class AutocompleteSearch extends BaElement {
 			<input id='autoComplete' .value=${inputText} @input=${onInput} @keydown=${onKeyDown}/>
 			${this._candidates ? html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
 			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
-		  `)}</div>`: nothing } 
+		  `)}</div>` : nothing } 
 		 </div>
 		`;
 

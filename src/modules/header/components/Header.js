@@ -28,21 +28,25 @@ export class Header extends BaElement {
 	}
 
 	createShowCase() {
-		const onClick0 = ()=> {
+		const onClick0 = () => {
 			changeZoomAndPosition({
 				zoom: 13,
 				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
 
-		const onClick1 = ()  => {
+		const onClick1 = () => {
 			changeZoomAndPosition({
 				zoom: 11,
 				position: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
 		};
+		const onToggle = (event) => {
+			// eslint-disable-next-line no-console
+			console.log('toggled ' + event.detail.checked);
+		};
 
-		return html `<p>Here we present components in random order that:</p>
+		return html`<p>Here we present components in random order that:</p>
 		<ul>
 		<li>are <i>common and reusable</i> components or <i>functional behaviors</i>, who can be added to or extend other components</li>
 		<li><i>feature</i> components, which have already been implemented, but have not yet been given the most suitable place...</li>
@@ -57,7 +61,7 @@ export class Header extends BaElement {
 					<ba-button id='button3' label='disabled' disabled=true></ba-button>
 		</div>
 		<p>Toggle-Button</p>
-		<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle title="Toggle"><span>Toggle me!</span></ba-toggle></div>
+		<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle title="Toggle" @toggle=${onToggle}><span>Toggle me!</span></ba-toggle></div>
 		<hr>
 		<h3>Specific components</h3>
 		<p>Theme-Toggle</p>
@@ -82,8 +86,8 @@ export class Header extends BaElement {
 			}
 		};
 
-		const showModalInfo = ()=> {
-			const payload = { title:'Showcase', content: this.createShowCase() };
+		const showModalInfo = () => {
+			const payload = { title: 'Showcase', content: this.createShowCase() };
 			openModal(payload);
 		};
 

@@ -79,9 +79,9 @@ describe('Header', () => {
 		});
 	});
 
-	describe('when logo is clicked', ()=> {
+	describe('when logo is clicked', () => {
 
-		it('shows a modal window with the showcase', async ()=> {
+		it('shows a modal window with the showcase', async () => {
 			const element = await setup({ mobile: false });
 			spyOn(element, 'createShowCase');
 
@@ -91,10 +91,10 @@ describe('Header', () => {
 		});
 	});
 
-	describe('when showcase created', ()=> {	
+	describe('when showcase created', () => {	
 		let store;
 			
-		const extendedSetup = ()=>{
+		const extendedSetup = () => {
 			const state = {
 				mobile: false,
 				map: {

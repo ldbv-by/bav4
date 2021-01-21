@@ -1,3 +1,7 @@
+/**
+ * Action creators to change/update the properties of sidePanel state.
+ * @module menue/action
+ */
 import { OPEN_CLOSED_CHANGED } from './sidePanel.reducer';
 import { $injector } from '../../../injection';
 
@@ -7,6 +11,10 @@ const getStore = () => {
 };
 
 
+/**
+ * Opens the sidePanel.
+ * @function
+ */
 export const openSidePanel = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
@@ -14,6 +22,10 @@ export const openSidePanel = () => {
 	});
 };
 
+/**
+ * Closes the sidePanel.
+ * @function
+ */
 export const closeSidePanel = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
@@ -22,8 +34,12 @@ export const closeSidePanel = () => {
 	});
 };
 
+/**
+ * Toggles the sidePanel.
+ * @function
+ */
 export const toggleSidePanel = () => {
-	const { sidePanel: { open } }  = getStore().getState();
+	const { sidePanel: { open } } = getStore().getState();
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open
