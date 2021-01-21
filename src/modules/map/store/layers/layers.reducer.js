@@ -37,7 +37,10 @@ export const layersReducer = (state = initialState, action) => {
 			const { id, properties } = payload;
 
 			if (state.active.findIndex(layer => layer.id === id) !== -1) {
-				throw new Error('Id ' + id + ' already present');
+				//do nothing when id already present
+				return {
+					...state
+				};
 			}
 
 			const layer = {

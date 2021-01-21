@@ -18,6 +18,7 @@ describe('layersReducer', () => {
 	});
 
 	it('it sets the zIndex property based on an array', () => {
+		setup();
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
 		const layer2 = { label: 'label2' };
@@ -30,6 +31,7 @@ describe('layersReducer', () => {
 	});
 
 	it('it sorts an array based on the the zIndex property', () => {
+		setup();
 		const layer0 = { label: 'label0', zIndex: 2 };
 		const layer1 = { label: 'label1', zIndex: 0 };
 		const layer2 = { label: 'label2', zIndex: 1 };
@@ -42,7 +44,6 @@ describe('layersReducer', () => {
 	});
 
 	it('it adds a layerConfig instance', () => {
-
 		setup();
 
 		const layer0 = { label: 'label0' };
@@ -60,24 +61,21 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
 	});
 
-	it('it throws an error a layer is already present', () => {
-
+	it('it does nothing when layer is already present', () => {
 		setup();
-
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
 
 		addLayer('id0', layer0);
+		addLayer('id0', layer1);
 
-		expect(() => {
-			addLayer('id0', layer1);
-
-		}).toThrowError(/Id id0 already present/);
+		expect(store.getState().layers.active.length).toBe(1);
+		expect(store.getState().layers.active[0].id).toBe('id0');
+		expect(store.getState().layers.active[0].label).toBe('label0');
 
 	});
 
 	it('it removes a layer', () => {
-
 		const layer0 = { id: 'id0', label: 'label0' };
 		const layer1 = { id: 'id1', label: 'label1' };
 		setup({
@@ -96,7 +94,6 @@ describe('layersReducer', () => {
 	});
 
 	it('it modifies the \'visible\' property of a layer', () => {
-
 		const layer0 = { id: 'id0', label: 'label0', visible: true };
 		setup({
 			layers: {
@@ -108,12 +105,11 @@ describe('layersReducer', () => {
 
 		modifyLayer('id0', { visible: false });
 
-
 		expect(store.getState().layers.active[0].visible).toBe(false);
 	});
 
 	it('it modifies the \'zIndex\' property of a layer', () => {
-
+		setup();
 		const layer0 = { id: 'id0', label: 'label0' };
 		const layer1 = { id: 'id1', label: 'label1' };
 		const layer2 = { id: 'id2', label: 'label2' };
@@ -131,7 +127,6 @@ describe('layersReducer', () => {
 	});
 
 	it('it does nothing when modified layer is not present', () => {
-
 		const layer0 = { id: 'id0', label: 'label0', visible: true };
 		setup({
 			layers: {
@@ -148,7 +143,7 @@ describe('layersReducer', () => {
 	});
 
 	it('changes the background', () => {
-		setup({ background: null });
+		setup();
 
 		changeBackground('bg0');
 
