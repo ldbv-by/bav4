@@ -161,9 +161,7 @@ describe('Toggle', () => {
 			const element = await TestUtils.render(Toggle.tag);
 			element.onToggle = jasmine.createSpy();
 
-
-			const label = element.shadowRoot.querySelector('label');
-			label.click();
+			element.click();
 
 			expect(element.onToggle).toHaveBeenCalled();
 		});
@@ -174,20 +172,16 @@ describe('Toggle', () => {
 			const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
 			element.onToggle = jasmine.createSpy();
 
-
-			const label = element.shadowRoot.querySelector('label');
-			label.click();
+			element.click();
 
 			expect(window.alert).toHaveBeenCalledWith('called');
 		});
 
 		it('does nothing when disabled', async () => {
 			const element = await TestUtils.render(Toggle.tag, { disabled: true });
-
 			element.onClick = jasmine.createSpy();
 
-			const label = element.shadowRoot.querySelector('label');
-			label.click();
+			element.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
 		});

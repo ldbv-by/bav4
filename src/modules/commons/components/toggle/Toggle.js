@@ -21,6 +21,11 @@ export class Toggle extends BaElement {
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this.title = this.getAttribute('title') || '';
+		
+		// we pass the click event
+		this.addEventListener('click', () =>{
+			this._root.querySelector('label').click();
+		});
 	}
 
 
