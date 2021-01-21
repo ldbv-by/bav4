@@ -16,8 +16,8 @@ export class Toggle extends BaElement {
 	 * @override
 	 */
 	initialize() {
-		//properties 'onChange', 'checked', 'disabled', 'title' are exposed via getter and setter
-		this._onChange = () => { };
+		//properties 'onToggle', 'checked', 'disabled', 'title' are exposed via getter and setter
+		this._onToggle = () => { };
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this.title = this.getAttribute('title') || '';
@@ -30,9 +30,12 @@ export class Toggle extends BaElement {
 	createView() {
 
 		const onChange = (event) => {
-			this._onChange(event);
+			this.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: event.target.checked }
+			}));
+			
+			this._onToggle(event);
 		};
-
 		const classes = {
 			disabled: this._disabled,
 			active: this._checked,
@@ -99,11 +102,11 @@ export class Toggle extends BaElement {
 		return this._checked;
 	}
 
-	set onChange(callback) {
-		this._onChange = callback;
+	set onToggle(callback) {
+		this._onToggle = callback;
 	}
 
-	get onChange() {
-		return this._onChange;
+	get onToggle() {
+		return this._onToggle;
 	}
 }
