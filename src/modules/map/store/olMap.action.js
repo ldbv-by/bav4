@@ -1,5 +1,5 @@
 /**
- * Action creators to change/update the properties of a map.
+ * Action creators to change/update the properties of map state.
  * @module map/action
  */
 import { ZOOM_CHANGED, POSITION_CHANGED, ZOOM_POSITION_CHANGED, POINTER_POSITION_CHANGED } from './olMap.reducer';
@@ -9,8 +9,6 @@ const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
 	return StoreService.getStore();
 };
-
-
 
 /**
  * Changes zoom level and the position.

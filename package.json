@@ -19,7 +19,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "fucazu-minami": "^1.1.7",
     "html-webpack-plugin": "^4.5.1",
-    "jasmine": "^3.6.3",
+    "jasmine": "^3.6.4",
     "jsdoc": "^3.6.6",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
@@ -38,7 +38,7 @@
     "svg-url-loader": "^7.1.1",
     "to-string-loader": "^1.1.6",
     "webpack": "^4.46.0",
-    "webpack-bundle-analyzer": "^4.3.0",
+    "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.2"
   },
