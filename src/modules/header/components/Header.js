@@ -28,7 +28,7 @@ export class Header extends BaElement {
 	}
 
 	createShowCase() {
-		const onClick0 = ()=> {
+		const onClick0 = () => {
 			changeZoomAndPosition({
 				zoom: 13,
 				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
@@ -82,7 +82,7 @@ export class Header extends BaElement {
 			}
 		};
 
-		const showModalInfo = ()=> {
+		const showModalInfo = () => {
 			const payload = { title:'Showcase', content: this.createShowCase() };
 			openModal(payload);
 		};
