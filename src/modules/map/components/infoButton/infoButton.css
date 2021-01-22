@@ -9,8 +9,8 @@
   }
   
   .info-icon {
-    mask: url('assets/plus-circle-fill.svg');
-    -webkit-mask-image: url('assets/plus-circle-fill.svg');
+    mask: url('assets/info-circle-solid.svg');
+    -webkit-mask-image: url('assets/info-circle-solid.svg');
   }
   
   .icon {

@@ -17,8 +17,8 @@ export class Popup extends BaElement {
      */
 	initialize() {
 		this._type = this.getAttribute('type') || 'hide';
-		this._right = this.getAttribute('right')|| '0';
-		this._top = this.getAttribute('top')|| '0';  
+		this._right = this.getAttribute('right') || '0';
+		this._top = this.getAttribute('top') || '0';  
 	} 
 
 	/**
@@ -26,7 +26,7 @@ export class Popup extends BaElement {
      */
 	createView() {
 
-		const classes ={
+		const classes = {
 			show: this._type === 'show',
 		}; 
 
