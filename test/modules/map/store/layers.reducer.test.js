@@ -3,22 +3,20 @@ import { addLayer, removeLayer, modifyLayer, changeBackground } from '../../../.
 import { TestUtils } from '../../../test-utils.js';
 
 describe('layersReducer', () => {
-	
-	let store;
-	const setup = (state = {}) => {
-		store = TestUtils.setupStoreAndDi(state, {
+
+	const setup = (state) => {
+		return TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer
 		});
 	};
 
 	it('initiales the store with default values', () => {
-		setup();
+		const store = setup();
 		expect(store.getState().layers.active.length).toBe(0);
 		expect(store.getState().layers.background).toBeNull();
 	});
 
 	it('it sets the zIndex property based on an array', () => {
-		setup();
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
 		const layer2 = { label: 'label2' };
@@ -31,7 +29,6 @@ describe('layersReducer', () => {
 	});
 
 	it('it sorts an array based on the the zIndex property', () => {
-		setup();
 		const layer0 = { label: 'label0', zIndex: 2 };
 		const layer1 = { label: 'label1', zIndex: 0 };
 		const layer2 = { label: 'label2', zIndex: 1 };
@@ -44,7 +41,7 @@ describe('layersReducer', () => {
 	});
 
 	it('it adds layers', () => {
-		setup();
+		const store = setup();
 
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
@@ -61,8 +58,28 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
 	});
 
-	it('it adds layers regarding a z-index property', () => {
-		setup();
+	it('it adds layers regarding a z-index property of 0', () => {
+		const store = setup();
+		expect(store.getState().layers.active.length).toBe(0);
+
+		const layer0 = { label: 'label0' };
+		const layer1 = { label: 'label1', zIndex: 0 };
+
+		addLayer('id0', layer0);
+		addLayer('id1', layer1);
+
+		expect(store.getState().layers.active.length).toBe(2);
+		expect(store.getState().layers.active[0].id).toBe('id1');
+		expect(store.getState().layers.active[0].label).toBe('label1');
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+
+		expect(store.getState().layers.active[1].id).toBe('id0');
+		expect(store.getState().layers.active[1].label).toBe('label0');
+		expect(store.getState().layers.active[1].zIndex).toBe(1);
+	});
+
+	it('it adds layers regarding a z-index property of > 0', () => {
+		const store = setup();
 
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
@@ -87,7 +104,7 @@ describe('layersReducer', () => {
 	});
 
 	it('it adds layers ignoring a negative z-index property', () => {
-		setup();
+		const store = setup();
 
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
@@ -112,7 +129,7 @@ describe('layersReducer', () => {
 	});
 
 	it('it does nothing when layer is already present', () => {
-		setup();
+		const store = setup();
 		const layer0 = { label: 'label0' };
 		const layer1 = { label: 'label1' };
 
@@ -128,7 +145,7 @@ describe('layersReducer', () => {
 	it('it removes a layer', () => {
 		const layer0 = { id: 'id0', label: 'label0' };
 		const layer1 = { id: 'id1', label: 'label1' };
-		setup({
+		const store = setup({
 			layers: {
 				active: [layer0, layer1]
 			}
@@ -145,7 +162,7 @@ describe('layersReducer', () => {
 
 	it('it modifies the \'visible\' property of a layer', () => {
 		const layer0 = { id: 'id0', label: 'label0', visible: true };
-		setup({
+		const store = setup({
 			layers: {
 				active: index([layer0])
 			}
@@ -159,11 +176,10 @@ describe('layersReducer', () => {
 	});
 
 	it('it modifies the \'zIndex\' property of a layer', () => {
-		setup();
 		const layer0 = { id: 'id0', label: 'label0' };
 		const layer1 = { id: 'id1', label: 'label1' };
 		const layer2 = { id: 'id2', label: 'label2' };
-		setup({
+		const store = setup({
 			layers: {
 				active: index([layer0, layer1, layer2])
 			}
@@ -178,7 +194,7 @@ describe('layersReducer', () => {
 
 	it('it does nothing when modified layer is not present', () => {
 		const layer0 = { id: 'id0', label: 'label0', visible: true };
-		setup({
+		const store = setup({
 			layers: {
 				active: index([layer0])
 			}
@@ -193,7 +209,7 @@ describe('layersReducer', () => {
 	});
 
 	it('changes the background', () => {
-		setup();
+		const store = setup();
 
 		changeBackground('bg0');
 
