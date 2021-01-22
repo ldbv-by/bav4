@@ -27,7 +27,13 @@ export class InfoButton extends BaElement {
 
 			// set created popup visible
 			var popup = this.shadowRoot.getElementById('info-popup');
-			popup.classList.toggle('show');
+			if (popup.getAttribute('type') === 'hide') {
+				// popup.setPosition(60, 210);
+				popup.setAttribute('type', 'show');
+			}
+			else{
+				popup.setAttribute('type', 'hide');
+			} 
 		};
 
 		return html`
@@ -35,8 +41,8 @@ export class InfoButton extends BaElement {
             <div class="info-button">
                 <a class="button" title="${translate('map_zoom_in_button')}" @click="${openPopup}"><span class="icon info-icon"></a>
             </div>
-            <ba-popup class="popup" id="info-popup-container">
-                <span class="popuptext" id="info-popup">I'm a popup !</span>
+			<ba-popup id="info-popup" type='hide' right='60' top='210' >
+				<span>I'm a reuseable popup!</span>
             </ba-popup>
             
         `;
