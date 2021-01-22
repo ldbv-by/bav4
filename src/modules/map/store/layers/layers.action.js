@@ -12,7 +12,7 @@ import { $injector } from '../../../../injection';
  * @property {name} label Label of this layer
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
- * @property {number} [ZIndex] Current index of this layer within the list of active layers.
+ * @property {number} [ZIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
  */
 
 /**
@@ -35,7 +35,7 @@ const getStore = () => {
  * @param {string} id Id of the layer
  * @param {LayerProperties} properties New properties
  */
-export const modifyLayer = (id, properties) => {
+export const modifyLayer = (id, properties = {}) => {
 	getStore().dispatch({
 		type: LAYER_MODIFIED,
 		payload: { id: id, properties: properties }
@@ -48,7 +48,7 @@ export const modifyLayer = (id, properties) => {
  * @param {string} id Id of the layer
  * @param {LayerProperties} properties New properties
  */
-export const addLayer = (id, properties) => {
+export const addLayer = (id, properties = {}) => {
 	getStore().dispatch({
 		type: LAYER_ADDED,
 		payload: { id: id, properties: properties }
@@ -61,10 +61,10 @@ export const addLayer = (id, properties) => {
  * @param {string} id Id of the layer
  * @param {LayerProperties} properties New properties
  */
-export const removeLayer = (layerConfig) => {
+export const removeLayer = (id) => {
 	getStore().dispatch({
 		type: LAYER_REMOVED,
-		payload: layerConfig
+		payload: id
 	});
 };
 

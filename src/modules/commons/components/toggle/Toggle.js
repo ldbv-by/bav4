@@ -23,7 +23,7 @@ export class Toggle extends BaElement {
 		this.title = this.getAttribute('title') || '';
 		
 		// we pass the click event
-		this.addEventListener('click', () =>{
+		this.addEventListener('click', () => {
 			this._root.querySelector('label').click();
 		});
 	}
