@@ -33,7 +33,7 @@ export class Popup extends BaElement {
 		return html`
         <style>${css}</style>
 		<div class='popup' id=this-popup>
-			<span class='popuptext ${classMap(classes)}' ?right=${this._right} ?top=${this._top}>
+			<span class='popuptext ${classMap(classes)}' right=${this._right} top=${this._top}>
 				 <slot></slot>
 			</span>
         </div>  
@@ -68,6 +68,9 @@ export class Popup extends BaElement {
 		return this._type;
 	}
 
+	/**
+	 * @param {number} value
+	 */
 	set right(value) {
 		this._right = value;
 		this.render();
@@ -78,7 +81,7 @@ export class Popup extends BaElement {
 	} 
 
 	/**
-	 * @param {any} value
+	 * @param {number} value
 	 */
 	set top(value) {
 		this._top = value;
@@ -92,7 +95,7 @@ export class Popup extends BaElement {
 	 * 
 	 *
 	 *@private 
-	 @param {string} right
+	 *@param {string} right
 	 *@param {string} top   
 	 */
 	_setPosition(right, top) {
