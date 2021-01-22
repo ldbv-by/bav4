@@ -24,13 +24,14 @@ export class ThemeToggle extends BaElement {
 	}
 
 
-	onWindowLoad() {
-		// register callback on toggle
-		this._root.querySelector('ba-toggle').onChange = () => {
-			toggleTheme();
-		};
+	onAfterRender(firsttime) {
+		if (firsttime) {
+			// register callback on toggle
+			this._root.querySelector('ba-toggle').onToggle = () => {
+				toggleTheme();
+			};
+		}
 	}
-
 
 	createView() {
 		const isChecked = (this._state.theme === 'dark');

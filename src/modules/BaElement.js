@@ -69,14 +69,23 @@ export class BaElement extends HTMLElement {
 		 * 
 		 */
 		this._state = {};
-	}
 
+		this._rendered = false;
+	}
 
 	log(message) {
 		// eslint-disable-next-line no-console
 		return console.log(`${this.constructor.name}: ` + message);
 	}
 
+	/**
+	 * Fires an event.
+	 * @param {*} name the event name
+	 * @param {*} payload the paylod of the event
+	 */
+	emitEvent(name, payload) {
+		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
+	}
 
 	/**
 	 * @private
@@ -138,6 +147,16 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
+	 * Creates the html template.
+	 * @abstract
+	 * @returns html template as tagged template literal
+	 */
+	createView() {
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
+	}
+
+	/**
 	 * Extract and returns the state of this element from the application-wide state.
 	 * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
 	 * 
@@ -149,30 +168,6 @@ export class BaElement extends HTMLElement {
 		return {};
 	}
 
-
-	/**
-	 * (Re-) renders the HTML view.
-	 * @protected
-	 */
-	render() {
-		if (this._initialized && !this.isRenderingSkipped()) {
-			this.onBeforeRender();
-			const template = this.createView();
-			renderLitHtml(template, this.getRenderTarget());
-			this.onAfterRender();
-		}
-	}
-
-	/**
-	 * Creates the html template.
-	 * @abstract
-	 * @returns html template as tagged template literal
-	 */
-	createView() {
-		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
-	}
-
 	/**
 	 * Called after after the component is connected to the dom.
 	 * Js setup should be done here.
@@ -181,20 +176,39 @@ export class BaElement extends HTMLElement {
 	initialize() { }
 
 	/**
-	 * Called after the view has been rendered.
-	 * @protected
-	 */
-	onAfterRender() { }
-
-	/**
 	 * Called before the view is rendered.
 	 * @protected
 	 */
-	onBeforeRender() { }
+	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
+
+	/**
+	 * (Re-) renders the HTML view.
+	 * @protected
+	 */
+	render() {
+		if (this._initialized && !this.isRenderingSkipped()) {
+
+			const initialRendering = !this._rendered;
+			this.onBeforeRender(initialRendering);
+			const template = this.createView();
+			renderLitHtml(template, this.getRenderTarget());
+			this._rendered = true;
+			this.onAfterRender(initialRendering);
+		}
+	}
+
+	/**
+	 * Called after the view has been rendered.
+	 * @protected
+	 */
+	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) { }
 
 	/**
 	 * Called when the load event of the window is fired.
-	 * Access on properties of nested web components is now possible. 
+	 * Access on properties of nested web components is now possible.
+	 * <br>
+	 * Attention: Will not be called, if the element being loaded lazily!
+	 * In this case use: {@link BaElement#onAfterRender}
 	 * @protected
 	 */
 	onWindowLoad() { }
@@ -212,16 +226,6 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 */
 	onDisconnect() { }
-
-	/**
-	 * Fires an event.
-	 * @param {*} name the event name
-	 * @param {*} payload the paylod of the event
-	 */
-	emitEvent(name, payload) {
-		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
-	}
-
 
 	/**
 	 * Returns the Html tag name of this element.
