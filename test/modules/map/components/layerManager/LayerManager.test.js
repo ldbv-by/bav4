@@ -15,7 +15,7 @@ describe('LayerManager', () => {
 	};
     
 	describe('when initialized', () => {
-		it(' with empty layers displays no layer item', async()=> {
+		it('with empty layers displays no layer item', async() => {
 			const stateEmpty = {
 				layers: {
 					active: [],
@@ -27,8 +27,8 @@ describe('LayerManager', () => {
 			expect(element.shadowRoot.querySelector('.layer')).toBeFalsy();
 		});
         
-		it('with one layer displays one layer item', async()=> {
-			const layer= { ...defaultLayerProperties,
+		it('with one layer displays one layer item', async() => {
+			const layer = { ...defaultLayerProperties,
 				id: 'id0', label: 'label0', visible: true, zIndex:1
 			};
 			const state = {
