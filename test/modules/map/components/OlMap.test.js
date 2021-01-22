@@ -9,6 +9,9 @@ import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
 import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
 import { $injector } from '../../../../src/injection';
+import { layersReducer } from '../../../../src/modules/map/store/layers/layers.reducer';
+import { WmsGeoResource } from '../../../../src/services/domain/geoResources';
+import { addLayer, modifyLayer, removeLayer } from '../../../../src/modules/map/store/layers/layers.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -26,15 +29,31 @@ describe('OlMap', () => {
 			map: {
 				zoom: 10,
 				position: initialPosition
+			},
+			layers: {
+				active: [],
+				background: null
 			}
 		};
 
 		store = TestUtils.setupStoreAndDi(state, {
-			map: mapReducer
+			map: mapReducer,
+			layers: layersReducer
 		});
 
 		$injector.registerSingleton('ShareService', {
 			copyToClipboard: () => { }
+		});
+		$injector.registerSingleton('GeoResourceService', {
+			async byId(id) {
+				switch (id) {
+					case 'id0':
+						return new WmsGeoResource(id, 'Label0', 'https://something0.url', 'layer0', 'image/png');
+					case 'id1':
+						return new WmsGeoResource(id, 'Label1', 'https://something1.url', 'layer1', 'image/png');
+				}
+				return Promise.reject('no georesource found for ' + id);
+			}
 		});
 
 		element = await TestUtils.render(OlMap.tag);
@@ -155,6 +174,144 @@ describe('OlMap', () => {
 			expect(actualCommands[1].label).toBe('Hello');
 			expect(actualCommands[1].action).not.toBeUndefined();
 			expect(actualCommands[1].shortCut).toBeUndefined();
+		});
+	});
+
+	describe('layer management', () => {
+
+		it('intial attaches one layer', () => {
+			const map = element._map;
+
+			expect(map.getLayers().getLength()).toBe(1);
+		});
+
+		/**
+		 * Note: Layers are added to map asynchronously. We do not get a Promise
+		 * or something like that. Therefore we use simple callbacks here,  
+		 * which are jasmine's low-level mechanism for that case:
+		 * https://jasmine.github.io/tutorials/async
+		 */
+		it('adds a layer with default settings', (done) => {
+			const map = element._map;
+
+			addLayer('id0');
+
+			setTimeout(() => {
+				expect(map.getLayers().getLength()).toBe(2);
+
+				const layer = map.getLayers().item(1);
+				expect(layer.get('id')).toBe('id0');
+				expect(layer.getOpacity()).toBe(1);
+				expect(layer.getVisible()).toBeTrue();
+
+				done();
+			});
+		});
+
+		it('adds a layer with custom settings', (done) => {
+			const map = element._map;
+
+			addLayer('id0', { visible: false, opacity: .5 });
+
+			setTimeout(() => {
+				expect(map.getLayers().getLength()).toBe(2);
+
+				const layer = map.getLayers().item(1);
+				expect(layer.get('id')).toBe('id0');
+				expect(layer.getOpacity()).toBe(.5);
+				expect(layer.getVisible()).toBeFalse();
+
+				done();
+			});
+		});
+
+		it('adds a layer with custom index', (done) => {
+			const map = element._map;
+
+			addLayer('id0');
+
+			setTimeout(() => {
+
+				addLayer('id1', { zIndex: 0 });
+				setTimeout(() => {
+					expect(map.getLayers().getLength()).toBe(3);
+					const layer1 = map.getLayers().item(1);
+					expect(layer1.get('id')).toBe('id1');
+					const layer0 = map.getLayers().item(2);
+					expect(layer0.get('id')).toBe('id0');
+
+					done();
+				});
+			});
+		});
+
+		it('removes a layer', (done) => {
+			const map = element._map;
+
+			addLayer('id0');
+
+			setTimeout(() => {
+				expect(map.getLayers().getLength()).toBe(2);
+
+				removeLayer('id0');
+
+				expect(map.getLayers().getLength()).toBe(1);
+				expect(map.getLayers().item(0).get('id')).not.toBe('id0');
+
+				done();
+			});
+		});
+
+		it('modifys the visibility of a layer', (done) => {
+			const map = element._map;
+
+			addLayer('id0');
+
+			setTimeout(() => {
+
+				addLayer('id1');
+				setTimeout(() => {
+					expect(map.getLayers().getLength()).toBe(3);
+
+					modifyLayer('id0', { visible: false, opacity: .5 });
+
+					const layer0 = map.getLayers().item(1);
+					expect(layer0.get('id')).toBe('id0');
+					expect(layer0.getVisible()).toBeFalse();
+					expect(layer0.getOpacity()).toBe(.5);
+
+					const layer1 = map.getLayers().item(2);
+					expect(layer1.get('id')).toBe('id1');
+					expect(layer1.getVisible()).toBeTrue();
+					expect(layer1.getOpacity()).toBe(1);
+
+					done();
+				});
+			});
+		});
+
+		it('modifys the z-index of a layer', (done) => {
+			const map = element._map;
+
+			addLayer('id0');
+
+			setTimeout(() => {
+
+				addLayer('id1');
+				setTimeout(() => {
+					expect(map.getLayers().getLength()).toBe(3);
+
+					modifyLayer('id0', { zIndex: 2 });
+
+					const layer0 = map.getLayers().item(1);
+					expect(layer0.get('id')).toBe('id1');
+
+					const layer1 = map.getLayers().item(2);
+					expect(layer1.get('id')).toBe('id0');
+
+					done();
+				});
+			});
 		});
 	});
 });
