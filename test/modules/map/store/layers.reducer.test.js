@@ -43,7 +43,7 @@ describe('layersReducer', () => {
 		expect(array[2].label).toBe('label0');
 	});
 
-	it('it adds a layerConfig instance', () => {
+	it('it adds layers', () => {
 		setup();
 
 		const layer0 = { label: 'label0' };
@@ -59,6 +59,56 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[1].id).toBe('id1');
 		expect(store.getState().layers.active[1].label).toBe('label1');
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
+	});
+
+	it('it adds layers regarding a z-index property', () => {
+		setup();
+
+		const layer0 = { label: 'label0' };
+		const layer1 = { label: 'label1' };
+		const layer2 = { label: 'label2', zIndex: 1 };
+
+		addLayer('id0', layer0);
+		addLayer('id1', layer1);
+		addLayer('id2', layer2);
+
+		expect(store.getState().layers.active.length).toBe(3);
+		expect(store.getState().layers.active[0].id).toBe('id0');
+		expect(store.getState().layers.active[0].label).toBe('label0');
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+
+		expect(store.getState().layers.active[1].id).toBe('id2');
+		expect(store.getState().layers.active[1].label).toBe('label2');
+		expect(store.getState().layers.active[1].zIndex).toBe(1);
+
+		expect(store.getState().layers.active[2].id).toBe('id1');
+		expect(store.getState().layers.active[2].label).toBe('label1');
+		expect(store.getState().layers.active[2].zIndex).toBe(2);
+	});
+
+	it('it adds layers ignoring a negative z-index property', () => {
+		setup();
+
+		const layer0 = { label: 'label0' };
+		const layer1 = { label: 'label1' };
+		const layer2 = { label: 'label2', zIndex: -1 };
+
+		addLayer('id0', layer0);
+		addLayer('id1', layer1);
+		addLayer('id2', layer2);
+
+		expect(store.getState().layers.active.length).toBe(3);
+		expect(store.getState().layers.active[0].id).toBe('id0');
+		expect(store.getState().layers.active[0].label).toBe('label0');
+		expect(store.getState().layers.active[0].zIndex).toBe(0);
+
+		expect(store.getState().layers.active[1].id).toBe('id1');
+		expect(store.getState().layers.active[1].label).toBe('label1');
+		expect(store.getState().layers.active[1].zIndex).toBe(1);
+
+		expect(store.getState().layers.active[2].id).toBe('id2');
+		expect(store.getState().layers.active[2].label).toBe('label2');
+		expect(store.getState().layers.active[2].zIndex).toBe(2);
 	});
 
 	it('it does nothing when layer is already present', () => {

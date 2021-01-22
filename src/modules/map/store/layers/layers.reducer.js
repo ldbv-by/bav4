@@ -24,7 +24,7 @@ export const sort = (list) => {
 export const defaultLayerProperties = {
 	label: '',
 	visible: true,
-	zIndex: -1,
+	zIndex: undefined,
 	opacity: 1
 };
 
@@ -48,7 +48,11 @@ export const layersReducer = (state = initialState, action) => {
 				...properties,
 				id: id
 			};
-			const active = [...state.active, layer];
+
+			//when index is given we insert at that value, otherwise we append the layer
+			const insertIndex = (properties.zIndex && properties.zIndex >= 0) || state.active.length;
+			const active = [...state.active];
+			active.splice(insertIndex, 0, layer);
 
 			return {
 				...state,
