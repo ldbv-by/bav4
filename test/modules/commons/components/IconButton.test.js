@@ -93,4 +93,20 @@ describe('IconButton', () => {
 		});
 
 	});
+
+	describe('when slot is filled', () => {
+
+		it('renders the slot', async () => {
+			const element = await TestUtils.render(IconButton.tag, {}, '<span>some slot content</span>');
+
+		
+			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
+			expect(element.shadowRoot.querySelector('slot').assignedNodes()[0].innerHTML).toEqual('some slot content');
+			expect(element.shadowRoot.querySelector('slot').assignedNodes()[0].outerHTML).toEqual('<span>some slot content</span>');
+		});
+
+	});
+
+
 });
