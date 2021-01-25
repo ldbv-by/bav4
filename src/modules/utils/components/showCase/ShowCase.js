@@ -2,6 +2,8 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import { addLayer } from '../../../map/store/layers/layers.action';
+
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -42,6 +44,10 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
+		const onClickLayer = () => {
+			addLayer('dop80');
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -63,6 +69,11 @@ export class ShowCase extends BaElement {
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
 			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+			<p>Layer-Manager</p>
+			<div class='layer-manager' style="display: flex;justify-content: space-between;">
+				<ba-layer-manager></ba-layer-manager>
+				<ba-button id='button0' label='Add Layer' type="primary" @click=${onClickLayer}></ba-button>
+			</div>
 		</div>`;
 	}
     

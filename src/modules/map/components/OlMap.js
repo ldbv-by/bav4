@@ -167,13 +167,6 @@ export class OlMap extends BaElement {
 
 		const { overlayLayers } = this._state;
 
-		// this._map.getLayers()
-		// 	.getArray()
-		// 	.forEach(layer => {
-		// 		console.log(layer.get('id'));
-		// 		console.log(layer);
-		// 	});
-
 		const updatedIds = overlayLayers.map(layer => layer.id);
 		const currentIds = this._map.getLayers()
 			.getArray()
@@ -181,14 +174,12 @@ export class OlMap extends BaElement {
 			.slice(1)
 			.map(olLayer => olLayer.get('id'));
 
-
 		// array intersection
 		const toBeUpdated = updatedIds.filter(id => currentIds.includes(id));
 		// array difference left side
 		const toBeAdded = updatedIds.filter(id => !currentIds.includes(id));
 		// array difference right side
 		const toBeRemoved = currentIds.filter(id => !updatedIds.includes(id));
-
 
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
