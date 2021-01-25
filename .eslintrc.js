@@ -21,6 +21,8 @@ module.exports = {
 		'lines-between-class-members': ['error', 'always'],
 		'comma-spacing': ['error', { 'before': false, 'after': true }],
 		"array-bracket-spacing": ['error', "never"],
+		"arrow-spacing": ['error'],
+		"space-infix-ops": ["error", { "int32Hint": false }],
 		'curly': ['error', 'all'],
 		'space-before-blocks': ['error', 'always'],
 		'no-console': ['error', { allow: ["warn", "error"] }],
