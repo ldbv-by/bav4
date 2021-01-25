@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType } from '../../../src/services/domain/geoResources';
 
 
 describe('GeoResource', () => {
@@ -67,6 +67,7 @@ describe('GeoResource', () => {
 		it('instantiates a WmsGeoResource', () => {
 
 			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format');
+			
 			expect(wmsGeoResource.getType()).toEqual(GeoResourceTypes.WMS);
 			expect(wmsGeoResource.id).toBe('id');
 			expect(wmsGeoResource.label).toBe('label');
@@ -81,10 +82,43 @@ describe('GeoResource', () => {
 		it('instantiates a WmtsGeoResource', () => {
 
 			const wmsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+			
 			expect(wmsGeoResource.getType()).toEqual(GeoResourceTypes.WMTS);
 			expect(wmsGeoResource.id).toBe('id');
 			expect(wmsGeoResource.label).toBe('label');
 			expect(wmsGeoResource.url).toBe('url');
+		});
+	});
+
+	it('provides an enum of all available vector source types', () => {
+
+		expect(VectorSourceType.KML).toBeTruthy();
+		expect(VectorSourceType.GPX).toBeTruthy();
+		expect(VectorSourceType.GEOJSON).toBeTruthy();
+	});
+
+
+	describe('VectorGeoResource', () => {
+
+		it('instantiates a VectorGeoResource', () => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+			
+			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
+			expect(vectorGeoResource.id).toBe('id');
+			expect(vectorGeoResource.label).toBe('label');
+			expect(vectorGeoResource.url).toBe('url');
+			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
+		});
+	
+
+		it('sets data as the source of a VectorGeoResource', () => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+			vectorGeoResource.source = 'someData';
+
+			expect(vectorGeoResource.source).toBe('someData');
+			expect(vectorGeoResource.url).toBeNull();
 		});
 	});
 });

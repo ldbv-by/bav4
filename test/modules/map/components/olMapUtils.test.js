@@ -1,11 +1,23 @@
 import BaseLayer from 'ol/layer/Base';
-import { toOlLayer, updateOlLayer } from '../../../../src/modules/map/components/olMapUtils';
-import { WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../src/modules/map/components/olMapUtils';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 
 describe('olMapUtils', () => {
+
+	it('it maps vectorSourceType to olFormats', () => {
+
+		expect(mapVectorSourceTypeToFormat(VectorSourceType.KML).constructor.name).toBe('KML');
+		expect(mapVectorSourceTypeToFormat(VectorSourceType.GPX).constructor.name).toBe('GPX');
+		expect(mapVectorSourceTypeToFormat(VectorSourceType.GEOJSON).constructor.name).toBe('GeoJSON');
+		expect(() => {
+			mapVectorSourceTypeToFormat('unknown');
+		})
+			.toThrowError(/unknown currently not supported/);
+	});
+
 	describe('toOlLayer', () => {
 
-		it('it converts a wmsGeoresource to a olLayer', () => {
+		it('it converts a WmsGeoresource to a olLayer', () => {
 			const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png');
 
 			const wmsOlLayer = toOlLayer(wmsGeoresource);
@@ -20,17 +32,31 @@ describe('olMapUtils', () => {
 			expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 		});
 
-		it('it converts a wmtsGeoresource to a olLayer', () => {
+		it('it converts a WmtsGeoresource to a olLayer', () => {
 			const wmtsGeoresource = new WMTSGeoResource('someId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const wmtsOlLayer = toOlLayer(wmtsGeoresource);
 			expect(wmtsOlLayer.get('id')).toBe('someId');
 
-			const wmsSource = wmtsOlLayer.getSource();
+			const wmtsSource = wmtsOlLayer.getSource();
 			expect(wmtsOlLayer.constructor.name).toBe('TileLayer');
-			expect(wmsSource.constructor.name).toBe('XYZ');
-			expect(wmsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+			expect(wmtsSource.constructor.name).toBe('XYZ');
+			expect(wmtsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 		});
+
+		it('it converts a VectorGeoresource to a olLayer', () => {
+			const vectorGeoresource = new VectorGeoResource('someId', 'Label', 'https://some.url', VectorSourceType.KML);
+
+			const vectorOlLayer = toOlLayer(vectorGeoresource);
+			expect(vectorOlLayer.get('id')).toBe('someId');
+
+			const vectorSource = vectorOlLayer.getSource();
+			expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
+			expect(vectorSource.constructor.name).toBe('VectorSource');
+			expect(vectorSource.getUrl()).toBe('https://some.url');
+			expect(vectorSource.getFormat().constructor.name).toBe('KML');
+		});
+
 
 		it('it throws an error when georesource type is not supported', () => {
 

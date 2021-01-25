@@ -119,3 +119,43 @@ export class WMTSGeoResource extends GeoResource {
 		return GeoResourceTypes.WMTS;
 	}
 }
+
+export const VectorSourceType = Object.freeze({
+	KML: Symbol('kml'),
+	GPX: Symbol('gpx'),
+	GEOJSON: Symbol('geojson'),
+});
+
+
+export class VectorGeoResource extends GeoResource {
+	constructor(id, label, url, sourceType) {
+		super(id, label);
+		this._url = url;
+		this._sourceType = sourceType;
+		this._source = null;
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get sourceType() {
+		return this._sourceType;
+	}
+
+	get source() {
+		return this._source;
+	}
+
+	set source(data) {
+		this._url = null;
+		this._source = data;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VECTOR;
+	}
+}
