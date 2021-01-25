@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import css from './showCase.css';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -57,6 +58,25 @@ export class ShowCase extends BaElement {
 						<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
 						<ba-button id='button3' label='disabled' disabled=true></ba-button>
 			</div>
+			<p>ba-icon-buttons</p>
+		<div class='buttons'>		
+		<ba-icon-button id='button0' title='Share this!' @click=${onClick0}>
+						<style>${css}</style>
+						<span class='icon list'>
+					</ba-icon-button>
+					<ba-icon-button id='button1' title='disabled'  disabled=true>
+						<style>${css}</style>
+						<span class='icon list'>
+					</ba-icon-button>
+					<ba-icon-button id='button2' title='Share this!' @click=${onClick0}>
+						<style>${css}</style>
+						<span class='icon share'>
+					</ba-icon-button>
+					<ba-icon-button id='button3' title='disabled' disabled=true>
+						<style>${css}</style>
+						<span class='icon share'>
+					</ba-icon-button>
+		</div>
 			<p>Toggle-Button</p>
 			<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle id='toggle' title="Toggle" @toggle=${onToggle}><span>Toggle me!</span></ba-toggle></div>
 			<hr>

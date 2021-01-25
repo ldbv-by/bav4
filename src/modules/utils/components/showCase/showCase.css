@@ -1,13 +1,13 @@
 .share {
     background-color: var(--primary-color);
-    mask: url('assets/share_invert.svg');
-    -webkit-mask-image: url('assets/share_invert.svg');
+    mask: url('./../assets/share_invert.svg');
+    -webkit-mask-image: url('./../assets/share_invert.svg');
   }
 
 .list {    
     background-color: var(--primary-color);
-    mask: url('assets/list.svg');
-    -webkit-mask-image: url('assets/list.svg');    
+    mask: url('./../assets/list.svg');
+    -webkit-mask-image: url('./../assets/list.svg');    
 }
 
 .icon {        

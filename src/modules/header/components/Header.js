@@ -5,7 +5,6 @@ import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import { changeZoomAndPosition } from '../../map/store/olMap.action';
 import css from './header.css';
-import showCaseCss from './showCase.css';
 
 
 /**
