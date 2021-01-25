@@ -28,10 +28,10 @@ export class LayerManager extends BaElement {
 			modifyLayer(layer.id, { visible: !layer.visible });
 		};
 		
-		const getTitle= (layer) => {
+		const getTitle = (layer) => {
 			const name = layer.label === '' ? layer.id : layer.label;
 			return name + ' - ' + translate('layer_manager_change_visibility');
-		}
+		};
 
 		return html`
 			<style>${css}</style>
