@@ -94,7 +94,7 @@ export class Toggle extends BaElement {
 	}
 
 	set disabled(value) {
-		if (value != this._disabled) {
+		if (value !== this._disabled) {
 			this._disabled = value;
 			this.render();
 		}
