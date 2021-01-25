@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource } from '../../../src/services/domain/geoResources';
 
 
 describe('GeoResource', () => {
@@ -73,6 +73,18 @@ describe('GeoResource', () => {
 			expect(wmsGeoResource.url).toBe('url');
 			expect(wmsGeoResource.layers).toBe('layers');
 			expect(wmsGeoResource.format).toBe('format');
+		});
+	});
+
+	describe('WmtsGeoResource', () => {
+
+		it('instantiates a WmtsGeoResource', () => {
+
+			const wmsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+			expect(wmsGeoResource.getType()).toEqual(GeoResourceTypes.WMTS);
+			expect(wmsGeoResource.id).toBe('id');
+			expect(wmsGeoResource.label).toBe('label');
+			expect(wmsGeoResource.url).toBe('url');
 		});
 	});
 });

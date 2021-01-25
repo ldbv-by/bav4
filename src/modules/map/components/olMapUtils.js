@@ -1,6 +1,8 @@
 import { GeoResourceTypes } from '../../../services/domain/geoResources';
 import { Image as ImageLayer } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
+import TileLayer from 'ol/layer/Tile';
+import { XYZ as XYZSource } from 'ol/source';
 
 export const toOlLayer = (georesource) => {
 
@@ -18,6 +20,15 @@ export const toOlLayer = (georesource) => {
 						'VERSION': '1.1.1'
 					}
 				}),
+			});
+
+		case GeoResourceTypes.WMTS:
+
+			return new TileLayer({
+				id: georesource.id,
+				source: new XYZSource({
+					url: georesource.url,
+				})
 			});
 	}
 

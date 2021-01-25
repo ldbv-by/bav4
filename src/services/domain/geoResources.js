@@ -29,10 +29,10 @@ export class GeoResource {
 	}
 
 	/**
-     * protected
-     * @param {*} value 
-     * @param {*} name 
-     */
+	 * protected
+	 * @param {*} value 
+	 * @param {*} name 
+	 */
 	checkDefined(value, name) {
 		if (!value) {
 			throw new TypeError(name + ' must not be undefined');
@@ -54,7 +54,7 @@ export class GeoResource {
 	get opacity() {
 		return this._opacity;
 	}
-    
+
 	set background(background) {
 		this._background = background;
 	}
@@ -64,8 +64,8 @@ export class GeoResource {
 	}
 
 	/**
-     * @abstract
-     */
+	 * @abstract
+	 */
 	getType() {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
@@ -95,9 +95,27 @@ export class WmsGeoResource extends GeoResource {
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	getType() {
 		return GeoResourceTypes.WMS;
+	}
+
+}
+export class WMTSGeoResource extends GeoResource {
+	constructor(id, label, url) {
+		super(id, label);
+		this._url = url;
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.WMTS;
 	}
 }
