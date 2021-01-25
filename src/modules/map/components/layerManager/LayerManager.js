@@ -27,6 +27,11 @@ export class LayerManager extends BaElement {
 		const onToggle = (layer) => {
 			modifyLayer(layer.id, { visible: !layer.visible });
 		};
+		
+		const getTitle= (layer) => {
+			const name = layer.label === '' ? layer.id : layer.label;
+			return name + ' - ' + translate('layer_manager_change_visibility');
+		}
 
 		return html`
 			<style>${css}</style>
@@ -36,8 +41,8 @@ export class LayerManager extends BaElement {
                     ${repeat(activeLayers, (layer) => layer.id, (layer, index) => html`
 					<li index=${index} >
 						<div class='layer'>
-							<ba-toggle title='${layer.label === '' ? layer.id : layer.label}' checked=${layer.visible} @toggle=${() => onToggle(layer)}>
-								<span class='layer-label'>${layer.label}</span>
+							<ba-toggle title='${getTitle(layer)}' checked=${layer.visible} @toggle=${() => onToggle(layer)}>
+								<span class='layer-label'>${layer.label === '' ? layer.id : layer.label}</span>
 							</ba-toggle>
 						</div>
 					</li>`)}
