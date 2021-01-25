@@ -28,7 +28,7 @@ describe('ContextMenue', () => {
 			element = await TestUtils.render(ContextMenue.tag);
 
 			// assert
-			expect(element.shadowRoot.querySelector('.context-menu--active')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.context_menu_active')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.context-menu__item')).toBeFalsy();
@@ -62,43 +62,11 @@ describe('ContextMenue', () => {
 
 			contextMenueOpen(contextMenueData);
 
-			expect(element.shadowRoot.querySelector('.context-menu--active')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.context_menu_active')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.context-menu__item')).toBeTruthy();
 		});
-
-		it('adds data-content with object as label to context-menu', () => {
-			const obj = { foo: 'bar' };
-			class SimpleClass {
-
-				constructor(value) {
-					this._value = value;
-				}
-
-				toString() {
-					return this._value;
-				}
-			}
-
-			const instance = new SimpleClass('foobar');
-			const contextMenueData = {
-				pointer: { x: 0, y: 0 },
-				commands: [
-					{ label: instance, action: () => { } },
-					{ label: obj, action: () => { } }]
-			};
-
-			contextMenueOpen(contextMenueData);
-
-			expect(element.shadowRoot.querySelector('.context-menu--active')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.context-menu')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.context-menu__item')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.context-menu__label').firstChild.nodeValue).toEqual('foobar');
-			expect(element.shadowRoot.querySelectorAll('.context-menu__label')[1].innerText).toEqual('[object Object]');
-		});
-
 
 		it('removes data-content from context-menu', () => {
 			const contextMenueData = {
@@ -109,13 +77,12 @@ describe('ContextMenue', () => {
 			};
 
 			contextMenueOpen(contextMenueData);
-			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
-
+			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;			
 			contextMenueClose();
-			const isOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
+			
 
 			expect(wasOpen).toBe(true);
-			expect(isOpen).toBe(false);
+			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeFalsy();
 		});
 	});
 
@@ -195,6 +162,20 @@ describe('ContextMenue', () => {
 			expect(actualRect.top).toBeLessThan(pointerNearBottomBorder.y);
 			expect(actualRect.left).toBeGreaterThan(pointerNearBottomBorder.x);
 
+		});
+
+		it('calls the command-callback on click', () => {
+			const command = { label: 'foo', action: () => {} };
+			command.action = jasmine.createSpy();
+			const contextMenueData = {
+				pointer: { x: 0, y: 0 },
+				commands: [command]
+			};
+
+			contextMenueOpen(contextMenueData);
+			element.shadowRoot.getElementById('context-menu__item_0').click();
+
+			expect(command.action).toHaveBeenCalled();
 		});
 	});
 });

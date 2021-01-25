@@ -1,9 +1,10 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../BaElement';
 import { contextMenueClose } from '../store/contextMenue.action';
 import css from './contextMenue.css';
-
-const NO_CONTENT = '';
 
 /**
  * 
@@ -11,34 +12,6 @@ const NO_CONTENT = '';
  * @author thiloSchlemmer
  */
 export class ContextMenue extends BaElement {
-
-
-	/**
-	  * Builds the content of the contextmenu based on the commands 
-	  * @private 
-	  */
-	_buildContextMenue(pointer, commands) {
-		this._clearContextItems();
-
-		const menu = this._createContextMenu();
-		this._view.appendChild(menu);
-
-		commands.forEach((command) => {
-			const menuItem = this._createContextMenuItem(command);
-			menuItem.addEventListener('click', () => {
-				command.action();
-				this._closeContextMenu();
-			});
-			menu.appendChild(menuItem);
-		});
-		document.addEventListener('click', () => this._closeContextMenu());
-
-		const menuPlacement = this._calculateMenuPlacement(pointer);
-
-		this._view.style.left = menuPlacement.left;
-		this._view.style.top = menuPlacement.top;
-		this._view.classList.add('context-menu--active');
-	}
 
 	/**
 	 * Calculates the placement of the menu inside the window.
@@ -74,82 +47,6 @@ export class ContextMenue extends BaElement {
 	}
 
 	/**
-	 * Creates a ListItem-Element with label and shortcut Sub-Element (div) 
-	 * @private 
-	 */
-	_createContextMenuItem(command) {
-		const label = command.label;
-		const shortCut = command.shortCut;
-		let liElement = document.createElement('li');
-		liElement.setAttribute('class', 'context-menu__item');
-		liElement.setAttribute('id', 'context-menu__item');
-
-		let labelElement = document.createElement('div');
-		labelElement.setAttribute('class', 'context-menu__label');
-
-		if (typeof label === 'string' || label instanceof String) {
-			labelElement.insertAdjacentText('beforeend', label);
-		}
-		else {
-			labelElement.insertAdjacentText('beforeend', label.toString());
-		}
-
-		let shortCutElement = document.createElement('div');
-		shortCutElement.setAttribute('class', 'context-menu__shortCut');
-		if (shortCut) {
-			shortCutElement.insertAdjacentText('beforeend', shortCut);
-		}
-		else {
-			shortCutElement.insertAdjacentText('beforeend', '');
-		}
-
-		liElement.appendChild(labelElement);
-		liElement.appendChild(shortCutElement);
-		return liElement;
-	}
-
-	/**
-	 * Creates a UnorderedList-Element
-	 * @private 
-	 */
-	_createContextMenu() {
-		let ulElement = document.createElement('ul');
-		ulElement.setAttribute('id', 'context-menu__items');
-		ulElement.setAttribute('class', 'context-menu__items');
-
-		return ulElement;
-	}
-
-	/**
-	 * Tests whether or not, the context menu is open
-	 * @private 
-	 */
-	_isOpen() {
-		const { pointer } = this._state;
-		return pointer !== false;
-	}
-
-
-	/**
-	 * Closed the context menu by removing class-name and inner content 
-	 * @private
-	 */
-	_closeContextMenu() {
-		this._view.classList.remove('context-menu--active');
-		this._clearContextItems();
-		document.removeEventListener('click', () => this._closeContextMenu());
-		contextMenueClose();
-	}
-
-	/**
-	 * Removes the inner content (menu items)
-	 * @private
-	 */
-	_clearContextItems() {
-		this._view.textContent = NO_CONTENT;
-	}
-
-	/**
 	 * @override
 	 */
 	onWindowLoad() {
@@ -160,9 +57,32 @@ export class ContextMenue extends BaElement {
 	 * @override
 	 */
 	createView() {
+		const { pointer, commands } = this._state;
+		const isOpen = pointer !== false;
+		const onClick = (command) => {
+			command.action();
+			contextMenueClose();
+		};
+		let menuStyle = {};
+		if(isOpen) {
+			const placement = this._calculateMenuPlacement(pointer);
+			menuStyle = { left:placement.left, top:placement.top };
+		}
+
+		const classes = {
+			context_menu_active:isOpen			
+		};
+		
 		return html`
         <style>${css}</style>
-        <nav id=context-menu class="context-menu">
+		<nav id=context-menu class='context-menu ${classMap(classes)}' style=${styleMap(menuStyle)} >
+			${isOpen ? html`<ul id='context-menu__items' class='context-menu__items'>
+				${repeat(commands, (command) => command.label, (command, index) => html`
+				<li class='context-menu__item' id='context-menu__item_${index}' title=${command.label} @click=${() => onClick(command)}>
+				<div class='context-menu__label'>${command.label}</div>
+				<div class='context-menu__shortCut'>${command.shortCut ? command.shortCut : nothing}</div>
+				</li>`)}
+			</ul>` : nothing}
         </nav>`;
 	}
 
@@ -175,18 +95,6 @@ export class ContextMenue extends BaElement {
 		return data;
 	}
 
-	/**
-	 * @override
-	 */
-	onStateChanged() {
-		if (this._isOpen()) {
-			const { pointer, commands } = this._state;
-			this._buildContextMenue(pointer, commands);			
-		}
-		else {
-			this._closeContextMenu();
-		}
-	}
 
 	static get tag() {
 		return 'ba-context-menue';
