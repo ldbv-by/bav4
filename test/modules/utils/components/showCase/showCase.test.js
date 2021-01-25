@@ -1,4 +1,5 @@
 import { ShowCase } from '../../../../../src/modules/utils/components/showCase/ShowCase';
+import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
@@ -6,6 +7,7 @@ import { OlCoordinateService } from '../../../../../src/services/OlCoordinateSer
 import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(ShowCase.tag, ShowCase);
+window.customElements.define(Toggle.tag, Toggle);
 
 describe('ShowCase', () => {
 
@@ -62,16 +64,16 @@ describe('ShowCase', () => {
 			expect(store.getState().map.zoom).toBe(11);
 		});
 
-		// it('toggle gets checked, if toggle are clicked', async () => {
-		// 	const  element = await setup();
-		// 	const toggle = element.shadowRoot.querySelector('#toggle');
+		it('toggle gets checked, if toggle are clicked', async () => {
+			const  element = await setup();
+			const toggle = element.shadowRoot.querySelector('#toggle');
 			
-		// 	expect(toggle).toBeTruthy();
-			
-		// 	toggle.click();
-			
-		// 	expect(toggle.checked).toBe(true);
-		// });
+			expect(toggle).toBeTruthy();
+
+			toggle.shadowRoot.querySelector('.switch').click();
+
+			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
+		});
 	});
 
 });
