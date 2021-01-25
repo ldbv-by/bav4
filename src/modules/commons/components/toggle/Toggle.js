@@ -21,24 +21,17 @@ export class Toggle extends BaElement {
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this.title = this.getAttribute('title') || '';
-		
-		// we pass the click event
-		this.addEventListener('click', () =>{
-			this._root.querySelector('label').click();
-		});
 	}
-
 
 	/**
 	 * @override
 	 */
 	createView() {
-
 		const onChange = (event) => {
 			this.dispatchEvent(new CustomEvent('toggle', {
 				detail: { checked: event.target.checked }
 			}));
-			
+
 			this._onToggle(event);
 		};
 		const classes = {
@@ -66,6 +59,15 @@ export class Toggle extends BaElement {
 		return ['disabled', 'checked', 'title'];
 	}
 
+	/**
+	 * Mainly for testing purposes.<br>
+	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
+	 * @public
+	 */
+	click() {
+		this._root.querySelector('label').click();
+	}
+
 	attributeChangedCallback(name, oldValue, newValue) {
 		switch (name) {
 			case 'disabled':
@@ -81,8 +83,10 @@ export class Toggle extends BaElement {
 	}
 
 	set title(value) {
-		this._title = value;
-		this.render();
+		if (value !== this._title) {
+			this._title = value;
+			this.render();
+		}
 	}
 
 	get title() {
@@ -90,8 +94,10 @@ export class Toggle extends BaElement {
 	}
 
 	set disabled(value) {
-		this._disabled = value;
-		this.render();
+		if (value != this._disabled) {
+			this._disabled = value;
+			this.render();
+		}
 	}
 
 	get disabled() {
@@ -99,8 +105,10 @@ export class Toggle extends BaElement {
 	}
 
 	set checked(value) {
-		this._checked = value;
-		this.render();
+		if (value !== this._checked) {
+			this._checked = value;
+			this.render();
+		}
 	}
 
 	get checked() {
