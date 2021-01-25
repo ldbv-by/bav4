@@ -75,8 +75,8 @@ describe('Modal', () => {
 			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
 
 			openModal(modalContent);
-			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
-			const hadContent = element.shadowRoot.querySelector('.bar').innerText == 'bar';
+			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText === 'foo';
+			const hadContent = element.shadowRoot.querySelector('.bar').innerText === 'bar';
 
 			closeModal();
 
@@ -90,8 +90,8 @@ describe('Modal', () => {
 			const modalContent = { title: 'foo', content: html `<p class="bar">bar<p/>` };
 
 			openModal(modalContent);			
-			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText == 'foo';
-			const hadContent = element.shadowRoot.querySelector('.bar').innerText == 'bar';
+			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText === 'foo';
+			const hadContent = element.shadowRoot.querySelector('.bar').innerText === 'bar';
 
 			const closeBtn = element.shadowRoot.querySelector('ba-button');
 			closeBtn.click();
