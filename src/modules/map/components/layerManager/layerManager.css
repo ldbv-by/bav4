@@ -12,6 +12,7 @@
 }
 
 ul {
+    margin:0px;
     padding:0 px;
     padding-inline-start: 0px;
     display: flex;
@@ -30,6 +31,18 @@ ul {
     text-decoration-color: var(--secondary-color);
     background-color:var(--primary-bg-color);
     /* border: 1px solid var(--primary-color); */
+}
+
+.placeholder {
+    padding: 2px;
+    margin:2px;
+    height: 10px;
+    border:solid 1px rosybrown;
+    background-color:var(--secondary-bg-color);
+}
+.over {
+    height: 20px;
+    border: dotted 2px rebeccapurple;    
 }
 
 .slider-container{
