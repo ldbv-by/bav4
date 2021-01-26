@@ -9,7 +9,10 @@ export const initialState = {
 	background: null
 };
 
-
+/**
+ * Sets the zIndex based of the current order within the layer list.
+ * @param {*} list 
+ */
 export const index = (list) => {
 	list.forEach((element, index) => {
 		element.zIndex = index;
@@ -17,15 +20,30 @@ export const index = (list) => {
 	return list;
 };
 
+/**
+ * Sorts the list based on the zIndex regarding the alwaysTop constraints.
+ * Finally it calls {@link index()}.
+ * @param {*} list 
+ */
 export const sort = (list) => {
-	return list.sort((a, b) => a.zIndex - b.zIndex);
+
+	const layersWithAlwaysTopConstraint = list.filter(l => l.constraints.alwaysTop);
+	const sorted = list.sort((a, b) => a.zIndex - b.zIndex);
+
+	//we insert alwaysTop layers at the end
+	layersWithAlwaysTopConstraint.forEach(l => {
+		sorted.push(sorted.splice(sorted.indexOf(l), 1)[0]);
+	});
+	//and reindex
+	return index(sorted);
 };
 
 export const defaultLayerProperties = {
 	label: '',
 	visible: true,
 	zIndex: -1,
-	opacity: 1
+	opacity: 1,
+	constraints: { alwaysTop: false, hidden: false }
 };
 
 export const layersReducer = (state = initialState, action) => {
@@ -49,8 +67,9 @@ export const layersReducer = (state = initialState, action) => {
 				id: id
 			};
 
+			const { constraints: { alwaysTop } } = layer;
 			//when index is given we insert at that value, otherwise we append the layer
-			const insertIndex = (properties.zIndex >= 0) ? properties.zIndex : state.active.length;
+			const insertIndex = (properties.zIndex >= 0 && !alwaysTop) ? properties.zIndex : state.active.length;
 			const active = [...state.active];
 			active.splice(insertIndex, 0, layer);
 
