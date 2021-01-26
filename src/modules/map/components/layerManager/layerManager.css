@@ -2,6 +2,7 @@
     padding: 0px;    
     background-color: var(--secondary-bg-color);
     border: 1px solid var(--primary-color);
+    width:250px
 }
 
 .title {
@@ -12,7 +13,7 @@
 
 ul {
     padding:0 px;
-    padding-inline-start: 10px;
+    padding-inline-start: 0px;
     display: flex;
     flex-direction: column-reverse;
     margin-bottom: 0px;
@@ -26,11 +27,24 @@ ul {
 .layer {
     padding: 2px;
     margin:2px;
-    display: flex;
-    justify-content: space-evenly;
     text-decoration-color: var(--secondary-color);
     background-color:var(--primary-bg-color);
-    border: 1px solid var(--primary-color);
+    /* border: 1px solid var(--primary-color); */
+}
+
+.slider-container{
+    background: var(--primary-bg-color);  
+    padding: 0 5px;  
+}
+
+.opacity-slider{
+    width:100%
+}
+
+.layer-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;    
 }
 
 .layer-label {

@@ -44,8 +44,16 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
-		const onClickLayer = () => {
+		const onAddDOP = () => {
 			addLayer('dop80');
+		};
+
+		const onAddATKIS = () => {
+			addLayer('atkis_sw');
+		};
+
+		const onAddBaudenkmal = () => {
+			addLayer('baudenkmal');
 		};
 
 		return html`<div>
@@ -72,7 +80,12 @@ export class ShowCase extends BaElement {
 			<p>Layer-Manager</p>
 			<div class='layer-manager' style="display: flex;justify-content: space-between;">
 				<ba-layer-manager></ba-layer-manager>
-				<ba-button id='button0' label='Add Layer' type="primary" @click=${onClickLayer}></ba-button>
+				<div style="display: flex;flex-direction: column">
+					<ba-button style='padding:4px' label='Add DOP' type="primary" @click=${onAddDOP}></ba-button>
+					<ba-button style='padding:4px' label='Add ATKIS SW' type="primary" @click=${onAddATKIS}></ba-button>
+					<ba-button style='padding:4px' label='Add Baudenkmal' type="primary" @click=${onAddBaudenkmal}></ba-button>
+				</div>
+				
 			</div>
 		</div>`;
 	}
