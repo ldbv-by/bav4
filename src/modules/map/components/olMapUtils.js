@@ -5,15 +5,20 @@ import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { KML, GPX, GeoJSON } from 'ol/format';
+import { $injector } from '../../../injection';
 
+
+const getUrlService = () => {
+
+	const { UrlService: urlService } = $injector.inject('UrlService');
+	return urlService;
+};
 
 export const mapVectorSourceTypeToFormat = (sourceType) => {
-
 
 	switch (sourceType) {
 		case VectorSourceType.KML:
 			return new KML();
-
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -53,7 +58,7 @@ export const toOlLayer = (georesource) => {
 			return new VectorLayer({
 				id: georesource.id,
 				source: new VectorSource({
-					url: georesource.url,
+					url: getUrlService().proxifyInstant(georesource.url),
 					format: mapVectorSourceTypeToFormat(georesource.sourceType)
 				}),
 			});

@@ -1,8 +1,19 @@
 import BaseLayer from 'ol/layer/Base';
 import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../src/modules/map/components/olMapUtils';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { $injector } from '../../../../src/injection';
+
 
 describe('olMapUtils', () => {
+
+	const urlService = {
+		proxifyInstant: () => { }
+	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('UrlService', urlService);
+	});
 
 	it('it maps vectorSourceType to olFormats', () => {
 
@@ -45,7 +56,9 @@ describe('olMapUtils', () => {
 		});
 
 		it('it converts a VectorGeoresource to a olLayer', () => {
-			const vectorGeoresource = new VectorGeoResource('someId', 'Label', 'https://some.url', VectorSourceType.KML);
+			const url = 'https://some.url';
+			spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
+			const vectorGeoresource = new VectorGeoResource('someId', 'Label', url, VectorSourceType.KML);
 
 			const vectorOlLayer = toOlLayer(vectorGeoresource);
 			expect(vectorOlLayer.get('id')).toBe('someId');
@@ -53,7 +66,7 @@ describe('olMapUtils', () => {
 			const vectorSource = vectorOlLayer.getSource();
 			expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 			expect(vectorSource.constructor.name).toBe('VectorSource');
-			expect(vectorSource.getUrl()).toBe('https://some.url');
+			expect(vectorSource.getUrl()).toBe('https://proxy.url?' + url);
 			expect(vectorSource.getFormat().constructor.name).toBe('KML');
 		});
 
