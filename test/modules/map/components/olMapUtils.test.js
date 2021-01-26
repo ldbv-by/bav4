@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
 import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../src/modules/map/components/olMapUtils';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../src/injection';
 
 
@@ -68,6 +68,20 @@ describe('olMapUtils', () => {
 			expect(vectorSource.constructor.name).toBe('VectorSource');
 			expect(vectorSource.getUrl()).toBe('https://proxy.url?' + url);
 			expect(vectorSource.getFormat().constructor.name).toBe('KML');
+		});
+
+		it('it converts a AggregateGeoresource to a olLayer(Group)', () => {
+			const wmtsGeoresource = new WMTSGeoResource('wmtsId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const wmsGeoresource = new WmsGeoResource('wmsId', 'Label', 'https://some.url', 'layer', 'image/png');
+			const aggreggateGeoResource = new AggregateGeoResource('someId', 'label', [wmtsGeoresource, wmsGeoresource]);
+
+			const olLayerGroup = toOlLayer(aggreggateGeoResource);
+
+			expect(olLayerGroup.get('id')).toBe('someId');
+			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
+			const layers = olLayerGroup.getLayers();
+			expect(layers.item(0).get('id')).toBe('wmtsId');
+			expect(layers.item(1).get('id')).toBe('wmsId');
 		});
 
 
