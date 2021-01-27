@@ -2,6 +2,20 @@ import { layersReducer, index, sort, defaultLayerProperties } from '../../../../
 import { addLayer, removeLayer, modifyLayer, changeBackground } from '../../../../src/modules/map/store/layers/layers.action';
 import { TestUtils } from '../../../test-utils.js';
 
+describe('defaultLayerProperties', () => {
+
+	it('returns a layer object with default settings', () => {
+	
+		expect(Object.isFrozen(defaultLayerProperties)).toBeTrue();
+		expect(defaultLayerProperties.visible).toBeTrue();
+		expect(defaultLayerProperties.label).toBe('');
+		expect(defaultLayerProperties.opacity).toBe(1);
+		expect(defaultLayerProperties.zIndex).toBe(-1);
+		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
+		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
+	});
+});
+
 describe('layersReducer', () => {
 
 	const setup = (state) => {

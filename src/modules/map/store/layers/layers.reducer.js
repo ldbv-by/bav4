@@ -38,13 +38,13 @@ export const sort = (list) => {
 	return index(sorted);
 };
 
-export const defaultLayerProperties = {
+export const defaultLayerProperties = Object.freeze({
 	label: '',
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
 	constraints: { alwaysTop: false, hidden: false }
-};
+});
 
 export const layersReducer = (state = initialState, action) => {
 
@@ -100,7 +100,7 @@ export const layersReducer = (state = initialState, action) => {
 					...layer,
 					...properties
 				};
-				
+
 				//add updated layer
 				active.splice(updatedLayer.zIndex, 0, updatedLayer);
 
