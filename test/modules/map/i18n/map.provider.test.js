@@ -9,6 +9,7 @@ describe('i18n for map module', () => {
 
 		expect(map.map_zoom_in_button).toBe('Vergrößere Kartenausschnitt');
 		expect(map.map_zoom_out_button).toBe('Verkleinere Kartenausschnitt');
+		expect(map.map_info_button).toBe('Information');
 	});
 
 	it('provides translation for en', () => {
@@ -17,6 +18,7 @@ describe('i18n for map module', () => {
 
 		expect(map.map_zoom_in_button).toBe('Zoom in');
 		expect(map.map_zoom_out_button).toBe('Zoom out');
+		expect(map.map_info_button).toBe('Information');
 	});
 
 	it('provides an empty map for a unknown lang', () => {

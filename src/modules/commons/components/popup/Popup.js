@@ -25,7 +25,12 @@ export class Popup extends BaElement {
      *@override 
      */
 	createView() {
-
+		if(this._type === 'show') {			
+			var popup = this.shadowRoot.getElementById('this-popup');	
+			popup.style.right = this._right + 'px';
+			popup.style.top = this._top + 'px';
+		} 
+			
 		const classes = {
 			show: this._type === 'show',
 		}; 
@@ -33,9 +38,9 @@ export class Popup extends BaElement {
 		return html`
         <style>${css}</style>
 		<div class='popup' id=this-popup>
-			<span class='popuptext ${classMap(classes)}' right=${this._right} top=${this._top}>
+			<div class='popuptext ${classMap(classes)}' right=${this._right} top=${this._top}>
 				 <slot></slot>
-			</span>
+			</div>
         </div>  
         `;
 	} 
@@ -57,12 +62,11 @@ export class Popup extends BaElement {
 	}
 
 	set type(value) {
-		this._type = value;
-		if(this._type === 'show') {
-			this._setPosition(this._right, this._top);
-		} 
-		this.render();
-	}
+		if(value !== this.type) {
+			this._type = value;
+			this.render();
+		}
+	}	
 
 	get type() {
 		return this._type;
@@ -73,7 +77,6 @@ export class Popup extends BaElement {
 	 */
 	set right(value) {
 		this._right = value;
-		this.render();
 	}
 
 	get right() {
@@ -90,21 +93,4 @@ export class Popup extends BaElement {
 	get top() {
 		return this._top;
 	} 
-
-	/**
-	 * 
-	 *
-	 *@private 
-	 *@param {string} right
-	 *@param {string} top   
-	 */
-	_setPosition(right, top) {
-		var popup = this.shadowRoot.getElementById('this-popup');	
-		popup.style.right = right + 'px';
-		popup.style.top = top + 'px';
-		this.render();
-	} 
-
-	
-
 } 

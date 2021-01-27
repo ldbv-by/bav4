@@ -18,7 +18,7 @@ describe('Popup', () => {
 			expect(element.right).toBe('0');
 			expect(element.top).toBe('0');
 			expect(element.shadowRoot.querySelector('.popup')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('span')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
 
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
@@ -38,30 +38,30 @@ describe('Popup', () => {
 			element.setAttribute('type', 'show');
             
 			expect(element.type).toBe('show');
-			expect(element.shadowRoot.querySelector('span').classList.contains('show')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeTrue();
 		});
 
 		it('re-renders the popup when property \'show\' changed', async () => {
 
 			const element = await TestUtils.render(Popup.tag);
 
-			expect(element.shadowRoot.querySelector('span').classList.contains('show')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeFalse();
 
 			element.type = 'show';
 
-			expect(element.shadowRoot.querySelector('span').classList.contains('show')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeTrue();
 		});
 
 		it('re-renders the popup when attribute \'show\' changed', async () => {
 
 			const element = await TestUtils.render(Popup.tag);
 
-			expect(element.shadowRoot.querySelector('span').classList.contains('show')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeFalse();
 
 			element.setAttribute('type', 'show');
 
 			expect(element.type).toBe('show');
-			expect(element.shadowRoot.querySelector('span').classList.contains('show')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeTrue();
 		});
 	});
     
