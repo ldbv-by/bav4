@@ -10,7 +10,7 @@ describe('BvvGeoResourceService', () => {
 
 			const geoResources = await service.all();
 
-			expect(geoResources.length).toBe(4);
+			expect(geoResources.length).toBe(6);
 		});
 	});
 
