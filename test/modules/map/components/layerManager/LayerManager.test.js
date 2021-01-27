@@ -7,6 +7,7 @@ import { $injector } from '../../../../../src/injection';
 window.customElements.define(LayerManager.tag, LayerManager);
 window.customElements.define(Toggle.tag, Toggle);
 
+
 describe('LayerManager', () => {
 	let store;
 	const setup = async (state) => {
@@ -31,7 +32,7 @@ describe('LayerManager', () => {
         
 		it('with one layer displays one layer item', async() => {
 			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: 'label0', visible: true, zIndex:1
+				id: 'id0', label: 'label0', visible: true, zIndex:0
 			};
 			const state = {
 				layers: {
@@ -49,7 +50,7 @@ describe('LayerManager', () => {
 
 		it('displays id if label is empty', async () => {
 			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: '', visible: true, zIndex:1
+				id: 'id0', label: '', visible: true, zIndex:0
 			};
 			const state = {
 				layers: {
@@ -64,9 +65,9 @@ describe('LayerManager', () => {
 			expect(toggle.label).not.toBe('');
 		});
 
-		it('click on layer item change state', async() => {
+		it('click on layer item change state in store', async() => {
 			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: 'label0', visible: true, zIndex:1
+				id: 'id0', label: 'label0', visible: true, zIndex:0
 			};
 			const state = {
 				layers: {
@@ -80,8 +81,236 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].visible).toBe(true);
 			toggle.click();
 			expect(store.getState().layers.active[0].visible).toBe(false);
+		});
 
+		it('change value on opacity-slider of a layer item change state in store', async() => {
+			const layer = { ...defaultLayerProperties,
+				id: 'id0', label: 'label0', visible: true, zIndex:0, opacity:.4
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background:'bg0'
+				}
+			};
+			const element = await setup(state);
+
+			const slider = element.shadowRoot.querySelector('#opacity-sliderid0');
+			expect(store.getState().layers.active[0].opacity).toBe(0.4);
+			slider.value = 80;
+			slider.dispatchEvent(new Event('input'));
+
+			
+			expect(store.getState().layers.active[0].opacity).toBe(0.8);
+		});
+
+	});
+
+	describe('when layer items are rendered', () => {
+		let element;
+		beforeEach(async () => {	
+			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:0 };
+			const layer1 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:1 };
+			const layer2 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:2 };
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};
+			element = await setup(state);
+		});
+
+		it('renders placeholder for dragging around the layers', () => {
+		
+			const listElements = element.shadowRoot.querySelectorAll('li');
+			const layerElements = element.shadowRoot.querySelectorAll('.layer');
+			const placeholderElements = element.shadowRoot.querySelectorAll('.placeholder');
+			expect(listElements.length).toBe(7);
+			expect(layerElements.length).toBe(3);
+			expect(placeholderElements.length).toBe(4);			
+		});
+
+		it('have only draggable layer items', () => {
+			const layerElements = [...element.shadowRoot.querySelectorAll('.layer')];
+			
+			const nonDraggableLayerElements = layerElements.filter((element) => {
+				return element.draggable;
+			});
+
+			expect(layerElements.length).toBe(3);
+			expect(nonDraggableLayerElements.length).toBe(0);
+
+		});
+
+		it('have only non-draggable placeholder items', () => {
+			const placeholderElements = [...element.shadowRoot.querySelectorAll('.placeholder')];
+			
+			const nonDraggablePlaceholderElements = placeholderElements.filter((element) => {
+				return !element.draggable;
+			});
+
+			expect(placeholderElements.length).toBe(4);
+			expect(nonDraggablePlaceholderElements.length).toBe(4);
 
 		});
 	});
+
+	describe('when layer items dragged', () => {
+		let element;
+		beforeEach(async () => {	
+			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:0 };
+			const layer1 = { ...defaultLayerProperties, id: 'id1', label: '', visible: true, zIndex:1 };
+			const layer2 = { ...defaultLayerProperties, id: 'id2', label: '', visible: true, zIndex:2 };
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};
+			element = await setup(state);
+		});
+		const createNewDataTransfer = () => {
+			var data = {};
+			return {
+				clearData: function(key) {
+					if (key === undefined) {
+						data = {};
+					}
+					else {
+						delete data[key];
+					}
+				},
+				getData: function(key) {
+					return data[key];
+				},
+				setData: function(key, value) {
+					data[key] = value;
+				},
+				setDragImage: function() {},
+				dropEffect: 'none',
+				files: [],
+				items: [],
+				types: [],
+				// also effectAllowed      
+			};
+		};
+
+		it('on dragstart should update internal draggedItem', () => {
+			const layerElement = element.shadowRoot.querySelector('.layer');	
+			
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+			
+			expect(element._draggedItem).not.toBeFalse();
+
+		});
+
+		it('on dragEnter of neighbouring placeholder no style changed', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			neighbourPlaceholder.dispatchEvent(dragstartEvt);
+			
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+
+		});
+
+		it('on dragEnter of not neighbouring placeholder add style class', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			neighbourPlaceholder.dispatchEvent(dragstartEvt);
+			
+			expect(neighbourPlaceholder.classList.contains('over')).toBeTrue();
+
+		});
+
+		xit('on dragEnd call event.preventDefault()', () => {
+			
+			const listElement = element.shadowRoot.querySelector('li');	
+			
+			const dragendEvt = document.createEvent('MouseEvents');
+			dragendEvt.initMouseEvent('dragend', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, listElement);
+			dragendEvt.dataTransfer = createNewDataTransfer();
+			dragendEvt.dataTransfer.preventDefault = () => {};
+			dragendEvt.dataTransfer.preventDefault = jasmine.createSpy();
+			listElement.dispatchEvent(dragendEvt);
+			
+			expect(dragendEvt.dataTransfer.preventDefault).toHaveBeenCalled();
+
+		});
+
+		it('on dragleave of not neighbouring placeholder remove style class', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragleave', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+
+			neighbourPlaceholder.classList.add('over');
+			neighbourPlaceholder.dispatchEvent(dragstartEvt);
+			
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+
+		});
+
+		it('on dragover of not neighbouring placeholder dropEffect to \'all\'', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragoverEvt = document.createEvent('MouseEvents');
+			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragoverEvt.dataTransfer = createNewDataTransfer();
+
+			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+			
+			expect(dragoverEvt.dataTransfer.dropEffect).toBe('all');
+
+		});
+
+		it('on dragover of not neighbouring placeholder dropEffect to \'none\'', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragoverEvt = document.createEvent('MouseEvents');
+			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragoverEvt.dataTransfer = createNewDataTransfer();
+			dragoverEvt.dataTransfer.dropEffect = 'foo';
+			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+			
+			expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
+
+		});
+
+		it('on drop of not neighbouring placeholder change state in store', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			const dragoverEvt = document.createEvent('MouseEvents');
+			dragoverEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragoverEvt.dataTransfer = createNewDataTransfer();
+
+			
+			neighbourPlaceholder.classList.add('over');
+			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+
+			expect(store.getState().layers.active[1].id).toBe('id0');
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
+
+		});
+	});
+
+
+
+
 });

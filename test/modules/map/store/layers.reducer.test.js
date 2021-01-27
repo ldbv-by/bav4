@@ -242,6 +242,23 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[2].id).toBe('id2');
 	});
 
+	xit('it modifies the \'zIndex\' property of a layer, to become lowermost', () => {
+		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+		const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'label1' };
+		const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'label2' };
+		const store = setup({
+			layers: {
+				active: index([layer0, layer1, layer2])
+			}
+		});
+
+		modifyLayer('id1', { zIndex: 0 });
+
+		expect(store.getState().layers.active[0].id).toBe('id1');
+		expect(store.getState().layers.active[1].id).toBe('id0');
+		expect(store.getState().layers.active[2].id).toBe('id2');
+	});
+
 	it('it modifies the \'zIndex\' property of a layer regarding the \'alwaysTop\' constraint', () => {
 		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 		const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'label1', constraints: { alwaysTop: true } };

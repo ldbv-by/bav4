@@ -12,20 +12,24 @@ export class LayerManager extends BaElement {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._layerItems = [];
+		this._draggableItems = [];
+		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
+	}	
+
+	_resetDraggedItem() {
+		this._draggedItem = false;
 	}
 
-	_buildLayerItems(layers) {
-		let layerItems = [{ isPlaceholder:true, listIndex:0 }];
-		
+	_buildDraggableItems(layers) {
+		this._draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
+		this._resetDraggedItem();
 		let j = 0;
 		for(let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
-			layerItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1 });
-			layerItems.push({ zIndex:layer.zIndex, isPlaceholder:true, listIndex:j + 2 });
+			this._draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true });
+			this._draggableItems.push({ zIndex:layer.zIndex, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
 			j += 2;
-		}
-		return layerItems;
+		}		
 	}
 
 	/**
@@ -35,31 +39,48 @@ export class LayerManager extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { active } = this._state;
 		const layerCount = active.length;
-		this._layerItems = this._buildLayerItems(active);
+		this._buildDraggableItems(active);
 
-		const onToggle = (layer) => {
-			modifyLayer(layer.id, { visible: !layer.visible });
-		};
-		
-		const getToggleTitle = (layer) => {
-			const name = layer.label === '' ? layer.id : layer.label;
-			return name + ' - ' + translate('layer_manager_change_visibility');
+		const isNeighbour = (index, otherIndex) => {
+			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};
 
-		const getSlider = (layer) => {
+		const getSlider = (layerItem) => {
 			const onChangeOpacity = (e) => {				
 				const input = e.target;
 				const properties = { opacity: input.value / 100 };
-				modifyLayer(layer.id, properties);				
+				modifyLayer(layerItem.id, properties);				
+			};		
+
+			const onPreventDragging = (e) => {
+				e.preventDefault();
+				e.stopPropagation();
 			};
 
 			return html`<div class='slider-container'>
-				<input id=${'opacity-slider' + layer.id} type="range" min="1" max="100" value=${layer.opacity * 100} class="opacity-slider" @input=${onChangeOpacity} id="myRange"></div>`;
-
+				<input id=${'opacity-slider' + layerItem.id} 
+					type="range" 
+					min="1" 
+					max="100" 
+					value=${layerItem.opacity * 100} 
+					class="opacity-slider" 
+					draggable=${layerItem.isDraggable} 
+					@input=${onChangeOpacity} 
+					@dragstart=${onPreventDragging}
+					id="opacityRange"></div>`;
 		};
 
 		const createLayerElement = (layerItem) => {
-			return html`<div class='layer'>
+			const onToggle = (layerItem) => {
+				modifyLayer(layerItem.id, { visible: !layerItem.visible });
+			};
+			
+			const getToggleTitle = (layerItem) => {
+				const name = layerItem.label === '' ? layerItem.id : layerItem.label;
+				return name + ' - ' + translate('layer_manager_change_visibility');
+			};
+
+			return html`<div id=${'layer_' + layerItem.listIndex} class='layer'>
 							<div class='layer-header'>
 								<span class='layer-label'>${layerItem.label === '' ? layerItem.id : layerItem.label}</span>
 								<ba-toggle title='${getToggleTitle(layerItem)}' checked=${layerItem.visible} @toggle=${() => onToggle(layerItem)}></ba-toggle>
@@ -76,84 +97,42 @@ export class LayerManager extends BaElement {
 		};
 
 		const onDragStart = (e, layerItem) => {
-			const thatId = layerItem.listIndex;
-			const thatIdFallback = 'thatid_' +  thatId;
+			this._draggedItem = layerItem;
 			e.dataTransfer.dropEffect = 'move';
-			e.dataTransfer.effectAllowed = 'move';
-
-			e.dataTransfer.setData('thatid', '' + thatId);
-			// Hack to overcome security-restrictions on dragenter-event
-			// with empty datatransfer-object
-			e.dataTransfer.setData(thatIdFallback, 'ohno!');			
+			e.dataTransfer.effectAllowed = 'move';		
 		};
 
 		const onDragEnd = (e) => {
 			e.preventDefault();
-			//console.log('dragend:', e);
 		};
 
 		const onDrop = (e, layerItem) => {
-			if(layerItem.isPlaceholder ) {
-				const afterId = layerItem.listIndex;
-				let thatId = e.dataTransfer.getData('thatid');
-				if (thatId == '') {
-				// Hack to overcome security-restrictions on dragenter-event
-				// with empty datatransfer-object
-					e.dataTransfer.types.forEach((t) => {					
-						if (t.startsWith('thatid_')) {
-							const candidate = t.split('_')[1];			
-							if(candidate) {
-								thatId = candidate;												
-							}						
-						}									
-					});
-				}		
-				
-				console.log('thatId, afterId:' + thatId + ',' + afterId);
-
-				const thatLayer = this._layerItems[parseInt(thatId)];
-				const afterLayer = this._layerItems[afterId]; 
-			
-			
-				console.log('layer change zIndex: ' + thatLayer.id + ',' + afterLayer.zIndex);
-				modifyLayer(thatLayer.id, { zIndex:afterLayer.zIndex });
+			if(layerItem.isPlaceholder && this._draggedItem) {
+				modifyLayer(this._draggedItem.id, { zIndex:layerItem.zIndex });
 			}
 			if(e.target.classList.contains('placeholder')) {
-				e.target.classList.remove('over');
+				e.target.classList.remove('over');				
 			}
+			this._resetDraggedItem();
 		};
-		const onDragOver = (e) => {
-			e.preventDefault();
-			e.dataTransfer.dropEffect = 'move';
-			//console.log('dragover:', e);
+		const onDragOver = (e, layerItem) => {
+			e.preventDefault();			
+			let dropEffect = 'none';
+			
+			if(this._draggedItem) {			
+				if(layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
+					dropEffect = 'all';
+				}
+			}
+			e.dataTransfer.dropEffect = dropEffect;
 		};
 
 		const onDragEnter = (e, layerItem) => {
-			const thisId = layerItem.listIndex;
-			let thatId = e.dataTransfer.getData('thatid');
-			
-			if (thatId == '') {
-				// Hack to overcome security-restrictions on dragenter-event
-				// with empty datatransfer-object
-				e.dataTransfer.types.forEach((t) => {					
-					if (t.startsWith('thatid_')) {
-						const candidate = t.split('_')[1];			
-						if(candidate) {
-							thatId = candidate;												
-						}						
-					}									
-				});
+			if(this._draggedItem) {			
+				if(layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
+					e.target.classList.add('over');
+				}
 			}
-			e.dataTransfer.dropEffect = 'move';
-			const isNeighbour = (thisId, thatId) => {
-				return thisId === thatId || 
-						thisId - 1 === thatId ||
-						thisId + 1 === thatId;
-			};
-			if(e.target.classList.contains('placeholder') && !isNeighbour(thisId, parseInt(thatId))) {
-				e.target.classList.add('over');
-			}
-
 		};
 		const onDragLeave = (e) => {			
 			e.stopPropagation();
@@ -161,22 +140,20 @@ export class LayerManager extends BaElement {
 				if(e.target.classList.contains('over')) {
 					e.target.classList.remove('over');					
 				}			
-			}
-			
+			}			
 		};
-
 
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
 				<div class='title'>${translate('layer_manager_title')} (${layerCount})</div> 
 				<ul class='layers'>
-                    ${repeat(this._layerItems, (layerItem) => layerItem.listIndex, (layerItem, index) => html`
-					<li draggable='true' 
+                    ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex, (layerItem, index) => html`
+					<li draggable=${layerItem.isDraggable} 
 						@dragstart=${(e) => onDragStart(e, layerItem)} 
 						@dragend=${onDragEnd}
 						@drop=${(e) => onDrop(e, layerItem)}
-						@dragover=${onDragOver}
+						@dragover=${(e) => onDragOver(e, layerItem)}
 						@dragenter=${(e) => onDragEnter(e, layerItem)}
 						@dragleave=${onDragLeave}
 						index=${index}> ${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}						
