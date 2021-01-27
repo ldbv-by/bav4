@@ -3,6 +3,19 @@ import { BvvGeoResourceService } from '../../src/services/BvvGeoResourceService'
 
 describe('BvvGeoResourceService', () => {
 
+	describe('init', () => {
+
+		it('initializes the service', async () => {
+			const service = new BvvGeoResourceService();
+
+			expect(service._georesources).toBeNull();
+
+			await service.init();
+
+			expect(service._georesources).not.toBeNull();
+		});
+	});
+
 	describe('all', () => {
 
 		it('provides all GeoResources', async () => {
@@ -18,21 +31,29 @@ describe('BvvGeoResourceService', () => {
 
 		it('provides a GeoResource by id', async () => {
 			const service = new BvvGeoResourceService();
+			await service.init();
 
-			const geoResource = await service.byId('dop80');
+			const geoResource = service.byId('dop80');
 
 			expect(geoResource).toBeTruthy();
 		});
 
-		it('provides a rejected Promise when GeoResource is not found', (done) => {
+		it('provides null if for an unknown id', async () => {
+			const service = new BvvGeoResourceService();
+			await service.init();
+
+			const geoResource = service.byId('something');
+
+			expect(geoResource).toBeNull();
+		});
+
+		it('throws an error when service hat not been initialized', async () => {
 			const service = new BvvGeoResourceService();
 
-			service.byId('unknownId').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toBe('No GeoResource for unknownId found');
-				done();
-			});
+			expect(() => {
+				service.byId('unknownId');
+			})
+				.toThrowError(/GeoResourceService not yet initialized/);
 		});
 	});
 });

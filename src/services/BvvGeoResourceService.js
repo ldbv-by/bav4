@@ -13,11 +13,15 @@ export class BvvGeoResourceService {
 		this._georesources = null;
 	}
 
+	async init() {
+		await this.all();
+	}
+
 	/**
 	 * Returns all available {@link GeoResource}.
 	 * @public
 	 * @async
-	 * @returns  {Array.<GeoResource>} } 
+	 * @returns  {Array.<GeoResource>}
 	 */
 	async all() {
 		if (!this._georesources) {
@@ -36,14 +40,16 @@ export class BvvGeoResourceService {
 
 
 	/**
-	 * 
+	 * Returns the corresponding  {@link GeoResource} for an id.
 	 * @public
-	 * @async
-	 * @param {string| Promise.reject} id Id of the desired {@link GeoResource}
+	 * @param {string} id Id of the desired {@link GeoResource}
+	 * @returns {Array.<GeoResource> | null}
 	 */
-	async byId(id) {
-		const georesources = await this.all();
-		const geoResource = georesources.find(georesource => georesource.id === id);
-		return geoResource || Promise.reject('No GeoResource for ' + id + ' found');
+	byId(id) {
+		if (!this._georesources) {
+			throw new Error('GeoResourceService not yet initialized');
+		}
+		const geoResource = this._georesources.find(georesource => georesource.id === id);
+		return geoResource || null;
 	}
 }
