@@ -3,6 +3,7 @@ import { Toggle } from '../../../../../src/modules/commons/components/toggle/Tog
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { $injector } from '../../../../../src/injection';
 
@@ -22,9 +23,13 @@ describe('ShowCase', () => {
 			},
 			sidePanel: {
 				open: false
+			},
+			layers: {
+				active: [],
+				background:'null'
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer });
+		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer, layers:layersReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded : () => false });
@@ -73,6 +78,14 @@ describe('ShowCase', () => {
 			toggle.shadowRoot.querySelector('.switch').click();
 
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
+		});
+
+		it('adds layers to store, if button is clicked', async () => {
+			const  element = await setup();
+			
+			element.shadowRoot.querySelector('#addLayerButton').click();			
+
+			expect(store.getState().layers.active.length).toBe(3);
 		});
 	});
 
