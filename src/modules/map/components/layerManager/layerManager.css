@@ -30,19 +30,17 @@ ul {
     margin:2px;
     text-decoration-color: var(--secondary-color);
     background-color:var(--primary-bg-color);
-    /* border: 1px solid var(--primary-color); */
 }
 
 .placeholder {
     padding: 2px;
     margin:2px;
-    height: 10px;
-    border:solid 1px rosybrown;
+    height: 5px;
     background-color:var(--secondary-bg-color);
 }
 .over {
-    height: 20px;
-    border: dotted 2px rebeccapurple;    
+    height: 25px;
+    border: dotted 1px var(--primary-color);    
 }
 
 .slider-container{
