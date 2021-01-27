@@ -39,7 +39,7 @@ describe('ShowCase', () => {
 			const  element = await setup();
 			
 			// try different approaches
-			expect(element.shadowRoot.querySelectorAll('ba-button').length).toBe(5);
+			expect(element.shadowRoot.querySelectorAll('.buttons ba-button').length).toBe(4);
 			expect(element.shadowRoot.querySelector('.buttons').childElementCount).toBe(4);
 			expect(element.shadowRoot.querySelector('#button0')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#button1')).toBeTruthy();
