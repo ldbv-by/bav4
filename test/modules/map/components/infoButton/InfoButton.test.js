@@ -26,10 +26,15 @@ describe('InfoButton', () => {
 
 	describe('when initialized', () => {
 		it('adds a div which shows an info button', async () => {
-
 			expect(element.shadowRoot.querySelector('.info-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.button').title).toBe('map_info_button');						
 		});
+
+		it('provides popup content', async () => {
+			expect(element.shadowRoot.querySelector('.info-popup-link').getAttribute('href')).toBeDefined();
+			expect(element.shadowRoot.querySelectorAll('.info-popup-link').length).toBe(3);
+			expect(element.shadowRoot.querySelectorAll('.info-popup-link')[0].getAttribute('href')).toEqual('http://www.ldbv.bayern.de/hilfe.html');
+		} );
 	});
 
 	describe('when clicked', () => {
@@ -40,7 +45,6 @@ describe('InfoButton', () => {
 			element.shadowRoot.querySelector('.button').click();
 
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('show');
-
 		});
 	});
 });

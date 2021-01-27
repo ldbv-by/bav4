@@ -24,9 +24,9 @@ export class InfoButton extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const items = [
-			{ name: 'Hilfe', url: 'http://www.ldbv.bayern.de/hilfe.html' },
-			{ name: 'Kontakt', url: 'https://www.ldbv.bayern.de/service/kontakt.html' },
-			{ name: 'Impressum', url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
+			{ name: translate('map_info_button_help'), url: 'http://www.ldbv.bayern.de/hilfe.html' },
+			{ name: translate('map_info_button_contact'), url: 'https://www.ldbv.bayern.de/service/kontakt.html' },
+			{ name: translate('map_info_button_about'), url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
 		];
 
 		const openPopup = () => {
