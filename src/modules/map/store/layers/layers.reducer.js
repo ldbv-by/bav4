@@ -90,25 +90,23 @@ export const layersReducer = (state = initialState, action) => {
 
 			const layer = state.active.find(layer => layer.id === id);
 			if (layer) {
-				let active = [...state.active];
-				if (layer.zIndex !== properties.zIndex) {
-					//zIndex was changed
-					active.forEach((layer, index) => {
-						if (index <= properties.zIndex) {
-							layer.zIndex = layer.zIndex - 1;
-						}
-					});
-				}
-				active = active.filter(layer => layer.id !== id);
+				const active = [...state.active];
+
+				const currentIndex = active.indexOf(layer);
+				//remove current layer
+				active.splice(currentIndex, 1);
+
 				const updatedLayer = {
 					...layer,
 					...properties
 				};
-				active.push(updatedLayer);
+				
+				//add updated layer
+				active.splice(updatedLayer.zIndex, 0, updatedLayer);
 
 				return {
 					...state,
-					active: sort(active)
+					active: sort(index(active))
 				};
 			}
 			return {
