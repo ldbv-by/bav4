@@ -6,6 +6,15 @@ describe('tests for ProcessEnvConfigService', () => {
 		// eslint-disable-next-line no-undef
 		process.env = {};
 	});
+	describe('test _trailingSlash()', () => {
+		it('appends a trailing slash when needed', () => {
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService._trailingSlash('some')).toBe('some/');
+			expect(configService._trailingSlash('some/')).toBe('some/');
+			expect(configService._trailingSlash()).toBeUndefined();
+		});
+	});
 
 	describe('test getValue()', () => {
 
@@ -14,17 +23,19 @@ describe('tests for ProcessEnvConfigService', () => {
 			process.env = {
 				'SEARCH_SERVICE_API_KEY': 'SEARCH_SERVICE_API_KEY_value',
 				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
-				'DEFAULT_LANG': 'DEFAULT_LANG_value'
+				'DEFAULT_LANG': 'DEFAULT_LANG_value',
+				'PROXY_URL': 'PROXY_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
 
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
-			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value');
+			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value/');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
+			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value/');
 		});
-
+		
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 

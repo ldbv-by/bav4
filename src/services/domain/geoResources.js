@@ -73,6 +73,9 @@ export class GeoResource {
 
 }
 
+/**
+ * @class
+ */
 export class WmsGeoResource extends GeoResource {
 
 	constructor(id, label, url, layers, format) {
@@ -102,6 +105,10 @@ export class WmsGeoResource extends GeoResource {
 	}
 
 }
+
+/**
+ * @class
+ */
 export class WMTSGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
@@ -117,5 +124,72 @@ export class WMTSGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.WMTS;
+	}
+}
+
+/**
+ * @enum
+ */
+export const VectorSourceType = Object.freeze({
+	KML: Symbol('kml'),
+	GPX: Symbol('gpx'),
+	GEOJSON: Symbol('geojson'),
+});
+
+
+/**
+ * @class
+ */
+export class VectorGeoResource extends GeoResource {
+	constructor(id, label, url, sourceType) {
+		super(id, label);
+		this._url = url;
+		this._sourceType = sourceType;
+		this._source = null;
+	}
+
+	get url() {
+		return this._url;
+	}
+
+	get sourceType() {
+		return this._sourceType;
+	}
+
+	get source() {
+		return this._source;
+	}
+
+	set source(data) {
+		this._url = null;
+		this._source = data;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VECTOR;
+	}
+}
+
+/**
+ * @class
+ */
+export class AggregateGeoResource extends GeoResource {
+	constructor(id, label, geoResourceIds) {
+		super(id, label);
+		this._geoResourceIds = [...geoResourceIds];
+	}
+
+	get geoResourceIds() {
+		return [...this._geoResourceIds];
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.AGGREGATE;
 	}
 }

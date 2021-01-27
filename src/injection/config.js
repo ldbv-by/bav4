@@ -8,6 +8,7 @@ import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { BvvGeoResourceService } from '../services/BvvGeoResourceService';
+import { UrlService } from '../services/UrlService';
 
 
 $injector
@@ -19,7 +20,8 @@ $injector
 	.registerSingleton('StoreService', new StoreService())
 	.register('SearchService', BvvSearchService)
 	.registerSingleton('GeoResourceService', new BvvGeoResourceService())
-	.registerSingleton('ShareService', new ShareService(navigator));
+	.registerSingleton('ShareService', new ShareService(navigator))
+	.register('UrlService', UrlService);
 
 
 export let init = true;

@@ -13,6 +13,13 @@ import { $injector } from '../../../../injection';
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
  * @property {number} [ZIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
+ * @property {Constraints} [Constraints] Constraints of the layer.
+ */
+
+/**
+ * @typedef {Object} Constraints
+ * @property {boolean} [hidden=false] Layer is not displayed in UI
+ * @property {boolean} [alwaysTop=false] Layer always on top
  */
 
 /**
