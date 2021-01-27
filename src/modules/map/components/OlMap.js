@@ -41,6 +41,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
+		this._geoResourceService.init();
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
 		const { zoom, position } = this._state;
@@ -187,13 +188,11 @@ export class OlMap extends BaElement {
 		});
 
 		toBeAdded.forEach(async id => {
-			this._geoResourceService.byId(id)
-				.then(resource => {
-					const layer = overlayLayers.find(layer => layer.id === id);
-					const olLayer = updateOlLayer(toOlLayer(resource), layer);
-					//+1: regard baselayer
-					this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
-				});
+			const resource = this._geoResourceService.byId(id);
+			const layer = overlayLayers.find(layer => layer.id === id);
+			const olLayer = updateOlLayer(toOlLayer(resource), layer);
+			//+1: regard baselayer
+			this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
 		});
 
 		toBeUpdated.forEach(id => {
