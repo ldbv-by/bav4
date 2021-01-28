@@ -21,15 +21,13 @@ ul {
     list-style:none;    
 }
 
-.overflow-container{
-    overflow:auto;
+li {
+    flex: 0 0 auto;
 }
 
-.layer {
-    padding: 2px;
-    margin:2px;
-    text-decoration-color: var(--secondary-color);
-    background-color:var(--primary-bg-color);
+
+.overflow-container{
+    overflow:auto;
 }
 
 .placeholder {
@@ -42,70 +40,3 @@ ul {
     height: 25px;
     border: dotted 1px var(--primary-color);    
 }
-
-.slider-container{
-    background: var(--primary-bg-color);  
-    padding: 0 5px;  
-}
-
-.opacity-slider{
-    width:100%
-}
-
-.layer-header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;    
-}
-
-.layer-label {
-    padding:0px 10px;
-}
-
-.layer-body {
-    display:none;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
-}
-
-.expand{
-    display:block;
-    max-height:50px;
-    overflow: none;
-    transition: max-height 0.2s ease-out;
-}
-
-li {
-    flex: 0 0 auto;
-}
-
-.layer-expand {
-    position: absolute;
-    mask: url('assets/chevron-right.svg');
-    -webkit-mask-image: url('assets/chevron-right.svg'); 
-  }
-
-.layer-expanded {
-    -moz-transform:rotate(90deg);
-    -webkit-transform:rotate(90deg);
-    transform:rotate(90deg);
-}
-
-.icon {
-    background: var(--primary-color);
-    mask-size: cover;
-    -webkit-mask-size: cover;
-    cursor: pointer;
-    display: inline-block;
-    height: 16px;
-    width: 10px;
-  }
-
-  .icon:hover, .icon:focus {
-    background: var(--map-button-bg-color);
-  }
-  
-  .icon:hover {
-    filter: brightness(.8);
-  }

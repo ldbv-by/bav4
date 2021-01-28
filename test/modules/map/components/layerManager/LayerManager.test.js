@@ -46,95 +46,13 @@ describe('LayerManager', () => {
 		});
 	});
 
-	describe('when layer item is rendered', () => {
-
-		it('displays id if label is empty', async () => {
-			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: '', visible: true, zIndex:0
-			};
-			const state = {
-				layers: {
-					active: [layer],
-					background:'bg0'
-				}
-			};
-			const element = await setup(state);
-			const toggle = element.shadowRoot.querySelector('ba-toggle');
-
-			expect(toggle.title).not.toBe('');
-			expect(toggle.label).not.toBe('');
-		});
-
-		it('click on layer item change state in store', async() => {
-			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: 'label0', visible: true, zIndex:0
-			};
-			const state = {
-				layers: {
-					active: [layer],
-					background:'bg0'
-				}
-			};
-			const element = await setup(state);
-
-			const toggle = element.shadowRoot.querySelector('ba-toggle');
-			expect(store.getState().layers.active[0].visible).toBe(true);
-			toggle.click();
-			expect(store.getState().layers.active[0].visible).toBe(false);
-		});
-
-		it('change value on opacity-slider of a layer item change state in store', async() => {
-			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: 'label0', visible: true, zIndex:0, opacity:.4
-			};
-			const state = {
-				layers: {
-					active: [layer],
-					background:'bg0'
-				}
-			};
-			const element = await setup(state);
-
-			const slider = element.shadowRoot.querySelector('#opacity-sliderid0');
-			expect(store.getState().layers.active[0].opacity).toBe(0.4);
-			slider.value = 80;
-			slider.dispatchEvent(new Event('input'));
-
-			
-			expect(store.getState().layers.active[0].opacity).toBe(0.8);
-		});
-
-		it('expands layeritem when expand-button is clicked', async() => {
-			const layer = { ...defaultLayerProperties,
-				id: 'id0', label: 'label0', visible: true, zIndex:0, opacity:.4
-			};
-			const state = {
-				layers: {
-					active: [layer],
-					background:'bg0'
-				}
-			};
-			const element = await setup(state);
-			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeFalse();
-			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeFalse();
-			element.shadowRoot.querySelector('.expand-button a').click();
-			
-			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeTrue();
-			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeTrue();
-			element.shadowRoot.querySelector('.expand-button a').click();
-
-			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeFalse();
-			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeFalse();
-			
-		});
-	});
-
+	
 	describe('when layer items are rendered', () => {
 		let element;
 		beforeEach(async () => {	
-			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:0 };
-			const layer1 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:1 };
-			const layer2 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:2 };
+			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:0, draggable:true };
+			const layer1 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:1, draggable:true };
+			const layer2 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex:2, draggable:true };
 			const state = {
 				layers: {
 					active: [layer0, layer1, layer2],
@@ -158,7 +76,7 @@ describe('LayerManager', () => {
 			const layerElements = [...element.shadowRoot.querySelectorAll('.layer')];
 			
 			const nonDraggableLayerElements = layerElements.filter((element) => {
-				return element.draggable;
+				return !element.draggable;
 			});
 
 			expect(layerElements.length).toBe(3);
@@ -327,7 +245,8 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.classList.add('over');
 			neighbourPlaceholder.dispatchEvent(dragoverEvt);
 
-			expect(store.getState().layers.active[1].id).toBe('id0');
+			expect(store.getState().layers.active[2].id).toBe('id0');
+			expect(store.getState().layers.active[1].id).toBe('id2');
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
 
 		});

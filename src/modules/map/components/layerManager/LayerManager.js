@@ -26,8 +26,8 @@ export class LayerManager extends BaElement {
 		let j = 0;
 		for(let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
-			this._draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true });
-			this._draggableItems.push({ zIndex:layer.zIndex, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
+			this._draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true, collapsed:true });
+			this._draggableItems.push({ zIndex:layer.zIndex + 1, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
 			j += 2;
 		}		
 	}
@@ -43,76 +43,33 @@ export class LayerManager extends BaElement {
 
 		const isNeighbour = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
-		};
-
-		const getSlider = (layerItem) => {
-			const onChangeOpacity = (e) => {				
-				const input = e.target;
-				const properties = { opacity: input.value / 100 };
-				modifyLayer(layerItem.id, properties);				
-			};		
-
-			const onPreventDragging = (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			};
-
-			return html`<div class='slider-container'>
-				<input id=${'opacity-slider' + layerItem.id} 
-					type="range" 
-					min="1" 
-					max="100" 
-					value=${layerItem.opacity * 100} 
-					class="opacity-slider" 
-					draggable=${layerItem.isDraggable} 
-					@input=${onChangeOpacity} 
-					@dragstart=${onPreventDragging}
-					id="opacityRange"></div>`;
-		};
+		};		
 
 		const createLayerElement = (layerItem) => {
-			const onToggle = (layerItem) => {
-				modifyLayer(layerItem.id, { visible: !layerItem.visible });
+			const name = layerItem.label === '' ? layerItem.id : layerItem.label;
+
+			const onVisible = (e, layerItem) => {
+				modifyLayer(layerItem.id, { visible: e.detail.visible });
 			};
 			
-			const getToggleTitle = (layerItem) => {
-				const name = layerItem.label === '' ? layerItem.id : layerItem.label;
-				return name + ' - ' + translate('layer_manager_change_visibility');
+			const onOpacity = (e, layerItem) => {
+				modifyLayer(layerItem.id, { opacity: e.detail.opacity / 100 });
 			};
 
-			const getButtonTitle = () => {				
-				return  translate('layer_manager_change_visibility');
+			const onCollapse = () => (e, layerItem) => {
+				layerItem.collapsed = e.detail.collapsed;
 			};
 
-			const expandLayer = (layerItem) => {
-				const bodyId = '#layer-body_' + layerItem.listIndex;
-				const buttonId = '#layer-expand_' + layerItem.listIndex;
-				const layerBody = this._root.querySelector(bodyId);
-				const expandButton = this._root.querySelector(buttonId);
-				if(layerBody.classList.contains('expand')) {
-					layerBody.classList.remove('expand');					
-					expandButton.classList.remove('layer-expanded');
-				}
-				else{
-					layerBody.classList.add('expand');
-					expandButton.classList.add('layer-expanded');
-				}
-			};
-
-			return html`<div id=${'layer_' + layerItem.listIndex} class='layer'>
-							<div class='layer-header'>
-								<div class='expand-button'>
-									<a title="${getButtonTitle()}" @click="${() => expandLayer(layerItem)}">
-									<i id=${'layer-expand_' + layerItem.listIndex} class='icon layer-expand'></i>
-									</a>
-								</div>
-								<span class='layer-label'>${layerItem.label === '' ? layerItem.id : layerItem.label}</span>
-								<ba-toggle title='${getToggleTitle(layerItem)}' checked=${layerItem.visible} @toggle=${() => onToggle(layerItem)}></ba-toggle>
-							</div>
-							<div id=${'layer-body_' + layerItem.listIndex} class='layer-body'>
-								${getSlider(layerItem)}
-							</div>
-						</div>`;
+			return html`<ba-layer-item class='layer' name=${name} 
+					opacity=${layerItem.opacity * 100}
+					collapsed=${layerItem.collapsed}
+					draggable='true'
+					@visible=${(e) => onVisible(e, layerItem)}
+					@opacity=${(e) => onOpacity(e, layerItem)}
+					@collapse=${(e) => onCollapse(e, layerItem)}
+					>
+					</ba-layer-item>`;
+			
 		};
 
 		const createPlaceholderElement = (layerItem) => {
