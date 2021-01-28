@@ -233,20 +233,52 @@ describe('LayerManager', () => {
 
 		});
 
-		it('on drop of not neighbouring placeholder change state in store', () => {
+		it('drops firstlayer on placeholder to be penultimate layer', () => {
 			
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
 			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
-			const dragoverEvt = document.createEvent('MouseEvents');
-			dragoverEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
-			dragoverEvt.dataTransfer = createNewDataTransfer();
+			expect(element._draggedItem.id).toBe('id0');
+			const dropEvt = document.createEvent('MouseEvents');
+			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dropEvt.dataTransfer = createNewDataTransfer();
 
+			/* 
+			*  0     0    1     1    2     2     3
+			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
+			*        |_______________^ 
+			*/ 
 			
 			neighbourPlaceholder.classList.add('over');
-			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+			neighbourPlaceholder.dispatchEvent(dropEvt);
+			
+			expect(store.getState().layers.active[0].id).toBe('id1');
+			expect(store.getState().layers.active[1].id).toBe('id0');
+			expect(store.getState().layers.active[2].id).toBe('id2');			
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
 
-			expect(store.getState().layers.active[2].id).toBe('id0');
+		});
+
+		it('drops last on placeholder to be penultimate layer', () => {
+			
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
+			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 5)[0];
+			expect(element._draggedItem.id).toBe('id2');
+			const dropEvt = document.createEvent('MouseEvents');
+			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dropEvt.dataTransfer = createNewDataTransfer();
+
+			/* 
+			*  0     0    1     1    2     2     3
+			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
+			*              ^_______________|
+			*/ 
+			
+			neighbourPlaceholder.classList.add('over');
+			neighbourPlaceholder.dispatchEvent(dropEvt);
+			
+			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id2');
+			expect(store.getState().layers.active[2].id).toBe('id1');			
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
 
 		});

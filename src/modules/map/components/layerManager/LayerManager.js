@@ -13,6 +13,7 @@ export class LayerManager extends BaElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._draggableItems = [];
+		this._layerCount = 0;
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 	}	
 
@@ -22,6 +23,7 @@ export class LayerManager extends BaElement {
 
 	_buildDraggableItems(layers) {
 		this._draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
+		this._layerCount = layers.length;
 		this._resetDraggedItem();
 		let j = 0;
 		for(let i = 0; i < layers.length; i++) {
@@ -89,7 +91,11 @@ export class LayerManager extends BaElement {
 
 		const onDrop = (e, layerItem) => {
 			if(layerItem.isPlaceholder && this._draggedItem) {
-				modifyLayer(this._draggedItem.id, { zIndex:layerItem.zIndex });
+				let newZIndex = layerItem.zIndex;
+				if(layerItem.zIndex === this._layerCount - 1) {
+					newZIndex = layerItem.zIndex - 1;
+				}
+				modifyLayer(this._draggedItem.id, { zIndex:newZIndex });				
 			}
 			if(e.target.classList.contains('placeholder')) {
 				e.target.classList.remove('over');				
