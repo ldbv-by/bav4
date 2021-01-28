@@ -80,12 +80,36 @@ export class LayerManager extends BaElement {
 				return name + ' - ' + translate('layer_manager_change_visibility');
 			};
 
+			const getButtonTitle = () => {				
+				return  translate('layer_manager_change_visibility');
+			};
+
+			const expandLayer = (layerItem) => {
+				const bodyId = '#layer-body_' + layerItem.listIndex;
+				const buttonId = '#layer-expand_' + layerItem.listIndex;
+				const layerBody = this._root.querySelector(bodyId);
+				const expandButton = this._root.querySelector(buttonId);
+				if(layerBody.classList.contains('expand')) {
+					layerBody.classList.remove('expand');					
+					expandButton.classList.remove('layer-expanded');
+				}
+				else{
+					layerBody.classList.add('expand');
+					expandButton.classList.add('layer-expanded');
+				}
+			};
+
 			return html`<div id=${'layer_' + layerItem.listIndex} class='layer'>
 							<div class='layer-header'>
+								<div class='expand-button'>
+									<a title="${getButtonTitle()}" @click="${() => expandLayer(layerItem)}">
+									<i id=${'layer-expand_' + layerItem.listIndex} class='icon layer-expand'></i>
+									</a>
+								</div>
 								<span class='layer-label'>${layerItem.label === '' ? layerItem.id : layerItem.label}</span>
 								<ba-toggle title='${getToggleTitle(layerItem)}' checked=${layerItem.visible} @toggle=${() => onToggle(layerItem)}></ba-toggle>
 							</div>
-							<div class='layer-body'>
+							<div id=${'layer-body_' + layerItem.listIndex} class='layer-body'>
 								${getSlider(layerItem)}
 							</div>
 						</div>`;

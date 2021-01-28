@@ -104,6 +104,29 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].opacity).toBe(0.8);
 		});
 
+		it('expands layeritem when expand-button is clicked', async() => {
+			const layer = { ...defaultLayerProperties,
+				id: 'id0', label: 'label0', visible: true, zIndex:0, opacity:.4
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background:'bg0'
+				}
+			};
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeFalse();
+			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeFalse();
+			element.shadowRoot.querySelector('.expand-button a').click();
+			
+			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeTrue();
+			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeTrue();
+			element.shadowRoot.querySelector('.expand-button a').click();
+
+			expect(element.shadowRoot.querySelector('#layer-body_1').classList.contains('expand')).toBeFalse();
+			expect(element.shadowRoot.querySelector('#layer-expand_1').classList.contains('layer-expanded')).toBeFalse();
+			
+		});
 	});
 
 	describe('when layer items are rendered', () => {
