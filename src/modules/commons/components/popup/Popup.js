@@ -93,4 +93,26 @@ export class Popup extends BaElement {
 	get top() {
 		return this._top;
 	} 
+
+	/** 
+	 *@private 
+	 */
+	isOpen() {
+		return this._type === 'show';
+	} 
+
+	/**
+	 *@private 
+	 */
+	openPopup() {
+		this.setAttribute('type', 'show');
+	}
+
+	/**
+	 *@private 
+	 */
+	closePopup() {
+		this.setAttribute('type', 'hide');
+	}	
+	
 } 

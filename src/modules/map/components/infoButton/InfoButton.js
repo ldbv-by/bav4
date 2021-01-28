@@ -29,17 +29,24 @@ export class InfoButton extends BaElement {
 			{ name: translate('map_info_button_about'), url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
 		];
 
-		const openPopup = () => {
-
+		const openPopup = () => {			
 			// set created popup visible
 			var popup = this.shadowRoot.getElementById('info-popup');
-			if (popup.getAttribute('type') === 'hide') {
-				popup.setAttribute('type', 'show');
+			if (!popup.isOpen()) {
+				popup.openPopup();
 			}
 			else{
-				popup.setAttribute('type', 'hide');
+				popup.closePopup();
 			} 
 		};
+
+		// close popup on map click
+		window.addEventListener('map_clicked', () => {
+			var popup = this.shadowRoot.getElementById('info-popup');
+			if (popup.isOpen()) {
+				popup.closePopup();
+			}
+		}); 
 
 		return html`
             <style>${css}</style>
@@ -49,8 +56,7 @@ export class InfoButton extends BaElement {
 			<ba-popup id="info-popup" type='hide' right='60' top='170' >
 				<div class="info-popup-content">
 					<ul class="info-popup-list">
-					${items.map((item) => 
-		html`
+					${items.map((item) => html`
 						<li class="info-popup-listelement">
 							<a class="info-popup-link" href="${item.url}" target="_blank">${item.name}</a> 
 						</li>
