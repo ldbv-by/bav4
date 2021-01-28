@@ -20,11 +20,21 @@ describe('OlMap', () => {
 
 	const initialPosition = fromLonLat([11.57245, 48.14021]);
 
+	const geoResourceServiceStub = {
+		byId(id) {
+			switch (id) {
+				case 'id0':
+					return new WmsGeoResource(id, 'Label0', 'https://something0.url', 'layer0', 'image/png');
+				case 'id1':
+					return new WmsGeoResource(id, 'Label1', 'https://something1.url', 'layer1', 'image/png');
+			}
+			return null;
+		},
+		init() { }
+	};
 	let store;
-	let element;
 
-	beforeEach(async () => {
-
+	const setup = () => {
 		const state = {
 			map: {
 				zoom: 10,
@@ -44,22 +54,13 @@ describe('OlMap', () => {
 		$injector.registerSingleton('ShareService', {
 			copyToClipboard: () => { }
 		});
-		$injector.registerSingleton('GeoResourceService', {
-			async byId(id) {
-				switch (id) {
-					case 'id0':
-						return new WmsGeoResource(id, 'Label0', 'https://something0.url', 'layer0', 'image/png');
-					case 'id1':
-						return new WmsGeoResource(id, 'Label1', 'https://something1.url', 'layer1', 'image/png');
-				}
-				return Promise.reject('no georesource found for ' + id);
-			}
-		});
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceStub);
 
-		element = await TestUtils.render(OlMap.tag);
-	});
+		return TestUtils.render(OlMap.tag);
+	};
 
-	function simulateMouseEvent(type, x, y, dragging) {
+
+	const simulateMouseEvent = (element, type, x, y, dragging) => {
 		const map = element._map;
 		const eventType = type;
 
@@ -76,32 +77,39 @@ describe('OlMap', () => {
 		let mapEvent = new MapBrowserEvent(eventType, map, event);
 		mapEvent.dragging = dragging ? dragging : false;
 		map.dispatchEvent(mapEvent);
-	}
+	};
 
-	function simulateMapEvent(type) {
+	const simulateMapEvent = (element, type) => {
 		const map = element._map;
 		const mapEvent = new MapEvent(type, map, map.frameState);
 
 		map.dispatchEvent(mapEvent);
-	}
+	};
 
 	describe('when initialized', () => {
 		it('configures the map and adds a div which contains the ol-map', async () => {
-			// nothing for arrange and act
-
-			// assert
+			const element = await setup();
 			expect(element._view.getZoom()).toBe(10);
 			expect(element._view.getCenter()).toEqual(initialPosition);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
+		});
+
+		it('initialized the geoResourceService', async () => {
+			const geoResourceServiceSpy = spyOn(geoResourceServiceStub, 'init');
+
+			await setup();
+
+			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
 
 	describe('when clicked', () => {
 		it('emits event', async () => {
+			const element = await setup();
 			spyOn(element, 'emitEvent');
 
-			simulateMouseEvent(MapBrowserEventType.SINGLECLICK, 0, 0);
+			simulateMouseEvent(element, MapBrowserEventType.SINGLECLICK, 0, 0);
 
 			expect(element.emitEvent).toHaveBeenCalledWith('map_clicked', null);
 		});
@@ -109,11 +117,12 @@ describe('OlMap', () => {
 
 	describe('when map move', () => {
 		it('change state from view properties', async () => {
+			const element = await setup();
 			const view = element._view;
 			spyOn(view, 'getZoom');
 			spyOn(view, 'getCenter');
 
-			simulateMapEvent(MapEventType.MOVEEND);
+			simulateMapEvent(element, MapEventType.MOVEEND);
 
 			expect(view.getZoom).toHaveBeenCalledTimes(1);
 			expect(view.getCenter).toHaveBeenCalledTimes(1);
@@ -122,11 +131,12 @@ describe('OlMap', () => {
 
 	describe('when pointer move', () => {
 		it('pointer position store is updated', async () => {
+			const element = await setup();
 			const map = element._map;
 			const pointerPosition = ['foo', 'bar'];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			simulateMouseEvent(MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 			expect(store.getState().map.pointerPosition).toBe(pointerPosition);
 		});
@@ -134,11 +144,12 @@ describe('OlMap', () => {
 
 	describe('when mouse is dragging', () => {
 		it('do NOT store pointerPosition', async () => {
+			const element = await setup();
 			const map = element._map;
 			const pointerPosition = [99, 99];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			simulateMouseEvent(MapBrowserEventType.POINTERMOVE, 10, 0, true);
+			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
 			expect(store.getState().map.pointerPosition).toBeUndefined();
 		});
@@ -146,8 +157,8 @@ describe('OlMap', () => {
 
 	describe('when contextmenu (i.e. with right-click) is performed', () => {
 
-
 		it('do store valid contextMenuData', async () => {
+			const element = await setup();
 			const customEventType = 'contextmenu';
 			const state = {
 				map: {
@@ -162,7 +173,7 @@ describe('OlMap', () => {
 				contextMenue: contextMenueReducer
 			});
 
-			simulateMouseEvent(customEventType, 10, 0);
+			simulateMouseEvent(element, customEventType, 10, 0);
 			const actualCommands = store.getState().contextMenue.data.commands;
 			const actualPointer = store.getState().contextMenue.data.pointer;
 
@@ -179,139 +190,103 @@ describe('OlMap', () => {
 
 	describe('layer management', () => {
 
-		it('intial attaches one layer', () => {
+		it('intial attaches one layer', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			expect(map.getLayers().getLength()).toBe(1);
 		});
 
-		/**
-		 * Note: Layers are added to map asynchronously. We do not get a Promise
-		 * or something like that. Therefore we use simple callbacks here,  
-		 * which are jasmine's low-level mechanism for that case:
-		 * https://jasmine.github.io/tutorials/async
-		 */
-		it('adds a layer with default settings', (done) => {
+		it('adds a layer with default settings', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0');
 
-			setTimeout(() => {
-				expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(2);
 
-				const layer = map.getLayers().item(1);
-				expect(layer.get('id')).toBe('id0');
-				expect(layer.getOpacity()).toBe(1);
-				expect(layer.getVisible()).toBeTrue();
-
-				done();
-			});
+			const layer = map.getLayers().item(1);
+			expect(layer.get('id')).toBe('id0');
+			expect(layer.getOpacity()).toBe(1);
+			expect(layer.getVisible()).toBeTrue();
 		});
 
-		it('adds a layer with custom settings', (done) => {
+		it('adds a layer with custom settings', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0', { visible: false, opacity: .5 });
 
-			setTimeout(() => {
-				expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(2);
 
-				const layer = map.getLayers().item(1);
-				expect(layer.get('id')).toBe('id0');
-				expect(layer.getOpacity()).toBe(.5);
-				expect(layer.getVisible()).toBeFalse();
-
-				done();
-			});
+			const layer = map.getLayers().item(1);
+			expect(layer.get('id')).toBe('id0');
+			expect(layer.getOpacity()).toBe(.5);
+			expect(layer.getVisible()).toBeFalse();
 		});
 
-		it('adds a layer with custom index', (done) => {
+		it('adds a layer with custom index', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0');
-
-			setTimeout(() => {
-
-				addLayer('id1', { zIndex: 0 });
-				setTimeout(() => {
-					expect(map.getLayers().getLength()).toBe(3);
-					const layer1 = map.getLayers().item(1);
-					expect(layer1.get('id')).toBe('id1');
-					const layer0 = map.getLayers().item(2);
-					expect(layer0.get('id')).toBe('id0');
-
-					done();
-				});
-			});
+			addLayer('id1', { zIndex: 0 });
+			expect(map.getLayers().getLength()).toBe(3);
+			const layer1 = map.getLayers().item(1);
+			expect(layer1.get('id')).toBe('id1');
+			const layer0 = map.getLayers().item(2);
+			expect(layer0.get('id')).toBe('id0');
 		});
 
-		it('removes a layer', (done) => {
+		it('removes a layer', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0');
+			expect(map.getLayers().getLength()).toBe(2);
 
-			setTimeout(() => {
-				expect(map.getLayers().getLength()).toBe(2);
+			removeLayer('id0');
 
-				removeLayer('id0');
-
-				expect(map.getLayers().getLength()).toBe(1);
-				expect(map.getLayers().item(0).get('id')).not.toBe('id0');
-
-				done();
-			});
+			expect(map.getLayers().getLength()).toBe(1);
+			expect(map.getLayers().item(0).get('id')).not.toBe('id0');
 		});
 
-		it('modifys the visibility of a layer', (done) => {
+		it('modifys the visibility of a layer', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0');
+			addLayer('id1');
+			expect(map.getLayers().getLength()).toBe(3);
 
-			setTimeout(() => {
+			modifyLayer('id0', { visible: false, opacity: .5 });
 
-				addLayer('id1');
-				setTimeout(() => {
-					expect(map.getLayers().getLength()).toBe(3);
+			const layer0 = map.getLayers().item(1);
+			expect(layer0.get('id')).toBe('id0');
+			expect(layer0.getVisible()).toBeFalse();
+			expect(layer0.getOpacity()).toBe(.5);
 
-					modifyLayer('id0', { visible: false, opacity: .5 });
-
-					const layer0 = map.getLayers().item(1);
-					expect(layer0.get('id')).toBe('id0');
-					expect(layer0.getVisible()).toBeFalse();
-					expect(layer0.getOpacity()).toBe(.5);
-
-					const layer1 = map.getLayers().item(2);
-					expect(layer1.get('id')).toBe('id1');
-					expect(layer1.getVisible()).toBeTrue();
-					expect(layer1.getOpacity()).toBe(1);
-
-					done();
-				});
-			});
+			const layer1 = map.getLayers().item(2);
+			expect(layer1.get('id')).toBe('id1');
+			expect(layer1.getVisible()).toBeTrue();
+			expect(layer1.getOpacity()).toBe(1);
 		});
 
-		it('modifys the z-index of a layer', (done) => {
+		it('modifys the z-index of a layer', async () => {
+			const element = await setup();
 			const map = element._map;
 
 			addLayer('id0');
+			addLayer('id1');
+			expect(map.getLayers().getLength()).toBe(3);
 
-			setTimeout(() => {
+			modifyLayer('id0', { zIndex: 2 });
 
-				addLayer('id1');
-				setTimeout(() => {
-					expect(map.getLayers().getLength()).toBe(3);
+			const layer0 = map.getLayers().item(1);
+			expect(layer0.get('id')).toBe('id1');
 
-					modifyLayer('id0', { zIndex: 2 });
-
-					const layer0 = map.getLayers().item(1);
-					expect(layer0.get('id')).toBe('id1');
-
-					const layer1 = map.getLayers().item(2);
-					expect(layer1.get('id')).toBe('id0');
-
-					done();
-				});
-			});
+			const layer1 = map.getLayers().item(2);
+			expect(layer1.get('id')).toBe('id0');
 		});
 	});
 });
