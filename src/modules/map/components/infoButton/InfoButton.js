@@ -28,25 +28,14 @@ export class InfoButton extends BaElement {
 			{ name: translate('map_info_button_contact'), url: 'https://www.ldbv.bayern.de/service/kontakt.html' },
 			{ name: translate('map_info_button_about'), url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
 		];
-
+		
 		const openPopup = () => {			
 			// set created popup visible
 			var popup = this.shadowRoot.getElementById('info-popup');
 			if (!popup.isOpen()) {
 				popup.openPopup();
-			}
-			else{
-				popup.closePopup();
 			} 
 		};
-
-		// close popup on map click
-		window.addEventListener('map_clicked', () => {
-			var popup = this.shadowRoot.getElementById('info-popup');
-			if (popup.isOpen()) {
-				popup.closePopup();
-			}
-		}); 
 
 		return html`
             <style>${css}</style>
@@ -67,6 +56,18 @@ export class InfoButton extends BaElement {
             
         `;
 	} 
+
+	extractState(store) {
+		const { map: { zoom, position } } = store;
+		return { zoom, position };
+	}
+
+	onStateChanged() {
+		var popup = this.shadowRoot.getElementById('info-popup');
+		if (popup.isOpen()) {
+			popup.closePopup();
+		}
+	}
 
 	static get tag() {
 		return 'ba-info-button';
