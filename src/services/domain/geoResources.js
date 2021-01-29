@@ -2,11 +2,11 @@
  * @enum
  */
 export const GeoResourceTypes = Object.freeze({
-	WMS: Symbol('wms'),
-	WMTS: Symbol('wmts'),
-	VECTOR: Symbol('vector'),
-	VECTOR_TILES: Symbol('vector_tiles'),
-	AGGREGATE: Symbol('aggregate')
+	WMS: Symbol.for('wms'),
+	WMTS: Symbol.for('wmts'),
+	VECTOR: Symbol.for('vector'),
+	VECTOR_TILES: Symbol.for('vector_tiles'),
+	AGGREGATE: Symbol.for('aggregate')
 });
 
 /**
@@ -131,9 +131,9 @@ export class WMTSGeoResource extends GeoResource {
  * @enum
  */
 export const VectorSourceType = Object.freeze({
-	KML: Symbol('kml'),
-	GPX: Symbol('gpx'),
-	GEOJSON: Symbol('geojson'),
+	KML: Symbol.for('kml'),
+	GPX: Symbol.for('gpx'),
+	GEOJSON: Symbol.for('geojson'),
 });
 
 
