@@ -12,11 +12,11 @@ export class LayerItem extends BaElement {
 		this._translationService = TranslationService;
 		this._onOpacityChanged = () => { };
 		this._opacity = parseInt(this.getAttribute('opacity')) || 100;
-		this.name = this.getAttribute('name') || '';
-		this.draggable = this.getAttribute('draggable') === 'true';
-		this._visible = this.getAttribute('visible') === 'true' || true;
+		this._title = this.getAttribute('title') || '';
+		this._draggable = this.getAttribute('draggable') === 'true';
+		this._visible = this.getAttribute('visible') === 'true';
 		this._onVisibilityChanged = () => {};
-		this._collapsed = this.getAttribute('collapsed') === 'true' || true;
+		this._collapsed = this.getAttribute('collapsed') === 'true';
 		this._onCollapsed = () => { };        
 	}
     
@@ -49,7 +49,7 @@ export class LayerItem extends BaElement {
 					max="100" 
 					value=${this._opacity} 
 					class="opacity-slider" 
-					draggable=${this.draggable} 
+					draggable=${this._draggable} 
 					@input=${onChangeOpacity} 
 					@dragstart=${onPreventDragging}
 					id="opacityRange"></div>`;
@@ -60,24 +60,26 @@ export class LayerItem extends BaElement {
 		};
         
 		const onCollapse = () => {
-			this.collapsed = !this._collapsed;
+			this._collapsed = !this._collapsed;
 			this.dispatchEvent(new CustomEvent('collapse', {
 				detail: { collapse: this._collapsed }
 			}));            
 			this._onCollapsed(this._collapsed);
+			this.render();
 		};
         
 		const onVisible = () => {
-			this.visible = !this._visible;
+			this._visible = !this._visible;
             
 			this.dispatchEvent(new CustomEvent('visible', {
 				detail: { visible: this._visible }
 			}));            
 			this._onVisibilityChanged(this._visible);
+			this.render();
 		};
         
 		const getVisibilityTitle = () => {
-			return this.name + ' - ' + translate('layer_item_change_visibility');
+			return this.title + ' - ' + translate('layer_item_change_visibility');
 		};
         
 		const iconCollapseClass = {
@@ -97,7 +99,7 @@ export class LayerItem extends BaElement {
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
                 </div>
-                <span class='layer-label'>${this._name}</span>
+                <span class='layer-label'>${this.title}</span>
                 <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${onVisible}></ba-toggle>
             </div>
             <div class='layer-body ${classMap(bodyCollapseClass)}'>
@@ -107,7 +109,7 @@ export class LayerItem extends BaElement {
 	}
     
 	static get observedAttributes() {
-		return ['name', 'collapsed', 'visible', 'opacity', 'draggable'];
+		return ['title', 'collapsed', 'visible', 'opacity', 'draggable'];
 	}
 
 	static get tag() {
@@ -115,79 +117,30 @@ export class LayerItem extends BaElement {
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
+		console.log('attribute ' + name + ' changed from ' + oldValue + ' to ' + newValue);
 		switch (name) {
-			case 'name':
-				this.name = newValue;
+			case 'title':
+				this._title = newValue;
+				this.render();
 				break;
 			case 'collapsed':
-				this.collapsed = (newValue === 'true');
+				this._collapsed = newValue === '' ? true : (newValue === 'true');
+				this.render();
 				break;
 			case 'visible':
-				this.visible = (newValue === 'true');
+				this._visible = newValue === '' ? true : (newValue === 'true');
+				this.render();
 				break;
 			case 'opacity':
-				this.opacity = parseInt(newValue);
+				this._opacity = parseInt(newValue);
+				this.render();
 				break;
 			case 'draggable':
-				this.draggable = (newValue === 'true');
-				break;
+				this._draggable = newValue === '' ? true : (newValue === 'true');
+				this.render();
+				break;				
 		}
 	}
-    
-	set name(value) {
-		if (value !== this._name) {
-			this._name = value;
-			this.render();
-		}
-	}
-    
-	get name() {
-		return this._name;
-	}
-    
-	set collapsed(value) {
-		if (value !== this._collapsed) {
-			this._collapsed = value;
-			this.render();
-		}
-	}
-
-	get collapsed() {
-		return this._collapsed;
-	}
-    
-	set draggable(value) {
-		if (value !== this._draggable) {
-			this._draggable = value;
-			this.render();
-		}
-	}
-
-	get draggable() {
-		return this._draggable;
-	}
-    
-	set visible(value) {
-		if (value !== this._visible) {
-			this._visible = value;
-			this.render();
-		}
-	}
-
-	get visible() {
-		return this._visible;
-	}
-    
-	set opacity(value) {
-		if (value !== this._opacity) {
-			this._opacity = value;
-			this.render();
-		}
-	}
-
-	get opacity() {
-		return this._opacity;
-	}    
 
 	set onOpacityChanged(callback) {
 		this._onOpacityChanged = callback;
