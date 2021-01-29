@@ -72,6 +72,13 @@ export class LayerManager extends BaElement {
 				layerItem.collapsed = e.detail.collapse;
 			};
 
+			const onMove = (e, layerItem) => {						
+				const newZIndex = layerItem.zIndex + e.detail.move;		
+				if(newZIndex >= 0) {
+					modifyLayer(layerItem.id, { zIndex: newZIndex });
+				}						
+			};
+
 			return html`<ba-layer-item id=${'layer_' + layerItem.id + '_' + layerItem.zIndex} class='layer' title=${title} 
 					opacity=${layerItem.opacity * 100}
 					collapsed=${layerItem.collapsed}
@@ -80,6 +87,7 @@ export class LayerManager extends BaElement {
 					@visible=${(e) => onVisible(e, layerItem)}
 					@opacity=${(e) => onOpacity(e, layerItem)}
 					@collapse=${(e) => onCollapse(e, layerItem)}
+					@move=${(e) => onMove(e, layerItem)}
 					>
 					</ba-layer-item>`;
 			

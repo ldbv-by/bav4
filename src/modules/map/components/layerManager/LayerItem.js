@@ -17,7 +17,8 @@ export class LayerItem extends BaElement {
 		this._visible = this.getAttribute('visible') === 'true';
 		this._onVisibilityChanged = () => {};
 		this._collapsed = this.getAttribute('collapsed') === 'true';
-		this._onCollapsed = () => { };        
+		this._onCollapsed = () => { };       
+		this._onMove = () => {}; 
 	}
     
     
@@ -64,7 +65,27 @@ export class LayerItem extends BaElement {
 			this.dispatchEvent(new CustomEvent('collapse', {
 				detail: { collapse: this._collapsed }
 			}));            
-			this._onCollapsed(this._collapsed);
+			this._onCollapsed({
+				detail: { collapse: this._collapsed }
+			});
+			this.render();
+		};
+
+		const onMoveUp = () => {
+			this.dispatchEvent(new CustomEvent('move', {
+				detail: { move: +1 }
+			}));            
+			this._onMove(+1);
+			this.render();
+		};
+
+		const onMoveDown = () => {
+			this.dispatchEvent(new CustomEvent('move', {
+				detail: { move: -1 }
+			}));            
+			this._onMove( {
+				detail: { move: -1 }
+			});
 			this.render();
 		};
         
@@ -74,7 +95,9 @@ export class LayerItem extends BaElement {
 			this.dispatchEvent(new CustomEvent('visible', {
 				detail: { visible: this._visible }
 			}));            
-			this._onVisibilityChanged(this._visible);
+			this._onVisibilityChanged({
+				detail: { visible: this._visible }
+			});
 			this.render();
 		};
         
@@ -102,8 +125,17 @@ export class LayerItem extends BaElement {
                 <span class='layer-label'>${this.title}</span>
                 <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${onVisible}></ba-toggle>
             </div>
-            <div class='layer-body ${classMap(bodyCollapseClass)}'>
-                ${getSlider()}
+			<div class='layer-body ${classMap(bodyCollapseClass)}'>
+			
+				${getSlider()}
+				<div class='layer-move-buttons'> 
+					<a class='button' title="move up" @click="${onMoveUp}">
+						<i class='arrow-icon arrow-up'></i>
+					</a>
+					<a class='button' title="move down" @click="${onMoveDown}">
+						<i class='arrow-icon arrow-down'></i>
+					</a>
+				</div>
             </div>
         </div>`;
 	}
@@ -117,7 +149,6 @@ export class LayerItem extends BaElement {
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
-		console.log('attribute ' + name + ' changed from ' + oldValue + ' to ' + newValue);
 		switch (name) {
 			case 'title':
 				this._title = newValue;
@@ -164,6 +195,14 @@ export class LayerItem extends BaElement {
 
 	get onCollapsed() {
 		return this._onCollapsed;
+	}
+
+	set onMove(callback) {
+		this._onMove = callback;
+	}
+
+	get onMove() {
+		return this._onMove;
 	}
 
 	

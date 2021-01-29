@@ -24,6 +24,8 @@
 .slider-container{
     background: var(--primary-bg-color);  
     padding: 0 5px;  
+    width:90%;
+    margin:auto;
 }
 
 .opacity-slider{
@@ -31,10 +33,47 @@
 }
 
 .expand{
-    display:block;
+    display:flex;
     max-height:50px;
     overflow: none;
     transition: max-height 0.2s ease-out;
+}
+
+.arrow-up {
+    position: absolute;
+    mask: url('assets/arrow-up-short.svg');
+    -webkit-mask-image: url('assets/arrow-up-short.svg'); 
+    mask-image: url('assets/arrow-up-short.svg')
+}
+
+.arrow-down {
+    position: absolute;
+    mask: url('assets/arrow-down-short.svg');
+    -webkit-mask-image: url('assets/arrow-down-short.svg'); 
+    mask-image: url('assets/arrow-down-short.svg')
+}
+
+.arrow-icon {
+    background: var(--primary-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    cursor: pointer;
+    display: inline-block;
+    height: 22px;
+    width: 16px;
+}
+
+.layer-move-buttons{
+    height:40px;
+    width:30px;
+    display: inline-block;
+}
+.layer-move-buttons .button{
+        background-color: var(--map-button-color);
+        display: inline-block;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;     
 }
 
 .chevron {
