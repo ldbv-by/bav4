@@ -17,6 +17,8 @@ export class ProcessEnvConfigService {
 		this._properties.set('DEFAULT_LANG', process.env.DEFAULT_LANG);
 		// eslint-disable-next-line no-undef
 		this._properties.set('PROXY_URL', this._trailingSlash(process.env.PROXY_URL));
+		// eslint-disable-next-line no-undef
+		this._properties.set('BACKEND_URL', this._trailingSlash(process.env.BACKEND_URL));
 	}
 
 	/**

@@ -24,16 +24,20 @@ describe('tests for ProcessEnvConfigService', () => {
 				'SEARCH_SERVICE_API_KEY': 'SEARCH_SERVICE_API_KEY_value',
 				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
-				'PROXY_URL': 'PROXY_URL_value'
+				'PROXY_URL': 'PROXY_URL_value',
+				'BACKEND_URL': 'BACKEND_URL_value',
+
 			};
 
 			const configService = new ProcessEnvConfigService();
 
+			expect(configService._properties.size).toBe(6);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value/');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value/');
+			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value/');
 		});
 		
 		it('throws an exception for a non-existing key', () => {
