@@ -28,13 +28,13 @@ export class BvvGeoResourceService {
 		if (!this._georesources) {
 			try {
 				this._georesources = await this._load();
-				return Promise.resolve(this._georesources);
+				return this._georesources;
 			}
 			catch (e) {
 				return Promise.reject('GeoResourceService could not be initialized: ' + e.message);
 			}
 		}
-		return Promise.resolve(this._georesources);
+		return this._georesources;
 	}
 
 	async _load() {
@@ -65,18 +65,18 @@ export class BvvGeoResourceService {
 						break;
 
 				}
-				if(geoResource) {
+				if (geoResource) {
 					geoResource.background = definition.background;
 					geoResource.opacity = definition.opacity;
 					geoResources.push(geoResource);
 				}
-				else{
+				else {
 					console.warn('Could not create a GeoResource  for ' + definition.id);
 				}
 			});
-			return Promise.resolve(geoResources);
+			return geoResources;
 		}
-		return Promise.reject(new Error('GeoResources could not be loaded'));
+		throw new Error('GeoResources could not be loaded');
 	}
 
 	/**
