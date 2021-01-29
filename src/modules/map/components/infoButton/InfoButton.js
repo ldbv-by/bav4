@@ -29,18 +29,28 @@ export class InfoButton extends BaElement {
 			{ name: translate('map_info_button_about'), url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
 		];
 		
-		const openPopup = () => {			
-			// set created popup visible
+		const togglePopup = () => {			
+			// open/close popup on info button click
 			var popup = this.shadowRoot.getElementById('info-popup');
 			if (!popup.isOpen()) {
 				popup.openPopup();
+			}
+			else{
+				popup.closePopup();
 			} 
 		};
+		
+		window.onresize = () => {
+			var popup = this.shadowRoot.getElementById('info-popup');
+			if(popup.isOpen()) {
+				this.shadowRoot.getElementById('info-popup').closePopup();
+			}			
+		}; 
 
 		return html`
             <style>${css}</style>
             <div class="info-button">
-                <a class="button" title="${translate('map_info_button')}" @click="${openPopup}"><span class="icon info-icon"></span></a>
+                <a class="button" title="${translate('map_info_button')}" @click="${togglePopup}"><span class="icon info-icon"></span></a>
             </div>
 			<ba-popup id="info-popup" type='hide' right='60' top='170' >
 				<div class="info-popup-content">
@@ -63,10 +73,7 @@ export class InfoButton extends BaElement {
 	}
 
 	onStateChanged() {
-		var popup = this.shadowRoot.getElementById('info-popup');
-		if (popup.isOpen()) {
-			popup.closePopup();
-		}
+		this.shadowRoot.getElementById('info-popup').closePopup();
 	}
 
 	static get tag() {

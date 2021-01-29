@@ -96,8 +96,6 @@ describe('InfoButton', () => {
 
 			changeZoom(4);
 
-			expect(store.getState().map.zoom).toBe(4);
-
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('hide');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeFalse();
 		});
@@ -118,7 +116,23 @@ describe('InfoButton', () => {
 
 			changePosition([1290570.5705933168, 6129218.880274274]);
 
-			expect(store.getState().map.position).toEqual([1290570.5705933168, 6129218.880274274]);
+			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('hide');
+			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeFalse();
+		});
+	});
+
+	describe('on window resize', () => {
+
+		it('closes the popup', () => {
+			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('hide');
+			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeFalse();
+
+			element.shadowRoot.getElementById('info-popup').openPopup();
+
+			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('show');
+			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeTrue();
+
+			window.dispatchEvent(new Event('resize'));
 
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('hide');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeFalse();
