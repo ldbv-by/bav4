@@ -187,7 +187,7 @@ export class OlMap extends BaElement {
 			this._map.removeLayer(olLayer);
 		});
 
-		toBeAdded.forEach(async id => {
+		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
 			const layer = overlayLayers.find(layer => layer.id === id);
 			const olLayer = updateOlLayer(toOlLayer(resource), layer);
