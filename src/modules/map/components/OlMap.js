@@ -7,6 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from '../store/olMap.action';
+import { removeLayer } from '../store/layers/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../injection';
 import { toOlLayer, updateOlLayer } from './olMapUtils';
@@ -184,15 +185,22 @@ export class OlMap extends BaElement {
 
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
-			this._map.removeLayer(olLayer);
+			if(olLayer) {
+				this._map.removeLayer(olLayer);
+			}
 		});
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const layer = overlayLayers.find(layer => layer.id === id);
-			const olLayer = updateOlLayer(toOlLayer(resource), layer);
-			//+1: regard baselayer
-			this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+			if (resource) {
+				const layer = overlayLayers.find(layer => layer.id === id);
+				const olLayer = updateOlLayer(toOlLayer(resource), layer);
+				//+1: regard baselayer
+				this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+			}
+			else {
+				removeLayer(id);
+			}
 		});
 
 		toBeUpdated.forEach(id => {

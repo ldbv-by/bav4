@@ -188,16 +188,16 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('layer management', () => {
+	describe('olLayer management', () => {
 
-		it('intial attaches one layer', async () => {
+		it('intial attaches one olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
 			expect(map.getLayers().getLength()).toBe(1);
 		});
 
-		it('adds a layer with default settings', async () => {
+		it('adds an olLayer with default settings', async () => {
 			const element = await setup();
 			const map = element._map;
 
@@ -211,7 +211,7 @@ describe('OlMap', () => {
 			expect(layer.getVisible()).toBeTrue();
 		});
 
-		it('adds a layer with custom settings', async () => {
+		it('adds an olLayer with custom settings', async () => {
 			const element = await setup();
 			const map = element._map;
 
@@ -225,7 +225,7 @@ describe('OlMap', () => {
 			expect(layer.getVisible()).toBeFalse();
 		});
 
-		it('adds a layer with custom index', async () => {
+		it('adds an olLayer with custom index', async () => {
 			const element = await setup();
 			const map = element._map;
 
@@ -238,7 +238,21 @@ describe('OlMap', () => {
 			expect(layer0.get('id')).toBe('id0');
 		});
 
-		it('removes a layer', async () => {
+		it('does not add an olLayer to map AND removes layer from state store when georesource is NOT available ', async () => {
+			const element = await setup();
+			const map = element._map;
+			expect(store.getState().layers.active.length).toBe(0);
+
+			addLayer('id0');
+			expect(map.getLayers().getLength()).toBe(2);
+			expect(store.getState().layers.active.length).toBe(1);
+
+			addLayer('unknown');
+			expect(map.getLayers().getLength()).toBe(2);
+			expect(store.getState().layers.active.length).toBe(1);
+		});
+
+		it('removes an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
@@ -251,7 +265,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().item(0).get('id')).not.toBe('id0');
 		});
 
-		it('modifys the visibility of a layer', async () => {
+		it('modifys the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
@@ -272,7 +286,7 @@ describe('OlMap', () => {
 			expect(layer1.getOpacity()).toBe(1);
 		});
 
-		it('modifys the z-index of a layer', async () => {
+		it('modifys the z-index of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
