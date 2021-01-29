@@ -31,13 +31,8 @@ export class InfoButton extends BaElement {
 		
 		const togglePopup = () => {			
 			// open/close popup on info button click
-			var popup = this.shadowRoot.getElementById('info-popup');
-			if (!popup.isOpen()) {
-				popup.openPopup();
-			}
-			else{
-				popup.closePopup();
-			} 
+			var popup = this.shadowRoot.getElementById('info-popup'); 
+			popup.isOpen() ? popup.closePopup() : popup.openPopup();
 		};
 		
 		window.onresize = () => {
