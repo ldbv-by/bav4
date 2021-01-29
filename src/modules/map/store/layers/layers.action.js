@@ -12,7 +12,7 @@ import { $injector } from '../../../../injection';
  * @property {name} label Label of this layer
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
- * @property {number} [ZIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
+ * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
  * @property {Constraints} [Constraints] Constraints of the layer.
  */
 
@@ -27,7 +27,7 @@ import { $injector } from '../../../../injection';
  * @typedef {Object} LayerProperties
  * @property {number} [opacity] Opacity (0, 1).
  * @property {boolean} [visible] Visibility.
- * @property {number} [ZIndex] Desired index of this layer within the list of active layers.
+ * @property {number} [zIndex] Desired index of this layer within the list of active layers.
  */
 
 
