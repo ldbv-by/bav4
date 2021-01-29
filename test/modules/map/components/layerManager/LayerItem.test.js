@@ -1,4 +1,4 @@
-import { LayerItem } from '../../../../../src/modules/map/components/layerItem/LayerItem';
+import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
