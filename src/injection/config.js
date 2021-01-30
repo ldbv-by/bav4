@@ -7,7 +7,8 @@ import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
 import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
-import { BvvGeoResourceService } from '../services/BvvGeoResourceService';
+import { GeoResourceService } from '../services/GeoResourceService';
+import { loadExampleGeoResources } from '../services/domain/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 
 
@@ -19,7 +20,7 @@ $injector
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
 	.registerSingleton('StoreService', new StoreService())
 	.register('SearchService', BvvSearchService)
-	.registerSingleton('GeoResourceService', new BvvGeoResourceService())
+	.registerSingleton('GeoResourceService', new GeoResourceService(loadExampleGeoResources))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService);
 
