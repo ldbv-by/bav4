@@ -60,35 +60,9 @@ export class LayerManager extends BaElement {
 		const createLayerElement = (layerItem) => {
 			const title = layerItem.label === '' ? layerItem.id : layerItem.label;
 
-			const onVisible = (e, layerItem) => {
-				modifyLayer(layerItem.id, { visible: e.detail.visible });
-			};
 			
-			const onOpacity = (e, layerItem) => {
-				modifyLayer(layerItem.id, { opacity: e.detail.opacity / 100 });
-			};
 
-			const onCollapse = (e, layerItem) => {			
-				layerItem.collapsed = e.detail.collapse;
-			};
-
-			const onMove = (e, layerItem) => {						
-				const newZIndex = layerItem.zIndex + e.detail.move;		
-				if(newZIndex >= 0) {
-					modifyLayer(layerItem.id, { zIndex: newZIndex });
-				}						
-			};
-
-			return html`<ba-layer-item id=${'layer_' + layerItem.id + '_' + layerItem.zIndex} class='layer' title=${title} 
-					opacity=${layerItem.opacity * 100}
-					collapsed=${layerItem.collapsed}
-					visible=${layerItem.visible}
-					draggable='true'
-					@visible=${(e) => onVisible(e, layerItem)}
-					@opacity=${(e) => onOpacity(e, layerItem)}
-					@collapse=${(e) => onCollapse(e, layerItem)}
-					@move=${(e) => onMove(e, layerItem)}
-					>
+			return html`<ba-layer-item .layer=${layerItem} class='layer' title=${title}>
 					</ba-layer-item>`;
 			
 		};

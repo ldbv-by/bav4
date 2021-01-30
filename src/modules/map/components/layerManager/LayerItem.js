@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { modifyLayer } from './../../store/layers/layers.action';
 
 export class LayerItem extends BaElement {
 
@@ -28,16 +29,35 @@ export class LayerItem extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
         
-		const getSlider = () => {
-			const onChangeOpacity = (e) => {                	
-				const input = e.target;	
-				this.dispatchEvent(new CustomEvent('opacity', {
-					detail: { opacity: parseInt(input.value) }
-				}));						
-				this.opacity = parseInt(input.value);
-				this._onOpacityChanged( input.value);				
-			};		
+		
+		const getCollapseTitle = () => {				
+			return  translate('layer_item_collapse');
+		};
+        
+		const changeOpacity = (event) => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { opacity: parseInt(event.target.value) / 100 });
+		};
+		const toggleVisibility = (event) => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { visible: event.detail.checked });
+		};
+		const toggleCollapse = () => {
+			//change of local state -> explicit call of #render() 
+			this._layer.collapsed = !this._layer.collapsed ;
+			this.render();
+		};
+		const increaseIndex = () => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { zIndex: this._layer.zIndex + 1 });
+		};
+		const decreaseIndex = () => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
+		};
 
+		const getSlider = () => {
+			
 			const onPreventDragging = (e) => {
 				e.preventDefault();
 				e.stopPropagation();
@@ -51,66 +71,22 @@ export class LayerItem extends BaElement {
 					value=${this._opacity} 
 					class="opacity-slider" 
 					draggable=${this._draggable} 
-					@input=${onChangeOpacity} 
+					@input=${changeOpacity} 
 					@dragstart=${onPreventDragging}
 					id="opacityRange"></div>`;
 		};
         
-		const getCollapseTitle = () => {				
-			return  translate('layer_item_collapse');
-		};
-        
-		const onCollapse = () => {
-			this._collapsed = !this._collapsed;
-			this.dispatchEvent(new CustomEvent('collapse', {
-				detail: { collapse: this._collapsed }
-			}));            
-			this._onCollapsed({
-				detail: { collapse: this._collapsed }
-			});
-			this.render();
-		};
-
-		const onMoveUp = () => {
-			this.dispatchEvent(new CustomEvent('move', {
-				detail: { move: +1 }
-			}));            
-			this._onMove(+1);
-			this.render();
-		};
-
-		const onMoveDown = () => {
-			this.dispatchEvent(new CustomEvent('move', {
-				detail: { move: -1 }
-			}));            
-			this._onMove( {
-				detail: { move: -1 }
-			});
-			this.render();
-		};
-        
-		const onVisible = () => {
-			this._visible = !this._visible;
-            
-			this.dispatchEvent(new CustomEvent('visible', {
-				detail: { visible: this._visible }
-			}));            
-			this._onVisibilityChanged({
-				detail: { visible: this._visible }
-			});
-			this.render();
-		};
         
 		const getVisibilityTitle = () => {
 			return this.title + ' - ' + translate('layer_item_change_visibility');
 		};
         
 		const iconCollapseClass = {
-			iconexpand:!this._collapsed
+			iconexpand:!this._layer.collapsed
 		};
         
 		const bodyCollapseClass = {
-			expand:!this._collapsed
+			expand:!this._layer.collapsed
 		};
         
 		return html`
@@ -118,92 +94,34 @@ export class LayerItem extends BaElement {
         <div class='layer'>
             <div class='layer-header'>
                 <div class='collapse-button'>
-                    <a title="${getCollapseTitle()}" @click="${onCollapse}">
+                    <a title="${getCollapseTitle()}" @click="${toggleCollapse}">
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
                 </div>
                 <span class='layer-label'>${this.title}</span>
-                <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${onVisible}></ba-toggle>
+                <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${toggleVisibility}></ba-toggle>
             </div>
 			<div class='layer-body ${classMap(bodyCollapseClass)}'>
 			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
-					<a class='button' title="move up" @click="${onMoveUp}">
+					<a class='button' title="move up" @click="${increaseIndex}">
 						<i class='arrow-icon arrow-up'></i>
 					</a>
-					<a class='button' title="move down" @click="${onMoveDown}">
+					<a class='button' title="move down" @click="${decreaseIndex}">
 						<i class='arrow-icon arrow-down'></i>
 					</a>
 				</div>
             </div>
         </div>`;
 	}
-    
-	static get observedAttributes() {
-		return ['title', 'collapsed', 'visible', 'opacity', 'draggable'];
-	}
 
 	static get tag() {
 		return 'ba-layer-item';
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'title':
-				this._title = newValue;
-				this.render();
-				break;
-			case 'collapsed':
-				this._collapsed = newValue === '' ? true : (newValue === 'true');
-				this.render();
-				break;
-			case 'visible':
-				this._visible = newValue === '' ? true : (newValue === 'true');
-				this.render();
-				break;
-			case 'opacity':
-				this._opacity = parseInt(newValue);
-				this.render();
-				break;
-			case 'draggable':
-				this._draggable = newValue === '' ? true : (newValue === 'true');
-				this.render();
-				break;				
-		}
+	set layer(value) {
+		this._layer = value;
+		this.render();
 	}
-
-	set onOpacityChanged(callback) {
-		this._onOpacityChanged = callback;
-	}
-
-	get onOpacityChanged() {
-		return this._onOpacityChanged;
-	}
-    
-	set onVisibilityChanged(callback) {
-		this._onVisibilityChanged = callback;
-	}
-
-	get onVisibilityChanged() {
-		return this._onVisibilityChanged;
-	}
-    
-	set onCollapsed(callback) {
-		this._onCollapsed = callback;
-	}
-
-	get onCollapsed() {
-		return this._onCollapsed;
-	}
-
-	set onMove(callback) {
-		this._onMove = callback;
-	}
-
-	get onMove() {
-		return this._onMove;
-	}
-
-	
 }
