@@ -46,7 +46,9 @@ export class LayerItem extends BaElement {
 		};
 		const decreaseIndex = () => {
 			//state store change -> implicit call of #render()
-			modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
+			if(this._layer.zIndex - 1 >= 0) {
+				modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
+			}
 		};
 
 		const getSlider = () => {
@@ -98,10 +100,10 @@ export class LayerItem extends BaElement {
 			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
-					<a class='button' title="move up" @click="${increaseIndex}">
+					<a class='increase button' title="move up" @click="${increaseIndex}">
 						<i class='arrow-icon arrow-up'></i>
 					</a>
-					<a class='button' title="move down" @click="${decreaseIndex}">
+					<a class='decrease button' title="move down" @click="${decreaseIndex}">
 						<i class='arrow-icon arrow-down'></i>
 					</a>
 				</div>
