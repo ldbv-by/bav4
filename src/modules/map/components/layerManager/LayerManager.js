@@ -57,12 +57,9 @@ export class LayerManager extends BaElement {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};		
 
-		const createLayerElement = (layerItem) => {
-			const title = layerItem.label === '' ? layerItem.id : layerItem.label;
+		const createLayerElement = (layerItem) => {		
 
-			
-
-			return html`<ba-layer-item .layer=${layerItem} class='layer' title=${title}>
+			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable>
 					</ba-layer-item>`;
 			
 		};

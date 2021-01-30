@@ -10,16 +10,8 @@ export class LayerItem extends BaElement {
 	constructor() {
 		super();        
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._onOpacityChanged = () => { };
-		this._opacity = parseInt(this.getAttribute('opacity')) || 100;
-		this._title = this.getAttribute('title') || '';
-		this._draggable = this.getAttribute('draggable') === 'true';
-		this._visible = this.getAttribute('visible') === 'true';
-		this._onVisibilityChanged = () => {};
-		this._collapsed = this.getAttribute('collapsed') === 'true';
-		this._onCollapsed = () => { };       
-		this._onMove = () => {}; 
+		this._translationService = TranslationService;	
+		this._layer = { id:'', label:'', visible:true, collapsed:true, opacity:1 };	
 	}
     
     
@@ -29,6 +21,7 @@ export class LayerItem extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
         
+		const currentLabel = this._layer.label === '' ? this._layer.id : this._layer.label;
 		
 		const getCollapseTitle = () => {				
 			return  translate('layer_item_collapse');
@@ -68,9 +61,9 @@ export class LayerItem extends BaElement {
 					type="range" 
 					min="1" 
 					max="100" 
-					value=${this._opacity} 
-					class="opacity-slider" 
-					draggable=${this._draggable} 
+					value=${this._layer.opacity * 100} 
+					class='opacity-slider' 
+					draggable='true' 
 					@input=${changeOpacity} 
 					@dragstart=${onPreventDragging}
 					id="opacityRange"></div>`;
@@ -78,7 +71,7 @@ export class LayerItem extends BaElement {
         
         
 		const getVisibilityTitle = () => {
-			return this.title + ' - ' + translate('layer_item_change_visibility');
+			return currentLabel + ' - ' + translate('layer_item_change_visibility');
 		};
         
 		const iconCollapseClass = {
@@ -87,8 +80,9 @@ export class LayerItem extends BaElement {
         
 		const bodyCollapseClass = {
 			expand:!this._layer.collapsed
-		};
-        
+		};		
+
+		
 		return html`
         <style>${css}</style>
         <div class='layer'>
@@ -98,11 +92,10 @@ export class LayerItem extends BaElement {
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
                 </div>
-                <span class='layer-label'>${this.title}</span>
-                <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${toggleVisibility}></ba-toggle>
+                <span class='layer-label'>${currentLabel}</span>
+                <ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
             </div>
-			<div class='layer-body ${classMap(bodyCollapseClass)}'>
-			
+			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
 					<a class='button' title="move up" @click="${increaseIndex}">

@@ -71,18 +71,7 @@ describe('LayerManager', () => {
 			expect(layerElements.length).toBe(3);
 			expect(placeholderElements.length).toBe(4);			
 		});
-
-		it('have only draggable layer items', () => {
-			const layerElements = [...element.shadowRoot.querySelectorAll('.layer')];
-			
-			const nonDraggableLayerElements = layerElements.filter((element) => {
-				return !element.draggable;
-			});
-
-			expect(layerElements.length).toBe(3);
-			expect(nonDraggableLayerElements.length).toBe(0);
-
-		});
+		
 
 		it('have only non-draggable placeholder items', () => {
 			const placeholderElements = [...element.shadowRoot.querySelectorAll('.placeholder')];
