@@ -3,21 +3,15 @@ import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { modifyLayer } from './../../store/layers/layers.action';
 
 export class LayerItem extends BaElement {
 
 	constructor() {
 		super();        
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._onOpacityChanged = () => { };
-		this._opacity = parseInt(this.getAttribute('opacity')) || 100;
-		this.name = this.getAttribute('name') || '';
-		this.draggable = this.getAttribute('draggable') === 'true';
-		this._visible = this.getAttribute('visible') === 'true' || true;
-		this._onVisibilityChanged = () => {};
-		this._collapsed = this.getAttribute('collapsed') === 'true' || true;
-		this._onCollapsed = () => { };        
+		this._translationService = TranslationService;	
+		this._layer = { id:'', label:'', visible:true, collapsed:true, opacity:1 };	
 	}
     
     
@@ -27,16 +21,38 @@ export class LayerItem extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
         
-		const getSlider = () => {
-			const onChangeOpacity = (e) => {                	
-				const input = e.target;	
-				this.dispatchEvent(new CustomEvent('opacity', {
-					detail: { opacity: parseInt(input.value) }
-				}));						
-				this.opacity = parseInt(input.value);
-				this._onOpacityChanged( input.value);				
-			};		
+		const currentLabel = this._layer.label === '' ? this._layer.id : this._layer.label;
+		
+		const getCollapseTitle = () => {				
+			return  translate('layer_item_collapse');
+		};
+        
+		const changeOpacity = (event) => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { opacity: parseInt(event.target.value) / 100 });
+		};
+		const toggleVisibility = (event) => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { visible: event.detail.checked });
+		};
+		const toggleCollapse = () => {
+			//change of local state -> explicit call of #render() 
+			this._layer.collapsed = !this._layer.collapsed ;
+			this.render();
+		};
+		const increaseIndex = () => {
+			//state store change -> implicit call of #render()
+			modifyLayer(this._layer.id, { zIndex: this._layer.zIndex + 1 });
+		};
+		const decreaseIndex = () => {
+			//state store change -> implicit call of #render()
+			if(this._layer.zIndex - 1 >= 0) {
+				modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
+			}
+		};
 
+		const getSlider = () => {
+			
 			const onPreventDragging = (e) => {
 				e.preventDefault();
 				e.stopPropagation();
@@ -47,171 +63,60 @@ export class LayerItem extends BaElement {
 					type="range" 
 					min="1" 
 					max="100" 
-					value=${this._opacity} 
-					class="opacity-slider" 
-					draggable=${this.draggable} 
-					@input=${onChangeOpacity} 
+					value=${this._layer.opacity * 100} 
+					class='opacity-slider' 
+					draggable='true' 
+					@input=${changeOpacity} 
 					@dragstart=${onPreventDragging}
 					id="opacityRange"></div>`;
 		};
         
-		const getCollapseTitle = () => {				
-			return  translate('layer_item_collapse');
-		};
-        
-		const onCollapse = () => {
-			this.collapsed = !this._collapsed;
-			this.dispatchEvent(new CustomEvent('collapse', {
-				detail: { collapse: this._collapsed }
-			}));            
-			this._onCollapsed(this._collapsed);
-		};
-        
-		const onVisible = () => {
-			this.visible = !this._visible;
-            
-			this.dispatchEvent(new CustomEvent('visible', {
-				detail: { visible: this._visible }
-			}));            
-			this._onVisibilityChanged(this._visible);
-		};
         
 		const getVisibilityTitle = () => {
-			return this.name + ' - ' + translate('layer_item_change_visibility');
+			return currentLabel + ' - ' + translate('layer_item_change_visibility');
 		};
         
 		const iconCollapseClass = {
-			iconexpand:!this._collapsed
+			iconexpand:!this._layer.collapsed
 		};
         
 		const bodyCollapseClass = {
-			expand:!this._collapsed
-		};
-        
+			expand:!this._layer.collapsed
+		};		
+
+		
 		return html`
         <style>${css}</style>
         <div class='layer'>
             <div class='layer-header'>
                 <div class='collapse-button'>
-                    <a title="${getCollapseTitle()}" @click="${onCollapse}">
+                    <a title="${getCollapseTitle()}" @click="${toggleCollapse}">
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
                 </div>
-                <span class='layer-label'>${this._name}</span>
-                <ba-toggle title='${getVisibilityTitle()}' checked=${this._visible} @toggle=${onVisible}></ba-toggle>
+                <span class='layer-label'>${currentLabel}</span>
+                <ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
             </div>
-            <div class='layer-body ${classMap(bodyCollapseClass)}'>
-                ${getSlider()}
+			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
+				${getSlider()}
+				<div class='layer-move-buttons'> 
+					<a class='increase button' title="move up" @click="${increaseIndex}">
+						<i class='arrow-icon arrow-up'></i>
+					</a>
+					<a class='decrease button' title="move down" @click="${decreaseIndex}">
+						<i class='arrow-icon arrow-down'></i>
+					</a>
+				</div>
             </div>
         </div>`;
-	}
-    
-	static get observedAttributes() {
-		return ['name', 'collapsed', 'visible', 'opacity', 'draggable'];
 	}
 
 	static get tag() {
 		return 'ba-layer-item';
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'name':
-				this.name = newValue;
-				break;
-			case 'collapsed':
-				this.collapsed = (newValue === 'true');
-				break;
-			case 'visible':
-				this.visible = (newValue === 'true');
-				break;
-			case 'opacity':
-				this.opacity = parseInt(newValue);
-				break;
-			case 'draggable':
-				this.draggable = (newValue === 'true');
-				break;
-		}
+	set layer(value) {
+		this._layer = value;
+		this.render();
 	}
-    
-	set name(value) {
-		if (value !== this._name) {
-			this._name = value;
-			this.render();
-		}
-	}
-    
-	get name() {
-		return this._name;
-	}
-    
-	set collapsed(value) {
-		if (value !== this._collapsed) {
-			this._collapsed = value;
-			this.render();
-		}
-	}
-
-	get collapsed() {
-		return this._collapsed;
-	}
-    
-	set draggable(value) {
-		if (value !== this._draggable) {
-			this._draggable = value;
-			this.render();
-		}
-	}
-
-	get draggable() {
-		return this._draggable;
-	}
-    
-	set visible(value) {
-		if (value !== this._visible) {
-			this._visible = value;
-			this.render();
-		}
-	}
-
-	get visible() {
-		return this._visible;
-	}
-    
-	set opacity(value) {
-		if (value !== this._opacity) {
-			this._opacity = value;
-			this.render();
-		}
-	}
-
-	get opacity() {
-		return this._opacity;
-	}    
-
-	set onOpacityChanged(callback) {
-		this._onOpacityChanged = callback;
-	}
-
-	get onOpacityChanged() {
-		return this._onOpacityChanged;
-	}
-    
-	set onVisibilityChanged(callback) {
-		this._onVisibilityChanged = callback;
-	}
-
-	get onVisibilityChanged() {
-		return this._onVisibilityChanged;
-	}
-    
-	set onCollapsed(callback) {
-		this._onCollapsed = callback;
-	}
-
-	get onCollapsed() {
-		return this._onCollapsed;
-	}
-
-	
 }

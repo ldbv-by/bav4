@@ -22,16 +22,26 @@ export class LayerManager extends BaElement {
 	}
 
 	_buildDraggableItems(layers) {
-		this._draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
+		const draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
 		this._layerCount = layers.length;
 		this._resetDraggedItem();
 		let j = 0;
 		for(let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
-			this._draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true, collapsed:true });
-			this._draggableItems.push({ zIndex:layer.zIndex + 1, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
+			const old = this._draggableItems.filter(item => item.id === layer.id)[0];
+			const displayProperties = {
+				collapsed:true,
+				visible:true
+			};
+			if(old) {
+				displayProperties.collapsed = old.collapsed;
+				displayProperties.visible = old.visible;
+			}
+			draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true, ...displayProperties });
+			draggableItems.push({ zIndex:layer.zIndex + 1, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
 			j += 2;
 		}		
+		this._draggableItems = draggableItems;		
 	}
 
 	/**
@@ -47,29 +57,9 @@ export class LayerManager extends BaElement {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};		
 
-		const createLayerElement = (layerItem) => {
-			const name = layerItem.label === '' ? layerItem.id : layerItem.label;
+		const createLayerElement = (layerItem) => {		
 
-			const onVisible = (e, layerItem) => {
-				modifyLayer(layerItem.id, { visible: e.detail.visible });
-			};
-			
-			const onOpacity = (e, layerItem) => {
-				modifyLayer(layerItem.id, { opacity: e.detail.opacity / 100 });
-			};
-
-			const onCollapse = () => (e, layerItem) => {
-				layerItem.collapsed = e.detail.collapsed;
-			};
-
-			return html`<ba-layer-item class='layer' name=${name} 
-					opacity=${layerItem.opacity * 100}
-					collapsed=${layerItem.collapsed}
-					draggable='true'
-					@visible=${(e) => onVisible(e, layerItem)}
-					@opacity=${(e) => onOpacity(e, layerItem)}
-					@collapse=${(e) => onCollapse(e, layerItem)}
-					>
+			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable>
 					</ba-layer-item>`;
 			
 		};
