@@ -216,5 +216,20 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[1].id).toBe('id2');
 			expect(store.getState().layers.active[2].id).toBe('id1');
 		});
+
+		it('click on decrease-button for first layer change not state in store', async() => {
+			
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer0 };			
+			
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[1].id).toBe('id1');
+			expect(store.getState().layers.active[2].id).toBe('id2');
+			const decreaseButton = element.shadowRoot.querySelector('.decrease');     
+			decreaseButton.click();
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[1].id).toBe('id1');
+			expect(store.getState().layers.active[2].id).toBe('id2');
+		});
 	});
 });

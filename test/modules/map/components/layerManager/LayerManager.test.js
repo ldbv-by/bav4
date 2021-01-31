@@ -164,18 +164,17 @@ describe('LayerManager', () => {
 
 		});
 
-		xit('on dragEnd call event.preventDefault()', () => {
+		it('on dragEnd call event.preventDefault()', () => {
 			
 			const listElement = element.shadowRoot.querySelector('li');	
 			
 			const dragendEvt = document.createEvent('MouseEvents');
 			dragendEvt.initMouseEvent('dragend', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, listElement);
 			dragendEvt.dataTransfer = createNewDataTransfer();
-			dragendEvt.dataTransfer.preventDefault = () => {};
-			dragendEvt.dataTransfer.preventDefault = jasmine.createSpy();
+			dragendEvt.preventDefault = jasmine.createSpy();
 			listElement.dispatchEvent(dragendEvt);
 			
-			expect(dragendEvt.dataTransfer.preventDefault).toHaveBeenCalled();
+			expect(dragendEvt.preventDefault).toHaveBeenCalled();
 
 		});
 
