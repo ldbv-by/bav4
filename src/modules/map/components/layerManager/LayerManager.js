@@ -125,7 +125,7 @@ export class LayerManager extends BaElement {
 			<div class="layermanager overflow-container">
 				<div class='title'>${translate('layer_manager_title')} (${layerCount})</div> 
 				<ul class='layers'>
-                    ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex, (layerItem, index) => html`
+                    ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex + '_' + layerItem.id, (layerItem, index) => html`
 					<li draggable=${layerItem.isDraggable} 
 						@dragstart=${(e) => onDragStart(e, layerItem)} 
 						@dragend=${onDragEnd}
