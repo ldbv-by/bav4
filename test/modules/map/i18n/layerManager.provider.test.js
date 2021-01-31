@@ -7,16 +7,14 @@ describe('i18n for layer-manager', () => {
 
 		const map = layerManagerProvide('de');
 
-		expect(map.layer_manager_title).toBe('Ebenen');
-		expect(map.layer_manager_change_visibility).toBe('Sichtbarkeit umschalten');
+		expect(map.layer_manager_title).toBe('Ebenen');		
 	});
 
 	it('provides translation for en', () => {
 
 		const map = layerManagerProvide('en');
 
-		expect(map.layer_manager_title).toBe('Layers');
-		expect(map.layer_manager_change_visibility).toBe('toggle visibility');
+		expect(map.layer_manager_title).toBe('Layers');		
 	});
 
 	it('provides an empty map for a unknown lang', () => {

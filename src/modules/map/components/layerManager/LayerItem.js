@@ -24,7 +24,7 @@ export class LayerItem extends BaElement {
 		const currentLabel = this._layer.label === '' ? this._layer.id : this._layer.label;
 		
 		const getCollapseTitle = () => {				
-			return  translate('layer_item_collapse');
+			return  this._layer.collapsed ? translate('layer_item_expand') : translate('layer_item_collapse');
 		};
         
 		const changeOpacity = (event) => {
@@ -62,6 +62,7 @@ export class LayerItem extends BaElement {
 				<input  
 					type="range" 
 					min="1" 
+					title=${translate('layer_item_opacity')}
 					max="100" 
 					value=${this._layer.opacity * 100} 
 					class='opacity-slider' 
@@ -100,10 +101,10 @@ export class LayerItem extends BaElement {
 			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
-					<a class='increase button' title="move up" @click="${increaseIndex}">
+					<a class='increase button' title=${translate('layer_item_move_up')} @click="${increaseIndex}">
 						<i class='arrow-icon arrow-up'></i>
 					</a>
-					<a class='decrease button' title="move down" @click="${decreaseIndex}">
+					<a class='decrease button' title=${translate('layer_item_move_down')} @click="${decreaseIndex}">
 						<i class='arrow-icon arrow-down'></i>
 					</a>
 				</div>
