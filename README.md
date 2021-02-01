@@ -19,7 +19,7 @@ Next generation web-mapviewer based on web standards.
 - Use of web standards as far as possible
 - Modern Js (ES9), currently no transpiler
 - Model–view–viewmodel (MVVM) structuring:
-  - Data objects from service classes => *model*
+  - Data objects derived from the state store and service classes => *model*
   - DOM => *view*
   - Web components  =>  *viewmodel*
 - Built-in dependency injection
@@ -43,6 +43,9 @@ The source code is distributed among following directories:
 
 Contains the built-in dependency injection. The central configuration is done in `config.js`.
 
+Mostly services are beeing injected in order to be interchangeable.
+Services may retrieve data from an external source by using a provider function. Such providers are also interchangeable. 
+Names of services and provider functions starting with 'BVV' are focusing the LDBV context and infrastructure.
 
 ### `src/modules`
 
@@ -60,7 +63,7 @@ Modules meet the following conventions:
    - `/services` : the service and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
-4. Modules are allowed to use actions from other modules
+4. Modules are allowed to use actions from other modules.
 
 
 ### `src/services`
