@@ -20,8 +20,7 @@
 
 .modal-body{
   /*background-color: var(--secondary-bg-color);*/
-  margin: 10px 0 px;
-  padding: 10px 0px;
+  margin: 10px;
   max-height: calc(100vh - 210px);
   overflow-y: auto;
 }
