@@ -3,6 +3,8 @@ import { BaElement } from '../../../BaElement';
 import css from './icon.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 /**
+ * Clickable icon.
+ * 
  * Configurable Attributes:
  * - `icon` (svg)
  * - `size` (in px)
