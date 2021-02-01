@@ -54,10 +54,10 @@ export class Icon extends BaElement {
 		};
 
 		const iconClass = `.icon {--size: ${this._size}px;}`;
-		const customIconClass = `.icon-custom {
+		const customIconClass = this._icon ? `.icon-custom {
 			mask : url("${this._icon}");
 			-webkit-mask-image : url("${this._icon}");
-		}`;
+		}` : '';
 
 		const classes = {
 			disabled: this._disabled
