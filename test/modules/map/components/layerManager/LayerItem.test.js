@@ -69,7 +69,7 @@ describe('LayerItem', () => {
 			expect(toggle.title).toBe('label0 - layer_item_change_visibility');
 		});
 
-		xit('use layer.opacity-property in slider ', async () => {
+		it('use layer.opacity-property in slider ', async () => {
 			const element = await setup({ id:'id0', label:'label0', visible: true, zIndex:0, opacity:0.55, collapsed:true });
 			
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
