@@ -1,0 +1,64 @@
+.info-button {
+  position: absolute;
+  right: 30px;
+  top: 200px;
+  display: inline-block;
+  vertical-align: top;
+  width: 20px;
+  height: 20px;
+}
+
+.info-icon {
+  mask: url("assets/info-circle-solid.svg");
+  -webkit-mask-image: url("assets/info-circle-solid.svg");
+}
+
+.icon {
+  background: var(--map-button-bg-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+}
+
+.icon:hover,
+.icon:focus {
+  background: var(--map-button-bg-color);
+}
+
+.icon:hover {
+  transform: scale(1.1);
+}
+
+.icon:active {
+  transform: scale(1.15);
+}
+
+.info-button .button {
+  background-color: var(--map-button-color);
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+.info-popup-content {
+  background-color: var(--primary-bg-color);
+}
+
+.info-popup-list {
+  list-style-type: none;
+  padding: inherit;
+  margin: auto;
+}
+
+.info-popup-listelement {
+  margin: 8px;
+}
+
+.info-popup-link {
+  font-family: var(--font-family);
+  color: var(--primary-color);
+}

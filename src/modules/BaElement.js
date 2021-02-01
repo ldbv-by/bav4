@@ -73,6 +73,11 @@ export class BaElement extends HTMLElement {
 		this._rendered = false;
 	}
 
+	/**
+	 *
+	 * @param {string} message 
+	 * @protected
+	 */
 	log(message) {
 		// eslint-disable-next-line no-console
 		return console.log(`${this.constructor.name}: ` + message);
@@ -80,8 +85,9 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 * Fires an event.
-	 * @param {*} name the event name
-	 * @param {*} payload the paylod of the event
+	 * @param {string} name the event name
+	 * @param {object} payload the paylod of the event
+	 * @protected
 	 */
 	emitEvent(name, payload) {
 		this.dispatchEvent(new CustomEvent(name, { detail: payload, bubbles: true }));
@@ -147,8 +153,9 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the html template.
+	 * Creates the Html template.
 	 * @abstract
+	 * @protected
 	 * @returns html template as tagged template literal
 	 */
 	createView() {

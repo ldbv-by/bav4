@@ -52,6 +52,12 @@ describe('ShowCase', () => {
 			expect(element.shadowRoot.querySelector('#button3')).toBeTruthy();
 		});
 
+		it('adds a div which shows some icons', async() => {
+			const  element = await setup();
+			
+			expect(element.shadowRoot.querySelectorAll('ba-icon').length).toBe(4);
+		});
+
 	
 		it('calls the callback, if button0 are clicked', async () => {
 			const  element = await setup();
