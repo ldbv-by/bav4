@@ -1,0 +1,34 @@
+.icon {   
+  background: var(--primary-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: var(--size);
+  width: var(--size);
+}
+
+.icon.disabled {
+    filter: brightness(0.8) ;
+    cursor: not-allowed;   
+}
+  
+.icon:hover {
+    transform: scale(1.1);
+}
+  
+.icon:active {
+    transform: scale(1.15);
+}
+
+.icon.disabled:hover {
+    transform: none;
+}
+  
+.icon.disabled:active {
+    transform: none;
+}
+
+.anchor {
+    display: inline-block;
+}
