@@ -74,8 +74,8 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * 
-	 * @param {*} message 
+	 *
+	 * @param {string} message 
 	 * @protected
 	 */
 	log(message) {
@@ -85,8 +85,8 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 * Fires an event.
-	 * @param {*} name the event name
-	 * @param {*} payload the paylod of the event
+	 * @param {string} name the event name
+	 * @param {object} payload the paylod of the event
 	 * @protected
 	 */
 	emitEvent(name, payload) {
@@ -153,7 +153,7 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the html template.
+	 * Creates the Html template.
 	 * @abstract
 	 * @protected
 	 * @returns html template as tagged template literal
