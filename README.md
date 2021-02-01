@@ -45,7 +45,7 @@ Contains the built-in dependency injection. The central configuration is done in
 
 Mostly services are beeing injected in order to be interchangeable.
 Services may retrieve data from an external source by using a provider function. Such providers are also interchangeable. 
-Names of services and provider functions starting with 'BVV' are focusing the LDBV context and infrastructure.
+Services and provider functions whose names start with 'BVV' are focusing on the LDBV context and infrastructure.
 
 ### `src/modules`
 
