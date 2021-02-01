@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { modifyLayer } from './../../store/layers/layers.action';
+import { modifyLayer, removeLayer } from './../../store/layers/layers.action';
 
 export class LayerItem extends BaElement {
 
@@ -49,6 +49,11 @@ export class LayerItem extends BaElement {
 			if(this._layer.zIndex - 1 >= 0) {
 				modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
 			}
+		};
+
+		const remove = () => {
+			//state store change -> implicit call of #render()
+			removeLayer(this._layer.id);
 		};
 
 		const getSlider = () => {
@@ -106,6 +111,11 @@ export class LayerItem extends BaElement {
 					</a>
 					<a class='decrease button' title=${translate('layer_item_move_down')} @click="${decreaseIndex}">
 						<i class='arrow-icon arrow-down'></i>
+					</a>
+				</div>
+				<div class='layer-remove'>
+					<a class='remove button' title=${translate('layer_item_remove')} @click="${remove}">
+						<i class='remove-icon'></i>
 					</a>
 				</div>
             </div>

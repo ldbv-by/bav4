@@ -225,5 +225,22 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[1].id).toBe('id1');
 			expect(store.getState().layers.active[2].id).toBe('id2');
 		});
+
+		it('click on remove-button change state in store', async() => {
+			
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer0 };			
+			
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[1].id).toBe('id1');
+			expect(store.getState().layers.active[2].id).toBe('id2');
+			const decreaseButton = element.shadowRoot.querySelector('.remove');     
+			decreaseButton.click();
+			expect(store.getState().layers.active.length).toBe(2);
+			expect(store.getState().layers.active[0].id).toBe('id1');
+			expect(store.getState().layers.active[1].id).toBe('id2');
+		});
+
+
 	});
 });
