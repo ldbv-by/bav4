@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
-import listIcon from './assets/list.svg';
+import arrowUpSvg from './assets/arrow-up.svg';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -53,10 +53,10 @@ export class ShowCase extends BaElement {
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
 			<div class='icons'>		
-						<ba-icon icon='${listIcon}' @click=${onClick0}></ba-icon>
-						<ba-icon icon='${listIcon}' disabled=true @click=${onClick0}></ba-icon>
-						<ba-icon icon='${listIcon}' size=15 @click=${onClick0}></ba-icon>
-						<ba-icon icon='${listIcon}' size=40 @click=${onClick0}></ba-icon>
+						<ba-icon icon='${arrowUpSvg}' @click=${onClick0}></ba-icon>
+						<ba-icon icon='${arrowUpSvg}' disabled=true @click=${onClick0}></ba-icon>
+						<ba-icon icon='${arrowUpSvg}' size=15 @click=${onClick0}></ba-icon>
+						<ba-icon icon='${arrowUpSvg}' size=40 @click=${onClick0}></ba-icon>
 						
 			</div>
 			<p>ba-buttons</p>
