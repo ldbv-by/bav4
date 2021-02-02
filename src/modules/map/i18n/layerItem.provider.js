@@ -9,7 +9,8 @@ export const layerItemProvide = (lang) => {
 				layer_item_collapse:'collapse properties',
 				layer_item_expand:'expand properties',
 				layer_item_move_up: 'move Layer up',		
-				layer_item_move_down: 'move Layer down'
+				layer_item_move_down: 'move Layer down',
+				layer_item_remove: 'remove Layer'
 			};
 
 		case 'de':
@@ -20,7 +21,8 @@ export const layerItemProvide = (lang) => {
 				layer_item_collapse:'Eigenschaften einklappen',
 				layer_item_expand:'Eigenschaften ausklappen',
 				layer_item_move_up: 'Ebene anheben',	
-				layer_item_move_down: 'Ebene absenken'		
+				layer_item_move_down: 'Ebene absenken',		
+				layer_item_remove: 'Ebene entfernen'
 			};
 
 		default:

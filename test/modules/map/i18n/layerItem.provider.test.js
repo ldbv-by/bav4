@@ -13,6 +13,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layer_item_expand).toBe('Eigenschaften ausklappen');
 		expect(map.layer_item_move_up).toBe('Ebene anheben');
 		expect(map.layer_item_move_down).toBe('Ebene absenken');
+		expect(map.layer_item_remove).toBe('Ebene entfernen');
 	});
 
 	it('provides translation for en', () => {
@@ -25,6 +26,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layer_item_expand).toBe('expand properties');
 		expect(map.layer_item_move_up).toBe('move Layer up');
 		expect(map.layer_item_move_down).toBe('move Layer down');
+		expect(map.layer_item_remove).toBe('remove Layer');
 	});
 
 	it('provides an empty map for a unknown lang', () => {
