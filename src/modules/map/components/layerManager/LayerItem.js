@@ -82,7 +82,7 @@ export class LayerItem extends BaElement {
         
         
 		const getVisibilityTitle = () => {
-			return currentLabel + ' - ' + translate('layer_item_change_visibility');
+			return this._layer.label + ' - ' + translate('layer_item_change_visibility');
 		};
         
 		const iconCollapseClass = {
@@ -97,24 +97,24 @@ export class LayerItem extends BaElement {
 		return html`
         <style>${css}</style>
         <div class='layer'>
-            <div class='layer-header'>
+			<div class='layer-header'>
+				<div class='layer-actions'>
+					<ba-icon id='remove' icon='${removeSvg}' size=16 title=${translate('layer_item_remove')} @click=${remove}></ba-icon>					
+					<ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
+				</div>				
+				<span class='layer-label'>${currentLabel}</span>
 				<div class='collapse-button'>					
                     <a title="${getCollapseTitle()}" @click="${toggleCollapse}">
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
-                </div>
-                <span class='layer-label'>${currentLabel}</span>
-                <ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
+                </div>                
             </div>
 			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
-					<ba-icon id='increase' icon='${arrowUpSvg}' size=20 title=${translate('layer_item_move_up')} @click=${increaseIndex}></ba-icon>					
-					<ba-icon id='decrease' icon='${arrowDownSvg}' size=20 title=${translate('layer_item_move_down')} @click=${decreaseIndex}></ba-icon>					
-				</div>
-				<div class='layer-remove'>
-					<ba-icon id='remove' icon='${removeSvg}' size=16 title=${translate('layer_item_remove')} @click=${remove}></ba-icon>					
-				</div>
+					<ba-icon id='increase' icon='${arrowUpSvg}' size=24 title=${translate('layer_item_move_up')} @click=${increaseIndex}></ba-icon>					
+					<ba-icon id='decrease' icon='${arrowDownSvg}' size=24 title=${translate('layer_item_move_down')} @click=${decreaseIndex}></ba-icon>					
+				</div>				
             </div>
         </div>`;
 	}
