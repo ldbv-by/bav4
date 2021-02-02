@@ -4,6 +4,9 @@ import css from './layerItem.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { modifyLayer, removeLayer } from './../../store/layers/layers.action';
+import arrowUpSvg from './assets/arrow-up-short.svg';
+import arrowDownSvg from './assets/arrow-down-short.svg';
+import removeSvg from './assets/x-square.svg';
 
 export class LayerItem extends BaElement {
 
@@ -95,7 +98,7 @@ export class LayerItem extends BaElement {
         <style>${css}</style>
         <div class='layer'>
             <div class='layer-header'>
-                <div class='collapse-button'>
+				<div class='collapse-button'>					
                     <a title="${getCollapseTitle()}" @click="${toggleCollapse}">
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
                     </a>
@@ -106,17 +109,11 @@ export class LayerItem extends BaElement {
 			<div class='layer-body ${classMap(bodyCollapseClass)}'>			
 				${getSlider()}
 				<div class='layer-move-buttons'> 
-					<a class='increase button' title=${translate('layer_item_move_up')} @click="${increaseIndex}">
-						<i class='arrow-icon arrow-up'></i>
-					</a>
-					<a class='decrease button' title=${translate('layer_item_move_down')} @click="${decreaseIndex}">
-						<i class='arrow-icon arrow-down'></i>
-					</a>
+					<ba-icon id='increase' icon='${arrowUpSvg}' size=20 title=${translate('layer_item_move_up')} @click=${increaseIndex}></ba-icon>					
+					<ba-icon id='decrease' icon='${arrowDownSvg}' size=20 title=${translate('layer_item_move_down')} @click=${decreaseIndex}></ba-icon>					
 				</div>
 				<div class='layer-remove'>
-					<a class='remove button' title=${translate('layer_item_remove')} @click="${remove}">
-						<i class='remove-icon'></i>
-					</a>
+					<ba-icon id='remove' icon='${removeSvg}' size=16 title=${translate('layer_item_remove')} @click=${remove}></ba-icon>					
 				</div>
             </div>
         </div>`;

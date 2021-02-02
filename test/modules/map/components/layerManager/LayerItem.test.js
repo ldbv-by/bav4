@@ -1,5 +1,6 @@
 import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers/layers.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -7,6 +8,7 @@ import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(Icon.tag, Icon);
 
 
 
@@ -188,7 +190,7 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id1');
 			expect(store.getState().layers.active[2].id).toBe('id2');
-			const increaseButton = element.shadowRoot.querySelector('.increase');     
+			const increaseButton = element.shadowRoot.querySelector('#increase');     
 			increaseButton.click();
 			
 			expect(store.getState().layers.active[0].id).toBe('id1');
@@ -204,7 +206,7 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id1');
 			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('.decrease');     
+			const decreaseButton = element.shadowRoot.querySelector('#decrease');     
 			decreaseButton.click();
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id2');
@@ -219,7 +221,7 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id1');
 			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('.decrease');     
+			const decreaseButton = element.shadowRoot.querySelector('#decrease');     
 			decreaseButton.click();
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id1');
@@ -234,7 +236,7 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id).toBe('id1');
 			expect(store.getState().layers.active[2].id).toBe('id2');
-			const decreaseButton = element.shadowRoot.querySelector('.remove');     
+			const decreaseButton = element.shadowRoot.querySelector('#remove');     
 			decreaseButton.click();
 			expect(store.getState().layers.active.length).toBe(2);
 			expect(store.getState().layers.active[0].id).toBe('id1');
