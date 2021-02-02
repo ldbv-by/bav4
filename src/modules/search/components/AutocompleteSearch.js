@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../BaElement';
@@ -155,9 +155,9 @@ export class AutocompleteSearch extends BaElement {
 		 <style>${css}</style>
 		 <div class="autocomplete">
 			<input id='autoComplete'  @input=${onInput} @keydown=${onKeyDown}/>
-			${this._candidates ? html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
+			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
 			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
-		  `)}</div>` : nothing} 
+		  `)}</div>`} 
 		 </div>
 		`;
 	}
