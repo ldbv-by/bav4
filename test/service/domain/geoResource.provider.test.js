@@ -100,7 +100,7 @@ describe('GeoResource provider', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not create a GeoResource  for someId');
 		});
 
-		it('rejects when backend is not available', (done) => {
+		it('rejects when backend request cannot be fulfilled', (done) => {
 
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources';
