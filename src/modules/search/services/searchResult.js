@@ -13,7 +13,7 @@ export const SearchResultTypes = Object.freeze({
  */
 export class SearchResult {
 
-	constructor(id, label, labelFormated, type, center, extent = []) {
+	constructor(id, label, labelFormated, type, center = null, extent = null) {
 		this._id = id;
 		this._label = label;
 		this._labelFormated = labelFormated;

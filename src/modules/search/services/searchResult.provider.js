@@ -16,11 +16,11 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 		const regex = /(<([^>]+)>)/ig;
 		const raw = await result.json();
 		const data = raw.results.map(o => {
-			return new SearchResult(o.attrs.label.replace(regex, ''), o.attrs.label, SearchResultTypes.GEORESOURCE, [o.attrs.x, o.attrs.y]);
+			return new SearchResult(o.id, o.attrs.label.replace(regex, ''), o.attrs.label, SearchResultTypes.GEORESOURCE);
 		});
 		return data;
 	}
-	throw new Error('GeoResourceSearchResults could not be loaded');
+	throw new Error('SearchResults for georesources could not be retrieved');
 };
 
 export const loadBvvLocationSearchResults = async (query) => {
@@ -41,5 +41,5 @@ export const loadBvvLocationSearchResults = async (query) => {
 		return data;
 	}
 
-	throw new Error('SearchResults for GeoResources could not be retrieved');
+	throw new Error('SearchResults for locations could not be retrieved');
 };
