@@ -10,15 +10,15 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('RUNTIME_MODE', process.env.NODE_ENV);
 		// eslint-disable-next-line no-undef
-		this._properties.set('SEARCH_SERVICE_API_KEY', this._trailingSlash(process.env.SEARCH_SERVICE_API_KEY));
+		this._properties.set('SEARCH_SERVICE_API_KEY', process.env.SEARCH_SERVICE_API_KEY);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SOFTWARE_INFO', process.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
 		this._properties.set('DEFAULT_LANG', process.env.DEFAULT_LANG);
 		// eslint-disable-next-line no-undef
-		this._properties.set('PROXY_URL', this._trailingSlash(process.env.PROXY_URL));
+		this._properties.set('PROXY_URL', process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('BACKEND_URL', this._trailingSlash(process.env.BACKEND_URL));
+		this._properties.set('BACKEND_URL', process.env.BACKEND_URL);
 	}
 
 	/**
@@ -26,19 +26,21 @@ export class ProcessEnvConfigService {
 	 * @param {string} value 
 	 * @private
 	 */
-	_trailingSlash(value) {
+	_trailingSlash(value, append) {
 		if (!value) {
 			return;
 		}
 		value = value.trim();
-		const test = value.endsWith('/') ? value : value + '/';
-		return test;
+		if (append) {
+			return value.endsWith('/') ? value : value + '/';
+		}
+		return value.replace(/\/$/, '');
 	}
 
 	/**
 	 * 
 	 * @param {string} key 
-	 * @param string*} defaultValue 
+	 * @param {string} defaultValue 
 	 * @public
 	 */
 	getValue(key, defaultValue) {
@@ -51,6 +53,16 @@ export class ProcessEnvConfigService {
 			return defaultValue;
 		}
 		throw 'No value found for \'' + key + '\'';
+	}
+
+	/**
+	 * Ensures that the value ends with a <code>/</code>
+	 * @param {string} key 
+	 * @param {string} defaultValue 
+	 * @public
+	 */
+	getValueAsPath(key, defaultValue) {
+		return this._trailingSlash(this.getValue(key, defaultValue), true);
 	}
 
 	/**

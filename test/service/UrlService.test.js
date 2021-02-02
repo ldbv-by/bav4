@@ -6,7 +6,7 @@ describe('UrlService', () => {
 
 	let instanceUnderTest;
 	const configService = {
-		getValue: () => { }
+		getValueAsPath: () => { }
 	};
 
 	const httpService = {
@@ -63,7 +63,7 @@ describe('UrlService', () => {
 	describe('proxify urls', () => {
 		it('proxyfies a url instant', async () => {
 			const url = 'https://some.url';
-			const configServiceSpy = spyOn(configService, 'getValue').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
 			const result = await instanceUnderTest.proxifyInstant(url);
 
@@ -76,7 +76,7 @@ describe('UrlService', () => {
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
 				ok: false
 			}));
-			const configServiceSpy = spyOn(configService, 'getValue').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
 			const result = await instanceUnderTest.proxify(url);
 
@@ -90,7 +90,7 @@ describe('UrlService', () => {
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
 				ok: true
 			}));
-			const configServiceSpy = spyOn(configService, 'getValue').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
 			const result = await instanceUnderTest.proxify(url);
 

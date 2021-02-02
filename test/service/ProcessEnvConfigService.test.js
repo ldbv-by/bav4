@@ -10,8 +10,18 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('appends a trailing slash when needed', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._trailingSlash('some')).toBe('some/');
-			expect(configService._trailingSlash('some/')).toBe('some/');
+			expect(configService._trailingSlash('some', true)).toBe('some/');
+			expect(configService._trailingSlash('some/', true)).toBe('some/');
+			expect(configService._trailingSlash(' some ', true)).toBe('some/');
+			expect(configService._trailingSlash()).toBeUndefined();
+		});
+
+		it('removes a trailing slash when needed', () => {
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService._trailingSlash('some', false)).toBe('some');
+			expect(configService._trailingSlash('some/', false)).toBe('some');
+			expect(configService._trailingSlash('some/ ', false)).toBe('some');
 			expect(configService._trailingSlash()).toBeUndefined();
 		});
 	});
@@ -33,13 +43,13 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			expect(configService._properties.size).toBe(6);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
-			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value/');
+			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
-			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value/');
-			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value/');
+			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
+			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 		});
-		
+
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
@@ -50,6 +60,20 @@ describe('tests for ProcessEnvConfigService', () => {
 			const configService = new ProcessEnvConfigService();
 
 			expect(configService.getValue('unknown', 42)).toBe(42);
+		});
+	});
+
+	describe('test getValue()', () => {
+
+		it('provides a path for required keys', () => {
+			// eslint-disable-next-line no-undef
+			process.env = {
+				'BACKEND_URL': 'BACKEND_URL_value',
+			};
+
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService.getValueAsPath('BACKEND_URL')).toBe('BACKEND_URL_value/');
 		});
 	});
 
@@ -64,6 +88,5 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.hasKey('SEARCH_SERVICE_API_KEY')).toBeTrue();
 			expect(configService.hasKey('unknown')).toBeFalse();
 		});
-
 	});
 });

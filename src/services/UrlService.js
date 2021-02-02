@@ -19,7 +19,7 @@ export class UrlService {
    * @param {string} url 
    */
 	proxifyInstant(url) {
-		const proxyUrl = this._configService.getValue('PROXY_URL');
+		const proxyUrl = this._configService.getValueAsPath('PROXY_URL');
 		return proxyUrl + '?' + encodeURIComponent(url);
 	}
 
@@ -35,7 +35,7 @@ export class UrlService {
 			return url;
 		}
 
-		const proxyUrl = this._configService.getValue('PROXY_URL');
+		const proxyUrl = this._configService.getValueAsPath('PROXY_URL');
 		return proxyUrl + '?' + encodeURIComponent(url);
 	}
 

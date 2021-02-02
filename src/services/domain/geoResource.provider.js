@@ -6,7 +6,7 @@ export const loadBvvGeoResources = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
     
     
-	const url = configService.getValue('BACKEND_URL') + 'georesources';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources';
 
 	const result = await httpService.fetch(url, {
 		timeout: 2000,

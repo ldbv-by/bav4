@@ -6,7 +6,7 @@ describe('GeoResource provider', () => {
 
 
 		const configService = {
-			getValue: () => { }
+			getValueAsPath: () => { }
 		};
 
 		const httpService = {
@@ -44,7 +44,7 @@ describe('GeoResource provider', () => {
 				timeout: 2000,
 				mode: 'cors'
 			};
-			const configServiceSpy = spyOn(configService, 'getValue').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify([
@@ -85,7 +85,7 @@ describe('GeoResource provider', () => {
 
 			const warnSpy = spyOn(console, 'warn');
 			const backendUrl = 'https://backend.url';
-			spyOn(configService, 'getValue').and.returnValue(backendUrl);
+			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
 			spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify([
@@ -108,7 +108,7 @@ describe('GeoResource provider', () => {
 				timeout: 2000,
 				mode: 'cors'
 			};
-			const configServiceSpy = spyOn(configService, 'getValue').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
