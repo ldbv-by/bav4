@@ -122,7 +122,6 @@ describe('LayerItem', () => {
 	});
 
 	describe('when user interacts with layer item', () => {
-		let store;
 		const layer0 = { ...defaultLayerProperties,
 			id: 'id0', label: 'label0', visible: true, zIndex:0, opacity:1
 		};
@@ -133,22 +132,24 @@ describe('LayerItem', () => {
 			id: 'id2', label: 'label2', visible: true, zIndex:2, opacity:1
 		};		
 
-		beforeEach(async () => {	
-			
-			const state = {
-				layers: {
-					active: [layer0, layer1, layer2],
-					background:'bg0'
-				}
-			};				
-			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+	
+		
+		const setup = async(state = {}) =>  {
+			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
-		});	
+			return store;
+		};
 		
 
 		it('click on layer toggle change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0, collapsed:true };			
 
 			const toggle = element.shadowRoot.querySelector('ba-toggle');          
@@ -158,9 +159,15 @@ describe('LayerItem', () => {
 			expect(actualLayer.visible).toBeFalse();
 		});
 
-		it('click on opacity slider change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+		it('click on opacity slider change state in store', async() => {			
+			const state = {
+				layers: {
+					active: [layer0],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0 };			
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');     
@@ -172,8 +179,14 @@ describe('LayerItem', () => {
 		});
 
 		it('click on layer toggle change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0],
+					background:'bg0'
+				}
+			};		
+			await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0, collapsed:true };			
 
 			const collapseButton = element.shadowRoot.querySelector('.collapse-button a');          
@@ -183,8 +196,14 @@ describe('LayerItem', () => {
 		});
 
 		it('click on increase-button change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0 };			
 			
 			expect(store.getState().layers.active[0].id).toBe('id0');
@@ -199,8 +218,14 @@ describe('LayerItem', () => {
 		});
 
 		it('click on decrease-button change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer2 };			
 			
 			expect(store.getState().layers.active[0].id).toBe('id0');
@@ -214,8 +239,14 @@ describe('LayerItem', () => {
 		});
 
 		it('click on decrease-button for first layer change not state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0 };			
 			
 			expect(store.getState().layers.active[0].id).toBe('id0');
@@ -229,8 +260,14 @@ describe('LayerItem', () => {
 		});
 
 		it('click on remove-button change state in store', async() => {
-			
-			const element = await TestUtils.render(LayerItem.tag);
+			const state = {
+				layers: {
+					active: [layer0, layer1, layer2],
+					background:'bg0'
+				}
+			};		
+			const store  = await setup(state);
+			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer0 };			
 			
 			expect(store.getState().layers.active[0].id).toBe('id0');
