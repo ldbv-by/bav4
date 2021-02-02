@@ -21,7 +21,7 @@
 .modal-body{
   /*background-color: var(--secondary-bg-color);*/
   margin: 10px;
-  max-height: calc(100vh - 210px);
+  max-height: 60vh;
   overflow-y: auto;
 }
   
