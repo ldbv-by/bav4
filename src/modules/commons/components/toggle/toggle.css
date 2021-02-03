@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  text-align: left;
 }
 
 .switch div {
