@@ -1,0 +1,7 @@
+.extend-button {
+  position: absolute;
+  top: 250px;
+  right: 10px;
+  display: inline-block;
+  vertical-align: top;
+}
