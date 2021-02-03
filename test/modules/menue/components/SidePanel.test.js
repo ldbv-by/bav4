@@ -22,12 +22,14 @@ describe('SidePanelElement', () => {
 			}
 		};
 		TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
-		$injector.registerSingleton('EnvironmentService', {
-			getScreenOrientation: () => {
-				return { portrait: portrait };
-			},
-			isEmbedded : () => embed 
-		});
+		$injector
+			.registerSingleton('EnvironmentService', {
+				getScreenOrientation: () => {
+					return { portrait: portrait };
+				},
+				isEmbedded: () => embed
+			})
+			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 		return TestUtils.render(SidePanel.tag);
 	};
 

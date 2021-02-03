@@ -4,7 +4,6 @@ import { toggleSidePanel } from '../../menue/store/sidePanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import { changeZoomAndPosition } from '../../map/store/olMap.action';
-import { loadBvvLocationSearchResults } from '../../search/services/searchResult.provider';
 import css from './header.css';
 
 
@@ -18,9 +17,10 @@ export class Header extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService } = $injector.inject('CoordinateService', 'EnvironmentService');
+		const { CoordinateService, EnvironmentService, SearchResultProviderService: providerService } = $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
+		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
 		this._menueButtonLocked = false;
 	}
 
@@ -67,7 +67,7 @@ export class Header extends BaElement {
 							<div class='ci-logo' @click="${showModalInfo}"></div>
 						</div>
 					</div>
-					<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${loadBvvLocationSearchResults}></ba-autocomplete-search>
+					<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._locationSearchResultProvider}></ba-autocomplete-search>
 					<div class="item2">
 						<div class='menue-button'>
 							<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">

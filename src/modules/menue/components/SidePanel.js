@@ -3,7 +3,6 @@ import { BaElement } from '../../BaElement';
 import css from './sidePanel.css';
 import { closeSidePanel } from '../store/sidePanel.action';
 import { $injector } from '../../../injection';
-import { loadBvvGeoResourceSearchResults } from '../../search/services/searchResult.provider';
 import { addLayer } from '../../map/store/layers/layers.action';
 
 
@@ -17,8 +16,9 @@ export class SidePanel extends BaElement {
 	constructor() {
 		super();
 
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService, SearchResultProviderService: providerService } = $injector.inject('EnvironmentService', 'SearchResultProviderService');
 		this._environmentService = EnvironmentService;
+		this._georesourceSearchResultProvider = providerService.getGeoresourceSearchResultProvider();
 		this._activeTabIndex = 0;
 	}
 
@@ -47,7 +47,7 @@ export class SidePanel extends BaElement {
 		};
 		return html`
 		<div style="padding: 10px">
-			<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${loadBvvGeoResourceSearchResults}></ba-autocomplete-search>
+			<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._georesourceSearchResultProvider}></ba-autocomplete-search>
 		</div>
 		<div>
 			<ba-layer-manager></ba-layer-manager>
