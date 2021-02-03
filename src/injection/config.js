@@ -7,7 +7,7 @@ import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { GeoResourceService } from '../services/GeoResourceService';
-import { loadExampleGeoResources } from '../services/domain/geoResource.provider';
+import { loadBvvGeoResources } from '../services/domain/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 
 
@@ -18,7 +18,7 @@ $injector
 	.register('CoordinateService', OlCoordinateService)
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
 	.registerSingleton('StoreService', new StoreService())
-	.registerSingleton('GeoResourceService', new GeoResourceService(loadExampleGeoResources))
+	.registerSingleton('GeoResourceService', new GeoResourceService(loadBvvGeoResources))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService);
 
