@@ -2,7 +2,6 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
-import { addLayer } from '../../../map/store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 
 /**
@@ -44,12 +43,6 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
-		const onAddLayers = () => {
-			addLayer('dop80');
-			addLayer('atkis_sw');
-			addLayer('baudenkmal');
-		};
-
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -78,15 +71,7 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
-			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
-			<p>Layer-Manager</p>
-			<div class='layer-manager' style="display: flex;justify-content: space-between;">
-				<ba-layer-manager></ba-layer-manager>
-				<div style="display: flex;flex-direction: column">
-					<ba-button id='addLayerButton' style='padding:4px' label='Add Layers' type="primary" @click=${onAddLayers}></ba-button>					
-				</div>
-				
-			</div>						
+			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>							
 		</div>`;
 	}
     

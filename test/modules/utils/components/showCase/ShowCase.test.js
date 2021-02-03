@@ -86,13 +86,6 @@ describe('ShowCase', () => {
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
 		});
 
-		it('adds layers to store, if button is clicked', async () => {
-			const  element = await setup();
-			
-			element.shadowRoot.querySelector('#addLayerButton').click();			
-
-			expect(store.getState().layers.active.length).toBe(3);
-		});
 	});
 
 });
