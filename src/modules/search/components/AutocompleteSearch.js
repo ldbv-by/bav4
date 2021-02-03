@@ -73,16 +73,17 @@ export class AutocompleteSearch extends BaElement {
 		const requestData = (e) => {
 			const val = e.target.value;
 			if (this.provider) {
-
-				this.provider(val)
-					.then(data => {
-						if (data) {
-							this._updateCandidates(data);
-						}
-					}, reason => {
-						this._clearCandidates();
-						console.warn(reason);
-					});
+				if (val.trim().length > 2) {
+					this.provider(val)
+						.then(data => {
+							if (data) {
+								this._updateCandidates(data);
+							}
+						}, reason => {
+							this._clearCandidates();
+							console.warn(reason);
+						});
+				}
 			}
 			else {
 				console.warn('No SearchResult provider found.');

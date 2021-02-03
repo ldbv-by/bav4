@@ -64,7 +64,7 @@ describe('Button', () => {
 			});
 		});
 
-		it('shows no results', async () => {
+		it('shows no results when nothing retrieved from provider', async () => {
 
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = provider;
@@ -78,6 +78,44 @@ describe('Button', () => {
 
 			//wait for elements
 			window.requestAnimationFrame(() => {
+				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
+			});
+		});
+
+		it('does not call the provider when search term is empty', async () => {
+
+			const element = await TestUtils.render(AutocompleteSearch.tag);
+			element.provider = jasmine.createSpy();
+			const input = element.shadowRoot.querySelector('input');
+
+			input.value = ' ';
+			input.dispatchEvent(new Event('input'));
+			//AutocompleteSearch uses debounce from timer.js
+			jasmine.clock().tick(300);
+
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				expect(element.provider).not.toHaveBeenCalled();
+				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
+			});
+		});
+
+		it('does not call the provider when length of search term < 2', async () => {
+
+			const element = await TestUtils.render(AutocompleteSearch.tag);
+			element.provider = jasmine.createSpy();
+			const input = element.shadowRoot.querySelector('input');
+
+			input.value = 'a';
+			input.dispatchEvent(new Event('input'));
+			//AutocompleteSearch uses debounce from timer.js
+			jasmine.clock().tick(300);
+
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				expect(element.provider).not.toHaveBeenCalled();
 				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
 			});
 		});
