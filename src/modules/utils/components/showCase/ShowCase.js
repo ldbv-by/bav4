@@ -86,7 +86,7 @@ export class ShowCase extends BaElement {
 					<ba-button id='addLayerButton' style='padding:4px' label='Add Layers' type="primary" @click=${onAddLayers}></ba-button>					
 				</div>
 				
-			</div>
+			</div>						
 		</div>`;
 	}
     
