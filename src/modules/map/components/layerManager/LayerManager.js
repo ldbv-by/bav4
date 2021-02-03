@@ -5,7 +5,13 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { modifyLayer } from './../../store/layers/layers.action';
 import css from './layerManager.css';
 
-
+/**
+ * Element to render the curent layers state and its possible actions
+ * (reorder,remove, change visibility and opacity)
+ * @class
+ * @author thiloSchlemmer
+ * @author tAulinger 
+ */
 export class LayerManager extends BaElement {
 
 	constructor() {
@@ -17,10 +23,16 @@ export class LayerManager extends BaElement {
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 	}	
 
+	/**
+	 * @private
+	 */
 	_resetDraggedItem() {
 		this._draggedItem = false;
 	}
 
+	/**
+	 * @private
+	 */
 	_buildDraggableItems(layers) {
 		const draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
 		this._layerCount = layers.length;
@@ -141,9 +153,9 @@ export class LayerManager extends BaElement {
 	}
     
 	/**
- * @override
- * @param {Object} store 
- */
+ 	* @override
+ 	* @param {Object} store 
+ 	*/
 	extractState(store) {
 		const { layers: { active } } = store;
 		

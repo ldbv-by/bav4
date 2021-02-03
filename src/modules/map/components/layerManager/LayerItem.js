@@ -8,6 +8,13 @@ import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/x-square.svg';
 
+/**
+ * private Element of LayerManager to render a layer state and its possible actions
+ * (remove,change visibility and opacity)
+ * @class
+ * @author thiloSchlemmer
+ * @author tAulinger 
+ */
 export class LayerItem extends BaElement {
 
 	constructor() {
