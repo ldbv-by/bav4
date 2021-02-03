@@ -80,6 +80,13 @@ describe('SidePanelElement', () => {
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-landscape.overlay-landscape-closed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.overlay-landscape-open')).toBeFalsy();
 		});
+
+		it('it closes the sidepanel (portrait)', async () => {
+			const element = await setup({ portrait: true });
+			toggleSidePanel();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-portrait.overlay-portrait-closed')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.overlay-portrait-open')).toBeFalsy();
+		});
 	});
 
 	describe('when tab clicked', () => {
