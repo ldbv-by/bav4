@@ -28,8 +28,10 @@ export class Toggle extends BaElement {
 	 */
 	createView() {
 		const onChange = (event) => {
+			const checked = event.target.checked;
+			this.checked = checked;
 			this.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: event.target.checked }
+				detail: { checked: checked }
 			}));
 
 			this._onToggle(event);
@@ -62,7 +64,6 @@ export class Toggle extends BaElement {
 	/**
 	 * Mainly for testing purposes.<br>
 	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
-	 * @public
 	 */
 	click() {
 		this._root.querySelector('label').click();
