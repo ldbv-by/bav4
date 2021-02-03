@@ -60,14 +60,14 @@ Modules meet the following conventions:
 3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
    - `/store` : all redux related files like reducers and actions
-   - `/services` : the service and domain classes of the module
+   - `/services` : the service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
 4. Modules are allowed to use actions from other modules.
 
 
 ### `src/services`
-All global services like the `HttpService` are located here.
+All global services like the `HttpService`, providers and domain classes are located here.
 
 ### `src/utils`
 Contains global utilities.
