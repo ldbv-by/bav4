@@ -71,7 +71,7 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
-			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>			
+			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>							
 		</div>`;
 	}
     

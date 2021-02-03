@@ -3,6 +3,7 @@ import { Toggle } from '../../../../../src/modules/commons/components/toggle/Tog
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { $injector } from '../../../../../src/injection';
 
@@ -22,9 +23,13 @@ describe('ShowCase', () => {
 			},
 			sidePanel: {
 				open: false
+			},
+			layers: {
+				active: [],
+				background:'null'
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer });
+		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer, layers:layersReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded : () => false });
@@ -39,7 +44,7 @@ describe('ShowCase', () => {
 			const  element = await setup();
 			
 			// try different approaches
-			expect(element.shadowRoot.querySelectorAll('ba-button').length).toBe(4);
+			expect(element.shadowRoot.querySelectorAll('.buttons ba-button').length).toBe(4);
 			expect(element.shadowRoot.querySelector('.buttons').childElementCount).toBe(4);
 			expect(element.shadowRoot.querySelector('#button0')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#button1')).toBeTruthy();
@@ -80,6 +85,7 @@ describe('ShowCase', () => {
 
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
 		});
+
 	});
 
 });

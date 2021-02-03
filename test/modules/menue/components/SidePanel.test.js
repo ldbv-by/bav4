@@ -22,12 +22,14 @@ describe('SidePanelElement', () => {
 			}
 		};
 		TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
-		$injector.registerSingleton('EnvironmentService', {
-			getScreenOrientation: () => {
-				return { portrait: portrait };
-			},
-			isEmbedded : () => embed 
-		});
+		$injector
+			.registerSingleton('EnvironmentService', {
+				getScreenOrientation: () => {
+					return { portrait: portrait };
+				},
+				isEmbedded: () => embed
+			})
+			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 		return TestUtils.render(SidePanel.tag);
 	};
 
@@ -79,6 +81,13 @@ describe('SidePanelElement', () => {
 			element.shadowRoot.querySelector('.close').click();
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-landscape.overlay-landscape-closed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.overlay-landscape-open')).toBeFalsy();
+		});
+
+		it('it closes the sidepanel (portrait)', async () => {
+			const element = await setup({ portrait: true });
+			toggleSidePanel();
+			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-portrait.overlay-portrait-closed')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.overlay-portrait-open')).toBeFalsy();
 		});
 	});
 

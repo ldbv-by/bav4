@@ -1,5 +1,6 @@
 import './i18n';
 import './components/zoomButtons';
+import './components/layerManager';
 import './components/infoButton';
 import { OlMap } from './components/OlMap';
 if (!window.customElements.get(OlMap.tag)) {

@@ -1,12 +1,20 @@
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../BaElement';
 import { debounced } from '../../../utils/timer';
-import { $injector } from '../../../injection';
 import css from './autocompleteSearch.css';
 
 /**
+ * Configurable Attributes:
+ * 
+ * Observed Attributes:
+ * 
+ * Configurable Properties:
+ * - `provider` (SearchResult provider function)
+ * - `onSelect() (callback function)`
+ * 
+ * Observed Properties:
  * 
  * @class
  * @author aul
@@ -15,13 +23,11 @@ export class AutocompleteSearch extends BaElement {
 
 	constructor() {
 		super();
-		const { SearchService } = $injector.inject('SearchService');
-		this._searchService = SearchService;
 
-		//field '_onSelect' is exposed via getter and setter
-		this._onSelect = () => { };
 		this._candidates = [];
 		this._currentFocus = -1;
+		// this._provider = async () =>  [];
+		this._provider = null;
 	}
 
 	/**
@@ -63,20 +69,26 @@ export class AutocompleteSearch extends BaElement {
 	 * @override
 	 */
 	createView() {
-		let inputText = this._onSelect.label ? this._onSelect.label : '';
+		// let inputText = this._onSelect.label ? this._onSelect.label : '';
 		const requestData = (e) => {
-			let val = e.target.value;
-			if (!val) {
-				this._clearCandidates();
-				return false;
+			const val = e.target.value;
+			if (this.provider) {
+				if (val.trim().length > 2) {
+					this.provider(val)
+						.then(data => {
+							if (data) {
+								this._updateCandidates(data);
+							}
+						}, reason => {
+							this._clearCandidates();
+							console.warn(reason);
+						});
+				}
+			}
+			else {
+				console.warn('No SearchResult provider found.');
 			}
 
-			this._searchService.getData(val)
-				.then((data) => {
-					if (data) {
-						this._updateCandidates(data);
-					}
-				});
 		};
 
 		const addActive = (x) => {
@@ -100,11 +112,11 @@ export class AutocompleteSearch extends BaElement {
 			for (var i = 0; i < x.length; i++) {
 				x[i].classList.remove('autocomplete-active');
 			}
-		}; 
-		
+		};
+
 		const onInput = (e) => debounced(200, requestData(e));
-		const onClick = (candidate) => {			
-			this._onSelect(candidate);
+		const onClick = (candidate) => {
+			this.onSelect(candidate);
 			this._setSearchValue(candidate.label);
 			this._clearCandidates();
 		};
@@ -139,25 +151,16 @@ export class AutocompleteSearch extends BaElement {
 				}
 			}
 		};
-		
+
 		return html`
 		 <style>${css}</style>
 		 <div class="autocomplete">
-			<input id='autoComplete' .value=${inputText} @input=${onInput} @keydown=${onKeyDown}/>
-			${this._candidates ? html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
+			<input id='autoComplete'  @input=${onInput} @keydown=${onKeyDown}/>
+			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(this._candidates, (candidate) => candidate.id, (candidate, index) => html`
 			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
-		  `)}</div>` : nothing } 
+		  `)}</div>`} 
 		 </div>
 		`;
-
-	}
-
-	set onSelect(callback) {
-		this._onSelect = callback;
-	}
-
-	get onSelect() {
-		return this._onSelect;
 	}
 
 	static get tag() {

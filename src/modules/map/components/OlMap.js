@@ -7,8 +7,10 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndPosition, updatePointerPosition } from '../store/olMap.action';
+import { removeLayer } from '../store/layers/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../injection';
+import { toOlLayer, updateOlLayer } from './olMapUtils';
 
 
 /**
@@ -21,10 +23,10 @@ export class OlMap extends BaElement {
 
 	constructor() {
 		super();
-		const { ShareService: shareService } = $injector.inject('ShareService');
+		const { ShareService: shareService, GeoResourceService: georesourceService } = $injector.inject('ShareService', 'GeoResourceService');
 		this._shareService = shareService;
+		this._geoResourceService = georesourceService;
 	}
-
 
 	/**
 	 * @override
@@ -40,6 +42,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
+		this._geoResourceService.init();
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
 		const { zoom, position } = this._state;
@@ -49,21 +52,22 @@ export class OlMap extends BaElement {
 			zoom: zoom,
 		});
 		this._contextMenuToggle = false;
+		const baseLayer = new TileLayer({
+			id: BACKGROUND_LAYER_ID,
+			source: new XYZ({
+				projection: 'EPSG:3857',
+				url: `https://intergeo37.bayernwolke.de/betty/${BACKGROUND_LAYER_ID}/{z}/{x}/{y}`,
+				attributions: '&#169; ' +
+					'<a href="https://www.geodaten.bayern.de" target="_blank">Bayerische Vermessungsverwaltung</a> ',
+
+				attributionsCollapsible: false
+			})
+		});
+		baseLayer.set('id', 'g_atkis');
 
 		this._map = new Map({
 			layers: [
-				new TileLayer({
-					id: BACKGROUND_LAYER_ID,
-					source: new XYZ({
-						projection: 'EPSG:3857',
-						url: `https://intergeo37.bayernwolke.de/betty/${BACKGROUND_LAYER_ID}/{z}/{x}/{y}`,
-						attributions: '&#169; ' +
-							'<a href="https://www.geodaten.bayern.de" target="_blank">Bayerische Vermessungsverwaltung</a> ',
-
-						attributionsCollapsible: false
-					})
-				})
-
+				baseLayer
 			],
 			// target: 'ol-map',
 			view: this._view,
@@ -134,8 +138,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { map: { zoom, position } } = store;
-		return { zoom, position };
+		const { map: { zoom, position }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		return { zoom, position, overlayLayers, backgroundLayer };
 	}
 
 	/**
@@ -143,6 +147,8 @@ export class OlMap extends BaElement {
 	 */
 	onStateChanged() {
 		const { zoom, position } = this._state;
+
+		this._syncOverlayLayer();
 
 		this.log('map state changed by store');
 
@@ -152,6 +158,62 @@ export class OlMap extends BaElement {
 			center: position,
 			duration: 500
 		});
+
+	}
+
+	_getOlLayerById(id) {
+		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
+	}
+
+	_syncOverlayLayer() {
+
+		const { overlayLayers } = this._state;
+
+		const updatedIds = overlayLayers.map(layer => layer.id);
+		const currentIds = this._map.getLayers()
+			.getArray()
+			//exclude background layer
+			.slice(1)
+			.map(olLayer => olLayer.get('id'));
+
+		// array intersection
+		const toBeUpdated = updatedIds.filter(id => currentIds.includes(id));
+		// array difference left side
+		const toBeAdded = updatedIds.filter(id => !currentIds.includes(id));
+		// array difference right side
+		const toBeRemoved = currentIds.filter(id => !updatedIds.includes(id));
+
+		toBeRemoved.forEach(id => {
+			const olLayer = this._getOlLayerById(id);
+			if(olLayer) {
+				this._map.removeLayer(olLayer);
+			}
+		});
+
+		toBeAdded.forEach(id => {
+			const resource = this._geoResourceService.byId(id);
+			if (resource) {
+				const layer = overlayLayers.find(layer => layer.id === id);
+				const olLayer = updateOlLayer(toOlLayer(resource), layer);
+				//+1: regard baselayer
+				this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+			}
+			else {
+				removeLayer(id);
+			}
+		});
+
+		toBeUpdated.forEach(id => {
+			const layer = overlayLayers.find(layer => layer.id === id);
+			const olLayer = this._getOlLayerById(id);
+			updateOlLayer(olLayer, layer);
+			this._map.getLayers().remove(olLayer);
+			//+1: regard baselayer
+			this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+		});
+	}
+
+	_syncBackgroundLayer() {
 
 	}
 
@@ -168,6 +230,4 @@ export class OlMap extends BaElement {
 	static get tag() {
 		return 'ba-ol-map';
 	}
-
-
 }
