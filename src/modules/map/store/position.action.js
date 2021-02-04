@@ -2,7 +2,7 @@
  * Action creators to change/update the properties of map state.
  * @module map/action
  */
-import { ZOOM_CHANGED, POSITION_CHANGED, ZOOM_POSITION_CHANGED, POINTER_POSITION_CHANGED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, POINTER_POSITION_CHANGED } from './position.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -14,10 +14,10 @@ const getStore = () => {
  * Changes zoom level and the position.
  * @function
  */
-export const changeZoomAndPosition = (zoomPosition) => {
+export const changeZoomAndCenter = (zoomCenter) => {
 	getStore().dispatch({
-		type: ZOOM_POSITION_CHANGED,
-		payload: zoomPosition
+		type: ZOOM_CENTER_CHANGED,
+		payload: zoomCenter
 	});
 };
 
@@ -63,13 +63,13 @@ export const decreaseZoom = () => {
 };
 
 /**
- * Changes the position.
+ * Changes the center.
  * @function
  */
-export const changePosition = (position) => {
+export const changeCenter = (center) => {
 	getStore().dispatch({
-		type: POSITION_CHANGED,
-		payload: position
+		type: CENTER_CHANGED,
+		payload: center
 	});
 };
 

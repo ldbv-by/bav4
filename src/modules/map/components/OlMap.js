@@ -6,7 +6,7 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndPosition, updatePointerPosition } from '../store/position.action';
+import { changeZoomAndCenter, updatePointerPosition } from '../store/position.action';
 import { removeLayer } from '../store/layers/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../injection';
@@ -45,10 +45,10 @@ export class OlMap extends BaElement {
 		this._geoResourceService.init();
 
 		const BACKGROUND_LAYER_ID = 'g_atkis';
-		const { zoom, position } = this._state;
+		const { zoom, center } = this._state;
 
 		this._view = new View({
-			center: position,
+			center: center,
 			zoom: zoom,
 		});
 		this._contextMenuToggle = false;
@@ -81,9 +81,9 @@ export class OlMap extends BaElement {
 			if (this._view) {
 				this.log('updating store');
 
-				changeZoomAndPosition({
+				changeZoomAndCenter({
 					zoom: this._view.getZoom(),
-					position: this._view.getCenter()
+					center: this._view.getCenter()
 
 				});
 			}
@@ -138,15 +138,15 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, position }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
-		return { zoom, position, overlayLayers, backgroundLayer };
+		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		return { zoom, center, overlayLayers, backgroundLayer };
 	}
 
 	/**
 	 * @override
 	 */
 	onStateChanged() {
-		const { zoom, position } = this._state;
+		const { zoom, center } = this._state;
 
 		this._syncOverlayLayer();
 
@@ -155,7 +155,7 @@ export class OlMap extends BaElement {
 
 		this._view.animate({
 			zoom: zoom,
-			center: position,
+			center: center,
 			duration: 500
 		});
 

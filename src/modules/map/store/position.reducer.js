@@ -1,12 +1,12 @@
-export const ZOOM_CHANGED = 'map/zoom';
-export const POSITION_CHANGED = 'map/position';
-export const ZOOM_POSITION_CHANGED = 'map/zoom_position';
-export const POINTER_POSITION_CHANGED = 'map/pointerPosition';
+export const ZOOM_CHANGED = 'position/zoom';
+export const CENTER_CHANGED = 'position/center';
+export const ZOOM_CENTER_CHANGED = 'position/zoom_center';
+export const POINTER_POSITION_CHANGED = 'position/pointerPosition';
 
 
 export const initialState = {
 	zoom: 12,
-	position: [1288239.2412306187, 6130212.561641981],
+	center: [1288239.2412306187, 6130212.561641981],
 	pointerPosition : null
 };
 
@@ -22,20 +22,20 @@ export const positionReducer = (state = initialState, action) => {
 
 			};
 		}
-		case POSITION_CHANGED: {
+		case CENTER_CHANGED: {
 
 			return {
 				...state,
-				position: payload
+				center: payload
 			};
 		}
-		case ZOOM_POSITION_CHANGED: {
-			const { zoom, position } = payload;
+		case ZOOM_CENTER_CHANGED: {
+			const { zoom, center } = payload;
 
 			return {
 				...state,
 				zoom: zoom,
-				position: position
+				center: center
 			};
 		}
 

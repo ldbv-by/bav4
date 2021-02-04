@@ -1,5 +1,5 @@
 import { combineReducers, createStore } from 'redux';
-import { positionReducer, initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../modules/map/store/position.reducer';
+import { positionReducer, initialState as initialMapState, ZOOM_CHANGED, CENTER_CHANGED } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
@@ -41,9 +41,9 @@ export class StoreService {
 					 */
 					defaultValue: initialMapState.zoom,
 				},
-				position: {
-					selector: state => state.position.position,
-					action: value => ({ type: POSITION_CHANGED, payload: value }),
+				center: {
+					selector: state => state.position.center,
+					action: value => ({ type: CENTER_CHANGED, payload: value }),
 
 					//TODO: handler non parseable string
 					stringToValue: (string) => string.split(',').map(Number.parseFloat),
@@ -54,7 +54,7 @@ export class StoreService {
 						}
 					},
 
-					defaultValue: initialMapState.position,
+					defaultValue: initialMapState.center,
 				},
 			},
 			initialTruth: 'location',

@@ -5,7 +5,7 @@ import { positionReducer } from '../../../../../src/modules/map/store/position.r
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { Popup } from '../../../../../src/modules/commons/components/popup/Popup';
-import { changePosition, changeZoom } from '../../../../../src/modules/map/store/position.action';
+import { changeCenter, changeZoom } from '../../../../../src/modules/map/store/position.action';
 
 window.customElements.define(InfoButton.tag, InfoButton);
 window.customElements.define(Popup.tag, Popup);
@@ -19,7 +19,7 @@ describe('InfoButton', () => {
 		state = {
 			position: {
 				zoom: 5,
-				position: [1288239.2412306187, 6130212.561641981]
+				center: [1288239.2412306187, 6130212.561641981]
 			}
 		};
 
@@ -112,9 +112,9 @@ describe('InfoButton', () => {
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('show');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeTrue();
 
-			expect(store.getState().position.position).toEqual([1288239.2412306187, 6130212.561641981]); 
+			expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]); 
 
-			changePosition([1290570.5705933168, 6129218.880274274]);
+			changeCenter([1290570.5705933168, 6129218.880274274]);
 
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('hide');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeFalse();

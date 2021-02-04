@@ -18,7 +18,7 @@ window.customElements.define(OlMap.tag, OlMap);
 
 describe('OlMap', () => {
 
-	const initialPosition = fromLonLat([11.57245, 48.14021]);
+	const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 	const geoResourceServiceStub = {
 		byId(id) {
@@ -38,7 +38,7 @@ describe('OlMap', () => {
 		const state = {
 			position: {
 				zoom: 10,
-				position: initialPosition
+				center: initialCenter
 			},
 			layers: {
 				active: [],
@@ -90,7 +90,7 @@ describe('OlMap', () => {
 		it('configures the map and adds a div which contains the ol-map', async () => {
 			const element = await setup();
 			expect(element._view.getZoom()).toBe(10);
-			expect(element._view.getCenter()).toEqual(initialPosition);
+			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 		});
 
@@ -163,7 +163,7 @@ describe('OlMap', () => {
 			const state = {
 				position: {
 					zoom: 10,
-					position: initialPosition
+					center: initialCenter
 				},
 				contextMenue: { data: { pointer: false, commands: false } }
 			};
