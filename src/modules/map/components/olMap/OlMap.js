@@ -1,15 +1,15 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../BaElement';
+import { BaElement } from '../../../BaElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndCenter, updatePointerPosition } from '../store/position.action';
-import { removeLayer } from '../store/layers/layers.action';
-import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
-import { $injector } from '../../../injection';
+import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
+import { removeLayer } from '../../store/layers/layers.action';
+import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
+import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer } from './olMapUtils';
 
 

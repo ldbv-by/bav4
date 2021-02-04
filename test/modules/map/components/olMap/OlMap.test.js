@@ -1,17 +1,17 @@
 /* eslint-disable no-undef */
-import { OlMap } from '../../../../src/modules/map/components/OlMap';
+import { OlMap } from '../../../../../src/modules/map/components/olMap/OlMap';
 import { fromLonLat } from 'ol/proj';
-import { TestUtils } from '../../../test-utils.js';
-import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
+import { TestUtils } from '../../../../test-utils.js';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
-import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
-import { $injector } from '../../../../src/injection';
-import { layersReducer } from '../../../../src/modules/map/store/layers/layers.reducer';
-import { WmsGeoResource } from '../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../src/modules/map/store/layers/layers.action';
+import { contextMenueReducer } from '../../../../../src/modules/contextMenue/store/contextMenue.reducer';
+import { $injector } from '../../../../../src/injection';
+import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
+import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers/layers.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
