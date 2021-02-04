@@ -3,7 +3,7 @@ import { BaElement } from '../../BaElement';
 import { toggleSidePanel } from '../../menue/store/sidePanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
-import { changeZoomAndPosition } from '../../map/store/olMap.action';
+import { changeZoomAndPosition } from '../../map/store/position.action';
 import css from './header.css';
 
 

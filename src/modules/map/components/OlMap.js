@@ -6,7 +6,7 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndPosition, updatePointerPosition } from '../store/olMap.action';
+import { changeZoomAndPosition, updatePointerPosition } from '../store/position.action';
 import { removeLayer } from '../store/layers/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../injection';
@@ -138,7 +138,7 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { map: { zoom, position }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		const { position: { zoom, position }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
 		return { zoom, position, overlayLayers, backgroundLayer };
 	}
 

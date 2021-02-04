@@ -63,7 +63,7 @@ export class InfoButton extends BaElement {
 	} 
 
 	extractState(store) {
-		const { map: { zoom, position } } = store;
+		const { position: { zoom, position } } = store;
 		return { zoom, position };
 	}
 

@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import { changeZoomAndPosition } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 
 /**

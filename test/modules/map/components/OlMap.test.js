@@ -2,7 +2,7 @@
 import { OlMap } from '../../../../src/modules/map/components/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../../test-utils.js';
-import { mapReducer } from '../../../../src/modules/map/store/olMap.reducer';
+import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
 import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
@@ -36,7 +36,7 @@ describe('OlMap', () => {
 
 	const setup = () => {
 		const state = {
-			map: {
+			position: {
 				zoom: 10,
 				position: initialPosition
 			},
@@ -47,7 +47,7 @@ describe('OlMap', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(state, {
-			map: mapReducer,
+			position: positionReducer,
 			layers: layersReducer
 		});
 
@@ -138,7 +138,7 @@ describe('OlMap', () => {
 
 			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0);
 
-			expect(store.getState().map.pointerPosition).toBe(pointerPosition);
+			expect(store.getState().position.pointerPosition).toBe(pointerPosition);
 		});
 	});
 
@@ -151,7 +151,7 @@ describe('OlMap', () => {
 
 			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			expect(store.getState().map.pointerPosition).toBeUndefined();
+			expect(store.getState().position.pointerPosition).toBeUndefined();
 		});
 	});
 
@@ -161,7 +161,7 @@ describe('OlMap', () => {
 			const element = await setup();
 			const customEventType = 'contextmenu';
 			const state = {
-				map: {
+				position: {
 					zoom: 10,
 					position: initialPosition
 				},
@@ -169,7 +169,7 @@ describe('OlMap', () => {
 			};
 
 			store = TestUtils.setupStoreAndDi(state, {
-				map: mapReducer,
+				position: positionReducer,
 				contextMenue: contextMenueReducer
 			});
 
