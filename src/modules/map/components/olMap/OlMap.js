@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
-import { removeLayer } from '../../store/layers/layers.action';
+import { removeLayer } from '../../store/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer } from './olMapUtils';

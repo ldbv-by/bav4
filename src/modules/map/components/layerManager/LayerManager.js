@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer } from './../../store/layers/layers.action';
+import { modifyLayer } from './../../store/layers.action';
 import css from './layerManager.css';
 
 /**

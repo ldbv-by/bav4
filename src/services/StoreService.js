@@ -4,7 +4,7 @@ import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
-import { layersReducer } from '../modules/map/store/layers/layers.reducer';
+import { layersReducer } from '../modules/map/store/layers.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 

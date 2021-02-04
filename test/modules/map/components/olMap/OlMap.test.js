@@ -9,9 +9,9 @@ import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
 import { contextMenueReducer } from '../../../../../src/modules/contextMenue/store/contextMenue.reducer';
 import { $injector } from '../../../../../src/injection';
-import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
+import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers/layers.action';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 

@@ -3,7 +3,7 @@ import { Toggle } from '../../../../../src/modules/commons/components/toggle/Tog
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
 import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
-import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
+import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { $injector } from '../../../../../src/injection';
 
