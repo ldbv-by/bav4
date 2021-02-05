@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import { closeModal } from '../../../modal/store/modal.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 
 /**
@@ -43,6 +44,12 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
+		const onClickMeasureDistance = () => {
+			// activate measurement-modus in map, so modal must disappear
+			//todo: start/activate measurement-state in state
+			closeModal();
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -71,7 +78,9 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
-			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>							
+			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
+			<p>Measure Distance</p>
+			<ba-button id='buttonMeasureDistance' label='Measure Distance' type="primary" @click=${onClickMeasureDistance}></ba-button>	
 		</div>`;
 	}
     
