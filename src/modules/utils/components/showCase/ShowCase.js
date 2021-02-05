@@ -28,7 +28,7 @@ export class ShowCase extends BaElement {
 		const onClick0 = () => {
 			changeZoomAndCenter({
 				zoom: 13,
-				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
+				center: this._coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
 
