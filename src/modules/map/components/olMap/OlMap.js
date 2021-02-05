@@ -23,9 +23,14 @@ export class OlMap extends BaElement {
 
 	constructor() {
 		super();
-		const { ShareService: shareService, GeoResourceService: georesourceService } = $injector.inject('ShareService', 'GeoResourceService');
+		const {
+			ShareService: shareService,
+			GeoResourceService: georesourceService,
+			OlMeasurementHandler: measurementHandler
+		} = $injector.inject('ShareService', 'GeoResourceService', 'OlMeasurementHandler');
 		this._shareService = shareService;
 		this._geoResourceService = georesourceService;
+		this._measurementHandler = measurementHandler;
 	}
 
 	/**
@@ -138,8 +143,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
-		return { zoom, center, overlayLayers, backgroundLayer };
+		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer }, measurement: { active: measurementActive } } = store;
+		return { zoom, center, overlayLayers, backgroundLayer, measurementActive };
 	}
 
 	/**
@@ -149,6 +154,7 @@ export class OlMap extends BaElement {
 		const { zoom, center } = this._state;
 
 		this._syncOverlayLayer();
+		this._syncMeasurement();
 
 		this.log('map state changed by store');
 
@@ -185,7 +191,7 @@ export class OlMap extends BaElement {
 
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
-			if(olLayer) {
+			if (olLayer) {
 				this._map.removeLayer(olLayer);
 			}
 		});
@@ -216,6 +222,12 @@ export class OlMap extends BaElement {
 	_syncBackgroundLayer() {
 
 	}
+
+	_syncMeasurement() {
+		const { measurementActive } = this._state;
+		measurementActive ? this._measurementHandler.activate(this._map) : this._measurementHandler.deactivate(this._map);
+	}
+
 
 	/**
 	 * @override
