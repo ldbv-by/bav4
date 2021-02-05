@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 
 /**
@@ -26,16 +26,16 @@ export class ShowCase extends BaElement {
 	createView() {
 
 		const onClick0 = () => {
-			changeZoomAndPosition({
+			changeZoomAndCenter({
 				zoom: 13,
-				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
+				center: this._coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
 
 		const onClick1 = () => {
-			changeZoomAndPosition({
+			changeZoomAndCenter({
 				zoom: 11,
-				position: this._coordinateService.fromLonLat([11.081, 49.449])
+				center: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
 		};
 		const onToggle = (event) => {

@@ -3,7 +3,7 @@
  * @module map/action
  */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from './layers.reducer';
-import { $injector } from '../../../../injection';
+import { $injector } from '../../../injection';
 
 /**
  * Reflects the state of a layer.

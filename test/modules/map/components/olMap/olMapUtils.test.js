@@ -1,7 +1,7 @@
 import BaseLayer from 'ol/layer/Base';
-import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../src/modules/map/components/olMapUtils';
-import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
-import { $injector } from '../../../../src/injection';
+import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
+import { $injector } from '../../../../../src/injection';
 
 
 describe('olMapUtils', () => {

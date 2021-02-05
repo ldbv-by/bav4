@@ -3,7 +3,7 @@ import { BaElement } from '../../BaElement';
 import { toggleSidePanel } from '../../menue/store/sidePanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
-import { changeZoomAndPosition } from '../../map/store/olMap.action';
+import { changeZoomAndCenter } from '../../map/store/position.action';
 import css from './header.css';
 
 
@@ -51,9 +51,9 @@ export class Header extends BaElement {
 		};
 
 		const onSelect = (data) => {
-			changeZoomAndPosition({
+			changeZoomAndCenter({
 				zoom: 16,
-				position: this._coordinateService.fromLonLat([data.center[0], data.center[1]])
+				center: this._coordinateService.fromLonLat([data.center[0], data.center[1]])
 			});
 		};
 
