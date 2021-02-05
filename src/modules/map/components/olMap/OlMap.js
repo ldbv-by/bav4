@@ -116,12 +116,18 @@ export class OlMap extends BaElement {
 
 	_buildContextMenueData(evt) {
 		const coord = this._map.getEventCoordinate(evt.originalEvent);
+
+		const shareUrl = window.location.href;
 		const copyToClipboard = () => this._shareService.copyToClipboard(coord).catch(() => this.log('Cannot copy the coordinate to clipboard.'));
+		// todo: implement (and use) permalink-service, shortener-service to get a usable URL
+		// todo: add translation-service with i18n-olMap-provider
+		const shareWith = () => this._shareService.share('BA4', 'Use the platform', shareUrl);
 		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: copyToClipboard };
 		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
+		const thirdCommand = { label: 'Share', action: shareWith };
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
-			commands: [firstCommand, secondCommand]
+			commands: [firstCommand, secondCommand, thirdCommand]
 		};
 	}
 
