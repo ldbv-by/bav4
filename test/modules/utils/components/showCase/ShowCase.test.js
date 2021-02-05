@@ -1,11 +1,14 @@
+import { html } from 'lit-html';
 import { ShowCase } from '../../../../../src/modules/utils/components/showCase/ShowCase';
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
 import { layersReducer } from '../../../../../src/modules/map/store/layers/layers.reducer';
+import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { $injector } from '../../../../../src/injection';
+import { openModal } from '../../../../../src/modules/modal/store/modal.action';
 
 window.customElements.define(ShowCase.tag, ShowCase);
 window.customElements.define(Toggle.tag, Toggle);
@@ -27,9 +30,10 @@ describe('ShowCase', () => {
 			layers: {
 				active: [],
 				background:'null'
-			}
+			},
+			modal: { title: false, content: false }
 		};
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer, layers:layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer, layers:layersReducer, modal: modalReducer  });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded : () => false });
@@ -84,6 +88,19 @@ describe('ShowCase', () => {
 			toggle.shadowRoot.querySelector('.switch').click();
 
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
+		});
+
+		it('modal state changes in store, when \'Measure Distance\'-Button is clicked', async () => {
+			const  element = await setup();
+			const button = element.shadowRoot.querySelector('#buttonMeasureDistance');
+			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+
+			openModal(modalContent);
+			expect(button).toBeTruthy();
+
+			button.click();
+
+			expect(store.getState().modal.title).toBeFalse();
 		});
 
 	});
