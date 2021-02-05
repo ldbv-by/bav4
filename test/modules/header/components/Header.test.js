@@ -25,7 +25,8 @@ describe('Header', () => {
 		store = TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer, modal: modalReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
-			.registerSingleton('EnvironmentService', { isEmbedded : () => embed });
+			.registerSingleton('EnvironmentService', { isEmbedded : () => embed })
+			.registerSingleton('SearchResultProviderService', { getLocationSearchResultProvider : () => {} });
 
 
 		return TestUtils.render(Header.tag);

@@ -1,9 +1,10 @@
 import { combineReducers, createStore } from 'redux';
-import { mapReducer, initialState as initialMapState, ZOOM_CHANGED, POSITION_CHANGED } from '../modules/map/store/olMap.reducer';
+import { positionReducer, initialState as initialMapState, ZOOM_CHANGED, CENTER_CHANGED } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
+import { layersReducer } from '../modules/map/store/layers.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 
 
@@ -21,7 +22,7 @@ export class StoreService {
 		const storeEnhancer = ReduxQuerySync.enhancer({
 			params: {
 				zoom: {
-					selector: state => state.map.zoom,
+					selector: state => state.position.zoom,
 
 					action: value => ({ type: ZOOM_CHANGED, payload: value }),
 
@@ -40,9 +41,9 @@ export class StoreService {
 					 */
 					defaultValue: initialMapState.zoom,
 				},
-				position: {
-					selector: state => state.map.position,
-					action: value => ({ type: POSITION_CHANGED, payload: value }),
+				center: {
+					selector: state => state.position.center,
+					action: value => ({ type: CENTER_CHANGED, payload: value }),
 
 					//TODO: handler non parseable string
 					stringToValue: (string) => string.split(',').map(Number.parseFloat),
@@ -53,7 +54,7 @@ export class StoreService {
 						}
 					},
 
-					defaultValue: initialMapState.position,
+					defaultValue: initialMapState.center,
 				},
 			},
 			initialTruth: 'location',
@@ -65,11 +66,12 @@ export class StoreService {
 			 * must be named like the field of the state
 			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
 			 */
-			map: mapReducer,
+			position: positionReducer,
 			sidePanel: sidePanelReducer,
 			contextMenue: contextMenueReducer,
 			modal:modalReducer,
-			uiTheme: uiThemeReducer 
+			uiTheme: uiThemeReducer,
+			layers: layersReducer
 		});
 
 		this.store = createStore(rootReducer, storeEnhancer);

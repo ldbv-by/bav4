@@ -2,7 +2,8 @@ import { ShowCase } from '../../../../../src/modules/utils/components/showCase/S
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { TestUtils } from '../../../../test-utils';
 import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
-import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { $injector } from '../../../../../src/injection';
 
@@ -16,15 +17,19 @@ describe('ShowCase', () => {
 	const setup = () => {
 		const state = {
 			mobile: false,
-			map: {
+			position: {
 				zoom: 10,
 				pointerPosition: [1288239.2412306187, 6130212.561641981]
 			},
 			sidePanel: {
 				open: false
+			},
+			layers: {
+				active: [],
+				background:'null'
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer, sidePanel: sidePanelReducer });
+		store = TestUtils.setupStoreAndDi(state, { position: positionReducer, sidePanel: sidePanelReducer, layers:layersReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded : () => false });
@@ -39,7 +44,7 @@ describe('ShowCase', () => {
 			const  element = await setup();
 			
 			// try different approaches
-			expect(element.shadowRoot.querySelectorAll('ba-button').length).toBe(4);
+			expect(element.shadowRoot.querySelectorAll('.buttons ba-button').length).toBe(4);
 			expect(element.shadowRoot.querySelector('.buttons').childElementCount).toBe(4);
 			expect(element.shadowRoot.querySelector('#button0')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#button1')).toBeTruthy();
@@ -59,7 +64,7 @@ describe('ShowCase', () => {
 			
 			element.shadowRoot.querySelector('#button0').click();
 			
-			expect(store.getState().map.zoom).toBe(13);
+			expect(store.getState().position.zoom).toBe(13);
 		});
 
 		it('calls the callback, if button1 are clicked', async () => {
@@ -67,7 +72,7 @@ describe('ShowCase', () => {
 			
 			element.shadowRoot.querySelector('#button1').click();
 			
-			expect(store.getState().map.zoom).toBe(11);
+			expect(store.getState().position.zoom).toBe(11);
 		});
 
 		it('toggle gets checked, if toggle are clicked', async () => {
@@ -80,6 +85,7 @@ describe('ShowCase', () => {
 
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
 		});
+
 	});
 
 });

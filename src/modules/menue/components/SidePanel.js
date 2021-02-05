@@ -1,8 +1,9 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { BaElement } from '../../BaElement';
 import css from './sidePanel.css';
 import { closeSidePanel } from '../store/sidePanel.action';
 import { $injector } from '../../../injection';
+import { addLayer } from '../../map/store/layers.action';
 
 
 /**
@@ -15,8 +16,9 @@ export class SidePanel extends BaElement {
 	constructor() {
 		super();
 
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService, SearchResultProviderService: providerService } = $injector.inject('EnvironmentService', 'SearchResultProviderService');
 		this._environmentService = EnvironmentService;
+		this._georesourceSearchResultProvider = providerService.getGeoresourceSearchResultProvider();
 		this._activeTabIndex = 0;
 	}
 
@@ -38,6 +40,21 @@ export class SidePanel extends BaElement {
 		this.activateTab(this._activeTabIndex);
 	}
 
+	//needs to be refactored to a seperate component later
+	_createDataPanel() {
+		const onSelect = (data) => {
+			addLayer(data.id, { label: data.label });
+		};
+		return html`
+		<div style="padding: 10px">
+			<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._georesourceSearchResultProvider}></ba-autocomplete-search>
+		</div>
+		<div>
+			<ba-layer-manager></ba-layer-manager>
+		</div>
+		`;
+	}
+
 	/**
 	 * @override
 	 */
@@ -56,8 +73,9 @@ export class SidePanel extends BaElement {
 		const getTabBarClass = () => portrait ? 'tab-bar-portrait' : 'tab-bar-landscape';
 		const getHeaderClass = () => portrait ? 'header-portrait' : 'header-landscape';
 
+
 		const items = [
-			{ name: 'Data', description: 'Let\'s view geodata' },
+			{ name: 'Data', description: 'Let\'s view geodata', content: this._createDataPanel() },
 			{ name: 'Share', description: '...share' },
 			{ name: 'Draw', description: '...draw and measure on the map' },
 			{ name: 'Routing', description: '...get a route' },
@@ -84,6 +102,7 @@ export class SidePanel extends BaElement {
 						<div class="tabcontent">
 							<!-- <h1>${item.name}</h1>-->
 							<p>${item.description}</p>
+							${item.content ? item.content : nothing}
 						</div>
 					`)}
 				</div>

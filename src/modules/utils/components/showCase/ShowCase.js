@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { changeZoomAndPosition } from '../../../map/store/olMap.action';
+import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 
 /**
@@ -26,16 +26,16 @@ export class ShowCase extends BaElement {
 	createView() {
 
 		const onClick0 = () => {
-			changeZoomAndPosition({
+			changeZoomAndCenter({
 				zoom: 13,
-				position: this._coordinateService.fromLonLat([11.57245, 48.14021])
+				center: this._coordinateService.fromLonLat([11.57245, 48.14021])
 			});
 		};
 
 		const onClick1 = () => {
-			changeZoomAndPosition({
+			changeZoomAndCenter({
 				zoom: 11,
-				position: this._coordinateService.fromLonLat([11.081, 49.449])
+				center: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
 		};
 		const onToggle = (event) => {
@@ -71,10 +71,7 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
-			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
-			<p>Test</p>
-			<div class='text'>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-			</div>
+			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>							
 		</div>`;
 	}
     

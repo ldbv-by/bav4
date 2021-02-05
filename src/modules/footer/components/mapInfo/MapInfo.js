@@ -53,7 +53,7 @@ export class MapInfo extends BaElement {
 	}
 
 	extractState(store) {
-		const { map: { zoom, pointerPosition } } = store;
+		const { position: { zoom, pointerPosition } } = store;
 		return { zoom, pointerPosition };
 	}
 

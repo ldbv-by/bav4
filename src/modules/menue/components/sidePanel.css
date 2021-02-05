@@ -124,7 +124,7 @@
 .tabcontent {
   color: var(--color);
   display: none;
-  padding: 50px;
+  padding: 5px;
   text-align: center;
   height: 100%;
 }

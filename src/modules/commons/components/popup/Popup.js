@@ -5,6 +5,26 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 
 /**
+ * Popup
+ * 
+ * Configurable Attributes:
+ * - `type` (default=hide or show)
+ * - `right` (in px)
+ * - `top` (in px)
+ * 
+ * Observed Attributes:
+ * - `type`
+ * 
+ * Configurable Properties / Methods:
+ * - `type` (default=hide or show)
+ * - `isOpen()`: true if popup is visible
+ * - `openPopup()` 
+ * - `closePopup()`
+ * 
+ * Observed Properties:
+ * - `type` (default=hide or show)
+ * 
+ * Content is set via slot
  * 
  * @class
  * @author bakir_en

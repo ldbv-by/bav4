@@ -164,6 +164,7 @@ describe('Toggle', () => {
 			element.click();
 
 			expect(element.onToggle).toHaveBeenCalled();
+			expect(element.checked).toBeTrue();
 		});
 
 		it('calls the onToggle callback via attribute callback', async () => {
@@ -175,6 +176,7 @@ describe('Toggle', () => {
 			element.click();
 
 			expect(window.alert).toHaveBeenCalledWith('called');
+			expect(element.checked).toBeTrue();
 		});
 
 		it('does nothing when disabled', async () => {
@@ -184,6 +186,7 @@ describe('Toggle', () => {
 			element.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
+			expect(element.checked).toBeFalse();
 		});
 	});
 });
