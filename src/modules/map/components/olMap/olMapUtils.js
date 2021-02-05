@@ -1,11 +1,11 @@
-import { GeoResourceTypes, VectorSourceType } from '../../../services/domain/geoResources';
+import { GeoResourceTypes, VectorSourceType } from '../../../../services/domain/geoResources';
 import { Image as ImageLayer, Vector as VectorLayer, Group as LayerGroup } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { KML, GPX, GeoJSON } from 'ol/format';
-import { $injector } from '../../../injection';
+import { $injector } from '../../../../injection';
 
 
 const getUrlService = () => {

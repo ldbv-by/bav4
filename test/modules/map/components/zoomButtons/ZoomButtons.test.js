@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { ZoomButtons } from '../../../../../src/modules/map/components/zoomButtons/ZoomButtons';
-import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 window.customElements.define(ZoomButtons.tag, ZoomButtons);
@@ -14,12 +14,12 @@ describe('ZoomButtons', () => {
 	beforeEach(async () => {
 
 		const state = {
-			map: {
+			position: {
 				zoom: 10
 			}
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer });
+		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -41,14 +41,14 @@ describe('ZoomButtons', () => {
 		it('decreases the current zoom level by one', () => {
 
 			element.shadowRoot.querySelector('.zoom-out').click();
-			expect(store.getState().map.zoom).toBe(9);
+			expect(store.getState().position.zoom).toBe(9);
 
 		});
 
 		it('increases the current zoom level by one', () => {
 
 			element.shadowRoot.querySelector('.zoom-in').click();
-			expect(store.getState().map.zoom).toBe(11);
+			expect(store.getState().position.zoom).toBe(11);
 
 		});
 	});

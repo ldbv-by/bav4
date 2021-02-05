@@ -1,6 +1,6 @@
 import { LayerManager } from '../../../../../src/modules/map/components/layerManager/LayerManager';
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers/layers.reducer';
+import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 

@@ -1,24 +1,24 @@
 /* eslint-disable no-undef */
-import { OlMap } from '../../../../src/modules/map/components/OlMap';
+import { OlMap } from '../../../../../src/modules/map/components/olMap/OlMap';
 import { fromLonLat } from 'ol/proj';
-import { TestUtils } from '../../../test-utils.js';
-import { mapReducer } from '../../../../src/modules/map/store/olMap.reducer';
+import { TestUtils } from '../../../../test-utils.js';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import Event from 'ol/events/Event';
-import { contextMenueReducer } from '../../../../src/modules/contextMenue/store/contextMenue.reducer';
-import { $injector } from '../../../../src/injection';
-import { layersReducer } from '../../../../src/modules/map/store/layers/layers.reducer';
-import { WmsGeoResource } from '../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../src/modules/map/store/layers/layers.action';
+import { contextMenueReducer } from '../../../../../src/modules/contextMenue/store/contextMenue.reducer';
+import { $injector } from '../../../../../src/injection';
+import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
+import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
 
 describe('OlMap', () => {
 
-	const initialPosition = fromLonLat([11.57245, 48.14021]);
+	const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 	const geoResourceServiceStub = {
 		byId(id) {
@@ -36,9 +36,9 @@ describe('OlMap', () => {
 
 	const setup = () => {
 		const state = {
-			map: {
+			position: {
 				zoom: 10,
-				position: initialPosition
+				center: initialCenter
 			},
 			layers: {
 				active: [],
@@ -47,7 +47,7 @@ describe('OlMap', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(state, {
-			map: mapReducer,
+			position: positionReducer,
 			layers: layersReducer
 		});
 
@@ -90,7 +90,7 @@ describe('OlMap', () => {
 		it('configures the map and adds a div which contains the ol-map', async () => {
 			const element = await setup();
 			expect(element._view.getZoom()).toBe(10);
-			expect(element._view.getCenter()).toEqual(initialPosition);
+			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 		});
 
@@ -138,7 +138,7 @@ describe('OlMap', () => {
 
 			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0);
 
-			expect(store.getState().map.pointerPosition).toBe(pointerPosition);
+			expect(store.getState().position.pointerPosition).toBe(pointerPosition);
 		});
 	});
 
@@ -151,7 +151,7 @@ describe('OlMap', () => {
 
 			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			expect(store.getState().map.pointerPosition).toBeUndefined();
+			expect(store.getState().position.pointerPosition).toBeUndefined();
 		});
 	});
 
@@ -161,15 +161,15 @@ describe('OlMap', () => {
 			const element = await setup();
 			const customEventType = 'contextmenu';
 			const state = {
-				map: {
+				position: {
 					zoom: 10,
-					position: initialPosition
+					center: initialCenter
 				},
 				contextMenue: { data: { pointer: false, commands: false } }
 			};
 
 			store = TestUtils.setupStoreAndDi(state, {
-				map: mapReducer,
+				position: positionReducer,
 				contextMenue: contextMenueReducer
 			});
 

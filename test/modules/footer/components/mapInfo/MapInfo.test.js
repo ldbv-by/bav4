@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
 import { MapInfo } from '../../../../../src/modules/footer/components/mapInfo/MapInfo';
-import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { $injector } from '../../../../../src/injection';
 import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
-import { changeZoom } from '../../../../../src/modules/map/store/olMap.action';
+import { changeZoom } from '../../../../../src/modules/map/store/position.action';
 
 
 
@@ -17,7 +17,7 @@ window.customElements.define(MapInfo.tag, MapInfo);
 
 
 const setupStoreAndDi = (state) => {
-	TestUtils.setupStoreAndDi(state, { map: mapReducer });
+	TestUtils.setupStoreAndDi(state, { position: positionReducer });
 
 	$injector
 		.register('CoordinateService', OlCoordinateService);
@@ -32,7 +32,7 @@ describe('MapInfo', () => {
 		it('adds a div which shows the initial zoom level 5', async () => {
 
 			setupStoreAndDi({
-				map: {
+				position: {
 					zoom: 5,
 					pointerPosition: [1288239.2412306187, 6130212.561641981]
 				}
@@ -50,7 +50,7 @@ describe('MapInfo', () => {
 
 		it('updates the div which shows the current zoom level', async () => {
 			setupStoreAndDi({
-				map: {
+				position: {
 					zoom: 10,
 					pointerPosition: [1288239.2412306187, 6130212.561641981]
 				}
@@ -71,7 +71,7 @@ describe('MapInfo', () => {
 
 		it('shows an alert', async () => {
 			setupStoreAndDi({
-				map: {
+				position: {
 					zoom: 10,
 					pointerPosition: [1288239.2412306187, 6130212.561641981]
 				}
