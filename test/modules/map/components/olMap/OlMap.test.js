@@ -178,7 +178,7 @@ describe('OlMap', () => {
 			const actualPointer = store.getState().contextMenue.data.pointer;
 
 			expect(actualPointer).toEqual({ x: 10, y: 0 });
-			expect(actualCommands.length).toBe(2);
+			expect(actualCommands.length).toBe(3);
 			expect(actualCommands[0].label).toBe('Copy Coordinates');
 			expect(actualCommands[0].action).not.toBeUndefined();
 			expect(actualCommands[0].shortCut).toBe('[CTRL] + C');
