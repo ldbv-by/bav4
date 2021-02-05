@@ -1,16 +1,17 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './extendButton.css';
+import css from './extentButton.css';
 import { $injector } from '../../../../injection';
 import arrowUpSvg from './assets/arrow-up.svg';
+import { changeZoomAndPosition } from '../../store/olMap.action';
 
 /**
- * Button that zooms map to extend
+ * Button that zooms map to extent
  * @class 
  * @author bakir_en  
  */
 
-export class ExtendButton extends BaElement {
+export class ExtentButton extends BaElement {
 
 	constructor() {
 		super();
@@ -24,14 +25,17 @@ export class ExtendButton extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
         
-		const zoomExtend = () => {
-			console.log('zoom to extend');
-		}; 
+		const zoomToExtent = () => {
+			changeZoomAndPosition({
+				zoom: 12,
+				position: [1288239.2412306187, 6130212.561641981]
+			});
+		};
 
 		return html`
             <style>${css}</style>
-            <div class="extend-button">
-                <ba-icon icon='${arrowUpSvg}' title="${translate('map_info_button')}" size=40 @click=${zoomExtend}></ba-icon>
+            <div class="extent-button">
+                <ba-icon icon='${arrowUpSvg}' title="${translate('map_extent_button')}" size=40 @click=${zoomToExtent}></ba-icon>
             </div>
             
         `;
@@ -47,6 +51,6 @@ export class ExtendButton extends BaElement {
 	// }
 
 	static get tag() {
-		return 'ba-extend-button';
+		return 'ba-extent-button';
 	} 
 } 
