@@ -12,6 +12,8 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
+import { activate, deactivate } from '../../../../../src/modules/map/store/measurement.action';
+import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -32,10 +34,16 @@ describe('OlMap', () => {
 		},
 		init() { }
 	};
+
+	const measurementHandlerMock = {
+		activate() { },
+		deactivate() { }
+	};
+
 	let store;
 
-	const setup = () => {
-		const state = {
+	const setup = (state) => {
+		const defaultState = {
 			position: {
 				zoom: 10,
 				center: initialCenter
@@ -43,18 +51,26 @@ describe('OlMap', () => {
 			layers: {
 				active: [],
 				background: null
-			}
+			},
+			measurement: { active: false }
+		};
+		const combinedState = {
+			...defaultState,
+			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(combinedState, {
 			position: positionReducer,
-			layers: layersReducer
+			layers: layersReducer,
+			measurement: measurementReducer
 		});
 
-		$injector.registerSingleton('ShareService', {
-			copyToClipboard: () => { }
-		});
-		$injector.registerSingleton('GeoResourceService', geoResourceServiceStub);
+		$injector
+			.registerSingleton('ShareService', {
+				copyToClipboard: () => { }
+			})
+			.registerSingleton('GeoResourceService', geoResourceServiceStub)
+			.registerSingleton('OlMeasurementHandler', measurementHandlerMock);
 
 		return TestUtils.render(OlMap.tag);
 	};
@@ -301,6 +317,31 @@ describe('OlMap', () => {
 
 			const layer1 = map.getLayers().item(2);
 			expect(layer1.get('id')).toBe('id0');
+		});
+	});
+
+	describe('measurement handler', () => {
+
+		it('activates the handler', async () => {
+			const spy = spyOn(measurementHandlerMock, 'activate');
+			const element = await setup();
+			const map = element._map;
+
+
+			activate();
+
+			expect(spy).toHaveBeenCalledWith(map);
+		});
+
+		it('deactivates the handler', async () => {
+			const spy = spyOn(measurementHandlerMock, 'deactivate');
+			const element = await setup({ measurement: { active: true } });
+			const map = element._map;
+
+
+			deactivate();
+
+			expect(spy).toHaveBeenCalledWith(map);
 		});
 	});
 });
