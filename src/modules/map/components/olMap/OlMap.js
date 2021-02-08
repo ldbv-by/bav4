@@ -9,6 +9,7 @@ import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
 import { removeLayer } from '../../store/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
+import { activate as activateMeasurement } from '../../../map/store/measurement.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer } from './olMapUtils';
 
@@ -112,6 +113,13 @@ export class OlMap extends BaElement {
 			this.emitEvent('map_clicked', coord);
 		});
 
+		this._map.on('dblclick', (evt) => {
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			this._contextMenuToggle = false;
+			contextMenueClose();
+			this.emitEvent('map_dblclicked', coord);
+		});
+
 		this._map.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
 			const contextMenueData = this._buildContextMenueData(e);
@@ -123,7 +131,7 @@ export class OlMap extends BaElement {
 		const coord = this._map.getEventCoordinate(evt.originalEvent);
 		const copyToClipboard = () => this._shareService.copyToClipboard(coord).catch(() => this.log('Cannot copy the coordinate to clipboard.'));
 		const firstCommand = { label: 'Copy Coordinates', shortCut: '[CTRL] + C', action: copyToClipboard };
-		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
+		const secondCommand = { label: 'Measure Distance', action: activateMeasurement };
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
 			commands: [firstCommand, secondCommand]
