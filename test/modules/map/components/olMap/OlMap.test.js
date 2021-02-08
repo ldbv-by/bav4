@@ -12,7 +12,7 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
-import { changeZoomAndCenter } from '../../../../../src/modules/map/store/position.action';
+import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -39,7 +39,8 @@ describe('OlMap', () => {
 		const state = {
 			position: {
 				zoom: 10,
-				center: initialCenter
+				center: initialCenter,
+				fitRequest: null
 			},
 			layers: {
 				active: [],
@@ -190,6 +191,7 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
+	
 
 		it('it updates zoom and center', async () => {
 			const element = await setup();
@@ -203,6 +205,22 @@ describe('OlMap', () => {
 				center: fromLonLat([11, 48]),
 				duration: 500
 			});
+		});
+
+		it('it fits to an extent', async (done) => {
+			const element = await setup();
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+			fit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
+			
+			
+			expect(element._viewSyncBlocked).toBeTrue();
+			//check if flag is reset
+			setTimeout(function () {
+				expect(element._viewSyncBlocked).toBeFalse();
+				done();
+
+			}, 500);
 		});
 	});
 

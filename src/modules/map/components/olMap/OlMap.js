@@ -138,8 +138,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
-		return { zoom, center, overlayLayers, backgroundLayer };
+		const { position: { zoom, center, fitRequest }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		return { zoom, center, fitRequest, overlayLayers, backgroundLayer };
 	}
 
 	/**
@@ -157,13 +157,22 @@ export class OlMap extends BaElement {
 	}
 
 	_syncView() {
-		const { zoom, center } = this._state;
+		const { zoom, center, fitRequest } = this._state;
 
-		this._view.animate({
-			zoom: zoom,
-			center: center,
-			duration: 500
-		});
+		if(!this._viewSyncBlocked) {
+
+			if (fitRequest && fitRequest.extent) {
+				this._viewSyncBlocked = true;
+				this._view.fit(fitRequest.extent, { callback: () => this._viewSyncBlocked = false });
+			}
+			else {
+				this._view.animate({
+					zoom: zoom,
+					center: center,
+					duration: 500
+				});
+			}
+		}
 	}
 
 	_syncOverlayLayer() {
