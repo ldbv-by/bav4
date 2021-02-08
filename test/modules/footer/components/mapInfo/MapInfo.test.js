@@ -67,7 +67,7 @@ describe('MapInfo', () => {
 		});
 	});
 
-	describe('on map click', () => {
+	xdescribe('on map click', () => {
 
 		it('shows an alert', async () => {
 			setupStoreAndDi({

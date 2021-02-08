@@ -19,9 +19,9 @@ export const getGeometryLength = (geometry) => {
 	else if(geometry instanceof LinearRing) {
 		lineString = new LineString(geometry.getCoordinates());
 	}
-	else if(geometry instanceof Circle) {
-		return 2 * Math.PI * geometry.getRadius();
-	}
+	else if(geometry instanceof Polygon) {
+		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
+	}	
 	
 	if(lineString) {
 		return lineString.getLength();
@@ -125,9 +125,7 @@ export class OlMeasurementHandler {
 		//olLayer currently undefined, will be fixed later
 		
 		olMap.removeInteraction(this._draw);
-		// if(this._vectorLayer) {
-		// 	olMap.removeLayer(this._vectorLayer);
-		// }
+		this._draw = false;
 	}	
 
 	_pointerMoveHandler(evt) {
