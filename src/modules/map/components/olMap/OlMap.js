@@ -146,23 +146,24 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		const { zoom, center } = this._state;
-
-		this._syncOverlayLayer();
-
 		this.log('map state changed by store');
 
+		this._syncOverlayLayer();
+		this._syncView();
+	}
+
+	_getOlLayerById(id) {
+		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
+	}
+
+	_syncView() {
+		const { zoom, center } = this._state;
 
 		this._view.animate({
 			zoom: zoom,
 			center: center,
 			duration: 500
 		});
-
-	}
-
-	_getOlLayerById(id) {
-		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
 	}
 
 	_syncOverlayLayer() {
@@ -185,7 +186,7 @@ export class OlMap extends BaElement {
 
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
-			if(olLayer) {
+			if (olLayer) {
 				this._map.removeLayer(olLayer);
 			}
 		});
