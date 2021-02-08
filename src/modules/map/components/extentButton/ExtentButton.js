@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './extentButton.css';
 import { $injector } from '../../../../injection';
 import baSvg from './assets/ba.svg';
-import { changeZoomAndCenter } from '../../store/position.action';
+import { fit } from '../../store/position.action';
 
 /**
  * Button that zooms map to extent
@@ -26,10 +26,8 @@ export class ExtentButton extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
         
 		const zoomToExtent = () => {
-			changeZoomAndCenter({
-				zoom: 8,
-				position: [1288239.2412306187, 6130212.561641981]
-			});
+			//later we will use a service to retrieve the extent
+			fit({ extent: [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462] });
 		};
 
 		return html`
