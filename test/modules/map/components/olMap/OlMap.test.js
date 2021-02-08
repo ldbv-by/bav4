@@ -12,6 +12,7 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
+import { changeZoomAndCenter } from '../../../../../src/modules/map/store/position.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -185,6 +186,23 @@ describe('OlMap', () => {
 			expect(actualCommands[1].label).toBe('Hello');
 			expect(actualCommands[1].action).not.toBeUndefined();
 			expect(actualCommands[1].shortCut).toBeUndefined();
+		});
+	});
+
+	describe('olView management', () => {
+
+		it('it updates zoom and center', async () => {
+			const element = await setup();
+			const view = element._map.getView();
+			const viewSpy = spyOn(view, 'animate');
+
+			changeZoomAndCenter({ zoom: 5, center: fromLonLat([11, 48]) });
+
+			expect(viewSpy).toHaveBeenCalledWith({
+				zoom: 5,
+				center: fromLonLat([11, 48]),
+				duration: 500
+			});
 		});
 	});
 
