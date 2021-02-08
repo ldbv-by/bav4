@@ -26,7 +26,7 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService)
-	.registerSingleton('OlMeasurementHandler', new OlMeasurementHandler());
+	.register('OlMeasurementHandler', OlMeasurementHandler);
 
 
 export let init = true;

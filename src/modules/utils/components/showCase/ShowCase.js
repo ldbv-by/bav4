@@ -4,6 +4,8 @@ import { $injector } from '../../../../injection';
 import { closeModal } from '../../../modal/store/modal.action';
 import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
+import { activate as activatMeasurement } from '../../../map/store/measurement.action';
+import { addLayer, MEASUREMENT_LAYER_ID } from '../../../map/store/layers.action';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -45,8 +47,8 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickMeasureDistance = () => {
-			// activate measurement-modus in map, so modal must disappear
-			//todo: start/activate measurement-state in state
+			activatMeasurement();
+			addLayer(MEASUREMENT_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
 			closeModal();
 		};
 
@@ -83,7 +85,7 @@ export class ShowCase extends BaElement {
 			<ba-button id='buttonMeasureDistance' label='Measure Distance' type="primary" @click=${onClickMeasureDistance}></ba-button>	
 		</div>`;
 	}
-    
+
 	static get tag() {
 		return 'ba-showcase';
 	}

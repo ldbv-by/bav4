@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
-import { removeLayer } from '../../store/layers.action';
+import { removeLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
 import { activate as activateMeasurement } from '../../../map/store/measurement.action';
 import { $injector } from '../../../../injection';
@@ -32,6 +32,8 @@ export class OlMap extends BaElement {
 		this._shareService = shareService;
 		this._geoResourceService = georesourceService;
 		this._measurementHandler = measurementHandler;
+		//temporary store for layers retrieved from handlers
+		this._olLayersStore = new Map();
 	}
 
 	/**
@@ -206,13 +208,16 @@ export class OlMap extends BaElement {
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			if (resource) {
+			const olLayer = resource ? toOlLayer(resource) : this._olLayersStore.get(id);
+
+			if (olLayer) {
 				const layer = overlayLayers.find(layer => layer.id === id);
-				const olLayer = updateOlLayer(toOlLayer(resource), layer);
+				updateOlLayer(olLayer, layer);
 				//+1: regard baselayer
 				this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
 			}
 			else {
+				console.warn('Could not add an olLayer for id \'' + id + '\'');
 				removeLayer(id);
 			}
 		});
@@ -233,7 +238,16 @@ export class OlMap extends BaElement {
 
 	_syncMeasurement() {
 		const { measurementActive } = this._state;
-		measurementActive ? this._measurementHandler.activate(this._map) : this._measurementHandler.deactivate(this._map);
+		if (measurementActive) {
+			const olLayer = this._measurementHandler.activate(this._map);
+			if(olLayer) {
+				olLayer.set('id', MEASUREMENT_LAYER_ID);
+				this._olLayersStore.set(MEASUREMENT_LAYER_ID, olLayer);
+			}
+		}
+		else {
+			this._measurementHandler.deactivate(this._map);
+		}
 	}
 
 
