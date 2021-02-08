@@ -11,6 +11,7 @@ import { getLength } from 'ol/sphere';
 const ZPOLYGON = 10;
 const ZLINE = 20;
 
+//todo: find a better place....move to utils
 export const getGeometryLength = (geometry) => {
 	let lineString;
 	if(geometry instanceof LineString) {
@@ -29,6 +30,8 @@ export const getGeometryLength = (geometry) => {
 	return 0;
 };
 
+
+//todo: find a better place....move to utils
 export const canShowAzimuthCircle = (geometry) => {
 	if(geometry instanceof LineString) {
 		const coords = geometry.getCoordinates();
@@ -40,8 +43,9 @@ export const canShowAzimuthCircle = (geometry) => {
 	return false;
 };
 
-
-export const measureStyleFunction = (feature, res) => {
+//todo: find a better place....maybe StyleService
+export const measureStyleFunction = (feature) => {
+	
 	const color = [255, 0, 0];
 	const stroke = new Stroke({
 		color:color.concat([1]),
@@ -81,19 +85,14 @@ export const measureStyleFunction = (feature, res) => {
 	return styles;
 };
 export class OlMeasurementHandler {
-
-
 	//this handler could be statefull
 	constructor() {
 		this._map;
 		this._draw = false;
 		this._vectorLayer = false;
-		this._sketch;
-		this._helpTooltipElement;
-		this._helpTooltip;
+	
 		this._measureTooltipElement;
-		this._measureTooltip;
-		this._continueLineMsg = 'Click to continue drawing the line';
+		this._measureTooltip;		
 	}
 
 	/**
@@ -111,7 +110,7 @@ export class OlMeasurementHandler {
 			this._map = olMap;
 			this._addInteraction();		
 		}		
-		return null;
+		return this._vectorLayer;
 	}	
 
 	/**
@@ -128,29 +127,6 @@ export class OlMeasurementHandler {
 		this._draw = false;
 	}	
 
-	_pointerMoveHandler(evt) {
-		if (evt.dragging) {
-			return;
-		}
-		/** @type {string} */
-		var helpMsg = 'Click to start drawing';
-	
-		if (this._sketch) {
-			var geom = this._sketch.getGeometry();
-			if (geom instanceof Polygon) {
-				helpMsg = this._continuePolygonMsg;
-			}
-			else if (geom instanceof LineString) {
-				helpMsg = this._continueLineMsg;
-			}
-		}
-	
-		this._helpTooltipElement.innerHTML = helpMsg;
-		this._helpTooltip.setPosition(evt.coordinate);
-	
-		this._helpTooltipElement.classList.remove('hidden');
-	}	
-
 	_addInteraction() {
 		const source = new VectorSource({ wrapX: false });	
 		this._vectorLayer = new VectorLayer({
@@ -159,7 +135,6 @@ export class OlMeasurementHandler {
 			map:this._map
 		});
 		this._createMeasureTooltip();
-		this._createHelpTooltip();
 		this._draw = new Draw({
 			source: source,
 			type: 'LineString',
@@ -169,8 +144,8 @@ export class OlMeasurementHandler {
 		this._map.addInteraction(this._draw);		
 
 		const formatLength = (line) => {
-			var length = getLength(line);
-			var output;
+			const length = getLength(line);
+			let output;
 			if (length > 100) {
 				output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
 			}
@@ -183,31 +158,22 @@ export class OlMeasurementHandler {
 			this._measureTooltipElement.innerHTML = content;
 			this._measureTooltip.setPosition(coordinate);
 		};
-
+		let listener;
+		
 		const finishMeasurementTooltip = () => {			
 			this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
 			this._measureTooltip.setOffset([0, -7]);
-			// unset sketch
-			this._sketch = null;
-			// unset tooltip so that a new one can be created
-			this._measureTooltipElement = null;
 			this._createMeasureTooltip();
 			unByKey(listener);
 		};
+		
+		this._draw.on('drawstart', event =>  {
+			
+			let tooltipCoord = event.coordinate;			
 
-		let listener;
-		this._draw.on('drawstart', function (evt) {
-			// set sketch
-			this._sketch = evt.feature;
-
-			/** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
-			var tooltipCoord = evt.coordinate;			
-
-			listener = this._sketch.getGeometry().on('change', function (evt) {
-				
-				var geom = evt.target;
-				var output;
-				output = formatLength(geom);
+			listener = event.feature.getGeometry().on('change', event => {
+				const geom = event.target;
+				const output = formatLength(geom);
 				tooltipCoord = geom.getLastCoordinate();
 				writeMeasurement(output, tooltipCoord);
 			});
@@ -218,29 +184,9 @@ export class OlMeasurementHandler {
 
 
 	/**
- * Creates a new help tooltip
- */
-	_createHelpTooltip() {
-		if (this._helpTooltipElement) {
-			this._helpTooltipElement.parentNode.removeChild(this._helpTooltipElement);
-		}
-		this._helpTooltipElement = document.createElement('div');
-		this._helpTooltipElement.className = 'ol-tooltip hidden';
-		this._helpTooltip = new Overlay({
-			element: this._helpTooltipElement,
-			offset: [15, 0],
-			positioning: 'center-left',
-		});
-		this._map.addOverlay(this._helpTooltip);
-	}
-
-	/**
- * Creates a new measure tooltip
- */
-	_createMeasureTooltip() {
-		if (this._measureTooltipElement) {
-			this._measureTooltipElement.parentNode.removeChild(this._measureTooltipElement);
-		}		
+	 * Creates a new measure tooltip
+	 */
+	_createMeasureTooltip() {	
 		this._measureTooltipElement = document.createElement('div');
 		this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
 		this._measureTooltip = new Overlay({
