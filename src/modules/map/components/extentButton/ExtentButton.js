@@ -2,8 +2,8 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './extentButton.css';
 import { $injector } from '../../../../injection';
-import arrowUpSvg from './assets/arrow-up.svg';
-import { changeZoomAndPosition } from '../../store/olMap.action';
+import baSvg from './assets/ba.svg';
+import { changeZoomAndCenter } from '../../store/position.action';
 
 /**
  * Button that zooms map to extent
@@ -26,8 +26,8 @@ export class ExtentButton extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
         
 		const zoomToExtent = () => {
-			changeZoomAndPosition({
-				zoom: 12,
+			changeZoomAndCenter({
+				zoom: 8,
 				position: [1288239.2412306187, 6130212.561641981]
 			});
 		};
@@ -35,20 +35,11 @@ export class ExtentButton extends BaElement {
 		return html`
             <style>${css}</style>
             <div class="extent-button">
-                <ba-icon icon='${arrowUpSvg}' title="${translate('map_extent_button')}" size=40 @click=${zoomToExtent}></ba-icon>
+                <ba-icon class="extent-icon" icon='${baSvg}' title="${translate('map_extent_button')}" size=50 @click=${zoomToExtent}></ba-icon>
             </div>
             
         `;
-	} 
-
-	// extractState(store) {
-	// 	const { map: { zoom, position } } = store;
-	// 	return { zoom, position };
-	// }
-
-	// onStateChanged() {
-	// 	this.shadowRoot.getElementById('info-popup').closePopup();
-	// }
+	}
 
 	static get tag() {
 		return 'ba-extent-button';

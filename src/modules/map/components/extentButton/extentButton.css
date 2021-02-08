@@ -1,7 +1,12 @@
 .extent-button {
   position: absolute;
   top: 250px;
-  right: 10px;
+  right: 0px;
   display: inline-block;
   vertical-align: top;
+  /* background-color: var(--map-button-color); */
 }
+
+/* .extent-icon {
+    background-color: var(--map-button-color);
+} */

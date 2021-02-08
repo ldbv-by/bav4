@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { mapReducer } from '../../../../../src/modules/map/store/olMap.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 // import { changePosition, changeZoom } from '../../../../../src/modules/map/store/olMap.action';
@@ -10,18 +10,18 @@ window.customElements.define(ExtentButton.tag, ExtentButton);
 
 
 describe('ExtentButton', () => {
-	let element, state, store;
+	let element, state;
 
 	beforeEach(async () => {
 
 		state = {
-			map: {
+			position: {
 				zoom: 5,
-				position: [1288239.2412306187, 6130212.561641981]
+				center: [1254142.170686317, 6273726.299247982]
 			}
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { map: mapReducer });
+		TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
