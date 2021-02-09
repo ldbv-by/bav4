@@ -87,11 +87,8 @@ export const measureStyleFunction = (feature) => {
 export class OlMeasurementHandler {
 	//this handler could be statefull
 	constructor() {
-		this._map;
-		this._draw = false;
-		this._vectorLayer = false;
-	
-		this._measureTooltipElement;
+		this._vectorLayer = null;
+		this._draw = false;				
 		this._measureTooltip;		
 	}
 
@@ -102,13 +99,28 @@ export class OlMeasurementHandler {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	activate(olMap) {
-
+		const prepareInteraction = (map) => {
+			const source = new VectorSource({ wrapX: false });	
+			const layer = new VectorLayer({
+				source: source,
+				style: measureStyleFunction,
+				map:map // Sets the layer as overlay on a map
+			});
+			return layer;
+		};
 		//use the map to register event listener, interactions, etc
 		//for development purposes you can attach the layer to the map here,
 		//later, this will be done outside this handler
 		if(this._draw === false) {
-			this._map = olMap;
-			this._addInteraction();		
+			this._vectorLayer = prepareInteraction(olMap);
+			const source = this._vectorLayer.getSource();
+
+			const { draw, tooltip } = this._createInteraction(source);		
+			this._draw = draw;
+			this._measureTooltip = tooltip;
+			
+			olMap.addOverlay(this._measureTooltip);
+			olMap.addInteraction(this._draw);	
 		}		
 		return this._vectorLayer;
 	}	
@@ -127,21 +139,13 @@ export class OlMeasurementHandler {
 		this._draw = false;
 	}	
 
-	_addInteraction() {
-		const source = new VectorSource({ wrapX: false });	
-		this._vectorLayer = new VectorLayer({
-			source: source,
-			style: measureStyleFunction,
-			map:this._map
-		});
-		this._createMeasureTooltip();
-		this._draw = new Draw({
+	_createInteraction(source) {
+		const measurementTooltip = this._createMeasureTooltip();
+		const draw = new Draw({
 			source: source,
 			type: 'LineString',
 			style: measureStyleFunction
-		});
-					
-		this._map.addInteraction(this._draw);		
+		});						
 
 		const formatLength = (line) => {
 			const length = getLength(line);
@@ -155,19 +159,18 @@ export class OlMeasurementHandler {
 			return output;
 		};
 		const writeMeasurement = (content, coordinate) => {
-			this._measureTooltipElement.innerHTML = content;
-			this._measureTooltip.setPosition(coordinate);
+			measurementTooltip.getElement().innerHTML = content;
+			measurementTooltip.setPosition(coordinate);
 		};
 		let listener;
 		
 		const finishMeasurementTooltip = () => {			
-			this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
-			this._measureTooltip.setOffset([0, -7]);
-			this._createMeasureTooltip();
+			measurementTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
+			measurementTooltip.setOffset([0, -7]);			
 			unByKey(listener);
 		};
 		
-		this._draw.on('drawstart', event =>  {
+		draw.on('drawstart', event =>  {
 			
 			let tooltipCoord = event.coordinate;			
 
@@ -179,7 +182,9 @@ export class OlMeasurementHandler {
 			});
 		});
 
-		this._draw.on('drawend', () => finishMeasurementTooltip);
+		draw.on('drawend', () => finishMeasurementTooltip());
+
+		return { draw:draw, tooltip:measurementTooltip };
 	}
 
 
@@ -187,12 +192,12 @@ export class OlMeasurementHandler {
 	 * Creates a new measure tooltip
 	 */
 	_createMeasureTooltip() {	
-		this._measureTooltipElement = document.createElement('div');
-		this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
-		this._measureTooltip = new Overlay({
-			element: this._measureTooltipElement,
+		const measureTooltipElement = document.createElement('div');
+		measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+		const measureTooltip = new Overlay({
+			element:  measureTooltipElement,
 			offset: [0, -15], positioning: 'bottom-center'
 		});
-		this._map.addOverlay(this._measureTooltip);
+		return measureTooltip;
 	}
 }
