@@ -11,6 +11,8 @@ import { loadBvvGeoResources } from '../services/domain/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/searchResult.provider';
+import { getBvvMapDefinitions } from '../services/provider/mapDefinitions.provider';
+import { MapService } from '../services/MapService';
 
 
 $injector
@@ -23,7 +25,8 @@ $injector
 	.registerSingleton('GeoResourceService', new GeoResourceService(loadBvvGeoResources))
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
 	.registerSingleton('ShareService', new ShareService(navigator))
-	.register('UrlService', UrlService);
+	.register('UrlService', UrlService)
+	.register('MapService', new MapService(getBvvMapDefinitions));
 
 
 export let init = true;
