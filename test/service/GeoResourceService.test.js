@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { GeoResourceService } from '../../src/services/GeoResourceService';
 import { WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
-import { loadExampleGeoResources } from '../../src/services/domain/geoResource.provider';
+import { loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 
 describe('GeoResourceService', () => {
 

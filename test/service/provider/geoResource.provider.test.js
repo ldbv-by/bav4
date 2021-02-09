@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { loadBvvGeoResources, loadExampleGeoResources } from '../../../src/services/domain/geoResource.provider';
+import { loadBvvGeoResources, loadExampleGeoResources } from '../../../src/services/provider/geoResource.provider';
 
 describe('GeoResource provider', () => {
 	describe('Bvv GeoResource provider', () => {
