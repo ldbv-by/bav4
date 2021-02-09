@@ -61,12 +61,12 @@ describe('GeoResourceService', () => {
 			expect(geoResources.length).toBe(1);
 		});
 
-		it('throws an error when service hat not been initialized', () => {
+		it('logs a warn statement when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			expect(() => {
-				instanceUnderTest.all();
-			})
-				.toThrowError(/GeoResourceService not yet initialized/);
+			const warnSpy = spyOn(console, 'warn');
+
+			expect(instanceUnderTest.all()).toEqual([]);
+			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
 		});
 	});
 
@@ -91,12 +91,12 @@ describe('GeoResourceService', () => {
 			expect(geoResource).toBeNull();
 		});
 
-		it('throws an error when service hat not been initialized', () => {
+		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
-			expect(() => {
-				instanceUnderTest.byId('unknownId');
-			})
-				.toThrowError(/GeoResourceService not yet initialized/);
+			const warnSpy = spyOn(console, 'warn');
+			
+			expect(instanceUnderTest.byId('unknownId')).toBeNull();
+			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
 		});
 	});
 
