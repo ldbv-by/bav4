@@ -5,7 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
-import { Feature, Observable } from 'ol';
+import { Feature } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
 
 
