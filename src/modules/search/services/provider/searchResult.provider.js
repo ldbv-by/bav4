@@ -1,5 +1,5 @@
-import { SearchResult, SearchResultTypes } from './searchResult';
-import { $injector } from '../../../injection';
+import { SearchResult, SearchResultTypes } from '../searchResult';
+import { $injector } from '../../../../injection';
 
 export const loadBvvGeoResourceSearchResults = async (query) => {
 
