@@ -95,6 +95,7 @@ export class OlMeasurementHandler {
 		this._sketch = null;	
 		this._measureTooltip;		
 		this._helpTooltip;
+		this._overlays = [];
 	}
 
 	/**
@@ -154,16 +155,13 @@ export class OlMeasurementHandler {
 		if(this._draw === false) {
 			this._vectorLayer = prepareInteraction();
 			this._helpTooltip = prepareHelp();
-			const source = this._vectorLayer.getSource();
+			const source = this._vectorLayer.getSource();			
+			this._draw = this._createInteraction(source);	
 
-			const { draw, tooltip } = this._createInteraction(source);		
-			this._draw = draw;
-			this._measureTooltip = tooltip;
-			
-			olMap.addOverlay(this._helpTooltip);
+			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointeMoveListener = olMap.on('pointermove', pointerMoveHandler);
 
-			olMap.addOverlay(this._measureTooltip);
+			//olMap.addOverlay(this._measureTooltip);
 			olMap.addInteraction(this._draw);	
 		}		
 		return this._vectorLayer;
@@ -179,14 +177,19 @@ export class OlMeasurementHandler {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
-		olMap.removeOverlay(this._helpTooltip);
+		this._overlays.forEach(o => olMap.removeOverlay(o));
 		unByKey(this._pointeMoveListener);
 		this._helpTooltip = null;
 		this._draw = false;
 	}	
 
+	_addOverlayToMap(map, overlay) {
+		this._overlays.push(overlay);
+		map.addOverlay(overlay);
+	}
+
 	_createInteraction(source) {
-		const measurementTooltip = this._createMeasureTooltip();
+		
 		const draw = new Draw({
 			source: source,
 			type: 'LineString',
@@ -205,20 +208,20 @@ export class OlMeasurementHandler {
 			return output;
 		};
 		const writeMeasurement = (content, coordinate) => {
-			measurementTooltip.getElement().innerHTML = content;
-			measurementTooltip.setPosition(coordinate);
+			this._measureTooltip.getElement().innerHTML = content;
+			this._measureTooltip.setPosition(coordinate);
 		};
 		let listener;
 		
 		const finishMeasurementTooltip = () => {			
-			measurementTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
-			measurementTooltip.setOffset([0, -7]);		
-			this._sketch = null;			
+			this._measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
+			this._measureTooltip.setOffset([0, -7]);		
+			this._sketch = null;						
 			unByKey(listener);
 		};
 		
-		draw.on('drawstart', event =>  {
-			
+		draw.on('drawstart', event =>  {	
+			this._measureTooltip = this._createMeasureTooltip();			
 			let tooltipCoord = event.coordinate;	
 			this._sketch = event.feature;
 
@@ -228,11 +231,15 @@ export class OlMeasurementHandler {
 				tooltipCoord = geom.getLastCoordinate();
 				writeMeasurement(output, tooltipCoord);
 			});
+			const map = draw.getMap();
+			if(map) {
+				this._addOverlayToMap(map, this._measureTooltip);				
+			}			
 		});
 
 		draw.on('drawend', () => finishMeasurementTooltip());
 
-		return { draw:draw, tooltip:measurementTooltip };
+		return draw;
 	}
 
 
