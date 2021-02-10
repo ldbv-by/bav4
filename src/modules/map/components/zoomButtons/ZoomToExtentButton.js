@@ -1,8 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './extentButton.css';
+import css from './zoomToExtentButton.css';
 import { $injector } from '../../../../injection';
-import baSvg from './assets/ba.svg';
 import { fit } from '../../store/position.action';
 
 /**
@@ -11,7 +10,7 @@ import { fit } from '../../store/position.action';
  * @author bakir_en  
  */
 
-export class ExtentButton extends BaElement {
+export class ZoomToExtentButton extends BaElement {
 
 	constructor() {
 		super();
@@ -32,8 +31,8 @@ export class ExtentButton extends BaElement {
 
 		return html`
             <style>${css}</style>
-            <div class="extent-button">
-                <ba-icon class="extent-icon" icon='${baSvg}' title="${translate('map_extent_button')}" size=50 @click=${zoomToExtent}></ba-icon>
+			<div class="zoom-to-extent">
+				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoom_extent_button')}" ><i class="icon zoom-to-extent-icon"></i></button>
             </div>
             
         `;
