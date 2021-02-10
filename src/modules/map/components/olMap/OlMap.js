@@ -114,12 +114,6 @@ export class OlMap extends BaElement {
 			this.emitEvent('map_clicked', coord);
 		});
 
-		this._map.on('dblclick', (evt) => {
-			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			this._contextMenuToggle = false;
-			contextMenueClose();
-			this.emitEvent('map_dblclicked', coord);
-		});
 
 		this._map.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
