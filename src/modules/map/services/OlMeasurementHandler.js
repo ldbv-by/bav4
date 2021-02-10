@@ -99,7 +99,7 @@ export class OlMeasurementHandler {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	activate(olMap) {
-		const prepareInteraction = (map) => {
+		const prepareInteraction = () => {
 			const source = new VectorSource({ wrapX: false });	
 			const layer = new VectorLayer({
 				source: source,
