@@ -1,4 +1,4 @@
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from './geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from '../domain/geoResources';
 import { $injector } from '../../injection';
 
 export const loadBvvGeoResources = async () => {
