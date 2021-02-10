@@ -169,24 +169,25 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		const { zoom, center } = this._state;
+		this.log('map state changed by store');
 
 		this._syncOverlayLayer();
 		this._syncMeasurement();
+		this._syncView();
+	}
 
-		this.log('map state changed by store');
+	_getOlLayerById(id) {
+		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
+	}
 
+	_syncView() {
+		const { zoom, center } = this._state;
 
 		this._view.animate({
 			zoom: zoom,
 			center: center,
 			duration: 500
 		});
-
-	}
-
-	_getOlLayerById(id) {
-		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
 	}
 
 	_syncOverlayLayer() {
