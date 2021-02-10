@@ -7,6 +7,9 @@ import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
 import { Feature } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
+import { MapBrowserEvent } from 'ol';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+
 
 
 
@@ -92,7 +95,8 @@ describe('OlMeasurementHandler', () => {
 			let drawEvent = new DrawEvent(eventType, feature);
 			
 			draw.dispatchEvent(drawEvent);
-		};
+		};		
+
 		it('creates tooltip content for short line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
@@ -120,8 +124,7 @@ describe('OlMeasurementHandler', () => {
 		it('unregister tooltip-listener after finish drawing', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry:geometry });
-			//const unByKeySpy = spyOn(Observable, 'unByKey');			
+			const feature = new Feature({ geometry:geometry });	
 		
 			classUnderTest.activate(map);
 					
@@ -131,7 +134,83 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._measureTooltip.getElement().classList.contains('ol-tooltip-static')).toBeTrue();
 			expect(classUnderTest._measureTooltip.getOffset()).toEqual([0, -7]);
-			//expect(unByKeySpy).toHaveBeenCalled();
+		});	
+
+		
+	});
+
+	describe('when pointer move', () => {
+		const initialCenter = fromLonLat([11.57245, 48.14021]);
+
+		const setupMap =  async () => {
+
+			return new Map({
+				layers: [
+					new TileLayer({
+						source: new OSM(),
+					}),
+					new TileLayer({
+						source: new TileDebug(),
+					})],
+				target: 'map',
+				view: new View({
+					center: initialCenter,
+					zoom: 1,
+				}),
+			});
+			
+		};
+
+		const simulateMouseEvent = (map, type, x, y, dragging) => {
+			const eventType = type;
+	
+			const event = new Event(eventType);
+			//event.target = map.getViewport().firstChild;
+			event.clientX = x;
+			event.clientY = y;
+			event.pageX = x;
+			event.pageY = y;			
+			event.shiftKey = false;
+			event.preventDefault = function () { };
+	
+			
+			let mapEvent = new MapBrowserEvent(eventType, map, event);		
+			mapEvent.coordinate = [x, y];	
+			mapEvent.dragging = dragging ? dragging : false;
+			map.dispatchEvent(mapEvent);
+		};
+
+		it('creates and move helpTooltip', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			
+			classUnderTest.activate(map);			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);			
+			
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to start drawing');			
+			expect(classUnderTest._helpTooltip.getPosition()).toEqual([10, 0]);	
+		});	
+
+		it('no move when dragging', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			
+			classUnderTest.activate(map);			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0, true);			
+					
+			expect(classUnderTest._helpTooltip.getPosition()).toBeFalsy();
+		});	
+
+		it('change message in helpTooltip, when sketch is changing', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			
+			classUnderTest.activate(map);			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to start drawing');			
+			classUnderTest._sketch = new Feature({ geometry:new LineString([[0, 0], [1, 0]]) });	
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to continue drawing the line');	
 		});	
 	});
 });
