@@ -196,7 +196,7 @@ describe('OlMap', () => {
 			expect(actualCommands.length).toBe(2);
 			expect(actualCommands[0].label).toBe('Copy Coordinates');
 			expect(actualCommands[0].action).not.toBeUndefined();
-			expect(actualCommands[1].label).toBe('Measure Distance');
+			expect(actualCommands[1].label).toBe('Hello');
 			expect(actualCommands[1].action).not.toBeUndefined();
 			expect(actualCommands[1].shortCut).toBeUndefined();
 		});
