@@ -21,9 +21,6 @@ export class MapInfo extends BaElement {
 		this._coordinateService = CoordinateService;
 	}
 
-	initialize() {
-	}
-
 	createView() {
 		const { zoom, pointerPosition } = this._state;
 
