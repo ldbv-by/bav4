@@ -13,8 +13,7 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer, MEASUREMENT_LAYER_ID } from '../../../../../src/modules/map/store/layers.action';
-import { activate, deactivate } from '../../../../../src/modules/map/store/measurement.action';
-import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter } from '../../../../../src/modules/map/store/position.action';
 
 window.customElements.define(OlMap.tag, OlMap);
@@ -54,7 +53,6 @@ describe('OlMap', () => {
 				active: [],
 				background: null
 			},
-			measurement: { active: false }
 		};
 		const combinedState = {
 			...defaultState,
@@ -64,7 +62,6 @@ describe('OlMap', () => {
 		store = TestUtils.setupStoreAndDi(combinedState, {
 			position: positionReducer,
 			layers: layersReducer,
-			measurement: measurementReducer
 		});
 
 		$injector
@@ -272,23 +269,6 @@ describe('OlMap', () => {
 			expect(layer0.get('id')).toBe('id0');
 		});
 
-		it('adds an olLayer from the internal store', async () => {
-			const internalLayerId = 'internalId';
-			const element = await setup();
-			const map = element._map;
-			const internalLayersStore = element._olLayersStore;
-			internalLayersStore.set(internalLayerId, new VectorLayer({ id: internalLayerId }));
-
-			addLayer('id0');
-			addLayer('internalId');
-
-			expect(map.getLayers().getLength()).toBe(3);
-			const layer0 = map.getLayers().item(1);
-			expect(layer0.get('id')).toBe('id0');
-			const layer1 = map.getLayers().item(2);
-			expect(layer1.get('id')).toBe(internalLayerId);
-		});
-
 		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -358,31 +338,28 @@ describe('OlMap', () => {
 	});
 
 	describe('measurement handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
 
-		it('activates the handler', async () => {
+			expect(element._handler.get(MEASUREMENT_LAYER_ID)).toEqual(measurementHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			// const spy = spyOn(measurementHandlerMock, 'activate');
-			const spy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
+			const activateSpy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(measurementHandlerMock, 'deactivate').and.returnValue(olLayer);
 			const element = await setup();
 			const map = element._map;
 
+			activateMeasurement();
 
-			activate();
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
-			expect(spy).toHaveBeenCalledWith(map);
-			expect(olLayer.get('id')).toBe(MEASUREMENT_LAYER_ID);
-			expect(element._olLayersStore.get(MEASUREMENT_LAYER_ID)).toEqual(olLayer);
-		});
-
-		it('deactivates the handler', async () => {
-			const spy = spyOn(measurementHandlerMock, 'deactivate');
-			const element = await setup({ measurement: { active: true } });
-			const map = element._map;
-
-
-			deactivate();
-
-			expect(spy).toHaveBeenCalledWith(map);
+			deactivateMeasurement();
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});
 	});
 });
