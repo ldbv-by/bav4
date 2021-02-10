@@ -2,16 +2,15 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
-import { Map, View } from 'ol';
+import { Map as MapOl, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
-import { removeLayer,addLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
+import { removeLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
-import { activate as activateMeasurement, deactivate } from '../../../map/store/measurement.action';
 import { $injector } from '../../../../injection';
-import { toOlLayer, updateOlLayer } from './olMapUtils';
+import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
 
 
 /**
@@ -31,9 +30,8 @@ export class OlMap extends BaElement {
 		} = $injector.inject('ShareService', 'GeoResourceService', 'OlMeasurementHandler');
 		this._shareService = shareService;
 		this._geoResourceService = georesourceService;
-		this._measurementHandler = measurementHandler;
-		//temporary store for layers retrieved from handlers
-		this._olLayersStore = new Map();
+		this._handler = new Map([[MEASUREMENT_LAYER_ID, measurementHandler]]);
+
 	}
 
 	/**
@@ -73,7 +71,7 @@ export class OlMap extends BaElement {
 		});
 		baseLayer.set('id', 'g_atkis');
 
-		this._map = new Map({
+		this._map = new MapOl({
 			layers: [
 				baseLayer
 			],
@@ -115,12 +113,6 @@ export class OlMap extends BaElement {
 			this.emitEvent('map_clicked', coord);
 		});
 
-		this._map.on('dblclick', (evt) => {
-			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			this._contextMenuToggle = false;
-			contextMenueClose();
-			this.emitEvent('map_dblclicked', coord);
-		});
 
 		this._map.addEventListener('contextmenu', (e) => {
 			e.preventDefault();
@@ -129,19 +121,11 @@ export class OlMap extends BaElement {
 		});
 	}
 
-	_buildContextMenueData(evt) {
-		const { measurementActive } = this._state;
+	_buildContextMenueData(evt) {		
 		const coord = this._map.getEventCoordinate(evt.originalEvent);
-		const measureDistance = () => {
-			activateMeasurement();
-			addLayer(MEASUREMENT_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-		}
 		const copyToClipboard = () => this._shareService.copyToClipboard(coord).catch(() => this.log('Cannot copy the coordinate to clipboard.'));
 		const firstCommand = { label: 'Copy Coordinates', action: copyToClipboard };
-		let secondCommand = { label: 'Measure Distance', action: measureDistance };
-		if(measurementActive){
-			secondCommand = { label: 'Stop Measure Distance', action:  deactivate};
-		}
+		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
 		return {
 			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
 			commands: [firstCommand, secondCommand]
@@ -161,8 +145,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer }, measurement: { active: measurementActive } } = store;
-		return { zoom, center, overlayLayers, backgroundLayer, measurementActive };
+		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		return { zoom, center, overlayLayers, backgroundLayer };
 	}
 
 	/**
@@ -172,7 +156,6 @@ export class OlMap extends BaElement {
 		this.log('map state changed by store');
 
 		this._syncOverlayLayer();
-		this._syncMeasurement();
 		this._syncView();
 	}
 
@@ -191,7 +174,6 @@ export class OlMap extends BaElement {
 	}
 
 	_syncOverlayLayer() {
-
 		const { overlayLayers } = this._state;
 
 		const updatedIds = overlayLayers.map(layer => layer.id);
@@ -212,12 +194,15 @@ export class OlMap extends BaElement {
 			const olLayer = this._getOlLayerById(id);
 			if (olLayer) {
 				this._map.removeLayer(olLayer);
+				if (this._handler.has(id)) {
+					this._handler.get(id).deactivate(this._map);
+				}
 			}
 		});
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? toOlLayer(resource) : this._olLayersStore.get(id);
+			const olLayer = resource ? toOlLayer(resource) : (this._handler.has(id) ? toOlLayerFromHandler(id, this._handler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = overlayLayers.find(layer => layer.id === id);
@@ -244,21 +229,6 @@ export class OlMap extends BaElement {
 	_syncBackgroundLayer() {
 
 	}
-
-	_syncMeasurement() {
-		const { measurementActive } = this._state;
-		if (measurementActive) {
-			const olLayer = this._measurementHandler.activate(this._map);
-			if(olLayer) {
-				olLayer.set('id', MEASUREMENT_LAYER_ID);
-				this._olLayersStore.set(MEASUREMENT_LAYER_ID, olLayer);
-			}
-		}
-		else {
-			this._measurementHandler.deactivate(this._map);
-		}
-	}
-
 
 	/**
 	 * @override

@@ -66,24 +66,4 @@ describe('MapInfo', () => {
 			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 11')).toBeTruthy();
 		});
 	});
-
-	xdescribe('on map click', () => {
-
-		it('shows an alert', async () => {
-			setupStoreAndDi({
-				position: {
-					zoom: 10,
-					pointerPosition: [1288239.2412306187, 6130212.561641981]
-				}
-			});
-
-			element = await TestUtils.render(MapInfo.tag);
-
-			spyOn(window, 'alert');
-			// trigger map_clicked event
-			window.dispatchEvent(new CustomEvent('map_clicked', { detail: [1288239.2412306187, 6130212.561641981], bubbles: true }));
-
-			expect(window.alert).toHaveBeenCalledWith('click @ 11.572, 48.140');
-		});
-	});
 });

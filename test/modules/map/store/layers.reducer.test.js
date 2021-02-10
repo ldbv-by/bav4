@@ -1,5 +1,6 @@
 import { layersReducer, index, sort, defaultLayerProperties } from '../../../../src/modules/map/store/layers.reducer';
-import { addLayer, removeLayer, modifyLayer, changeBackground } from '../../../../src/modules/map/store/layers.action';
+import { addLayer, removeLayer, modifyLayer, changeBackground, MEASUREMENT_LAYER_ID } from '../../../../src/modules/map/store/layers.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
@@ -328,5 +329,20 @@ describe('layersReducer', () => {
 		changeBackground('bg0');
 
 		expect(store.getState().layers.background).toBe('bg0');
+	});
+
+	it('adds and removes a layer for the measurement tool', () => {
+		const store = setup();
+
+		activateMeasurement();
+
+		expect(store.getState().layers.active.length).toBe(1);
+		const measurementLayer = store.getState().layers.active[0];
+		expect(measurementLayer.id).toBe(MEASUREMENT_LAYER_ID);
+		expect(measurementLayer.constraints).toEqual({ hidden:true, alwaysTop: true });
+
+		deactivateMeasurement();
+
+		expect(store.getState().layers.active.length).toBe(0);
 	});
 });

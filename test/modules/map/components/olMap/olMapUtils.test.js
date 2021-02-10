@@ -1,7 +1,8 @@
 import BaseLayer from 'ol/layer/Base';
-import { mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { mapVectorSourceTypeToFormat, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
+import { Map } from 'ol';
 
 
 describe('olMapUtils', () => {
@@ -109,6 +110,21 @@ describe('olMapUtils', () => {
 
 			expect(olLayer.getVisible()).toBeFalse();
 			expect(olLayer.getOpacity()).toBe(.5);
+		});
+	});
+
+	describe('toOlLayerFromHandler', () => {
+		it('it retrieves an olLayer from a handler', () => {
+			const mockHandler = {
+				activate() { }
+			};
+			const map = new Map();
+			const olLayer = new BaseLayer({});
+			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(olLayer);
+
+			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
+
+			expect(myLayer.get('id')).toBe('someId');
 		});
 	});
 });
