@@ -9,12 +9,13 @@ import { Feature } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { $injector } from '../../../../src/injection';
 
 
 
+$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('OlMeasurementHandler', () => {
-
 	it('has two methods', async () => {
 		expect(new OlMeasurementHandler()).toBeTruthy();
 		expect(new OlMeasurementHandler().activate).toBeTruthy();
@@ -26,7 +27,6 @@ describe('OlMeasurementHandler', () => {
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 		const setupMap =  async () => {
-
 			return new Map({
 				layers: [
 					new TileLayer({
@@ -187,7 +187,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);			
 			
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to start drawing');			
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');			
 			expect(classUnderTest._helpTooltip.getPosition()).toEqual([10, 0]);	
 		});	
 
@@ -207,10 +207,10 @@ describe('OlMeasurementHandler', () => {
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to start drawing');			
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');			
 			classUnderTest._sketch = new Feature({ geometry:new LineString([[0, 0], [1, 0]]) });	
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('Click to continue drawing the line');	
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_line');	
 		});	
 	});
 });
