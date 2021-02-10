@@ -90,9 +90,22 @@ describe('ShowCase', () => {
 			expect(toggle.shadowRoot.querySelector('input').checked).toBeTrue();
 		});
 
-		it('modal state changes in store, when \'Measure Distance\'-Button is clicked', async () => {
+		it('modal state changes in store, when \'Activate Measure Distance\'-Button is clicked', async () => {
 			const  element = await setup();
-			const button = element.shadowRoot.querySelector('#buttonMeasureDistance');
+			const button = element.shadowRoot.querySelector('#buttonActivateMeasureDistance');
+			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+
+			openModal(modalContent);
+			expect(button).toBeTruthy();
+
+			button.click();
+
+			expect(store.getState().modal.title).toBeFalse();
+		});
+
+		it('modal state changes in store, when \'Deactivate Measure Distance\'-Button is clicked', async () => {
+			const  element = await setup();
+			const button = element.shadowRoot.querySelector('#buttonDeactivateMeasureDistance');
 			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
 
 			openModal(modalContent);

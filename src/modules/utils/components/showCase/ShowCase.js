@@ -4,8 +4,7 @@ import { $injector } from '../../../../injection';
 import { closeModal } from '../../../modal/store/modal.action';
 import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
-import { activate as activatMeasurement } from '../../../map/store/measurement.action';
-import { addLayer, MEASUREMENT_LAYER_ID } from '../../../map/store/layers.action';
+import { activate as activatMeasurement, deactivate } from '../../../map/store/measurement.action';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -46,9 +45,13 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
-		const onClickMeasureDistance = () => {
+		const activateMeasrementTool = () => {
 			activatMeasurement();
-			addLayer(MEASUREMENT_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
+			closeModal();
+		};
+
+		const deactivateMeasrementTool = () => {
+			deactivate();
 			closeModal();
 		};
 
@@ -82,7 +85,8 @@ export class ShowCase extends BaElement {
 			<p>Theme-Toggle</p>
 			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
 			<p>Measure Distance</p>
-			<ba-button id='buttonMeasureDistance' label='Measure Distance' type="primary" @click=${onClickMeasureDistance}></ba-button>	
+			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
+			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="primary" @click=${deactivateMeasrementTool}></ba-button>	
 		</div>`;
 	}
 
