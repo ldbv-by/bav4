@@ -1,6 +1,6 @@
-import { $injector } from '../../../../src/injection';
-import { SearchResultTypes } from '../../../../src/modules/search/services/searchResult';
-import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../src/modules/search/services/searchResult.provider';
+import { $injector } from '../../../../../src/injection';
+import { SearchResultTypes } from '../../../../../src/modules/search/services/searchResult';
+import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../../src/modules/search/services/provider/searchResult.provider';
 
 describe('SearchResult provider', () => {
 
