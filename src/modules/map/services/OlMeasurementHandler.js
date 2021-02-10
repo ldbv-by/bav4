@@ -88,8 +88,10 @@ export class OlMeasurementHandler {
 	//this handler could be statefull
 	constructor() {
 		this._vectorLayer = null;
-		this._draw = false;				
+		this._draw = false;			
+		this._sketch = null;	
 		this._measureTooltip;		
+		this._helpTooltip;
 	}
 
 	/**
@@ -107,14 +109,56 @@ export class OlMeasurementHandler {
 			});
 			return layer;
 		};
+
+		const prepareHelp = () => {
+			const helpTooltipElement = document.createElement('div');
+			helpTooltipElement.className = 'ol-tooltip hidden';
+			const helpTooltip = new Overlay({
+				element: helpTooltipElement,
+				offset: [15, 0],
+				positioning: 'center-left',
+			});
+			return helpTooltip;
+		};
+
+		const pointerMoveHandler = (event) => {
+			const continuePolygonMsg = 'Click to continue drawing the polygon';
+			const continueLineMsg = 'Click to continue drawing the line';
+
+			if (event.dragging) {
+				return;
+			}
+			/** @type {string} */
+			let helpMsg = 'Click to start drawing';
+
+			if (this._sketch) {
+				var geom = this._sketch.getGeometry();
+				if (geom instanceof Polygon) {
+					helpMsg = continuePolygonMsg;
+				}
+				else if (geom instanceof LineString) {
+					helpMsg = continueLineMsg;
+				}
+			}
+			
+			const helpTooltipElement = this._helpTooltip.getElement();
+			helpTooltipElement.innerHTML = helpMsg;
+			helpTooltipElement.classList.remove('hidden');
+			this._helpTooltip.setPosition(event.coordinate);
+		};
+
 		if(this._draw === false) {
-			this._vectorLayer = prepareInteraction(olMap);
+			this._vectorLayer = prepareInteraction();
+			this._helpTooltip = prepareHelp();
 			const source = this._vectorLayer.getSource();
 
 			const { draw, tooltip } = this._createInteraction(source);		
 			this._draw = draw;
 			this._measureTooltip = tooltip;
 			
+			olMap.addOverlay(this._helpTooltip);
+			this._pointeMoveListener = olMap.on('pointermove', pointerMoveHandler);
+
 			olMap.addOverlay(this._measureTooltip);
 			olMap.addInteraction(this._draw);	
 		}		
@@ -131,6 +175,9 @@ export class OlMeasurementHandler {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
+		olMap.removeOverlay(this._helpTooltip);
+		unByKey(this._pointeMoveListener);
+		this._helpTooltip = null;
 		this._draw = false;
 	}	
 
@@ -161,13 +208,15 @@ export class OlMeasurementHandler {
 		
 		const finishMeasurementTooltip = () => {			
 			measurementTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
-			measurementTooltip.setOffset([0, -7]);			
+			measurementTooltip.setOffset([0, -7]);		
+			this._sketch = null;			
 			unByKey(listener);
 		};
 		
 		draw.on('drawstart', event =>  {
 			
-			let tooltipCoord = event.coordinate;			
+			let tooltipCoord = event.coordinate;	
+			this._sketch = event.feature;
 
 			listener = event.feature.getGeometry().on('change', event => {
 				const geom = event.target;
