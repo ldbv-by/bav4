@@ -103,14 +103,10 @@ export class OlMeasurementHandler {
 			const source = new VectorSource({ wrapX: false });	
 			const layer = new VectorLayer({
 				source: source,
-				style: measureStyleFunction,
-				map:map // Sets the layer as overlay on a map
+				style: measureStyleFunction				
 			});
 			return layer;
 		};
-		//use the map to register event listener, interactions, etc
-		//for development purposes you can attach the layer to the map here,
-		//later, this will be done outside this handler
 		if(this._draw === false) {
 			this._vectorLayer = prepareInteraction(olMap);
 			const source = this._vectorLayer.getSource();
@@ -133,8 +129,7 @@ export class OlMeasurementHandler {
 	// eslint-disable-next-line no-unused-vars
 	deactivate(olMap, olLayer) {
 		//use the map to unregister event listener, interactions, etc
-		//olLayer currently undefined, will be fixed later
-		
+		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
 		this._draw = false;
 	}	
