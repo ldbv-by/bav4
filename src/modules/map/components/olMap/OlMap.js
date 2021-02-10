@@ -79,13 +79,7 @@ export class OlMap extends BaElement {
 
 		this._map.on('moveend', () => {
 			if (this._view) {
-				this.log('updating store');
-
-				changeZoomAndCenter({
-					zoom: this._view.getZoom(),
-					center: this._view.getCenter()
-
-				});
+				this._syncStore();
 			}
 		});
 
@@ -146,8 +140,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('map state changed by store');
-
+		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
@@ -156,14 +149,27 @@ export class OlMap extends BaElement {
 		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
 	}
 
+	_syncStore() {
+		this.log('syncing store');
+		changeZoomAndCenter({
+			zoom: this._view.getZoom(),
+			center: this._view.getCenter()
+		});
+	}
+
 	_syncView() {
 		const { zoom, center, fitRequest } = this._state;
+
+		const onAfterFit = () => {
+			this._viewSyncBlocked = false;
+			this._syncStore();
+		};
 
 		if(!this._viewSyncBlocked) {
 
 			if (fitRequest && fitRequest.extent) {
 				this._viewSyncBlocked = true;
-				this._view.fit(fitRequest.extent, { callback: () => this._viewSyncBlocked = false });
+				this._view.fit(fitRequest.extent, { callback: onAfterFit });
 			}
 			else {
 				this._view.animate({

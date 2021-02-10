@@ -209,15 +209,17 @@ describe('OlMap', () => {
 
 		it('it fits to an extent', async (done) => {
 			const element = await setup();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 			fit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
 			
-			
 			expect(element._viewSyncBlocked).toBeTrue();
-			//check if flag is reset
 			setTimeout(function () {
+				//check if flag is reset
 				expect(element._viewSyncBlocked).toBeFalse();
+				//and store is in sync with view
+				expect(spy).toHaveBeenCalled();
 				done();
 
 			}, 500);

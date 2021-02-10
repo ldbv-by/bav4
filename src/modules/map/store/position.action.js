@@ -85,7 +85,7 @@ export const updatePointerPosition = (position) => {
 };
 
 /**
- * Updates the pointer position.
+ * Fits the position to an extent.
  * @function
  */
 export const fit = (fitRequest) => {
