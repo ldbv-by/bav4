@@ -7,12 +7,12 @@ import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { GeoResourceService } from '../services/GeoResourceService';
-import { loadBvvGeoResources } from '../services/domain/geoResource.provider';
+import { loadBvvGeoResources } from '../services/provider/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
-import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/searchResult.provider';
 import { OlMeasurementHandler } from '../modules/map/services/OlMeasurementHandler';
+import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/provider/searchResult.provider';
 
 
 $injector
