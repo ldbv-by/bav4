@@ -140,8 +140,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('map state changed by store');
-
+		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
