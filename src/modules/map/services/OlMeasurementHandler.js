@@ -6,6 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
+import { $injector } from '../../../injection';
 
 
 const ZPOLYGON = 10;
@@ -87,6 +88,8 @@ export const measureStyleFunction = (feature) => {
 export class OlMeasurementHandler {
 	//this handler could be statefull
 	constructor() {
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
 		this._vectorLayer = null;
 		this._draw = false;			
 		this._sketch = null;	
@@ -122,14 +125,15 @@ export class OlMeasurementHandler {
 		};
 
 		const pointerMoveHandler = (event) => {
-			const continuePolygonMsg = 'Click to continue drawing the polygon';
-			const continueLineMsg = 'Click to continue drawing the line';
+			const translate = (key) => this._translationService.translate(key);
+			const continuePolygonMsg = translate('draw_measure_continue_polygon');
+			const continueLineMsg = translate('draw_measure_continue_line');
 
 			if (event.dragging) {
 				return;
 			}
 			/** @type {string} */
-			let helpMsg = 'Click to start drawing';
+			let helpMsg =  translate('draw_measure_start');
 
 			if (this._sketch) {
 				var geom = this._sketch.getGeometry();
