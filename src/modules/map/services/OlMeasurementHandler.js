@@ -7,6 +7,7 @@ import { LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
 import { $injector } from '../../../injection';
+import { OlLayerHandler } from '../components/olMap/handler/OlLayerHandler';
 
 
 const ZPOLYGON = 10;
@@ -85,9 +86,10 @@ export const measureStyleFunction = (feature) => {
 
 	return styles;
 };
-export class OlMeasurementHandler {
+export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
+		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._vectorLayer = null;
@@ -100,10 +102,8 @@ export class OlMeasurementHandler {
 
 	/**
 	 * Activates the Handler.
-	 * @param {Map} olMap 
-	 * @returns {VectorLayer} the olLayer which should be attached to
-	 */
-	// eslint-disable-next-line no-unused-vars
+	 * @override
+	 */	
 	activate(olMap) {
 		const prepareInteraction = () => {
 			const source = new VectorSource({ wrapX: false });	
@@ -168,12 +168,10 @@ export class OlMeasurementHandler {
 	}	
 
 	/**
-	 * Deactivates the Handler
-	 *  @param {Map} olMap 
-	 *  @param {VectorLayer} olLayer 
+	 *  @override
+	 *  @param {Map} olMap
 	 */
-	// eslint-disable-next-line no-unused-vars
-	deactivate(olMap, olLayer) {
+	deactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
@@ -188,8 +186,7 @@ export class OlMeasurementHandler {
 		map.addOverlay(overlay);
 	}
 
-	_createInteraction(source) {
-		
+	_createInteraction(source) {		
 		const draw = new Draw({
 			source: source,
 			type: 'LineString',
