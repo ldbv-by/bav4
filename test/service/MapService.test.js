@@ -60,5 +60,11 @@ describe('MapService', () => {
 
 		expect(instanceUnderTest.getSrid()).toBe(3857);
 	});
+
+	it('provides a srid for geodetic tasks', () => {
+		const instanceUnderTest = setup();
+
+		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(25832);
+	});
 });
 

@@ -41,6 +41,13 @@ export class MapService {
 	}
 
 	/**
+	 * Default SRID for geodatic tasks.
+	 */
+	getDefaultGeodeticSrid() {
+		return 25832;
+	}
+
+	/**
 	 * Return the default extent of the map.
 	 * @param {number}  srid 
 	 * @returns {Extent} extent 
