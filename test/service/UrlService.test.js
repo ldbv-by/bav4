@@ -6,7 +6,9 @@ describe('UrlService', () => {
 
 	let instanceUnderTest;
 	const configService = {
-		getValueAsPath: () => { }
+		getValueAsPath: () => {
+			return 'https://proxy.url'; 
+		}
 	};
 
 	const httpService = {
@@ -61,14 +63,12 @@ describe('UrlService', () => {
 	});
 
 	describe('proxify urls', () => {
-		it('proxyfies a url instant', async () => {
+		it('proxyfies a url instant', () => {
 			const url = 'https://some.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
-			const result = await instanceUnderTest.proxifyInstant(url);
+			const result =  instanceUnderTest.proxifyInstant(url);
 
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(result).toBe('https://proxy.url?' + encodeURIComponent(url));
+			expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
 		});
 
 		it('proxyfies a url with cors check (needs proxy)', async () => {
@@ -76,13 +76,11 @@ describe('UrlService', () => {
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
 				ok: false
 			}));
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
 			const result = await instanceUnderTest.proxify(url);
 
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(result).toBe('https://proxy.url?' + encodeURIComponent(url));
+			expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
 		});
 
 		it('proxyfies a url with cors check (does not need proxy)', async () => {
@@ -90,12 +88,10 @@ describe('UrlService', () => {
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
 				ok: true
 			}));
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('PROXY_URL').and.returnValue('https://proxy.url');
 
 			const result = await instanceUnderTest.proxify(url);
 
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(configServiceSpy).not.toHaveBeenCalled();
 			expect(result).toBe(url);
 		});
 	});
