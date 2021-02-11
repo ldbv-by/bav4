@@ -10,7 +10,7 @@ import { GeoResourceService } from '../services/GeoResourceService';
 import { loadBvvGeoResources } from '../services/provider/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
-import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/searchResult.provider';
+import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/provider/searchResult.provider';
 import { getBvvMapDefinitions } from '../services/provider/mapDefinitions.provider';
 import { MapService } from '../services/MapService';
 
