@@ -109,16 +109,77 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('measurement').getElement().innerHTML).toBe('1 m');
 		});	
 
-		it('creates tooltip content for longer line', async() => {
+		it('creates tooltip content for long line', async() => {
 			const map = await setupMap();
-			const geometry  = new LineString([[0, 0], [101, 0]]);
+			const geometry  = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('0.1 km');
+			expect(feature.get('measurement').getElement().innerHTML).toBe('1.23 km');
+			expect(feature.get('partitions').length).toBe(1);
+			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('1 km');
+		});	
+
+		it('creates tooltip content for longer line', async() => {
+			const map = await setupMap();
+			const geometry  = new LineString([[0, 0], [12345, 0]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('measurement').getElement().innerHTML).toBe('12.33 km');
+			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('1 km');
+		});	
+
+		it('creates tooltip content for very long line', async() => {
+			const map = await setupMap();
+			const geometry  = new LineString([[0, 0], [123456, 0]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('measurement').getElement().innerHTML).toBe('123.32 km');
+			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('10 km');
+		});	
+		
+		it('creates tooltip content for longest line', async() => {
+			const map = await setupMap();
+			const geometry  = new LineString([[0, 0], [1234567, 0]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('measurement').getElement().innerHTML).toBe('1233.19 km');
+			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('100 km');
+		});	
+
+		it('removes partition tooltips after shrinking very long line', async() => {
+			const map = await setupMap();
+			const geometry  = new LineString([[0, 0], [12345, 0]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(12);
+
+			geometry.setCoordinates([[0, 0], [1234, 0]]);
+			feature.getGeometry().dispatchEvent('change');
+			
+			expect(feature.get('partitions').length).toBe(1);			
 		});	
 
 		it('unregister tooltip-listener after finish drawing', async() => {
@@ -134,9 +195,7 @@ describe('OlMeasurementHandler', () => {
 
 			expect(feature.get('measurement').getElement().classList.contains('ba-tooltip-static')).toBeTrue();
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
-		});	
-
-		
+		});			
 	});
 
 	describe('when pointer move', () => {
