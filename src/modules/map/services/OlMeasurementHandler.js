@@ -94,8 +94,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._translationService = TranslationService;
 		this._vectorLayer = null;
 		this._draw = false;			
-		this._activeSketch = null;	
-		this._measureTooltip;		
+		this._activeSketch = null;		
 		this._helpTooltip;
 		this._overlays = [];
 	}
@@ -198,37 +197,36 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			return output;
 		};
-		const updateMeasureTooltip = (content, coordinate) => {
-			this._measureTooltip.getElement().innerHTML = content;
-			this._measureTooltip.setPosition(coordinate);
+		const updateMeasureTooltip = (measureTooltip, geometry) => {
+			const output = formatLength(geometry);
+			const tooltipCoord = geometry.getLastCoordinate();
+			this._updateOverlay(measureTooltip, output, tooltipCoord);			
 		};
 		let listener;
 		
-		const finishMeasurementTooltip = () => {			
-			this._measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
-			this._measureTooltip.setOffset([0, -7]);		
+		const finishMeasurementTooltip = (event) => {			
+			const measureTooltip = event.feature.get('measurement');
+			measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
+			measureTooltip.setOffset([0, -7]);		
 			this._activeSketch = null;						
 			unByKey(listener);
 		};
 		
 		draw.on('drawstart', event =>  {	
-			this._measureTooltip = this._createMeasureTooltip();			
-			let tooltipCoord = event.coordinate;	
+			const measureTooltip = this._createMeasureTooltip();	
 			this._activeSketch = event.feature;
+			this._activeSketch.set('measurement', measureTooltip);
 
 			listener = event.feature.getGeometry().on('change', event => {
-				const geom = event.target;
-				const output = formatLength(geom);
-				tooltipCoord = geom.getLastCoordinate();
-				updateMeasureTooltip(output, tooltipCoord);
+				updateMeasureTooltip(measureTooltip, event.target);
 			});
 			const map = draw.getMap();
 			if(map) {
-				this._addOverlayToMap(map, this._measureTooltip);				
+				this._addOverlayToMap(map, measureTooltip);				
 			}			
 		});
 
-		draw.on('drawend', () => finishMeasurementTooltip());
+		draw.on('drawend', finishMeasurementTooltip);
 
 		return draw;
 	}
@@ -248,5 +246,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		styleClasses.forEach(styleClass => contentElement.classList.add(styleClass));
 		const overlay = new Overlay({ ...overlayOptions, element:contentElement });
 		return overlay;
+	}
+
+	_updateOverlay(overlay, content = false, position = false) {
+		const contentElement = overlay.getElement();
+		if(content) {
+			contentElement.innerHTML = content;
+		}
+		if(position) {
+			overlay.setPosition(position);
+		}		
 	}
 }

@@ -106,7 +106,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(classUnderTest._measureTooltip.getElement().innerHTML).toBe('1 m');
+			expect(feature.get('measurement').getElement().innerHTML).toBe('1 m');
 		});	
 
 		it('creates tooltip content for longer line', async() => {
@@ -118,7 +118,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(classUnderTest._measureTooltip.getElement().innerHTML).toBe('0.1 km');
+			expect(feature.get('measurement').getElement().innerHTML).toBe('0.1 km');
 		});	
 
 		it('unregister tooltip-listener after finish drawing', async() => {
@@ -132,8 +132,8 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			expect(classUnderTest._measureTooltip.getElement().classList.contains('ol-tooltip-static')).toBeTrue();
-			expect(classUnderTest._measureTooltip.getOffset()).toEqual([0, -7]);
+			expect(feature.get('measurement').getElement().classList.contains('ol-tooltip-static')).toBeTrue();
+			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});	
 
 		
