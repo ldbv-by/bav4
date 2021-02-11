@@ -170,6 +170,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		map.addOverlay(overlay);
 	}
 
+	_removeOverlayFromMap(map, overlay) {
+		this._overlays.pop(overlay);
+		map.removeOverlay(overlay);
+	}
+
 	_createInteraction(source) {		
 		const draw = new Draw({
 			source: source,
@@ -177,8 +182,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			style: measureStyleFunction
 		});						
 
-		const formatLength = (line) => {
-			const length = getLength(line);
+		const formatLength = (length) => {
+			
 			let output;
 			if (length > 100) {
 				output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
@@ -188,10 +193,52 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			return output;
 		};
-		const updateMeasureTooltip = (measureTooltip, geometry) => {
-			const output = formatLength(geometry);
+		const updateMeasureTooltips = (geometry) => {
+			const map = draw.getMap();
+			const length = getLength(geometry);
+			const formattedLength = formatLength(length);
 			const tooltipCoord = geometry.getLastCoordinate();
-			this._updateOverlay(measureTooltip, output, tooltipCoord);			
+			const measureTooltip = this._activeSketch.get('measurement');
+			this._updateOverlay(measureTooltip, formattedLength, tooltipCoord);		
+						
+			// add partition tooltips on the line
+			const partitions = this._activeSketch.get('partitions') || [];
+			let delta = 1;
+			if(length > 200000) {
+				delta = 100000 / length;				
+			}
+			else if(length > 20000) {
+				delta = 10000 / length;				
+			}
+			else if(length !== 0) {
+				delta = 1000 / length;
+			}
+			let partitionIndex = 0;
+			for(let i = delta;i < 1;i += delta, partitionIndex++) {
+				let partition = partitions[partitionIndex] || false; 
+				if(partition === false) {
+					partition = this._createPartition();
+					
+					if(map) {
+						this._addOverlayToMap(map, partition);				
+					}			
+					partitions.push(partition);
+				}
+				const content = formatLength(length * i);
+				const position = geometry.getCoordinateAt(i);
+				this._updateOverlay(partition, content, position );
+			}
+
+			if(partitionIndex < partitions.length) {
+				for(let j = partitions.length - 1;j >= partitionIndex;j--) {
+					const removablePartition = partitions[j];
+					if(map) {
+						this._removeOverlayFromMap(map, removablePartition);				
+					}	
+					partitions.pop();
+				}
+			}
+			this._activeSketch.set('partitions', partitions);
 		};
 		let listener;
 		
@@ -209,7 +256,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._activeSketch.set('measurement', measureTooltip);
 
 			listener = event.feature.getGeometry().on('change', event => {
-				updateMeasureTooltip(measureTooltip, event.target);
+				updateMeasureTooltips(event.target);
 			});
 			const map = draw.getMap();
 			if(map) {
@@ -237,6 +284,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const styleClasses = ['ba-tooltip', 'hidden'];
 		return this._createOverlay(styleClasses, overlayOptions);	
 	}
+
+	_createPartition() {
+		const overlayOptions = { offset: [0, -10], positioning: 'top-center' };
+		const styleClasses = ['ba-tooltip', 'ba-intermediate'];		
+		return this._createOverlay(styleClasses, overlayOptions);	
+	}
+
 
 	_createOverlay(styleClasses = [], overlayOptions = {}) {
 		const contentElement = document.createElement('div');
