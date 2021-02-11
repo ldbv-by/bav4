@@ -14,8 +14,9 @@ export class ZoomToExtentButton extends BaElement {
 
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
 		this._translationService = TranslationService;  
+		this._mapService = MapService;
 	} 
 
 	/**
@@ -23,10 +24,10 @@ export class ZoomToExtentButton extends BaElement {
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-        
+		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
+         
 		const zoomToExtent = () => {
-			//later we will use a service to retrieve the extent
-			fit({ extent: [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462] });
+			fit({ extent: getDefaultMapExtent()	});
 		};
 
 		return html`

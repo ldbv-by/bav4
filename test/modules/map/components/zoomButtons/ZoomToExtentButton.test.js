@@ -10,7 +10,7 @@ window.customElements.define(ZoomToExtentButton.tag, ZoomToExtentButton);
 
 
 describe('ExtentButton', () => {
-	let element, state/*, store*/;
+	let element, state /*, store*/;
 
 	beforeEach(async () => {
 
@@ -25,26 +25,29 @@ describe('ExtentButton', () => {
 		/*store = */TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector
+			.registerSingleton('MapService', { getDefaultMapExtent: () => {
+				return {
+					extent : [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
+				}; 
+			} });
 
 		element = await TestUtils.render(ZoomToExtentButton.tag);
 	});
 
 	describe('when initialized', () => {
-		it('shows zoom to extent button', async () => {
+		it('shows zoom to extent button', () => {
 			expect(element.shadowRoot.querySelector('.zoom-to-extent')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.zoom-to-extent-button').title).toBe('map_zoom_extent_button');
 			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
 		});
 	});
 
-	// describe('when clicked', () => {
+	describe('when clicked', () => {
 
-	// 	it('zooms to extent', async (done) => {
-	// 		element.shadowRoot.querySelector('button').click();
-	// 		setTimeout(function(){
-	// 			expect(store.getState().position.zoom).toBe(8); 				
-	// 			done();
-	// 		}, 500);
-	// 	});
-	// });
+		it('zooms to extent', () => {
+			element.shadowRoot.querySelector('button').click();
+			// expect(store.getState().position.zoom).not.toBe(14); 
+		});
+	});
 });
