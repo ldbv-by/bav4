@@ -132,7 +132,7 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			expect(feature.get('measurement').getElement().classList.contains('ol-tooltip-static')).toBeTrue();
+			expect(feature.get('measurement').getElement().classList.contains('ba-tooltip-static')).toBeTrue();
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});	
 

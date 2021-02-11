@@ -197,7 +197,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		const finishMeasurementTooltip = (event) => {			
 			const measureTooltip = event.feature.get('measurement');
-			measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
+			measureTooltip.getElement().className = 'ba-tooltip ba-tooltip-static';
 			measureTooltip.setOffset([0, -7]);		
 			this._activeSketch = null;						
 			unByKey(listener);
@@ -228,13 +228,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	_createMeasureTooltip() {	
 		const overlayOptions = { offset: [0, -15], positioning: 'bottom-center' };
-		const styleClasses = ['ol-tooltip', 'ol-tooltip-measure'];
+		const styleClasses = ['ba-tooltip', 'ba-tooltip-measure'];
 		return this._createOverlay(styleClasses, overlayOptions);
 	}
 
 	_createHelpTooltip() {
 		const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
-		const styleClasses = ['ol-tooltip', 'hidden'];
+		const styleClasses = ['ba-tooltip', 'hidden'];
 		return this._createOverlay(styleClasses, overlayOptions);	
 	}
 
