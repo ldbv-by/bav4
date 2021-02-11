@@ -93,7 +93,12 @@ export const fit = (fitRequest) => {
 		type: FIT_REQUESTED,
 		payload: fitRequest
 	});
-	// and reset it immediately
+};
+
+/**
+ * Resets a fit request. Typically called from a map only.
+ */
+export const resetFitRequest = () => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
 		payload: null

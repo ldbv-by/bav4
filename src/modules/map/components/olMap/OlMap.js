@@ -6,7 +6,7 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
+import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
 import { removeLayer } from '../../store/layers.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../../injection';
@@ -163,6 +163,8 @@ export class OlMap extends BaElement {
 		const onAfterFit = () => {
 			this._viewSyncBlocked = false;
 			this._syncStore();
+			//reset
+			resetFitRequest();
 		};
 
 		if(!this._viewSyncBlocked) {

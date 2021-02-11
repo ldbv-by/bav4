@@ -191,7 +191,7 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
-	
+
 
 		it('it updates zoom and center', async () => {
 			const element = await setup();
@@ -213,13 +213,16 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 			fit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
-			
+			expect(store.getState().position.fitRequest).not.toBeNull();
+
 			expect(element._viewSyncBlocked).toBeTrue();
 			setTimeout(function () {
 				//check if flag is reset
 				expect(element._viewSyncBlocked).toBeFalse();
 				//and store is in sync with view
 				expect(spy).toHaveBeenCalled();
+				//fit request ist reset
+				expect(store.getState().position.fitRequest).toBeNull();
 				done();
 
 			}, 500);
