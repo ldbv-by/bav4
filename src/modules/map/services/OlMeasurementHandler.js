@@ -144,7 +144,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._draw = this._createInteraction(source);	
 
 			this._addOverlayToMap(olMap, this._helpTooltip);			
-			this._pointeMoveListener = olMap.on('pointermove', pointerMoveHandler);
+			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
 
 			olMap.addInteraction(this._draw);	
 		}		
@@ -160,7 +160,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
-		unByKey(this._pointeMoveListener);
+		unByKey(this._pointerMoveListener);
 		this._helpTooltip = null;
 		this._draw = false;
 	}	
