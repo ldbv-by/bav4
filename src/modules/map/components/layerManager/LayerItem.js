@@ -56,7 +56,7 @@ export class LayerItem extends BaElement {
 		};
 		const decreaseIndex = () => {
 			//state store change -> implicit call of #render()
-			if(this._layer.zIndex - 1 >= 0) {
+			if (this._layer.zIndex - 1 >= 0) {
 				modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
 			}
 		};
