@@ -94,7 +94,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._translationService = TranslationService;
 		this._vectorLayer = null;
 		this._draw = false;			
-		this._sketch = null;	
+		this._activeSketch = null;	
 		this._measureTooltip;		
 		this._helpTooltip;
 		this._overlays = [];
@@ -131,8 +131,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			/** @type {string} */
 			let helpMsg =  translate('draw_measure_start');
 
-			if (this._sketch) {
-				var geom = this._sketch.getGeometry();
+			if (this._activeSketch) {
+				var geom = this._activeSketch.getGeometry();
 				if (geom instanceof Polygon) {
 					helpMsg = continuePolygonMsg;
 				}
@@ -198,7 +198,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			return output;
 		};
-		const writeMeasurement = (content, coordinate) => {
+		const updateMeasureTooltip = (content, coordinate) => {
 			this._measureTooltip.getElement().innerHTML = content;
 			this._measureTooltip.setPosition(coordinate);
 		};
@@ -207,20 +207,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const finishMeasurementTooltip = () => {			
 			this._measureTooltip.getElement().className = 'ol-tooltip ol-tooltip-static';
 			this._measureTooltip.setOffset([0, -7]);		
-			this._sketch = null;						
+			this._activeSketch = null;						
 			unByKey(listener);
 		};
 		
 		draw.on('drawstart', event =>  {	
 			this._measureTooltip = this._createMeasureTooltip();			
 			let tooltipCoord = event.coordinate;	
-			this._sketch = event.feature;
+			this._activeSketch = event.feature;
 
 			listener = event.feature.getGeometry().on('change', event => {
 				const geom = event.target;
 				const output = formatLength(geom);
 				tooltipCoord = geom.getLastCoordinate();
-				writeMeasurement(output, tooltipCoord);
+				updateMeasureTooltip(output, tooltipCoord);
 			});
 			const map = draw.getMap();
 			if(map) {

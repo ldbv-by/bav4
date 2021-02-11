@@ -208,7 +208,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
 			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');			
-			classUnderTest._sketch = new Feature({ geometry:new LineString([[0, 0], [1, 0]]) });	
+			classUnderTest._activeSketch = new Feature({ geometry:new LineString([[0, 0], [1, 0]]) });	
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
 			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_line');	
 		});	
