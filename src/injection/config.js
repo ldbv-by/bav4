@@ -26,7 +26,7 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService)
-	.register('MapService', new MapService(getBvvMapDefinitions));
+	.registerSingleton('MapService', new MapService(getBvvMapDefinitions));
 
 
 export let init = true;
