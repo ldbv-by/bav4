@@ -10,11 +10,12 @@ window.customElements.define(ZoomToExtentButton.tag, ZoomToExtentButton);
 
 
 describe('ExtentButton', () => {
-	let element, state /*, store*/;
+	let element, store;
+	const extent = [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462];
 
 	beforeEach(async () => {
 
-		state = {
+		const state = {
 			position: {
 				zoom: 14,
 				center: fromLonLat([9.604, 50.015]), 
@@ -22,14 +23,12 @@ describe('ExtentButton', () => {
 			}
 		};
 
-		/*store = */TestUtils.setupStoreAndDi(state, { position: positionReducer });
+		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector
 			.registerSingleton('MapService', { getDefaultMapExtent: () => {
-				return {
-					extent : [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
-				}; 
+				return extent;			 
 			} });
 
 		element = await TestUtils.render(ZoomToExtentButton.tag);
@@ -47,7 +46,7 @@ describe('ExtentButton', () => {
 
 		it('zooms to extent', () => {
 			element.shadowRoot.querySelector('button').click();
-			// expect(store.getState().position.zoom).not.toBe(14); 
+			expect(store.getState().position.fitRequest.extent).toEqual(extent); 
 		});
 	});
 });
