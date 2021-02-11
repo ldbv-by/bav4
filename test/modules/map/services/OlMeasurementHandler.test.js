@@ -271,6 +271,19 @@ describe('OlMeasurementHandler', () => {
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
 			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_line');	
 		});	
+
+
+		it('change message in helpTooltip, when sketch is changing to polygon', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			
+			classUnderTest.activate(map);			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');		
+			classUnderTest._activeSketch = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });	
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
+			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_polygon');	
+		});	
 	});
 });
 
