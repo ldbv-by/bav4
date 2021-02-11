@@ -161,7 +161,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointeMoveListener = olMap.on('pointermove', pointerMoveHandler);
 
-			//olMap.addOverlay(this._measureTooltip);
 			olMap.addInteraction(this._draw);	
 		}		
 		return this._vectorLayer;
