@@ -114,15 +114,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return layer;
 		};
 
-		const prepareHelp = () => {
-			const helpTooltipElement = document.createElement('div');
-			helpTooltipElement.className = 'ol-tooltip hidden';
-			const helpTooltip = new Overlay({
-				element: helpTooltipElement,
-				offset: [15, 0],
-				positioning: 'center-left',
-			});
-			return helpTooltip;
+		const prepareHelp = () => {		
+			const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
+			const styleClasses = ['ol-tooltip', 'hidden'];
+			return this._createOverlay(styleClasses, overlayOptions);			
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -243,12 +238,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * Creates a new measure tooltip
 	 */
 	_createMeasureTooltip() {	
-		const measureTooltipElement = document.createElement('div');
-		measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
-		const measureTooltip = new Overlay({
-			element:  measureTooltipElement,
-			offset: [0, -15], positioning: 'bottom-center'
-		});
-		return measureTooltip;
+		const overlayOptions = { offset: [0, -15], positioning: 'bottom-center' };
+		const styleClasses = ['ol-tooltip', 'ol-tooltip-measure'];
+		return this._createOverlay(styleClasses, overlayOptions);
+	}
+
+	_createOverlay(styleClasses = [], overlayOptions = {}) {
+		const contentElement = document.createElement('div');
+		styleClasses.forEach(styleClass => contentElement.classList.add(styleClass));
+		const overlay = new Overlay({ ...overlayOptions, element:contentElement });
+		return overlay;
 	}
 }
