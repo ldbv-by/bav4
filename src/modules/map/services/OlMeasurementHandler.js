@@ -113,12 +113,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return layer;
 		};
 
-		const prepareHelp = () => {		
-			const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
-			const styleClasses = ['ol-tooltip', 'hidden'];
-			return this._createOverlay(styleClasses, overlayOptions);			
-		};
-
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
 			const continuePolygonMsg = translate('draw_measure_continue_polygon');
@@ -140,15 +134,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 			
-			const helpTooltipElement = this._helpTooltip.getElement();
-			helpTooltipElement.innerHTML = helpMsg;
-			helpTooltipElement.classList.remove('hidden');
-			this._helpTooltip.setPosition(event.coordinate);
+			this._updateOverlay(this._helpTooltip, helpMsg, event.coordinate, { remove:['hidden'] });
 		};
 
 		if(this._draw === false) {
 			this._vectorLayer = prepareInteraction();
-			this._helpTooltip = prepareHelp();
+			this._helpTooltip = this._createHelpTooltip();
 			const source = this._vectorLayer.getSource();			
 			this._draw = this._createInteraction(source);	
 
@@ -241,6 +232,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return this._createOverlay(styleClasses, overlayOptions);
 	}
 
+	_createHelpTooltip() {
+		const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
+		const styleClasses = ['ol-tooltip', 'hidden'];
+		return this._createOverlay(styleClasses, overlayOptions);	
+	}
+
 	_createOverlay(styleClasses = [], overlayOptions = {}) {
 		const contentElement = document.createElement('div');
 		styleClasses.forEach(styleClass => contentElement.classList.add(styleClass));
@@ -248,7 +245,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return overlay;
 	}
 
-	_updateOverlay(overlay, content = false, position = false) {
+	_updateOverlay(overlay, content = false, position = false, styleClassOperations = { add:[], remove:[], toggle:[] }) {
 		const contentElement = overlay.getElement();
 		if(content) {
 			contentElement.innerHTML = content;
@@ -256,5 +253,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if(position) {
 			overlay.setPosition(position);
 		}		
+		if(styleClassOperations.add) {
+			styleClassOperations.add.forEach(e => contentElement.classList.add(e));
+		}
+		if(styleClassOperations.remove) {
+			styleClassOperations.remove.forEach(e => contentElement.classList.remove(e));
+		}
+		if(styleClassOperations.toggle) {
+			styleClassOperations.toggle.forEach(e => contentElement.classList.toggle(e));
+		}
 	}
 }
