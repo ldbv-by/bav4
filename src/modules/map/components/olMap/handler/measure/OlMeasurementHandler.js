@@ -3,46 +3,15 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Fill, Stroke, Style } from 'ol/style';
 import { unByKey } from 'ol/Observable';
-import { LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+import { LineString, Polygon, Circle } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
+import { getGeometryLength, canShowAzimuthCircle } from './OlMeasureUtils';
 
 const ZPOLYGON = 10;
 const ZLINE = 20;
-
-//todo: find a better place....move to utils
-export const getGeometryLength = (geometry) => {
-	let lineString;
-	if(geometry instanceof LineString) {
-		lineString = geometry;
-	}
-	else if(geometry instanceof LinearRing) {
-		lineString = new LineString(geometry.getCoordinates());
-	}
-	else if(geometry instanceof Polygon) {
-		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
-	}	
-	
-	if(lineString) {
-		return lineString.getLength();
-	}
-	return 0;
-};
-
-
-//todo: find a better place....move to utils
-export const canShowAzimuthCircle = (geometry) => {
-	if(geometry instanceof LineString) {
-		const coords = geometry.getCoordinates();
-		if(coords.length === 2 || 
-			(coords.length === 3 && coords[1][0] === coords[2][0] && coords[1][1] === coords[2][1])) {
-			return true;
-		}
-	}
-	return false;
-};
 
 //todo: find a better place....maybe StyleService
 export const measureStyleFunction = (feature) => {
