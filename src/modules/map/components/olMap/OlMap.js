@@ -167,7 +167,7 @@ export class OlMap extends BaElement {
 			resetFitRequest();
 		};
 
-		if(!this._viewSyncBlocked) {
+		if (!this._viewSyncBlocked) {
 
 			if (fitRequest && fitRequest.extent) {
 				this._viewSyncBlocked = true;
