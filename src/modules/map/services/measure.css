@@ -1,0 +1,41 @@
+.ba-draw-measure, .ba-draw-help, .ba-draw-measure-static, .ba-draw-measure-tmp{
+    background-color: rgba(140,140,140,0.9);
+    border-radius: 4px;
+    color:white;
+    padding:2px 8px;
+    font-size:12px;
+}
+
+.ba-draw-measure:after,.ba-draw-measure-static:after, .ba-draw-measure-tmp:after{
+    position: absolute;
+    left:50%;
+    bottom:-6px;
+    margin-left: -7px;
+    content:"";
+    border-top: 6px solid rgba(140,140,140,0.9);
+    
+}
+
+.ba-draw-measure-tmp, .ba-draw-measure-intermediate {
+    background-color: transparent;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+.ba-draw-measure-intermediate:after{
+    bottom: -11px;
+    width:8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: red;
+    margin-left: -4px;
+    border: none;
+}
+
+.ba-draw-measure-static{
+    background-color: rgba(255,0,0,0.9);
+    /* cursor: move; */
+}
+
+.ba-draw-measure-static:after{
+    border-top: 6px solid #f00;
+}
