@@ -10,7 +10,7 @@ export const provide = (lang) => {
 				map_info_button_help: 'Help',
 				map_info_button_contact: 'Contact',
 				map_info_button_about: 'About us',
-				map_zoom_extent_button: 'Show whole map'
+				map_zoom_extent_button: 'Zoom to full extent'
 			};
 
 		case 'de':
