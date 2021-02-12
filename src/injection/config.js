@@ -11,7 +11,7 @@ import { loadBvvGeoResources } from '../services/provider/geoResource.provider';
 import { UrlService } from '../services/UrlService';
 
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
-import { OlMeasurementHandler } from '../modules/map/services/OlMeasurementHandler';
+import { OlMeasurementHandler } from '../modules/map/components/olMap/handler/measure/OlMeasurementHandler';
 import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/provider/searchResult.provider';
 
 

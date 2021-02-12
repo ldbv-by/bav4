@@ -1,4 +1,4 @@
-import { OlMeasurementHandler, getGeometryLength, canShowAzimuthCircle, measureStyleFunction } from '../../../../src/modules/map/services/OlMeasurementHandler';
+import { OlMeasurementHandler, getGeometryLength, canShowAzimuthCircle, measureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
 import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -9,7 +9,7 @@ import { Feature } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { $injector } from '../../../../src/injection';
+import { $injector } from '../../../../../../../src/injection';
 
 
 

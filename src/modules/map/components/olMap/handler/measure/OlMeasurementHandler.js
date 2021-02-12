@@ -6,8 +6,8 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
-import { $injector } from '../../../injection';
-import { OlLayerHandler } from '../components/olMap/handler/OlLayerHandler';
+import { $injector } from '../../../../../../injection';
+import { OlLayerHandler } from '../OlLayerHandler';
 
 const ZPOLYGON = 10;
 const ZLINE = 20;
