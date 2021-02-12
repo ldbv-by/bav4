@@ -10,7 +10,30 @@ export const BaOverlayTypes = {
 	HELP:'help'
 };
 /**
+ * Internal overlay content for measurements on map-components
  * 
+ * Configurable Attributes:
+ * - `type` (BaOverlay.BaOverlayType)
+ * - `value` 
+ * - `static` (default=false)
+ * 
+ * Observed Attributes:
+ * - `type`
+ * - `value` 
+ * - `static`
+ * 
+  * Configurable Properties:
+ * - `type`
+ * - `value` 
+ * - `static`
+ * 
+ * Observed Properties:
+ * - `type`
+ * - `value` 
+ * - `static`
+ * 
+ * @class
+ * @author thiloSchlemmer
  */
 export class BaOverlay extends BaElement {
 
@@ -76,7 +99,7 @@ export class BaOverlay extends BaElement {
 	}
 
 	static get observedAttributes() {
-		return ['value', 'static'];
+		return ['value', 'static', 'type'];
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -85,7 +108,11 @@ export class BaOverlay extends BaElement {
 				this.value = newValue;        
 				break;
 			case 'static':
-				this.static = newValue;        			
+				this.static = newValue; 
+				break;     
+			case 'type':
+				this.type = newValue; 
+				break;
 		}
 	}
 
