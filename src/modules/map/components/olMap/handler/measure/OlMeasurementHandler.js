@@ -1,59 +1,18 @@
 import Draw from 'ol/interaction/Draw';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import { Fill, Stroke, Style } from 'ol/style';
 import { unByKey } from 'ol/Observable';
-import { LineString, Polygon, Circle } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { getGeometryLength, canShowAzimuthCircle } from './OlMeasureUtils';
+import { BaOverlayTypes } from './BaOverlay';
+import { measureStyleFunction } from './StyleUtils';
 
-const ZPOLYGON = 10;
-const ZLINE = 20;
 
 //todo: find a better place....maybe StyleService
-export const measureStyleFunction = (feature) => {
-	
-	const color = [255, 0, 0];
-	const stroke = new Stroke({
-		color:color.concat([1]),
-		width:1
-	});
 
-	const dashedStroke = new Stroke({
-		color:color.concat([1]),
-		width:3,
-		lineDash:[8]
-	});
-	
-	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
-
-	const styles = [
-		new Style({
-			fill: new Fill({ 
-				color:color.concat([0.4]) 
-			}),
-			stroke:dashedStroke,
-			zIndex:zIndex
-		}),
-		new Style({
-			stroke:stroke,
-			geometry: feature => {
-				
-				if(canShowAzimuthCircle(feature.getGeometry())) {					
-					const coords = feature.getGeometry().getCoordinates();
-					const radius = getGeometryLength(feature.getGeometry());
-					const circle = new Circle(coords[0], radius);
-					return circle;
-				}
-			},
-			zIndex:0
-		})];
-
-	return styles;
-};
 export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
@@ -102,12 +61,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 			
-			this._updateOverlay(this._helpTooltip, helpMsg, event.coordinate, { remove:['hidden'] });
+			this._updateOverlay(this._helpTooltip, helpMsg, event.coordinate);
 		};
 
 		if(this._draw === false) {
-			this._vectorLayer = prepareInteraction();
-			this._helpTooltip = this._createHelpTooltip();
+			this._vectorLayer = prepareInteraction();			
+			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, BaOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
 			this._draw = this._createInteraction(source);	
 
@@ -149,25 +108,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'LineString',
 			style: measureStyleFunction
 		});						
-
-		const formatLength = (length) => {
-			
-			let output;
-			if (length > 100) {
-				output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
-			}
-			else {
-				output = Math.round(length * 100) / 100 + ' ' + 'm';
-			}
-			return output;
-		};
+		
 		const updateMeasureTooltips = (geometry) => {
 			const map = draw.getMap();
 			const length = getLength(geometry);
-			const formattedLength = formatLength(length);
+			
 			const tooltipCoord = geometry.getLastCoordinate();
 			const measureTooltip = this._activeSketch.get('measurement');
-			this._updateOverlay(measureTooltip, formattedLength, tooltipCoord);		
+			this._updateOverlay(measureTooltip, length, tooltipCoord);		
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
@@ -184,15 +132,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			let partitionIndex = 0;
 			for(let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 
-				if(partition === false) {
-					partition = this._createPartition();
+				if(partition === false) {			
+					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, BaOverlayTypes.DISTANCE_PARTITION );
 					
 					if(map) {
 						this._addOverlayToMap(map, partition);				
 					}			
 					partitions.push(partition);
 				}
-				const content = formatLength(length * i);
+				const content = length * i;
 				const position = geometry.getCoordinateAt(i);
 				this._updateOverlay(partition, content, position );
 			}
@@ -212,14 +160,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		const finishMeasurementTooltip = (event) => {			
 			const measureTooltip = event.feature.get('measurement');
-			measureTooltip.getElement().className = 'ba-draw-measure ba-draw-measure-static';
-			measureTooltip.setOffset([0, -7]);		
+			measureTooltip.getElement().static = true;
+			measureTooltip.setOffset([0, -7]);					
 			this._activeSketch = null;						
 			unByKey(listener);
 		};
 		
-		draw.on('drawstart', event =>  {	
-			const measureTooltip = this._createMeasureTooltip();	
+		draw.on('drawstart', event =>  {				
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, BaOverlayTypes.DISTANCE);	
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
@@ -237,52 +185,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-
-	/**
-	 * Creates a new measure tooltip
-	 */
-	_createMeasureTooltip() {	
-		const overlayOptions = { offset: [0, -15], positioning: 'bottom-center' };
-		const styleClasses = ['ba-draw-measure', 'ba-draw-measure-tmp'];
-		return this._createOverlay(styleClasses, overlayOptions);
-	}
-
-	_createHelpTooltip() {
-		const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
-		const styleClasses = ['ba-draw-measure', 'ba-draw-help', 'hidden'];
-		return this._createOverlay(styleClasses, overlayOptions);	
-	}
-
-	_createPartition() {
-		const overlayOptions = { offset: [0, -25], positioning: 'top-center' };
-		const styleClasses = ['ba-draw-measure', 'ba-draw-measure-intermediate'];		
-		return this._createOverlay(styleClasses, overlayOptions);	
-	}
-
-
-	_createOverlay(styleClasses = [], overlayOptions = {}) {
-		const contentElement = document.createElement('div');
-		styleClasses.forEach(styleClass => contentElement.classList.add(styleClass));
-		const overlay = new Overlay({ ...overlayOptions, element:contentElement });
+	_createOverlay(overlayOptions = {}, type = BaOverlayTypes.TEXT) {
+		const baOverlay = document.createElement('ba-overlay');
+		baOverlay.setAttribute('type', type);		
+		const overlay = new Overlay({ ...overlayOptions, element:baOverlay });
 		return overlay;
 	}
 
-	_updateOverlay(overlay, content = false, position = false, styleClassOperations = { add:[], remove:[], toggle:[] }) {
-		const contentElement = overlay.getElement();
+	_updateOverlay(overlay, content = false, position = false) {
+		const baOverlay = overlay.getElement();
 		if(content) {
-			contentElement.innerHTML = content;
+			baOverlay.value = content;
 		}
 		if(position) {
 			overlay.setPosition(position);
-		}		
-		if(styleClassOperations.add) {
-			styleClassOperations.add.forEach(e => contentElement.classList.add(e));
-		}
-		if(styleClassOperations.remove) {
-			styleClassOperations.remove.forEach(e => contentElement.classList.remove(e));
-		}
-		if(styleClassOperations.toggle) {
-			styleClassOperations.toggle.forEach(e => contentElement.classList.toggle(e));
-		}
+		}					
 	}
 }

@@ -1,12 +1,13 @@
-.ba-draw-measure, .ba-draw-help, .ba-draw-measure-static, .ba-draw-measure-tmp{
+.ba-overlay, .help, .static, .distance,.floating{
     background-color: rgba(140,140,140,0.9);
     border-radius: 4px;
     color:white;
     padding:2px 8px;
     font-size:12px;
+    cursor:pointer
 }
 
-.ba-draw-measure:after,.ba-draw-measure-static:after, .ba-draw-measure-tmp:after{
+.ba-overlay:after,.static:after, .floating:after{
     position: absolute;
     left:50%;
     bottom:-6px;
@@ -16,12 +17,12 @@
     
 }
 
-.ba-draw-measure-tmp, .ba-draw-measure-intermediate {
+.partition {
     background-color: transparent;
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
-.ba-draw-measure-intermediate:after{
+.partition:after{
     bottom: -11px;
     width:8px;
     height: 8px;
@@ -31,11 +32,11 @@
     border: none;
 }
 
-.ba-draw-measure-static{
+.static,.distance{
     background-color: rgba(255,0,0,0.9);
     /* cursor: move; */
 }
 
-.ba-draw-measure-static:after{
+.static:after{
     border-top: 6px solid #f00;
 }

@@ -1,5 +1,5 @@
-import { OlMeasurementHandler, measureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { OlMeasurementHandler } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
+import { LineString, Polygon } from 'ol/geom';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -61,9 +61,18 @@ describe('OlMeasurementHandler', () => {
 			
 			expect(map.removeInteraction).toHaveBeenCalled();
 		});	
-
-
 		
+
+		it('removes all registered mapOverlays', async() => {
+			const map = await setupMap();
+			const layerStub = {}; 
+			map.removeOverlay = jasmine.createSpy();
+			const overlayStub = {};
+			classUnderTest._overlays = [overlayStub, overlayStub, overlayStub, overlayStub];
+			classUnderTest.deactivate(map, layerStub);
+			
+			expect(map.removeOverlay).toHaveBeenCalledTimes(4);
+		});	
 	});
 
 
@@ -97,7 +106,7 @@ describe('OlMeasurementHandler', () => {
 			draw.dispatchEvent(drawEvent);
 		};		
 
-		it('creates tooltip content for short line', async() => {
+		it('creates tooltip content for line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -106,10 +115,12 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('1 m');
+			const baOverlay = feature.get('measurement').getElement();
+
+			expect(baOverlay.value).toBeCloseTo(1, 1);
 		});	
 
-		it('creates tooltip content for long line', async() => {
+		it('creates partition tooltips for long line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -118,12 +129,10 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('1.23 km');
-			expect(feature.get('partitions').length).toBe(1);
-			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('1 km');
+			expect(feature.get('partitions').length).toBe(1);			
 		});	
 
-		it('creates tooltip content for longer line', async() => {
+		it('creates partition tooltips for longer line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [12345, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -132,12 +141,10 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('12.33 km');
-			expect(feature.get('partitions').length).toBe(12);
-			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('1 km');
+			expect(feature.get('partitions').length).toBe(12);			
 		});	
 
-		it('creates tooltip content for very long line', async() => {
+		it('creates partition tooltips very long line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [123456, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -146,12 +153,10 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('123.32 km');
-			expect(feature.get('partitions').length).toBe(12);
-			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('10 km');
+			expect(feature.get('partitions').length).toBe(12);			
 		});	
 		
-		it('creates tooltip content for longest line', async() => {
+		it('creates partition tooltips for longest line', async() => {
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1234567, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -160,9 +165,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('measurement').getElement().innerHTML).toBe('1233.19 km');
-			expect(feature.get('partitions').length).toBe(12);
-			expect(feature.get('partitions')[0].getElement().innerHTML).toBe('100 km');
+			expect(feature.get('partitions').length).toBe(12);			
 		});	
 
 		it('removes partition tooltips after shrinking very long line', async() => {
@@ -193,7 +196,9 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-			expect(feature.get('measurement').getElement().classList.contains('ba-draw-measure-static')).toBeTrue();
+			const baOverlay = feature.get('measurement').getElement();
+
+			expect(baOverlay.static).toBeTrue();
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});			
 	});
@@ -245,8 +250,8 @@ describe('OlMeasurementHandler', () => {
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);			
-			
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');			
+			const baOverlay = classUnderTest._helpTooltip.getElement();
+			expect(baOverlay.value).toBe('draw_measure_start');			
 			expect(classUnderTest._helpTooltip.getPosition()).toEqual([10, 0]);	
 		});	
 
@@ -265,11 +270,13 @@ describe('OlMeasurementHandler', () => {
 			const map = await setupMap();
 			
 			classUnderTest.activate(map);			
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);		
+			
+			const baOverlay = classUnderTest._helpTooltip.getElement();
+			expect(baOverlay.value).toBe('draw_measure_start');			
 			classUnderTest._activeSketch = new Feature({ geometry:new LineString([[0, 0], [1, 0]]) });	
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_line');	
+			expect(baOverlay.value).toBe('draw_measure_continue_line');	
 		});	
 
 
@@ -279,62 +286,12 @@ describe('OlMeasurementHandler', () => {
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_start');		
+			const baOverlay = classUnderTest._helpTooltip.getElement();
+			expect(baOverlay.value).toBe('draw_measure_start');		
 			classUnderTest._activeSketch = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });	
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
-			expect(classUnderTest._helpTooltip.getElement().innerHTML).toBe('draw_measure_continue_polygon');	
+			expect(baOverlay.value).toBe('draw_measure_continue_polygon');	
 		});	
 	});
 });
 
-describe('measureStyleFunction', () => {
-	const geometry  = new LineString([[0, 0], [1, 0]]);
-	const feature = new Feature({ geometry:geometry });
-	it('should create styles', () => {
-		
-
-		const styles = measureStyleFunction(feature);
-
-		expect(styles).toBeTruthy();
-		expect(styles.length).toBe(2);
-	});
-
-	it('should query the featureGeometry', () => {
-		const geometrySpy = spyOn(feature, 'getGeometry');
-		
-		const styles = measureStyleFunction(feature);
-
-		expect(styles).toBeTruthy();
-		expect(geometrySpy).toHaveBeenCalled();
-	});
-
-	it('should have a style which creates circle for Lines', () => {
-		const styles = measureStyleFunction(feature);
-
-		
-		const circleStyle = styles.find(style => {
-			const geometryFunction = style.getGeometryFunction();
-			if(geometryFunction) {
-				const renderObject = geometryFunction(feature);
-				return renderObject.getType() === 'Circle';
-			}
-			else{
-				return false;
-			}
-			
-		} );
-		const geometryFunction = circleStyle.getGeometryFunction();
-		
-		const lineFeature = feature;
-		const pointFeature = new Feature({ geometry:new Point([0, 0]) });
-		const circle = geometryFunction(lineFeature);
-		const nonCircle = geometryFunction(pointFeature);
-
-
-		expect(circle).toBeTruthy();
-		expect(nonCircle).toBeFalsy();
-		expect(circleStyle).toBeTruthy();		
-	});
-
-
-});

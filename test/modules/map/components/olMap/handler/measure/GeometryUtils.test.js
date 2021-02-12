@@ -1,4 +1,4 @@
-import { getGeometryLength, canShowAzimuthCircle } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasureUtils';
+import { getGeometryLength, canShowAzimuthCircle } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
