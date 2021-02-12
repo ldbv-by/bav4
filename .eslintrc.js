@@ -28,6 +28,7 @@ module.exports = {
 		'space-before-blocks': ['error', 'always'],
 		'no-console': ['error', { allow: ['warn', 'error'] }],
 		'import/no-default-export': ['error'],
-		'eqeqeq': ['error', 'smart']
+		'eqeqeq': ['error', 'smart'],
+		'keyword-spacing':  ['error']
 	}
 };

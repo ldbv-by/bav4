@@ -38,14 +38,14 @@ export class LayerManager extends BaElement {
 		this._layerCount = layers.length;
 		this._resetDraggedItem();
 		let j = 0;
-		for(let i = 0; i < layers.length; i++) {
+		for (let i = 0; i < layers.length; i++) {
 			const layer = layers[i];
 			const old = this._draggableItems.filter(item => item.id === layer.id)[0];
 			const displayProperties = {
 				collapsed:true,
 				visible:true
 			};
-			if(old) {
+			if (old) {
 				displayProperties.collapsed = old.collapsed;
 				displayProperties.visible = old.visible;
 			}
@@ -92,14 +92,14 @@ export class LayerManager extends BaElement {
 		};
 
 		const onDrop = (e, layerItem) => {
-			if(layerItem.isPlaceholder && this._draggedItem) {
+			if (layerItem.isPlaceholder && this._draggedItem) {
 				let newZIndex = layerItem.zIndex;
-				if(layerItem.zIndex === this._layerCount - 1) {
+				if (layerItem.zIndex === this._layerCount - 1) {
 					newZIndex = layerItem.zIndex - 1;
 				}
 				modifyLayer(this._draggedItem.id, { zIndex:newZIndex });				
 			}
-			if(e.target.classList.contains('placeholder')) {
+			if (e.target.classList.contains('placeholder')) {
 				e.target.classList.remove('over');				
 			}
 			this._resetDraggedItem();
@@ -108,8 +108,8 @@ export class LayerManager extends BaElement {
 			e.preventDefault();			
 			let dropEffect = 'none';
 			
-			if(this._draggedItem) {			
-				if(layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
+			if (this._draggedItem) {			
+				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
 					dropEffect = 'all';
 				}
 			}
@@ -117,16 +117,16 @@ export class LayerManager extends BaElement {
 		};
 
 		const onDragEnter = (e, layerItem) => {
-			if(this._draggedItem) {			
-				if(layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
+			if (this._draggedItem) {			
+				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
 					e.target.classList.add('over');
 				}
 			}
 		};
 		const onDragLeave = (e) => {			
 			e.stopPropagation();
-			if(e.target) {
-				if(e.target.classList.contains('over')) {
+			if (e.target) {
+				if (e.target.classList.contains('over')) {
 					e.target.classList.remove('over');					
 				}			
 			}			
