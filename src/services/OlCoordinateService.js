@@ -1,6 +1,7 @@
-import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
-import { createStringXY } from 'ol/coordinate';
-
+import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
+import { loadBvvDefinitions } from './provider/proj4.provider';
+import { defaultStringifyFunction } from './provider/stringifyCoords.provider';
+import proj4 from 'proj4';
 
 /**
  * Utilities for coordinates like transformation based on ol.
@@ -9,10 +10,24 @@ import { createStringXY } from 'ol/coordinate';
  */
 export class OlCoordinateService {
 
+	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = defaultStringifyFunction) {
+		proj4Provider();
+		this._stringifyFunction = stringifyFunction;
+	}
+
+
+	/**
+	 * 
+	 * @private 
+	 */
+	static _toEpsgCodeString(srid) {
+		return 'EPSG:' + srid;
+	}
+
 	/**
 	 * Transforms a 3857 coordinate to longitude/latitude.
 	 * @public
-	 * @param {Coordinate} coordinate3857 
+	 * @param {Coordinate} coordinate3857
 	 * @returns {Coordinate} coordinate4326
 	 */
 	toLonLat(coordinate3857) {
@@ -50,21 +65,29 @@ export class OlCoordinateService {
 		return transformExtent(extent4326, 'EPSG:4326', 'EPSG:3857');
 	}
 
-	to25832() {
-		throw new Error('Not yet implemented');
-
+	/**
+	 * Transforms a coordinate in the source srid to a coordinate in the target srid
+	 * @param {Coordinate}  [coordinate] 
+	 * @param {numbet} sourceSrid srid of the current coordinate
+	 * @param {number} targetSrid srid of the transformed coordinate
+	 * @returns {Coordinate} transformed coordinate
+	 */
+	transform(coordinate,  sourceSrid, targetSrid,) {
+		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
+		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
+		if (proj4.defs(targetSridAsString)) {
+			return transform(coordinate, sourceSridAsString, targetSridAsString);
+		}
+		throw new Error('Unsupported SRID: ' + targetSrid);
 	}
 
-	from25832() {
-		throw new Error('Not yet implemented');
-	}
 
 	/**
 	 * Stringifies a coordinate.
-	 * @param {*} coordinate the coordinate
-	 * @param {*} digits number of fractional digits:
+	 * @param {Coordinate} coordinate the coordinate
+	 * @param {Object} [options] stringify function specific options
 	 */
-	stringifyYX(coordinate, digits) {
-		return createStringXY(digits)(coordinate);
+	stringify(coordinate, options) {
+		return this._stringifyFunction(options)(coordinate);
 	}
 }
