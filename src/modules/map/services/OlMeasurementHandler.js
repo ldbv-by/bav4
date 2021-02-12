@@ -9,7 +9,6 @@ import { getLength } from 'ol/sphere';
 import { $injector } from '../../../injection';
 import { OlLayerHandler } from '../components/olMap/handler/OlLayerHandler';
 
-
 const ZPOLYGON = 10;
 const ZLINE = 20;
 
@@ -244,7 +243,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		const finishMeasurementTooltip = (event) => {			
 			const measureTooltip = event.feature.get('measurement');
-			measureTooltip.getElement().className = 'ba-tooltip ba-tooltip-static';
+			measureTooltip.getElement().className = 'ba-draw-measure ba-draw-measure-static';
 			measureTooltip.setOffset([0, -7]);		
 			this._activeSketch = null;						
 			unByKey(listener);
@@ -275,19 +274,19 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	_createMeasureTooltip() {	
 		const overlayOptions = { offset: [0, -15], positioning: 'bottom-center' };
-		const styleClasses = ['ba-tooltip', 'ba-tooltip-measure'];
+		const styleClasses = ['ba-draw-measure', 'ba-draw-measure-tmp'];
 		return this._createOverlay(styleClasses, overlayOptions);
 	}
 
 	_createHelpTooltip() {
 		const overlayOptions = { offset: [15, 0], positioning: 'center-left' };
-		const styleClasses = ['ba-tooltip', 'hidden'];
+		const styleClasses = ['ba-draw-measure', 'ba-draw-help', 'hidden'];
 		return this._createOverlay(styleClasses, overlayOptions);	
 	}
 
 	_createPartition() {
-		const overlayOptions = { offset: [0, -10], positioning: 'top-center' };
-		const styleClasses = ['ba-tooltip', 'ba-intermediate'];		
+		const overlayOptions = { offset: [0, -25], positioning: 'top-center' };
+		const styleClasses = ['ba-draw-measure', 'ba-draw-measure-intermediate'];		
 		return this._createOverlay(styleClasses, overlayOptions);	
 	}
 
