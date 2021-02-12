@@ -24,7 +24,7 @@ export class MapInfo extends BaElement {
 	initialize() {
 		// let's listen for map_clicked -events
 		window.addEventListener('map_clicked', (evt) => {
-			alert('click @ ' + this._coordinateService.stringifyYX(
+			alert('click @ ' + this._coordinateService.stringify(
 				this._coordinateService.toLonLat(evt.detail), 3));
 		});
 
@@ -38,7 +38,7 @@ export class MapInfo extends BaElement {
 
 
 		const pointerPosition4326 = pointerPosition
-			? this._coordinateService.stringifyYX(
+			? this._coordinateService.stringify(
 				this._coordinateService.toLonLat(pointerPosition), 3)
 			: '';
 
