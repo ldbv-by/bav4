@@ -32,6 +32,7 @@
   border-radius: 50%;
   border: none;
   outline: none;
+  padding: 5px;
 }
 
 .zoom-to-extent-button:hover {
