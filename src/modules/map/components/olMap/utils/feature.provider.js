@@ -3,9 +3,9 @@ import { $injector } from '../../../../../injection';
 
 /**
  * Provides features from sources loaded over http
- * @param {import('ol/extent').Extent} extent 
+ * @param {Extent} extent 
  * @param {Resolution} resolution 
- * @param {import('ol/proj').ProjectionLike} targetProj 
+ * @param {ProjectionLike} targetProj 
  */
 export const load = async function (extent, resolution, targetProj) {
 	//no arrow function here, cause "this" is bound to the source
