@@ -1,4 +1,4 @@
-import{ Popup } from '../../../../src/modules/commons/components/popup/Popup';
+import { Popup } from '../../../../src/modules/commons/components/popup/Popup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Popup.tag, Popup);
 
