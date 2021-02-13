@@ -7,7 +7,7 @@ import Overlay from 'ol/Overlay';
 import { getLength } from 'ol/sphere';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { BaOverlayTypes } from './BaOverlay';
+import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction } from './StyleUtils';
 
 
@@ -66,7 +66,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		if(this._draw === false) {
 			this._vectorLayer = prepareInteraction();			
-			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, BaOverlayTypes.HELP);
+			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
 			this._draw = this._createInteraction(source);	
 
@@ -133,7 +133,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			for(let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 
 				if(partition === false) {			
-					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, BaOverlayTypes.DISTANCE_PARTITION );
+					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION );
 					
 					if(map) {
 						this._addOverlayToMap(map, partition);				
@@ -167,7 +167,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 		
 		draw.on('drawstart', event =>  {				
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, BaOverlayTypes.DISTANCE);	
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE);	
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
@@ -185,7 +185,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-	_createOverlay(overlayOptions = {}, type = BaOverlayTypes.TEXT) {
+	_createOverlay(overlayOptions = {}, type = MeasurementOverlayTypes.TEXT) {
 		const baOverlay = document.createElement('ba-overlay');
 		baOverlay.setAttribute('type', type);		
 		const overlay = new Overlay({ ...overlayOptions, element:baOverlay });

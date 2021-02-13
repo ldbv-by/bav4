@@ -3,7 +3,7 @@ import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-export const BaOverlayTypes = {
+export const MeasurementOverlayTypes = {
 	TEXT:'text',
 	DISTANCE:'distance',
 	DISTANCE_PARTITION:'distance-partition',
@@ -35,7 +35,7 @@ export const BaOverlayTypes = {
  * @class
  * @author thiloSchlemmer
  */
-export class BaOverlay extends BaElement {
+export class MeasurementOverlay extends BaElement {
 
 
 	/**
@@ -51,14 +51,14 @@ export class BaOverlay extends BaElement {
 	 * @override
 	 */
 	createView() {
-		const isContentText = this._type === BaOverlayTypes.HELP || this._type === BaOverlayTypes.TEXT;
+		const isContentText = this._type === MeasurementOverlayTypes.HELP || this._type === MeasurementOverlayTypes.TEXT;
 		const content = isContentText ? this._value : this._getFormatted(parseInt(this._value));
 		const classes = {
-			help: this._type === BaOverlayTypes.HELP,
-			distance: this._type === BaOverlayTypes.DISTANCE,
-			partition: this._type === BaOverlayTypes.DISTANCE_PARTITION,
-			static: this._static && this._type !== BaOverlayTypes.HELP,
-			floating: !this._static && this._type !== BaOverlayTypes.HELP
+			help: this._type === MeasurementOverlayTypes.HELP,
+			distance: this._type === MeasurementOverlayTypes.DISTANCE,
+			partition: this._type === MeasurementOverlayTypes.DISTANCE_PARTITION,
+			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
+			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP
 		};
 
 		return html`
@@ -83,14 +83,14 @@ export class BaOverlay extends BaElement {
 	_getType(typeValue) {
 		switch (typeValue) {
 			case 'distance':
-				return BaOverlayTypes.DISTANCE;
+				return MeasurementOverlayTypes.DISTANCE;
 			case 'distance-partition':
-				return BaOverlayTypes.DISTANCE_PARTITION;
+				return MeasurementOverlayTypes.DISTANCE_PARTITION;
 			case 'help':
-				return BaOverlayTypes.HELP;
+				return MeasurementOverlayTypes.HELP;
 			case 'text':
 			default:
-				return BaOverlayTypes.TEXT;
+				return MeasurementOverlayTypes.TEXT;
 		}
 	}
 
