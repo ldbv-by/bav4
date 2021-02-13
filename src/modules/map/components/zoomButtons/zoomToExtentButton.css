@@ -1,0 +1,45 @@
+.zoom-to-extent {
+  position: absolute;
+  top: 250px;
+  right: 10px;
+  display: inline-block;
+}
+
+.zoom-to-extent-icon {
+  mask: url("./assets/ba-icon.svg");
+  -webkit-mask-image: url("./assets/ba-icon.svg");
+}
+
+.icon {
+  background: var(--map-button-color);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+}
+
+.icon:hover,
+.icon:focus {
+  background: var(--map-button-color);
+}
+.zoom-to-extent-button {
+  background-color: var(--map-button-bg-color);
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  padding: 5px;
+}
+
+.zoom-to-extent-button:hover {
+  transform: scale(1.1);
+}
+
+.zoom-to-extent-button:active {
+  transform: scale(1.15);
+  border: none;
+}

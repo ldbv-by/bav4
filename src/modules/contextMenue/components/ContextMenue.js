@@ -64,7 +64,7 @@ export class ContextMenue extends BaElement {
 			contextMenueClose();
 		};
 		let menuStyle = {};
-		if(isOpen) {
+		if (isOpen) {
 			const placement = this._calculateMenuPlacement(pointer);
 			menuStyle = { left:placement.left, top:placement.top };
 		}

@@ -6,8 +6,8 @@ import { Map as MapOl, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
 import { removeLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
+import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
 import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
@@ -85,13 +85,7 @@ export class OlMap extends BaElement {
 
 		this._map.on('moveend', () => {
 			if (this._view) {
-				this.log('updating store');
-
-				changeZoomAndCenter({
-					zoom: this._view.getZoom(),
-					center: this._view.getCenter()
-
-				});
+				this._syncStore();
 			}
 		});
 
@@ -145,16 +139,15 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, center }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
-		return { zoom, center, overlayLayers, backgroundLayer };
+		const { position: { zoom, center, fitRequest }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
+		return { zoom, center, fitRequest, overlayLayers, backgroundLayer };
 	}
 
 	/**
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('map state changed by store');
-
+		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
@@ -163,14 +156,38 @@ export class OlMap extends BaElement {
 		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
 	}
 
-	_syncView() {
-		const { zoom, center } = this._state;
-
-		this._view.animate({
-			zoom: zoom,
-			center: center,
-			duration: 500
+	_syncStore() {
+		this.log('syncing store');
+		changeZoomAndCenter({
+			zoom: this._view.getZoom(),
+			center: this._view.getCenter()
 		});
+	}
+
+	_syncView() {
+		const { zoom, center, fitRequest } = this._state;
+
+		const onAfterFit = () => {
+			this._viewSyncBlocked = false;
+			this._syncStore();
+			//reset
+			resetFitRequest();
+		};
+
+		if (!this._viewSyncBlocked) {
+
+			if (fitRequest && fitRequest.extent) {
+				this._viewSyncBlocked = true;
+				this._view.fit(fitRequest.extent, { callback: onAfterFit });
+			}
+			else {
+				this._view.animate({
+					zoom: zoom,
+					center: center,
+					duration: 500
+				});
+			}
+		}
 	}
 
 	_syncOverlayLayer() {

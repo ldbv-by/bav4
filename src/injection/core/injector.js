@@ -48,6 +48,14 @@ export class Injector {
 	}
 
 	/**
+	 * Registers a "module". A module is a callback function which takes the injector as argument 
+	 * @param {function} moduleCallback Function
+	 */
+	registerModule(moduleCallback) {
+		moduleCallback(this);
+	}
+
+	/**
 	 * Returns the dependencies for the supplied function.
 	 * Details: The function is converted to it's string (code), parsed with regex to find
 	 * 	the argument names, and then those names are used to fetch the respective objects

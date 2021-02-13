@@ -6,6 +6,7 @@ import { XYZ as XYZSource } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { KML, GPX, GeoJSON } from 'ol/format';
 import { $injector } from '../../../../injection';
+import { load as featureLoader } from './utils/feature.provider';
 
 
 const getUrlService = () => {
@@ -14,11 +15,13 @@ const getUrlService = () => {
 	return urlService;
 };
 
+export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url);
+
 export const mapVectorSourceTypeToFormat = (sourceType) => {
 
 	switch (sourceType) {
 		case VectorSourceType.KML:
-			return new KML();
+			return new KML({ iconUrlFunction: iconUrlFunction });
 
 		case VectorSourceType.GPX:
 			return new GPX();
@@ -59,6 +62,7 @@ export const toOlLayer = (georesource) => {
 				id: georesource.id,
 				source: new VectorSource({
 					url: getUrlService().proxifyInstant(georesource.url),
+					loader: featureLoader,
 					format: mapVectorSourceTypeToFormat(georesource.sourceType)
 				}),
 			});

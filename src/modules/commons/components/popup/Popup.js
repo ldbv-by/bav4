@@ -45,7 +45,7 @@ export class Popup extends BaElement {
      *@override 
      */
 	createView() {
-		if(this._type === 'show') {			
+		if (this._type === 'show') {			
 			var popup = this.shadowRoot.getElementById('this-popup');	
 			popup.style.right = this._right + 'px';
 			popup.style.top = this._top + 'px';
@@ -74,7 +74,7 @@ export class Popup extends BaElement {
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
-		switch(name) {
+		switch (name) {
 			case 'type': 
 				this.type = newValue; 
 				break;
@@ -82,7 +82,7 @@ export class Popup extends BaElement {
 	}
 
 	set type(value) {
-		if(value !== this.type) {
+		if (value !== this.type) {
 			this._type = value;
 			this.render();
 		}

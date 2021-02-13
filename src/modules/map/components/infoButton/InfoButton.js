@@ -37,7 +37,7 @@ export class InfoButton extends BaElement {
 		
 		window.onresize = () => {
 			var popup = this.shadowRoot.getElementById('info-popup');
-			if(popup.isOpen()) {
+			if (popup.isOpen()) {
 				this.shadowRoot.getElementById('info-popup').closePopup();
 			}			
 		}; 

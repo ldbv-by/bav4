@@ -1,8 +1,9 @@
 import BaseLayer from 'ol/layer/Base';
-import { mapVectorSourceTypeToFormat, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
-import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 import { Map } from 'ol';
+import { iconUrlFunction, mapVectorSourceTypeToFormat, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
+import { load } from '../../../../../src/modules/map/components/olMap/utils/feature.provider';
 
 
 describe('olMapUtils', () => {
@@ -69,6 +70,9 @@ describe('olMapUtils', () => {
 			expect(vectorSource.constructor.name).toBe('VectorSource');
 			expect(vectorSource.getUrl()).toBe('https://proxy.url?' + url);
 			expect(vectorSource.getFormat().constructor.name).toBe('KML');
+
+			expect(vectorSource.loader_).toEqual(load);
+			expect(vectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
 		});
 
 		it('it converts a AggregateGeoresource to a olLayer(Group)', () => {
@@ -127,6 +131,13 @@ describe('olMapUtils', () => {
 			expect(myLayer.get('id')).toBe('someId');
 		});
 	});
+	
+	describe('iconUrlFunction', () => {
+		it('it updates the properties of a olLayer', () => {
+			const iconUrl = 'https://some.url';
+			spyOn(urlService, 'proxifyInstant').withArgs(iconUrl).and.returnValue('https://proxy.url?url=' + iconUrl);
+
+			expect(iconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
+		});
+	});
 });
-
-

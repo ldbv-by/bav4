@@ -59,7 +59,7 @@ export class Button extends BaElement {
 	}
 
 	set disabled(value) {
-		if(value !== this.disabled) {
+		if (value !== this.disabled) {
 			this._disabled = value;
 			this.render();
 		}

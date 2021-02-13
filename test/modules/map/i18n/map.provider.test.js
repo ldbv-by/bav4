@@ -10,6 +10,10 @@ describe('i18n for map module', () => {
 		expect(map.map_zoom_in_button).toBe('Vergrößere Kartenausschnitt');
 		expect(map.map_zoom_out_button).toBe('Verkleinere Kartenausschnitt');
 		expect(map.map_info_button).toBe('Information');
+		expect(map.map_info_button_help).toBe('Hilfe');
+		expect(map.map_info_button_contact).toBe('Kontakt');
+		expect(map.map_info_button_about).toBe('Impressum');
+		expect(map.map_zoom_extent_button).toBe('Ganz Bayern anzeigen');
 	});
 
 	it('provides translation for en', () => {
@@ -19,6 +23,10 @@ describe('i18n for map module', () => {
 		expect(map.map_zoom_in_button).toBe('Zoom in');
 		expect(map.map_zoom_out_button).toBe('Zoom out');
 		expect(map.map_info_button).toBe('Information');
+		expect(map.map_info_button_help).toBe('Help');
+		expect(map.map_info_button_contact).toBe('Contact');
+		expect(map.map_info_button_about).toBe('About us');
+		expect(map.map_zoom_extent_button).toBe('Zoom to full extent');
 	});
 
 	it('provides an empty map for a unknown lang', () => {
