@@ -185,14 +185,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-	_createOverlay(overlayOptions = {}, type = MeasurementOverlayTypes.TEXT) {
+	_createOverlay(overlayOptions = {}, type) {
 		const baOverlay = document.createElement('ba-overlay');
 		baOverlay.setAttribute('type', type);		
 		const overlay = new Overlay({ ...overlayOptions, element:baOverlay });
 		return overlay;
 	}
 
-	_updateOverlay(overlay, content = false, position = false) {
+	_updateOverlay(overlay, content, position) {
 		const baOverlay = overlay.getElement();
 		if(content) {
 			baOverlay.value = content;
