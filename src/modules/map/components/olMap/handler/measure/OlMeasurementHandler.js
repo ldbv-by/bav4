@@ -9,6 +9,11 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction } from './StyleUtils';
+import { MeasurementOverlay } from './MeasurementOverlay';
+
+if (!window.customElements.get(MeasurementOverlay.tag)) {
+	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
+}
 
 
 //todo: find a better place....maybe StyleService
@@ -186,7 +191,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createOverlay(overlayOptions = {}, type) {
-		const baOverlay = document.createElement('ba-overlay');
+		const baOverlay = document.createElement(MeasurementOverlay.tag);
 		baOverlay.setAttribute('type', type);		
 		const overlay = new Overlay({ ...overlayOptions, element:baOverlay });
 		return overlay;

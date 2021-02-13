@@ -10,12 +10,15 @@ import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { $injector } from '../../../../../../../src/injection';
+import { TestUtils } from '../../../../../../test-utils.js';
 
 
-
+TestUtils.setupStoreAndDi({ }, );
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
+
 describe('OlMeasurementHandler', () => {
+
 	it('has two methods', async () => {
 		expect(new OlMeasurementHandler()).toBeTruthy();
 		expect(new OlMeasurementHandler().activate).toBeTruthy();
