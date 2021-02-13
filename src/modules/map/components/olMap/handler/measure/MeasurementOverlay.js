@@ -51,8 +51,18 @@ export class MeasurementOverlay extends BaElement {
 	 * @override
 	 */
 	createView() {
-		const isContentText = this._type === MeasurementOverlayTypes.HELP || this._type === MeasurementOverlayTypes.TEXT;
-		const content = isContentText ? this._value : this._getFormatted(parseInt(this._value));
+		let content;
+		switch(this._type) {
+			case MeasurementOverlayTypes.DISTANCE:
+			case MeasurementOverlayTypes.DISTANCE_PARTITION:
+				content = this._getFormatted(parseInt(this._value));
+				break;
+			case MeasurementOverlayTypes.HELP:
+			case MeasurementOverlayTypes.TEXT:
+			default:
+				content = this._value;
+		}
+
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
 			distance: this._type === MeasurementOverlayTypes.DISTANCE,
