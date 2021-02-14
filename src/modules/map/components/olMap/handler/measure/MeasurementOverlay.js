@@ -20,10 +20,14 @@ export const MeasurementOverlayTypes = {
  * - `type`
  * - `value` 
  * - `static`
+ * - `geometry`
+ *  
  * 
  * Observed Properties:
  * - `value` 
  * - `static`
+ * - `geometry`
+ * - `position`
  * 
  * @class
  * @author thiloSchlemmer

@@ -13,7 +13,13 @@ import { MeasurementOverlay } from './MeasurementOverlay';
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
-
+/**
+ * Handler for measurement-interaction with the map
+ * 
+ * @class
+ * @author thiloSchlemmer
+ * @author taulinger
+ */
 export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
