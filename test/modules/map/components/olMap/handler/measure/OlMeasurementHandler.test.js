@@ -120,7 +120,7 @@ describe('OlMeasurementHandler', () => {
 
 			const baOverlay = feature.get('measurement').getElement();
 
-			expect(baOverlay.value).toBeCloseTo(1, 1);
+			expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
 		});	
 
 		it('creates partition tooltips for long line', async() => {

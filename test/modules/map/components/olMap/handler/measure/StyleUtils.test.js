@@ -30,11 +30,11 @@ describe('measureStyleFunction', () => {
 		
 		const circleStyle = styles.find(style => {
 			const geometryFunction = style.getGeometryFunction();
-			if(geometryFunction) {
+			if (geometryFunction) {
 				const renderObject = geometryFunction(feature);
 				return renderObject.getType() === 'Circle';
 			}
-			else{
+			else {
 				return false;
 			}
 			

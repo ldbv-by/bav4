@@ -13,14 +13,8 @@ export const MeasurementOverlayTypes = {
  * Internal overlay content for measurements on map-components
  * 
  * Configurable Attributes:
- * - `type` (BaOverlay.BaOverlayType)
- * - `value` 
- * - `static` (default=false)
  * 
  * Observed Attributes:
- * - `type`
- * - `value` 
- * - `static`
  * 
   * Configurable Properties:
  * - `type`
@@ -28,7 +22,6 @@ export const MeasurementOverlayTypes = {
  * - `static`
  * 
  * Observed Properties:
- * - `type`
  * - `value` 
  * - `static`
  * 
@@ -37,31 +30,19 @@ export const MeasurementOverlayTypes = {
  */
 export class MeasurementOverlay extends BaElement {
 
-
-	/**
-	 * @override
-	 */
-	initialize() {
-		this._type = this._getType(this.getAttribute('type'));
-		this._value = this.getAttribute('value') || '';
-		this._static = this.getAttribute('static') === 'true';
+	constructor() {
+		super();
+		this._value = '';
+		this._static = false;		
+		this._type = MeasurementOverlayTypes.TEXT;
+		this._contentFunction = () => '';
 	}
 
 	/**
 	 * @override
 	 */
 	createView() {
-		let content;
-		switch(this._type) {
-			case MeasurementOverlayTypes.DISTANCE:
-			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				content = this._getFormatted(parseInt(this._value));
-				break;
-			case MeasurementOverlayTypes.HELP:
-			case MeasurementOverlayTypes.TEXT:
-			default:
-				content = this._value;
-		}
+		const content = this._contentFunction();
 
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
@@ -79,55 +60,57 @@ export class MeasurementOverlay extends BaElement {
 		`;
 	}
 
-	_getFormatted(length) {			
+	_updatePosition() {
+		switch (this._type) {
+			case MeasurementOverlayTypes.DISTANCE_PARTITION:
+				this._position = this._geometry.getCoordinateAt(this._value);
+				break;
+			case MeasurementOverlayTypes.DISTANCE:	
+			case MeasurementOverlayTypes.HELP:				
+			case MeasurementOverlayTypes.TEXT:				
+			default:
+				this._position = this.geometry.getLastCoordinate();
+		}
+	}
+
+	_setContentFunctionBy(type) {
+		switch (type) {
+			case MeasurementOverlayTypes.DISTANCE:
+				this._contentFunction = () => {
+					const length = this.geometry ? this._geometry.getLength() : 1;
+					return this._getFormatted(length );
+				};
+				break;
+			case MeasurementOverlayTypes.DISTANCE_PARTITION:
+				this._contentFunction = () => { 					
+					const length = this.geometry ? this._geometry.getLength() : 1;
+					return this._getFormatted(length *  this._value);
+				};
+				break;
+			case MeasurementOverlayTypes.HELP:
+			case MeasurementOverlayTypes.TEXT:
+				this._contentFunction = () => this._value;
+				break;
+		}
+	}
+
+	_getFormatted(length) {		
 		let output;
 		if (length > 100) {
 			output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
 		}
 		else {
-			output = Math.round(length * 100) / 100 + ' ' + 'm';
+			output = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
 		}
 		return output;
-	}
-
-	_getType(typeValue) {
-		switch (typeValue) {
-			case 'distance':
-				return MeasurementOverlayTypes.DISTANCE;
-			case 'distance-partition':
-				return MeasurementOverlayTypes.DISTANCE_PARTITION;
-			case 'help':
-				return MeasurementOverlayTypes.HELP;
-			case 'text':
-			default:
-				return MeasurementOverlayTypes.TEXT;
-		}
-	}
+	}	
 
 	static get tag() {
 		return 'ba-measure-overlay';
-	}
-
-	static get observedAttributes() {
-		return ['value', 'static', 'type'];
-	}
-
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'value':
-				this.value = newValue;        
-				break;
-			case 'static':
-				this.static = newValue; 
-				break;     
-			case 'type':
-				this.type = newValue; 
-				break;
-		}
-	}
+	}	
 
 	set value(val) {
-		if(val !== this.value) {
+		if (val !== this.value) {			
 			this._value = val;
 			this.render();
 		}
@@ -138,9 +121,9 @@ export class MeasurementOverlay extends BaElement {
 	}
 
 	set type(value) {
-		const typeValue = this._getType(value);
-		if(typeValue !== this.type) {
-			this._type = typeValue ;
+		if (value !== this.type) {
+			this._type = value ;
+			this._setContentFunctionBy(value);
 			this.render();
 		}
 	}
@@ -150,7 +133,7 @@ export class MeasurementOverlay extends BaElement {
 	}
 
 	set static(value) {
-		if(value !== this.static) {
+		if (value !== this.static) {
 			this._static = value;
 			this.render();
 		}
@@ -158,5 +141,21 @@ export class MeasurementOverlay extends BaElement {
 
 	get static() {
 		return this._static;
+	}
+
+	set geometry(value) {
+		
+		this._geometry = value;
+		this._updatePosition();
+		this.render();
+		
+	}
+
+	get geometry() {
+		return this._geometry;
+	}
+
+	get position() {
+		return this._position;
 	}
 }

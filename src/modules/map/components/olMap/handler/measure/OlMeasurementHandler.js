@@ -2,9 +2,8 @@ import Draw from 'ol/interaction/Draw';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
-import { LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon } from 'ol/geom';
 import Overlay from 'ol/Overlay';
-import { getLength } from 'ol/sphere';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
@@ -14,9 +13,6 @@ import { MeasurementOverlay } from './MeasurementOverlay';
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
-
-
-//todo: find a better place....maybe StyleService
 
 export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
@@ -66,10 +62,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 			
-			this._updateOverlay(this._helpTooltip, helpMsg, event.coordinate);
+			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg );
 		};
 
-		if(this._draw === false) {
+		if (this._draw === false) {
 			this._vectorLayer = prepareInteraction();			
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
@@ -116,44 +112,40 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		const updateMeasureTooltips = (geometry) => {
 			const map = draw.getMap();
-			const length = getLength(geometry);
+			const length = geometry.getLength();
 			
-			const tooltipCoord = geometry.getLastCoordinate();
-			const measureTooltip = this._activeSketch.get('measurement');
-			this._updateOverlay(measureTooltip, length, tooltipCoord);		
+			const measureTooltip = this._activeSketch.get('measurement');			
+				
+			this._updateOverlay(measureTooltip, geometry, '');		
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
 			let delta = 1;
-			if(length > 200000) {
+			if (length > 200000) {
 				delta = 100000 / length;				
 			}
-			else if(length > 20000) {
+			else if (length > 20000) {
 				delta = 10000 / length;				
 			}
-			else if(length !== 0) {
+			else if (length !== 0) {
 				delta = 1000 / length;
 			}
 			let partitionIndex = 0;
-			for(let i = delta;i < 1;i += delta, partitionIndex++) {
+			for (let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 
-				if(partition === false) {			
+				if (partition === false) {			
 					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION );
 					
-					if(map) {
-						this._addOverlayToMap(map, partition);				
-					}			
+					this._addOverlayToMap(map, partition);									
 					partitions.push(partition);
 				}
-				const content = length * i;
-				const position = geometry.getCoordinateAt(i);
-				this._updateOverlay(partition, content, position );
+				this._updateOverlay(partition, geometry, i );
 			}
 
-			if(partitionIndex < partitions.length) {
-				for(let j = partitions.length - 1;j >= partitionIndex;j--) {
+			if (partitionIndex < partitions.length) {
+				for (let j = partitions.length - 1;j >= partitionIndex;j--) {
 					const removablePartition = partitions[j];
-					if(map) {
+					if (map) {
 						this._removeOverlayFromMap(map, removablePartition);				
 					}	
 					partitions.pop();
@@ -180,7 +172,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				updateMeasureTooltips(event.target);
 			});
 			const map = draw.getMap();
-			if(map) {
+			if (map) {
 				this._addOverlayToMap(map, measureTooltip);				
 			}			
 		});
@@ -191,19 +183,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createOverlay(overlayOptions = {}, type) {
-		const baOverlay = document.createElement(MeasurementOverlay.tag);
-		baOverlay.setAttribute('type', type);		
-		const overlay = new Overlay({ ...overlayOptions, element:baOverlay });
+		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
+		measurementOverlay.type = type;		
+		const overlay = new Overlay({ ...overlayOptions, element:measurementOverlay });
 		return overlay;
 	}
 
-	_updateOverlay(overlay, content, position) {
-		const baOverlay = overlay.getElement();
-		if(content) {
-			baOverlay.value = content;
-		}
-		if(position) {
-			overlay.setPosition(position);
-		}					
+	_updateOverlay(overlay, geometry, value) {
+		const measurementOverlay = overlay.getElement();
+		measurementOverlay.value = value;
+		measurementOverlay.geometry = geometry;
+		overlay.setPosition(measurementOverlay.position);							
 	}
 }

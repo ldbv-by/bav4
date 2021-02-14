@@ -34,7 +34,7 @@ export const measureStyleFunction = (feature) => {
 			stroke:stroke,
 			geometry: feature => {
 				
-				if(canShowAzimuthCircle(feature.getGeometry())) {					
+				if (canShowAzimuthCircle(feature.getGeometry())) {					
 					const coords = feature.getGeometry().getCoordinates();
 					const radius = getGeometryLength(feature.getGeometry());
 					const circle = new Circle(coords[0], radius);

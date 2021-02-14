@@ -1,26 +1,36 @@
 import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
+import { LineString } from 'ol/geom';
 import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 
 
-describe('Button', () => {
+describe('MeasurementOverlay', () => {
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
     
-	describe('when initialized with type attribute', () => {
+	const setup = async ( properties = {}) => {
+		const element = await TestUtils.render(MeasurementOverlay.tag);
+		for (let property in properties) {
+			element[property] = properties[property];
+		}
+		return element;
+	};
+
+
+	describe('when initialized with type property', () => {
 		it('renders the text view', async () => {
+			const element = await setup();
 
-			const element = await TestUtils.render(MeasurementOverlay.tag);
-
-			expect(element.type).toBe('text');
+			expect(element.type).toBe(MeasurementOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
 			expect(element.value).toBe('');			
 		});
 
 		it('renders the help view', async () => {
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.HELP, value:'foo' });
+			const properties = { type:MeasurementOverlayTypes.HELP, value:'foo' };
+			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.classList.contains('help')).toBeTrue();
@@ -32,84 +42,92 @@ describe('Button', () => {
 		});
 
 		it('renders the distance view', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:1 });
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [1, 0]]) };
+			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);			
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('1');			
+			expect(div.innerText).toBe('1 m');			
 		});
 
 		it('renders the distance-partition view', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE_PARTITION, value:1 });
+			const properties = {
+				type:MeasurementOverlayTypes.DISTANCE_PARTITION, 
+				geoemtry:new LineString([[0, 0], [1, 0]]), 
+				value:0.5 
+			};
+			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.classList.contains('partition')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE_PARTITION);			
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('1');			
+			expect(div.innerText).toBe('0.5 m');			
 		});
 
 		it('renders the static distance view', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:1, static:true });
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [1, 0]]), static:true };
+			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.classList.contains('distance')).toBeTrue();
 			expect(div.classList.contains('static')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);			
-			expect(element.value).toBe('1');			
+			expect(div.innerText).toBe('1 m');			
 		});
 
 		it('renders formatted distance 1 m ', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:1 });
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [1, 0]]) };
+			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('1 m');
 		});
 
 		it('renders formatted distance 10 m ', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:10 });
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [10, 0]]) };
+			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('10 m');
 		});
 
 		it('renders formatted distance 100 m ', async () => {
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [100, 0]]) };
+			const element = await setup(properties);			
 
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:100 });
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('100 m');
 		});
 
 		it('renders formatted distance 1 km ', async () => {
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [1000, 0]]) };
+			const element = await setup(properties);			
 
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:1000 });
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('1 km');
 		});
 
 		it('renders formatted distance 10 km ', async () => {
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [10000, 0]]) };
+			const element = await setup(properties);			
 
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:10000 });
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('10 km');
 		});
 
 		it('renders formatted distance 1.23 km ', async () => {
+			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:new LineString([[0, 0], [1234, 0]]) };
+			const element = await setup(properties);			
 
-			const element = await TestUtils.render(MeasurementOverlay.tag, { type:MeasurementOverlayTypes.DISTANCE, value:1234 });
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('1.23 km');
@@ -118,11 +136,11 @@ describe('Button', () => {
 
 	describe('when type changed', () => {
 		it('renders the changed view', async () => {
-
-			const element = await TestUtils.render(MeasurementOverlay.tag);
+		
+			const element = await setup();			
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(element.type).toBe('text');
+			expect(element.type).toBe(MeasurementOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
 			expect(element.value).toBe('');			
 
