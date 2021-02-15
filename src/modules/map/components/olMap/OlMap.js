@@ -30,7 +30,7 @@ export class OlMap extends BaElement {
 		} = $injector.inject('ShareService', 'GeoResourceService', 'OlMeasurementHandler');
 		this._shareService = shareService;
 		this._geoResourceService = georesourceService;
-		this._handler = new Map([[MEASUREMENT_LAYER_ID, measurementHandler]]);
+		this._layerHandler = new Map([[MEASUREMENT_LAYER_ID, measurementHandler]]);
 
 	}
 
@@ -211,15 +211,15 @@ export class OlMap extends BaElement {
 			const olLayer = this._getOlLayerById(id);
 			if (olLayer) {
 				this._map.removeLayer(olLayer);
-				if (this._handler.has(id)) {
-					this._handler.get(id).deactivate(this._map);
+				if (this._layerHandler.has(id)) {
+					this._layerHandler.get(id).deactivate(this._map);
 				}
 			}
 		});
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? toOlLayer(resource) : (this._handler.has(id) ? toOlLayerFromHandler(id, this._handler.get(id), this._map) : null);
+			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = overlayLayers.find(layer => layer.id === id);

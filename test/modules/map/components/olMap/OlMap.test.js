@@ -364,7 +364,7 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._handler.get(MEASUREMENT_LAYER_ID)).toEqual(measurementHandlerMock);
+			expect(element._layerHandler.get(MEASUREMENT_LAYER_ID)).toEqual(measurementHandlerMock);
 		});
 
 		it('activates and deactivates the handler', async () => {
