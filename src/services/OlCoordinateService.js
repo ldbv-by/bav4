@@ -68,7 +68,7 @@ export class OlCoordinateService {
 	/**
 	 * Transforms a coordinate in the source srid to a coordinate in the target srid
 	 * @param {Coordinate}  [coordinate] 
-	 * @param {numbet} sourceSrid srid of the current coordinate
+	 * @param {number} sourceSrid srid of the current coordinate
 	 * @param {number} targetSrid srid of the transformed coordinate
 	 * @returns {Coordinate} transformed coordinate
 	 */
