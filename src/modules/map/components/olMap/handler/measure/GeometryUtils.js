@@ -28,3 +28,45 @@ export const canShowAzimuthCircle = (geometry) => {
 	}
 	return false;
 };
+
+export const getAzimuth = (geometry) => {
+	if (!(geometry instanceof Polygon) && 
+		!(geometry instanceof LineString) && 
+		!(geometry instanceof LinearRing)) {
+		return null;
+	}
+	let coordinates = geometry.getCoordinates();
+	if (geometry instanceof Polygon) {
+		coordinates = coordinates[0];
+	}
+
+	if (coordinates.length < 2) {
+		return null;
+	}
+
+	const startPoint = coordinates[0];
+	const endPoint = coordinates[1];
+
+	const x = endPoint[0] - startPoint[0];
+	const y = endPoint[1] - startPoint[1];
+	const rad = Math.acos(y / Math.sqrt(x * x + y * y));
+	const factor = x > 0 ? 1 : -1;
+
+	return (360 + (factor * rad * 180 / Math.PI)) % 360;	
+};
+
+export const getPartitionDelta = (geometry) => {
+	const length = getGeometryLength(geometry);
+	let delta = 1;
+	if (length > 200000) {
+		delta = 100000 / length;				
+	}
+	else if (length > 20000) {
+		delta = 10000 / length;				
+	}
+	else if (length !== 0) {
+		delta = 1000 / length;
+	}
+
+	return delta;
+};

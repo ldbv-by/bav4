@@ -50,14 +50,14 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);			
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('1 m');			
+			expect(div.innerText).toBe('90.00°/1 m');			
 		});
 
 		it('renders the distance-partition view', async () => {
 			const properties = {
 				type:MeasurementOverlayTypes.DISTANCE_PARTITION, 
-				geoemtry:new LineString([[0, 0], [1, 0]]), 
-				value:0.5 
+				geometry:new LineString([[0, 0], [100, 0]]), 
+				value:0.1 
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -66,7 +66,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE_PARTITION);			
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('0.5 m');			
+			expect(div.innerText).toBe('10 m');			
 		});
 
 		it('renders the static distance view', async () => {
@@ -78,7 +78,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('static')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);			
-			expect(div.innerText).toBe('1 m');			
+			expect(div.innerText).toBe('90.00°/1 m');			
 		});
 
 		it('renders formatted distance 1 m ', async () => {
@@ -86,7 +86,7 @@ describe('MeasurementOverlay', () => {
 			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('1 m');
+			expect(div.innerText).toBe('90.00°/1 m');
 		});
 
 		it('renders formatted distance 10 m ', async () => {
@@ -94,7 +94,7 @@ describe('MeasurementOverlay', () => {
 			const element = await setup(properties);			
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('10 m');
+			expect(div.innerText).toBe('90.00°/10 m');
 		});
 
 		it('renders formatted distance 100 m ', async () => {
@@ -103,7 +103,7 @@ describe('MeasurementOverlay', () => {
 
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('100 m');
+			expect(div.innerText).toBe('90.00°/100 m');
 		});
 
 		it('renders formatted distance 1 km ', async () => {
@@ -112,7 +112,7 @@ describe('MeasurementOverlay', () => {
 
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('1 km');
+			expect(div.innerText).toBe('90.00°/1 km');
 		});
 
 		it('renders formatted distance 10 km ', async () => {
@@ -121,7 +121,7 @@ describe('MeasurementOverlay', () => {
 
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('10 km');
+			expect(div.innerText).toBe('90.00°/10 km');
 		});
 
 		it('renders formatted distance 1.23 km ', async () => {
@@ -130,7 +130,7 @@ describe('MeasurementOverlay', () => {
 
 			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('1.23 km');
+			expect(div.innerText).toBe('90.00°/1.23 km');
 		});
 	});
 

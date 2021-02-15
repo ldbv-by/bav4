@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { getAzimuth, getGeometryLength } from './GeometryUtils';
 
 export const MeasurementOverlayTypes = {
 	TEXT:'text',
@@ -81,14 +82,17 @@ export class MeasurementOverlay extends BaElement {
 		switch (type) {
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = this.geometry ? this._geometry.getLength() : 1;
-					return this._getFormatted(length );
+					const azimuthValue = getAzimuth(this.geometry);
+					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
+					const length = this._getFormatted(getGeometryLength(this.geometry));
+					
+					return azimuth + '°/' + length;					
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				this._contentFunction = () => { 					
-					const length = this.geometry ? this._geometry.getLength() : 1;
-					return this._getFormatted(length *  this._value);
+				this._contentFunction = () => {
+					const length = getGeometryLength(this.geometry);
+					return this._getFormatted(length * this._value);
 				};
 				break;
 			case MeasurementOverlayTypes.HELP:

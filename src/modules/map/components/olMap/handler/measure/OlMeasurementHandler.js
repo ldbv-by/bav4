@@ -8,6 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction } from './StyleUtils';
+import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
@@ -118,24 +119,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		const updateMeasureTooltips = (geometry) => {
 			const map = draw.getMap();
-			const length = geometry.getLength();
-			
 			const measureTooltip = this._activeSketch.get('measurement');			
 				
 			this._updateOverlay(measureTooltip, geometry, '');		
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
-			let delta = 1;
-			if (length > 200000) {
-				delta = 100000 / length;				
-			}
-			else if (length > 20000) {
-				delta = 10000 / length;				
-			}
-			else if (length !== 0) {
-				delta = 1000 / length;
-			}
+			let delta = getPartitionDelta(geometry);			
 			let partitionIndex = 0;
 			for (let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 

@@ -1,4 +1,4 @@
-import { getGeometryLength, canShowAzimuthCircle } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -57,5 +57,84 @@ describe('canShowAzimuthCircle', () => {
 		const threePointLineString = new LineString([[0, 0], [1, 0], [2, 1]]);
 
 		expect(canShowAzimuthCircle(threePointLineString)).toBeFalse();
+	});
+});
+
+describe('getAzimuth', () => {
+
+	describe('when different geometryTypes', () => {
+		it('calculates angle for a LineString', () => {
+			const twoPointLineString = new LineString([[0, 0], [1, 0]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(90);
+		});
+
+		it('calculates angle for a LinearRing', () => {
+			const linearRing = new LinearRing([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]);
+
+			expect(getAzimuth(linearRing)).toBe(90);
+		});
+
+		it('calculates angle for a Polygon', () => {
+			const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+
+			expect(getAzimuth(polygon)).toBe(90);
+		});
+
+		it('calculates NO angle for a imcomplete LineString', () => {
+			const onePointLineString = new LineString([[0, 0]]);
+
+			expect(getAzimuth(onePointLineString)).toBeNull();
+		});
+
+		it('calculates NO angle for a Point', () => {
+			const point = new Point([0, 0]);
+
+			expect(getAzimuth(point)).toBeNull();
+		});
+	});
+
+	describe('when direction goes in different directions', () => {
+		it('calculates angle for North', () => {
+			const twoPointLineString = new LineString([[0, 0], [0, 1]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(0);
+		});
+
+		it('calculates angle for North-East', () => {
+			const twoPointLineString = new LineString([[0, 0], [1, 1]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(45);
+		});
+
+		it('calculates angle for East', () => {
+			const twoPointLineString = new LineString([[0, 0], [1, 0]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(90);
+		});
+
+		it('calculates angle for South-East', () => {
+			const twoPointLineString = new LineString([[0, 0], [1, -1]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(135);
+		});
+
+		it('calculates angle for South', () => {
+			const twoPointLineString = new LineString([[0, 0], [0, -1]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(180);
+		});
+
+		it('calculates angle for South-West', () => {
+			const twoPointLineString = new LineString([[0, 0], [-1, -1]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(225);
+		});
+
+		it('calculates angle for West', () => {
+			const twoPointLineString = new LineString([[0, 0], [-1, 0]]);
+
+			expect(getAzimuth(twoPointLineString)).toBe(270);
+		});
 	});
 });
