@@ -1,4 +1,4 @@
-import Draw from 'ol/interaction/Draw';
+import { Draw, Modify, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -7,8 +7,8 @@ import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { measureStyleFunction } from './StyleUtils';
-import { getPartitionDelta } from './GeometryUtils';
+import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
+import { getPartitionDelta, isClosedPolygon } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
@@ -77,10 +77,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
 			this._draw = this._createInteraction(source);	
-
+			this._modify = new Modify({ source: source });			
+			this._snap = new Snap({ source: source, pixelTolerance:4 });
 			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
-
+			
+			olMap.addInteraction(this._modify);
+			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._draw);	
 		}		
 		return this._vectorLayer;
@@ -113,19 +116,48 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_createInteraction(source) {		
 		const draw = new Draw({
 			source: source,
-			type: 'LineString',
-			style: measureStyleFunction
+			type:'Polygon',
+			minPoints:2,
+			snapTolerance:4,
+			style: generateSketchStyleFunction(measureStyleFunction)
 		});						
+		let isFinishOnFirstPoint = false;
 		
+		let pointCount, isSnapOnLastPoint;
 		const updateMeasureTooltips = (geometry) => {
+			let measureGeometry = geometry;
 			const map = draw.getMap();
-			const measureTooltip = this._activeSketch.get('measurement');			
+			const measureTooltip = this._activeSketch.get('measurement');		
+			
+			if (geometry instanceof Polygon) {
+				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				
-			this._updateOverlay(measureTooltip, geometry, '');		
+
+				if (pointCount !== lineCoordinates.length) {
+					// a point is added or removed
+					pointCount = lineCoordinates.length;
+				}
+				else if (lineCoordinates.length > 1) {
+					const firstPoint = lineCoordinates[0];
+					const lastPoint = lineCoordinates[lineCoordinates.length - 1];
+					const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
+
+					const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
+					isFinishOnFirstPoint = (!isSnapOnLastPoint && isSnapOnFirstPoint);
+
+					isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+				}
+				
+				if (!isFinishOnFirstPoint) {
+					measureGeometry = new LineString(lineCoordinates);
+				}					
+			}
+
+			this._updateOverlay(measureTooltip, measureGeometry, '');		
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
-			let delta = getPartitionDelta(geometry);			
+			let delta = getPartitionDelta(measureGeometry);			
 			let partitionIndex = 0;
 			for (let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 
@@ -135,7 +167,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					this._addOverlayToMap(map, partition);									
 					partitions.push(partition);
 				}
-				this._updateOverlay(partition, geometry, i );
+				this._updateOverlay(partition, measureGeometry, i );
 			}
 
 			if (partitionIndex < partitions.length) {
@@ -152,18 +184,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		let listener;
 		
 		const finishMeasurementTooltip = (event) => {			
+
+			const geometry = event.feature.getGeometry();
 			const measureTooltip = event.feature.get('measurement');
 			measureTooltip.getElement().static = true;
-			measureTooltip.setOffset([0, -7]);					
+			measureTooltip.setOffset([0, -7]);				
+			if (geometry instanceof Polygon && !isFinishOnFirstPoint) {
+				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
+				event.feature.setGeometry(new LineString(lineCoordinates));				
+			}
+			else {
+				this._updateOverlay(measureTooltip, geometry, '');
+			}
 			this._activeSketch = null;						
 			unByKey(listener);
 		};
 		
-		draw.on('drawstart', event =>  {				
+		draw.on('drawstart', event =>  {	
+			
 			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE);	
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
+			pointCount = 1;		
+			isSnapOnLastPoint = false;
 			listener = event.feature.getGeometry().on('change', event => {
 				updateMeasureTooltips(event.target);
 			});

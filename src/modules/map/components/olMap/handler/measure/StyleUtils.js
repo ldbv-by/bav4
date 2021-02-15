@@ -1,6 +1,6 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
-import { Fill, Stroke, Style } from 'ol/style';
+import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { LineString, Circle } from 'ol/geom';
 
 
@@ -45,4 +45,42 @@ export const measureStyleFunction = (feature) => {
 		})];
 
 	return styles;
+};
+
+export const generateSketchStyleFunction = (styleFunction) => {
+	const sketchPolygon = new Style({ fill: new Fill({
+		color: [255, 255, 255, 0.4] 
+	}),
+	stroke: new Stroke({
+		color:[255, 255, 255],
+		width:0
+	}) 
+	});
+
+	return (feature, resolution) => {
+		let styles;
+		if (feature.getGeometry().getType() === 'Polygon') {
+			styles = [sketchPolygon];
+		}
+		else if (feature.getGeometry().getType() === 'Point') {
+			const fillColor = [255, 255, 255]; // todo: review, topic for diskussion
+			const fill = new Fill({
+				color:fillColor.concat([0.4])
+			});
+
+			const stroke = new Stroke({
+				color: fillColor.concat([1]),
+				width:3
+			});
+			const sketchCircle = new Style({
+				image:new CircleStyle({ radius:4, fill:fill, stroke:stroke })
+			});
+			styles = [sketchCircle];
+		}
+		else {
+			styles = styleFunction(feature, resolution);
+		}
+
+		return styles;
+	};
 };
