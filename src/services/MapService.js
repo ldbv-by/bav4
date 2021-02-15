@@ -21,7 +21,7 @@ export class MapService {
 	constructor(mapDefinitionProvider) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
 		this._coordinateService = CoordinateService;
-		this._definitionProvider = mapDefinitionProvider;
+		this._definitions = mapDefinitionProvider();
 	}
 
 	/**
@@ -29,22 +29,31 @@ export class MapService {
 	 * @returns {number} srid 
 	 */
 	getSrid() {
-		return 3857;
+		return this._definitions.srid;
 	}
 
 	/**
-	 * Default SRID to use within the UI.
+	 * Default SRID for use within the UI.
 	 * @returns {number} srid 
 	 */
 	getDefaultSridForView() {
-		return 4326;
+		return this._definitions.defaultSridForView;
+	}
+
+	/**
+	 *All availavle SRIDs for use within the UI.
+	 @returns {Array<number>} srids
+	 */
+	getSridsForView() {
+		return this._definitions.sridsForView;
 	}
 
 	/**
 	 * Default SRID for geodatic tasks.
+	 * @returns {number} srid 
 	 */
 	getDefaultGeodeticSrid() {
-		return 25832;
+		return this._definitions.defaultGeodeticSrid;
 	}
 
 	/**
@@ -55,9 +64,9 @@ export class MapService {
 	getDefaultMapExtent(srid = 3857) {
 		switch (srid) {
 			case 3857:
-				return this._definitionProvider().defaultExtent;
+				return this._definitions.defaultExtent;
 			case 4326:
-				return this._coordinateService.toLonLatExtent(this._definitionProvider().defaultExtent);
+				return this._coordinateService.toLonLatExtent(this._definitions.defaultExtent);
 		}
 		throw new Error('Unsupported SRID ' + srid);
 	}
