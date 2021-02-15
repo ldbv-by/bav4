@@ -3,9 +3,11 @@ import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength } from './GeometryUtils';
+import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {
 	TEXT:'text',
+	AREA:'area',
 	DISTANCE:'distance',
 	DISTANCE_PARTITION:'distance-partition',
 	HELP:'help'
@@ -51,6 +53,7 @@ export class MeasurementOverlay extends BaElement {
 
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
+			area:this._type === MeasurementOverlayTypes.AREA,
 			distance: this._type === MeasurementOverlayTypes.DISTANCE,
 			partition: this._type === MeasurementOverlayTypes.DISTANCE_PARTITION,
 			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
@@ -67,9 +70,12 @@ export class MeasurementOverlay extends BaElement {
 
 	_updatePosition() {
 		switch (this._type) {
+			case MeasurementOverlayTypes.AREA:				
+				this._position = [this.geometry.getInteriorPoint().getCoordinates()[0], this.geometry.getInteriorPoint().getCoordinates()[1]];
+				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
-				break;
+				break;				
 			case MeasurementOverlayTypes.DISTANCE:	
 			case MeasurementOverlayTypes.HELP:				
 			case MeasurementOverlayTypes.TEXT:				
@@ -80,6 +86,14 @@ export class MeasurementOverlay extends BaElement {
 
 	_setContentFunctionBy(type) {
 		switch (type) {
+			case MeasurementOverlayTypes.AREA:
+				this._contentFunction = () => {					
+					if (this.geometry instanceof Polygon) {
+						return this._getFormattedSquared(this.geometry.getArea());
+					}
+					return '';
+				};
+				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
 					const length = this._getFormatted(getGeometryLength(this.geometry));
@@ -112,6 +126,17 @@ export class MeasurementOverlay extends BaElement {
 		}
 		else {
 			output = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
+		}
+		return output;
+	}	
+
+	_getFormattedSquared(area) {		
+		let output;
+		if (area > 100) {
+			output = Math.round((area / 1000) * 100) / 100 + ' ' + 'km²';
+		}
+		else {
+			output = area !== 0 ? Math.round(area * 100) / 100 + ' ' + 'm' : '0 m²';
 		}
 		return output;
 	}	

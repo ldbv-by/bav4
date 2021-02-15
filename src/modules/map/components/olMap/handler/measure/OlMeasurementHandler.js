@@ -151,6 +151,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (!isFinishOnFirstPoint) {
 					measureGeometry = new LineString(lineCoordinates);
 				}					
+
+				if (geometry.getArea()) {
+					let areaOverlay = this._activeSketch.get('area') || this._createOverlay( { positioning: 'top-center' }, MeasurementOverlayTypes.AREA );				 
+					this._addOverlayToMap(map, areaOverlay);
+					this._updateOverlay(areaOverlay, geometry);
+					this._activeSketch.set('area', areaOverlay);
+				}
 			}
 
 			this._updateOverlay(measureTooltip, measureGeometry, '');		
@@ -179,7 +186,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					partitions.pop();
 				}
 			}
-			this._activeSketch.set('partitions', partitions);
+			this._activeSketch.set('partitions', partitions);		
 		};
 		let listener;
 		

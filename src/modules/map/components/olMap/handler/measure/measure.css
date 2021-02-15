@@ -1,4 +1,4 @@
-.ba-overlay, .help, .static, .distance,.floating{
+.ba-overlay, .help, .static, .distance,.area, .floating{
     background-color: rgba(140,140,140,0.9);
     border-radius: 4px;
     color:white;
@@ -32,7 +32,7 @@
     border: none;
 }
 
-.static,.distance{
+.static,.distance, .area{
     background-color: rgba(255,0,0,0.9);
     /* cursor: move; */
 }
