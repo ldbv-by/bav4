@@ -18,6 +18,24 @@ export const getGeometryLength = (geometry) => {
 	return 0;
 };
 
+export const getCoordinateAt = (geometry, fraction) => {
+	let lineString;
+	if (geometry instanceof LineString) {
+		lineString = geometry;
+	}
+	else if (geometry instanceof LinearRing) {
+		lineString = new LineString(geometry.getCoordinates());
+	}
+	else if (geometry instanceof Polygon) {
+		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
+	}	
+	
+	if (lineString) {
+		return lineString.getCoordinateAt(fraction);
+	}
+	return null;
+};
+
 export const canShowAzimuthCircle = (geometry) => {
 	if (geometry instanceof LineString) {
 		const coords = geometry.getCoordinates();
@@ -69,4 +87,14 @@ export const getPartitionDelta = (geometry) => {
 	}
 
 	return delta;
+};
+
+export const isClosedPolygon = (geometry) => {
+	if (geometry instanceof Polygon) {
+		const coordinates = geometry.getCoordinates()[0];
+		const first = coordinates[0];
+		const last = coordinates[coordinates.length - 2];
+		return (first[0] !== last[0] || first[1] !== last[1]);
+	}
+	return false;
 };

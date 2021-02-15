@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, canShowAzimuthCircle, getGeometryLength } from './GeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength } from './GeometryUtils';
 
 export const MeasurementOverlayTypes = {
 	TEXT:'text',
@@ -68,7 +68,7 @@ export class MeasurementOverlay extends BaElement {
 	_updatePosition() {
 		switch (this._type) {
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				this._position = this._geometry.getCoordinateAt(this._value);
+				this._position = getCoordinateAt(this.geometry, this._value);
 				break;
 			case MeasurementOverlayTypes.DISTANCE:	
 			case MeasurementOverlayTypes.HELP:				
