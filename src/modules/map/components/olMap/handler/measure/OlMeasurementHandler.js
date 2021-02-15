@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
-import { getPartitionDelta, isClosedPolygon } from './GeometryUtils';
+import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {

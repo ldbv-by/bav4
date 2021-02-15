@@ -88,13 +88,3 @@ export const getPartitionDelta = (geometry) => {
 
 	return delta;
 };
-
-export const isClosedPolygon = (geometry) => {
-	if (geometry instanceof Polygon) {
-		const coordinates = geometry.getCoordinates()[0];
-		const first = coordinates[0];
-		const last = coordinates[coordinates.length - 2];
-		return (first[0] !== last[0] || first[1] !== last[1]);
-	}
-	return false;
-};
