@@ -198,10 +198,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			measureTooltip.setOffset([0, -7]);				
 			if (geometry instanceof Polygon && !isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
-				event.feature.setGeometry(new LineString(lineCoordinates));				
+				event.feature.setGeometry(new LineString(lineCoordinates));		
+				this._removeOverlayFromMap(draw.getMap(),	this._activeSketch.get('area')	);
 			}
 			else {
-				this._updateOverlay(measureTooltip, geometry, '');
+				this._updateOverlay(measureTooltip, geometry);
 			}
 			this._activeSketch = null;						
 			unByKey(listener);

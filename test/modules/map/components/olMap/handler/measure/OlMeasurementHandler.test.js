@@ -80,7 +80,6 @@ describe('OlMeasurementHandler', () => {
 
 
 	describe('when draw a line', () => {
-		const classUnderTest = new OlMeasurementHandler();
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 		const setupMap =  async () => {
@@ -110,6 +109,7 @@ describe('OlMeasurementHandler', () => {
 		};		
 
 		it('creates tooltip content for line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -124,6 +124,7 @@ describe('OlMeasurementHandler', () => {
 		});	
 
 		it('creates partition tooltips for long line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -136,6 +137,7 @@ describe('OlMeasurementHandler', () => {
 		});	
 
 		it('creates partition tooltips for longer line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [12345, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -148,6 +150,7 @@ describe('OlMeasurementHandler', () => {
 		});	
 
 		it('creates partition tooltips very long line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [123456, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -160,6 +163,7 @@ describe('OlMeasurementHandler', () => {
 		});	
 		
 		it('creates partition tooltips for longest line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1234567, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -171,7 +175,34 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(12);			
 		});	
 
+		it('creates partition tooltips for not closed polygon', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			const geometry  = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500]]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(1);			
+		});	
+
+		it('creates partition tooltips for not closed large polygon', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			const geometry  = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+			const feature = new Feature({ geometry:geometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(10);			
+		});	
+
 		it('removes partition tooltips after shrinking very long line', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [12345, 0]]);
 			const feature = new Feature({ geometry:geometry });
@@ -189,6 +220,7 @@ describe('OlMeasurementHandler', () => {
 		});	
 
 		it('unregister tooltip-listener after finish drawing', async() => {
+			const classUnderTest = new OlMeasurementHandler();
 			const map = await setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry:geometry });	
@@ -203,13 +235,53 @@ describe('OlMeasurementHandler', () => {
 
 			expect(baOverlay.static).toBeTrue();
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
-		});			
+		});		
+		
+		
+		it('positions tooltip content on the end of not closed Polygon', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
+			const feature = new Feature({ geometry:snappedGeometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			const overlay = feature.get('measurement');
+
+			
+			expect(overlay.getPosition()[0]).toBe(0);
+			expect(overlay.getPosition()[1]).toBe(500);
+		});	
+
+		it('positions tooltip content on the end of a updated not closed Polygon', async() => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = await setupMap();
+			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);			  
+			const feature = new Feature({ geometry:snappedGeometry });
+		
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			const overlay = feature.get('measurement');
+			expect(overlay.getPosition()[0]).toBe(0);
+			expect(overlay.getPosition()[1]).toBe(500);
+			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 250], [0, 250]]]);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			expect(overlay.getPosition()[0]).toBe(0);
+			expect(overlay.getPosition()[1]).toBe(250);
+		});	
+		
 	});
 
 	describe('when pointer move', () => {
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
-		const setupMap =  async () => {
+		const setupMap =  () => {
 
 			return new Map({
 				layers: [
@@ -247,9 +319,9 @@ describe('OlMeasurementHandler', () => {
 			map.dispatchEvent(mapEvent);
 		};
 
-		it('creates and move helpTooltip', async() => {
+		it('creates and move helpTooltip', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map = setupMap();
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);			
@@ -258,9 +330,9 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._helpTooltip.getPosition()).toEqual([10, 0]);	
 		});	
 
-		it('no move when dragging', async() => {
+		it('no move when dragging', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map = setupMap();
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0, true);			
@@ -268,9 +340,9 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._helpTooltip.getPosition()).toBeFalsy();
 		});	
 
-		it('change message in helpTooltip, when sketch is changing', async() => {
+		it('change message in helpTooltip, when sketch is changing', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map = setupMap();
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);		
@@ -283,9 +355,9 @@ describe('OlMeasurementHandler', () => {
 		});	
 
 
-		it('change message in helpTooltip, when sketch is changing to polygon', async() => {
+		it('change message in helpTooltip, when sketch is changing to polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map = setupMap();
 			
 			classUnderTest.activate(map);			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						

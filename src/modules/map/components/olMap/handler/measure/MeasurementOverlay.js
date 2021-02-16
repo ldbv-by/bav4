@@ -71,7 +71,7 @@ export class MeasurementOverlay extends BaElement {
 	_updatePosition() {
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:				
-				this._position = [this.geometry.getInteriorPoint().getCoordinates()[0], this.geometry.getInteriorPoint().getCoordinates()[1]];
+				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
@@ -132,11 +132,14 @@ export class MeasurementOverlay extends BaElement {
 
 	_getFormattedSquared(area) {		
 		let output;
-		if (area > 100) {
-			output = Math.round((area / 1000) * 100) / 100 + ' ' + 'km²';
+		if (area >= 1000000) {
+			output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km²';
+		}
+		else if (area >= 10000) {
+			output = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
 		}
 		else {
-			output = area !== 0 ? Math.round(area * 100) / 100 + ' ' + 'm' : '0 m²';
+			output = Math.round(area * 100) / 100 + ' ' + 'm²';
 		}
 		return output;
 	}	

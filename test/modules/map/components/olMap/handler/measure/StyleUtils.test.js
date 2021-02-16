@@ -1,5 +1,5 @@
-import { measureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
-import { Point, LineString } from 'ol/geom';
+import { measureStyleFunction, generateSketchStyleFunction, hexToRgb } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
+import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 
 
@@ -53,4 +53,60 @@ describe('measureStyleFunction', () => {
 	});
 
 
+});
+
+describe('generateSketchStyleFunction', () => {
+	
+	it('should create a stylefunction', () => {
+
+		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+
+		expect(styleFunction).toBeDefined();
+	});
+
+	it('should query the featureGeometry', () => {
+		const geometry  = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry:geometry });
+		const geometrySpy = spyOn(feature, 'getGeometry').and.returnValue(geometry);
+		
+		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styles = styleFunction(feature, null);
+
+		expect(styles).toBeTruthy();
+		expect(geometrySpy).toHaveBeenCalled();
+	});
+
+	it('should have a style for sketch polygon', () => {
+		const geometry  = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+		const feature = new Feature({ geometry:geometry });
+		
+		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styles = styleFunction(feature, null);
+
+		expect(styles).toBeTruthy();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should have a style for sketch point', () => {
+		const geometry  = new Point([0, 0]);
+		const feature = new Feature({ geometry:geometry });
+		
+		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styles = styleFunction(feature, null);
+
+		expect(styles).toBeTruthy();
+		expect(styles.length).toBe(1);
+	});
+});
+
+describe('hexToRgb', () => {
+	it('should convert hex-color to rgb', () => {
+		const hex = '#556688';
+
+		const rgb = hexToRgb(hex);
+	
+		expect(rgb[0]).toBe(85);
+		expect(rgb[1]).toBe(102);
+		expect(rgb[2]).toBe(136);
+	});
 });

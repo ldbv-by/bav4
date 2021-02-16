@@ -1,4 +1,4 @@
-import { getGeometryLength, canShowAzimuthCircle, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle, getCoordinateAt, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -136,5 +136,40 @@ describe('getAzimuth', () => {
 
 			expect(getAzimuth(twoPointLineString)).toBe(270);
 		});
+	});
+});
+
+describe('getCoordinateAt', () => {
+	it('calculates coordinate for LineString', () => {
+		const lineString = new LineString([[0, 0], [2, 0]]);
+		const coord = getCoordinateAt(lineString, 0.5);
+
+		expect(coord[0]).toBe(1);
+		expect(coord[1]).toBe(0);
+	});
+
+
+	it('calculates coordinate for LinearRing', () => {
+		const linearRing = new LinearRing([[0, 0], [2, 0]]);
+		const coord = getCoordinateAt(linearRing, 0.5);
+
+		expect(coord[0]).toBe(1);
+		expect(coord[1]).toBe(0);
+	});
+
+	it('calculates coordinate for Polygon', () => {
+		const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const coord = getCoordinateAt(polygon, 0.5);
+
+		expect(coord[0]).toBe(1);
+		expect(coord[1]).toBe(1);
+	});
+
+	it('calculates NO coordinate for Circle', () => {
+		const circle = new Circle([0, 0], 1);
+		const coord = getCoordinateAt(circle, 0.5);
+
+		expect(coord).toBeNull();
+		
 	});
 });

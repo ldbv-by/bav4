@@ -1,5 +1,5 @@
 import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
-import { LineString } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 
@@ -51,6 +51,18 @@ describe('MeasurementOverlay', () => {
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);			
 			expect(element.static).toBeFalse();
 			expect(div.innerText).toBe('90.00°/1 m');			
+		});
+
+		it('renders the area view', async () => {
+			const properties = { type:MeasurementOverlayTypes.AREA, geometry:new Polygon([[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]) };
+			const element = await setup(properties);			
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(MeasurementOverlayTypes.AREA);			
+			expect(element.static).toBeFalse();
+			expect(div.innerText).toBe('100 m²');			
 		});
 
 		it('renders the distance-partition view', async () => {
@@ -131,6 +143,30 @@ describe('MeasurementOverlay', () => {
 			const div = element.shadowRoot.querySelector('div');
 
 			expect(div.innerText).toBe('90.00°/1.23 km');
+		});
+
+		it('renders formatted area 1 ha', async () => {
+			const properties = { type:MeasurementOverlayTypes.AREA, geometry:new Polygon([[[0, 0], [100, 0], [100, 100], [0, 100], [0, 0]]]) };
+			const element = await setup(properties);			
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(MeasurementOverlayTypes.AREA);			
+			expect(element.static).toBeFalse();
+			expect(div.innerText).toBe('1 ha');			
+		});
+
+		it('renders formatted area 1 km²', async () => {
+			const properties = { type:MeasurementOverlayTypes.AREA, geometry:new Polygon([[[0, 0], [1000, 0], [1000, 1000], [0, 1000], [0, 0]]]) };
+			const element = await setup(properties);			
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('area')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeTrue();
+			expect(element.type).toBe(MeasurementOverlayTypes.AREA);			
+			expect(element.static).toBeFalse();
+			expect(div.innerText).toBe('1 km²');			
 		});
 	});
 
