@@ -19,7 +19,7 @@ $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('OlMeasurementHandler', () => {
 
-	it('has two methods', async () => {
+	it('has two methods', () => {
 		expect(new OlMeasurementHandler()).toBeTruthy();
 		expect(new OlMeasurementHandler().activate).toBeTruthy();
 		expect(new OlMeasurementHandler().deactivate).toBeTruthy();
@@ -29,7 +29,7 @@ describe('OlMeasurementHandler', () => {
 		const classUnderTest = new OlMeasurementHandler();
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
-		const setupMap =  async () => {
+		const setupMap =  () => {
 			return new Map({
 				layers: [
 					new TileLayer({
@@ -47,16 +47,16 @@ describe('OlMeasurementHandler', () => {
 			
 		};
 
-		it('adds a Interaction', async() => {
-			const map = await setupMap();
+		it('adds a Interaction', () => {
+			const map =  setupMap();
 			map.addInteraction = jasmine.createSpy();
 			classUnderTest.activate(map);
 			
 			expect(map.addInteraction).toHaveBeenCalled();
 		});
 
-		it('removes a Interaction', async() => {
-			const map = await setupMap();
+		it('removes a Interaction', () => {
+			const map =  setupMap();
 			const layerStub = {}; 
 			map.removeInteraction = jasmine.createSpy();
 
@@ -66,8 +66,8 @@ describe('OlMeasurementHandler', () => {
 		});	
 		
 
-		it('removes all registered mapOverlays', async() => {
-			const map = await setupMap();
+		it('removes all registered mapOverlays', () => {
+			const map =  setupMap();
 			const layerStub = {}; 
 			map.removeOverlay = jasmine.createSpy();
 			const overlayStub = {};
@@ -82,7 +82,7 @@ describe('OlMeasurementHandler', () => {
 	describe('when draw a line', () => {
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
-		const setupMap =  async () => {
+		const setupMap =   () => {
 
 			return new Map({
 				layers: [
@@ -108,9 +108,9 @@ describe('OlMeasurementHandler', () => {
 			draw.dispatchEvent(drawEvent);
 		};		
 
-		it('creates tooltip content for line', async() => {
+		it('creates tooltip content for line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -123,9 +123,9 @@ describe('OlMeasurementHandler', () => {
 			expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
 		});	
 
-		it('creates partition tooltips for long line', async() => {
+		it('creates partition tooltips for long line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -136,9 +136,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(1);			
 		});	
 
-		it('creates partition tooltips for longer line', async() => {
+		it('creates partition tooltips for longer line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [12345, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -149,9 +149,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(12);			
 		});	
 
-		it('creates partition tooltips very long line', async() => {
+		it('creates partition tooltips very long line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [123456, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -162,9 +162,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(12);			
 		});	
 		
-		it('creates partition tooltips for longest line', async() => {
+		it('creates partition tooltips for longest line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [1234567, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -175,9 +175,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(12);			
 		});	
 
-		it('creates partition tooltips for not closed polygon', async() => {
+		it('creates partition tooltips for not closed polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500]]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -188,9 +188,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(1);			
 		});	
 
-		it('creates partition tooltips for not closed large polygon', async() => {
+		it('creates partition tooltips for not closed large polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -201,9 +201,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(10);			
 		});	
 
-		it('removes partition tooltips after shrinking very long line', async() => {
+		it('removes partition tooltips after shrinking very long line', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [12345, 0]]);
 			const feature = new Feature({ geometry:geometry });
 		
@@ -219,9 +219,9 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(1);			
 		});	
 
-		it('unregister tooltip-listener after finish drawing', async() => {
+		it('unregister tooltip-listener after finish drawing', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const geometry  = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry:geometry });	
 		
@@ -238,9 +238,9 @@ describe('OlMeasurementHandler', () => {
 		});		
 		
 		
-		it('positions tooltip content on the end of not closed Polygon', async() => {
+		it('positions tooltip content on the end of not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
 			const feature = new Feature({ geometry:snappedGeometry });
 		
@@ -255,9 +255,9 @@ describe('OlMeasurementHandler', () => {
 			expect(overlay.getPosition()[1]).toBe(500);
 		});	
 
-		it('positions tooltip content on the end of a updated not closed Polygon', async() => {
+		it('positions tooltip content on the end of a updated not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const map = await setupMap();
+			const map =  setupMap();
 			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);			  
 			const feature = new Feature({ geometry:snappedGeometry });
 		
