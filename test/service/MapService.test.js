@@ -19,8 +19,8 @@ describe('MapService', () => {
 			return {
 				defaultExtent: [0, 1, 2, 3],
 				srid: 3857,
-				defaultSridForView:  4326,
-				sridsForView :[4326, 9999],
+				defaultSridForView: 4326,
+				sridDefinitionsForView: [{ label: 'WGS88', code: 4326 }, { label: 'Something', code: 9999 }],
 				defaultGeodeticSrid: 9999
 			};
 		};
@@ -62,7 +62,7 @@ describe('MapService', () => {
 	it('provides an array of srids for the view', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getSridsForView()).toEqual([4326, 9999]);
+		expect(instanceUnderTest.getSridDefinitionsForView()).toEqual([{ label: 'WGS88', code: 4326 }, { label: 'Something', code: 9999 }]);
 	});
 
 	it('provides the internal srid of the map', () => {
