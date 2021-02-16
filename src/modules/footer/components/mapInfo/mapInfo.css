@@ -6,7 +6,7 @@
   
 
 .labels {
-    padding-top: 15px;
+    padding: 10px;
     /* flex-grow: 100; */
     display: block;
 }
@@ -20,4 +20,10 @@
 .buttons {
     /* flex-grow: 200; */
     display: block;
+}
+
+.coord {
+    padding-top: 2px;
+    /* flex-grow: 100; */
+    display: flex;
 }

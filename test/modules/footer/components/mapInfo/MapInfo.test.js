@@ -21,6 +21,12 @@ const setupStoreAndDi = (state) => {
 
 	$injector
 		.register('CoordinateService', OlCoordinateService);
+	$injector
+		.registerSingleton('MapService', { getSridsForView: () => {
+			return [0]; 
+		}, getSrid: () => {
+			return [0]; 
+		} } );
 };
 
 
