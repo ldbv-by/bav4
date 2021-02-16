@@ -11,6 +11,10 @@
  */
 export const getBvvMapDefinitions = () => {
 	return {
-		defaultExtent : [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
+		defaultExtent : [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462],
+		srid: 3857,
+		defaultSridForView:  25832,
+		sridsForView :[25832, 4326],
+		defaultGeodeticSrid: 25832
 	};
 };

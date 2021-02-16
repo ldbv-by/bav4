@@ -17,7 +17,11 @@ describe('MapService', () => {
 	const setup = () => {
 		const definitionsProvider = () => {
 			return {
-				defaultExtent: [0, 1, 2, 3]
+				defaultExtent: [0, 1, 2, 3],
+				srid: 3857,
+				defaultSridForView:  4326,
+				sridsForView :[4326, 9999],
+				defaultGeodeticSrid: 9999
 			};
 		};
 		return new MapService(definitionsProvider);
@@ -55,6 +59,12 @@ describe('MapService', () => {
 		expect(instanceUnderTest.getDefaultSridForView()).toBe(4326);
 	});
 
+	it('provides an array of srids for the view', () => {
+		const instanceUnderTest = setup();
+
+		expect(instanceUnderTest.getSridsForView()).toEqual([4326, 9999]);
+	});
+
 	it('provides the internal srid of the map', () => {
 		const instanceUnderTest = setup();
 
@@ -64,7 +74,7 @@ describe('MapService', () => {
 	it('provides a srid for geodetic tasks', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(25832);
+		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(9999);
 	});
 });
 

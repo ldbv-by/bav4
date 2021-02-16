@@ -21,7 +21,7 @@ $injector
 	.register('HttpService', HttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)
-	.register('CoordinateService', OlCoordinateService)
+	.registerSingleton('CoordinateService', new OlCoordinateService())
 	.registerSingleton('EnvironmentService', new EnvironmentService(window))
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService(loadBvvGeoResources))
