@@ -13,6 +13,7 @@ import { SearchResultProviderService } from '../modules/search/services/SearchRe
 import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/provider/searchResult.provider';
 import { getBvvMapDefinitions } from '../services/provider/mapDefinitions.provider';
 import { MapService } from '../services/MapService';
+import { mapModule } from '../modules/map/services';
 
 
 $injector
@@ -26,7 +27,7 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService)
-	.registerSingleton('MapService', new MapService(getBvvMapDefinitions));
-
+	.registerSingleton('MapService', new MapService(getBvvMapDefinitions))
+	.registerModule(mapModule);
 
 export let init = true;
