@@ -1,8 +1,8 @@
 export const MAP_CONTEXT_MENUE_CLICKED = 'event/contextMenue';
 
 export const initialState = {
-	eventCoordinate: null,
-	data: null
+	coordinate: null,
+	id: null
 };
 
 export const mapContextMenueReducer = (state = initialState, action) => {
@@ -11,8 +11,8 @@ export const mapContextMenueReducer = (state = initialState, action) => {
 		case MAP_CONTEXT_MENUE_CLICKED: {
 			return {
 				...state,
-				eventCoordinate: payload.eventCoordinate,
-				data: payload.data,
+				coordinate: payload.coordinate,
+				id: payload.id,
 			};
 		}
 	}
