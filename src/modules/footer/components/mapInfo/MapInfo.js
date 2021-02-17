@@ -23,10 +23,10 @@ export class MapInfo extends BaElement {
 
 	initialize() {
 		// let's listen for map_clicked -events
-		window.addEventListener('map_clicked', (evt) => {
-			alert('click @ ' + this._coordinateService.stringify(
-				this._coordinateService.toLonLat(evt.detail), 3));
-		});
+		// window.addEventListener('map_clicked', (evt) => {
+		// 	alert('click @ ' + this._coordinateService.stringify(
+		// 		this._coordinateService.toLonLat(evt.detail), 3));
+		// });
 
 	}
 
