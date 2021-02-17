@@ -2,7 +2,21 @@
   display: none;
   position: fixed;
   z-index: 10;
-  background-color: var(--secondary-bg-color);
+  background-color: var(--primary-bg-color);
+  border: 3px solid var(--primary-color);
+}
+
+.header {
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  font-size: 0.95em;
+  padding: 2px;
+  padding-bottom: 6px;
+}
+
+.close{
+  float: right;
 }
 
 .active {
@@ -12,43 +26,43 @@
 .top-left{
 }
 .top-left:after{
-  content:'';
-  position:absolute;
-  border-top:20px solid transparent;
-  border-left:20px solid var(--secondary-bg-color);
-  top:-20px;
-  left:0px;
+  content: '';
+  position: absolute;
+  border-top: 20px solid transparent;
+  border-left: 20px solid var(--primary-color);
+  top: -23px;
+  left: -3px;
 }
 
 .top-right{
 }
 .top-right:after{
-  content:'';
-  position:absolute;
-  border-top:20px solid transparent;
-  border-right:20px solid var(--secondary-bg-color);
-  top:-20px;
-  right:0px;
+  content: '';
+  position: absolute;
+  border-top: 20px solid transparent;
+  border-right: 20px solid var(--primary-color);
+  top: -23px;
+  right: -3px;
 }
 
 .bottom-left{
 }
 .bottom-left:after{
-  content:'';
-  position:absolute;
-  border-bottom:20px solid transparent;
-  border-left:20px solid var(--secondary-bg-color);
-  bottom:-20px;
-  left:0px;
+  content: '';
+  position: absolute;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid var(--primary-color);
+  bottom: -23px;
+  left: -3px;
 }
 
 .bottom-right{
 }
 .bottom-right:after{
   content:'';
-  position:absolute;
-  border-bottom:20px solid transparent;
-  border-right:20px solid var(--secondary-bg-color);
-  bottom:-20px;
-  right:0px;
+  position: absolute;
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid var(--primary-color);
+  bottom: -23px;
+  right: -3px;
 }
