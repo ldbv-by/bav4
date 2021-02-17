@@ -88,3 +88,30 @@ export const getPartitionDelta = (geometry) => {
 
 	return delta;
 };
+
+// intermediate helper-function until kind of FormattingService is in place
+export const getFormattedLength = (length) => {		
+	let formatted;
+	if (length > 100) {
+		formatted = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+	}
+	else {
+		formatted = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
+	}
+	return formatted;
+};	
+
+// intermediate helper-function until kind of FormattingService is in place
+export const getFormattedArea = (area) =>  {		
+	let formatted;
+	if (area >= 1000000) {
+		formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km²';
+	}
+	else if (area >= 10000) {
+		formatted = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
+	}
+	else {
+		formatted = Math.round(area * 100) / 100 + ' ' + 'm²';
+	}
+	return formatted;
+};	

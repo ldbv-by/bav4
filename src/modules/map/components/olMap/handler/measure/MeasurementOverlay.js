@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength } from './GeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getFormattedArea, getFormattedLength } from './GeometryUtils';
 import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {
@@ -89,14 +89,14 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.AREA:
 				this._contentFunction = () => {					
 					if (this.geometry instanceof Polygon) {
-						return this._getFormattedSquared(this.geometry.getArea());
+						return getFormattedArea(this.geometry.getArea());
 					}
 					return '';
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = this._getFormatted(getGeometryLength(this.geometry));
+					const length = getFormattedLength(getGeometryLength(this.geometry));
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
@@ -109,7 +109,7 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._contentFunction = () => {
 					const length = getGeometryLength(this.geometry);
-					return this._getFormatted(length * this._value);
+					return getFormattedLength(length * this._value);
 				};
 				break;
 			case MeasurementOverlayTypes.HELP:
@@ -118,31 +118,6 @@ export class MeasurementOverlay extends BaElement {
 				break;
 		}
 	}
-
-	_getFormatted(length) {		
-		let output;
-		if (length > 100) {
-			output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
-		}
-		else {
-			output = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
-		}
-		return output;
-	}	
-
-	_getFormattedSquared(area) {		
-		let output;
-		if (area >= 1000000) {
-			output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km²';
-		}
-		else if (area >= 10000) {
-			output = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
-		}
-		else {
-			output = Math.round(area * 100) / 100 + ' ' + 'm²';
-		}
-		return output;
-	}	
 
 	static get tag() {
 		return 'ba-measure-overlay';
