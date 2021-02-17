@@ -1,10 +1,8 @@
 import { OlMapEventHandler } from '../OlMapEventHandler';
 import { open, close } from '../../../../store/mapContextMenue.action';
 import { $injector } from '../../../../../../injection';
-import { MapContextMenue } from './MapContextMenue';
-if (!window.customElements.get(MapContextMenue.tag)) {
-	window.customElements.define(MapContextMenue.tag, MapContextMenue);
-}
+import { MapContextMenue } from '../../../contextMenue/MapContextMenue';
+
 
 export class ContextMenueEventHandler extends OlMapEventHandler {
 

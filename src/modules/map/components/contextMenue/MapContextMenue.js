@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { BaElement } from '../../../../../BaElement';
+import { BaElement } from '../../../BaElement';
 import css from './mapContextMenue.css';
 
 /**

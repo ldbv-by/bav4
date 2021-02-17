@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
-import { MapContextMenue } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenue/MapContextMenue';
-import { mapContextMenueReducer } from '../../../../../../../src/modules/map/store/mapContextMenue.reducer';
-import { TestUtils } from '../../../../../../test-utils.js';
-import { initialState } from '../../../../../../../src/modules/contextMenue/store/contextMenue.reducer';
-import { close, open } from '../../../../../../../src/modules/map/store/mapContextMenue.action';
+import { MapContextMenue } from '../../../../../src/modules/map/components/contextMenue/MapContextMenue';
+import { mapContextMenueReducer } from '../../../../../src/modules/map/store/mapContextMenue.reducer';
+import { TestUtils } from '../../../../test-utils.js';
+import { initialState } from '../../../../../src/modules/contextMenue/store/contextMenue.reducer';
+import { close, open } from '../../../../../src/modules/map/store/mapContextMenue.action';
 window.customElements.define(MapContextMenue.tag, MapContextMenue);
 
 describe('MapContextMenue', () => {
