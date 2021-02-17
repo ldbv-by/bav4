@@ -31,6 +31,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw = false;			
 		this._activeSketch = null;		
 		this._helpTooltip;
+		this._isFinishOnFirstPoint = false;
+		this._isSnapOnLastPoint = false;
+		this._pointCount = 0;
 		this._overlays = [];
 	}
 
@@ -50,9 +53,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
-			const continuePolygonMsg = translate('draw_measure_continue_polygon');
-			const continueLineMsg = translate('draw_measure_continue_line');
-
+			
 			if (event.dragging) {
 				return;
 			}
@@ -60,16 +61,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			let helpMsg =  translate('draw_measure_start');
 
 			if (this._activeSketch) {
-				var geom = this._activeSketch.getGeometry();
-				if (geom instanceof Polygon) {
-					helpMsg = continuePolygonMsg;
+				this._activeSketch.getGeometry();
+				helpMsg = translate('draw_measure_continue_line');
+
+				if (this._isFinishOnFirstPoint) {
+					helpMsg = translate('draw_measure_snap_first_point');
 				}
-				else if (geom instanceof LineString) {
-					helpMsg = continueLineMsg;
+				else if (this._isSnapOnLastPoint) {
+					helpMsg = translate('draw_measure_snap_last_point');
+				}
+
+				if (this._pointCount > 2) {
+					helpMsg += '<br/>' + translate('draw_delete_last_point');
 				}
 			}
 			
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg );
+		};
+
+		const removeLastPoint = (draw, event) => {
+			if ((event.which === 46 || event.keyCode === 46 ) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+				draw.removeLastPoint();
+			}
 		};
 
 		if (this._draw === false) {
@@ -81,7 +94,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance:4 });
 			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
-			
+			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
+
+
 			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._draw);	
@@ -99,6 +114,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._draw);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
 		unByKey(this._pointerMoveListener);
+		unByKey(this._keyboardListener);
 		this._helpTooltip = null;
 		this._draw = false;
 	}	
@@ -121,9 +137,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			snapTolerance:4,
 			style: generateSketchStyleFunction(measureStyleFunction)
 		});						
-		let isFinishOnFirstPoint = false;
 		
-		let pointCount, isSnapOnLastPoint;
 		const updateMeasureTooltips = (geometry) => {
 			let measureGeometry = geometry;
 			const map = draw.getMap();
@@ -133,9 +147,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				
 
-				if (pointCount !== lineCoordinates.length) {
+				if (this._pointCount !== lineCoordinates.length) {
 					// a point is added or removed
-					pointCount = lineCoordinates.length;
+					this._pointCount = lineCoordinates.length;
 				}
 				else if (lineCoordinates.length > 1) {
 					const firstPoint = lineCoordinates[0];
@@ -143,12 +157,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
 
 					const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-					isFinishOnFirstPoint = (!isSnapOnLastPoint && isSnapOnFirstPoint);
+					this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
 
-					isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+					this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
 				}
 				
-				if (!isFinishOnFirstPoint) {
+				if (!this._isFinishOnFirstPoint) {
 					measureGeometry = new LineString(lineCoordinates);
 				}					
 
@@ -196,7 +210,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const measureTooltip = event.feature.get('measurement');
 			measureTooltip.getElement().static = true;
 			measureTooltip.setOffset([0, -7]);				
-			if (geometry instanceof Polygon && !isFinishOnFirstPoint) {
+			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));		
 				this._removeOverlayFromMap(draw.getMap(),	this._activeSketch.get('area')	);
@@ -214,8 +228,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
-			pointCount = 1;		
-			isSnapOnLastPoint = false;
+			this._pointCount = 1;		
+			this._isSnapOnLastPoint = false;
 			listener = event.feature.getGeometry().on('change', event => {
 				updateMeasureTooltips(event.target);
 			});

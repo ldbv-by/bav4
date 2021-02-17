@@ -25,6 +25,19 @@ describe('OlMeasurementHandler', () => {
 		expect(new OlMeasurementHandler().deactivate).toBeTruthy();
 	});
 
+	const simulateDrawEvent = (type, draw, feature) => {
+		const eventType = type;
+		const drawEvent = new DrawEvent(eventType, feature);
+		
+		draw.dispatchEvent(drawEvent);
+	};		
+
+	const simulateKeyEvent = (keyCode) => {
+		const keyEvent = new KeyboardEvent('keyup', { keyCode:keyCode, which:keyCode });
+		
+		document.dispatchEvent(keyEvent);
+	};
+
 	describe('when activated over olMap', () => {
 		const classUnderTest = new OlMeasurementHandler();
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -99,14 +112,7 @@ describe('OlMeasurementHandler', () => {
 				}),
 			});
 			
-		};
-
-		const simulateDrawEvent = (type, draw, feature) => {
-			const eventType = type;
-			let drawEvent = new DrawEvent(eventType, feature);
-			
-			draw.dispatchEvent(drawEvent);
-		};		
+		};	
 
 		it('creates tooltip content for line', () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -276,6 +282,22 @@ describe('OlMeasurementHandler', () => {
 			expect(overlay.getPosition()[1]).toBe(250);
 		});	
 		
+
+		it('removes last point if keypressed', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map =  setupMap();
+			const geometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);			  
+			const feature = new Feature({ geometry:geometry });
+			const deleteKeyCode = 46;
+		
+			classUnderTest.activate(map);			
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			feature.getGeometry().dispatchEvent('change');
+			
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+		});
 	});
 
 	describe('when pointer move', () => {
@@ -354,19 +376,52 @@ describe('OlMeasurementHandler', () => {
 			expect(baOverlay.value).toBe('draw_measure_continue_line');	
 		});	
 
-
-		it('change message in helpTooltip, when sketch is changing to polygon', () => {
+		it('change message in helpTooltip, when sketch is snapping to first point', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			
-			classUnderTest.activate(map);			
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);						
+			classUnderTest.activate(map);	
 			const baOverlay = classUnderTest._helpTooltip.getElement();
-			expect(baOverlay.value).toBe('draw_measure_start');		
-			classUnderTest._activeSketch = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });	
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);						
-			expect(baOverlay.value).toBe('draw_measure_continue_polygon');	
+			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(baOverlay.value).toBe('draw_measure_start');			
+			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);			  
+			const feature = new Feature({ geometry:snappedGeometry });
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);		
+			feature.getGeometry().dispatchEvent('change');		
+			expect(classUnderTest._pointCount).toBe(4);
+			
+			
+			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._pointCount).toBe(5);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);									
+			expect(baOverlay.value).toBe('draw_measure_snap_first_point<br/>draw_delete_last_point');	
 		});	
+
+		it('change message in helpTooltip, when sketch is snapping to last point', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			
+			classUnderTest.activate(map);	
+			const baOverlay = classUnderTest._helpTooltip.getElement();
+			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(baOverlay.value).toBe('draw_measure_start');			
+			const snappedGeometry  =  new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);			  
+			const feature = new Feature({ geometry:snappedGeometry });
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);		
+			feature.getGeometry().dispatchEvent('change');		
+			expect(classUnderTest._pointCount).toBe(4);
+			
+			
+			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]]);
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._pointCount).toBe(5);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);									
+			expect(baOverlay.value).toBe('draw_measure_snap_last_point<br/>draw_delete_last_point');	
+		});	
+		
 	});
 });
 

@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../../../BaElement';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -63,7 +64,7 @@ export class MeasurementOverlay extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class='ba-overlay ${classMap(classes)}'>
-				${content}
+				${unsafeHTML(content)}
 			</div>
 		`;
 	}

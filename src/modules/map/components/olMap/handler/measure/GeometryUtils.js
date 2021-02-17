@@ -105,13 +105,13 @@ export const getFormattedLength = (length) => {
 export const getFormattedArea = (area) =>  {		
 	let formatted;
 	if (area >= 1000000) {
-		formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km²';
+		formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km&sup2;';
 	}
 	else if (area >= 10000) {
 		formatted = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
 	}
 	else {
-		formatted = Math.round(area * 100) / 100 + ' ' + 'm²';
+		formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
 	}
 	return formatted;
 };	
