@@ -18,16 +18,24 @@ describe('ContextMenueEventHandler', () => {
 		copyToClipboard() { }
 	};
 
+	const mapServiceMock = {
+	};
+
+	const coordinateServiceMock = {
+	};
 
 	const setup = (state = initialState) => {
 		const mapContextMenueState = {
 			mapContextMenue: state
 		};
 
+
 		store = TestUtils.setupStoreAndDi(mapContextMenueState, { mapContextMenue: mapContextMenueReducer });
 
 		$injector
-			.registerSingleton('ShareService', shareServiceMock);
+			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('CoordinateService', coordinateServiceMock);
 
 	};
 
@@ -42,58 +50,58 @@ describe('ContextMenueEventHandler', () => {
 
 	describe('when contextmenu (i.e. with right-click) is performed', () => {
 
-		it('it updates the store', () => {
+		it('it updates the store and inserts a ba-ol-map-context-menue-content element', () => {
 			setup();
 			const map = new Map();
 			const handler = new ContextMenueEventHandler();
 			handler.register(map);
 
-
 			simulateMouseEvent(map, 'contextmenu', 10, 5);
 
-
-			const eventCoordinate = store.getState().mapContextMenue.eventCoordinate;
-			const data = store.getState().mapContextMenue.data;
-			expect(eventCoordinate).toEqual({ x: 10, y: 5 });
-			expect(data).toEqual({});
+			const { coordinate, id } = store.getState().mapContextMenue;
+			expect(coordinate).toEqual([10, 5]);
+			expect(id).toEqual('ba-ol-map-context-menue-content_generatedByContextMenueEventHandler');
+			const element = document.querySelector('ba-ol-map-context-menue-content');
+			expect(element).toBeTruthy();
+			expect(element.id).toBe('ba-ol-map-context-menue-content_generatedByContextMenueEventHandler');
 		});
 	});
 
 	describe('when single click is performed', () => {
 
-		it('it updates the store', async () => {
+		it('it updates/resets the store',  () => {
 			const state = {
-				eventCoordinate: { x: 10, y: 10 },
-				data: null
+				coordinate: [10, 10],
+				id: null
 			};
 			setup(state);
 			const map = new Map();
 			const handler = new ContextMenueEventHandler();
 			handler.register(map);
-			
+
 			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, 0, 0);
 
-			const eventCoordinate = store.getState().mapContextMenue.eventCoordinate;
-			expect(eventCoordinate).toBeNull();
+			const { coordinate } = store.getState().mapContextMenue;
+			expect(coordinate).toBeNull();
 		});
 	});
 
-	describe('when changes center', () => {
+	describe('when center changes', () => {
 
-		it('it updates the store', async () => {
+		it('it updates/resets the store',  () => {
 			const state = {
-				eventCoordinate: { x: 10, y: 10 },
-				data: null
+				eventCoordinate: [10, 10],
+				id: null
 			};
 			setup(state);
 			const map = new Map();
 			const handler = new ContextMenueEventHandler();
 			handler.register(map);
-			
+
 			simulateMapEvent(map, MapEventType.MOVESTART);
 
-			const eventCoordinate = store.getState().mapContextMenue.eventCoordinate;
-			expect(eventCoordinate).toBeNull();
+			const { coordinate } = store.getState().mapContextMenue;
+			expect(coordinate).toBeNull();
 		});
 	});
 });
