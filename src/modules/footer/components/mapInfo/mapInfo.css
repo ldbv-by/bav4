@@ -22,8 +22,9 @@
     display: block;
 }
 
-.coord {
+.coordinates {
     padding-top: 2px;
     /* flex-grow: 100; */
     display: flex;
+    align-items: center;
 }
