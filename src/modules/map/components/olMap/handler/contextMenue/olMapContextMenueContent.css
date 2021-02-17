@@ -1,0 +1,15 @@
+.container {
+    float: left;
+  }
+  
+.content {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.8em;
+}
+  
+  .content li {
+    padding: 5px;
+    text-align: left;
+  }
