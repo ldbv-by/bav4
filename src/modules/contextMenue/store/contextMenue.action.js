@@ -11,15 +11,15 @@ const getStore = () => {
 };
 
 /**
- * A pointer representing a location in (x,y) coordinate space, specified in integer precision for the display.
- * @typedef {Object} Point
+ * A screen coordinate representing a location in (x,y) coordinate space, specified in integer precision.
+ * @typedef {Object} ScreenCoordinate
  * @property {number} [x] The X coordinate of this Point.
  * @property {number} [y] The Y coordinate of this Point.
  */
 
 /**
  * 
- * @typedef {Object} Command
+ * @typedef {Object} Data
  * @property {String} [label] The Label of this command.
  * @property {String} [shortcut] The Keyboard-Shortcut (optional) of this Command.
  * @property {function} [action1] The Callback to call, if the user select this command.
@@ -28,8 +28,8 @@ const getStore = () => {
 /**
  * Properties to display the contextmenu at a specific point with specific entries
  * @typedef {Object} ContextMenuData
- * @property {Point} [pointer] The Pointer, a location, where the contextmenu should be placed.
- * @property {Command[]} [commands] The list of available commands, to show in the contextmenu.
+ * @property {ScreenCoordinate} [eventCoordinate] Screen coordinates where the contextmenu should be placed.
+ * @property {Data[]} [data] The list of available data, to display in the contextmenu.
  */
 
 /**
