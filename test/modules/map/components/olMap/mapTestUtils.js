@@ -15,7 +15,7 @@ export const simulateMouseEvent = (map, type, x, y, dragging) => {
 	event.preventDefault = function () { };
 
 
-	let mapEvent = new MapBrowserEvent(eventType, map, event);
+	const mapEvent = new MapBrowserEvent(eventType, map, event);
 	mapEvent.dragging = dragging ? dragging : false;
 	map.dispatchEvent(mapEvent);
 };
