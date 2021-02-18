@@ -25,8 +25,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
 		this._translationService = TranslationService;
+		this._mapService = MapService;
 		this._vectorLayer = null;
 		this._draw = false;			
 		this._activeSketch = null;		
@@ -179,7 +180,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
-			let delta = getPartitionDelta(measureGeometry);			
+
+			const fromProjection = 'EPSG:' + this._mapService.getSrid();
+			const toProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();		
+			const geodeticGeometry = measureGeometry.clone().transform(fromProjection, toProjection);
+			let delta = getPartitionDelta(geodeticGeometry);			
 			let partitionIndex = 0;
 			for (let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 

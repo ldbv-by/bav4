@@ -11,10 +11,17 @@ import { MapBrowserEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
 
 
 TestUtils.setupStoreAndDi({ }, );
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
+$injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
+
+proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+register(proj4);
+
 
 
 describe('OlMeasurementHandler', () => {

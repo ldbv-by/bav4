@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../../../BaElement';
+import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getFormattedArea, getFormattedLength } from './GeometryUtils';
@@ -40,6 +41,8 @@ export class MeasurementOverlay extends BaElement {
 
 	constructor() {
 		super();
+		const { MapService } = $injector.inject('MapService');		
+		this._mapService = MapService;
 		this._value = '';
 		this._static = false;		
 		this._type = MeasurementOverlayTypes.TEXT;
@@ -69,6 +72,12 @@ export class MeasurementOverlay extends BaElement {
 		`;
 	}
 
+	_updateGeodetic() {
+		const fromProjection = 'EPSG:' + this._mapService.getSrid();
+		const toProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();		
+		this._geodetic = this._geometry.clone().transform(fromProjection, toProjection);
+	}
+
 	_updatePosition() {
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:				
@@ -90,14 +99,14 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.AREA:
 				this._contentFunction = () => {					
 					if (this.geometry instanceof Polygon) {
-						return getFormattedArea(this.geometry.getArea());
+						return getFormattedArea(this._geodetic.getArea());
 					}
 					return '';
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = getFormattedLength(getGeometryLength(this.geometry));
+					const length = getFormattedLength(getGeometryLength(this._geodetic));
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
@@ -109,7 +118,7 @@ export class MeasurementOverlay extends BaElement {
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._contentFunction = () => {
-					const length = getGeometryLength(this.geometry);
+					const length = getGeometryLength(this._geodetic);
 					return getFormattedLength(length * this._value);
 				};
 				break;
@@ -158,12 +167,11 @@ export class MeasurementOverlay extends BaElement {
 		return this._static;
 	}
 
-	set geometry(value) {
-		
+	set geometry(value) {		
 		this._geometry = value;
+		this._updateGeodetic();
 		this._updatePosition();
-		this.render();
-		
+		this.render();		
 	}
 
 	get geometry() {
