@@ -16,14 +16,14 @@ export class OlMapContextMenueContent extends BaElement {
 		this._coordinateService = coordinateService;
 	}
 
-	set coordinate(value) {
-		this._coordinate = value;
+	set coordinate(coordinateInMapSrid) {
+		this._coordinate = coordinateInMapSrid;
 	}
 
 
 	createView() {
 		if (this._coordinate) {
-			const sridDefinitions = this._mapService.getSridDefinitionsForView();
+			const sridDefinitions = this._mapService.getSridDefinitionsForView(this._coordinate);
 			const stringifiedCoords = sridDefinitions.map(definition => {
 				const { label, code } = definition;
 				const transformedCoordinate = this._coordinateService.transform(this._coordinate, this._mapService.getSrid(), code);

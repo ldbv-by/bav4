@@ -38,7 +38,7 @@ describe('OlMapContextMenueContent', () => {
 
 	describe('when screen coordinate available', () => {
 		it('renders the content', async () => {
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const transformMock =  spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
@@ -51,6 +51,7 @@ describe('OlMapContextMenueContent', () => {
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('li').innerText).toBe('code42 stringified coordinate');
+			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42);
 
