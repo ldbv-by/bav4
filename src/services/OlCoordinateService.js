@@ -1,16 +1,16 @@
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { loadBvvDefinitions } from './provider/proj4.provider';
-import { defaultStringifyFunction } from './provider/stringifyCoords.provider';
+import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 import proj4 from 'proj4';
 
 /**
- * Utilities for coordinates like transformation based on ol.
+ * Utilities methods for coordinates like transformation, based on ol.
  * @class
  * @author aul
  */
 export class OlCoordinateService {
 
-	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = defaultStringifyFunction) {
+	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = bvvStringifyFunction) {
 		proj4Provider();
 		this._stringifyFunction = stringifyFunction;
 	}
