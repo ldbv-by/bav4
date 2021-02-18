@@ -81,7 +81,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const removeLastPoint = (draw, event) => {
 			if ((event.which === 46 || event.keyCode === 46 ) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				draw.removeLastPoint();
+				if (draw) {
+					draw.removeLastPoint();
+				}				
 			}
 		};
 
