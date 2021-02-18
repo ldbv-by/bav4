@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/map/i18n/contextMenue.provider';
+import { provide } from '../../../../src/modules/map/i18n/contextMenu.provider';
 
 
 describe('i18n for context menue', () => {
@@ -7,8 +7,8 @@ describe('i18n for context menue', () => {
 
 		const map = provide('en');
 
-		expect(map.map_context_menue_header).toBe('Location');		
-		expect(map.map_context_menue_close_button).toBe('Close');		
+		expect(map.map_context_menu_header).toBe('Location');		
+		expect(map.map_context_menu_close_button).toBe('Close');		
 	});
 
 
@@ -16,8 +16,8 @@ describe('i18n for context menue', () => {
 
 		const map = provide('de');
 
-		expect(map.map_context_menue_header).toBe('Position');		
-		expect(map.map_context_menue_close_button).toBe('Schließen');		
+		expect(map.map_context_menu_header).toBe('Position');		
+		expect(map.map_context_menu_close_button).toBe('Schließen');		
 	});
 
 	it('provides an empty map for a unknown lang', () => {

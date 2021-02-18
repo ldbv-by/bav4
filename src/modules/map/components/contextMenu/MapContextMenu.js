@@ -1,9 +1,9 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { BaElement } from '../../../BaElement';
-import css from './mapContextMenue.css';
+import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
-import { close as closeContextMenue } from '../../store/mapContextMenue.action';
+import { close as closeContextMenu } from '../../store/mapContextMenu.action';
 
 import closeIcon from './assets/x-square.svg';
 
@@ -11,7 +11,7 @@ import closeIcon from './assets/x-square.svg';
  * 
  * @class
  */
-export class MapContextMenue extends BaElement {
+export class MapContextMenu extends BaElement {
 
 	constructor() {
 		super();
@@ -24,7 +24,7 @@ export class MapContextMenue extends BaElement {
 
 
 	_calculateParameter(coordinate, element) {
-		//alignment: location of the event coordinate relative to the menue
+		//alignment: location of the event coordinate relative to the menu
 		const values = { left: 0, top: 0, vAlignment: 'left', hAlignment: 'top' };
 		if (!element || !coordinate) {
 			return values;
@@ -64,7 +64,7 @@ export class MapContextMenue extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { coordinate, id } = this._state;
 
-		const parameters = this._calculateParameter(coordinate, this._root.querySelector('.context-menue'));
+		const parameters = this._calculateParameter(coordinate, this._root.querySelector('.context-menu'));
 		const style = { left: parameters.left, top: parameters.top };
 		const getClasses = () => {
 			const classes = [];
@@ -83,8 +83,8 @@ export class MapContextMenue extends BaElement {
 		//see: https://lit-html.polymer-project.org/guide/template-reference#supported-data-types-for-text-bindings -> Node
 		return html`
         <style>${css}</style>
-		<div class='context-menue $ ${getClasses()}' style=${styleMap(style)}>
-			<div class='header'>${translate('map_context_menue_header')}<ba-icon class='close' icon='${closeIcon}' title=${translate('map_context_menue_close_button')} size=20 color='white'} @click=${closeContextMenue}></ba-icon></div>
+		<div class='context-menu $ ${getClasses()}' style=${styleMap(style)}>
+			<div class='header'>${translate('map_context_menu_header')}<ba-icon class='close' icon='${closeIcon}' title=${translate('map_context_menu_close_button')} size=20 color='white'} @click=${closeContextMenu}></ba-icon></div>
 			${content}
         </div>`;
 
@@ -95,11 +95,11 @@ export class MapContextMenue extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { mapContextMenue: { coordinate, id } } = store;
+		const { mapContextMenu: { coordinate, id } } = store;
 		return { coordinate, id };
 	}
 
 	static get tag() {
-		return 'ba-map-context-menue';
+		return 'ba-map-context-menu';
 	}
 }

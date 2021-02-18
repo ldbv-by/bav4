@@ -1,12 +1,10 @@
 /* eslint-disable no-undef */
-import { OlMapContextMenueContent } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenue/OlMapContextMenueContent';
-// import { initialState, mapContextMenueReducer } from '../../../../../src/modules/map/store/mapContextMenue.reducer';
+import { OlMapContextMenuContent } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenu/OlMapContextMenuContent';
 import { TestUtils } from '../../../../../../test-utils';
-// import { close, open } from '../../../../../src/modules/map/store/mapContextMenue.action';
 import { $injector } from '../../../../../../../src/injection';
-window.customElements.define(OlMapContextMenueContent.tag, OlMapContextMenueContent);
+window.customElements.define(OlMapContextMenuContent.tag, OlMapContextMenuContent);
 
-describe('OlMapContextMenueContent', () => {
+describe('OlMapContextMenuContent', () => {
 
 
 	const mapServiceMock = {
@@ -29,7 +27,7 @@ describe('OlMapContextMenueContent', () => {
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(OlMapContextMenueContent.tag);
+		return TestUtils.render(OlMapContextMenuContent.tag);
 	};
 
 	describe('when initialized', () => {

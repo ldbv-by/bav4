@@ -1,28 +1,28 @@
 /* eslint-disable no-undef */
-import { MapContextMenue } from '../../../../../src/modules/map/components/contextMenue/MapContextMenue';
-import { initialState, mapContextMenueReducer } from '../../../../../src/modules/map/store/mapContextMenue.reducer';
+import { MapContextMenu } from '../../../../../src/modules/map/components/contextMenu/MapContextMenu';
+import { initialState, mapContextMenuReducer } from '../../../../../src/modules/map/store/mapContextMenu.reducer';
 import { TestUtils } from '../../../../test-utils.js';
-import { close, open } from '../../../../../src/modules/map/store/mapContextMenue.action';
+import { close, open } from '../../../../../src/modules/map/store/mapContextMenu.action';
 import { $injector } from '../../../../../src/injection';
-window.customElements.define(MapContextMenue.tag, MapContextMenue);
+window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
-describe('MapContextMenue', () => {
+describe('MapContextMenu', () => {
 
 	const setup = (state = initialState) => {
-		const mapContextMenueState = {
-			mapContextMenue: state
+		const mapContextMenuState = {
+			mapContextMenu: state
 		};
 
-		TestUtils.setupStoreAndDi(mapContextMenueState, { mapContextMenue: mapContextMenueReducer });
+		TestUtils.setupStoreAndDi(mapContextMenuState, { mapContextMenu: mapContextMenuReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(MapContextMenue.tag);
+		return TestUtils.render(MapContextMenu.tag);
 	};
 
 	describe('when initialized', () => {
 		it('adds a div which is not visible', async () => {
 			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 
 			expect(container).toBeTruthy();
 			expect(window.getComputedStyle(container).display).toBe('none');
@@ -30,9 +30,9 @@ describe('MapContextMenue', () => {
 	});
 
 	describe('store changed', () => {
-		it('shows/hides the context menue', async () => {
+		it('shows/hides the context menu', async () => {
 			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 
 			open([10, 10], 'unknownId');
 
@@ -46,18 +46,18 @@ describe('MapContextMenue', () => {
 	describe('when opened', () => {
 
 
-		it('shows a header and a close button which closes the menue', async () => {
+		it('shows a header and a close button which closes the menu', async () => {
 			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
-			expect(header.innerText).toBe('map_context_menue_header');
+			expect(header.innerText).toBe('map_context_menu_header');
 
 
 			const icon = element.shadowRoot.querySelector('ba-icon');
 			expect(icon).toBeTruthy();
-			expect(icon.title).toBe('map_context_menue_close_button');
+			expect(icon.title).toBe('map_context_menu_close_button');
 
 			icon.click();
 
@@ -68,7 +68,7 @@ describe('MapContextMenue', () => {
 		it('renders a content html element', async () => {
 			const element = await setup();
 			const contentElementId = 'mockContentId';
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 			const mockContent = document.createElement('div');
 			mockContent.innerText = 'mockContentText';
 			mockContent.id = contentElementId;
@@ -84,7 +84,7 @@ describe('MapContextMenue', () => {
 			const element = await setup();
 			const clickEvent = [10, 10];
 			const spy = spyOn(element, '_calculateParameter').and.callThrough();
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 
 			open(clickEvent);
 
@@ -94,7 +94,7 @@ describe('MapContextMenue', () => {
 		it('adds css classes and stylings', async () => {
 			const element = await setup();
 			const clickEvent = [10, 20];
-			const container = element.shadowRoot.querySelector('.context-menue');
+			const container = element.shadowRoot.querySelector('.context-menu');
 
 			open(clickEvent);
 

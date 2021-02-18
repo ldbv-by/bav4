@@ -1,11 +1,11 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../../../BaElement';
-import css from './olMapContextMenueContent.css';
+import css from './olMapContextMenuContent.css';
 import { $injector } from '../../../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 
 
-export class OlMapContextMenueContent extends BaElement {
+export class OlMapContextMenuContent extends BaElement {
 
 	constructor() {
 		super();
@@ -43,7 +43,7 @@ export class OlMapContextMenueContent extends BaElement {
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code);
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_context_menue_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_context_menu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
 			return html`
@@ -62,7 +62,7 @@ export class OlMapContextMenueContent extends BaElement {
 	}
 
 	static get tag() {
-		return 'ba-ol-map-context-menue-content';
+		return 'ba-ol-map-context-menu-content';
 	}
 
 }
