@@ -72,7 +72,7 @@ export class OlCoordinateService {
 	 * @param {number} targetSrid srid of the transformed coordinate
 	 * @returns {Coordinate} transformed coordinate
 	 */
-	transform(coordinate,  sourceSrid, targetSrid,) {
+	transform(coordinate, sourceSrid, targetSrid) {
 		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
 		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
 		if (proj4.defs(targetSridAsString)) {
