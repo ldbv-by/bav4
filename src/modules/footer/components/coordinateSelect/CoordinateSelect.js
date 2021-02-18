@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
+import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
 import css from './coordinateSelect.css';
-import { $injector } from '../../../../injection';
 
 /**
  * Dropdown for selecting the coordinate system
@@ -19,7 +19,11 @@ export class CoordinateSelect extends BaElement {
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._mapService = MapService;
-		this._translationService = TranslationService;  
+		this._translationService = TranslationService; 
+		
+		this._items = this._mapService.getSridDefinitionsForView();
+		// set selected coordinate system initially
+		this._selectedCode = String(this._items[0].code);
 	}
     
 	/**
@@ -27,17 +31,6 @@ export class CoordinateSelect extends BaElement {
      */
 	isRenderingSkipped() {
 		return this._environmentService.isTouch();
-	}
-    
-	/**
-	 * @override
-	 */
-	onWindowLoad() {
-		// without this if clause,  this._view equals null
-		if (!this._environmentService.isTouch()) {
-			this._view = this.shadowRoot.querySelector('.select-coordinate');
-			this._selected = this._view.value;
-		} 
 	}
 
 	/**
@@ -47,16 +40,17 @@ export class CoordinateSelect extends BaElement {
 
 		const { pointerPosition } = this._state;
 
-		const items = this._mapService.getSridDefinitionsForView();
-
 		const getPointerPositionChange = () => {
-			switch (this._selected) {
-				case String(items[1].code): //4326
+			switch (this._selectedCode) {
+				case String(this._items[0].code): //25832
+					// on window load pointerPosition returns null so we have to catch this here
+					return pointerPosition ? 
+						this._coordinateService.stringify(
+							this._coordinateService.transform(pointerPosition, '3857', '25832'), 3) 
+						: '';
+				case String(this._items[1].code): //4326
 					return this._coordinateService.stringify(
 						this._coordinateService.toLonLat(pointerPosition), 3);
-				case String(items[0].code): //25832
-					return this._coordinateService.stringify(
-						this._coordinateService.transform(pointerPosition, '3857', '25832'), 3);
 				default:
 					return '';
 			} 
@@ -64,7 +58,8 @@ export class CoordinateSelect extends BaElement {
 
 
 		const onChange = () => {			
-			this._selected = this._view.value; 
+			this._selectedCode = this.shadowRoot.querySelector('.select-coordinate').value;
+			this.render();
 		};
 
 
@@ -73,7 +68,7 @@ export class CoordinateSelect extends BaElement {
             <div class='coordinate-container' >
                 <div class='coordinate-label'>${getPointerPositionChange()}</div>
 					<select class='select-coordinate' @change="${onChange}" >
-					${items.map((item) => html`
+					${this._items.map((item) => html`
 						<option class="select-coordinate-option" value="${item.code}" target="_blank">${item.label}</a> 
 					`)}
 					</select>
@@ -81,6 +76,9 @@ export class CoordinateSelect extends BaElement {
 		`;
 	} 
 
+	/**
+     * @override 
+     */
 	extractState(store) {
 		const { position: { pointerPosition } } = store;
 		return { pointerPosition };

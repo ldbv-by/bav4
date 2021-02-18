@@ -66,12 +66,18 @@ describe('CoordinateSelect', () => {
 		it('updates the coordinate system', async () => {
 			const element = await setup({ touch: false });
 
-
 			updatePointerPosition([1211817.6233080907, 6168328.021915435]); 
 			expect(element.shadowRoot.innerHTML.includes('639675.996, 5358942.428')).toBeTruthy();
 
-			// change to '4326'
 			const select = element.shadowRoot.querySelector('select');
+
+			// shows no coordinates (default)
+			select.value = '';
+			select.dispatchEvent(new Event('change'));
+			element.render();
+			expect(element.shadowRoot.querySelector('.coordinate-label').innerHTML).toEqual('<!----><!---->');
+
+			// change to '4326'
 			select.value = '4326';
 			select.dispatchEvent(new Event('change'));
 			element.render();
@@ -82,6 +88,10 @@ describe('CoordinateSelect', () => {
 			select.dispatchEvent(new Event('change'));
 			element.render();
 			expect(element.shadowRoot.innerHTML.includes('639675.996, 5358942.428')).toBeTruthy();
+
+			// pointer position initial state (null)
+			updatePointerPosition(null);
+			expect(element.shadowRoot.querySelector('.coordinate-label').innerHTML).toEqual('<!----><!---->');
 		});
 	});
 
