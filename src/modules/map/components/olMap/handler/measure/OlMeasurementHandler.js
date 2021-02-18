@@ -1,4 +1,4 @@
-import { Draw, Modify, Snap } from 'ol/interaction';
+import { Draw, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -91,15 +91,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._vectorLayer = prepareInteraction();			
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
-			this._draw = this._createInteraction(source);	
-			this._modify = new Modify({ source: source });			
+			this._draw = this._createInteraction(source);			
 			this._snap = new Snap({ source: source, pixelTolerance:4 });
 			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
 			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
 
-
-			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._draw);	
 		}		
@@ -114,6 +111,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
+		olMap.removeInteraction(this._snap);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
 		this._overlays = [];
 		unByKey(this._pointerMoveListener);
