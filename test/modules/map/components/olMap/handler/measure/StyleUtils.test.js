@@ -1,4 +1,4 @@
-import { measureStyleFunction, generateSketchStyleFunction, hexToRgb } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
+import { measureStyleFunction, generateSketchStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 
@@ -96,17 +96,5 @@ describe('generateSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
-	});
-});
-
-describe('hexToRgb', () => {
-	it('should convert hex-color to rgb', () => {
-		const hex = '#556688';
-
-		const rgb = hexToRgb(hex);
-	
-		expect(rgb[0]).toBe(85);
-		expect(rgb[1]).toBe(102);
-		expect(rgb[2]).toBe(136);
 	});
 });
