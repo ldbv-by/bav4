@@ -113,6 +113,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
+		this._overlays = [];
 		unByKey(this._pointerMoveListener);
 		unByKey(this._keyboardListener);
 		this._helpTooltip = null;
@@ -125,7 +126,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_removeOverlayFromMap(map, overlay) {
-		this._overlays.pop(overlay);
+		this._overlays = this._overlays.filter(o => o !== overlay);
 		map.removeOverlay(overlay);
 	}
 

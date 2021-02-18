@@ -80,14 +80,14 @@ describe('OlMeasurementHandler', () => {
 		
 
 		it('removes all registered mapOverlays', () => {
-			const map =  setupMap();
-			const layerStub = {}; 
+			const map =  setupMap();			
 			map.removeOverlay = jasmine.createSpy();
 			const overlayStub = {};
 			classUnderTest._overlays = [overlayStub, overlayStub, overlayStub, overlayStub];
-			classUnderTest.deactivate(map, layerStub);
+			classUnderTest.deactivate(map);
 			
 			expect(map.removeOverlay).toHaveBeenCalledTimes(4);
+			expect(classUnderTest._overlays.length).toBe(0);
 		});	
 	});
 
