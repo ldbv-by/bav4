@@ -10,7 +10,8 @@ export const provide = (lang) => {
 				map_info_button_help: 'Help',
 				map_info_button_contact: 'Contact',
 				map_info_button_about: 'About us',
-				map_zoom_extent_button: 'Zoom to full extent'
+				map_zoom_extent_button: 'Zoom to full extent',
+				map_context_menue_content_icon: 'Copy to clipboard'
 			};
 
 		case 'de':
@@ -22,7 +23,8 @@ export const provide = (lang) => {
 				map_info_button_help: 'Hilfe',
 				map_info_button_contact: 'Kontakt',
 				map_info_button_about: 'Impressum',
-				map_zoom_extent_button: 'Ganz Bayern anzeigen'
+				map_zoom_extent_button: 'Ganz Bayern anzeigen',
+				map_context_menue_content_icon: 'In die Zwischenablage kopieren'
 			};
 
 		default:
