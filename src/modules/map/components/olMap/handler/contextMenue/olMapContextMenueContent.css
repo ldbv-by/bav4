@@ -11,5 +11,19 @@
   
   .content li {
     padding: 5px;
-    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+  }
+
+  .content li .label{
+    min-width: 50px;
+  }
+
+  .content li .coordinate{
+    flex-grow: 4
+  }
+
+  .content li .icon{
+    padding-left: 20px
   }

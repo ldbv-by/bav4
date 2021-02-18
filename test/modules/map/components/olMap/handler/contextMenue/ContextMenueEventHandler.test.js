@@ -35,8 +35,8 @@ describe('ContextMenueEventHandler', () => {
 		$injector
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('CoordinateService', coordinateServiceMock);
-
+			.registerSingleton('CoordinateService', coordinateServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 	};
 
 	it('instantiates the handler', () => {
