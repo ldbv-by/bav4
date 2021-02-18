@@ -39,7 +39,7 @@ export class MapInfo extends BaElement {
 
 		const pointerPosition4326 = pointerPosition
 			? this._coordinateService.stringify(
-				this._coordinateService.toLonLat(pointerPosition), 3)
+				this._coordinateService.toLonLat(pointerPosition), 4326, 3)
 			: '';
 
 
