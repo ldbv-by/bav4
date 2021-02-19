@@ -1,20 +1,39 @@
 import { LineString, Polygon, LinearRing } from 'ol/geom';
 
-export const getGeometryLength = (geometry) => {
-	let lineString;
-	if (geometry instanceof LineString) {
-		lineString = geometry;
-	}
-	else if (geometry instanceof LinearRing) {
-		lineString = new LineString(geometry.getCoordinates());
-	}
-	else if (geometry instanceof Polygon) {
-		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
+const transformGeometry = (geometry, fromProjection, toProjection) => {
+
+	if (fromProjection && toProjection) {
+		return geometry.clone().transform(fromProjection, toProjection);
 	}	
-	
-	if (lineString) {
-		return lineString.getLength();
+	return geometry;
+};
+
+export const getArea = (geometry, calculationHints = {}) => {
+	if (geometry.getArea()) {
+		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+		return calculationGeometry.getArea();
 	}
+	return 0;	
+};
+
+export const getGeometryLength = (geometry, calculationHints = {}) => {
+	if (geometry) {
+		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+		let lineString;
+		if (calculationGeometry instanceof LineString) {
+			lineString = calculationGeometry;
+		}
+		else if (calculationGeometry instanceof LinearRing) {
+			lineString = new LineString(calculationGeometry.getCoordinates());
+		}
+		else if (calculationGeometry instanceof Polygon) {
+			lineString = new LineString(calculationGeometry.getLinearRing(0).getCoordinates());
+		}	
+		
+		if (lineString) {
+			return lineString.getLength();
+		}
+	}	
 	return 0;
 };
 
@@ -73,8 +92,8 @@ export const getAzimuth = (geometry) => {
 	return (360 + (factor * rad * 180 / Math.PI)) % 360;	
 };
 
-export const getPartitionDelta = (geometry) => {
-	const length = getGeometryLength(geometry);
+export const getPartitionDelta = (geometry, calculationHints = {}) => {
+	const length = getGeometryLength(geometry, calculationHints);
 	let delta = 1;
 	if (length > 200000) {
 		delta = 100000 / length;				

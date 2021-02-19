@@ -1,10 +1,9 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../../../BaElement';
-import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getFormattedArea, getFormattedLength } from './GeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea, getFormattedArea, getFormattedLength } from './GeometryUtils';
 import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {
@@ -40,12 +39,11 @@ export const MeasurementOverlayTypes = {
 export class MeasurementOverlay extends BaElement {
 
 	constructor() {
-		super();
-		const { MapService } = $injector.inject('MapService');		
-		this._mapService = MapService;
+		super();	
 		this._value = '';
 		this._static = false;		
 		this._type = MeasurementOverlayTypes.TEXT;
+		this._projectionHints = false;
 		this._contentFunction = () => '';
 	}
 
@@ -72,12 +70,6 @@ export class MeasurementOverlay extends BaElement {
 		`;
 	}
 
-	_updateGeodetic() {
-		const fromProjection = 'EPSG:' + this._mapService.getSrid();
-		const toProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();		
-		this._geodetic = this._geometry.clone().transform(fromProjection, toProjection);
-	}
-
 	_updatePosition() {
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:				
@@ -99,14 +91,14 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.AREA:
 				this._contentFunction = () => {					
 					if (this.geometry instanceof Polygon) {
-						return getFormattedArea(this._geodetic.getArea());
+						return getFormattedArea(getArea(this._geometry, this._projectionHints));
 					}
 					return '';
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = getFormattedLength(getGeometryLength(this._geodetic));
+					const length = getFormattedLength(getGeometryLength(this._geometry, this._projectionHints));
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
@@ -118,7 +110,7 @@ export class MeasurementOverlay extends BaElement {
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._contentFunction = () => {
-					const length = getGeometryLength(this._geodetic);
+					const length = getGeometryLength(this._geometry, this.projectionHints);
 					return getFormattedLength(length * this._value);
 				};
 				break;
@@ -169,7 +161,6 @@ export class MeasurementOverlay extends BaElement {
 
 	set geometry(value) {		
 		this._geometry = value;
-		this._updateGeodetic();
 		this._updatePosition();
 		this.render();		
 	}
@@ -180,5 +171,17 @@ export class MeasurementOverlay extends BaElement {
 
 	get position() {
 		return this._position;
+	}
+
+	set projectionHints(value) {
+		if (value.toProjection !== this.projectionHints.toProjection || 
+			value.fromProjection !== this.projectionHints.fromProjection) {
+			this._projectionHints = value;
+			this.render();
+		}		
+	}
+
+	get projectionHints() {
+		return this._projectionHints;
 	}
 }

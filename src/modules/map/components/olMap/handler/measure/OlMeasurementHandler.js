@@ -36,6 +36,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._overlays = [];
+		this._projectionHints = { fromProjection:'EPSG:' + this._mapService.getSrid(), toProjection:'EPSG:' + this._mapService.getDefaultGeodeticSrid() };		
 	}
 
 	/**
@@ -169,7 +170,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}					
 
 				if (geometry.getArea()) {
-					let areaOverlay = this._activeSketch.get('area') || this._createOverlay( { positioning: 'top-center' }, MeasurementOverlayTypes.AREA );				 
+					let areaOverlay = this._activeSketch.get('area') || this._createOverlay( { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints );				 
 					this._addOverlayToMap(map, areaOverlay);
 					this._updateOverlay(areaOverlay, geometry);
 					this._activeSketch.set('area', areaOverlay);
@@ -180,16 +181,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
-
-			const fromProjection = 'EPSG:' + this._mapService.getSrid();
-			const toProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();		
-			const geodeticGeometry = measureGeometry.clone().transform(fromProjection, toProjection);
-			let delta = getPartitionDelta(geodeticGeometry);			
+		
+			
+			let delta = getPartitionDelta(measureGeometry, this._projectionHints);			
 			let partitionIndex = 0;
 			for (let i = delta;i < 1;i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false; 
 				if (partition === false) {			
-					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION );
+					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints );
 					
 					this._addOverlayToMap(map, partition);									
 					partitions.push(partition);
@@ -230,7 +229,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		draw.on('drawstart', event =>  {	
 			
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE);	
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);	
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
@@ -250,9 +249,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-	_createOverlay(overlayOptions = {}, type) {
+	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;		
+		measurementOverlay.projectionHints = projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element:measurementOverlay });
 		return overlay;
 	}
