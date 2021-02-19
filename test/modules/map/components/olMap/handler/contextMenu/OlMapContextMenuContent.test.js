@@ -40,10 +40,10 @@ describe('OlMapContextMenuContent', () => {
 
 	describe('when screen coordinate available', () => {
 		it('renders the content', async () => {
-			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard');
-			const transformMock =  spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
+			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const element = await setup();
 
@@ -53,18 +53,18 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
-			
+
 			expect(element.shadowRoot.querySelector('.label').innerText).toBe('code42');
 			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
-			const copyIcon = element.shadowRoot.querySelector('ba-icon'); 
+			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
 
-			
+
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
-			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42);
+			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
 
 		});
 
@@ -79,11 +79,11 @@ describe('OlMapContextMenuContent', () => {
 			element.coordinate = [1000, 2000];
 			//after we set the coordinate, we need to trigger rendering manually in this case
 			element.render();
-			const copyIcon = element.shadowRoot.querySelector('ba-icon'); 
+			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
 
-			
+
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
 		});
 	});
