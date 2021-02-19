@@ -1,4 +1,4 @@
-import { getGeometryLength, canShowAzimuthCircle, getCoordinateAt, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -172,4 +172,28 @@ describe('getCoordinateAt', () => {
 		expect(coord).toBeNull();
 		
 	});
+});
+
+describe('getArea', () => {
+	it('calculates the area for a Polygon', () => {
+		const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const area = getArea(polygon);
+
+		expect(area).toBe(1);		
+	});
+
+	it('returns 0 for a non-area-like geometry', () => {
+		const point = new Point([0, 0]);
+		const lineString = new LineString([[0, 0], [2, 0]]);
+		const linearRing = new LinearRing([[0, 0], [2, 0]]);		
+		
+		const pointArea = getArea(point);
+		const lineStringArea = getArea(lineString);
+		const linearRingArea = getArea(linearRing);
+
+		expect(pointArea).toBe(0);	
+		expect(lineStringArea).toBe(0);
+		expect(linearRingArea).toBe(0);
+	});
+
 });

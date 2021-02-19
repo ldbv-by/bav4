@@ -1,4 +1,4 @@
-import { LineString, Polygon, LinearRing } from 'ol/geom';
+import { LineString, Polygon, LinearRing, Circle } from 'ol/geom';
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 
@@ -22,11 +22,13 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
 export const getArea = (geometry, calculationHints = {}) => {
-	if (geometry.getArea()) {
-		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		return calculationGeometry.getArea();
-	}
-	return 0;	
+	if (!(geometry instanceof Polygon) && 
+		!(geometry instanceof Circle) && 
+		!(geometry instanceof LinearRing)) {
+		return 0;
+	}	
+	const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+	return calculationGeometry.getArea();	
 };
 
 
