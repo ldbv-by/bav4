@@ -21,15 +21,6 @@ export class MapInfo extends BaElement {
 		this._coordinateService = CoordinateService;
 	}
 
-	initialize() {
-		// let's listen for map_clicked -events
-		window.addEventListener('map_clicked', (evt) => {
-			alert('click @ ' + this._coordinateService.stringify(
-				this._coordinateService.toLonLat(evt.detail), 3));
-		});
-
-	}
-
 	createView() {
 		const { zoom } = this._state;
 

@@ -22,6 +22,7 @@ describe('Icon', () => {
 			expect(element.title).toBe('');
 			expect(element.disabled).toBeFalse();
 			expect(element.size).toBe(25);
+			expect(element.color).toBe('var(--primary-color)');
 
 		});
 
@@ -36,12 +37,13 @@ describe('Icon', () => {
 	describe('when initialized with custom values', () => {
 		it('has correct properties', async () => {
 
-			const element = await TestUtils.render(Icon.tag, { icon: svg, title: 'someTitle', disabled: false, size: 40 });
+			const element = await TestUtils.render(Icon.tag, { icon: svg, title: 'someTitle', disabled: false, size: 40, color: 'white' });
 
 			expect(element.icon).toBe(svg);
 			expect(element.title).toBe('someTitle');
 			expect(element.disabled).toBeFalse();
 			expect(element.size).toBe(40);
+			expect(element.color).toBe('white');
 
 		});
 

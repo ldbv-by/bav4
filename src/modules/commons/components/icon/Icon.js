@@ -8,6 +8,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * Configurable Attributes:
  * - `icon` (svg)
  * - `size` (in px)
+ * - `color` (css color value)
  * - `title` 
  * - `disabled` (default=false)
  * - `onClick()`
@@ -39,6 +40,7 @@ export class Icon extends BaElement {
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this._title = this.getAttribute('title') || '';
 		this._size = this.getAttribute('size') ? parseInt(this.getAttribute('size')) : 25;
+		this._color = this.getAttribute('color') ? this.getAttribute('color') : 'var(--primary-color)';
 	}
 
 
@@ -53,7 +55,10 @@ export class Icon extends BaElement {
 			}
 		};
 
-		const iconClass = `.icon {--size: ${this._size}px;}`;
+		const iconClass = `.icon {
+			--size: ${this._size}px; 
+			background: ${this._color}; 
+		}`;
 		const customIconClass = this._icon ? `.icon-custom {
 			mask : url("${this._icon}");
 			-webkit-mask-image : url("${this._icon}");
@@ -112,5 +117,9 @@ export class Icon extends BaElement {
 
 	get size() {
 		return this._size;
+	}
+
+	get color() {
+		return this._color;
 	}
 }
