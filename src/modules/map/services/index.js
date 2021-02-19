@@ -1,5 +1,5 @@
-import { ContextMenuEventHandler } from '../components/olMap/handler/contextMenu/ContextMenuEventHandler';
+import { OlContextMenuEventHandler } from '../components/olMap/handler/contextMenu/OlContextMenuEventHandler';
 
 export const mapModule = ($injector) => {
-	$injector.register('OlContextMenueMapEventHandler', ContextMenuEventHandler);
+	$injector.register('OlContextMenueMapEventHandler', OlContextMenuEventHandler);
 };
