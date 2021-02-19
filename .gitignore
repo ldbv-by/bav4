@@ -5,4 +5,4 @@ docs
 stats.json
 coverage
 .env
-/nbproject/private/
+nbproject
