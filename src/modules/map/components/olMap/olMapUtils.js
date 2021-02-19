@@ -72,7 +72,7 @@ export const toOlLayer = (georesource) => {
 				id: georesource.id,
 				layers: georesource.geoResourceIds.map(id => toOlLayer(id))
 			});
-		}	
+		}
 	}
 
 	throw new Error(georesource.getType() + ' currently not supported');
@@ -82,5 +82,16 @@ export const updateOlLayer = (olLayer, layer) => {
 
 	olLayer.setVisible(layer.visible);
 	olLayer.setOpacity(layer.opacity);
+	return olLayer;
+};
+
+
+export const toOlLayerFromHandler = (id, handler, map) => {
+
+	const olLayer = handler.activate(map);
+
+	if (olLayer) {
+		olLayer.set('id', id);
+	}
 	return olLayer;
 };

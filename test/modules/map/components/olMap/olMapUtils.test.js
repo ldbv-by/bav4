@@ -1,7 +1,8 @@
 import BaseLayer from 'ol/layer/Base';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, toOlLayer, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
-import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
+import { Map } from 'ol';
+import { iconUrlFunction, mapVectorSourceTypeToFormat, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { load } from '../../../../../src/modules/map/components/olMap/utils/feature.provider';
 
 
@@ -116,6 +117,21 @@ describe('olMapUtils', () => {
 		});
 	});
 
+	describe('toOlLayerFromHandler', () => {
+		it('it retrieves an olLayer from a handler', () => {
+			const mockHandler = {
+				activate() { }
+			};
+			const map = new Map();
+			const olLayer = new BaseLayer({});
+			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(olLayer);
+
+			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
+
+			expect(myLayer.get('id')).toBe('someId');
+		});
+	});
+	
 	describe('iconUrlFunction', () => {
 		it('it updates the properties of a olLayer', () => {
 			const iconUrl = 'https://some.url';
@@ -125,5 +141,3 @@ describe('olMapUtils', () => {
 		});
 	});
 });
-
-

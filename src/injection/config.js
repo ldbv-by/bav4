@@ -29,5 +29,7 @@ $injector
 	.register('UrlService', UrlService)
 	.registerSingleton('MapService', new MapService(getBvvMapDefinitions))
 	.registerModule(mapModule);
+	
+
 
 export let init = true;

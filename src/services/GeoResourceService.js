@@ -52,7 +52,8 @@ export class GeoResourceService {
 	 */
 	all() {
 		if (!this._georesources) {
-			throw new Error('GeoResourceService not yet initialized');
+			console.warn('GeoResourceService not yet initialized');
+			return [];
 		}
 		return this._georesources;
 	}
@@ -65,7 +66,8 @@ export class GeoResourceService {
 	 */
 	byId(id) {
 		if (!this._georesources) {
-			throw new Error('GeoResourceService not yet initialized');
+			console.warn('GeoResourceService not yet initialized');
+			return null;
 		}
 		const geoResource = this._georesources.find(georesource => georesource.id === id);
 		return geoResource || null;

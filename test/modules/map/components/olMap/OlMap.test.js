@@ -8,9 +8,11 @@ import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
+import { addLayer, modifyLayer, removeLayer, MEASUREMENT_LAYER_ID } from '../../../../../src/modules/map/store/layers.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
+import VectorLayer from 'ol/layer/Vector';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -35,14 +37,21 @@ describe('OlMap', () => {
 	const contextMenuEventHandlerMock = {
 		register() { },
 		get id() {
-			return 'contextMenuEventHandlerMock'; 
+			return 'contextMenuEventHandlerMock';
+		}
+	};
+	const measurementHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return MEASUREMENT_LAYER_ID;
 		}
 	};
 
 	let store;
 
-	const setup = () => {
-		const state = {
+	const setup = (state) => {
+		const defaultState = {
 			position: {
 				zoom: 10,
 				center: initialCenter,
@@ -51,18 +60,23 @@ describe('OlMap', () => {
 			layers: {
 				active: [],
 				background: null
-			}
+			},
+		};
+		const combinedState = {
+			...defaultState,
+			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(combinedState, {
 			position: positionReducer,
-			layers: layersReducer
+			layers: layersReducer,
 		});
 
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
-			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock);
+			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
+			.registerSingleton('OlMeasurementHandler', measurementHandlerMock);
 
 
 		return TestUtils.render(OlMap.tag);
@@ -214,9 +228,10 @@ describe('OlMap', () => {
 			expect(layer0.get('id')).toBe('id0');
 		});
 
-		it('does not add an olLayer to map AND removes layer from state store when georesource is NOT available ', async () => {
+		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
+			const warnSpy = spyOn(console, 'warn');
 			expect(store.getState().layers.active.length).toBe(0);
 
 			addLayer('id0');
@@ -226,6 +241,7 @@ describe('OlMap', () => {
 			addLayer('unknown');
 			expect(map.getLayers().getLength()).toBe(2);
 			expect(store.getState().layers.active.length).toBe(1);
+			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
 		});
 
 		it('removes an olLayer', async () => {
@@ -287,6 +303,33 @@ describe('OlMap', () => {
 
 			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
 			expect(registerSpy).toHaveBeenCalledOnceWith(element._map);
+		});
+	});
+
+
+	describe('measurement handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(measurementHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			activateMeasurement();
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			deactivateMeasurement();
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});
 	});
 });

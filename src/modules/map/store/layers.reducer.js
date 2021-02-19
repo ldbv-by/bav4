@@ -1,3 +1,5 @@
+import { ACTIVE_CHANGED as MEASUREMENT_ACTIVE_CHANGED } from './measurement.reducer';
+import { MEASUREMENT_LAYER_ID } from './layers.action';
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_MODIFIED = 'layer/modified';
@@ -46,73 +48,82 @@ export const defaultLayerProperties = Object.freeze({
 	constraints: { alwaysTop: false, hidden: false }
 });
 
+const addLayer = (state, payload) => {
+	const { id, properties } = payload;
+
+	if (state.active.findIndex(layer => layer.id === id) !== -1) {
+		//do nothing when id already present
+		return {
+			...state
+		};
+	}
+
+	const layer = {
+		...defaultLayerProperties,
+		...properties,
+		id: id
+	};
+
+	const { constraints: { alwaysTop } } = layer;
+	//when index is given we insert at that value, otherwise we append the layer
+	const insertIndex = (properties.zIndex >= 0 && !alwaysTop) ? properties.zIndex : state.active.length;
+	const active = [...state.active];
+	active.splice(insertIndex, 0, layer);
+	return {
+		...state,
+		active: index(active)
+	};
+};
+
+const removeLayer = (state, payload) => {
+	return {
+		...state,
+		active: index(state.active.filter(layer => layer.id !== payload))
+	};
+};
+
+const modifyLayer = (state, payload) => {
+	const { id, properties } = payload;
+
+	const layer = state.active.find(layer => layer.id === id);
+	if (layer) {
+		const active = [...state.active];
+
+		const currentIndex = active.indexOf(layer);
+		//remove current layer
+		active.splice(currentIndex, 1);
+
+		const updatedLayer = {
+			...layer,
+			...properties
+		};
+
+		//add updated layer
+		active.splice(updatedLayer.zIndex, 0, updatedLayer);
+
+		return {
+			...state,
+			active: sort(index(active))
+		};
+	}
+	return {
+		...state
+	};
+};
+
 export const layersReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
 	switch (type) {
 
 		case LAYER_ADDED: {
-			const { id, properties } = payload;
-
-			if (state.active.findIndex(layer => layer.id === id) !== -1) {
-				//do nothing when id already present
-				return {
-					...state
-				};
-			}
-
-			const layer = {
-				...defaultLayerProperties,
-				...properties,
-				id: id
-			};
-
-			const { constraints: { alwaysTop } } = layer;
-			//when index is given we insert at that value, otherwise we append the layer
-			const insertIndex = (properties.zIndex >= 0 && !alwaysTop) ? properties.zIndex : state.active.length;
-			const active = [...state.active];
-			active.splice(insertIndex, 0, layer);
-
-			return {
-				...state,
-				active: index(active)
-			};
+			return addLayer(state, payload);
 		}
 		case LAYER_REMOVED: {
-
-			return {
-				...state,
-				active: index(state.active.filter(layer => layer.id !== payload))
-			};
+			return removeLayer(state, payload);
 		}
 		case LAYER_MODIFIED: {
-			const { id, properties } = payload;
-
-			const layer = state.active.find(layer => layer.id === id);
-			if (layer) {
-				const active = [...state.active];
-
-				const currentIndex = active.indexOf(layer);
-				//remove current layer
-				active.splice(currentIndex, 1);
-
-				const updatedLayer = {
-					...layer,
-					...properties
-				};
-
-				//add updated layer
-				active.splice(updatedLayer.zIndex, 0, updatedLayer);
-
-				return {
-					...state,
-					active: sort(index(active))
-				};
-			}
-			return {
-				...state
-			};
-
+			return modifyLayer(state, payload);
 		}
 		case BACKGROUND_CHANGED: {
 
@@ -120,6 +131,14 @@ export const layersReducer = (state = initialState, action) => {
 				...state,
 				background: payload
 			};
+		}
+		case MEASUREMENT_ACTIVE_CHANGED: {
+			if (payload) {
+				return addLayer(state, { id: MEASUREMENT_LAYER_ID, properties: { constraints: { hidden: true, alwaysTop: true } } });
+			}
+			else {
+				return removeLayer(state, MEASUREMENT_LAYER_ID);
+			}
 		}
 
 	}

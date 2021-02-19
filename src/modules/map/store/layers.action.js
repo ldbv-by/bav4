@@ -6,14 +6,19 @@ import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from '
 import { $injector } from '../../../injection';
 
 /**
+ * Id of the layer used for measurement interaction
+ */
+export const MEASUREMENT_LAYER_ID = 'measurement_layer';
+
+/**
  * Reflects the state of a layer.
- * @typedef {Object} Layer
+ * @typedef {Object} LayerProperties
  * @property {string} opacity Id of this layer
  * @property {name} label Label of this layer
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
- * @property {Constraints} [Constraints] Constraints of the layer.
+ * @property {Constraints} [constraints] Constraints of the layer.
  */
 
 /**
@@ -24,7 +29,7 @@ import { $injector } from '../../../injection';
 
 /**
  * Properties to change the state of a layer.
- * @typedef {Object} LayerProperties
+ * @typedef {Object} ModifyableLayerProperties
  * @property {number} [opacity] Opacity (0, 1).
  * @property {boolean} [visible] Visibility.
  * @property {number} [zIndex] Desired index of this layer within the list of active layers.
@@ -40,7 +45,7 @@ const getStore = () => {
  * Updates the properties of a layer.
  * @function
  * @param {string} id Id of the layer
- * @param {LayerProperties} properties New properties
+ * @param {ModifyableLayerProperties} properties New properties
  */
 export const modifyLayer = (id, properties = {}) => {
 	getStore().dispatch({
@@ -66,7 +71,6 @@ export const addLayer = (id, properties = {}) => {
  * Removes a layer from the list of active layers.
  * @function
  * @param {string} id Id of the layer
- * @param {LayerProperties} properties New properties
  */
 export const removeLayer = (id) => {
 	getStore().dispatch({
