@@ -48,7 +48,7 @@ describe('CoordinateSelect', () => {
 		});	
 	});
     
-	describe('on pointer move', () => {
+	xdescribe('on pointer move', () => {
 		it('updates the div which shows the current pointer position', async () => {
 			const element = await setup({ touch: false });
 
@@ -62,7 +62,7 @@ describe('CoordinateSelect', () => {
 		});
 	});
 
-	describe('on selection change', () => {
+	xdescribe('on selection change', () => {
 		it('updates the coordinate system', async () => {
 			const element = await setup({ touch: false });
 
