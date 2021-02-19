@@ -1,6 +1,6 @@
 # BAv4 (#nomigration)
 
-[![Build Status](https://travis-ci.com/ldbv-by/bav4-nomigration.svg?branch=master)](https://travis-ci.com/ldbv-by/bav4-nomigration) 
+[![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js CI/badge.svg)](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js CI/badge.svg) 
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 [![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
