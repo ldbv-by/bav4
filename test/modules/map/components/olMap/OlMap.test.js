@@ -3,18 +3,16 @@ import { OlMap } from '../../../../../src/modules/map/components/olMap/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../../../test-utils.js';
 import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
-import { MapBrowserEvent, MapEvent } from 'ol';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
-import Event from 'ol/events/Event';
-import VectorLayer from 'ol/layer/Vector';
-import { contextMenueReducer } from '../../../../../src/modules/contextMenue/store/contextMenue.reducer';
 import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer, MEASUREMENT_LAYER_ID } from '../../../../../src/modules/map/store/layers.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
+import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
+import VectorLayer from 'ol/layer/Vector';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -36,6 +34,12 @@ describe('OlMap', () => {
 		init() { }
 	};
 
+	const contextMenuEventHandlerMock = {
+		register() { },
+		get id() {
+			return 'contextMenuEventHandlerMock';
+		}
+	};
 	const measurementHandlerMock = {
 		activate() { },
 		deactivate() { }
@@ -65,41 +69,14 @@ describe('OlMap', () => {
 			layers: layersReducer,
 		});
 
+
 		$injector
-			.registerSingleton('ShareService', {
-				copyToClipboard: () => { }
-			})
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
+			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
 			.registerSingleton('OlMeasurementHandler', measurementHandlerMock);
 
+
 		return TestUtils.render(OlMap.tag);
-	};
-
-
-	const simulateMouseEvent = (element, type, x, y, dragging) => {
-		const map = element._map;
-		const eventType = type;
-
-		const event = new Event(eventType);
-		event.target = map.getViewport().firstChild;
-		event.clientX = x;
-		event.clientY = y;
-		event.pageX = x;
-		event.pageY = y;
-		event.shiftKey = false;
-		event.preventDefault = function () { };
-
-
-		let mapEvent = new MapBrowserEvent(eventType, map, event);
-		mapEvent.dragging = dragging ? dragging : false;
-		map.dispatchEvent(mapEvent);
-	};
-
-	const simulateMapEvent = (element, type) => {
-		const map = element._map;
-		const mapEvent = new MapEvent(type, map, map.frameState);
-
-		map.dispatchEvent(mapEvent);
 	};
 
 	describe('when initialized', () => {
@@ -119,18 +96,6 @@ describe('OlMap', () => {
 		});
 	});
 
-
-	describe('when clicked', () => {
-		it('emits event', async () => {
-			const element = await setup();
-			spyOn(element, 'emitEvent');
-
-			simulateMouseEvent(element, MapBrowserEventType.SINGLECLICK, 0, 0);
-
-			expect(element.emitEvent).toHaveBeenCalledWith('map_clicked', null);
-		});
-	});
-
 	describe('when map move', () => {
 		it('change state from view properties', async () => {
 			const element = await setup();
@@ -138,7 +103,7 @@ describe('OlMap', () => {
 			spyOn(view, 'getZoom');
 			spyOn(view, 'getCenter');
 
-			simulateMapEvent(element, MapEventType.MOVEEND);
+			simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 			expect(view.getZoom).toHaveBeenCalledTimes(1);
 			expect(view.getCenter).toHaveBeenCalledTimes(1);
@@ -152,7 +117,7 @@ describe('OlMap', () => {
 			const pointerPosition = ['foo', 'bar'];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 			expect(store.getState().position.pointerPosition).toBe(pointerPosition);
 		});
@@ -165,41 +130,9 @@ describe('OlMap', () => {
 			const pointerPosition = [99, 99];
 			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
 
-			simulateMouseEvent(element, MapBrowserEventType.POINTERMOVE, 10, 0, true);
+			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
 			expect(store.getState().position.pointerPosition).toBeUndefined();
-		});
-	});
-
-	describe('when contextmenu (i.e. with right-click) is performed', () => {
-
-		it('do store valid contextMenuData', async () => {
-			const element = await setup();
-			const customEventType = 'contextmenu';
-			const state = {
-				position: {
-					zoom: 10,
-					center: initialCenter
-				},
-				contextMenue: { data: { pointer: false, commands: false } }
-			};
-
-			store = TestUtils.setupStoreAndDi(state, {
-				position: positionReducer,
-				contextMenue: contextMenueReducer
-			});
-
-			simulateMouseEvent(element, customEventType, 10, 0);
-			const actualCommands = store.getState().contextMenue.data.commands;
-			const actualPointer = store.getState().contextMenue.data.pointer;
-
-			expect(actualPointer).toEqual({ x: 10, y: 0 });
-			expect(actualCommands.length).toBe(2);
-			expect(actualCommands[0].label).toBe('Copy Coordinates');
-			expect(actualCommands[0].action).not.toBeUndefined();
-			expect(actualCommands[1].label).toBe('Hello');
-			expect(actualCommands[1].action).not.toBeUndefined();
-			expect(actualCommands[1].shortCut).toBeUndefined();
 		});
 	});
 
@@ -359,6 +292,17 @@ describe('OlMap', () => {
 			expect(layer1.get('id')).toBe('id0');
 		});
 	});
+
+	describe('contextmenue handler', () => {
+		it('registers the handler', async () => {
+			const registerSpy = spyOn(contextMenuEventHandlerMock, 'register');
+			const element = await setup();
+
+			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
+			expect(registerSpy).toHaveBeenCalledOnceWith(element._map);
+		});
+	});
+
 
 	describe('measurement handler', () => {
 		it('registers the handler', async () => {

@@ -8,7 +8,6 @@ import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
 import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
-import { contextMenueOpen, contextMenueClose } from '../../../contextMenue/store/contextMenue.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
 
@@ -24,14 +23,15 @@ export class OlMap extends BaElement {
 	constructor() {
 		super();
 		const {
-			ShareService: shareService,
 			GeoResourceService: georesourceService,
-			OlMeasurementHandler: measurementHandler
-		} = $injector.inject('ShareService', 'GeoResourceService', 'OlMeasurementHandler');
-		this._shareService = shareService;
+			OlMeasurementHandler: measurementHandler,
+			OlContextMenueMapEventHandler: contextMenueHandler
+		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
+		
+		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[MEASUREMENT_LAYER_ID, measurementHandler]]);
-
+		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 
 	/**
@@ -57,7 +57,7 @@ export class OlMap extends BaElement {
 			center: center,
 			zoom: zoom,
 		});
-		this._contextMenuToggle = false;
+
 		const baseLayer = new TileLayer({
 			id: BACKGROUND_LAYER_ID,
 			source: new XYZ({
@@ -99,31 +99,9 @@ export class OlMap extends BaElement {
 			updatePointerPosition(coord);
 		});
 
-
-		this._map.on('singleclick', (evt) => {
-			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			this._contextMenuToggle = false;
-			contextMenueClose();
-			this.emitEvent('map_clicked', coord);
+		this._eventHandler.forEach(handler => {
+			handler.register(this._map);
 		});
-
-
-		this._map.addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-			const contextMenueData = this._buildContextMenueData(e);
-			contextMenueOpen(contextMenueData);
-		});
-	}
-
-	_buildContextMenueData(evt) {		
-		const coord = this._map.getEventCoordinate(evt.originalEvent);
-		const copyToClipboard = () => this._shareService.copyToClipboard(coord).catch(() => this.log('Cannot copy the coordinate to clipboard.'));
-		const firstCommand = { label: 'Copy Coordinates', action: copyToClipboard };
-		const secondCommand = { label: 'Hello', action: () => this.log('Hello World!') };
-		return {
-			pointer: { x: evt.originalEvent.pageX, y: evt.originalEvent.pageY },
-			commands: [firstCommand, secondCommand]
-		};
 	}
 
 	/**

@@ -3,7 +3,6 @@
 import { MapInfo } from '../../../../../src/modules/footer/components/mapInfo/MapInfo';
 import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { $injector } from '../../../../../src/injection';
-import { OlCoordinateService } from '../../../../../src/services/OlCoordinateService';
 import { changeZoom } from '../../../../../src/modules/map/store/position.action';
 
 
@@ -14,13 +13,17 @@ import { changeZoom } from '../../../../../src/modules/map/store/position.action
 import { TestUtils } from '../../../../test-utils.js';
 window.customElements.define(MapInfo.tag, MapInfo);
 
+const coordinateServiceMock = {
+	stringify() { },
+	toLonLat() { }
 
+};
 
 const setupStoreAndDi = (state) => {
 	TestUtils.setupStoreAndDi(state, { position: positionReducer });
 
 	$injector
-		.register('CoordinateService', OlCoordinateService);
+		.registerSingleton('CoordinateService', coordinateServiceMock);
 };
 
 
@@ -43,7 +46,7 @@ describe('MapInfo', () => {
 			expect(element.shadowRoot.querySelector('ba-theme-toggle')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.labels')).toBeTruthy();
 			expect(element.shadowRoot.innerHTML.includes('ZoomLevel: 5')).toBeTruthy();
-		});		
+		});
 	});
 
 	describe('when updated', () => {

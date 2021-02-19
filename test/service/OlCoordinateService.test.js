@@ -101,7 +101,7 @@ describe('OlCoordinateService', () => {
 		it('stringifies with the default provider lon/lat coordinates', () => {
 			const initialCooord4326 = [11.57245, 48.14021];
 
-			const string = instanceUnderTest.stringify(initialCooord4326, 3);
+			const string = instanceUnderTest.stringify(initialCooord4326, 4326, 3);
 
 			expect(string).toBe('11.57245, 48.14021');
 		});

@@ -1,5 +1,4 @@
 .icon {   
-  background: var(--primary-color);
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;

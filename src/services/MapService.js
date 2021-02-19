@@ -33,7 +33,7 @@ export class MapService {
 	}
 
 	/**
-	 * Default SRID for use within the UI.
+	 * Default SRID suitable for the UI.
 	 * @returns {number} srid 
 	 */
 	getDefaultSridForView() {
@@ -41,11 +41,13 @@ export class MapService {
 	}
 
 	/**
-	 *All availavle SRIDs for use within the UI.
-	 @returns {Array<SridDefinition>} srids
+	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
+	 * suitable SridDefinition regarding this coordinate.
+	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
+	 * @returns {Array<SridDefinition>} srids
 	 */
-	getSridDefinitionsForView() {
-		return this._definitions.sridDefinitionsForView;
+	getSridDefinitionsForView(coordinateInMapProjection) {
+		return this._definitions.sridDefinitionsForView(coordinateInMapProjection);
 	}
 
 	/**

@@ -9,12 +9,11 @@ import { ShareService } from '../services/ShareService';
 import { GeoResourceService } from '../services/GeoResourceService';
 import { loadBvvGeoResources } from '../services/provider/geoResource.provider';
 import { UrlService } from '../services/UrlService';
-
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
-import { OlMeasurementHandler } from '../modules/map/components/olMap/handler/measure/OlMeasurementHandler';
 import { loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults } from '../modules/search/services/provider/searchResult.provider';
 import { getBvvMapDefinitions } from '../services/provider/mapDefinitions.provider';
 import { MapService } from '../services/MapService';
+import { mapModule } from '../modules/map/services';
 
 
 $injector
@@ -28,8 +27,9 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
 	.registerSingleton('ShareService', new ShareService(navigator))
 	.register('UrlService', UrlService)
-	.register('OlMeasurementHandler', OlMeasurementHandler)
-	.registerSingleton('MapService', new MapService(getBvvMapDefinitions));
+	.registerSingleton('MapService', new MapService(getBvvMapDefinitions))
+	.registerModule(mapModule);
+	
 
 
 export let init = true;
