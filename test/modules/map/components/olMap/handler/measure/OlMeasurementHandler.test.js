@@ -13,6 +13,7 @@ import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/layers.action';
 
 
 TestUtils.setupStoreAndDi({ }, );
@@ -27,9 +28,11 @@ register(proj4);
 describe('OlMeasurementHandler', () => {
 
 	it('has two methods', () => {
-		expect(new OlMeasurementHandler()).toBeTruthy();
-		expect(new OlMeasurementHandler().activate).toBeTruthy();
-		expect(new OlMeasurementHandler().deactivate).toBeTruthy();
+		const handler = new OlMeasurementHandler();
+		expect(handler).toBeTruthy();
+		expect(handler.activate).toBeTruthy();
+		expect(handler.deactivate).toBeTruthy();
+		expect(handler.id).toBe(MEASUREMENT_LAYER_ID);
 	});
 
 	const simulateDrawEvent = (type, draw, feature) => {

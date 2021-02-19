@@ -10,6 +10,7 @@ import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
 import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
+import { MEASUREMENT_LAYER_ID } from '../../../../store/layers.action';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -24,7 +25,7 @@ if (!window.customElements.get(MeasurementOverlay.tag)) {
 export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
-		super();
+		super(MEASUREMENT_LAYER_ID);
 		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;

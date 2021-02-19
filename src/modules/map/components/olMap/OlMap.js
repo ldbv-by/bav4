@@ -6,7 +6,7 @@ import { Map as MapOl, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { removeLayer, MEASUREMENT_LAYER_ID } from '../../store/layers.action';
+import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
@@ -30,7 +30,7 @@ export class OlMap extends BaElement {
 		
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[MEASUREMENT_LAYER_ID, measurementHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 

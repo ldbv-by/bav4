@@ -42,7 +42,10 @@ describe('OlMap', () => {
 	};
 	const measurementHandlerMock = {
 		activate() { },
-		deactivate() { }
+		deactivate() { },
+		get id() {
+			return MEASUREMENT_LAYER_ID;
+		}
 	};
 
 	let store;
@@ -308,7 +311,7 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._layerHandler.get(MEASUREMENT_LAYER_ID)).toEqual(measurementHandlerMock);
+			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
 		});
 
 		it('activates and deactivates the handler', async () => {
