@@ -7,6 +7,7 @@ import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 import { layersReducer } from '../modules/map/store/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import ReduxQuerySync from 'redux-query-sync';
+import { measurementReducer } from '../modules/map/store/measurement.reducer';
 
 
 
@@ -73,7 +74,8 @@ export class StoreService {
 			modal:modalReducer,
 			uiTheme: uiThemeReducer,
 			layers: layersReducer,
-			mapContextMenu: mapContextMenuReducer
+			mapContextMenu: mapContextMenuReducer,
+			measurement: measurementReducer
 		});
 
 		this.store = createStore(rootReducer, storeEnhancer);
