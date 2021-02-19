@@ -17,3 +17,8 @@ jobs:
     - run: npm run lint
     - run: npm run es-check
     - run: npm run test:travis
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
