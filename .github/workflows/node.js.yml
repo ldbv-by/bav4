@@ -16,7 +16,7 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run es-check
-    - run: npm run test:travis
+    - run: npm run test:gha
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
