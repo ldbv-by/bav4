@@ -20,11 +20,12 @@ export const MeasurementOverlayTypes = {
  * 
  * Observed Attributes:
  * 
-  * Configurable Properties:
+ * Configurable Properties:
  * - `type`
  * - `value` 
  * - `static`
  * - `geometry`
+ * - `projectionHints`
  *  
  * 
  * Observed Properties:
@@ -32,7 +33,7 @@ export const MeasurementOverlayTypes = {
  * - `static`
  * - `geometry`
  * - `position`
- * 
+ * - `projectionHints`
  * @class
  * @author thiloSchlemmer
  */
