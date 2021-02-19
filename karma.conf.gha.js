@@ -8,7 +8,7 @@ module.exports = function (config) {
 	config.set({
 		reporters: ['progress', 'coverage-istanbul', 'coveralls'],
 		customLaunchers: {
-			TravisHeadlessChrome: {
+			GhaHeadlessChrome: {
 				base: 'ChromeHeadless',
 				flags: ['--disable-translate', '--disable-extensions',
 					'--no-first-run', '--disable-background-networking',

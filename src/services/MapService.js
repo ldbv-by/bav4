@@ -42,10 +42,10 @@ export class MapService {
 
 	/**
 	 *All availavle SRIDs for use within the UI.
-	 @returns {Array<number>} srids
+	 @returns {Array<SridDefinition>} srids
 	 */
-	getSridsForView() {
-		return this._definitions.sridsForView;
+	getSridDefinitionsForView() {
+		return this._definitions.sridDefinitionsForView;
 	}
 
 	/**
