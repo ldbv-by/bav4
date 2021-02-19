@@ -46,11 +46,11 @@ export class CoordinateSelect extends BaElement {
 					// on window load pointerPosition returns null so we have to catch this here
 					return pointerPosition ? 
 						this._coordinateService.stringify(
-							this._coordinateService.transform(pointerPosition, '3857', '25832'), 3) 
+							this._coordinateService.transform(pointerPosition, 3857, this._items[0].code),  this._items[0].code) 
 						: '';
 				case String(this._items[1].code): //4326
 					return this._coordinateService.stringify(
-						this._coordinateService.toLonLat(pointerPosition), 3);
+						this._coordinateService.toLonLat(pointerPosition), this._items[1].code, { digits:5 });
 				default:
 					return '';
 			} 
