@@ -8,6 +8,19 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 	return geometry;
 };
 
+/**
+ * Contains informations for transformation-methods
+ * @typedef {Object} CalculationHints
+ * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'  
+ * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
+ */
+
+/**
+ * Calculates the area of the geometry.
+ * @param {Geometry} geometry the area-like geometry, to calculate with
+ * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @returns {number} the calculated length or 0 if the geometry-object is not area-like
+ */
 export const getArea = (geometry, calculationHints = {}) => {
 	if (geometry.getArea()) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
@@ -16,6 +29,13 @@ export const getArea = (geometry, calculationHints = {}) => {
 	return 0;	
 };
 
+
+/**
+ * Calculates the length of the geometry.
+ * @param {Geometry} geometry the geometry, to calculate with
+ * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
+ */
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
@@ -37,6 +57,14 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 	return 0;
 };
 
+/**
+ * A wrapper method for ol/LineString.getCoordinateAt().
+ * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry. 
+ * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). * 
+ * @param {Geometry} geometry 
+ * @param {number} fraction 
+ * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
+ */
 export const getCoordinateAt = (geometry, fraction) => {
 	let lineString;
 	if (geometry instanceof LineString) {
@@ -55,6 +83,11 @@ export const getCoordinateAt = (geometry, fraction) => {
 	return null;
 };
 
+/**
+ * Determines whether or not the geometry has the property of a azimuth-angle
+ * @param {Geometry} geometry the geometry
+ * @returns {boolean} 
+ */
 export const canShowAzimuthCircle = (geometry) => {
 	if (geometry instanceof LineString) {
 		const coords = geometry.getCoordinates();
@@ -66,6 +99,12 @@ export const canShowAzimuthCircle = (geometry) => {
 	return false;
 };
 
+
+/**
+ * Calculates the azimuth-angle between the start(first coordinate) and end(last coordinate) of the geometry
+ * @param {Geometry} geometry 
+ * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
+ */
 export const getAzimuth = (geometry) => {
 	if (!(geometry instanceof Polygon) && 
 		!(geometry instanceof LineString) && 
@@ -92,6 +131,14 @@ export const getAzimuth = (geometry) => {
 	return (360 + (factor * rad * 180 / Math.PI)) % 360;	
 };
 
+
+/**
+ * Calculates delta-value as a factor of the length of a provided geometry, 
+ * to get equal-distanced partition points related to the start of the geometry.
+ * @param {Geometry} geometry the linear/area-like geometry
+ * @param {CalculationHints} calculationHints calculationHints for a optional transformation
+ * @returns {number} the delta, a value between 0 and 1
+ */
 export const getPartitionDelta = (geometry, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
 	let delta = 1;
@@ -108,7 +155,13 @@ export const getPartitionDelta = (geometry, calculationHints = {}) => {
 	return delta;
 };
 
-// intermediate helper-function until kind of FormattingService is in place
+ 
+/**
+ * Appends the appropriate unit of measure to the specified number
+ * @param {number} length 
+ * @returns {String} the formatted length 
+ */
+//todo:intermediate helper-function until kind of FormattingService is in place
 export const getFormattedLength = (length) => {		
 	let formatted;
 	if (length > 100) {
@@ -120,7 +173,12 @@ export const getFormattedLength = (length) => {
 	return formatted;
 };	
 
-// intermediate helper-function until kind of FormattingService is in place
+/**
+ * Appends the appropriate unit of measure to the specified number
+ * @param {number} area 
+ * @returns {String} the formatted length 
+ */
+//todo: intermediate helper-function until kind of FormattingService is in place
 export const getFormattedArea = (area) =>  {		
 	let formatted;
 	if (area >= 1000000) {
