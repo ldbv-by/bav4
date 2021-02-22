@@ -14,12 +14,11 @@ export class CoordinateSelect extends BaElement {
 	constructor() {
 		super();
   
-		const { CoordinateService, EnvironmentService, MapService, TranslationService } 
-            = $injector.inject('CoordinateService', 'EnvironmentService', 'MapService', 'TranslationService');
+		const { CoordinateService, EnvironmentService, MapService } 
+            = $injector.inject('CoordinateService', 'EnvironmentService', 'MapService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._mapService = MapService;
-		this._translationService = TranslationService; 
 		
 		this._items = this._mapService.getSridDefinitionsForView();
 		// set selected coordinate system initially

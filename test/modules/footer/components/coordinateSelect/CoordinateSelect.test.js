@@ -38,8 +38,6 @@ describe('CoordinateSelect', () => {
 		TestUtils.setupStoreAndDi(state, { position: positionReducer });
 
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-		$injector
 			.registerSingleton('CoordinateService', coordinateServiceMock);
 		$injector
 			.registerSingleton('MapService', mapServiceMock);
