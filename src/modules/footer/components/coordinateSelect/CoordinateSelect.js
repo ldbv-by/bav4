@@ -14,11 +14,12 @@ export class CoordinateSelect extends BaElement {
 	constructor() {
 		super();
   
-		const { CoordinateService, EnvironmentService, MapService } 
-            = $injector.inject('CoordinateService', 'EnvironmentService', 'MapService');
+		const { CoordinateService, EnvironmentService, MapService, TranslationService } 
+            = $injector.inject('CoordinateService', 'EnvironmentService', 'MapService', 'TranslationService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._mapService = MapService;
+		this._translationService = TranslationService;
 		
 		this._items = this._mapService.getSridDefinitionsForView();
 		// set selected coordinate system initially
@@ -36,6 +37,8 @@ export class CoordinateSelect extends BaElement {
      *@override 
      */
 	createView() {
+
+		const translate = (key) => this._translationService.translate(key);
 
 		const { pointerPosition } = this._state;
 
@@ -66,7 +69,7 @@ export class CoordinateSelect extends BaElement {
 			<style>${css}</style>
             <div class='coordinate-container' >
                 <div class='coordinate-label'>${getPointerPositionChange()}</div>
-					<select class='select-coordinate' @change="${onChange}">
+					<select class='select-coordinate' @change="${onChange}" title="${translate('footer_coordinate_select')}">
 					${this._items.map((item) => html`
 						<option class="select-coordinate-option" value="${item.code}">${item.label}</option> 
 					`)}

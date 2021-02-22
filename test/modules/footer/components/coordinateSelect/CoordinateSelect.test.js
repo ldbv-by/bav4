@@ -38,6 +38,8 @@ describe('CoordinateSelect', () => {
 		TestUtils.setupStoreAndDi(state, { position: positionReducer });
 
 		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector
 			.registerSingleton('CoordinateService', coordinateServiceMock);
 		$injector
 			.registerSingleton('MapService', mapServiceMock);
@@ -57,6 +59,7 @@ describe('CoordinateSelect', () => {
 			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toEqual('99999');
 			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual('1111');
+			expect(element.shadowRoot.querySelector('select').title).toBe('footer_coordinate_select');						
 		});	
 	});
     
