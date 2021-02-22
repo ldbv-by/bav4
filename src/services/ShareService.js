@@ -1,5 +1,5 @@
 export class ShareService {
-	constructor(_navigator = navigator) {
+	constructor(_navigator = window.navigator) {
 		this._navigator = _navigator;
 	}
 
