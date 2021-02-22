@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
 import css from './coordinateSelect.css';
@@ -42,19 +42,20 @@ export class CoordinateSelect extends BaElement {
 
 		const { pointerPosition } = this._state;
 
+		if (!pointerPosition) {
+			return nothing;
+		} 
+
 		const getPointerPositionChange = () => {
 			switch (this._selectedCode) {
 				case String(this._items[0].code): //25832
-					// on window load pointerPosition returns null so we have to catch this here
-					return pointerPosition ? 
-						this._coordinateService.stringify(
-							this._coordinateService.transform(pointerPosition, this._mapService.getSrid(), this._items[0].code),  this._items[0].code) 
-						: '';
+					return this._coordinateService.stringify(
+						this._coordinateService.transform(pointerPosition, this._mapService.getSrid(), this._items[0].code),  this._items[0].code);
 				case String(this._items[1].code): //4326
 					return this._coordinateService.stringify(
 						this._coordinateService.toLonLat(pointerPosition), this._items[1].code, { digits:5 });
 				default:
-					return '';
+					return nothing;
 			} 
 		}; 
 

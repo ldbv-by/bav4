@@ -31,7 +31,7 @@ describe('CoordinateSelect', () => {
 		const state = {
 			position: {
 				zoom: 5,
-				pointerPosition: [12345, 67890]
+				pointerPosition: null
 			}
 		};
 
@@ -51,9 +51,21 @@ describe('CoordinateSelect', () => {
 
     
     
-	describe('when initialized', () => {	
+	describe('when initialized', () => {
+		it('renders nothing when pointer position equals null', async () => {
+			const element = await setup({ touch: false });
+
+			expect(element.shadowRoot.childElementCount).toBe(0);
+		});	
 		it('adds a div which shows coordinate select and coordinate display', async () => {
 			const element = await setup({ touch: false });
+
+			updatePointerPosition([12345, 67890]);
+
+			const container = element.shadowRoot.querySelector('.coordinate-container');
+
+			expect(container.childElementCount).toBe(2);
+			expect(container).toBeTruthy();
 
 			expect(element.shadowRoot.querySelector('select')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeTruthy();
@@ -72,12 +84,12 @@ describe('CoordinateSelect', () => {
 
 			const testCoordinate = [1211817.6233080907, 6168328.021915435]; 
 
+			// coordinates are shown after the pointer is moved, so initial there are no coordinates visible
+			updatePointerPosition(testCoordinate); 
+
 			expect(element.shadowRoot.querySelector('select').value).toEqual('99999');
 			expect(element.shadowRoot.querySelector('.select-coordinate-option').innerHTML.includes('TEST')).toBeTruthy();
             
-			// coordinates are shown after the pointer is moved, so initial there are no coordinates visible
-			updatePointerPosition(testCoordinate); 
-			// returns mocked value
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 
 			expect(transformMock).toHaveBeenCalledOnceWith(testCoordinate, 3857, 99999);
@@ -94,19 +106,18 @@ describe('CoordinateSelect', () => {
 			const toLonLatMock = spyOn(coordinateServiceMock, 'toLonLat').and.returnValue([42, 42]);
 
 			const testCoordinate = [23, 23];
+			updatePointerPosition(testCoordinate); 
 
 			const select = element.shadowRoot.querySelector('select');
 
 			// shows no coordinates (default)
-			select.value = '';
+			select.value = '123';
 			select.dispatchEvent(new Event('change'));
-			element.render();
-			expect(element.shadowRoot.querySelector('.coordinate-label').innerHTML).toEqual('<!----><!---->');
+			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeFalsy();
 
 			// change to code '1111' - toLonLat method is called
-			select.value = 1111;
+			select.value = '1111';
 			select.dispatchEvent(new Event('change'));
-			element.render();
 			updatePointerPosition(testCoordinate); 
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 			expect(toLonLatMock).toHaveBeenCalledWith(testCoordinate);
@@ -115,14 +126,13 @@ describe('CoordinateSelect', () => {
 			// change to code '99999' - transform method is called
 			select.value = '99999';
 			select.dispatchEvent(new Event('change'));
-			element.render();
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 			expect(transformMock).toHaveBeenCalledWith(testCoordinate, 3857, 99999);
 			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 99999);
 
 			// pointer position initial state (null)
 			updatePointerPosition(null);
-			expect(element.shadowRoot.querySelector('.coordinate-label').innerHTML).toEqual('<!----><!---->');
+			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 	});
 
