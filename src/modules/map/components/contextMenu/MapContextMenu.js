@@ -26,7 +26,7 @@ export class MapContextMenu extends BaElement {
 		const widthBorder = window.innerWidth * .66;
 		const heightBorder = window.innerHeight * .66;
 
-		//windiw sector the click event occurred:
+		//window sector the click event occurred:
 		//0-1
 		//3-2	
 
