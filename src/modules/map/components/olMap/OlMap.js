@@ -6,10 +6,10 @@ import { Map as MapOl, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
-import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
 import { removeLayer } from '../../store/layers.action';
+import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
 import { $injector } from '../../../../injection';
-import { toOlLayer, updateOlLayer } from './olMapUtils';
+import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
 
 
 /**
@@ -24,10 +24,13 @@ export class OlMap extends BaElement {
 		super();
 		const {
 			GeoResourceService: georesourceService,
+			OlMeasurementHandler: measurementHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'OlContextMenueMapEventHandler');
-
+		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
+		
 		this._geoResourceService = georesourceService;
+		this._geoResourceService = georesourceService;
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 
@@ -166,7 +169,6 @@ export class OlMap extends BaElement {
 	}
 
 	_syncOverlayLayer() {
-
 		const { overlayLayers } = this._state;
 
 		const updatedIds = overlayLayers.map(layer => layer.id);
@@ -187,18 +189,24 @@ export class OlMap extends BaElement {
 			const olLayer = this._getOlLayerById(id);
 			if (olLayer) {
 				this._map.removeLayer(olLayer);
+				if (this._layerHandler.has(id)) {
+					this._layerHandler.get(id).deactivate(this._map);
+				}
 			}
 		});
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			if (resource) {
+			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+
+			if (olLayer) {
 				const layer = overlayLayers.find(layer => layer.id === id);
-				const olLayer = updateOlLayer(toOlLayer(resource), layer);
+				updateOlLayer(olLayer, layer);
 				//+1: regard baselayer
 				this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
 			}
 			else {
+				console.warn('Could not add an olLayer for id \'' + id + '\'');
 				removeLayer(id);
 			}
 		});

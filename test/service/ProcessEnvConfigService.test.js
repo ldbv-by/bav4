@@ -26,7 +26,17 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 	});
 
-	describe('test getValue()', () => {
+	describe('constructor', () => {
+		it('warns when no properties could be found', () => {
+			const warnSpy = spyOn(console, 'warn');
+			new ProcessEnvConfigService();
+
+			expect(warnSpy).toHaveBeenCalledWith('No config properties could be found. This is likely because the .env file is missing.');
+		});
+	});
+
+
+	describe('getValue()', () => {
 
 		it('provides a value for required keys', () => {
 			// eslint-disable-next-line no-undef
@@ -63,7 +73,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 	});
 
-	describe('test getValue()', () => {
+	describe('getValueAsPath()', () => {
 
 		it('provides a path for required keys', () => {
 			// eslint-disable-next-line no-undef

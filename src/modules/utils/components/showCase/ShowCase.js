@@ -1,8 +1,10 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
+import { closeModal } from '../../../modal/store/modal.action';
 import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
+import { activate as activatMeasurement, deactivate } from '../../../map/store/measurement.action';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -43,6 +45,16 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
+		const activateMeasrementTool = () => {
+			activatMeasurement();
+			closeModal();
+		};
+
+		const deactivateMeasrementTool = () => {
+			deactivate();
+			closeModal();
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -71,10 +83,13 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
-			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>							
+			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
+			<p>Measure Distance</p>
+			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
+			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="primary" @click=${deactivateMeasrementTool}></ba-button>	
 		</div>`;
 	}
-    
+
 	static get tag() {
 		return 'ba-showcase';
 	}

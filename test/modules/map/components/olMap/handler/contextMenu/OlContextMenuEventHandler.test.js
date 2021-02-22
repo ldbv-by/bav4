@@ -1,4 +1,4 @@
-import { ContextMenuEventHandler } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenu/ContextMenuEventHandler';
+import { OlContextMenuEventHandler } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenu/OlContextMenuEventHandler';
 import Map from 'ol/Map';
 import { $injector } from '../../../../../../../src/injection';
 import { initialState, mapContextMenuReducer } from '../../../../../../../src/modules/map/store/mapContextMenu.reducer';
@@ -41,10 +41,10 @@ describe('ContextMenuEventHandler', () => {
 
 	it('instantiates the handler', () => {
 		setup();
-		const handler = new ContextMenuEventHandler();
+		const handler = new OlContextMenuEventHandler();
 
 		expect(handler).toBeTruthy();
-		expect(new ContextMenuEventHandler().register).toBeTruthy();
+		expect(new OlContextMenuEventHandler().register).toBeTruthy();
 		expect(handler.id).toBe('CONTEXTMENU_HANDLER');
 	});
 
@@ -53,7 +53,7 @@ describe('ContextMenuEventHandler', () => {
 		it('it updates the store and inserts a ba-ol-map-context-menu-content element', () => {
 			setup();
 			const map = new Map();
-			const handler = new ContextMenuEventHandler();
+			const handler = new OlContextMenuEventHandler();
 			handler.register(map);
 
 			simulateMouseEvent(map, 'contextmenu', 10, 5);
@@ -76,7 +76,7 @@ describe('ContextMenuEventHandler', () => {
 			};
 			setup(state);
 			const map = new Map();
-			const handler = new ContextMenuEventHandler();
+			const handler = new OlContextMenuEventHandler();
 			handler.register(map);
 
 			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, 0, 0);
@@ -95,7 +95,7 @@ describe('ContextMenuEventHandler', () => {
 			};
 			setup(state);
 			const map = new Map();
-			const handler = new ContextMenuEventHandler();
+			const handler = new OlContextMenuEventHandler();
 			handler.register(map);
 
 			simulateMapEvent(map, MapEventType.MOVESTART);

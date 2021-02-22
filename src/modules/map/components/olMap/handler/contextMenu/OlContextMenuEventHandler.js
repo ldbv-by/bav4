@@ -9,7 +9,7 @@ if (!window.customElements.get(OlMapContextMenuContent.tag)) {
 }
 
 
-export class ContextMenuEventHandler extends OlMapEventHandler {
+export class OlContextMenuEventHandler extends OlMapEventHandler {
 
 	constructor() {
 		super('CONTEXTMENU_HANDLER');

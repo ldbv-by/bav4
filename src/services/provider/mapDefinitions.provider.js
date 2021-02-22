@@ -15,6 +15,7 @@ import { $injector } from '../../injection';
  * @typedef {Object} SridDefinition
  * @property {string} label label
  * @property {number} code srid
+ * @property {number} digits decimal places for rounding 
  */
 
 /**
@@ -32,7 +33,7 @@ export const getBvvMapDefinitions = () => {
 };
 
 const getBvvSridDefinitionsForView = (coordinateInMapProjection) => {
-	const definitions = [{ label: 'UTM', code: 25832 }, { label: 'WGS84', code: 4326 }];
+	const definitions = [{ label: 'UTM', code: 25832, digits: 0 }, { label: 'WGS84', code: 4326, digits: 5 }];
 	if (coordinateInMapProjection) {
 
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
@@ -43,7 +44,7 @@ const getBvvSridDefinitionsForView = (coordinateInMapProjection) => {
 			return [definitions.pop()];
 		}
 		else if (coord4326[0] < 18 && coord4326[0] >= 12) {
-			definitions.splice(0, 0, { label: 'UTM', code: 25833 });
+			definitions.splice(0, 0, { label: 'UTM', code: 25833, digits: 0 });
 		}
 
 	}

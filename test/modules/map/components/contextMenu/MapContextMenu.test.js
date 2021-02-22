@@ -20,35 +20,32 @@ describe('MapContextMenu', () => {
 	};
 
 	describe('when initialized', () => {
-		it('adds a div which is not visible', async () => {
+		it('renders nothing', async () => {
 			const element = await setup();
 			const container = element.shadowRoot.querySelector('.context-menu');
 
-			expect(container).toBeTruthy();
-			expect(window.getComputedStyle(container).display).toBe('none');
+			expect(container).toBeFalsy();
 		});
 	});
 
 	describe('store changed', () => {
 		it('shows/hides the context menu', async () => {
 			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menu');
 
 			open([10, 10], 'unknownId');
 
+			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(window.getComputedStyle(container).display).toBe('block');
 
 			close();
 
-			expect(window.getComputedStyle(container).display).toBe('none');
+			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});
 	});
 	describe('when opened', () => {
 
-
 		it('shows a header and a close button which closes the menu', async () => {
-			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menu');
+			const element = await setup({ coordinate: [10, 20], id: 'someId' });
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
@@ -61,115 +58,100 @@ describe('MapContextMenu', () => {
 
 			icon.click();
 
-			expect(window.getComputedStyle(container).display).toBe('none');
+			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});
 
 
 		it('renders a content html element', async () => {
 			const element = await setup();
 			const contentElementId = 'mockContentId';
-			const container = element.shadowRoot.querySelector('.context-menu');
 			const mockContent = document.createElement('div');
 			mockContent.innerText = 'mockContentText';
 			mockContent.id = contentElementId;
 			document.body.appendChild(mockContent);
 
+			open([10, 20], contentElementId);
 
-			open([10, 10], contentElementId);
-
+			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(element.shadowRoot.querySelector('#' + contentElementId).parentElement).toEqual(container);
 		});
 
-		it('calls the calculateParameter()', async () => {
-			const element = await setup();
-			const clickEvent = [10, 10];
-			const spy = spyOn(element, '_calculateParameter').and.callThrough();
-			const container = element.shadowRoot.querySelector('.context-menu');
-
-			open(clickEvent);
-
-			expect(spy).toHaveBeenCalledWith(clickEvent, container);
-		});
-
-		it('adds css classes and stylings', async () => {
+		it('calls the _calculateSector() method', async () => {
 			const element = await setup();
 			const clickEvent = [10, 20];
+			const spy = spyOn(element, '_calculateSector').and.callThrough();
+
+			open(clickEvent, 'someId');
+
+			expect(spy).toHaveBeenCalledWith(clickEvent);
+		});
+
+		it('adds css classes and stylings when click event in sector0', async () => {
+			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
+			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			const element = await setup();
+			const clickEvent = [300, 150];
+			
+			open(clickEvent, 'someId');
+			
 			const container = element.shadowRoot.querySelector('.context-menu');
+			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
+			//consider arrow offset of 20px
+			expect(container.style.getPropertyValue('--mouse-y')).toBe('170px');
+			expect(container.classList.length).toBe(2);
+			expect(container.classList.contains('context-menu')).toBeTrue();
+			expect(container.classList.contains('sector-0')).toBeTrue();
+		});
 
-			open(clickEvent);
+		it('adds css classes and stylings when click event in sector1', async () => {
+			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
+			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			const element = await setup();
+			const clickEvent = [700, 150];
+			
+			open(clickEvent, 'someId');
+			
+			const container = element.shadowRoot.querySelector('.context-menu');
+			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
+			//consider arrow offset of 20px
+			expect(container.style.getPropertyValue('--mouse-y')).toBe('170px');
+			expect(container.classList.length).toBe(2);
+			expect(container.classList.contains('context-menu')).toBeTrue();
+			expect(container.classList.contains('sector-1')).toBeTrue();
+		});
 
-			expect(window.getComputedStyle(container).left).toBeTruthy('10px');
-			expect(window.getComputedStyle(container).top).toBe('40px');
-			expect(container.classList.contains('top-left')).toBeTrue();
+		it('adds css classes and stylings when click event in sector2', async () => {
+			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
+			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			const element = await setup();
+			const clickEvent = [700, 350];
+			
+			open(clickEvent, 'someId');
+			
+			const container = element.shadowRoot.querySelector('.context-menu');
+			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
+			//consider arrow offset of -20px
+			expect(container.style.getPropertyValue('--mouse-y')).toBe('330px');
+			expect(container.classList.length).toBe(2);
+			expect(container.classList.contains('context-menu')).toBeTrue();
+			expect(container.classList.contains('sector-2')).toBeTrue();
+		});
+
+		it('adds css classes and stylings when click event in sector3', async () => {
+			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1000);
+			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
+			const element = await setup();
+			const clickEvent = [300, 350];
+			
+			open(clickEvent, 'someId');
+			
+			const container = element.shadowRoot.querySelector('.context-menu');
+			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
+			//consider arrow offset of -20px
+			expect(container.style.getPropertyValue('--mouse-y')).toBe('330px');
+			expect(container.classList.length).toBe(2);
+			expect(container.classList.contains('context-menu')).toBeTrue();
+			expect(container.classList.contains('sector-3')).toBeTrue();
 		});
 	});
-
-	describe('calculateParameter', () => {
-		it('returns  default parameter when event coordinate or element is missing', async () => {
-			const element = await setup();
-			const expectedParameter = { left: 0, top: 0, vAlignment: 'left', hAlignment: 'top' };
-
-			let parameter = element._calculateParameter();
-
-			expect(parameter).toEqual(expectedParameter);
-
-			parameter = element._calculateParameter([10, 10]);
-
-			expect(parameter).toEqual(expectedParameter);
-		});
-
-		it('returns parameter for top-left click position', async () => {
-			const element = await setup();
-			const expectedParameter = { left: '10px', top: '30px', vAlignment: 'left', hAlignment: 'top' };
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(400);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(400);
-			spyOnProperty(element, 'offsetWidth', 'get').and.returnValue(50);
-			spyOnProperty(element, 'offsetHeight', 'get').and.returnValue(50);
-
-			const parameter = element._calculateParameter([10, 10], element);
-
-			expect(parameter).toEqual(expectedParameter);
-		});
-
-		it('returns parameter for top-right click position', async () => {
-			const element = await setup();
-			const expectedParameter = { left: '250px', top: '30px', vAlignment: 'right', hAlignment: 'top' };
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(400);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(400);
-			spyOnProperty(element, 'offsetWidth', 'get').and.returnValue(50);
-			spyOnProperty(element, 'offsetHeight', 'get').and.returnValue(50);
-
-			const parameter = element._calculateParameter([300, 10], element);
-
-			expect(parameter).toEqual(expectedParameter);
-		});
-
-		it('returns parameter for bottom-left click position', async () => {
-			const element = await setup();
-			const expectedParameter = { left: '10px', top: '230px', vAlignment: 'left', hAlignment: 'bottom' };
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(400);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(400);
-			spyOnProperty(element, 'offsetWidth', 'get').and.returnValue(50);
-			spyOnProperty(element, 'offsetHeight', 'get').and.returnValue(50);
-
-			const parameter = element._calculateParameter([10, 300], element);
-
-			expect(parameter).toEqual(expectedParameter);
-		});
-
-		it('returns parameter for bottom-right click position', async () => {
-			const element = await setup();
-			const expectedParameter = { left: '250px', top: '230px', vAlignment: 'right', hAlignment: 'bottom' };
-			spyOnProperty(window, 'innerWidth', 'get').and.returnValue(400);
-			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(400);
-			spyOnProperty(element, 'offsetWidth', 'get').and.returnValue(50);
-			spyOnProperty(element, 'offsetHeight', 'get').and.returnValue(50);
-
-			const parameter = element._calculateParameter([300, 300], element);
-
-			expect(parameter).toEqual(expectedParameter);
-		});
-
-	});
-
 });

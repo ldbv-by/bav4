@@ -41,7 +41,7 @@ export class OlMapContextMenuContent extends BaElement {
 					this._shareService.copyToClipboard(transformedCoordinate.join(', '));
 				};
 
-				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code);
+				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
 				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_context_menu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
