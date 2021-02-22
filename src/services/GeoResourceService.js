@@ -7,6 +7,8 @@
  * @typedef {function():(Array<geoResource>)} georesourceProvider
  */
 
+import { loadBvvGeoResources } from './provider/geoResource.provider';
+
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -20,7 +22,7 @@ export class GeoResourceService {
 	 * 
 	 * @param {georesourceProvider} provider 
 	 */
-	constructor(provider) {
+	constructor(provider = loadBvvGeoResources()) {
 		this._provider = provider;
 		this._georesources = null;
 	}
