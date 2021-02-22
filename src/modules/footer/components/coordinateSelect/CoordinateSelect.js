@@ -46,7 +46,7 @@ export class CoordinateSelect extends BaElement {
 					// on window load pointerPosition returns null so we have to catch this here
 					return pointerPosition ? 
 						this._coordinateService.stringify(
-							this._coordinateService.transform(pointerPosition, 3857, this._items[0].code),  this._items[0].code) 
+							this._coordinateService.transform(pointerPosition, this._mapService.getSrid(), this._items[0].code),  this._items[0].code) 
 						: '';
 				case String(this._items[1].code): //4326
 					return this._coordinateService.stringify(
@@ -67,9 +67,9 @@ export class CoordinateSelect extends BaElement {
 			<style>${css}</style>
             <div class='coordinate-container' >
                 <div class='coordinate-label'>${getPointerPositionChange()}</div>
-					<select class='select-coordinate' @change="${onChange}" >
+					<select class='select-coordinate' @change="${onChange}">
 					${this._items.map((item) => html`
-						<option class="select-coordinate-option" value="${item.code}" target="_blank">${item.label}</a> 
+						<option class="select-coordinate-option" value="${item.code}">${item.label}</option> 
 					`)}
 					</select>
 			</div>				

@@ -1,5 +1,4 @@
 .coordinate-container {
-    /* flex-grow: 100; */
     display: flex;
     margin: auto;
     user-select: none;
@@ -13,13 +12,14 @@
 
 
 .coordinate-label {
-    padding: 10px;
-    /* flex-grow: 100; */
+    padding-right: 10px;
+    margin: auto;
     display: block;
 }
 
 .select-coordinate {
-    background-color:  var(--primary-color);
+    background-color:  var(--secondary-bg-color);
+    color: var(--color);
     border: 1px solid transparent;
     border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
     cursor: pointer;
