@@ -25,7 +25,7 @@ $injector
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService(loadBvvGeoResources))
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService(loadBvvLocationSearchResults, loadBvvGeoResourceSearchResults))
-	.registerSingleton('ShareService', new ShareService(navigator))
+	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)
 	.registerSingleton('MapService', new MapService(getBvvMapDefinitions))
 	.registerModule(mapModule);
