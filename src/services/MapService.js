@@ -1,4 +1,5 @@
 import { $injector } from '../injection';
+import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
 * A function that provides map releated meta data
@@ -18,7 +19,7 @@ export class MapService {
 	 * 
 	 * @param {mapDefinitionProvider} provider 
 	 */
-	constructor(mapDefinitionProvider) {
+	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
 		this._coordinateService = CoordinateService;
 		this._definitions = mapDefinitionProvider();

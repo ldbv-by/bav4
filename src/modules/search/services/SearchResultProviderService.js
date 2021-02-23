@@ -1,6 +1,9 @@
-export class SearchResultProviderService {
+import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from './provider/searchResult.provider';
 
-	constructor(locationResultProvider, georesourceResultProvider) {
+export class SearchResultProviderService {
+	
+	constructor(locationResultProvider = loadBvvLocationSearchResults,
+		georesourceResultProvider = loadBvvGeoResourceSearchResults) {
 		this._locationResultProvider = locationResultProvider;
 		this._georesourceResultProvider = georesourceResultProvider;
 	}
