@@ -61,21 +61,21 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				return;
 			}
 			/** @type {string} */
-			let helpMsg =  translate('draw_measure_start');
+			let helpMsg =  translate('map_measure_start');
 
 			if (this._activeSketch) {
 				this._activeSketch.getGeometry();
-				helpMsg = translate('draw_measure_continue_line');
+				helpMsg = translate('map_measure_continue_line');
 
 				if (this._isFinishOnFirstPoint) {
-					helpMsg = translate('draw_measure_snap_first_point');
+					helpMsg = translate('map_measure_snap_first_point');
 				}
 				else if (this._isSnapOnLastPoint) {
-					helpMsg = translate('draw_measure_snap_last_point');
+					helpMsg = translate('map_measure_snap_last_point');
 				}
 
 				if (this._pointCount > 2) {
-					helpMsg += '<br/>' + translate('draw_delete_last_point');
+					helpMsg += '<br/>' + translate('map_delete_last_point');
 				}
 			}
 			
