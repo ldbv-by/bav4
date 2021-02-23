@@ -4,6 +4,7 @@ import { $injector } from '../injection';
 /**
  * Abstract Base-Class for all BaElements.
  * BaElement classes represent the view model within the MVVM pattern.
+ * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
  * 
  * Lifecycle:<br>
  * 
@@ -153,10 +154,11 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the Html template.
+	 * Creates the view with all data bindings
+	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @returns html template as tagged template literal
+	 * @returns {TemplateResult}
 	 */
 	createView() {
 		// The child has not implemented this method.
