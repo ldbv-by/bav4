@@ -16,9 +16,12 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/layers.action';
 
 
+const environmentServiceMock = { isTouch: () => false };
+
 TestUtils.setupStoreAndDi({ }, );
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 $injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
+$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -99,8 +102,29 @@ describe('OlMeasurementHandler', () => {
 			expect(map.removeOverlay).toHaveBeenCalledTimes(4);
 			expect(classUnderTest._overlays.length).toBe(0);
 		});	
+
+		
 	});
 
+	describe('when using EnvironmentService for snapTolerance', () => {
+			
+		it('isTouch() resolves in higher snapTolerance', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+								
+			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(12);			
+			expect(environmentSpy).toHaveBeenCalled();	
+		});
+
+		it('isTouch() resolves in lower snapTolerance', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+								
+			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(4);			
+			expect(environmentSpy).toHaveBeenCalled();	
+		});
+
+	});
 
 	describe('when draw a line', () => {
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
