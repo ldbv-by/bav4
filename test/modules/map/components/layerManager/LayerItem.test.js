@@ -68,7 +68,7 @@ describe('LayerItem', () => {
 			const element = await setup({ id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true });
 			const toggle = element.shadowRoot.querySelector('ba-toggle');
 
-			expect(toggle.title).toBe('label0 - layer_manager_change_visibility');
+			expect(toggle.title).toBe('label0 - map_layerManager_change_visibility');
 		});
 
 		it('use layer.opacity-property in slider ', async () => {

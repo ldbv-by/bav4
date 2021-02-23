@@ -4,27 +4,27 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				layer_manager_title: 'Layers',	
-				layer_manager_change_visibility: 'toggle visibility',
-				layer_manager_opacity:'Opacity',
-				layer_manager_collapse:'collapse properties',
-				layer_manager_expand:'expand properties',
-				layer_manager_move_up: 'move Layer up',		
-				layer_manager_move_down: 'move Layer down',
-				layer_manager_remove: 'remove Layer'				
+				map_layerManager_title: 'Layers',	
+				map_layerManager_change_visibility: 'toggle visibility',
+				map_layerManager_opacity:'Opacity',
+				map_layerManager_collapse:'collapse properties',
+				map_layerManager_expand:'expand properties',
+				map_layerManager_move_up: 'move Layer up',		
+				map_layerManager_move_down: 'move Layer down',
+				map_layerManager_remove: 'remove Layer'				
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				layer_manager_title: 'Ebenen',
-				layer_manager_change_visibility: 'Sichtbarkeit umschalten',			
-				layer_manager_opacity:'Opazität',
-				layer_manager_collapse:'Eigenschaften einklappen',
-				layer_manager_expand:'Eigenschaften ausklappen',
-				layer_manager_move_up: 'Ebene anheben',	
-				layer_manager_move_down: 'Ebene absenken',		
-				layer_manager_remove: 'Ebene entfernen'								
+				map_layerManager_title: 'Ebenen',
+				map_layerManager_change_visibility: 'Sichtbarkeit umschalten',			
+				map_layerManager_opacity:'Opazität',
+				map_layerManager_collapse:'Eigenschaften einklappen',
+				map_layerManager_expand:'Eigenschaften ausklappen',
+				map_layerManager_move_up: 'Ebene anheben',	
+				map_layerManager_move_down: 'Ebene absenken',		
+				map_layerManager_remove: 'Ebene entfernen'								
 			};
 
 		default:
