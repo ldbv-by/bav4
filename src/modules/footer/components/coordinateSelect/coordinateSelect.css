@@ -1,0 +1,39 @@
+.coordinate-container {
+    display: flex;
+    margin: auto;
+    user-select: none;
+}
+
+@media (max-width: 600px){
+    .coordinate-container {
+        display: none;
+    }
+} 
+
+
+.coordinate-label {
+    padding-right: 10px;
+    margin: auto;
+    display: block;
+}
+
+.select-coordinate {
+    background-color:  var(--secondary-bg-color);
+    color: var(--color);
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+    user-select: none;
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 10%;
+    width: min-content;
+    height: min-content;
+    outline: none;
+    margin: auto;
+} 
+
+.select-coordinate-option{    
+    font-weight: bold;
+} 

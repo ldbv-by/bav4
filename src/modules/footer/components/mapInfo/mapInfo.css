@@ -2,14 +2,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-  }
-  
-
-.labels {
-    padding-top: 15px;
-    /* flex-grow: 100; */
-    display: block;
-}
+}  
 
 .theme-toggle {
     padding-top: 10px;
@@ -17,7 +10,8 @@
     display: block;
 }
 
-.buttons {
-    /* flex-grow: 200; */
+.coordinates {
+    padding-top: 10px;
+    /* flex-grow: 100; */
     display: block;
 }
