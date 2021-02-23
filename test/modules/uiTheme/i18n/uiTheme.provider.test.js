@@ -19,6 +19,17 @@ describe('i18n for map module', () => {
 		expect(map.uiTheme_toggle_tooltip_light).toBe('Enable contrast mode');
 	});
 
+	it('have the expected amount of translations', () => {
+		const expectedSize = 2;
+		const deMap = provide('de');
+		const enMap = provide('en');
+
+		const actualSize = (o) => Object.keys(o).length;
+
+		expect(actualSize(deMap)).toBe(expectedSize);
+		expect(actualSize(enMap)).toBe(expectedSize);										
+	});
+
 	it('provides an empty map for a unknown lang', () => {
 
 		const map = provide('unknown');

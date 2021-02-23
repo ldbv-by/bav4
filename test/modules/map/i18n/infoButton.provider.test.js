@@ -23,6 +23,17 @@ describe('i18n for map module', () => {
 		expect(map.map_infoButton_about).toBe('About us');		
 	});
 
+	it('have the expected amount of translations', () => {
+		const expectedSize = 4;
+		const deMap = provide('de');
+		const enMap = provide('en');
+
+		const actualSize = (o) => Object.keys(o).length;
+
+		expect(actualSize(deMap)).toBe(expectedSize);
+		expect(actualSize(enMap)).toBe(expectedSize);										
+	});
+
 	it('provides an empty map for a unknown lang', () => {
 
 		const map = provide('unknown');

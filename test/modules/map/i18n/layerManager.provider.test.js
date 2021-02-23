@@ -1,11 +1,11 @@
-import { provide as layerManagerProvide } from '../../../../src/modules/map/i18n/layerManager.provider';
+import { provide } from '../../../../src/modules/map/i18n/layerManager.provider';
 
 
 describe('i18n for layer-manager', () => {
 
 	it('provides translation for de', () => {
 
-		const map = layerManagerProvide('de');
+		const map = provide('de');
 
 		expect(map.map_layerManager_title).toBe('Ebenen');		
 		expect(map.map_layerManager_change_visibility).toBe('Sichtbarkeit umschalten');
@@ -19,7 +19,7 @@ describe('i18n for layer-manager', () => {
 
 	it('provides translation for en', () => {
 
-		const map = layerManagerProvide('en');
+		const map = provide('en');
 
 		expect(map.map_layerManager_title).toBe('Layers');		
 		expect(map.map_layerManager_change_visibility).toBe('toggle visibility');
@@ -31,9 +31,20 @@ describe('i18n for layer-manager', () => {
 		expect(map.map_layerManager_remove).toBe('remove Layer');
 	});
 
+	it('have the expected amount of translations', () => {
+		const expectedSize = 8;
+		const deMap = provide('de');
+		const enMap = provide('en');
+
+		const actualSize = (o) => Object.keys(o).length;
+
+		expect(actualSize(deMap)).toBe(expectedSize);
+		expect(actualSize(enMap)).toBe(expectedSize);									
+	});
+
 	it('provides an empty map for a unknown lang', () => {
 
-		const map = layerManagerProvide('unknown');
+		const map = provide('unknown');
 
 		expect(map).toEqual({});
 	});

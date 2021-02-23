@@ -7,9 +7,6 @@ describe('i18n for map module', () => {
 
 		const map = provide('de');
 
-		expect(map.map_olMap_zoom_in_button).toBe('Vergrößere Kartenausschnitt');
-		expect(map.map_olMap_zoom_out_button).toBe('Verkleinere Kartenausschnitt');
-		expect(map.map_olMap_zoom_extent_button).toBe('Ganz Bayern anzeigen');
 		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.map_olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
@@ -23,8 +20,6 @@ describe('i18n for map module', () => {
 
 		const map = provide('en');
 
-		expect(map.map_olMap_zoom_in_button).toBe('Zoom in');
-		expect(map.map_olMap_zoom_out_button).toBe('Zoom out');
 		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('Copy to clipboard');		
 		expect(map.map_olMap_handler_measure_start).toBe('Click to start measurement');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
@@ -32,6 +27,17 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_snap_first_point).toBe('Click to close the surface');
 		expect(map.map_olMap_handler_measure_snap_last_point).toBe('Click to finish the line');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
+	});
+
+	it('have the expected amount of translations', () => {
+		const expectedSize = 7;
+		const deMap = provide('de');
+		const enMap = provide('en');
+
+		const actualSize = (o) => Object.keys(o).length;
+
+		expect(actualSize(deMap)).toBe(expectedSize);
+		expect(actualSize(enMap)).toBe(expectedSize);									
 	});
 
 	it('provides an empty map for a unknown lang', () => {
