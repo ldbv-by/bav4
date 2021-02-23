@@ -38,7 +38,9 @@ export class OlMapContextMenuContent extends BaElement {
 				const transformedCoordinate = this._coordinateService.transform(this._coordinate, this._mapService.getSrid(), code);
 				
 				const copyCoordinate = () => {
-					this._shareService.copyToClipboard(transformedCoordinate.join(', '));
+					this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {}, () => {
+						console.warn('Clipboard API not available');
+					});
 				};
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
