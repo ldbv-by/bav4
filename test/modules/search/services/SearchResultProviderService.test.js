@@ -14,4 +14,11 @@ describe('SearchResultProviderService', () => {
 		expect(locationSearchResultProvider).toHaveBeenCalledWith('location');
 		expect(georesourceSearchResultProvider).toHaveBeenCalledWith('georesource');
 	});
+
+	it('provides the default provider functions for location and georesource search results', () => {
+		const instanceUnderTest = new SearchResultProviderService();
+		
+		expect(instanceUnderTest.getLocationSearchResultProvider()).toBeDefined();
+		expect(instanceUnderTest.getGeoresourceSearchResultProvider()).toBeDefined();
+	});
 });

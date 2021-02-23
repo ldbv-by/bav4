@@ -1,13 +1,12 @@
-
-import { provide } from './map.provider';
-import { layerManagerProvide } from './layerManager.provider';
-import { layerItemProvide } from './layerItem.provider';
+import { provide as olMapProvide } from './olMap.provider';
+import { provide as infoButtonProvide } from './infoButton.provider';
+import { provide as zoomButtonsProvide } from './zoomButtons.provider';
+import { provide as layerManagerProvide } from './layerManager.provider';
 import { provide as contextMenuProvider } from './contextMenu.provider';
-import { olMeasurementHandlerProvide } from './olMeasurementHandler.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('mapProvider', provide);
+translationService.register('mapProvider', olMapProvide);
+translationService.register('infoButtonProvider', infoButtonProvide);
+translationService.register('zoomButtonsProvider', zoomButtonsProvide);
 translationService.register('layerManagerProvider', layerManagerProvide);
-translationService.register('layerItemProvider', layerItemProvide);
 translationService.register('contextMenuProvider', contextMenuProvider);
-translationService.register('olMeasurementHandlerProvider', olMeasurementHandlerProvide);

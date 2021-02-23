@@ -38,12 +38,14 @@ export class OlMapContextMenuContent extends BaElement {
 				const transformedCoordinate = this._coordinateService.transform(this._coordinate, this._mapService.getSrid(), code);
 				
 				const copyCoordinate = () => {
-					this._shareService.copyToClipboard(transformedCoordinate.join(', '));
+					this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {}, () => {
+						console.warn('Clipboard API not available');
+					});
 				};
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_context_menu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
 			return html`

@@ -42,7 +42,7 @@ describe('OlMapContextMenuContent', () => {
 		it('renders the content', async () => {
 			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard');
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const element = await setup();
@@ -71,7 +71,7 @@ describe('OlMapContextMenuContent', () => {
 		it('copies a coordinate to the clipboard', async () => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard');
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const element = await setup();
@@ -85,6 +85,28 @@ describe('OlMapContextMenuContent', () => {
 
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
+		});
+
+		fit('logs a warn statement when Clipboard API is not available', async (done) => {
+			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
+			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
+			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup();
+
+			element.coordinate = [1000, 2000];
+			//after we set the coordinate, we need to trigger rendering manually in this case
+			element.render();
+			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+			expect(copyIcon).toBeTruthy();
+			copyIcon.click();
+
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+				done();
+			});
 		});
 	});
 });

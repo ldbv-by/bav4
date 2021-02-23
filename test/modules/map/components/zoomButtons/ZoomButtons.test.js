@@ -30,9 +30,9 @@ describe('ZoomButtons', () => {
 		it('adds a div which shows two zoom buttons', async () => {
 
 			expect(element.shadowRoot.querySelector('.zoom-in')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.zoom-in').parentElement.title).toBe('map_zoom_in_button');			
+			expect(element.shadowRoot.querySelector('.zoom-in').parentElement.title).toBe('map_zoomButtons_in');			
 			expect(element.shadowRoot.querySelector('.zoom-out')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.zoom-out').parentElement.title).toBe('map_zoom_out_button');			
+			expect(element.shadowRoot.querySelector('.zoom-out').parentElement.title).toBe('map_zoomButtons_out');			
 		});
 	});
 
