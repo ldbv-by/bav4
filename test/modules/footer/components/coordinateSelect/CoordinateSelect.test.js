@@ -55,7 +55,7 @@ describe('CoordinateSelect', () => {
 		it('renders nothing when pointer position equals null', async () => {
 			const element = await setup({ touch: false });
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeFalsy();
 		});	
 		it('adds a div which shows coordinate select and coordinate display', async () => {
 			const element = await setup({ touch: false });
@@ -132,7 +132,7 @@ describe('CoordinateSelect', () => {
 
 			// pointer position initial state (null)
 			updatePointerPosition(null);
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeFalsy();
 		});
 	});
 

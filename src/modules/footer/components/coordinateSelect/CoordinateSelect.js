@@ -41,11 +41,7 @@ export class CoordinateSelect extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const { pointerPosition } = this._state;
-
-		if (!pointerPosition) {
-			return nothing;
-		} 
-
+		
 		const getPointerPositionChange = () => {
 			switch (this._selectedCode) {
 				case String(this._items[0].code): //25832
@@ -69,12 +65,12 @@ export class CoordinateSelect extends BaElement {
 		return html`
 			<style>${css}</style>
             <div class='coordinate-container' >
-                <div class='coordinate-label'>${getPointerPositionChange()}</div>
-					<select class='select-coordinate' @change="${onChange}" title="${translate('footer_coordinate_select')}">
-					${this._items.map((item) => html`
-						<option class="select-coordinate-option" value="${item.code}">${item.label}</option> 
-					`)}
-					</select>
+				${pointerPosition ? html`<div class='coordinate-label'>${getPointerPositionChange()}</div>` : nothing} 
+				<select class='select-coordinate' @change="${onChange}" title="${translate('footer_coordinate_select')}">
+				${this._items.map((item) => html`
+					<option class="select-coordinate-option" value="${item.code}">${item.label}</option> 
+				`)}
+				</select>
 			</div>				
 		`;
 	} 
