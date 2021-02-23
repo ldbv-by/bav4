@@ -106,52 +106,26 @@ describe('OlMeasurementHandler', () => {
 		
 	});
 
-	describe('when activated over olMap', () => {
-		
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
-		const setupMap =  () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM(),
-					}),
-					new TileLayer({
-						source: new TileDebug(),
-					})],
-				target: 'map',
-				view: new View({
-					center: initialCenter,
-					zoom: 1,
-				}),
-			});
+	describe('when using EnvironmentService for snapTolerance', () => {
 			
-		};
-
-		it('uses EnvironmentService for snapTolerance', () => {
-			const classUnderTest = new OlMeasurementHandler();			
-			const environmentSpy = spyOn(environmentServiceMock, 'isTouch');
-			const map =  setupMap();
-
-			classUnderTest.activate(map);
-			expect(environmentSpy).toHaveBeenCalled();			
-		});
-
 		it('isTouch() resolves in higher snapTolerance', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			environmentServiceMock.isTouch = () => true;
-			
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+								
 			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(12);			
+			expect(environmentSpy).toHaveBeenCalled();	
 		});
 
 		it('isTouch() resolves in lower snapTolerance', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			environmentServiceMock.isTouch = () => false;
-			
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+								
 			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(4);			
+			expect(environmentSpy).toHaveBeenCalled();	
 		});
 
 	});
+
 	describe('when draw a line', () => {
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
