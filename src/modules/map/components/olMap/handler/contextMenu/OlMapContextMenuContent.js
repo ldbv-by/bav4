@@ -43,7 +43,7 @@ export class OlMapContextMenuContent extends BaElement {
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
 			return html`

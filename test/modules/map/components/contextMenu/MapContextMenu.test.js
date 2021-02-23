@@ -49,12 +49,12 @@ describe('MapContextMenu', () => {
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
-			expect(header.innerText).toBe('map_olMap_contextMenu_header');
+			expect(header.innerText).toBe('map_contextMenu_header');
 
 
 			const icon = element.shadowRoot.querySelector('ba-icon');
 			expect(icon).toBeTruthy();
-			expect(icon.title).toBe('map_olMap_contextMenu_close_button');
+			expect(icon.title).toBe('map_contextMenu_close_button');
 
 			icon.click();
 

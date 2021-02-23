@@ -10,7 +10,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_zoom_in_button).toBe('Vergrößere Kartenausschnitt');
 		expect(map.map_olMap_zoom_out_button).toBe('Verkleinere Kartenausschnitt');
 		expect(map.map_olMap_zoom_extent_button).toBe('Ganz Bayern anzeigen');
-		expect(map.map_olMap_contextMenu_content_icon).toBe('In die Zwischenablage kopieren');
+		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.map_olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
@@ -25,7 +25,7 @@ describe('i18n for map module', () => {
 
 		expect(map.map_olMap_zoom_in_button).toBe('Zoom in');
 		expect(map.map_olMap_zoom_out_button).toBe('Zoom out');
-		expect(map.map_olMap_contextMenu_content_icon).toBe('Copy to clipboard');		
+		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('Copy to clipboard');		
 		expect(map.map_olMap_handler_measure_start).toBe('Click to start measurement');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
