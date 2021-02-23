@@ -6,10 +6,6 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_olMap_zoom_in_button: 'Zoom in',
 				map_olMap_zoom_out_button: 'Zoom out',
-				map_olMap_info_button: 'Information',
-				map_olMap_info_button_help: 'Help',
-				map_olMap_info_button_contact: 'Contact',
-				map_olMap_info_button_about: 'About us',
 				map_olMap_zoom_extent_button: 'Zoom to full extent',
 				map_olMap_contextMenu_content_icon: 'Copy to clipboard',
 				map_olMap_handler_measure_start:'Click to start measurement',
@@ -25,10 +21,6 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_olMap_zoom_in_button: 'Vergrößere Kartenausschnitt',
 				map_olMap_zoom_out_button: 'Verkleinere Kartenausschnitt',
-				map_olMap_info_button: 'Information',
-				map_olMap_info_button_help: 'Hilfe',
-				map_olMap_info_button_contact: 'Kontakt',
-				map_olMap_info_button_about: 'Impressum',
 				map_olMap_zoom_extent_button: 'Ganz Bayern anzeigen',
 				map_olMap_contextMenu_content_icon: 'In die Zwischenablage kopieren',
 				map_olMap_handler_measure_start:'Klicken, um die Messung zu beginnen',

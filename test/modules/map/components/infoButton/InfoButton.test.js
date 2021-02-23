@@ -33,7 +33,7 @@ describe('InfoButton', () => {
 	describe('when initialized', () => {
 		it('adds a div which shows an info button', async () => {
 			expect(element.shadowRoot.querySelector('.info-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.button').title).toBe('map_info_button');						
+			expect(element.shadowRoot.querySelector('.button').title).toBe('map_infoButton_title');						
 		});
 
 		it('provides popup content', async () => {
