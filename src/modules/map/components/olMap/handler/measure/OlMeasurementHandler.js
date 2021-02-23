@@ -26,9 +26,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	//this handler could be statefull
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
+		const { TranslationService, MapService, EnvironmentService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
+		this._environmentService = EnvironmentService;
 		this._vectorLayer = null;
 		this._draw = false;			
 		this._activeSketch = null;		
@@ -95,7 +96,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();			
 			this._draw = this._createInteraction(source);			
-			this._snap = new Snap({ source: source, pixelTolerance:4 });
+			this._snap = new Snap({ source: source, pixelTolerance:this._getSnapTolerancePerDevice() });
 			this._addOverlayToMap(olMap, this._helpTooltip);			
 			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
 			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
@@ -263,5 +264,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measurementOverlay.value = value;
 		measurementOverlay.geometry = geometry;
 		overlay.setPosition(measurementOverlay.position);							
+	}
+
+	_getSnapTolerancePerDevice() {
+		if (this._environmentService.isTouch()) {
+			return 12;
+		}
+		return 4;
 	}
 }
