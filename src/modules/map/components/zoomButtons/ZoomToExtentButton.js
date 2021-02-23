@@ -33,7 +33,7 @@ export class ZoomToExtentButton extends BaElement {
 		return html`
             <style>${css}</style>
 			<div class="zoom-to-extent">
-				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoom_extent_button')}" ><i class="icon zoom-to-extent-icon"></i></button>
+				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoomButtons_extent')}" ><i class="icon zoom-to-extent-icon"></i></button>
             </div>
             
         `;

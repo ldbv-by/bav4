@@ -74,7 +74,7 @@ export class MapContextMenu extends BaElement {
 		return html`
         <style>${css}</style>
 		<div class='context-menu ${sectorClass}' style=${styleMap(style)}>
-			<div class='header'>${translate('map_context_menu_header')}<ba-icon class='close' icon='${closeIcon}' title=${translate('map_context_menu_close_button')} size=20 color='white'} @click=${closeContextMenu}></ba-icon></div>
+			<div class='header'>${translate('map_contextMenu_header')}<ba-icon class='close' icon='${closeIcon}' title=${translate('map_contextMenu_close_button')} size=20 color='white'} @click=${closeContextMenu}></ba-icon></div>
 			${content}
         </div>`;
 	}

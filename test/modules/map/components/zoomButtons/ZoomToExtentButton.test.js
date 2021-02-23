@@ -37,7 +37,7 @@ describe('ExtentButton', () => {
 	describe('when initialized', () => {
 		it('shows zoom to extent button', () => {
 			expect(element.shadowRoot.querySelector('.zoom-to-extent')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.zoom-to-extent-button').title).toBe('map_zoom_extent_button');
+			expect(element.shadowRoot.querySelector('.zoom-to-extent-button').title).toBe('map_zoomButtons_extent');
 			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
 		});
 	});

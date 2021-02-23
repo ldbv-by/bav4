@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/uiTheme/i18n/uiTheme.provider';
+import { provide } from '../../../../src/modules/map/i18n/zoomButtons.provider';
 
 
 describe('i18n for map module', () => {
@@ -7,27 +7,29 @@ describe('i18n for map module', () => {
 
 		const map = provide('de');
 
-		expect(map.uiTheme_toggle_tooltip_dark).toBe('Kontrastmodus deaktivieren');
-		expect(map.uiTheme_toggle_tooltip_light).toBe('Kontrastmodus aktivieren');
+		expect(map.map_zoomButtons_in).toBe('Vergrößere Kartenausschnitt');
+		expect(map.map_zoomButtons_out).toBe('Verkleinere Kartenausschnitt');
+		expect(map.map_zoomButtons_extent).toBe('Ganz Bayern anzeigen');		
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.uiTheme_toggle_tooltip_dark).toBe('Disable contrast mode');
-		expect(map.uiTheme_toggle_tooltip_light).toBe('Enable contrast mode');
+		expect(map.map_zoomButtons_in).toBe('Zoom in');
+		expect(map.map_zoomButtons_out).toBe('Zoom out');				
+		expect(map.map_zoomButtons_extent).toBe('Zoom to full extent');	
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);										
+		expect(actualSize(enMap)).toBe(expectedSize);								
 	});
 
 	it('provides an empty map for a unknown lang', () => {

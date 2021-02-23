@@ -17,6 +17,17 @@ describe('i18n for modal module', () => {
 		expect(modal.modal_close_button).toBe('Close');
 	});
 
+	it('have the expected amount of translations', () => {
+		const expectedSize = 1;
+		const deMap = provide('de');
+		const enMap = provide('en');
+
+		const actualSize = (o) => Object.keys(o).length;
+
+		expect(actualSize(deMap)).toBe(expectedSize);
+		expect(actualSize(enMap)).toBe(expectedSize);										
+	});
+
 	it('provides an empty map for a unknown lang', () => {
 
 		const modal = provide('unknown');
