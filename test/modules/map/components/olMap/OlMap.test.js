@@ -8,11 +8,13 @@ import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer, MEASUREMENT_LAYER_ID } from '../../../../../src/modules/map/store/layers.action';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
+import { MEASUREMENT_LAYER_ID, registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
+import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -61,6 +63,9 @@ describe('OlMap', () => {
 				active: [],
 				background: null
 			},
+			measurement:{
+				active:false
+			}
 		};
 		const combinedState = {
 			...defaultState,
@@ -70,6 +75,7 @@ describe('OlMap', () => {
 		store = TestUtils.setupStoreAndDi(combinedState, {
 			position: positionReducer,
 			layers: layersReducer,
+			measurement: measurementReducer
 		});
 
 
@@ -319,6 +325,8 @@ describe('OlMap', () => {
 			const activateSpy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
 			const deactivateSpy = spyOn(measurementHandlerMock, 'deactivate').and.returnValue(olLayer);
 			const element = await setup();
+			//in this case we need the measurement oberver, because it adds the measurement layer to the store
+			registerMeasurementObserver(store);
 			const map = element._map;
 
 			activateMeasurement();
