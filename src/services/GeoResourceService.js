@@ -22,7 +22,7 @@ export class GeoResourceService {
 	 * 
 	 * @param {georesourceProvider} provider 
 	 */
-	constructor(provider = loadBvvGeoResources()) {
+	constructor(provider = loadBvvGeoResources) {
 		this._provider = provider;
 		this._georesources = null;
 	}

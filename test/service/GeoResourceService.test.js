@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { GeoResourceService } from '../../src/services/GeoResourceService';
 import { WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
-import { loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
+import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 
 describe('GeoResourceService', () => {
 
@@ -19,6 +19,11 @@ describe('GeoResourceService', () => {
 			const georesources = await instanceUnderTest.init();
 
 			expect(georesources.length).toBe(6);
+		});
+
+		it('initializes the service with default provider', async () => {
+			const instanceUnderTest = new GeoResourceService();
+			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 		});
 
 
