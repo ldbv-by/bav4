@@ -21,7 +21,7 @@ export class LayerManager extends BaElement {
 		this._draggableItems = [];
 		this._layerCount = 0;
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
-	}	
+	}
 
 	/**
 	 * @private
@@ -34,7 +34,7 @@ export class LayerManager extends BaElement {
 	 * @private
 	 */
 	_buildDraggableItems(layers) {
-		const draggableItems  = [{ zIndex: 0, isPlaceholder:true, listIndex:0, isDraggable:false  }];
+		const draggableItems = [{ zIndex: 0, isPlaceholder: true, listIndex: 0, isDraggable: false }];
 		this._layerCount = layers.length;
 		this._resetDraggedItem();
 		let j = 0;
@@ -42,18 +42,18 @@ export class LayerManager extends BaElement {
 			const layer = layers[i];
 			const old = this._draggableItems.filter(item => item.id === layer.id)[0];
 			const displayProperties = {
-				collapsed:true,
-				visible:true
+				collapsed: true,
+				visible: true
 			};
 			if (old) {
 				displayProperties.collapsed = old.collapsed;
 				displayProperties.visible = old.visible;
 			}
-			draggableItems.push({ ...layer, isPlaceholder:false, listIndex:j + 1, isDraggable:true, ...displayProperties });
-			draggableItems.push({ zIndex:layer.zIndex + 1, isPlaceholder:true, listIndex:j + 2, isDraggable:false });
+			draggableItems.push({ ...layer, isPlaceholder: false, listIndex: j + 1, isDraggable: true, ...displayProperties });
+			draggableItems.push({ zIndex: layer.zIndex + 1, isPlaceholder: true, listIndex: j + 2, isDraggable: false });
 			j += 2;
-		}		
-		this._draggableItems = draggableItems;		
+		}
+		this._draggableItems = draggableItems;
 	}
 
 	/**
@@ -67,13 +67,13 @@ export class LayerManager extends BaElement {
 
 		const isNeighbour = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
-		};		
+		};
 
-		const createLayerElement = (layerItem) => {		
+		const createLayerElement = (layerItem) => {
 
 			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable>
 					</ba-layer-item>`;
-			
+
 		};
 
 		const createPlaceholderElement = (layerItem) => {
@@ -84,7 +84,7 @@ export class LayerManager extends BaElement {
 		const onDragStart = (e, layerItem) => {
 			this._draggedItem = layerItem;
 			e.dataTransfer.dropEffect = 'move';
-			e.dataTransfer.effectAllowed = 'move';		
+			e.dataTransfer.effectAllowed = 'move';
 		};
 
 		const onDragEnd = (e) => {
@@ -97,18 +97,18 @@ export class LayerManager extends BaElement {
 				if (layerItem.zIndex === this._layerCount - 1) {
 					newZIndex = layerItem.zIndex - 1;
 				}
-				modifyLayer(this._draggedItem.id, { zIndex:newZIndex });				
+				modifyLayer(this._draggedItem.id, { zIndex: newZIndex });
 			}
 			if (e.target.classList.contains('placeholder')) {
-				e.target.classList.remove('over');				
+				e.target.classList.remove('over');
 			}
 			this._resetDraggedItem();
 		};
 		const onDragOver = (e, layerItem) => {
-			e.preventDefault();			
+			e.preventDefault();
 			let dropEffect = 'none';
-			
-			if (this._draggedItem) {			
+
+			if (this._draggedItem) {
 				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
 					dropEffect = 'all';
 				}
@@ -117,25 +117,25 @@ export class LayerManager extends BaElement {
 		};
 
 		const onDragEnter = (e, layerItem) => {
-			if (this._draggedItem) {			
+			if (this._draggedItem) {
 				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, this._draggedItem.listIndex)) {
 					e.target.classList.add('over');
 				}
 			}
 		};
-		const onDragLeave = (e) => {			
+		const onDragLeave = (e) => {
 			e.stopPropagation();
 			if (e.target) {
 				if (e.target.classList.contains('over')) {
-					e.target.classList.remove('over');					
-				}			
-			}			
+					e.target.classList.remove('over');
+				}
+			}
 		};
 
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
-				<div class='title'>${translate('layer_manager_title')} (${layerCount})</div> 
+				<div class='title'>${translate('map_layerManager_title')} (${layerCount})</div> 
 				<ul class='layers'>
                     ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex + '_' + layerItem.id, (layerItem, index) => html`
 					<li draggable=${layerItem.isDraggable} 
@@ -151,17 +151,17 @@ export class LayerManager extends BaElement {
 			</div>
 		`;
 	}
-    
+
 	/**
- 	* @override
- 	* @param {Object} store 
- 	*/
+	  * @override
+	  * @param {Object} store 
+	  */
 	extractState(store) {
 		const { layers: { active } } = store;
-		
+
 		return { active };
 	}
-    
+
 	static get tag() {
 		return 'ba-layer-manager';
 	}
