@@ -73,6 +73,8 @@ export class BaElement extends HTMLElement {
 		this._state = {};
 
 		this._rendered = false;
+
+		this._observer = [];
 	}
 
 	/**
@@ -142,6 +144,7 @@ export class BaElement extends HTMLElement {
 
 		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
+			this._observer.forEach(o => o());
 			this.onStateChanged();
 		}
 	}
@@ -252,4 +255,33 @@ export class BaElement extends HTMLElement {
 		}
 	}
 
+
+	/**
+	 * Registers an observer for a field / property of the state (see: {@link BaElement#extractState})
+	 * Observers are called right after {@link BaElement#extractState}
+	 * @protected
+	 * @param {string} name Name of the observed field
+	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
+	 */
+	_observe(name, onChange) {
+		const createObserver = (name, onChange) => {
+			let currentState = this._state[name];
+
+			return () => {
+				if (this._state[name]) {
+					const nextState = this._state[name];
+					if (!equals(nextState, currentState)) {
+						currentState = nextState;
+						onChange(currentState);
+					}
+				}
+				else {
+					console.warn('\'' + name + '\' is not a field in the state of this BaElement');
+				}
+			};
+
+		};
+
+		this._observer.push(createObserver(name, onChange));
+	}
 }

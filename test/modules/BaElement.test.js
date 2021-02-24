@@ -128,7 +128,7 @@ describe('BaElement', () => {
 	});
 
 	describe('when initialized', () => {
-		
+
 		it('renders the view', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 
@@ -159,14 +159,14 @@ describe('BaElement', () => {
 		it('does not call render() as long as not initialized', async () => {
 			const instance = new BaElementImpl();
 			spyOn(instance, 'onBeforeRender');
-			
+
 			instance.render();
-			
+
 			expect(instance.onBeforeRender).not.toHaveBeenCalled();
-			
+
 			//let's initialize the component
 			instance.connectedCallback();
-			
+
 			expect(instance.onBeforeRender).toHaveBeenCalledTimes(1);
 		});
 
@@ -174,11 +174,11 @@ describe('BaElement', () => {
 			const instance = new BaElementImpl();
 			const onBeforeRenderSpy = spyOn(instance, 'onBeforeRender');
 			const onAfterRenderSpy = spyOn(instance, 'onAfterRender');
-			
+
 			//let's initialize the component
 			instance.connectedCallback();
 			instance.render();
-			
+
 			expect(instance.onBeforeRender).toHaveBeenCalledWith(true);
 			expect(instance.onAfterRender).toHaveBeenCalledWith(true);
 
@@ -208,6 +208,24 @@ describe('BaElement', () => {
 			expect(element.onRenderCalled).toBe(8);
 			expect(element.onAfterRenderCalled).toBe(9);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
+		});
+
+		it('calls registered observer', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+			const elementStateIndexCallback = jasmine.createSpy();
+			const someUnknownFieldCallback = jasmine.createSpy();
+			const warnSpy = spyOn(console, 'warn');
+			element._observe('elementStateIndex', elementStateIndexCallback);
+			element._observe('someUnknowField', someUnknownFieldCallback);
+
+
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+
+			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
+			expect(warnSpy).toHaveBeenCalledOnceWith('\'someUnknowField\' is not a field in the state of this BaElement');
 		});
 	});
 });
