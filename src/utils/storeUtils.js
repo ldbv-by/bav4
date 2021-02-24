@@ -28,7 +28,7 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
 };
 
 /**
- * Returns the result of a comparision. If both values are objects,
+ * Returns the result of a comparision between two values. If both values are objects,
  * a deep comparision is done, otherwise a shallow one.
  * @function
  * @param {object|string|number} value0 
