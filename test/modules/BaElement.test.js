@@ -215,8 +215,8 @@ describe('BaElement', () => {
 			const elementStateIndexCallback = jasmine.createSpy();
 			const someUnknownFieldCallback = jasmine.createSpy();
 			const warnSpy = spyOn(console, 'warn');
-			element._observe('elementStateIndex', elementStateIndexCallback);
-			element._observe('someUnknowField', someUnknownFieldCallback);
+			element.observe('elementStateIndex', elementStateIndexCallback);
+			element.observe('someUnknowField', someUnknownFieldCallback);
 
 
 			store.dispatch({

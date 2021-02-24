@@ -257,13 +257,13 @@ export class BaElement extends HTMLElement {
 
 
 	/**
-	 * Registers an observer for a field / property of the state (see: {@link BaElement#extractState})
+	 * Registers an observer for a field / property of the state of this element (see: {@link BaElement#extractState}).
 	 * Observers are called right after {@link BaElement#extractState}
 	 * @protected
 	 * @param {string} name Name of the observed field
 	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
 	 */
-	_observe(name, onChange) {
+	observe(name, onChange) {
 		const createObserver = (name, onChange) => {
 			let currentState = this._state[name];
 
