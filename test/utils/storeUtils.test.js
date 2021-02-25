@@ -27,7 +27,7 @@ describe('store utils', () => {
 			observe(store, extract, onChangeSpy);
 			//no initial call after observer registration
 			expect(onChangeSpy).not.toHaveBeenCalled();
-			
+
 
 			//act
 			store.dispatch({
@@ -42,7 +42,7 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: true
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith(true);
+			expect(onChangeSpy).toHaveBeenCalledOnceWith(true, { active: true });
 		});
 
 		it('initially calls the callback when ignoreInitialState is set to false', () => {
@@ -64,7 +64,7 @@ describe('store utils', () => {
 			//act
 			observe(store, extract, onChangeSpy, false);
 
-			expect(onChangeSpy).toHaveBeenCalledOnceWith(false);
+			expect(onChangeSpy).toHaveBeenCalledOnceWith(false, { active: false });
 		});
 
 
@@ -104,7 +104,7 @@ describe('store utils', () => {
 				type: 'SOMETHING',
 				payload: { active: true }
 			});
-			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true });
+			expect(onChangeSpy).toHaveBeenCalledOnceWith({ active: true }, { some: { active: true } });
 		});
 	});
 	describe('equals', () => {
