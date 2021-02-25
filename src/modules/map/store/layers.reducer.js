@@ -1,5 +1,3 @@
-import { ACTIVE_CHANGED as MEASUREMENT_ACTIVE_CHANGED } from './measurement.reducer';
-import { MEASUREMENT_LAYER_ID } from './layers.action';
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_MODIFIED = 'layer/modified';
@@ -132,15 +130,6 @@ export const layersReducer = (state = initialState, action) => {
 				background: payload
 			};
 		}
-		case MEASUREMENT_ACTIVE_CHANGED: {
-			if (payload) {
-				return addLayer(state, { id: MEASUREMENT_LAYER_ID, properties: { constraints: { hidden: true, alwaysTop: true } } });
-			}
-			else {
-				return removeLayer(state, MEASUREMENT_LAYER_ID);
-			}
-		}
-
 	}
 
 	return state;

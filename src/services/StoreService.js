@@ -8,6 +8,7 @@ import { layersReducer } from '../modules/map/store/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
+import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
 
 
 
@@ -71,21 +72,22 @@ export class StoreService {
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
 			contextMenue: contextMenueReducer,
-			modal:modalReducer,
+			modal: modalReducer,
 			uiTheme: uiThemeReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer
 		});
 
-		this.store = createStore(rootReducer, storeEnhancer);
+		this._store = createStore(rootReducer, storeEnhancer);
+
+		registerMeasurementObserver(this._store);
 	}
 
 	/**
 	 * Returns the store.
 	 */
 	getStore() {
-		return this.store;
-
+		return this._store;
 	}
 }

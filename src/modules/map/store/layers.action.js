@@ -5,10 +5,6 @@
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from './layers.reducer';
 import { $injector } from '../../../injection';
 
-/**
- * Id of the layer used for measurement interaction
- */
-export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
 /**
  * Reflects the state of a layer.
