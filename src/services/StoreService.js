@@ -8,7 +8,7 @@ import { layersReducer } from '../modules/map/store/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import ReduxQuerySync from 'redux-query-sync';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
-import { registerMeasurementObserver as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
+import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
 
 
 

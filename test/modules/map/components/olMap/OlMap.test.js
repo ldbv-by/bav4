@@ -13,7 +13,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { MEASUREMENT_LAYER_ID, registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
+import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);

@@ -1,5 +1,5 @@
 import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
-import { MEASUREMENT_LAYER_ID, registerMeasurementObserver } from '../../../../src/modules/map/store/measurement.observer';
+import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../src/modules/map/store/measurement.observer';
 
 import { activate, deactivate } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';

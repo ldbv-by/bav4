@@ -6,7 +6,7 @@ import { addLayer, removeLayer } from './layers.action';
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
-export const registerMeasurementObserver = (store) => {
+export const register = (store) => {
 
 	const extract = (state) => {
 		return state.measurement.active;
