@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { SearchResultProviderService } from '../../../../src/modules/search/services/SearchResultProviderService';
 describe('SearchResultProviderService', () => {
 
@@ -18,7 +19,7 @@ describe('SearchResultProviderService', () => {
 	it('provides the default provider functions for location and georesource search results', () => {
 		const instanceUnderTest = new SearchResultProviderService();
 		
-		expect(instanceUnderTest.getLocationSearchResultProvider()).toBeDefined();
-		expect(instanceUnderTest.getGeoresourceSearchResultProvider()).toBeDefined();
+		expect(instanceUnderTest.getLocationSearchResultProvider()).toEqual(loadBvvLocationSearchResults);
+		expect(instanceUnderTest.getGeoresourceSearchResultProvider()).toEqual(loadBvvGeoResourceSearchResults);
 	});
 });

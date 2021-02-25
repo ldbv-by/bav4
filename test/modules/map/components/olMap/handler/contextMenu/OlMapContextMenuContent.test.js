@@ -87,7 +87,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
 		});
 
-		fit('logs a warn statement when Clipboard API is not available', async (done) => {
+		it('logs a warn statement when Clipboard API is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));

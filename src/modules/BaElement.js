@@ -1,5 +1,6 @@
 import { render as renderLitHtml } from 'lit-html';
 import { $injector } from '../injection';
+import { equals } from '../utils/storeUtils';
 
 /**
  * Abstract Base-Class for all BaElements.
@@ -139,8 +140,7 @@ export class BaElement extends HTMLElement {
 
 		const extractedState = this.extractState(this._storeService.getStore().getState());
 
-		// maybe we should use Lo.isEqual later, but for now it does the job
-		if (JSON.stringify(this._state) !== JSON.stringify(extractedState)) {
+		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
 			this.onStateChanged();
 		}
