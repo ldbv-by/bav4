@@ -1,5 +1,5 @@
+import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { StateStoreConsumentMixin } from './StateStoreConsument.mixin';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Style, Stroke, Fill, Circle } from 'ol/style';
@@ -30,10 +30,12 @@ const GEOLOCATION_STYLE = new Style({
  * @class
  * @author thiloSchlemmer
  */
-export class OlGeolocationHandler extends StateStoreConsumentMixin(OlLayerHandler) {
+export class OlGeolocationHandler extends OlLayerHandler {
 
 	constructor() {
 		super(GEOLOCATION_LAYER_ID);
+		const { StoreService } = $injector.inject('StoreService');
+		this._storeService = StoreService;
 		this._geolocationLayer = null;
 		this._projection = null;
 	}
@@ -51,9 +53,9 @@ export class OlGeolocationHandler extends StateStoreConsumentMixin(OlLayerHandle
 			});
 		}
 		this._projection = olMap.getView().getProjection();
-
-
 	}
+
+
 
 	/**
 	 *  @override
