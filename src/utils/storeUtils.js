@@ -3,7 +3,7 @@
  * @function
  * @param {object} store The redux store
  * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparision
- * @param {function(changedState)} onChange A function that will be called when the extracted state has changed
+ * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
  * @param {boolean|true} ignoreInitialState A boolean which indicate, if the callback should be initially called with the current state immediately after the observer has been registered
  * @returns  A function that unsubscribes the observer
  */
@@ -17,7 +17,7 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
 			const callCallback = (currentState !== initialFlag || !ignoreInitialState);
 			currentState = nextState;
 			if (callCallback) {
-				onChange(currentState);
+				onChange(currentState, store.getState());
 			}
 		}
 	};
