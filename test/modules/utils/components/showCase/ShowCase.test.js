@@ -116,6 +116,32 @@ describe('ShowCase', () => {
 			expect(store.getState().modal.title).toBeFalse();
 		});
 
+		it('modal state changes in store, when \'Activate Geolocation\'-Button is clicked', async () => {
+			const  element = await setup();
+			const button = element.shadowRoot.querySelector('#buttonActivateGeolocation');
+			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+
+			openModal(modalContent);
+			expect(button).toBeTruthy();
+
+			button.click();
+
+			expect(store.getState().modal.title).toBeFalse();
+		});
+
+		it('modal state changes in store, when \'Deactivate Geolocation\'-Button is clicked', async () => {
+			const  element = await setup();
+			const button = element.shadowRoot.querySelector('#buttonDeactivateGeolocation');
+			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+
+			openModal(modalContent);
+			expect(button).toBeTruthy();
+
+			button.click();
+
+			expect(store.getState().modal.title).toBeFalse();
+		});
+
 	});
 
 });
