@@ -1,9 +1,9 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../BaElement';
+import { BaElement } from '../../../BaElement';
 import css from './sidePanel.css';
-import { closeSidePanel } from '../store/sidePanel.action';
-import { $injector } from '../../../injection';
-import { addLayer } from '../../map/store/layers.action';
+import { closeSidePanel } from '../../store/sidePanel.action';
+import { $injector } from '../../../../injection';
+import { addLayer } from '../../../map/store/layers.action';
 
 
 /**
