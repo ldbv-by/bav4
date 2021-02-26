@@ -69,6 +69,14 @@ export const geolocationReducer = (state = initialState, action) => {
 
 			};
 		}
+		case TRACKING_CHANGED: {
+
+			return {
+				...state,
+				tracking: payload
+
+			};
+		}
 	}
 
 	return state;
