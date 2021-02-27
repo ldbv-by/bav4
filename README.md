@@ -116,9 +116,8 @@ Here's a overview of what project folder structure looks like:
 
 ### State
 
-Mutation of global state at **one moment** should be done in just **one place** (single source of truth).
-
-<small>(Where "moment" is the phase when parts of the application react to an event, e.g. user interaction, initial setup)</small>
+- Mutation of global state should be done in just one place at the same moment (single source of truth) <br>
+("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 Common places for mutating state are:
 - `BaElement` components
