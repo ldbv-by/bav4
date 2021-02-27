@@ -121,7 +121,7 @@ Here's a overview of what project folder structure looks like:
 
 Common places for mutating state are:
 - `BaElement` components
-- `Observer` on the Redux store
+- `Observer` of the Redux store
 
 
 ## Pending Questions
