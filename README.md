@@ -59,7 +59,7 @@ Modules meet the following conventions:
 
 3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
-   - `/store` : all redux related files like reducers and actions
+   - `/store` : all Redux related files like reducers and actions
    - `/services` : the service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
@@ -111,6 +111,17 @@ Here's a overview of what project folder structure looks like:
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
 | `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomable treemap |
 
+## Best Practices
+
+### State
+
+Mutation of global state at **one moment** should be done in just **one place** (single source of truth).
+
+<small>(Where "moment" is the phase when parts of the application react to an event, e.g. user interaction, initial setup)</small>
+
+Common places for mutating state are:
+- `BaElement` components
+- `Observer` on the Redux store
 
 
 ## Pending Questions
