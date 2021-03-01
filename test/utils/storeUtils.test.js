@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { observe, equals } from '../../src/utils/storeUtils.js';
+import { observe, equals, EventLike } from '../../src/utils/storeUtils.js';
 import { createStore } from 'redux';
 
 // onChangeSpy.calls.reset();
@@ -132,5 +132,17 @@ describe('store utils', () => {
 			expect(equals({ some: 42 }, { some: 21 })).toBeFalse();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBeFalse();
 		});
+	});
+
+	describe('class EventLike', () => {
+
+		it('initializes the object', () => {
+			const eventLike = new EventLike('payload');
+
+			expect(eventLike.payload).toBe('payload');
+			expect(eventLike.id).toBeDefined();
+			expect(equals(new EventLike('some'), new EventLike('some'))).toBeFalse();
+		});
+
 	});
 });

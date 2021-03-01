@@ -42,3 +42,22 @@ export const equals = (value0, value1) => {
 	}
 	return value0 === value1;
 };
+
+/**
+ * Wrapper for payloads of actions which dispatch event-like changes of state.
+ */
+export class EventLike {
+
+	constructor(payload) {
+		this._paylod = payload;
+		this._id = Date.now() + Math.random();
+	}
+
+	get payload() {
+		return this._paylod;
+	}
+
+	get id() {
+		return this._id;
+	}
+}

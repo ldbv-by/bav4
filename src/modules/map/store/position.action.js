@@ -4,6 +4,14 @@
  */
 import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, POINTER_POSITION_CHANGED, FIT_REQUESTED } from './position.reducer';
 import { $injector } from '../../../injection';
+import { EventLike } from '../../../utils/storeUtils';
+
+
+/**
+ * Request for fitting a map to a geographic extent
+ * @typedef {Object} FitRequest
+ * @property {Extent} extent geographic extent
+ */
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -85,22 +93,15 @@ export const updatePointerPosition = (position) => {
 };
 
 /**
- * Fits the position to an extent.
+ * Sets a fit request,
+ * The fitRequest object is wrapper by an {@link EventLike} object
+ * @param {FitRequest} fitRequest
  * @function
  */
-export const fit = (fitRequest) => {
+export const setFit = (fitRequest) => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
-		payload: fitRequest
+		payload: new EventLike(fitRequest)
 	});
 };
 
-/**
- * Resets a fit request. Typically called from a map only.
- */
-export const resetFitRequest = () => {
-	getStore().dispatch({
-		type: FIT_REQUESTED,
-		payload: null
-	});
-};
