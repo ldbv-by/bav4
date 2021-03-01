@@ -10,7 +10,7 @@ import { layersReducer } from '../../../../../src/modules/map/store/layers.reduc
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
-import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
+import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
@@ -167,7 +167,7 @@ describe('OlMap', () => {
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 
 			expect(element._viewSyncBlocked).toBeUndefined();
-			fit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
+			setFit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
 			expect(store.getState().position.fitRequest).not.toBeNull();
 
 			expect(element._viewSyncBlocked).toBeTrue();
@@ -176,8 +176,6 @@ describe('OlMap', () => {
 				expect(element._viewSyncBlocked).toBeFalse();
 				//and store is in sync with view
 				expect(spy).toHaveBeenCalled();
-				//fit request ist reset
-				expect(store.getState().position.fitRequest).toBeNull();
 				done();
 
 			}, 500);

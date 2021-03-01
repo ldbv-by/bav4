@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
-import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
+import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
 
@@ -102,6 +102,15 @@ export class OlMap extends BaElement {
 		this._eventHandler.forEach(handler => {
 			handler.register(this._map);
 		});
+
+		this.observe('fitRequest', (fitRequest) => {
+			this._viewSyncBlocked = true;
+			const onAfterFit = () => {
+				this._viewSyncBlocked = false;
+				this._syncStore();
+			};
+			this._view.fit(fitRequest.payload.extent, { callback: onAfterFit });
+		});
 	}
 
 	/**
@@ -143,28 +152,26 @@ export class OlMap extends BaElement {
 	}
 
 	_syncView() {
-		const { zoom, center, fitRequest } = this._state;
+		const { zoom, center } = this._state;
 
-		const onAfterFit = () => {
-			this._viewSyncBlocked = false;
-			this._syncStore();
-			//reset
-			resetFitRequest();
-		};
+		// const onAfterFit = () => {
+		// 	this._viewSyncBlocked = false;
+		// 	this._syncStore();
+		// };
 
 		if (!this._viewSyncBlocked) {
 
-			if (fitRequest && fitRequest.extent) {
-				this._viewSyncBlocked = true;
-				this._view.fit(fitRequest.extent, { callback: onAfterFit });
-			}
-			else {
-				this._view.animate({
-					zoom: zoom,
-					center: center,
-					duration: 500
-				});
-			}
+			// if (fitRequest && fitRequest.payload.extent) {
+			// 	this._viewSyncBlocked = true;
+			// 	this._view.fit(fitRequest.extent, { callback: onAfterFit });
+			// }
+			// else {
+			this._view.animate({
+				zoom: zoom,
+				center: center,
+				duration: 500
+			});
+			// }
 		}
 	}
 

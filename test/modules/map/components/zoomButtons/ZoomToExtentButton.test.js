@@ -46,7 +46,7 @@ describe('ExtentButton', () => {
 
 		it('zooms to extent', () => {
 			element.shadowRoot.querySelector('button').click();
-			expect(store.getState().position.fitRequest.extent).toEqual(extent); 
+			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent); 
 		});
 	});
 });
