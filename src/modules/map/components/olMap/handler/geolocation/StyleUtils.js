@@ -4,14 +4,14 @@ export const accuracyStyleFunction = () => [new Style({
 	fill: new Fill({
 		color: [255, 0, 0, 0.1]
 	}),
-	stroke: Stroke({
+	stroke: new Stroke({
 		color: [255, 0, 0, 0.9],
 		width: 3
 	})
 })];
 export const positionStyleFunction = () => [new Style({
 	image: new CircleStyle({
-		radius6: 6,
+		radius: 6,
 		fill: new Fill({
 			color: [255, 0, 0, 0.1],
 		}),

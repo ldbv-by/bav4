@@ -52,10 +52,10 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		const onChange = (changedState) => {
 			if (changedState.active) {
 				// position from statestore is by convention in EPSG:3857, no transformation needed
-				let point = new Point(changedState.geolocation.position);
+				let point = new Point(changedState.position);
 
 				this._positionFeature.setGeometry(point);
-				this._accuracyFeature.setGeometry(new Circle(point, changedState.geolocation.accuracy));
+				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
 				this._positionFeature.setStyle(positionStyleFunction);
 				this._accuracyFeature.setStyle(accuracyStyleFunction);
 			}
