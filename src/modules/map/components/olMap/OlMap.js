@@ -154,24 +154,13 @@ export class OlMap extends BaElement {
 	_syncView() {
 		const { zoom, center } = this._state;
 
-		// const onAfterFit = () => {
-		// 	this._viewSyncBlocked = false;
-		// 	this._syncStore();
-		// };
-
 		if (!this._viewSyncBlocked) {
 
-			// if (fitRequest && fitRequest.payload.extent) {
-			// 	this._viewSyncBlocked = true;
-			// 	this._view.fit(fitRequest.extent, { callback: onAfterFit });
-			// }
-			// else {
 			this._view.animate({
 				zoom: zoom,
 				center: center,
 				duration: 500
 			});
-			// }
 		}
 	}
 
