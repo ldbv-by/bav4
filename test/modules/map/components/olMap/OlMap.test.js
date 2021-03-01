@@ -16,7 +16,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
-import { observe } from '../../../../../src/utils/storeUtils';
+import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -65,8 +65,8 @@ describe('OlMap', () => {
 				active: [],
 				background: null
 			},
-			measurement:{
-				active:false
+			measurement: {
+				active: false
 			}
 		};
 		const combinedState = {
@@ -75,6 +75,7 @@ describe('OlMap', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(combinedState, {
+			map: mapReducer,
 			pointer: pointerReducer,
 			position: positionReducer,
 			layers: layersReducer,
@@ -108,22 +109,55 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('when map move', () => {
-		it('change state from view properties', async () => {
-			const element = await setup();
-			const view = element._view;
-			spyOn(view, 'getZoom');
-			spyOn(view, 'getCenter');
-			
-			simulateMapEvent(element._map, MapEventType.MOVEEND);
-			
-			expect(view.getZoom).toHaveBeenCalledTimes(1);
-			expect(view.getCenter).toHaveBeenCalledTimes(1);
+	describe('map move events', () => {
+		describe('movestart', () => {
+
+			it('updates the \'movestart\' property in map store', async () => {
+				const element = await setup();
+
+				simulateMapEvent(element._map, MapEventType.MOVESTART);
+
+				expect(store.getState().map.moveStart.payload).toBe('movestart');
+			});
+			it('updates the \'beingMoved\' property in pointer store', async () => {
+				const element = await setup();
+				
+				simulateMapEvent(element._map, MapEventType.MOVESTART);
+
+				expect(store.getState().map.beingMoved).toBeTrue();
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(store.getState().map.beingMoved).toBeFalse();
+			});
+		});
+
+		describe('moveend', () => {
+
+			it('updates the \'moveend\' property in map store', async () => {
+				const element = await setup();
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(store.getState().map.moveEnd.payload).toBe('moveend');
+			});
+
+			it('change state from view properties', async () => {
+				const element = await setup();
+				const view = element._view;
+				spyOn(view, 'getZoom');
+				spyOn(view, 'getCenter');
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(view.getZoom).toHaveBeenCalledTimes(1);
+				expect(view.getCenter).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
-	
-	describe('pointermove', () => {
-		
+
+	describe('pointer events', () => {
+
 		describe('when pointer move', () => {
 			it('updates the \'pointer\' property in pointer store', async () => {
 				const element = await setup();
@@ -131,15 +165,16 @@ describe('OlMap', () => {
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				
+
 				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
-				
+
 				expect(store.getState().pointer.move.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.move.payload.screenCoordinate).toEqual(screenCoordinate);
 			});
 		});
-		
-		describe('when pointer is dragging', () => {
+
+
+		describe('when pointer drag', () => {
 			it('does NOT update the \'pointer\' property in pointer store', async () => {
 				const element = await setup();
 				const map = element._map;
@@ -148,40 +183,30 @@ describe('OlMap', () => {
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
 				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
-				
+
 				expect(store.getState().pointer.move).toBeNull();
 			});
-		});
-	});
 
-	describe('pointerdrag', () => {
-		
-		describe('when pointer drag', () => {
 			it('updates the \'beingDragged\' property in pointer store', async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				const beingDraggedBeginChangeSpy = jasmine.createSpy();
-				observe(store, state => state.pointer.beingDragged, beingDraggedBeginChangeSpy);
-				
-				
+
 				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
+
+				expect(store.getState().pointer.beingDragged).toBeTrue();
 				
-				expect(beingDraggedBeginChangeSpy).toHaveBeenCalledOnceWith(true, store.getState());
-				
-				const beingDraggedEndChangeSpy = jasmine.createSpy();
-				observe(store, state => state.pointer.beingDragged, beingDraggedEndChangeSpy);
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 				
-				expect(beingDraggedEndChangeSpy).toHaveBeenCalledOnceWith(false, store.getState());
+				expect(store.getState().pointer.beingDragged).toBeFalse();
 			});
 		});
 	});
 
 	describe('contextmenu', () => {
-		
+
 		describe('when contextmenu click', () => {
 			it('updates the \'contextclick\' property in pointer store', async () => {
 				const element = await setup();
@@ -189,15 +214,15 @@ describe('OlMap', () => {
 				const coordinate = [38, 75];
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-				
+
 				simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
-				
+
 				expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
 			});
 		});
 	});
-		
+
 	describe('olView management', () => {
 
 

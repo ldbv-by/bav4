@@ -11,6 +11,7 @@ import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
 
 /**
@@ -84,11 +85,18 @@ export class OlMap extends BaElement {
 			}),
 		});
 
+		this._map.on('movestart', () => {
+			setMoveStart();
+			setBeingMoved(true);
+		});
+
 		this._map.on('moveend', () => {
 			if (this._view) {
 				this._syncStore();
 			}
 			setBeingDragged(false);
+			setMoveEnd();
+			setBeingMoved(false);
 		});
 
 		this._map.addEventListener('contextmenu', (evt) => {
@@ -99,7 +107,7 @@ export class OlMap extends BaElement {
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
-				// the event is a drag gesture, twe handle it in 'pointerdrag'
+				// the event is a drag gesture, so we handle it in 'pointerdrag'
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
