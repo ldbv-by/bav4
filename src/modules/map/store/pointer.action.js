@@ -1,5 +1,5 @@
 /**
- * Action creators to update state concerning map related information
+ * Action creators concerning pointer based interactions of the user.
  * @module map/action
  */
 
@@ -56,7 +56,7 @@ export const setPointerMove = (pointerEvent) => {
 };
 
 /**
- * Sets information wether map is being dragged.
+ * Sets information wether the pointer is being dragged.
  * @function
  * @param {boolean} dragged 
  */
