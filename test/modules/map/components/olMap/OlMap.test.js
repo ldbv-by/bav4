@@ -16,6 +16,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import { observe } from '../../../../../src/utils/storeUtils';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -113,43 +114,72 @@ describe('OlMap', () => {
 			const view = element._view;
 			spyOn(view, 'getZoom');
 			spyOn(view, 'getCenter');
-
+			
 			simulateMapEvent(element._map, MapEventType.MOVEEND);
-
+			
 			expect(view.getZoom).toHaveBeenCalledTimes(1);
 			expect(view.getCenter).toHaveBeenCalledTimes(1);
 		});
 	});
+	
+	describe('pointermove', () => {
+		
+		describe('when pointer move', () => {
+			it('updates the \'pointer\' property in map store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
+				
+				expect(store.getState().map.pointer.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().map.pointer.payload.screenCoordinate).toEqual(screenCoordinate);
+			});
+		});
+		
+		describe('when pointer is dragging', () => {
+			it('dous NOT update the \'pointer\' property in map store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-	describe('when pointer move', () => {
-		it('updates the pointer property in map store', async () => {
-			const element = await setup();
-			const map = element._map;
-			const coordinate = [38, 75];
-			const screenCoordinate = [21, 42];
-			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-
-			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
-
-			expect(store.getState().map.pointer.payload.coordinate).toEqual(coordinate);
-			expect(store.getState().map.pointer.payload.screenCoordinate).toEqual(screenCoordinate);
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
+				
+				expect(store.getState().map.pointer).toBeNull();
+			});
 		});
 	});
 
-	describe('when mouse is dragging', () => {
-		it('do NOT store pointerPosition', async () => {
-			const element = await setup();
-			const map = element._map;
-			const coordinate = [38, 75];
-			const screenCoordinate = [21, 42];
-			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-
-			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
-
-			expect(store.getState().map.pointer).toBeNull();
+	describe('pointerdrag', () => {
+		
+		describe('when pointer drag', () => {
+			it('updates the \'beingDragged\' property in map store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				const beingDraggedBeginChangeSpy = jasmine.createSpy();
+				observe(store, state => state.map.beingDragged, beingDraggedBeginChangeSpy);
+				
+				
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
+				
+				expect(beingDraggedBeginChangeSpy).toHaveBeenCalledOnceWith(true, store.getState());
+				
+				const beingDraggedEndChangeSpy = jasmine.createSpy();
+				observe(store, state => state.map.beingDragged, beingDraggedEndChangeSpy);
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+				
+				expect(beingDraggedEndChangeSpy).toHaveBeenCalledOnceWith(false, store.getState());
+			});
 		});
 	});
-
+		
 	describe('olView management', () => {
 
 

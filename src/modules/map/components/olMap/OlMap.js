@@ -10,7 +10,7 @@ import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
-import { setPointer } from '../../store/map.action';
+import { setBeingDragged, setPointer } from '../../store/map.action';
 
 
 /**
@@ -88,16 +88,21 @@ export class OlMap extends BaElement {
 			if (this._view) {
 				this._syncStore();
 			}
+			setBeingDragged(false);
 		});
 
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
-				// the event is a drag gesture, this is handled by openlayers (map move)
+				// the event is a drag gesture, twe handle it in 'pointerdrag'
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			setPointer({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
+
+		this._map.on('pointerdrag', () => {
+			setBeingDragged(true);
 		});
 
 		this._eventHandler.forEach(handler => {
