@@ -1,8 +1,8 @@
 /**
- * Action creators to change/update the properties of map state.
+ * Action creators to change/update the properties concerning the resolution and center of a map.
  * @module map/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, POINTER_POSITION_CHANGED, FIT_REQUESTED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED } from './position.reducer';
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
 
@@ -78,17 +78,6 @@ export const changeCenter = (center) => {
 	getStore().dispatch({
 		type: CENTER_CHANGED,
 		payload: center
-	});
-};
-
-/**
- * Updates the pointer position.
- * @function
- */
-export const updatePointerPosition = (position) => {
-	getStore().dispatch({
-		type: POINTER_POSITION_CHANGED,
-		payload: position
 	});
 };
 

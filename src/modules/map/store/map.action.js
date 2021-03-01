@@ -5,10 +5,10 @@
 
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
-import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED } from './map.reducer';
+import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED, POINTER_CHANGED } from './map.reducer';
 
 /**
-* @typedef {Object} Click
+* @typedef {Object} PointerEvent
 * @param {number[]} coordinate Of the last click expressed in EPSG:3857
 * @param {number[]} screenCoordinate Of the last click expressed pixel
 */
@@ -22,24 +22,36 @@ const getStore = () => {
 /**
  * Sets information about the last click that occurred on the map.
  * @function
- * @param {Click} click 
+ * @param {PointerEvent} pointerEvent 
  */
-export const setClick = (click) => {
+export const setClick = (pointerEvent) => {
 	getStore().dispatch({
 		type: CLICK_CHANGED,
-		payload: new EventLike(click)
+		payload: new EventLike(pointerEvent)
 	});
 };
 
 /**
  * Sets information about the last context click that occurred on the map.
  * @function
- * @param {Click} click 
+ * @param {PointerEvent} pointerEvent 
  */
-export const setContextClick = (click) => {
+export const setContextClick = (pointerEvent) => {
 	getStore().dispatch({
 		type: CONTEXT_CLICK_CHANGED,
-		payload: new EventLike(click)
+		payload: new EventLike(pointerEvent)
+	});
+};
+
+/**
+ * Sets information about the last pointer move occurred on the map.
+ * @function
+ * @param {PointerEvent} pointerEvent 
+ */
+export const setPointer = (pointerEvent) => {
+	getStore().dispatch({
+		type: POINTER_CHANGED,
+		payload: new EventLike(pointerEvent)
 	});
 };
 
@@ -54,3 +66,4 @@ export const setBeingDragged = (dragged) => {
 		payload: dragged
 	});
 };
+

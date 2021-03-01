@@ -1,7 +1,6 @@
 export const ZOOM_CHANGED = 'position/zoom';
 export const CENTER_CHANGED = 'position/center';
 export const ZOOM_CENTER_CHANGED = 'position/zoom_center';
-export const POINTER_POSITION_CHANGED = 'position/pointerPosition';
 export const FIT_REQUESTED = 'position/fit';
 
 
@@ -38,14 +37,6 @@ export const positionReducer = (state = initialState, action) => {
 				...state,
 				zoom: zoom,
 				center: center
-			};
-		}
-
-		case POINTER_POSITION_CHANGED: {
-
-			return {
-				...state,
-				pointerPosition: payload
 			};
 		}
 
