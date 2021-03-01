@@ -93,8 +93,8 @@ export const updatePointerPosition = (position) => {
 };
 
 /**
- * Sets a fit request,
- * The fitRequest object is wrapper by an {@link EventLike} object
+ * Sets a fit request.
+ * The fitRequest object is wrapper by an {@link EventLike} object.
  * @param {FitRequest} fitRequest
  * @function
  */
