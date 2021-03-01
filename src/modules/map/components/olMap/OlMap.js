@@ -7,9 +7,10 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
-import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
+import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
+import { setPointer } from '../../store/map.action';
 
 
 /**
@@ -27,7 +28,7 @@ export class OlMap extends BaElement {
 			OlMeasurementHandler: measurementHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
 		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
-		
+
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
@@ -96,7 +97,7 @@ export class OlMap extends BaElement {
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			updatePointerPosition(coord);
+			setPointer({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		});
 
 		this._eventHandler.forEach(handler => {
