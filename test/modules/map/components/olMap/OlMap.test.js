@@ -9,7 +9,7 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
-import { changeZoomAndCenter, fit } from '../../../../../src/modules/map/store/position.action';
+import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
@@ -68,8 +68,8 @@ describe('OlMap', () => {
 				active: [],
 				background: null
 			},
-			measurement:{
-				active:false
+			measurement: {
+				active: false
 			}
 		};
 		const combinedState = {
@@ -172,7 +172,7 @@ describe('OlMap', () => {
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 
 			expect(element._viewSyncBlocked).toBeUndefined();
-			fit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
+			setFit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
 			expect(store.getState().position.fitRequest).not.toBeNull();
 
 			expect(element._viewSyncBlocked).toBeTrue();
@@ -181,8 +181,6 @@ describe('OlMap', () => {
 				expect(element._viewSyncBlocked).toBeFalse();
 				//and store is in sync with view
 				expect(spy).toHaveBeenCalled();
-				//fit request ist reset
-				expect(store.getState().position.fitRequest).toBeNull();
 				done();
 
 			}, 500);
@@ -351,7 +349,7 @@ describe('OlMap', () => {
 			expect(element._layerHandler.get('geolocationLayerHandlerMockId')).toEqual(geolocationLayerHandlerMock);
 		});
 
-		
+
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
 			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
