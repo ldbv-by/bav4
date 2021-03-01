@@ -125,7 +125,7 @@ describe('OlMap', () => {
 	describe('pointermove', () => {
 		
 		describe('when pointer move', () => {
-			it('updates the \'pointer\' property in map store', async () => {
+			it('updates the \'pointer\' property in pointer store', async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -140,7 +140,7 @@ describe('OlMap', () => {
 		});
 		
 		describe('when pointer is dragging', () => {
-			it('does NOT update the \'pointer\' property in map store', async () => {
+			it('does NOT update the \'pointer\' property in pointer store', async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -157,7 +157,7 @@ describe('OlMap', () => {
 	describe('pointerdrag', () => {
 		
 		describe('when pointer drag', () => {
-			it('updates the \'beingDragged\' property in map store', async () => {
+			it('updates the \'beingDragged\' property in pointer store', async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -176,6 +176,24 @@ describe('OlMap', () => {
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 				
 				expect(beingDraggedEndChangeSpy).toHaveBeenCalledOnceWith(false, store.getState());
+			});
+		});
+	});
+
+	describe('contextmenu', () => {
+		
+		describe('when contextmenu click', () => {
+			it('updates the \'contextclick\' property in pointer store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				
+				simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+				
+				expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
 			});
 		});
 	});

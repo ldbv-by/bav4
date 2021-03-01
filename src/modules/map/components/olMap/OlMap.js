@@ -10,7 +10,7 @@ import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
-import { setBeingDragged, setPointerMove } from '../../store/pointer.action';
+import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 
 
 /**
@@ -91,6 +91,11 @@ export class OlMap extends BaElement {
 			setBeingDragged(false);
 		});
 
+		this._map.addEventListener('contextmenu', (evt) => {
+			evt.preventDefault();
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
