@@ -1,5 +1,5 @@
-import { mapReducer } from '../../../../src/modules/map/store/map.reducer';
-import { setClick, setContextClick, setBeingDragged, setPointer } from '../../../../src/modules/map/store/map.action';
+import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
+import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../../../../src/modules/map/store/pointer.action';
 import { TestUtils } from '../../../test-utils.js';
 
 
@@ -7,15 +7,15 @@ describe('mapReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
-			map: mapReducer
+			pointer: pointerReducer
 		});
 	};
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().map.click).toBeNull();
-		expect(store.getState().map.contextClick).toBeNull();
-		expect(store.getState().map.beingDragged).toBeFalse();
+		expect(store.getState().pointer.click).toBeNull();
+		expect(store.getState().pointer.contextClick).toBeNull();
+		expect(store.getState().pointer.beingDragged).toBeFalse();
 	});
 
 	it('changes the \'click\' property', () => {
@@ -24,7 +24,7 @@ describe('mapReducer', () => {
 
 		setClick(pointerEvent);
 
-		expect(store.getState().map.click.payload).toEqual(pointerEvent);
+		expect(store.getState().pointer.click.payload).toEqual(pointerEvent);
 	});
 
 	it('changes the \'contextClick\' property', () => {
@@ -33,16 +33,16 @@ describe('mapReducer', () => {
 
 		setContextClick(pointerEvent);
 
-		expect(store.getState().map.contextClick.payload).toEqual(pointerEvent);
+		expect(store.getState().pointer.contextClick.payload).toEqual(pointerEvent);
 	});
 
-	it('changes the \'pointer\' property', () => {
+	it('changes the \'move\' property', () => {
 		const store = setup();
 		const pointerEvent = { coordinate: [7, 8], screenCoordinate: [2, 1] };
 
-		setPointer(pointerEvent);
+		setPointerMove(pointerEvent);
 
-		expect(store.getState().map.pointer.payload).toEqual(pointerEvent);
+		expect(store.getState().pointer.move.payload).toEqual(pointerEvent);
 	});
 
 	it('changes the \'beingDragged\' property', () => {
@@ -50,10 +50,10 @@ describe('mapReducer', () => {
 
 		setBeingDragged(true);
 
-		expect(store.getState().map.beingDragged).toBeTrue();
+		expect(store.getState().pointer.beingDragged).toBeTrue();
 
 		setBeingDragged(false);
 
-		expect(store.getState().map.beingDragged).toBeFalse();
+		expect(store.getState().pointer.beingDragged).toBeFalse();
 	});
 });

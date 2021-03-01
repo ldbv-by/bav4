@@ -10,7 +10,7 @@ import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
-import { setBeingDragged, setPointer } from '../../store/map.action';
+import { setBeingDragged, setPointerMove } from '../../store/pointer.action';
 
 
 /**
@@ -98,7 +98,7 @@ export class OlMap extends BaElement {
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			setPointer({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+			setPointerMove({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		});
 
 		this._map.on('pointerdrag', () => {

@@ -5,7 +5,7 @@
 
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
-import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED, POINTER_CHANGED } from './map.reducer';
+import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED, POINTER_MOVE_CHANGED } from './pointer.reducer';
 
 /**
 * @typedef {Object} PointerEvent
@@ -48,9 +48,9 @@ export const setContextClick = (pointerEvent) => {
  * @function
  * @param {PointerEvent} pointerEvent 
  */
-export const setPointer = (pointerEvent) => {
+export const setPointerMove = (pointerEvent) => {
 	getStore().dispatch({
-		type: POINTER_CHANGED,
+		type: POINTER_MOVE_CHANGED,
 		payload: new EventLike(pointerEvent)
 	});
 };

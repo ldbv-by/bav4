@@ -1,8 +1,8 @@
 import { CoordinateSelect } from '../../../../../src/modules/footer/components/coordinateSelect/CoordinateSelect';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils.js';
-import { setPointer } from '../../../../../src/modules/map/store/map.action';
-import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import { setPointerMove } from '../../../../../src/modules/map/store/pointer.action';
+import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 
 window.customElements.define(CoordinateSelect.tag, CoordinateSelect);
 
@@ -29,12 +29,12 @@ describe('CoordinateSelect', () => {
 		const { touch = false } = config;
 
 		const state = {
-			map: {
+			pointer: {
 				pointer: null
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, { map: mapReducer });
+		TestUtils.setupStoreAndDi(state, { pointer: pointerReducer });
 
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
@@ -59,7 +59,7 @@ describe('CoordinateSelect', () => {
 		it('adds a div which shows coordinate select and coordinate display', async () => {
 			const element = await setup({ touch: false });
 
-			setPointer({ coordinate: [12345, 67890], screenCoordinate: [] });
+			setPointerMove({ coordinate: [12345, 67890], screenCoordinate: [] });
 
 			const container = element.shadowRoot.querySelector('.coordinate-container');
 
@@ -84,7 +84,7 @@ describe('CoordinateSelect', () => {
 			const testCoordinate = [1211817.6233080907, 6168328.021915435]; 
 
 			// coordinates are shown after the pointer is moved, so initial there are no coordinates visible
-			setPointer({ coordinate: testCoordinate, screenCoordinate: [] });
+			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 
 			expect(element.shadowRoot.querySelector('select').value).toEqual('99999');
 			expect(element.shadowRoot.querySelector('.select-coordinate-option').innerHTML.includes('TEST')).toBeTruthy();
@@ -105,7 +105,7 @@ describe('CoordinateSelect', () => {
 			const toLonLatMock = spyOn(coordinateServiceMock, 'toLonLat').and.returnValue([42, 42]);
 
 			const testCoordinate = [23, 23];
-			setPointer({ coordinate: testCoordinate, screenCoordinate: [] });
+			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 
 			const select = element.shadowRoot.querySelector('select');
 
@@ -117,7 +117,7 @@ describe('CoordinateSelect', () => {
 			// change to code '1111' - toLonLat method is called
 			select.value = '1111';
 			select.dispatchEvent(new Event('change'));
-			setPointer({ coordinate: testCoordinate, screenCoordinate: [] });
+			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 			expect(toLonLatMock).toHaveBeenCalledWith(testCoordinate);
 			expect(stringifyMock).toHaveBeenCalledWith([42, 42], 1111, { digits: 5 });

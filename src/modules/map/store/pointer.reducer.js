@@ -1,17 +1,17 @@
-export const CLICK_CHANGED = 'map/click';
-export const CONTEXT_CLICK_CHANGED = 'map/contextClick';
-export const BEING_DRAGGED_CHANGED = 'map/beingDragged';
-export const POINTER_CHANGED = 'map/pointer';
+export const CLICK_CHANGED = 'pointer/click';
+export const CONTEXT_CLICK_CHANGED = 'pointer/contextClick';
+export const BEING_DRAGGED_CHANGED = 'pointer/beingDragged';
+export const POINTER_MOVE_CHANGED = 'pointer/move';
 
 export const initialState = {
 
 	/**
-     * @type {EventLike<Click>}
+     * @type {EventLike<PointerEvent>}
      */
 	click: null,
 
 	/**
-     * @type {EventLike<Click>}
+     * @type {EventLike<PointerEvent>}
      */
 	contextClick: null,
 
@@ -21,14 +21,14 @@ export const initialState = {
 	beingDragged: false,
 
 	/**
-     * @type {EventLike<Click>}
+     * @type {EventLike<PointerEvent>}
      */
-	pointer: null
+	move: null
 
 };
 
 
-export const mapReducer = (state = initialState, action) => {
+export const pointerReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
 	switch (type) {
@@ -46,11 +46,11 @@ export const mapReducer = (state = initialState, action) => {
 				contextClick: payload
 			};
 		}
-		case POINTER_CHANGED: {
+		case POINTER_MOVE_CHANGED: {
 
 			return {
 				...state,
-				pointer: payload
+				move: payload
 			};
 		}
 		case BEING_DRAGGED_CHANGED: {
