@@ -3,7 +3,7 @@ import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../.
 import { TestUtils } from '../../../test-utils.js';
 
 
-describe('mapReducer', () => {
+describe('pointerReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
