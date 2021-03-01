@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { SidePanel } from '../../../../src/modules/menue/components/SidePanel';
+import { SidePanel } from '../../../../src/modules/menue/components/sidePanel/SidePanel';
 import { sidePanelReducer } from '../../../../src/modules/menue/store/sidePanel.reducer';
 import { toggleSidePanel } from '../../../../src/modules/menue/store/sidePanel.action';
 import { TestUtils } from '../../../test-utils';

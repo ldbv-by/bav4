@@ -31,38 +31,51 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._vectorLayer = null;
-		this._draw = false;			
-		this._activeSketch = null;		
+		this._draw = false;
+		this._activeSketch = null;
 		this._helpTooltip;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._overlays = [];
-		this._projectionHints = { fromProjection:'EPSG:' + this._mapService.getSrid(), toProjection:'EPSG:' + this._mapService.getDefaultGeodeticSrid() };		
+		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 	}
 
 	/**
 	 * Activates the Handler.
 	 * @override
-	 */	
+	 */
 	activate(olMap) {
+		const visibleChangedHandler = (event) => {
+			const layer = event.target;
+			const isVisibleStyle = layer.getVisible() ? '' : 'none';
+			this._overlays.forEach(o => o.getElement().style.display = isVisibleStyle);
+		};
+
+		const opacityChangedHandler = (event) => {
+			const layer = event.target;
+			this._overlays.forEach(o => o.getElement().style.opacity = layer.getOpacity());
+		};
+
 		const prepareInteraction = () => {
-			const source = new VectorSource({ wrapX: false });	
+			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: measureStyleFunction				
+				style: measureStyleFunction
 			});
+			this._layerVisibilityListener = layer.on('change:visible', visibleChangedHandler);
+			this._layerOpacityListener = layer.on('change:opacity', opacityChangedHandler);
 			return layer;
 		};
 
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
-			
+
 			if (event.dragging) {
 				return;
 			}
 			/** @type {string} */
-			let helpMsg =  translate('map_olMap_handler_measure_start');
+			let helpMsg = translate('map_olMap_handler_measure_start');
 
 			if (this._activeSketch) {
 				this._activeSketch.getGeometry();
@@ -79,33 +92,33 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
 				}
 			}
-			
-			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg );
+
+			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
 
 		const removeLastPoint = (draw, event) => {
-			if ((event.which === 46 || event.keyCode === 46 ) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				if (draw) {
 					draw.removeLastPoint();
-				}				
+				}
 			}
 		};
 
 		if (this._draw === false) {
-			this._vectorLayer = prepareInteraction();			
+			this._vectorLayer = prepareInteraction();
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
-			const source = this._vectorLayer.getSource();			
-			this._draw = this._createInteraction(source);			
-			this._snap = new Snap({ source: source, pixelTolerance:this._getSnapTolerancePerDevice() });
-			this._addOverlayToMap(olMap, this._helpTooltip);			
+			const source = this._vectorLayer.getSource();
+			this._draw = this._createInteraction(source);
+			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
+			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
 			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
 
 			olMap.addInteraction(this._snap);
-			olMap.addInteraction(this._draw);	
-		}		
+			olMap.addInteraction(this._draw);
+		}
 		return this._vectorLayer;
-	}	
+	}
 
 	/**
 	 *  @override
@@ -120,9 +133,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._overlays = [];
 		unByKey(this._pointerMoveListener);
 		unByKey(this._keyboardListener);
+		unByKey(this._layerVisibilityListener);
+		unByKey(this._layerOpacityListener);
 		this._helpTooltip = null;
 		this._draw = false;
-	}	
+	}
 
 	_addOverlayToMap(map, overlay) {
 		this._overlays.push(overlay);
@@ -134,23 +149,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		map.removeOverlay(overlay);
 	}
 
-	_createInteraction(source) {		
+	_createInteraction(source) {
 		const draw = new Draw({
 			source: source,
-			type:'Polygon',
-			minPoints:2,
-			snapTolerance:4,
+			type: 'Polygon',
+			minPoints: 2,
+			snapTolerance: 4,
 			style: generateSketchStyleFunction(measureStyleFunction)
-		});						
-		
+		});
+
 		const updateMeasureTooltips = (geometry) => {
 			let measureGeometry = geometry;
 			const map = draw.getMap();
-			const measureTooltip = this._activeSketch.get('measurement');		
-			
+			const measureTooltip = this._activeSketch.get('measurement');
+
 			if (geometry instanceof Polygon) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
-				
+
 
 				if (this._pointCount !== lineCoordinates.length) {
 					// a point is added or removed
@@ -166,84 +181,84 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 					this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
 				}
-				
+
 				if (!this._isFinishOnFirstPoint) {
 					measureGeometry = new LineString(lineCoordinates);
-				}					
+				}
 
 				if (geometry.getArea()) {
-					let areaOverlay = this._activeSketch.get('area') || this._createOverlay( { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints );				 
+					let areaOverlay = this._activeSketch.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints);
 					this._addOverlayToMap(map, areaOverlay);
 					this._updateOverlay(areaOverlay, geometry);
 					this._activeSketch.set('area', areaOverlay);
 				}
 			}
 
-			this._updateOverlay(measureTooltip, measureGeometry, '');		
-						
+			this._updateOverlay(measureTooltip, measureGeometry, '');
+
 			// add partition tooltips on the line
 			const partitions = this._activeSketch.get('partitions') || [];
-		
-			
-			let delta = getPartitionDelta(measureGeometry, this._projectionHints);			
+
+
+			let delta = getPartitionDelta(measureGeometry, this._projectionHints);
 			let partitionIndex = 0;
-			for (let i = delta;i < 1;i += delta, partitionIndex++) {
-				let partition = partitions[partitionIndex] || false; 
-				if (partition === false) {			
-					partition = this._createOverlay( { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints );
-					
-					this._addOverlayToMap(map, partition);									
+			for (let i = delta; i < 1; i += delta, partitionIndex++) {
+				let partition = partitions[partitionIndex] || false;
+				if (partition === false) {
+					partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
+
+					this._addOverlayToMap(map, partition);
 					partitions.push(partition);
 				}
-				this._updateOverlay(partition, measureGeometry, i );
+				this._updateOverlay(partition, measureGeometry, i);
 			}
 
 			if (partitionIndex < partitions.length) {
-				for (let j = partitions.length - 1;j >= partitionIndex;j--) {
+				for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 					const removablePartition = partitions[j];
 					if (map) {
-						this._removeOverlayFromMap(map, removablePartition);				
-					}	
+						this._removeOverlayFromMap(map, removablePartition);
+					}
 					partitions.pop();
 				}
 			}
-			this._activeSketch.set('partitions', partitions);		
+			this._activeSketch.set('partitions', partitions);
 		};
 		let listener;
-		
-		const finishMeasurementTooltip = (event) => {			
+
+		const finishMeasurementTooltip = (event) => {
 
 			const geometry = event.feature.getGeometry();
 			const measureTooltip = event.feature.get('measurement');
 			measureTooltip.getElement().static = true;
-			measureTooltip.setOffset([0, -7]);				
+			measureTooltip.setOffset([0, -7]);
 			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
-				event.feature.setGeometry(new LineString(lineCoordinates));		
-				this._removeOverlayFromMap(draw.getMap(),	this._activeSketch.get('area')	);
+				event.feature.setGeometry(new LineString(lineCoordinates));
+				this._removeOverlayFromMap(draw.getMap(), this._activeSketch.get('area'));
 			}
 			else {
 				this._updateOverlay(measureTooltip, geometry);
 			}
-			this._activeSketch = null;						
+			this._activeSketch = null;
 			unByKey(listener);
 		};
-		
-		draw.on('drawstart', event =>  {	
-			
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);	
+
+		draw.on('drawstart', event => {
+
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);
 			this._activeSketch = event.feature;
 			this._activeSketch.set('measurement', measureTooltip);
 
-			this._pointCount = 1;		
+			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
 			listener = event.feature.getGeometry().on('change', event => {
 				updateMeasureTooltips(event.target);
 			});
 			const map = draw.getMap();
 			if (map) {
-				this._addOverlayToMap(map, measureTooltip);				
-			}			
+				this._addOverlayToMap(map, measureTooltip);
+			}
 		});
 
 		draw.on('drawend', finishMeasurementTooltip);
@@ -253,9 +268,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
-		measurementOverlay.type = type;		
+		measurementOverlay.type = type;
 		measurementOverlay.projectionHints = projectionHints;
-		const overlay = new Overlay({ ...overlayOptions, element:measurementOverlay });
+		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
 		return overlay;
 	}
 
@@ -263,7 +278,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const measurementOverlay = overlay.getElement();
 		measurementOverlay.value = value;
 		measurementOverlay.geometry = geometry;
-		overlay.setPosition(measurementOverlay.position);							
+		overlay.setPosition(measurementOverlay.position);
 	}
 
 	_getSnapTolerancePerDevice() {
