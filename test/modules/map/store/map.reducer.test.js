@@ -1,5 +1,5 @@
 import { mapReducer } from '../../../../src/modules/map/store/map.reducer';
-import { setClick, setContextClick, setBeingDragged } from '../../../../src/modules/map/store/map.action';
+import { setClick, setContextClick, setBeingDragged, setPointer } from '../../../../src/modules/map/store/map.action';
 import { TestUtils } from '../../../test-utils.js';
 
 
@@ -20,20 +20,29 @@ describe('mapReducer', () => {
 
 	it('changes the \'click\' property', () => {
 		const store = setup();
-		const click = { coordinate: [38, 57], screenCoordinate: [21, 42] };
+		const pointerEvent = { coordinate: [38, 57], screenCoordinate: [21, 42] };
 
-		setClick(click);
+		setClick(pointerEvent);
 
-		expect(store.getState().map.click.payload).toEqual(click);
+		expect(store.getState().map.click.payload).toEqual(pointerEvent);
 	});
 
 	it('changes the \'contextClick\' property', () => {
 		const store = setup();
-		const click = { coordinate: [57, 38], screenCoordinate: [42, 21] };
+		const pointerEvent = { coordinate: [57, 38], screenCoordinate: [42, 21] };
 
-		setContextClick(click);
+		setContextClick(pointerEvent);
 
-		expect(store.getState().map.contextClick.payload).toEqual(click);
+		expect(store.getState().map.contextClick.payload).toEqual(pointerEvent);
+	});
+
+	it('changes the \'pointer\' property', () => {
+		const store = setup();
+		const pointerEvent = { coordinate: [7, 8], screenCoordinate: [2, 1] };
+
+		setPointer(pointerEvent);
+
+		expect(store.getState().map.pointer.payload).toEqual(pointerEvent);
 	});
 
 	it('changes the \'beingDragged\' property', () => {
