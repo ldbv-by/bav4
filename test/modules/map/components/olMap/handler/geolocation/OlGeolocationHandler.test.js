@@ -90,4 +90,23 @@ describe('OlGeolocationHandler', () => {
 
 		});
 	});
+
+	describe('when deactivate', () => {
+		it('unregisters observer', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlGeolocationHandler();
+			handler.activate(map);
+			const spyOnUnregister = spyOn(handler, '_unregister');
+
+
+			handler.deactivate(map);
+
+			expect(handler._geolocationLayer).toBeNull();
+			expect(spyOnUnregister).toHaveBeenCalled();
+		});
+
+
+	});
 });
