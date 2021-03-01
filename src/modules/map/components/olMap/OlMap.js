@@ -100,7 +100,7 @@ export class OlMap extends BaElement {
 		});
 
 		this._map.addEventListener('contextmenu', (evt) => {
-			evt.preventDefault();
+			// evt.preventDefault();
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		});
