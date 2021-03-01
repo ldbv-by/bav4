@@ -2,6 +2,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const portFinderSync = require('portfinder-sync');
+const port = portFinderSync.getPort(8080);
 
 module.exports = {
 	mode: 'development',
@@ -43,5 +45,6 @@ module.exports = {
 	watch: false,
 	devServer: {
 		contentBase: './dist',
+		port: port,
 	},
 };
