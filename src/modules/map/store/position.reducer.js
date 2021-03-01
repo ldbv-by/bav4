@@ -7,7 +7,6 @@ export const FIT_REQUESTED = 'position/fit';
 export const initialState = {
 	zoom: 12,
 	center: [1288239.2412306187, 6130212.561641981],
-	pointerPosition : null,
 	fitRequest : null
 };
 
