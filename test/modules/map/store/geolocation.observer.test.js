@@ -23,6 +23,13 @@ describe('geolocationObserver', () => {
 
 	const coordinateServiceMock = {
 		fromLonLat() { },
+		transformExtent() { },
+		buffer() { }
+	};
+
+	const mapServiceMock = {
+		getDefaultGeodeticSrid() { },
+		getSrid() { },
 	};
 
 	const setup = () => {
@@ -36,6 +43,7 @@ describe('geolocationObserver', () => {
 		$injector
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return store;
@@ -84,14 +92,14 @@ describe('geolocationObserver', () => {
 			setTracking(true);
 
 			setMoveStart();
-			
+
 			expect(store.getState().geolocation.tracking).toBeFalse();
 		});
 	});
 
 	describe('GeolocationHandler', () => {
 		let store, instanceUnderTest;
-		
+
 		beforeEach(() => {
 			store = setup();
 			instanceUnderTest = new GeolocationHandler();
@@ -174,11 +182,13 @@ describe('geolocationObserver', () => {
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
 				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything()).and.returnValue(4242);
+				const fitSpy = spyOn(instanceUnderTest, '_fit');
 
 				instanceUnderTest._handlePositionSuccess(position, state);
 
 				expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position, jasmine.anything());
-				expect(store.getState().position.zoom).toBe(15.5);
+				// expect(store.getState().position.zoom).toBe(15.5);
+				expect(fitSpy).toHaveBeenCalledOnceWith(position);
 				expect(store.getState().geolocation.tracking).toBeTrue();
 				expect(instanceUnderTest._geolocationWatcherId).toBe(4242);
 			});
@@ -237,6 +247,30 @@ describe('geolocationObserver', () => {
 				});
 			});
 		});
+
+		describe('_fit', () => {
+			it('calculates an extent and updates the state', () => {
+
+				const mapSrid = 2100;
+				const geodeticSrid = 4200;
+				const geodeticExtent = [42, 10, 42, 10];
+				const bufferedGeodeticExtent = [52, 0, 52, 0];
+				const bufferedMapExtent = [11, 22, 33, 44];
+				const position = { coords: { longitude: 43, latitude: 26, accuracy: 10 } };
+				spyOn(mapServiceMock, 'getSrid').and.returnValue(mapSrid);
+				spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.returnValue(geodeticSrid);
+				spyOn(instanceUnderTest, '_transformPositionTo3857').and.returnValue([38, 57]);
+				spyOn(coordinateServiceMock, 'transformExtent').and.callFake((extent, sourceSrid, targetSrid) => {
+					return targetSrid === geodeticSrid ? geodeticExtent : bufferedMapExtent;
+				});
+				spyOn(coordinateServiceMock, 'buffer').withArgs([42, 10, 42, 10], 10).and.returnValue(bufferedGeodeticExtent);
+
+				instanceUnderTest._fit(position);
+
+				expect(store.getState().position.fitRequest.payload.extent).toEqual(bufferedMapExtent);
+			});
+		});
+
 
 		describe('activate / deactivate', () => {
 

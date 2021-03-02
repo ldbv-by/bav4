@@ -1,7 +1,7 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
-import { changeCenter, changeZoom } from './position.action';
+import { changeCenter, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
 
 
@@ -18,11 +18,17 @@ export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
 export class GeolocationHandler {
 	constructor() {
-		const { TranslationService: translationService, CoordinateService: coordinateService, EnvironmentService: environmentService }
-            = $injector.inject('TranslationService', 'CoordinateService', 'EnvironmentService');
+		const {
+			TranslationService: translationService,
+			CoordinateService: coordinateService,
+			EnvironmentService: environmentService,
+			MapService: mapService
+		}
+			= $injector.inject('TranslationService', 'CoordinateService', 'EnvironmentService', 'MapService');
 		this._translationService = translationService;
 		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
+		this._mapService = mapService;
 
 		this._firstTimeActivatingGeolocation = true;
 		this._geolocationWatcherId = null;
@@ -46,6 +52,22 @@ export class GeolocationHandler {
 		);
 	}
 
+	_fit(position) {
+		const positionEpsg3857 = this._transformPositionTo3857(position);
+		const extent3857 = [...positionEpsg3857, ...positionEpsg3857];
+		const geodeticExtent = this._coordinateService.transformExtent(
+			extent3857,
+			this._mapService.getSrid(),
+			this._mapService.getDefaultGeodeticSrid()
+		);
+		const bufferedExtent = this._coordinateService.transformExtent(
+			this._coordinateService.buffer(geodeticExtent, position.coords.accuracy),
+			this._mapService.getDefaultGeodeticSrid(),
+			this._mapService.getSrid()
+		);
+		setFit({ extent:bufferedExtent });
+	}
+
 	_handlePositionSuccess(position, state) {
 
 		// if geolocation was previously denied, we clear the flag
@@ -56,8 +78,7 @@ export class GeolocationHandler {
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
 			setTracking(true);
-			//Todo: fit to extent
-			changeZoom(15.5);
+			this._fit(position);
 		}
 		this._geolocationWatcherId = this._watchPosition(state);
 	}
