@@ -1,8 +1,8 @@
 import { $injector, http, router } from './testsConfig';
 
 //test proto
-var protoTest = function() {
-	var { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
+let protoTest = function() {
+	let { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
 	return { HttpService, RouterService };
 };
 

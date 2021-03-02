@@ -10,7 +10,7 @@ class classTest {
 	}
 }
 
-var instance = new classTest();
+let instance = new classTest();
 
 //tests
 describe('ES6 Class Injection', () => {

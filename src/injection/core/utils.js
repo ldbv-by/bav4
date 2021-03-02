@@ -6,7 +6,7 @@
  * @param  {function} action Action to perform on each property.
  */
 export const forEachPropertyDoAction = function (obj, action) {
-	for (var key in obj) {
+	for (let key in obj) {
 		// eslint-disable-next-line no-prototype-builtins
 		if (obj.hasOwnProperty(key)) {
 			action(key, obj[key]);
