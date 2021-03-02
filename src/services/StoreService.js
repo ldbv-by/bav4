@@ -11,6 +11,8 @@ import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
 import { register as registerGeolocationObserver } from '../modules/map/store/geolocation.observer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
+import { pointerReducer } from '../modules/map/store/pointer.reducer';
+import { mapReducer } from '../modules/map/store/map.reducer';
 
 
 
@@ -71,6 +73,8 @@ export class StoreService {
 			 * must be named like the field of the state
 			 * see: https://redux.js.org/recipes/structuring-reducers/initializing-state#combined-reducers
 			 */
+			map: mapReducer,
+			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
 			contextMenue: contextMenueReducer,

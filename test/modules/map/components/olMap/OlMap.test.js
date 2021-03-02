@@ -13,6 +13,8 @@ import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/stor
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
+import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
+import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -78,6 +80,8 @@ describe('OlMap', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(combinedState, {
+			map: mapReducer,
+			pointer: pointerReducer,
 			position: positionReducer,
 			layers: layersReducer,
 			measurement: measurementReducer
@@ -110,43 +114,117 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('when map move', () => {
-		it('change state from view properties', async () => {
-			const element = await setup();
-			const view = element._view;
-			spyOn(view, 'getZoom');
-			spyOn(view, 'getCenter');
+	describe('map move events', () => {
+		describe('movestart', () => {
 
-			simulateMapEvent(element._map, MapEventType.MOVEEND);
+			it('updates the \'movestart\' property in map store', async () => {
+				const element = await setup();
 
-			expect(view.getZoom).toHaveBeenCalledTimes(1);
-			expect(view.getCenter).toHaveBeenCalledTimes(1);
+				simulateMapEvent(element._map, MapEventType.MOVESTART);
+
+				expect(store.getState().map.moveStart.payload).toBe('movestart');
+			});
+			it('updates the \'beingMoved\' property in pointer store', async () => {
+				const element = await setup();
+				
+				simulateMapEvent(element._map, MapEventType.MOVESTART);
+
+				expect(store.getState().map.beingMoved).toBeTrue();
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(store.getState().map.beingMoved).toBeFalse();
+			});
+		});
+
+		describe('moveend', () => {
+
+			it('updates the \'moveend\' property in map store', async () => {
+				const element = await setup();
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(store.getState().map.moveEnd.payload).toBe('moveend');
+			});
+
+			it('change state from view properties', async () => {
+				const element = await setup();
+				const view = element._view;
+				spyOn(view, 'getZoom');
+				spyOn(view, 'getCenter');
+
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+
+				expect(view.getZoom).toHaveBeenCalledTimes(1);
+				expect(view.getCenter).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 
-	describe('when pointer move', () => {
-		it('pointer position store is updated', async () => {
-			const element = await setup();
-			const map = element._map;
-			const pointerPosition = ['foo', 'bar'];
-			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
+	describe('pointer events', () => {
 
-			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, 10, 0);
+		describe('when pointer move', () => {
+			it('updates the \'pointer\' property in pointer store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-			expect(store.getState().position.pointerPosition).toBe(pointerPosition);
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
+
+				expect(store.getState().pointer.move.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.move.payload.screenCoordinate).toEqual(screenCoordinate);
+			});
+		});
+
+
+		describe('when pointer drag', () => {
+			it('does NOT update the \'pointer\' property in pointer store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
+
+				expect(store.getState().pointer.move).toBeNull();
+			});
+
+			it('updates the \'beingDragged\' property in pointer store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
+
+				expect(store.getState().pointer.beingDragged).toBeTrue();
+				
+				simulateMapEvent(element._map, MapEventType.MOVEEND);
+				
+				expect(store.getState().pointer.beingDragged).toBeFalse();
+			});
 		});
 	});
 
-	describe('when mouse is dragging', () => {
-		it('do NOT store pointerPosition', async () => {
-			const element = await setup();
-			const map = element._map;
-			const pointerPosition = [99, 99];
-			spyOn(map, 'getEventCoordinate').and.returnValue(pointerPosition);
+	describe('contextmenu', () => {
 
-			simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, 10, 0, true);
+		describe('when contextmenu click', () => {
+			it('updates the \'contextclick\' property in pointer store', async () => {
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-			expect(store.getState().position.pointerPosition).toBeUndefined();
+				simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+
+				expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+			});
 		});
 	});
 

@@ -79,7 +79,11 @@ export class CoordinateSelect extends BaElement {
      * @override 
      */
 	extractState(store) {
-		const { position: { pointerPosition } } = store;
+		let pointerPosition = undefined;
+		const { pointer: { move } } = store;
+		if (move) {
+			pointerPosition = move.payload.coordinate;
+		}
 		return { pointerPosition };
 	}
 
