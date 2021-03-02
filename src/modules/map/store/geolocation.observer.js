@@ -1,6 +1,6 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
-import { setPosition, setAccuracy, setDenied } from './geolocation.action';
+import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
 import { changeCenter, changeZoom } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
 
@@ -55,6 +55,8 @@ export class GeolocationHandler {
 		this._handlePositionAndUpdateStore(position, state);
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
+			setTracking(true);
+			//Todo: fit to extent
 			changeZoom(15.5);
 		}
 		this._geolocationWatcherId = this._watchPosition(state);
@@ -107,6 +109,6 @@ export const register = (store, geolocationHandler = new GeolocationHandler()) =
 	};
 
 	observe(store, state => state.geolocation.active, onGeolocationActivityChange);
-
-	//Todo: register a second observer to detect dragging of map and disable geolocation tracking
+	//disable tracking when map is moved by user
+	
 };

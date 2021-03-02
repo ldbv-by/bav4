@@ -1,10 +1,12 @@
 import { GeolocationHandler, GEOLOCATION_LAYER_ID, register } from '../../../../src/modules/map/store/geolocation.observer';
-import { activate, deactivate } from '../../../../src/modules/map/store/geolocation.action';
+import { activate, deactivate, setTracking } from '../../../../src/modules/map/store/geolocation.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { geolocationReducer } from '../../../../src/modules/map/store/geolocation.reducer';
 import { $injector } from '../../../../src/injection';
 import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
+import { mapReducer } from '../../../../src/modules/map/store/map.reducer';
+import { setMoveStart } from '../../../../src/modules/map/store/map.action';
 
 
 describe('geolocationObserver', () => {
@@ -26,6 +28,7 @@ describe('geolocationObserver', () => {
 	const setup = () => {
 
 		const store = TestUtils.setupStoreAndDi(undefined, {
+			map: mapReducer,
 			geolocation: geolocationReducer,
 			layers: layersReducer,
 			position: positionReducer
@@ -166,6 +169,7 @@ describe('geolocationObserver', () => {
 
 				expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position, jasmine.anything());
 				expect(store.getState().position.zoom).toBe(15.5);
+				expect(store.getState().geolocation.tracking).toBeTrue();
 				expect(instanceUnderTest._geolocationWatcherId).toBe(4242);
 			});
 
@@ -186,6 +190,7 @@ describe('geolocationObserver', () => {
 				expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position, jasmine.anything());
 				expect(store.getState().position.zoom).not.toBe(15.5);
 				expect(store.getState().geolocation.denied).toBeFalse();
+				expect(store.getState().geolocation.tracking).toBeFalse();
 				expect(instanceUnderTest._geolocationWatcherId).toBe(4242);
 			});
 		});
