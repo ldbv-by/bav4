@@ -91,6 +91,7 @@ export class GeolocationHandler {
 			navigator.geolocation.clearWatch(this._geolocationWatcherId);
 			this._geolocationWatcherId = null;
 		}
+		this._firstTimeActivatingGeolocation = true;
 	}
 }
 
