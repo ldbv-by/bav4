@@ -7,9 +7,11 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
-import { changeZoomAndCenter, updatePointerPosition } from '../../store/position.action';
+import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
+import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
 
 /**
@@ -27,7 +29,7 @@ export class OlMap extends BaElement {
 			OlMeasurementHandler: measurementHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
 		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
-		
+
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
@@ -83,20 +85,37 @@ export class OlMap extends BaElement {
 			}),
 		});
 
+		this._map.on('movestart', () => {
+			setMoveStart();
+			setBeingMoved(true);
+		});
+
 		this._map.on('moveend', () => {
 			if (this._view) {
 				this._syncStore();
 			}
+			setBeingDragged(false);
+			setMoveEnd();
+			setBeingMoved(false);
 		});
 
+		this._map.addEventListener('contextmenu', (evt) => {
+			// evt.preventDefault();
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
-				// the event is a drag gesture, this is handled by openlayers (map move)
+				// the event is a drag gesture, so we handle it in 'pointerdrag'
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			updatePointerPosition(coord);
+			setPointerMove({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
+
+		this._map.on('pointerdrag', () => {
+			setBeingDragged(true);
 		});
 
 		this._eventHandler.forEach(handler => {
