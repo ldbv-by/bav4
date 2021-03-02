@@ -1,7 +1,7 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
-import { changeCenter, setFit } from './position.action';
+import { changeCenter, changeZoom, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
 
 
@@ -17,7 +17,7 @@ import { addLayer, removeLayer } from './layers.action';
 export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
 export class GeolocationHandler {
-	constructor() {
+	constructor(store) {
 		const {
 			TranslationService: translationService,
 			CoordinateService: coordinateService,
@@ -32,6 +32,7 @@ export class GeolocationHandler {
 
 		this._firstTimeActivatingGeolocation = true;
 		this._geolocationWatcherId = null;
+		this._store = store;
 	}
 
 	_handlePositionError(error) {
@@ -45,9 +46,9 @@ export class GeolocationHandler {
 		}
 	}
 
-	_watchPosition(state) {
+	_watchPosition() {
 		return navigator.geolocation.watchPosition(
-			(position) => this._handlePositionAndUpdateStore(position, state),
+			(position) => this._handlePositionAndUpdateStore(position),
 			(error) => this._handlePositionError(error)
 		);
 	}
@@ -65,30 +66,33 @@ export class GeolocationHandler {
 			this._mapService.getDefaultGeodeticSrid(),
 			this._mapService.getSrid()
 		);
-		setFit({ extent:bufferedExtent });
+		setFit({ extent: bufferedExtent });
 	}
 
-	_handlePositionSuccess(position, state) {
+	_handlePositionSuccess(position) {
 
 		// if geolocation was previously denied, we clear the flag
-		if (state.geolocation.denied) {
+		if (this._store.getState().geolocation.denied) {
 			setDenied(false);
 		}
-		this._handlePositionAndUpdateStore(position, state);
+		this._handlePositionAndUpdateStore(position);
+
+
+		// On the first time after activation we zoom to a suitable resolution
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
-			setTracking(true);
-			this._fit(position);
+			// this._fit(position);
+			changeZoom(15);
 		}
-		this._geolocationWatcherId = this._watchPosition(state);
+		this._geolocationWatcherId = this._watchPosition();
 	}
 
-	_handlePositionAndUpdateStore(position, state) {
+	_handlePositionAndUpdateStore(position) {
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		setPosition(positionEpsg3857);
 		setAccuracy(position.coords.accuracy);
 		// if tracking is active, we center the view of the map on the position received
-		if (state.geolocation.tracking) {
+		if (this._store.getState().geolocation.tracking) {
 			changeCenter(positionEpsg3857);
 		}
 	}
@@ -99,11 +103,13 @@ export class GeolocationHandler {
 		return coordinateService.fromLonLat([coords.longitude, coords.latitude]);
 	}
 
-	activate(state) {
-		const onSucess = (position) => {
-			this._handlePositionSuccess(position, state);
-		};
+	activate() {
+		//after activation tracking is always enabled until the mapped is dragged by the user
+		setTracking(true);
 
+		const onSucess = (position) => {
+			this._handlePositionSuccess(position);
+		};
 		navigator.geolocation.getCurrentPosition(onSucess, this._handlePositionError);
 	}
 
@@ -112,16 +118,15 @@ export class GeolocationHandler {
 			navigator.geolocation.clearWatch(this._geolocationWatcherId);
 			this._geolocationWatcherId = null;
 		}
-		this._firstTimeActivatingGeolocation = true;
 	}
 }
 
-export const register = (store, geolocationHandler = new GeolocationHandler()) => {
+export const register = (store, geolocationHandler = new GeolocationHandler(store)) => {
 
-	const onGeolocationActivityChange = (active, state) => {
+	const onGeolocationActivityChange = (active) => {
 
 		if (active) {
-			geolocationHandler.activate(state);
+			geolocationHandler.activate();
 			addLayer(GEOLOCATION_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
 		}
 		else {
@@ -131,6 +136,11 @@ export const register = (store, geolocationHandler = new GeolocationHandler()) =
 	};
 
 	observe(store, state => state.geolocation.active, onGeolocationActivityChange);
-	//disable tracking when map is moved by user
-	observe(store, state => state.map.moveStart, () => setTracking(false));
+
+	//disable tracking when map is dragged  by user
+	observe(store, state => state.pointer.beingDragged, (beingDragged, state) => {
+		if (state.geolocation.active && beingDragged) {
+			setTracking(false);
+		}
+	});
 };
