@@ -2,7 +2,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { GEOLOCATION_LAYER_ID } from '../../../../store/geolocation.observer';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { accuracyStyleFunction, positionStyleFunction } from './StyleUtils';
+import { geolocationStyleFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import Feature from 'ol/Feature';
@@ -56,8 +56,8 @@ export class OlGeolocationHandler extends OlLayerHandler {
 
 				this._positionFeature.setGeometry(point);
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
-				this._positionFeature.setStyle(positionStyleFunction);
-				this._accuracyFeature.setStyle(accuracyStyleFunction);
+				this._positionFeature.setStyle(geolocationStyleFunction);
+				this._accuracyFeature.setStyle(geolocationStyleFunction);
 			}
 			else {
 				this._positionFeature.setStyle();
