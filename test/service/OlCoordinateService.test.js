@@ -6,7 +6,7 @@ import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
 
 describe('OlCoordinateService', () => {
-	
+
 	describe('constructor', () => {
 
 		it('initializes the service', async () => {
@@ -71,7 +71,6 @@ describe('OlCoordinateService', () => {
 
 			describe('with custom projection', () => {
 
-
 				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
 					const coord25832 = [1288239.2412306187, 6130212.561641981];
 					const coord25833 = instanceUnderTest.transform(coord25832, 25832, 25833);
@@ -79,7 +78,6 @@ describe('OlCoordinateService', () => {
 					expect(coord25833.length).toBe(2);
 					expect(coord25833).not.toEqual(coord25832);
 				});
-
 
 				it('throws an error when srid is not supported', () => {
 					const coord25832 = [1288239.2412306187, 6130212.561641981];
@@ -118,6 +116,26 @@ describe('OlCoordinateService', () => {
 				expect(extent3857[2]).toBeCloseTo(initialExtent3857[2], 3);
 				expect(extent3857[3]).toBeCloseTo(initialExtent3857[3], 3);
 			});
+
+			describe('with custom projection', () => {
+
+				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
+					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
+					const extent25833 = instanceUnderTest.transformExtent(extent25832, 25832, 25833);
+
+					expect(extent25833.length).toBe(4);
+					expect(extent25832).not.toEqual(extent25833);
+				});
+
+				it('throws an error when srid is not supported', () => {
+					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
+
+					expect(() => {
+						instanceUnderTest.transform(extent25832, 25832, 25834);
+					})
+						.toThrowError(/Unsupported SRID: 25834/);
+				});
+			});
 		});
 
 		describe('stringifiy', () => {
@@ -128,6 +146,17 @@ describe('OlCoordinateService', () => {
 				const string = instanceUnderTest.stringify(initialCooord4326, 4326, 3);
 
 				expect(string).toBe('11.57245, 48.14021');
+			});
+		});
+
+		describe('buffer', () => {
+
+			it('increases an extent by the provided value', () => {
+				const extent = [10, 10, 20, 20];
+
+				const buffededExtent = instanceUnderTest.buffer(extent, 10);
+
+				expect(buffededExtent).toEqual([0, 0, 30, 30]);
 			});
 		});
 	});
