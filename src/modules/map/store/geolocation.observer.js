@@ -110,5 +110,5 @@ export const register = (store, geolocationHandler = new GeolocationHandler()) =
 
 	observe(store, state => state.geolocation.active, onGeolocationActivityChange);
 	//disable tracking when map is moved by user
-	
+	observe(store, state => state.map.moveStart, () => setTracking(false));
 };

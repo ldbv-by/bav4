@@ -77,6 +77,16 @@ describe('geolocationObserver', () => {
 
 			expect(store.getState().layers.active.length).toBe(0);
 		});
+
+		it('registers an observer for movestart changes', () => {
+			const store = setup();
+			register(store);
+			setTracking(true);
+
+			setMoveStart();
+			
+			expect(store.getState().geolocation.tracking).toBeFalse();
+		});
 	});
 
 	describe('GeolocationHandler', () => {
