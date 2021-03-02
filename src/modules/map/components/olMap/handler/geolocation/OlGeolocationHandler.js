@@ -2,10 +2,12 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { GEOLOCATION_LAYER_ID } from '../../../../store/geolocation.observer';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { geolocationStyleFunction } from './StyleUtils';
+import { geolocationStyleFunction, getFlashAnimation } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import Feature from 'ol/Feature';
+
+import { unByKey } from 'ol/Observable';
 import { Point, Circle } from 'ol/geom';
 
 
@@ -24,6 +26,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		this._geolocationLayer = null;
 		this._accuracyFeature = new Feature();
 		this._positionFeature = new Feature();
+		this._map = null;
 	}
 
 
@@ -31,7 +34,6 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	 * Activates the Handler.
 	 * @override
 	 */
-	// eslint-disable-next-line no-unused-vars
 	activate(olMap) {
 		if (this._geolocationLayer === null) {
 			const source = new VectorSource({ wrapX: false, features: [this._accuracyFeature, this._positionFeature] });
@@ -40,10 +42,20 @@ export class OlGeolocationHandler extends OlLayerHandler {
 			});
 
 		}
+		this._map = olMap;
 		this._unregister = this._register(this._storeService.getStore());
 		return this._geolocationLayer;
 	}
 
+	/**
+	 *  @override
+	 *  @param {Map} olMap
+	 */
+	deactivate(/*eslint-disable no-unused-vars */olMap) {
+		this._geolocationLayer = null;
+		this._map = null;
+		this._unregister();
+	}
 
 	_register(store) {
 		const extract = (state) => {
@@ -55,9 +67,11 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				let point = new Point(changedState.position);
 
 				this._positionFeature.setGeometry(point);
+				this._flashPosition(this._positionFeature);
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
 				this._positionFeature.setStyle(geolocationStyleFunction);
 				this._accuracyFeature.setStyle(geolocationStyleFunction);
+				
 			}
 			else {
 				this._positionFeature.setStyle();
@@ -69,13 +83,9 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		return observe(store, extract, onChange);
 	}
 
-	/**
-	 *  @override
-	 *  @param {Map} olMap
-	 */
-	deactivate(/*eslint-disable no-unused-vars */olMap) {
-		this._geolocationLayer = null;
-		this._unregister();
+	_flashPosition(feature) {
+		const onEnd = () => unByKey(listenerKey);	
+		const flashAnimation = getFlashAnimation(this._map, feature, onEnd);		
+		const listenerKey = this._geolocationLayer.on('postrender', flashAnimation);
 	}
-
 }
