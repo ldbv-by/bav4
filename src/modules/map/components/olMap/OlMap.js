@@ -155,7 +155,6 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
@@ -165,7 +164,6 @@ export class OlMap extends BaElement {
 	}
 
 	_syncStore() {
-		this.log('syncing store');
 		changeZoomAndCenter({
 			zoom: this._view.getZoom(),
 			center: this._view.getCenter()
