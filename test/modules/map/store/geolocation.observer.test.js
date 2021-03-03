@@ -118,18 +118,19 @@ describe('geolocationObserver', () => {
 		describe('_transformPositionTo3857', () => {
 
 			it('transforms a position to 3857', () => {
+				const expectedCoord = [38, 57];
 				const instanceUnderTest = new GeolocationHandler(setup());
-				spyOn(coordinateServiceMock, 'fromLonLat').and.returnValue([38, 57]);
+				spyOn(coordinateServiceMock, 'fromLonLat').and.returnValue(expectedCoord);
 
 				const transformedCoord = instanceUnderTest._transformPositionTo3857({ coords: { longitude: 43, latitude: 26 } });
 
-				expect(transformedCoord).toEqual([38, 57]);
+				expect(transformedCoord).toEqual(expectedCoord);
 			});
 		});
 
 		describe('_handlePositionError', () => {
 
-			it('handles a position error', () => {
+			it('handles a PERMISSION_DENIED position error', () => {
 				const store = setup();
 				const instanceUnderTest = new GeolocationHandler(store);
 				spyOn(window, 'alert');
@@ -144,23 +145,41 @@ describe('geolocationObserver', () => {
 				expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
 
 			});
+
+			it('handles other position errors', () => {
+				const store = setup();
+				const instanceUnderTest = new GeolocationHandler(store);
+				spyOn(window, 'alert');
+				const warnSpy = spyOn(console, 'warn');
+				// code PERMISSION_DENIED
+				const error = { code: 2,  POSITION_UNAVAILABLE :2 };
+
+				instanceUnderTest._handlePositionError(error);
+
+				expect(window.alert).toHaveBeenCalledWith('map_store_geolocation_not_available');
+				expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
+
+			});
 		});
 
 		describe('_handlePositionAndUpdateStore', () => {
 
 			it('handles a position update', () => {
+				const expectedCoord = [38, 57];
+				const expectedAccuracy = 42;
 				const store = setup();
 				const instanceUnderTest = new GeolocationHandler(store);
-				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
+				const position = { coords: { longitude: 43, latitude: 26, accuracy: expectedAccuracy } };
+				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
 
 				instanceUnderTest._handlePositionAndUpdateStore(position);
 
-				expect(store.getState().geolocation.position).toEqual([38, 57]);
-				expect(store.getState().geolocation.accuracy).toBe(42);
+				expect(store.getState().geolocation.position).toEqual(expectedCoord);
+				expect(store.getState().geolocation.accuracy).toBe(expectedAccuracy);
 			});
 
 			it('changes center when tracking is enabled', () => {
+				const expectedCoord = [38, 57];
 				const state = {
 					geolocation: {
 						tracking: true
@@ -171,11 +190,11 @@ describe('geolocationObserver', () => {
 				instanceUnderTest._firstTimeActivatingGeolocation = false;
 
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
-				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
+				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
 
 				instanceUnderTest._handlePositionAndUpdateStore(position);
 
-				expect(store.getState().position.center).toEqual([38, 57]);
+				expect(store.getState().position.center).toEqual(expectedCoord);
 			});
 
 			it('places a fit request on first time after activation', () => {

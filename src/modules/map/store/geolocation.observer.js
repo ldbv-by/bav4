@@ -36,6 +36,9 @@ export class GeolocationHandler {
 				setDenied(true);
 				alert(translationService.translate('map_store_geolocation_denied'));
 				break;
+			default:
+				alert(translationService.translate('map_store_geolocation_not_available'));
+				break;
 		}
 	}
 
@@ -67,25 +70,9 @@ export class GeolocationHandler {
 		setFit( extent,  { maxZoom: 16 } );
 	}
 
-	// _handlePositionSuccess(position) {
-
-	// 	// if geolocation was previously denied, we clear the flag
-	// 	if (this._store.getState().geolocation.denied) {
-	// 		setDenied(false);
-	// 	}
-	// 	this._handlePositionAndUpdateStore(position);
-
-
-	// 	// On the first time after activation we zoom to a suitable resolution
-	// 	if (this._firstTimeActivatingGeolocation) {
-	// 		this._firstTimeActivatingGeolocation = false;
-	// 		this._fit(position);
-	// 	}
-	// 	this._geolocationWatcherId = this._watchPosition();
-	// }
-
 	_handlePositionAndUpdateStore(position) {
 
+		//if geolocation was previously denied, we reset the flag
 		if (this._store.getState().geolocation.denied) {
 			setDenied(false);
 		}
@@ -93,7 +80,7 @@ export class GeolocationHandler {
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		setPosition(positionEpsg3857);
 		setAccuracy(position.coords.accuracy);
-		// On the first time after activation we zoom to a suitable resolution
+		// On the first time after activation we fit the map to an extent
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
 			this._fit(position);
@@ -114,11 +101,6 @@ export class GeolocationHandler {
 		//after activation tracking is always enabled until the mapped is dragged by the user
 		setTracking(true);
 		this._geolocationWatcherId = this._watchPosition();
-
-		// const onSucess = (position) => {
-		// 	this._handlePositionSuccess(position);
-		// };
-		// navigator.geolocation.getCurrentPosition(onSucess, this._handlePositionError);
 	}
 
 	deactivate() {
