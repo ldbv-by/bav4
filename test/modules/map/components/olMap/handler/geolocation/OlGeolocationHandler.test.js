@@ -109,4 +109,37 @@ describe('OlGeolocationHandler', () => {
 
 
 	});
+
+
+	describe('when toggle activate/deactivate', () => {
+		it('uses correct styles per state', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlGeolocationHandler();
+			handler.activate(map);
+
+			const positionFeature = handler._positionFeature;
+
+			handler.deactivate(map);
+			const nullStyleFunction = positionFeature.getStyle();
+			const nullStyle = nullStyleFunction(positionFeature)[0];
+			expect(nullStyle).toBeDefined();
+
+			expect(nullStyle.getFill()).toBeNull();
+			expect(nullStyle.getStroke()).toBeNull();
+			expect(nullStyle.getImage()).toBeNull();
+
+
+			handler.activate(map);
+			const geolocationStyleFunction = positionFeature.getStyle();
+			const geolocationStyle = geolocationStyleFunction(positionFeature)[0];
+			expect(geolocationStyle).toBeDefined();
+			expect(geolocationStyle.getFill()).toBeTruthy();
+			expect(geolocationStyle.getStroke()).toBeTruthy();
+			expect(geolocationStyle.getImage()).toBeTruthy();
+		});
+
+
+	});
 });

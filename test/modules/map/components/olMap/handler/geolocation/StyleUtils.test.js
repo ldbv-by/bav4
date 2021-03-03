@@ -58,7 +58,7 @@ describe('nullStyleFunction', () => {
 		const nullStyle = styles[0];
 		expect(nullStyle.getFill()).toBeFalsy();
 		expect(nullStyle.getStroke()).toBeFalsy();
-		expect(nullStyle.getStroke()).toBeFalsy();
+		expect(nullStyle.getImage()).toBeFalsy();
 	});
 });
 
