@@ -369,7 +369,7 @@ describe('OlMeasurementHandler', () => {
 			event.preventDefault = function () { };
 
 
-			let mapEvent = new MapBrowserEvent(eventType, map, event);
+			const mapEvent = new MapBrowserEvent(eventType, map, event);
 			mapEvent.coordinate = [x, y];
 			mapEvent.dragging = dragging ? dragging : false;
 			map.dispatchEvent(mapEvent);

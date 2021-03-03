@@ -123,14 +123,14 @@ describe('EnvironmentService', () => {
 
 	describe('screen orientation', () => {
 		it('detects screen orientation by orientation api', () => {
-			let mockWindow = {
+			const mockWindow = {
 				screen: {
 					orientation: {
 						type: 'portrait-primary'
 					}
 				},
 			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
+			const instanceUnderTest = new EnvironmentService(mockWindow);
 			const { portrait, landscape } = instanceUnderTest.getScreenOrientation();
 			expect(portrait).toBeTrue();
 			expect(landscape).toBeFalse();

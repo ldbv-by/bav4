@@ -46,7 +46,7 @@ export class Popup extends BaElement {
      */
 	createView() {
 		if (this._type === 'show') {			
-			let popup = this.shadowRoot.getElementById('this-popup');	
+			const popup = this.shadowRoot.getElementById('this-popup');	
 			popup.style.right = this._right + 'px';
 			popup.style.top = this._top + 'px';
 		} 
