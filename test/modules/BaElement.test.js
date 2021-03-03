@@ -16,7 +16,7 @@ class BaElementImpl extends BaElement {
 		this.extractStateCalled = this.callOrderIndex++;
 		//here we extract the local state from the application store
 		const { root: { applicationStateIndex } } = store;
-		return { elementStateIndex: applicationStateIndex };
+		return { elementStateIndex: applicationStateIndex, someWhatNull: null };
 	}
 
 	initialize() {
@@ -214,9 +214,11 @@ describe('BaElement', () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
 			const someUnknownFieldCallback = jasmine.createSpy();
+			const someWhatNullFieldCallback = jasmine.createSpy();
 			const warnSpy = spyOn(console, 'warn');
 			element.observe('elementStateIndex', elementStateIndexCallback);
 			element.observe('someUnknowField', someUnknownFieldCallback);
+			element.observe('someWhatNull', someWhatNullFieldCallback);
 
 
 			store.dispatch({
@@ -226,6 +228,8 @@ describe('BaElement', () => {
 
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
 			expect(warnSpy).toHaveBeenCalledOnceWith('\'someUnknowField\' is not a field in the state of this BaElement');
+			expect(someWhatNullFieldCallback).not.toHaveBeenCalled();
+			expect(warnSpy).not.toHaveBeenCalledOnceWith('\'someWhatNull\' is not a field in the state of this BaElement');
 		});
 	});
 });
