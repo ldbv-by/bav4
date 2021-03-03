@@ -1,5 +1,5 @@
 
-import { geolocationStyleFunction, createAnimateFunction } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/StyleUtils';
+import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/StyleUtils';
 import { Point, Circle } from 'ol/geom';
 import Map from 'ol/Map';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -21,6 +21,11 @@ describe('geolocationStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+
+		const geolocationStyle = styles[0];
+		expect(geolocationStyle.getFill()).toBeTruthy();
+		expect(geolocationStyle.getStroke()).toBeTruthy();
+		expect(geolocationStyle.getImage()).toBeTruthy();
 	});
 
 	it('should create a style for a Circle-feature', () => {
@@ -31,8 +36,32 @@ describe('geolocationStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+
+		const geolocationStyle = styles[0];
+		expect(geolocationStyle.getFill()).toBeTruthy();
+		expect(geolocationStyle.getStroke()).toBeTruthy();
+		expect(geolocationStyle.getImage()).toBeTruthy();
 	});
 });
+
+
+describe('nullStyleFunction', () => {
+	it('should create a empty style', () => {
+		const geometry = new Point([0, 0]);
+		const feature = new Feature({ geometry: geometry });
+
+		const styles = nullStyleFunction(feature);
+
+		expect(styles).toBeTruthy();
+		expect(styles.length).toBe(1);
+
+		const nullStyle = styles[0];
+		expect(nullStyle.getFill()).toBeFalsy();
+		expect(nullStyle.getStroke()).toBeFalsy();
+		expect(nullStyle.getStroke()).toBeFalsy();
+	});
+});
+
 
 describe('createAnimateFunction', () => {
 
@@ -108,7 +137,7 @@ describe('createAnimateFunction', () => {
 
 	it('when animation ends, should call the endCallback', () => {
 		const startFrameState = setupFrameState(+new Date());
-		const endFrameState = setupFrameState(+new Date() + 1010);
+		const endFrameState = setupFrameState(+new Date() + 1100);
 
 		const feature = getFeature();
 		const map = setupMap();

@@ -22,6 +22,8 @@ export const geolocationStyleFunction = () => [new Style({
 	}),
 })];
 
+export const nullStyleFunction = () => [new Style({})];
+
 /**
  * inspired by https://openlayers.org/en/latest/examples/feature-animation.html
  * creates a AnimationFunction for the postrender-event of a {ol.Layer}

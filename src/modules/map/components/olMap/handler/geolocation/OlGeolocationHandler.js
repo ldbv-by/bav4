@@ -2,7 +2,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { GEOLOCATION_LAYER_ID } from '../../../../store/geolocation.observer';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { geolocationStyleFunction, createAnimateFunction } from './StyleUtils';
+import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import Feature from 'ol/Feature';
@@ -43,7 +43,13 @@ export class OlGeolocationHandler extends OlLayerHandler {
 
 		}
 		this._map = olMap;
+
+		this._positionFeature.setStyle(geolocationStyleFunction);
+		this._accuracyFeature.setStyle(geolocationStyleFunction);
+		this._flashPosition(this._positionFeature);
+
 		this._unregister = this._register(this._storeService.getStore());
+
 		return this._geolocationLayer;
 	}
 
@@ -52,6 +58,8 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	 *  @param {Map} olMap
 	 */
 	deactivate(/*eslint-disable no-unused-vars */olMap) {
+		this._positionFeature.setStyle(nullStyleFunction);
+		this._accuracyFeature.setStyle(nullStyleFunction);
 		this._geolocationLayer = null;
 		this._map = null;
 		this._unregister();
@@ -63,19 +71,14 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		};
 		const onChange = (changedState) => {
 			if (changedState.active) {
-				// position from statestore is by convention in EPSG:3857, no transformation needed
-				let point = new Point(changedState.position);
-
-				this._positionFeature.setGeometry(point);
-				this._flashPosition(this._positionFeature);
+				// position from statestore is by convention in EPSG:3857, no transformation needed				
+				this._positionFeature.setGeometry(new Point(changedState.position));
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
-				this._positionFeature.setStyle(geolocationStyleFunction);
-				this._accuracyFeature.setStyle(geolocationStyleFunction);
-
+				this._flashPosition(this._positionFeature);
 			}
 			else {
-				this._positionFeature.setStyle();
-				this._accuracyFeature.setStyle();
+				this._positionFeature.setStyle(nullStyleFunction);
+				this._accuracyFeature.setStyle(nullStyleFunction);
 			}
 
 		};
