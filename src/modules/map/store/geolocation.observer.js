@@ -1,7 +1,7 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
-import { changeCenter, changeZoom, setFit } from './position.action';
+import { changeCenter, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
 
 
@@ -71,8 +71,7 @@ export class GeolocationHandler {
 			this._mapService.getDefaultGeodeticSrid(),
 			this._mapService.getSrid()
 		);
-		const options =  { maxZoom: 16 };
-		setFit({ extent, options });
+		setFit( extent,  { maxZoom: 16 } );
 	}
 
 	_handlePositionSuccess(position) {

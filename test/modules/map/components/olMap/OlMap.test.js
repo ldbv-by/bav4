@@ -243,10 +243,10 @@ describe('OlMap', () => {
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const extent = [38, 57, 39, 58];
-			
+
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			setFit({ extent: extent });
+			setFit(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
@@ -271,8 +271,8 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			setFit({ extent: extent, options: { maxZoom: maxZoom } });
-			
+			setFit(extent, { maxZoom: maxZoom });
+
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();

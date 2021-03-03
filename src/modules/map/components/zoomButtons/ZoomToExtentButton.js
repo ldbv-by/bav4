@@ -27,7 +27,7 @@ export class ZoomToExtentButton extends BaElement {
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
          
 		const zoomToExtent = () => {
-			setFit({ extent: getDefaultMapExtent()	});
+			setFit(getDefaultMapExtent());
 		};
 
 		return html`

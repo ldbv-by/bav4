@@ -92,13 +92,14 @@ export const changeCenter = (center) => {
 /**
  * Sets a fit request.
  * The fitRequest object is wrapper by an {@link EventLike} object.
- * @param {FitRequest} fitRequest
+ * @param {extent} extent extent for this fit request
+ * @param {FitRequestOptions} options options for this fit request
  * @function
  */
-export const setFit = (fitRequest) => {
+export const setFit = (extent, options = {}) => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
-		payload: new EventLike(fitRequest)
+		payload: new EventLike({ extent, options })
 	});
 };
 
