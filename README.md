@@ -110,7 +110,7 @@ Here's a overview of what project folder structure looks like:
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
-| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomable treemap |
+| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomabel tree map |
 
 ## Best Practices
 
