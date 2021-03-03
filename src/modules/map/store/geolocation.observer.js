@@ -4,13 +4,6 @@ import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.
 import { changeCenter, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
 
-
-/**
- * Note: Parts of this code have been inspired by
- * https://github.com/geoadmin/web-mapviewer/blob/develop/src/modules/store/plugins/geolocation-management.plugin.js
- * licenced under MIT License.
- */
-
 /**
  * Id of the layer used for geolocation visualization
  */
@@ -74,29 +67,39 @@ export class GeolocationHandler {
 		setFit( extent,  { maxZoom: 16 } );
 	}
 
-	_handlePositionSuccess(position) {
+	// _handlePositionSuccess(position) {
 
-		// if geolocation was previously denied, we clear the flag
+	// 	// if geolocation was previously denied, we clear the flag
+	// 	if (this._store.getState().geolocation.denied) {
+	// 		setDenied(false);
+	// 	}
+	// 	this._handlePositionAndUpdateStore(position);
+
+
+	// 	// On the first time after activation we zoom to a suitable resolution
+	// 	if (this._firstTimeActivatingGeolocation) {
+	// 		this._firstTimeActivatingGeolocation = false;
+	// 		this._fit(position);
+	// 	}
+	// 	this._geolocationWatcherId = this._watchPosition();
+	// }
+
+	_handlePositionAndUpdateStore(position) {
+
 		if (this._store.getState().geolocation.denied) {
 			setDenied(false);
 		}
-		this._handlePositionAndUpdateStore(position);
 
-
+		const positionEpsg3857 = this._transformPositionTo3857(position);
+		setPosition(positionEpsg3857);
+		setAccuracy(position.coords.accuracy);
 		// On the first time after activation we zoom to a suitable resolution
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
 			this._fit(position);
 		}
-		this._geolocationWatcherId = this._watchPosition();
-	}
-
-	_handlePositionAndUpdateStore(position) {
-		const positionEpsg3857 = this._transformPositionTo3857(position);
-		setPosition(positionEpsg3857);
-		setAccuracy(position.coords.accuracy);
-		// if tracking is active, we center the view of the map on the position received
-		if (this._store.getState().geolocation.tracking) {
+		// if tracking is active, we center the view of the map
+		else if (this._store.getState().geolocation.tracking) {
 			changeCenter(positionEpsg3857);
 		}
 	}
@@ -110,11 +113,12 @@ export class GeolocationHandler {
 	activate() {
 		//after activation tracking is always enabled until the mapped is dragged by the user
 		setTracking(true);
+		this._geolocationWatcherId = this._watchPosition();
 
-		const onSucess = (position) => {
-			this._handlePositionSuccess(position);
-		};
-		navigator.geolocation.getCurrentPosition(onSucess, this._handlePositionError);
+		// const onSucess = (position) => {
+		// 	this._handlePositionSuccess(position);
+		// };
+		// navigator.geolocation.getCurrentPosition(onSucess, this._handlePositionError);
 	}
 
 	deactivate() {
