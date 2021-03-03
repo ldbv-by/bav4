@@ -63,7 +63,7 @@ export class Header extends BaElement {
 				<div class="content">
 					<div class="item0">
 						<div class='ci'>
-							<h3 class='ci-text'>BAv4 (#nomigration)</h3>
+							<h3 class='ci-text'>BAv4</h3>
 							<div class='ci-logo' @click="${showModalInfo}"></div>
 						</div>
 					</div>

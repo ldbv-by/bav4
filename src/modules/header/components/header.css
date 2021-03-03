@@ -1,13 +1,14 @@
 .header {
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  position: fixed;
+  top: 0em;
+  left: 0em;
   z-index: 100;
   font-size: 1em;
   color: var(--primary-color);
+  width: 28em;  
+  background-color: var(--secondary-color);
+  /* TODO: raus wenn suche in ContentPanel */
   height: 50px;
-  width: 100%;
-  background-color: var(--primary-bg-color);
 }
 
 .content {
@@ -96,6 +97,13 @@
   height: 32px;
   float: right;
 }
+
+@media (orientation: portrait){
+  .header {
+      width: 100%;
+  }
+}
+
 
 /* .logo-desktop {
   float: right;
