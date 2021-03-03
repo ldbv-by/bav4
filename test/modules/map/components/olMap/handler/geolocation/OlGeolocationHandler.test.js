@@ -56,6 +56,11 @@ describe('OlGeolocationHandler', () => {
 	});
 
 	describe('when activate', () => {
+		const getStyles = (feature) => {
+			const styleFunction = feature.getStyle();
+			return styleFunction(feature);
+		};
+
 		it('registers observer', () => {
 			const map = setupMap();
 			setup();
@@ -86,6 +91,99 @@ describe('OlGeolocationHandler', () => {
 
 				expect(handler._accuracyFeature.getGeometry().getCenter()).toEqual([38, 57]);
 				expect(handler._positionFeature.getGeometry().getCoordinates()).toEqual([38, 57]);
+			});
+
+
+			it('does NOT position accuracy- and position-feature with invalid position', () => {
+				const map = setupMap();
+				setup();
+
+
+				const handler = new OlGeolocationHandler();
+				handler.activate(map);
+
+				setPosition([38, 57]);
+				setAccuracy(null);
+				activateGeolocation();
+
+				expect(handler._accuracyFeature).toBeDefined();
+				expect(handler._positionFeature).toBeDefined();
+
+				expect(handler._accuracyFeature.getGeometry()).toBeUndefined();
+				expect(handler._positionFeature.getGeometry()).toBeUndefined();
+
+				const accuracyStyle = getStyles(handler._accuracyFeature)[0];
+				const positionStyle = getStyles(handler._positionFeature)[0];
+
+				expect(accuracyStyle.getFill()).toBeFalsy();
+				expect(accuracyStyle.getStroke()).toBeFalsy();
+				expect(accuracyStyle.getImage()).toBeFalsy();
+				expect(positionStyle.getFill()).toBeFalsy();
+				expect(positionStyle.getStroke()).toBeFalsy();
+				expect(positionStyle.getImage()).toBeFalsy();
+			});
+
+			it('does NOT position accuracy- and position-feature with invalid accuracy', () => {
+				const map = setupMap();
+				setup();
+
+
+				const handler = new OlGeolocationHandler();
+				handler.activate(map);
+
+				setPosition(null);
+				setAccuracy(42);
+				activateGeolocation();
+
+				expect(handler._accuracyFeature).toBeDefined();
+				expect(handler._positionFeature).toBeDefined();
+
+				expect(handler._accuracyFeature.getGeometry()).toBeUndefined();
+				expect(handler._positionFeature.getGeometry()).toBeUndefined();
+
+				const accuracyStyle = getStyles(handler._accuracyFeature)[0];
+				const positionStyle = getStyles(handler._positionFeature)[0];
+
+				expect(accuracyStyle.getFill()).toBeFalsy();
+				expect(accuracyStyle.getStroke()).toBeFalsy();
+				expect(accuracyStyle.getImage()).toBeFalsy();
+				expect(positionStyle.getFill()).toBeFalsy();
+				expect(positionStyle.getStroke()).toBeFalsy();
+				expect(positionStyle.getImage()).toBeFalsy();
+			});
+
+
+		});
+		describe('when geolocation-request is denied', () => {
+
+
+			it('sets accuracy- and position-feature to default', () => {
+				const map = setupMap();
+				const state = { ...initialState, denied: true };
+				setup(state);
+
+
+				const handler = new OlGeolocationHandler();
+				handler.activate(map);
+
+				setPosition([38, 57]);
+				setAccuracy(42);
+				activateGeolocation();
+
+				expect(handler._accuracyFeature).toBeDefined();
+				expect(handler._positionFeature).toBeDefined();
+				expect(handler._accuracyFeature.getGeometry()).toBeUndefined();
+				expect(handler._positionFeature.getGeometry()).toBeUndefined();
+
+				const accuracyStyle = getStyles(handler._accuracyFeature)[0];
+				const positionStyle = getStyles(handler._positionFeature)[0];
+
+				expect(accuracyStyle.getFill()).toBeFalsy();
+				expect(accuracyStyle.getStroke()).toBeFalsy();
+				expect(accuracyStyle.getImage()).toBeFalsy();
+				expect(positionStyle.getFill()).toBeFalsy();
+				expect(positionStyle.getStroke()).toBeFalsy();
+				expect(positionStyle.getImage()).toBeFalsy();
 			});
 
 		});

@@ -69,9 +69,28 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		const extract = (state) => {
 			return state.geolocation;
 		};
+
+		const isValidGeolocation = (geolocation) => {
+			if (!geolocation.active) {
+				return false;
+			}
+
+			if (geolocation.denied) {
+				return false;
+			}
+			if (!geolocation.position) {
+				return false;
+			}
+			if (!geolocation.accuracy) {
+				return false;
+			}
+
+			return true;
+		};
 		const onChange = (changedState) => {
-			if (changedState.active) {
-				// position from statestore is by convention in EPSG:3857, no transformation needed				
+			if (isValidGeolocation(changedState)) {
+				this._positionFeature.setStyle(geolocationStyleFunction);
+				this._accuracyFeature.setStyle(geolocationStyleFunction);
 				this._positionFeature.setGeometry(new Point(changedState.position));
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
 				this._flashPosition(this._positionFeature);
@@ -80,7 +99,6 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				this._positionFeature.setStyle(nullStyleFunction);
 				this._accuracyFeature.setStyle(nullStyleFunction);
 			}
-
 		};
 
 		return observe(store, extract, onChange);

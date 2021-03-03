@@ -1,15 +1,8 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
-import { changeCenter, changeZoom, setFit } from './position.action';
+import { changeCenter, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
-
-
-/**
- * Note: Parts of this code have been inspired by
- * https://github.com/geoadmin/web-mapviewer/blob/develop/src/modules/store/plugins/geolocation-management.plugin.js
- * licenced under MIT License.
- */
 
 /**
  * Id of the layer used for geolocation visualization
@@ -43,13 +36,21 @@ export class GeolocationHandler {
 				setDenied(true);
 				alert(translationService.translate('map_store_geolocation_denied'));
 				break;
+			default:
+				alert(translationService.translate('map_store_geolocation_not_available'));
+				break;
 		}
 	}
 
 	_watchPosition() {
 		return navigator.geolocation.watchPosition(
 			(position) => this._handlePositionAndUpdateStore(position),
-			(error) => this._handlePositionError(error)
+			(error) => this._handlePositionError(error),
+			{
+				maximumAge: 10000,
+				enableHighAccuracy: true,
+				timeout: 600000
+			}
 		);
 	}
 
@@ -61,38 +62,31 @@ export class GeolocationHandler {
 			this._mapService.getSrid(),
 			this._mapService.getDefaultGeodeticSrid()
 		);
-		const bufferedExtent = this._coordinateService.transformExtent(
+		const extent = this._coordinateService.transformExtent(
 			this._coordinateService.buffer(geodeticExtent, position.coords.accuracy),
 			this._mapService.getDefaultGeodeticSrid(),
 			this._mapService.getSrid()
 		);
-		setFit({ extent: bufferedExtent });
-	}
-
-	_handlePositionSuccess(position) {
-
-		// if geolocation was previously denied, we clear the flag
-		if (this._store.getState().geolocation.denied) {
-			setDenied(false);
-		}
-		this._handlePositionAndUpdateStore(position);
-
-
-		// On the first time after activation we zoom to a suitable resolution
-		if (this._firstTimeActivatingGeolocation) {
-			this._firstTimeActivatingGeolocation = false;
-			// this._fit(position);
-			changeZoom(15);
-		}
-		this._geolocationWatcherId = this._watchPosition();
+		setFit( extent,  { maxZoom: 16 } );
 	}
 
 	_handlePositionAndUpdateStore(position) {
+
+		//if geolocation was previously denied, we reset the flag
+		if (this._store.getState().geolocation.denied) {
+			setDenied(false);
+		}
+
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		setPosition(positionEpsg3857);
 		setAccuracy(position.coords.accuracy);
-		// if tracking is active, we center the view of the map on the position received
-		if (this._store.getState().geolocation.tracking) {
+		// On the first time after activation we fit the map to an extent
+		if (this._firstTimeActivatingGeolocation) {
+			this._firstTimeActivatingGeolocation = false;
+			this._fit(position);
+		}
+		// if tracking is active, we center the view of the map
+		else if (this._store.getState().geolocation.tracking) {
 			changeCenter(positionEpsg3857);
 		}
 	}
@@ -106,11 +100,7 @@ export class GeolocationHandler {
 	activate() {
 		//after activation tracking is always enabled until the mapped is dragged by the user
 		setTracking(true);
-
-		const onSucess = (position) => {
-			this._handlePositionSuccess(position);
-		};
-		navigator.geolocation.getCurrentPosition(onSucess, this._handlePositionError);
+		this._geolocationWatcherId = this._watchPosition();
 	}
 
 	deactivate() {

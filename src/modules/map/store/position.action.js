@@ -11,7 +11,15 @@ import { EventLike } from '../../../utils/storeUtils';
  * Request for fitting a map to a geographic extent
  * @typedef {Object} FitRequest
  * @property {Extent} extent geographic extent
+ * @property {FitRequestOptions} options options for this FitRequest
  */
+
+/**
+ * Options for a FitRequest.
+ * @typedef {Object} FitRequestOptions
+ * @property {maxZoom} maxZoom max zoom level that is set even if extent would result in a higher zoom level
+ */
+
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -84,13 +92,14 @@ export const changeCenter = (center) => {
 /**
  * Sets a fit request.
  * The fitRequest object is wrapper by an {@link EventLike} object.
- * @param {FitRequest} fitRequest
+ * @param {extent} extent extent for this fit request
+ * @param {FitRequestOptions} options options for this fit request
  * @function
  */
-export const setFit = (fitRequest) => {
+export const setFit = (extent, options = {}) => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
-		payload: new EventLike(fitRequest)
+		payload: new EventLike({ extent, options })
 	});
 };
 
