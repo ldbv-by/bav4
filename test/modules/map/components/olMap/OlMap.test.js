@@ -243,13 +243,13 @@ describe('OlMap', () => {
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const extent = [38, 57, 39, 58];
-
-
+			
 			expect(element._viewSyncBlocked).toBeUndefined();
+
 			setFit({ extent: extent });
+
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
-
 			expect(element._viewSyncBlocked).toBeTrue();
 			setTimeout(function () {
 				//check if flag is reset
@@ -270,10 +270,11 @@ describe('OlMap', () => {
 			const maxZoom = 10;
 
 			expect(element._viewSyncBlocked).toBeUndefined();
+
 			setFit({ extent: extent, options: { maxZoom: maxZoom } });
+			
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
-
 			expect(element._viewSyncBlocked).toBeTrue();
 			setTimeout(function () {
 				//check if flag is reset
