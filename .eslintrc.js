@@ -30,6 +30,7 @@ module.exports = {
 		'import/no-default-export': ['error'],
 		'eqeqeq': ['error', 'smart'],
 		'keyword-spacing':  ['error'],
-		'no-var':  ['error']
+		'no-var':  ['error'],
+		'prefer-const':  ['error']
 	}
 };
