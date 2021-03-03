@@ -35,19 +35,19 @@ export const nullStyleFunction = () => [new Style({})];
  */
 export const createAnimateFunction = (map, feature, endCallback) => {
 	const duration = 1000; // 1 second
-	let start = +new Date();
+	const start = +new Date();
 
 	const animate = (event) => {
-		var vectorContext = getVectorContext(event);
-		var frameState = event.frameState;
-		var flashGeom = feature.getGeometry().clone();
-		var elapsed = frameState.time - start;
-		var elapsedRatio = elapsed / duration;
+		const vectorContext = getVectorContext(event);
+		const frameState = event.frameState;
+		const flashGeom = feature.getGeometry().clone();
+		const elapsed = frameState.time - start;
+		const elapsedRatio = elapsed / duration;
 		// radius will be 6 at start and 30 at end.
-		var radius = easeOut(elapsedRatio) * 24 + 6;
-		var opacity = easeOut(1 - elapsedRatio);
+		const radius = easeOut(elapsedRatio) * 24 + 6;
+		const opacity = easeOut(1 - elapsedRatio);
 
-		var style = new Style({
+		const style = new Style({
 			image: new CircleStyle({
 				radius: radius,
 				stroke: new Stroke({
