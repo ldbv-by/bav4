@@ -1,13 +1,13 @@
 import { $injector, http, router } from './testsConfig';
 
 //test proto
-var protoTest = function() {
-	var { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
+const protoTest = function() {
+	const { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
 	this.http = HttpService;
 	this.router = RouterService;
 };
 
-var instance = new protoTest();
+const instance = new protoTest();
 
 //tests
 describe('Prototype Constructor Injection', () => {

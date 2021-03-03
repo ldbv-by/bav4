@@ -29,4 +29,4 @@ $injector
 	
 
 
-export let init = true;
+export const init = true;
