@@ -1,9 +1,9 @@
 import { Injector } from '../../../src/injection/core/injector';
 
 //Configure injection...
-var $injector = new Injector();
-var http  = { get: 'I\'m a http service.' };
-var router = { get: 'I\'m a router.' };
+const $injector = new Injector();
+const http  = { get: 'I\'m a http service.' };
+const router = { get: 'I\'m a router.' };
 
 $injector.registerSingleton('HttpService', http)
 	.registerSingleton('RouterService', router);

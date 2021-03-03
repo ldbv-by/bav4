@@ -29,6 +29,8 @@ module.exports = {
 		'no-console': ['error', { allow: ['warn', 'error'] }],
 		'import/no-default-export': ['error'],
 		'eqeqeq': ['error', 'smart'],
-		'keyword-spacing':  ['error']
+		'keyword-spacing':  ['error'],
+		'no-var':  ['error'],
+		'prefer-const':  ['error']
 	}
 };

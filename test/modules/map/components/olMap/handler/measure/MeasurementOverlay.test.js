@@ -22,7 +22,7 @@ describe('MeasurementOverlay', () => {
 		if (properties.geometry) {
 			properties.geometry.transform('EPSG:25832', 'EPSG:3857');
 		}
-		for (let property in properties) {
+		for (const property in properties) {
 			element[property] = properties[property];
 		}
 		return element;
