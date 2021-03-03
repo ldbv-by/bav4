@@ -2,7 +2,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { GEOLOCATION_LAYER_ID } from '../../../../store/geolocation.observer';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { geolocationStyleFunction, getFlashAnimation } from './StyleUtils';
+import { geolocationStyleFunction, createAnimateFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import Feature from 'ol/Feature';
@@ -71,7 +71,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
 				this._positionFeature.setStyle(geolocationStyleFunction);
 				this._accuracyFeature.setStyle(geolocationStyleFunction);
-				
+
 			}
 			else {
 				this._positionFeature.setStyle();
@@ -84,8 +84,8 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	}
 
 	_flashPosition(feature) {
-		const onEnd = () => unByKey(listenerKey);	
-		const flashAnimation = getFlashAnimation(this._map, feature, onEnd);		
+		const onEnd = () => unByKey(listenerKey);
+		const flashAnimation = createAnimateFunction(this._map, feature, onEnd);
 		const listenerKey = this._geolocationLayer.on('postrender', flashAnimation);
 	}
 }

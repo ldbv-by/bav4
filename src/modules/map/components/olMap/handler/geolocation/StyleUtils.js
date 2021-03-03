@@ -24,15 +24,18 @@ export const geolocationStyleFunction = () => [new Style({
 
 /**
  * inspired by https://openlayers.org/en/latest/examples/feature-animation.html
+ * creates a AnimationFunction for the postrender-event of a {ol.Layer}
+ * 
  * @param {ol.Map} map the map where the animation is injected
  * @param {ol.Feature} feature the feature (Point-Feature) which is used as center to draw the animation
- * @param {function} endCallback the callback, to finalize listeners etc.
+ * @param {function} endCallback the callback, when the animation ends
+ * @returns {function} the animation function
  */
-export const  getFlashAnimation = (map, feature, endCallback) => {
+export const createAnimateFunction = (map, feature, endCallback) => {
 	const duration = 1000; // 1 second
-	let start = +new Date();	
-  
-	const  animate = (event) =>  {
+	let start = +new Date();
+
+	const animate = (event) => {
 		var vectorContext = getVectorContext(event);
 		var frameState = event.frameState;
 		var flashGeom = feature.getGeometry().clone();
@@ -41,7 +44,7 @@ export const  getFlashAnimation = (map, feature, endCallback) => {
 		// radius will be 6 at start and 30 at end.
 		var radius = easeOut(elapsedRatio) * 24 + 6;
 		var opacity = easeOut(1 - elapsedRatio);
-	
+
 		var style = new Style({
 			image: new CircleStyle({
 				radius: radius,
@@ -51,7 +54,7 @@ export const  getFlashAnimation = (map, feature, endCallback) => {
 				}),
 			}),
 		});
-	
+
 		vectorContext.setStyle(style);
 		vectorContext.drawGeometry(flashGeom);
 		if (elapsed > duration) {

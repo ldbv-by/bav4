@@ -1,5 +1,5 @@
 
-import { geolocationStyleFunction, getFlashAnimation } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/StyleUtils';
+import { geolocationStyleFunction, createAnimateFunction } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/StyleUtils';
 import { Point, Circle } from 'ol/geom';
 import Map from 'ol/Map';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -34,9 +34,15 @@ describe('geolocationStyleFunction', () => {
 	});
 });
 
-describe('getFlashAnimation', () => {
+describe('createAnimateFunction', () => {
 
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
+	const transform = [1, 0, 0, 1, 0, 0];
+	const projection = getProjection('EPSG:3857');
+	const viewState = {
+		projection: projection, resolution: 1, rotation: 0,
+	};
+	const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { } };
 	const setupMap = () => {
 		return new Map({
 			target: 'map',
@@ -47,7 +53,7 @@ describe('getFlashAnimation', () => {
 		});
 
 	};
-	const setupLayer = (map, feature) => {	
+	const setupLayer = (map, feature) => {
 		const source = new VectorSource({
 			wrapX: false,
 		});
@@ -59,47 +65,64 @@ describe('getFlashAnimation', () => {
 		return vector;
 	};
 
+	const setupFrameState = (time) => {
+		return {
+			time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+		};
+	};
+
+	const getFeature = () => {
+		const geometry = new Point([0, 0]);
+		return new Feature({ geometry: geometry });
+
+	};
+
 
 	it('should create animation-function', () => {
-		const geometry = new Point([0, 0]);
-		const feature = new Feature({ geometry: geometry });
-		const map = setupMap();		
-		const endCallback = () => {};
-		
-		const functionUnderTest = getFlashAnimation(map, feature, endCallback);
-				
+		const feature = getFeature();
+		const map = setupMap();
+		const endCallback = () => { };
+
+		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
+
 		expect(functionUnderTest).toBeDefined();
 	});
 
-	it('when animation ends, should call the endCallback', () => {
-		const projection = getProjection('EPSG:3857');
-		const inversePixelTransform = [1, 0, 0, 1, 0, 0];
-		const startFrameState = { time:+new Date(),
-			coordinateToPixelTransform:[1, 0, 0, 1, 0, 0],
-			viewHints: [],
-			viewState: { projection: projection, resolution: 1, rotation: 0,
-			}, };
-		const endFrameState = { time:+new Date() + 5000,
-			coordinateToPixelTransform:[1, 0, 0, 1, 0, 0],
-			viewHints: [],
-			viewState: { projection: projection, resolution: 1, rotation: 0,
-			}, };
-	
-		const context = { setTransform:() => {}, translate:() => {}, scale:() => {}, drawImage:() => {} };
-		const geometry = new Point([0, 0]);
-		const feature = new Feature({ geometry: geometry });
+	it('when animation ends, should NOT call the endCallback', () => {
+		const startFrameState = setupFrameState(new Date());
+
+		const feature = getFeature();
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
-		
-		const endCallback = jasmine.createSpy();		
-		
-		const functionUnderTest = getFlashAnimation(map, feature, endCallback);
+
+		const endCallback = jasmine.createSpy();
+
+		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
-		layer.dispatchEvent(new RenderEvent('postrender', inversePixelTransform, startFrameState, context)	);
+		layer.dispatchEvent(new RenderEvent('postrender', transform, startFrameState, contextStub));
+
+		expect(functionUnderTest).toBeDefined();
+		expect(endCallback).not.toHaveBeenCalled();
+
+	});
+
+	it('when animation ends, should call the endCallback', () => {
+		const startFrameState = setupFrameState(+new Date());
+		const endFrameState = setupFrameState(+new Date() + 1010);
+
+		const feature = getFeature();
+		const map = setupMap();
+		const layer = setupLayer(map, feature);
+
+		const endCallback = jasmine.createSpy();
+
+		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
+		layer.on('postrender', functionUnderTest);
+		layer.dispatchEvent(new RenderEvent('postrender', transform, startFrameState, contextStub));
 
 		expect(functionUnderTest).toBeDefined();
 
-		layer.dispatchEvent(new RenderEvent('postrender', inversePixelTransform, endFrameState, context)	);
+		layer.dispatchEvent(new RenderEvent('postrender', transform, endFrameState, contextStub));
 		expect(endCallback).toHaveBeenCalled();
 
 	});
