@@ -2,7 +2,8 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import geolocationSvg from './assets/geo-alt-fill.svg';
 import { $injector } from '../../../../injection';
-import { activate } from '../../store/measurement.action';
+import css from './geolocationButton.css';
+import { activate, deactivate } from '../../store/geolocation.action';
 
 /**
  * Button that activates-deactivates geolocation
@@ -22,23 +23,25 @@ export class GeolocationButton extends BaElement {
 	 *@override 
 	 */
 	createView() {
+		const { active, denied } = this._state;
 		const translate = (key) => this._translationService.translate(key);
 
 		const onClick = () => {
+			if (active) {
+				deactivate();
+			}
 			activate();
 		};
-		return html`<ba-icon icon='${geolocationSvg}' title=${translate('map_geolocationButton_title_activate')} @click=${onClick}></ba-icon>
+		return html`<style>${css}</style>
+		<ba-icon icon='${geolocationSvg}' size=40 disabled=${denied} title=${translate('map_geolocationButton_title_activate')} @click=${onClick}></ba-icon>
         `;
 	}
 
 	extractState(store) {
-		const { position: { zoom, center } } = store;
-		return { zoom, center };
+		const { geolocation: { active, denied } } = store;
+		return { active, denied };
 	}
 
-	onStateChanged() {
-		this.shadowRoot.getElementById('info-popup').closePopup();
-	}
 
 	static get tag() {
 		return 'ba-geolocation-button';
