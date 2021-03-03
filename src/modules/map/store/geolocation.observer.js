@@ -49,7 +49,12 @@ export class GeolocationHandler {
 	_watchPosition() {
 		return navigator.geolocation.watchPosition(
 			(position) => this._handlePositionAndUpdateStore(position),
-			(error) => this._handlePositionError(error)
+			(error) => this._handlePositionError(error),
+			{
+				maximumAge: 10000,
+				enableHighAccuracy: true,
+				timeout: 600000
+			}
 		);
 	}
 

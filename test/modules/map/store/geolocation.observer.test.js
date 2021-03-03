@@ -184,9 +184,14 @@ describe('geolocationObserver', () => {
 			it('handles positioning success on first time', () => {
 				const store = setup();
 				const instanceUnderTest = new GeolocationHandler(store);
+				const positionOptions = {
+					maximumAge: 10000,
+					enableHighAccuracy: true,
+					timeout: 600000
+				};
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
-				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything()).and.returnValue(4242);
+				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything(), positionOptions).and.returnValue(4242);
 				// const fitSpy = spyOn(instanceUnderTest, '_fit');
 
 				instanceUnderTest._handlePositionSuccess(position);
@@ -206,9 +211,14 @@ describe('geolocationObserver', () => {
 				const store = setup(state);
 				const instanceUnderTest = new GeolocationHandler(store);
 				instanceUnderTest._firstTimeActivatingGeolocation = false;
+				const positionOptions = {
+					maximumAge: 10000,
+					enableHighAccuracy: true,
+					timeout: 600000
+				};
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
-				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything()).and.returnValue(4242);
+				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything(), positionOptions).and.returnValue(4242);
 
 				instanceUnderTest._handlePositionSuccess(position, state);
 
