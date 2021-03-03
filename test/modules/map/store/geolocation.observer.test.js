@@ -192,13 +192,12 @@ describe('geolocationObserver', () => {
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
 				spyOn(window.navigator.geolocation, 'watchPosition').withArgs(jasmine.anything(), jasmine.anything(), positionOptions).and.returnValue(4242);
-				// const fitSpy = spyOn(instanceUnderTest, '_fit');
+				const fitSpy = spyOn(instanceUnderTest, '_fit');
 
 				instanceUnderTest._handlePositionSuccess(position);
 
 				expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position);
-				expect(store.getState().position.zoom).toBe(15);
-				// expect(fitSpy).toHaveBeenCalledOnceWith(position);
+				expect(fitSpy).toHaveBeenCalledOnceWith(position);
 				expect(instanceUnderTest._geolocationWatcherId).toBe(4242);
 			});
 
@@ -285,6 +284,7 @@ describe('geolocationObserver', () => {
 				instanceUnderTest._fit(position);
 
 				expect(store.getState().position.fitRequest.payload.extent).toEqual(bufferedMapExtent);
+				expect(store.getState().position.fitRequest.payload.options.maxZoom).toEqual(16);
 			});
 		});
 

@@ -66,12 +66,13 @@ export class GeolocationHandler {
 			this._mapService.getSrid(),
 			this._mapService.getDefaultGeodeticSrid()
 		);
-		const bufferedExtent = this._coordinateService.transformExtent(
+		const extent = this._coordinateService.transformExtent(
 			this._coordinateService.buffer(geodeticExtent, position.coords.accuracy),
 			this._mapService.getDefaultGeodeticSrid(),
 			this._mapService.getSrid()
 		);
-		setFit({ extent: bufferedExtent });
+		const options =  { maxZoom: 16 };
+		setFit({ extent, options });
 	}
 
 	_handlePositionSuccess(position) {
@@ -86,8 +87,7 @@ export class GeolocationHandler {
 		// On the first time after activation we zoom to a suitable resolution
 		if (this._firstTimeActivatingGeolocation) {
 			this._firstTimeActivatingGeolocation = false;
-			// this._fit(position);
-			changeZoom(15);
+			this._fit(position);
 		}
 		this._geolocationWatcherId = this._watchPosition();
 	}
