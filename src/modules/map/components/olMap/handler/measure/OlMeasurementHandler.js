@@ -187,7 +187,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 
 				if (geometry.getArea()) {
-					let areaOverlay = this._activeSketch.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints);
+					const areaOverlay = this._activeSketch.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints);
 					this._addOverlayToMap(map, areaOverlay);
 					this._updateOverlay(areaOverlay, geometry);
 					this._activeSketch.set('area', areaOverlay);
@@ -200,7 +200,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const partitions = this._activeSketch.get('partitions') || [];
 
 
-			let delta = getPartitionDelta(measureGeometry, this._projectionHints);
+			const delta = getPartitionDelta(measureGeometry, this._projectionHints);
 			let partitionIndex = 0;
 			for (let i = delta; i < 1; i += delta, partitionIndex++) {
 				let partition = partitions[partitionIndex] || false;

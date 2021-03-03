@@ -9,11 +9,9 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
@@ -44,11 +42,18 @@ describe('OlMap', () => {
 			return 'contextMenuEventHandlerMock';
 		}
 	};
-	const measurementHandlerMock = {
+	const measurementLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
 		get id() {
-			return MEASUREMENT_LAYER_ID;
+			return 'measurementLayerHandlerMockId';
+		}
+	};
+	const geolocationLayerHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'geolocationLayerHandlerMockId';
 		}
 	};
 
@@ -86,8 +91,8 @@ describe('OlMap', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
-			.registerSingleton('OlMeasurementHandler', measurementHandlerMock);
-
+			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
+			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
 
 		return TestUtils.render(OlMap.tag);
 	};
@@ -393,25 +398,50 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
+			expect(element._layerHandler.get('measurementLayerHandlerMockId')).toEqual(measurementLayerHandlerMock);
 		});
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(measurementHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = spyOn(measurementLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(measurementLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
 			const element = await setup();
-			//in this case we need the measurement oberver, because it adds the measurement layer to the store
-			registerMeasurementObserver(store);
 			const map = element._map;
 
-			activateMeasurement();
+			addLayer(measurementLayerHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
 			activateSpy.calls.reset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
-			deactivateMeasurement();
+			removeLayer(measurementLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('geolocation handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('geolocationLayerHandlerMockId')).toEqual(geolocationLayerHandlerMock);
+		});
+
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(geolocationLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(geolocationLayerHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(geolocationLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});

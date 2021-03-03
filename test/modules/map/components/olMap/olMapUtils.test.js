@@ -107,7 +107,7 @@ describe('olMapUtils', () => {
 	describe('updateOlLayer', () => {
 		it('it updates the properties of a olLayer', () => {
 
-			let olLayer = new BaseLayer({});
+			const olLayer = new BaseLayer({});
 			const layer = { visible: false, opacity: .5 };
 
 			updateOlLayer(olLayer, layer);

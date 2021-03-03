@@ -26,7 +26,7 @@ export class EnvironmentService {
 			hasTouchScreen = navigator.maxTouchPoints > 0;
 		}
 		else {
-			var mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
+			const mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
 			if (mQ && mQ.media === '(pointer:coarse)') {
 				hasTouchScreen = !!mQ.matches;
 			}
@@ -35,7 +35,7 @@ export class EnvironmentService {
 			}
 			else {
 				// Only as a last resort, fall back to user agent sniffing
-				var UA = navigator.userAgent;
+				const UA = navigator.userAgent;
 				hasTouchScreen = (
 					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
 					/\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)

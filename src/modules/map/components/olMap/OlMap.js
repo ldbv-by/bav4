@@ -27,12 +27,13 @@ export class OlMap extends BaElement {
 		const {
 			GeoResourceService: georesourceService,
 			OlMeasurementHandler: measurementHandler,
+			OlGeolocationHandler: geolocationHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
-
+		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
+		
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 
