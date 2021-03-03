@@ -129,7 +129,8 @@ export class OlMap extends BaElement {
 				this._viewSyncBlocked = false;
 				this._syncStore();
 			};
-			this._view.fit(fitRequest.payload.extent, { callback: onAfterFit });
+			const maxZoom = (fitRequest.payload.options && fitRequest.payload.options.maxZoom) ? fitRequest.payload.options.maxZoom : this._view.getMaxZoom();
+			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
 	}
 
