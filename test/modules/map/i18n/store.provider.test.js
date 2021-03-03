@@ -8,6 +8,7 @@ describe('i18n for store', () => {
 		const map = provide('en');
 		
 		expect(map.map_store_geolocation_denied).toBe('The acquisition of the position failed because your browser settings does not allow it. Allow your browser / this website to use your location. Deactivate the "private" mode of your browser.');		
+		expect(map.map_store_geolocation_not_available).toBe('The acquisition of the position failed.');
 	});
 
 
@@ -16,10 +17,11 @@ describe('i18n for store', () => {
 		const map = provide('de');
 
 		expect(map.map_store_geolocation_denied).toBe('Es ist keine Positionsbestimmung möglich, da ihre Browsereinstellungen dies nicht zulassen. Erlauben sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.');		
+		expect(map.map_store_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich.');		
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
