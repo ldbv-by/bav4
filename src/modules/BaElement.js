@@ -268,7 +268,7 @@ export class BaElement extends HTMLElement {
 			let currentState = this._state[name];
 
 			return () => {
-				if (this._state[name]) {
+				if (this._state[name] !== undefined) {
 					const nextState = this._state[name];
 					if (!equals(nextState, currentState)) {
 						currentState = nextState;
