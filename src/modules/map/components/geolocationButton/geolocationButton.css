@@ -38,7 +38,7 @@
   border-radius: 50%;
   border: none;
   outline: none;
-  padding: 4px;
+  padding-top: 4px;
 }
 
 .geolocation-button:hover {
