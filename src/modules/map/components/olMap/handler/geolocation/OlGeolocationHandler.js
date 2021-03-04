@@ -46,7 +46,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 
 		this._positionFeature.setStyle(geolocationStyleFunction);
 		this._accuracyFeature.setStyle(geolocationStyleFunction);
-		this._flashPosition(this._positionFeature);
+		this._blinkPosition(this._positionFeature);
 
 		this._unregister = this._register(this._storeService.getStore());
 
@@ -93,7 +93,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				this._accuracyFeature.setStyle(geolocationStyleFunction);
 				this._positionFeature.setGeometry(new Point(changedState.position));
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
-				this._flashPosition(this._positionFeature);
+				this._blinkPosition(this._positionFeature);
 			}
 			else {
 				this._positionFeature.setStyle(nullStyleFunction);
@@ -104,9 +104,9 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		return observe(store, extract, onChange);
 	}
 
-	_flashPosition(feature) {
+	_blinkPosition(feature) {
 		const onEnd = () => unByKey(listenerKey);
-		const flashAnimation = createAnimateFunction(this._map, feature, onEnd);
-		const listenerKey = this._geolocationLayer.on('postrender', flashAnimation);
+		const blinkAnimation = createAnimateFunction(this._map, feature, onEnd);
+		const listenerKey = this._geolocationLayer.on('postrender', blinkAnimation);
 	}
 }
