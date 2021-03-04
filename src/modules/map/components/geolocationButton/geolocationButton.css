@@ -1,7 +1,56 @@
-ba-icon {
+.geolocation {
   position: absolute;
   right: 10px;
   top: 50px;
   display: inline-block;
   vertical-align: top;
+}
+
+.geolocation-icon {
+  mask: url("./assets/geo-alt-fill.svg");
+  -webkit-mask-image: url("./assets/geo-alt-fill.svg");
+}
+
+.icon {
+ 
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  cursor: pointer;
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+}
+
+.inactive {
+  background: var(--map-button-color);
+}
+.active {
+  background: var(--secondary-color);
+}
+.denied {
+  background: #696969;
+}
+
+.icon:hover,
+.icon:focus {
+  background: var(--map-button-color);
+}
+.geolocation-button {
+  background-color: var(--map-button-bg-color);
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  padding: 5px;
+}
+
+.geolocation-button:hover {
+  transform: scale(1.1);
+}
+
+.geolocation-button:active {
+  transform: scale(1.15);
+  border: none;
 }
