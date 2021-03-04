@@ -31,10 +31,6 @@
   background: #696969;
 }
 
-.icon:hover,
-.icon:focus {
-  background: var(--map-button-color);
-}
 .geolocation-button {
   background-color: var(--map-button-bg-color);
   display: inline-block;
