@@ -25,7 +25,7 @@
   background: var(--map-button-color);
 }
 .active {
-  background: var(--secondary-color);
+  background: #ff0000;
 }
 .denied {
   background: #696969;
