@@ -34,7 +34,7 @@ export class ContentPanel extends BaElement {
 			<style>${css}</style>
 			<div class="content-panel ${getOverlayClass()}">            
 			<button @click="${closeSidePanel}" class="content-panel__close-button">
-				<			
+				<span class='arrow'></span>	
 			</button>
 			</div>			
 		`;

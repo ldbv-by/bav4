@@ -15,15 +15,25 @@
 .content-panel__close-button{                   
     position: absolute;
     background-color: var(--secondary-bg-color);
-    top: 6.5em;
-    left: 32em;
+    top: 4.5em;
+    left: 25.5em;
     border-radius: 2em 0 0 2em;
-    font-size: .8rem;
     padding: 0;
-    width: 3em;
-    height: 4em;
+    width: 2.5em;
+    height: 2.5em;
     border: 0;
 }
+.arrow{
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: .6em;
+    left: .5em;
+    border-width: .5em;
+    border-style: solid;
+    border-color: transparent gray transparent transparent;
+}
+
 .is-open {
     transform: translate(28em, 0);
 }
@@ -37,14 +47,25 @@
         overflow: auto;
     }
     .content-panel__close-button{                          
-        bottom: -.5em;
-        border:0;
-        top: unset;
         position: absolute;
-        transform: rotate(0.25turn);
+        top: unset;
         left: unset;
-        right: 2em;    
+        bottom: 0em;
+        right: 0em;    
+        border-radius: 2em  0 0  0;
     }
+    .arrow{
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: .6em;
+        left: 1em;
+        border-width: .5em;
+        border-style: solid;
+        border-color: transparent  transparent gray transparent;
+    }
+
+
     .is-open {
         transform: translate(0, 75vh);
     }
