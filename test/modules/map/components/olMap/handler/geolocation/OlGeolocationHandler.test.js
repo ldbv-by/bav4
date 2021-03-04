@@ -1,6 +1,7 @@
 import { OlGeolocationHandler } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/OlGeolocationHandler';
 import { geolocationReducer } from '../../../../../../../src/modules/map/store/geolocation.reducer';
 import { activate as activateGeolocation, setAccuracy, setPosition } from '../../../../../../../src/modules/map/store/geolocation.action';
+import { setBeingDragged } from '../../../../../../../src/modules/map/store/pointer.action';
 import { TestUtils } from '../../../../../../test-utils';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -8,6 +9,7 @@ import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 
 import { OSM, TileDebug } from 'ol/source';
+import { pointerReducer } from '../../../../../../../src/modules/map/store/pointer.reducer';
 
 describe('OlGeolocationHandler', () => {
 
@@ -21,13 +23,14 @@ describe('OlGeolocationHandler', () => {
 	};
 	const setup = (state = initialState) => {
 		const geolocationState = {
-			geolocation: state
+			geolocation: state,
+			pointer: { beingDragged:false }
 		};
-		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer });
+		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer, pointer:pointerReducer });
 	};
 
 	const setupMap = () => {
-
+		const container = document.createElement('div');
 		return new Map({
 			layers: [
 				new TileLayer({
@@ -36,7 +39,7 @@ describe('OlGeolocationHandler', () => {
 				new TileLayer({
 					source: new TileDebug(),
 				})],
-			target: 'map',
+			target: container,
 			view: new View({
 				center: initialCenter,
 				zoom: 1,
@@ -152,11 +155,33 @@ describe('OlGeolocationHandler', () => {
 				expect(positionStyle.getImage()).toBeFalsy();
 			});
 
+			it('pauses blink-animation while map is dragged', () => {
+				const map = setupMap();
+				setup();
 
+
+				const handler = new OlGeolocationHandler();
+				const blinkSpy = spyOn(handler, '_blinkPosition');
+				handler.activate(map);
+
+				setPosition([38, 57]);
+				setAccuracy(42);
+				activateGeolocation();
+				setAccuracy(38);
+				setAccuracy(57);
+
+				expect(blinkSpy).toHaveBeenCalledTimes(4);
+
+				setBeingDragged(true);
+				setAccuracy(42);
+				setBeingDragged(false);
+				expect(blinkSpy).toHaveBeenCalledTimes(4);
+				setAccuracy(4);
+				expect(blinkSpy).toHaveBeenCalledTimes(5);
+			});
 		});
 		describe('when geolocation-request is denied', () => {
-
-
+			
 			it('sets accuracy- and position-feature to default', () => {
 				const map = setupMap();
 				const state = { ...initialState, denied: true };

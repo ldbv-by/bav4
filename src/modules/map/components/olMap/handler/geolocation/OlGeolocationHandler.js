@@ -87,13 +87,16 @@ export class OlGeolocationHandler extends OlLayerHandler {
 
 			return true;
 		};
-		const onChange = (changedState) => {
+		const onChange = (changedState, stateSnapshot) => {
 			if (isValidGeolocation(changedState)) {
 				this._positionFeature.setStyle(geolocationStyleFunction);
 				this._accuracyFeature.setStyle(geolocationStyleFunction);
 				this._positionFeature.setGeometry(new Point(changedState.position));
 				this._accuracyFeature.setGeometry(new Circle(changedState.position, changedState.accuracy));
-				this._blinkPosition(this._positionFeature);
+				this._map.renderSync();
+				if (!stateSnapshot.pointer.beingDragged) {
+					this._blinkPosition(this._positionFeature);
+				}					
 			}
 			else {
 				this._positionFeature.setStyle(nullStyleFunction);
