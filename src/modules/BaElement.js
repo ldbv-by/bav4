@@ -1,6 +1,8 @@
-import { render as renderLitHtml } from 'lit-html';
+import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
+import css from './baElement.css';
+
 
 /**
  * Abstract Base-Class for all BaElements.
@@ -161,7 +163,7 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @returns {TemplateResult}
+	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView() {
 		// The child has not implemented this method.
@@ -203,10 +205,41 @@ export class BaElement extends HTMLElement {
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
 			const template = this.createView();
-			renderLitHtml(template, this.getRenderTarget());
+			if (this._isNothing(template)) {
+				renderLitHtml(template, this.getRenderTarget());
+			}
+			else {
+				renderLitHtml(html`${this.defaultCss()} ${template}`, this.getRenderTarget());
+			}
+
 			this._rendered = true;
 			this.onAfterRender(initialRendering);
 		}
+	}
+
+	/**
+	 * @private
+	 * @param {TemplateResult} templateResult 
+	 * @returns {boolean}
+	 */
+	_isNothing(templateResult) {
+		return templateResult === nothing
+			|| templateResult === undefined
+			|| templateResult === null
+			|| templateResult === '';
+	}
+
+	/**
+	 * Returns a (CSS) TemplateResult that will be prepended.
+	 * @protected
+	 * @returns {TemplateResult|nothing|null|undefined|''}
+	 */
+	defaultCss() {
+		return html`
+		<style>
+		${css}
+		</style>
+		`;
 	}
 
 	/**
