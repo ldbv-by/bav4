@@ -1,7 +1,7 @@
 .geolocation {
   position: absolute;
   right: 10px;
-  top: 50px;
+  top: 300px;
   display: inline-block;
   vertical-align: top;
 }
@@ -11,8 +11,7 @@
   -webkit-mask-image: url("./assets/geo-alt-fill.svg");
 }
 
-.icon {
- 
+.icon { 
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;
@@ -39,7 +38,7 @@
   border-radius: 50%;
   border: none;
   outline: none;
-  padding: 5px;
+  padding: 4px;
 }
 
 .geolocation-button:hover {
