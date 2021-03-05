@@ -17,7 +17,7 @@ describe('MediaQueryPanel', () => {
 	};
 
 	describe('when initialized', () => {
-		fit('layouts for landscape', async () => {
+		it('layouts for landscape', async () => {
 
 			const matchMediaSpy = spyOn(window, 'matchMedia')
 				//mock 
