@@ -27,12 +27,13 @@ export class OlMap extends BaElement {
 		const {
 			GeoResourceService: georesourceService,
 			OlMeasurementHandler: measurementHandler,
+			OlGeolocationHandler: geolocationHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
-
+		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
+		
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 
@@ -128,7 +129,8 @@ export class OlMap extends BaElement {
 				this._viewSyncBlocked = false;
 				this._syncStore();
 			};
-			this._view.fit(fitRequest.payload.extent, { callback: onAfterFit });
+			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
+			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
 	}
 
@@ -153,7 +155,6 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
@@ -163,7 +164,6 @@ export class OlMap extends BaElement {
 	}
 
 	_syncStore() {
-		this.log('syncing store');
 		changeZoomAndCenter({
 			zoom: this._view.getZoom(),
 			center: this._view.getCenter()

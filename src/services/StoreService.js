@@ -9,6 +9,8 @@ import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reduc
 import ReduxQuerySync from 'redux-query-sync';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
+import { register as registerGeolocationObserver } from '../modules/map/store/geolocation.observer';
+import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 
@@ -16,7 +18,7 @@ import { mapReducer } from '../modules/map/store/map.reducer';
 
 
 /**
- * Service which holds the redux store.
+ * Service which configures, initializes and holds the redux store.
  * @class
  * @author aul
  */
@@ -80,16 +82,18 @@ export class StoreService {
 			uiTheme: uiThemeReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
-			measurement: measurementReducer
+			measurement: measurementReducer,
+			geolocation: geolocationReducer
 		});
 
 		this._store = createStore(rootReducer, storeEnhancer);
 
 		registerMeasurementObserver(this._store);
+		registerGeolocationObserver(this._store);
 	}
 
 	/**
-	 * Returns the store.
+	 * Returns the fully initialized store.
 	 */
 	getStore() {
 		return this._store;
