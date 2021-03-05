@@ -19,7 +19,7 @@ describe('measurementObserver', () => {
 	};
 
 
-	it('adds ore remove the measuremt layer', () => {
+	it('adds or removes the measurement layer', () => {
 		const store = setup();
 		
 		activate();

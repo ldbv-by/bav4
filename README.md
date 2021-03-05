@@ -110,18 +110,20 @@ Here's a overview of what project folder structure looks like:
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
-| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomable treemap |
+| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomabel tree map |
 
 ## Best Practices
 
 ### State
 
-- Mutation of global state should be done in just one place at the same moment (single source of truth) <br>
+- Mutation of same parts of global state should be done in just one place at the same moment (single source of truth) <br>
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
-Common places for mutating state are:
-- `BaElement` components
-- `Observer` of the Redux store
+- Common places for mutating state are:
+- - `BaElement` components
+- - `Observer` of the Redux store
+
+- Mutations of global state that have an event character should be wrapped (in order to avoid "resetting" state, see: `EventLike` in storeUtils.js)
 
 
 ## Pending Questions

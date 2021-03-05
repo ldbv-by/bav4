@@ -114,7 +114,7 @@ describe('LayerManager', () => {
 			element = await setup(state);
 		});
 		const createNewDataTransfer = () => {
-			var data = {};
+			let data = {};
 			return {
 				clearData: function (key) {
 					if (key === undefined) {

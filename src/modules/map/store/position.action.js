@@ -1,9 +1,25 @@
 /**
- * Action creators to change/update the properties of map state.
+ * Action creators to change/update the properties concerning the resolution and center of a map.
  * @module map/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, POINTER_POSITION_CHANGED, FIT_REQUESTED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED } from './position.reducer';
 import { $injector } from '../../../injection';
+import { EventLike } from '../../../utils/storeUtils';
+
+
+/**
+ * Request for fitting a map to a geographic extent
+ * @typedef {Object} FitRequest
+ * @property {Extent} extent geographic extent
+ * @property {FitRequestOptions} options options for this FitRequest
+ */
+
+/**
+ * Options for a FitRequest.
+ * @typedef {Object} FitRequestOptions
+ * @property {maxZoom} maxZoom max zoom level that is set even if extent would result in a higher zoom level
+ */
+
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -74,33 +90,16 @@ export const changeCenter = (center) => {
 };
 
 /**
- * Updates the pointer position.
+ * Sets a fit request.
+ * The fitRequest object is wrapper by an {@link EventLike} object.
+ * @param {extent} extent extent for this fit request
+ * @param {FitRequestOptions} options options for this fit request
  * @function
  */
-export const updatePointerPosition = (position) => {
+export const setFit = (extent, options = {}) => {
 	getStore().dispatch({
-		type: POINTER_POSITION_CHANGED,
-		payload: position
+		type: FIT_REQUESTED,
+		payload: new EventLike({ extent, options })
 	});
 };
 
-/**
- * Fits the position to an extent.
- * @function
- */
-export const fit = (fitRequest) => {
-	getStore().dispatch({
-		type: FIT_REQUESTED,
-		payload: fitRequest
-	});
-};
-
-/**
- * Resets a fit request. Typically called from a map only.
- */
-export const resetFitRequest = () => {
-	getStore().dispatch({
-		type: FIT_REQUESTED,
-		payload: null
-	});
-};

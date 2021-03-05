@@ -1,6 +1,8 @@
-import { render as renderLitHtml } from 'lit-html';
+import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
+import css from './baElement.css';
+
 
 /**
  * Abstract Base-Class for all BaElements.
@@ -73,6 +75,8 @@ export class BaElement extends HTMLElement {
 		this._state = {};
 
 		this._rendered = false;
+
+		this._observer = [];
 	}
 
 	/**
@@ -142,6 +146,7 @@ export class BaElement extends HTMLElement {
 
 		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
+			this._observer.forEach(o => o());
 			this.onStateChanged();
 		}
 	}
@@ -158,7 +163,7 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @returns {TemplateResult}
+	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView() {
 		// The child has not implemented this method.
@@ -200,10 +205,41 @@ export class BaElement extends HTMLElement {
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
 			const template = this.createView();
-			renderLitHtml(template, this.getRenderTarget());
+			if (this._isNothing(template)) {
+				renderLitHtml(template, this.getRenderTarget());
+			}
+			else {
+				renderLitHtml(html`${this.defaultCss()} ${template}`, this.getRenderTarget());
+			}
+
 			this._rendered = true;
 			this.onAfterRender(initialRendering);
 		}
+	}
+
+	/**
+	 * @private
+	 * @param {TemplateResult} templateResult 
+	 * @returns {boolean}
+	 */
+	_isNothing(templateResult) {
+		return templateResult === nothing
+			|| templateResult === undefined
+			|| templateResult === null
+			|| templateResult === '';
+	}
+
+	/**
+	 * Returns a (CSS) TemplateResult that will be prepended.
+	 * @protected
+	 * @returns {TemplateResult|nothing|null|undefined|''}
+	 */
+	defaultCss() {
+		return html`
+		<style>
+		${css}
+		</style>
+		`;
 	}
 
 	/**
@@ -252,4 +288,33 @@ export class BaElement extends HTMLElement {
 		}
 	}
 
+
+	/**
+	 * Registers an observer for a field / property of the state of this element (see: {@link BaElement#extractState}).
+	 * Observers are called right after {@link BaElement#extractState}
+	 * @protected
+	 * @param {string} name Name of the observed field
+	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
+	 */
+	observe(name, onChange) {
+		const createObserver = (name, onChange) => {
+			let currentState = this._state[name];
+
+			return () => {
+				if (this._state[name] !== undefined) {
+					const nextState = this._state[name];
+					if (!equals(nextState, currentState)) {
+						currentState = nextState;
+						onChange(currentState);
+					}
+				}
+				else {
+					console.warn('\'' + name + '\' is not a field in the state of this BaElement');
+				}
+			};
+
+		};
+
+		this._observer.push(createObserver(name, onChange));
+	}
 }

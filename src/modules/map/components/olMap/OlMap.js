@@ -7,9 +7,11 @@ import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
-import { changeZoomAndCenter, resetFitRequest, updatePointerPosition } from '../../store/position.action';
+import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
+import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
 
 /**
@@ -25,12 +27,13 @@ export class OlMap extends BaElement {
 		const {
 			GeoResourceService: georesourceService,
 			OlMeasurementHandler: measurementHandler,
+			OlGeolocationHandler: geolocationHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlContextMenueMapEventHandler');
+		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
 		
 		this._geoResourceService = georesourceService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
 	}
 
@@ -83,24 +86,51 @@ export class OlMap extends BaElement {
 			}),
 		});
 
+		this._map.on('movestart', () => {
+			setMoveStart();
+			setBeingMoved(true);
+		});
+
 		this._map.on('moveend', () => {
 			if (this._view) {
 				this._syncStore();
 			}
+			setBeingDragged(false);
+			setMoveEnd();
+			setBeingMoved(false);
 		});
 
+		this._map.addEventListener('contextmenu', (evt) => {
+			// evt.preventDefault();
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
-				// the event is a drag gesture, this is handled by openlayers (map move)
+				// the event is a drag gesture, so we handle it in 'pointerdrag'
 				return;
 			}
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			updatePointerPosition(coord);
+			setPointerMove({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+		});
+
+		this._map.on('pointerdrag', () => {
+			setBeingDragged(true);
 		});
 
 		this._eventHandler.forEach(handler => {
 			handler.register(this._map);
+		});
+
+		this.observe('fitRequest', (fitRequest) => {
+			this._viewSyncBlocked = true;
+			const onAfterFit = () => {
+				this._viewSyncBlocked = false;
+				this._syncStore();
+			};
+			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
+			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
 	}
 
@@ -125,7 +155,6 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this.log('syncing map');
 		this._syncOverlayLayer();
 		this._syncView();
 	}
@@ -135,7 +164,6 @@ export class OlMap extends BaElement {
 	}
 
 	_syncStore() {
-		this.log('syncing store');
 		changeZoomAndCenter({
 			zoom: this._view.getZoom(),
 			center: this._view.getCenter()
@@ -143,28 +171,15 @@ export class OlMap extends BaElement {
 	}
 
 	_syncView() {
-		const { zoom, center, fitRequest } = this._state;
-
-		const onAfterFit = () => {
-			this._viewSyncBlocked = false;
-			this._syncStore();
-			//reset
-			resetFitRequest();
-		};
+		const { zoom, center } = this._state;
 
 		if (!this._viewSyncBlocked) {
 
-			if (fitRequest && fitRequest.extent) {
-				this._viewSyncBlocked = true;
-				this._view.fit(fitRequest.extent, { callback: onAfterFit });
-			}
-			else {
-				this._view.animate({
-					zoom: zoom,
-					center: center,
-					duration: 500
-				});
-			}
+			this._view.animate({
+				zoom: zoom,
+				center: center,
+				duration: 500
+			});
 		}
 	}
 

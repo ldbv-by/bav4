@@ -14,7 +14,7 @@ window.customElements.define(Icon.tag, Icon);
 
 describe('LayerItem', () => {
 	const createNewDataTransfer = () => {
-		var data = {};
+		let data = {};
 		return {
 			clearData: function(key) {
 				if (key === undefined) {
