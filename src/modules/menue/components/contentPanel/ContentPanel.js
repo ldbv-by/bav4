@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import cssmain from '../../../../main.css';
 import css from './contentPanel.css';
 import { closeSidePanel } from '../../store/sidePanel.action';
-// import { $injector } from '../../../../injection';
+import { $injector } from '../../../../injection';
 // import { fit } from '../../store/position.action';
 
 
@@ -16,6 +16,9 @@ export class ContentPanel extends BaElement {
 
 	constructor() {
 		super();
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = EnvironmentService;
+
 	}
 
 	/**
@@ -40,6 +43,9 @@ export class ContentPanel extends BaElement {
 		`;
 	}
 
+	isRenderingSkipped() {
+		return this._environmentService.isEmbedded();
+	}
 
 	/**
 	 * @override
