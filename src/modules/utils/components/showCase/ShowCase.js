@@ -5,7 +5,6 @@ import { closeModal } from '../../../modal/store/modal.action';
 import { changeZoomAndCenter } from '../../../map/store/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
-import { activate as activateGeolocation, deactivate as deactivateGeolocation } from '../../../map/store/geolocation.action';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -56,16 +55,6 @@ export class ShowCase extends BaElement {
 			closeModal();
 		};
 
-		const activateGeolocationTool = () => {
-			activateGeolocation();
-			closeModal();
-		};
-
-		const deactivateGeolocationTool = () => {
-			deactivateGeolocation();
-			closeModal();
-		};
-
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -79,9 +68,7 @@ export class ShowCase extends BaElement {
 			<p>Measure Distance</p>
 			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
 			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="secondary" @click=${deactivateMeasrementTool}></ba-button>	
-			<p>Geolocation</p>
-			<ba-button id='buttonActivateGeolocation' label='Geolocation on' type="primary" @click=${activateGeolocationTool}></ba-button>	
-			<ba-button id='buttonDeactivateGeolocation' label='Geolocation off' type="secondary" @click=${deactivateGeolocationTool}></ba-button>	
+			
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
 			<div class='icons'>		

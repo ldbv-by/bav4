@@ -16,7 +16,7 @@ window.customElements.define(Toggle.tag, Toggle);
 describe('ShowCase', () => {
 
 	let store;
-	
+
 	const setup = () => {
 		const state = {
 			mobile: false,
@@ -29,24 +29,24 @@ describe('ShowCase', () => {
 			},
 			layers: {
 				active: [],
-				background:'null'
+				background: 'null'
 			},
 			modal: { title: false, content: false }
-		};		
-		store = TestUtils.setupStoreAndDi(state, { position: positionReducer, sidePanel: sidePanelReducer, layers:layersReducer, modal: modalReducer });
+		};
+		store = TestUtils.setupStoreAndDi(state, { position: positionReducer, sidePanel: sidePanelReducer, layers: layersReducer, modal: modalReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
-			.registerSingleton('EnvironmentService', { isEmbedded : () => false });
-        
-        
+			.registerSingleton('EnvironmentService', { isEmbedded: () => false });
+
+
 		return TestUtils.render(ShowCase.tag);
 	};
-    
-	describe('when initialized',  () => {
-		
-		it('adds a div which shows some buttons', async() => {
-			const  element = await setup();
-			
+
+	describe('when initialized', () => {
+
+		it('adds a div which shows some buttons', async () => {
+			const element = await setup();
+
 			// try different approaches
 			expect(element.shadowRoot.querySelectorAll('.buttons ba-button').length).toBe(4);
 			expect(element.shadowRoot.querySelector('.buttons').childElementCount).toBe(4);
@@ -56,33 +56,33 @@ describe('ShowCase', () => {
 			expect(element.shadowRoot.querySelector('#button3')).toBeTruthy();
 		});
 
-		it('adds a div which shows some icons', async() => {
-			const  element = await setup();
-			
+		it('adds a div which shows some icons', async () => {
+			const element = await setup();
+
 			expect(element.shadowRoot.querySelectorAll('ba-icon').length).toBe(4);
 		});
 
-	
+
 		it('calls the callback, if button0 are clicked', async () => {
-			const  element = await setup();
-			
+			const element = await setup();
+
 			element.shadowRoot.querySelector('#button0').click();
-			
+
 			expect(store.getState().position.zoom).toBe(13);
 		});
 
 		it('calls the callback, if button1 are clicked', async () => {
-			const  element = await setup();
-			
+			const element = await setup();
+
 			element.shadowRoot.querySelector('#button1').click();
-			
+
 			expect(store.getState().position.zoom).toBe(11);
 		});
 
 		it('toggle gets checked, if toggle are clicked', async () => {
-			const  element = await setup();
+			const element = await setup();
 			const toggle = element.shadowRoot.querySelector('#toggle');
-			
+
 			expect(toggle).toBeTruthy();
 
 			toggle.shadowRoot.querySelector('.switch').click();
@@ -91,9 +91,9 @@ describe('ShowCase', () => {
 		});
 
 		it('modal state changes in store, when \'Activate Measure Distance\'-Button is clicked', async () => {
-			const  element = await setup();
+			const element = await setup();
 			const button = element.shadowRoot.querySelector('#buttonActivateMeasureDistance');
-			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+			const modalContent = { title: 'foo', content: html`<p class="bar">bar<p/>` };
 
 			openModal(modalContent);
 			expect(button).toBeTruthy();
@@ -104,9 +104,9 @@ describe('ShowCase', () => {
 		});
 
 		it('modal state changes in store, when \'Deactivate Measure Distance\'-Button is clicked', async () => {
-			const  element = await setup();
+			const element = await setup();
 			const button = element.shadowRoot.querySelector('#buttonDeactivateMeasureDistance');
-			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
+			const modalContent = { title: 'foo', content: html`<p class="bar">bar<p/>` };
 
 			openModal(modalContent);
 			expect(button).toBeTruthy();
@@ -115,33 +115,6 @@ describe('ShowCase', () => {
 
 			expect(store.getState().modal.title).toBeFalse();
 		});
-
-		it('modal state changes in store, when \'Activate Geolocation\'-Button is clicked', async () => {
-			const  element = await setup();
-			const button = element.shadowRoot.querySelector('#buttonActivateGeolocation');
-			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
-
-			openModal(modalContent);
-			expect(button).toBeTruthy();
-
-			button.click();
-
-			expect(store.getState().modal.title).toBeFalse();
-		});
-
-		it('modal state changes in store, when \'Deactivate Geolocation\'-Button is clicked', async () => {
-			const  element = await setup();
-			const button = element.shadowRoot.querySelector('#buttonDeactivateGeolocation');
-			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
-
-			openModal(modalContent);
-			expect(button).toBeTruthy();
-
-			button.click();
-
-			expect(store.getState().modal.title).toBeFalse();
-		});
-
 	});
 
 });
