@@ -60,7 +60,7 @@ Modules meet the following conventions:
 
 3. Each module may contain further directories:
    - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
-   - `/store` : all Redux related files like reducers and actions
+   - `/store` : all redux related files like reducers and actions
    - `/services` : the service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
@@ -120,10 +120,10 @@ Here's a overview of what project folder structure looks like:
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 - Common places for mutating state are:
-- - `BaElement` components
-- - `Observer` of the Redux store
+  - `BaElement` components
+  - `Observer` of the redux store
 
-- Mutations of global state that have an event character should be wrapped (in order to avoid "resetting" state, see: `EventLike` in storeUtils.js)
+- Mutations of global state that have an event character should be wrapped in another object. This makes it possible to track mutation and avoid a second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
 
 
 ## Pending Questions
