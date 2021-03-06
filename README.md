@@ -123,7 +123,7 @@ Here's a overview of what project folder structure looks like:
   - `BaElement` components
   - `Observer` of the redux store
 
-- Mutations of global state that have an event character should be wrapped in another object. This makes it possible to track mutation and avoid a second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
+- If a mutations of global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
 
 
 ## Pending Questions
