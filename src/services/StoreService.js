@@ -13,6 +13,7 @@ import { register as registerGeolocationObserver } from '../modules/map/store/ge
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
+import { $injector } from '../injection';
 
 
 
@@ -88,8 +89,10 @@ export class StoreService {
 
 		this._store = createStore(rootReducer, storeEnhancer);
 
-		registerMeasurementObserver(this._store);
-		registerGeolocationObserver(this._store);
+		$injector.onReady(() => {
+			registerMeasurementObserver(this._store);
+			registerGeolocationObserver(this._store);
+		});
 	}
 
 	/**
