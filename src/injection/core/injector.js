@@ -94,7 +94,7 @@ export class Injector {
 
 	/**
 	 * Marks this injector as ready.
-	 * This means all dependencies are registered and resolveable.
+	 * This means all dependencies are registered and resolvable.
 	 */
 	ready() {
 		if (!this._ready) {
