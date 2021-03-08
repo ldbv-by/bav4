@@ -1,7 +1,7 @@
 import { $injector } from './testsConfig';
-var mockService =  { get: 'I\'m a mock. ' };
-var debugService = { get: 'I\'m a debug service... ' };
-var serverService = { get: 'I\'m a server service. ' };
+const mockService =  { get: 'I\'m a mock. ' };
+const debugService = { get: 'I\'m a debug service... ' };
+const serverService = { get: 'I\'m a server service. ' };
 
 $injector.registerSingleton({
 	MockService: mockService,
@@ -12,14 +12,14 @@ $injector.registerSingleton({
 
 class RegistrationTest {
 	constructor() {
-		var { MockService, DebugService, ServerService } = $injector.inject('MockService', 'DebugService', 'ServerService');
+		const { MockService, DebugService, ServerService } = $injector.inject('MockService', 'DebugService', 'ServerService');
 		this.mock = MockService;
 		this.debug = DebugService;
 		this.server = ServerService;
 	}
 }
 
-var testObj = new RegistrationTest();
+const testObj = new RegistrationTest();
 
 //tests
 describe('Multiple Dependency Registration Using .register()', () => {

@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { BaElement } from '../../BaElement';
 import { closeModal } from '../store/modal.action';
 import css from './modal.css';
@@ -39,7 +39,7 @@ export class Modal extends BaElement {
 					</div>
     			</div>`;
 		}	
-		return html``;	
+		return nothing;	
 	}	
 
 	

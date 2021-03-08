@@ -26,7 +26,7 @@ export class ContextMenue extends BaElement {
 		const menuWidth = this._view.offsetWidth + offset;
 		const menuHeight = this._view.offsetHeight + offset;
 
-		let placement = { left: undefined, top: undefined };
+		const placement = { left: undefined, top: undefined };
 
 		const windowWidth = window.innerWidth - (window.innerWidth * offsetBorderInPercent);
 		const windowHeight = window.innerHeight - (window.innerHeight * offsetBorderInPercent);

@@ -1,5 +1,5 @@
 import { BaElement } from '../../src/modules/BaElement';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
 
@@ -16,7 +16,7 @@ class BaElementImpl extends BaElement {
 		this.extractStateCalled = this.callOrderIndex++;
 		//here we extract the local state from the application store
 		const { root: { applicationStateIndex } } = store;
-		return { elementStateIndex: applicationStateIndex };
+		return { elementStateIndex: applicationStateIndex, someWhatNull: null };
 	}
 
 	initialize() {
@@ -55,9 +55,43 @@ class BaElementImpl extends BaElement {
 class BaElementNoImpl extends BaElement {
 }
 
+class BaElementDefaultCss extends BaElement {
+
+
+	defaultCss() {
+		return html`<style id='defaultCss'></style>`;
+	}
+
+	createView() {
+		return html`something`;
+	}
+
+	static get tag() {
+		return 'ba-element-default-css';
+	}
+}
+
+class BaElementNoDefaultCss extends BaElement {
+
+
+	defaultCss() {
+		return html`<style id='defaultCss'></style>`;
+	}
+
+	createView() {
+		return nothing;
+	}
+
+	static get tag() {
+		return 'ba-element-no-default-css';
+	}
+}
+
 window.customElements.define(BaElementImpl.tag, BaElementImpl);
 window.customElements.define('ba-element', BaElement);
 window.customElements.define('ba-element-noimpl', BaElementNoImpl);
+window.customElements.define('ba-element-default-css', BaElementDefaultCss);
+window.customElements.define('ba-element-no-default-css', BaElementNoDefaultCss);
 
 
 let store;
@@ -214,9 +248,11 @@ describe('BaElement', () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
 			const someUnknownFieldCallback = jasmine.createSpy();
+			const someWhatNullFieldCallback = jasmine.createSpy();
 			const warnSpy = spyOn(console, 'warn');
 			element.observe('elementStateIndex', elementStateIndexCallback);
 			element.observe('someUnknowField', someUnknownFieldCallback);
+			element.observe('someWhatNull', someWhatNullFieldCallback);
 
 
 			store.dispatch({
@@ -226,6 +262,32 @@ describe('BaElement', () => {
 
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
 			expect(warnSpy).toHaveBeenCalledOnceWith('\'someUnknowField\' is not a field in the state of this BaElement');
+			expect(someWhatNullFieldCallback).not.toHaveBeenCalled();
+			expect(warnSpy).not.toHaveBeenCalledOnceWith('\'someWhatNull\' is not a field in the state of this BaElement');
 		});
+	});
+
+	describe('default css', () => {
+
+		it('checks if a template result contains content', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+			
+			expect(element._isNothing(nothing)).toBeTrue();
+			expect(element._isNothing(undefined)).toBeTrue();
+			expect(element._isNothing(null)).toBeTrue();
+			expect(element._isNothing('')).toBeTrue();
+			expect(element._isNothing(html`some`)).toBeFalse();
+		});
+		
+		it('prepends the default css', async () => {
+			const element = await TestUtils.render(BaElementDefaultCss.tag);
+			expect(element.shadowRoot.querySelector('#defaultCss')).toBeTruthy();
+		});
+
+		it('does not prepends the default css when #createView returns \'nothing\'', async () => {
+			const element = await TestUtils.render(BaElementNoDefaultCss.tag);
+			expect(element.shadowRoot.querySelector('#defaultCss')).toBeFalsy();
+		});
+		
 	});
 });

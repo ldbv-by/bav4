@@ -20,15 +20,16 @@ $injector
 	.registerSingleton('TranslationService', new TranslationService)
 	.registerSingleton('CoordinateService', new OlCoordinateService())
 	.registerSingleton('EnvironmentService', new EnvironmentService())
+	.registerSingleton('MapService', new MapService())
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
 	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)
-	.registerSingleton('MapService', new MapService())
-	.registerModule(mapModule);
+	.registerModule(mapModule)
+	.ready();
 	
 
 
-export let init = true;
+export const init = true;

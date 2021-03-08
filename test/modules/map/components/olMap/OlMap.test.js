@@ -9,11 +9,9 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../../src/modules/map/store/measurement.action';
 import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/store/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { MEASUREMENT_LAYER_ID, register as registerMeasurementObserver } from '../../../../../src/modules/map/store/measurement.observer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
@@ -44,11 +42,18 @@ describe('OlMap', () => {
 			return 'contextMenuEventHandlerMock';
 		}
 	};
-	const measurementHandlerMock = {
+	const measurementLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
 		get id() {
-			return MEASUREMENT_LAYER_ID;
+			return 'measurementLayerHandlerMockId';
+		}
+	};
+	const geolocationLayerHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'geolocationLayerHandlerMockId';
 		}
 	};
 
@@ -59,15 +64,7 @@ describe('OlMap', () => {
 			position: {
 				zoom: 10,
 				center: initialCenter,
-				fitRequest: null
 			},
-			layers: {
-				active: [],
-				background: null
-			},
-			measurement: {
-				active: false
-			}
 		};
 		const combinedState = {
 			...defaultState,
@@ -86,8 +83,8 @@ describe('OlMap', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
-			.registerSingleton('OlMeasurementHandler', measurementHandlerMock);
-
+			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
+			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
 
 		return TestUtils.render(OlMap.tag);
 	};
@@ -121,7 +118,7 @@ describe('OlMap', () => {
 			});
 			it('updates the \'beingMoved\' property in pointer store', async () => {
 				const element = await setup();
-				
+
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
 
 				expect(store.getState().map.beingMoved).toBeTrue();
@@ -197,9 +194,9 @@ describe('OlMap', () => {
 				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
 
 				expect(store.getState().pointer.beingDragged).toBeTrue();
-				
+
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
-				
+
 				expect(store.getState().pointer.beingDragged).toBeFalse();
 			});
 		});
@@ -242,12 +239,17 @@ describe('OlMap', () => {
 
 		it('it fits to an extent', async (done) => {
 			const element = await setup();
+			const view = element._map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
 
 			expect(element._viewSyncBlocked).toBeUndefined();
-			setFit({ extent: [fromLonLat([11, 48]), fromLonLat([11.5, 48.5])] });
-			expect(store.getState().position.fitRequest).not.toBeNull();
 
+			setFit(extent);
+
+			expect(store.getState().position.fitRequest).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();
 			setTimeout(function () {
 				//check if flag is reset
@@ -256,7 +258,32 @@ describe('OlMap', () => {
 				expect(spy).toHaveBeenCalled();
 				done();
 
-			}, 500);
+			});
+		});
+
+		it('it fits to an extent with custom maxZoom option', async (done) => {
+			const element = await setup();
+			const view = element._map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const maxZoom = 10;
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			setFit(extent, { maxZoom: maxZoom });
+
+			expect(store.getState().position.fitRequest).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
+			expect(element._viewSyncBlocked).toBeTrue();
+			setTimeout(function () {
+				//check if flag is reset
+				expect(element._viewSyncBlocked).toBeFalse();
+				//and store is in sync with view
+				expect(spy).toHaveBeenCalled();
+				done();
+
+			});
 		});
 	});
 
@@ -393,25 +420,50 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
+			expect(element._layerHandler.get('measurementLayerHandlerMockId')).toEqual(measurementLayerHandlerMock);
 		});
 
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
-			const activateSpy = spyOn(measurementHandlerMock, 'activate').and.returnValue(olLayer);
-			const deactivateSpy = spyOn(measurementHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const activateSpy = spyOn(measurementLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(measurementLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
 			const element = await setup();
-			//in this case we need the measurement oberver, because it adds the measurement layer to the store
-			registerMeasurementObserver(store);
 			const map = element._map;
 
-			activateMeasurement();
+			addLayer(measurementLayerHandlerMock.id);
 
 			expect(activateSpy).toHaveBeenCalledWith(map);
 			activateSpy.calls.reset();
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
-			deactivateMeasurement();
+			removeLayer(measurementLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('geolocation handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('geolocationLayerHandlerMockId')).toEqual(geolocationLayerHandlerMock);
+		});
+
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(geolocationLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(geolocationLayerHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(geolocationLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});

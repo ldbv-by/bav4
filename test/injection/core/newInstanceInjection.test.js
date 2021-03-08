@@ -4,10 +4,10 @@ import { $injector } from './testsConfig';
  * This will overwrite the current keys "HttpServer" and "RouterService" that are already registered as
  * singletons with instance dependencies.
  */
-var instanceHttp  = function() {
+const instanceHttp  = function() {
 	this.get = 'I\'m a http service.'; 
 };
-var instanceRouter = function() {
+const instanceRouter = function() {
 	this.get = 'I\'m a router.'; 
 };
 
@@ -20,13 +20,13 @@ $injector.register({
 //Test ES6 class
 class classTest {
 	constructor() {
-		var { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
+		const { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
 		this.http = HttpService;
 		this.router = RouterService;
 	}
 }
 
-var instance = new classTest();
+const instance = new classTest();
 
 //tests
 describe('ES6 Class Injection', () => {
