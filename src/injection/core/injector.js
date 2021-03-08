@@ -1,13 +1,14 @@
 import { forEachPropertyDoAction } from './utils';
 
 /**
- * Class that provides dependency injection for vanilla js.
+ * Dependency injection for vanilla js.
+ * @class
  */
 export class Injector {
 
 	/**
 	 * Create a new instance of the Injector.
-	 * @return {object} The new instance, to be chained if needed.
+	 * @return {Injector} The new instance, to be chained if needed.
 	 */
 	constructor() {
 		this._dependencies = [];
@@ -17,7 +18,7 @@ export class Injector {
 
 	/**
 	 * Removes the registered dependencies.
-	 * @return {object} The instance, to be chained if needed.
+	 * @return {Injector} The instance, to be chained if needed.
 	 */
 	reset() {
 		this._dependencies = [];
@@ -28,7 +29,7 @@ export class Injector {
 	 * Register a new dependency for injection.
 	 * @param  {string} keyOrPOJO   Key of the dependency, javascript object with multiple dependencies defined.
 	 * @param  {object} object 		The dependency object.
-	 * @return {object}        		The Injector instance.
+	 * @return {Injector} 			The Injector instance.
 	 */
 	register(keyOrPOJO, object) {
 		return _register(this, keyOrPOJO, object, false);
@@ -39,7 +40,7 @@ export class Injector {
 	 * 
 	 * @param {any} keyOrPOJO	Key of the dependency, javascript object with multiple dependencies defined.
 	 * @param {any} object		The dependency object.
-	 * @returns {object}		The Injector instance.
+	 * @returns {Injector}		The Injector instance.
 	 * 
 	 * @memberOf Injector
 	 */
@@ -49,10 +50,12 @@ export class Injector {
 
 	/**
 	 * Registers a "module". A module is a callback function which takes the injector as argument 
-	 * @param {function} moduleCallback Function
+	 * @param {function} moduleCallback callback function that registers takes the injector as argument
+	 * @returns {Injector} 				The Injector instance.
 	 */
 	registerModule(moduleCallback) {
 		moduleCallback(this);
+		return this;
 	}
 
 	/**
@@ -61,7 +64,7 @@ export class Injector {
 	 * 	the argument names, and then those names are used to fetch the respective objects
 	 * 	that were registered with the Injector.
 	 * @param  {function} funct Function to get dependencies for.
-	 * @return {object}       Object holding the dependencies.
+	 * @return {object}       	Object holding the dependencies.
 	 */
 	inject(...names) {
 		const dependenciesToInject = {};
