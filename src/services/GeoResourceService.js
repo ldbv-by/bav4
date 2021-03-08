@@ -7,6 +7,7 @@
  * @typedef {function():(Array<geoResource>)} georesourceProvider
  */
 
+import { WMTSGeoResource } from './domain/geoResources';
 import { loadBvvGeoResources } from './provider/geoResource.provider';
 
 
@@ -40,7 +41,8 @@ export class GeoResourceService {
 				return this._georesources;
 			}
 			catch (e) {
-				return Promise.reject('GeoResourceService could not be initialized: ' + e.message);
+				this._georesources = [this._newFallbackGeoResource()];
+				console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			}
 		}
 		return this._georesources;
@@ -86,5 +88,14 @@ export class GeoResourceService {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @private
+	 */
+	_newFallbackGeoResource() {
+		const wmtsGeoResource = new WMTSGeoResource('fallBackground', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
+		wmtsGeoResource.background = true;
+		return wmtsGeoResource;
 	}
 }
