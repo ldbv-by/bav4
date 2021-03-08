@@ -6,7 +6,6 @@ export const BACKGROUND_CHANGED = 'background/changed';
 
 export const initialState = {
 	active: [],
-	background: null
 };
 
 /**

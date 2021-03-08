@@ -75,16 +75,3 @@ export const removeLayer = (id) => {
 	});
 };
 
-/**
- * Updates the current background layer
- * @function
- * @param {string} id Id of the layer
- */
-export const changeBackground = (id) => {
-	getStore().dispatch({
-		type: BACKGROUND_CHANGED,
-		payload: id
-	});
-};
-
-
