@@ -12,6 +12,7 @@ export class Injector {
 	 */
 	constructor() {
 		this._dependencies = [];
+		this._listeners = [];
 		this.id = 'injector_' + Math.random().toString(36).substr(2, 9);
 		return this;
 	}
@@ -80,6 +81,29 @@ export class Injector {
 			});
 
 		return dependenciesToInject;
+	}
+
+
+	/**
+	 * Registers a callback function that will be invoked after the injector is marked as ready.
+	 * @param {function} listener 
+	 */
+	onReady(listener) {
+		this._listeners.push(listener);
+	}
+
+	/**
+	 * Marks this injector as ready.
+	 * This means all dependencies are registered and resolveable.
+	 */
+	ready() {
+		if (!this._ready) {
+			this._listeners.forEach(listener => listener());
+			this._ready = true;
+		}
+		else {
+			console.warn('Injector already marked as ready!');
+		}
 	}
 }
 

@@ -25,7 +25,8 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)
-	.registerModule(mapModule);
+	.registerModule(mapModule)
+	.ready();
 	
 
 
