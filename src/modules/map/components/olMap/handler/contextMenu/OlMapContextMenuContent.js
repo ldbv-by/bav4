@@ -13,17 +13,29 @@ export class OlMapContextMenuContent extends BaElement {
 			MapService: mapService,
 			CoordinateService: coordinateService,
 			TranslationService: translastionService,
-			ShareService: shareService
-		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService');
+			ShareService: shareService,
+			AltitudeService: altitudeProviderService
+		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
 		this._translationService = translastionService;
 		this._shareService = shareService;
+		this._altitudeServiceProvider = altitudeProviderService.getAltitudeProvider();
+
+		this._altitude = 0;
 	}
 
 	set coordinate(coordinateInMapSrid) {
 		this._coordinate = coordinateInMapSrid;
+	}
+
+	/**
+	 * @private
+	 */
+	_updateAltitude(altitude) {
+		this._altitude = altitude;
+		this.render();
 	}
 
 
@@ -48,12 +60,25 @@ export class OlMapContextMenuContent extends BaElement {
 				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
+			// const getAltitude = async() => {
+			// 	await this._altitudeServiceProvider(this._coordinate[0], this._coordinate[1])
+			// 	.then(data => {
+			// 		if (data) {
+			// 			console.log(data.altitude)
+			// 			this._updateAltitude(data.altitude);
+			// 		}
+			// 	}, reason => {
+			// 		console.warn(reason);
+			// 	});
+			// }; 
+			
 			return html`
 			<style>${css}</style>
 
 			<div class="container">
   				<ul class="content">
 				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
+				<li><span class='label'>Höhe</span><span class='coordinate'>${this._altitude}</span></li>
   				</ul>
 			</div>
 			`;

@@ -7,6 +7,7 @@ import { HttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { GeoResourceService } from '../services/GeoResourceService';
+import { AltitudeService } from '../services/AltitudeService'; 
 import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { MapService } from '../services/MapService';
@@ -21,6 +22,7 @@ $injector
 	.registerSingleton('EnvironmentService', new EnvironmentService())
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
+	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)

@@ -24,6 +24,10 @@ describe('ContextMenuEventHandler', () => {
 	const coordinateServiceMock = {
 	};
 
+	const altitudeServiceMock = {
+		getAltitudeProvider() {} 
+	}; 
+
 	const setup = (state = initialState) => {
 		const mapContextMenuState = {
 			mapContextMenu: state
@@ -36,7 +40,8 @@ describe('ContextMenuEventHandler', () => {
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AltitudeService', altitudeServiceMock);
 	};
 
 	it('instantiates the handler', () => {

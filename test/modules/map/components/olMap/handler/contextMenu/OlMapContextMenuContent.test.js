@@ -18,6 +18,9 @@ describe('OlMapContextMenuContent', () => {
 	const shareServiceMock = {
 		copyToClipboard() { },
 	};
+	const altitudeServiceMock = {
+		getAltitudeProvider() {} 
+	}; 
 
 	const setup = () => {
 
@@ -26,7 +29,8 @@ describe('OlMapContextMenuContent', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('AltitudeService', altitudeServiceMock);
 		return TestUtils.render(OlMapContextMenuContent.tag);
 	};
 
