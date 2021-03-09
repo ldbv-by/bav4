@@ -31,7 +31,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			const warnSpy = spyOn(console, 'warn');
 			new ProcessEnvConfigService();
 
-			expect(warnSpy).toHaveBeenCalledWith('No config properties could be found. This is likely because the .env file is missing.');
+			expect(warnSpy).toHaveBeenCalled();
 		});
 	});
 
@@ -39,6 +39,7 @@ describe('tests for ProcessEnvConfigService', () => {
 	describe('getValue()', () => {
 
 		it('provides a value for required keys', () => {
+			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
 			process.env = {
 				'SEARCH_SERVICE_API_KEY': 'SEARCH_SERVICE_API_KEY_value',
@@ -46,7 +47,6 @@ describe('tests for ProcessEnvConfigService', () => {
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
 				'BACKEND_URL': 'BACKEND_URL_value',
-
 			};
 
 			const configService = new ProcessEnvConfigService();
@@ -58,6 +58,8 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
+
+			expect(warnSpy).not.toHaveBeenCalled();
 		});
 
 		it('throws an exception for a non-existing key', () => {
