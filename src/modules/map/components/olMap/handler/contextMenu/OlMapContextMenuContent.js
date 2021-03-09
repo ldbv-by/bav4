@@ -14,40 +14,36 @@ export class OlMapContextMenuContent extends BaElement {
 			CoordinateService: coordinateService,
 			TranslationService: translastionService,
 			ShareService: shareService,
-			AltitudeService: altitudeProviderService
+			AltitudeService: altitudeService
 		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
 		this._translationService = translastionService;
 		this._shareService = shareService;
-		this._altitudeServiceProvider = altitudeProviderService;
+		this._altitudeService = altitudeService;
 
 		this._altitude = null;
 	}
 
 	set coordinate(coordinateInMapSrid) {
 		this._coordinate = coordinateInMapSrid;
+		this._getAltitude();
 	}
 
 	/**
 	 * @private
 	 */
-	_updateAltitude(altitude) {
-		this._altitude = altitude;
-		this.render();
+	async _getAltitude() {
+		try {
+			this._altitude = await this._altitudeService.getAltitude(this._coordinate);
+			this.render();
+		}
+		catch (e) {
+			this._altitude = '-';
+			console.warn(e.message);
+		}
 	}
-
-	async _getAltitude () {
-		await this._altitudeServiceProvider.getAltitude(this._coordinate)
-			.then( data => {
-				if (data) {
-					this._updateAltitude(data.altitude);
-				} 
-			}, reason => {
-				console.warn(reason);
-			});
-	} 
 
 
 	createView() {
@@ -71,7 +67,6 @@ export class OlMapContextMenuContent extends BaElement {
 				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
-			// this._getAltitude();
 			
 			return html`
 			<style>${css}</style>
@@ -79,7 +74,7 @@ export class OlMapContextMenuContent extends BaElement {
 			<div class="container">
   				<ul class="content">
 				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-				<li><span class='label'>Höhe</span><span class='coordinate'>${this._altitude}</span></li>
+				<li><span class='label'>${translate('map_olMap_handler_contextMenu_content_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
   				</ul>
 			</div>
 			`;
