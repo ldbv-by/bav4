@@ -38,6 +38,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._overlays = [];
+		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 	}
 
@@ -63,8 +64,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				source: source,
 				style: measureStyleFunction
 			});
-			this._layerVisibilityListener = layer.on('change:visible', visibleChangedHandler);
-			this._layerOpacityListener = layer.on('change:opacity', opacityChangedHandler);
+			this._listeners.push( layer.on('change:visible', visibleChangedHandler));
+			this._listeners.push( layer.on('change:opacity', opacityChangedHandler));
 			return layer;
 		};
 
@@ -108,11 +109,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._vectorLayer = prepareInteraction();
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();
-			this._draw = this._createInteraction(source);
+			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._addOverlayToMap(olMap, this._helpTooltip);
-			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
-			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
+			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
+			this._listeners.push(document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e)));
 
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._draw);
@@ -131,10 +132,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._snap);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
 		this._overlays = [];
-		unByKey(this._pointerMoveListener);
-		unByKey(this._keyboardListener);
-		unByKey(this._layerVisibilityListener);
-		unByKey(this._layerOpacityListener);
+		this._listeners.forEach(l => unByKey(l));
+		// unByKey(this._pointerMoveListener);
+		// unByKey(this._keyboardListener);
+		// unByKey(this._layerVisibilityListener);
+		// unByKey(this._layerOpacityListener);
 		this._helpTooltip = null;
 		this._draw = false;
 	}
@@ -149,7 +151,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		map.removeOverlay(overlay);
 	}
 
-	_createInteraction(source) {
+	_createDraw(source) {
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
