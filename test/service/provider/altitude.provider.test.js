@@ -18,50 +18,60 @@ describe('Altitude provider', () => {
 				.registerSingleton('HttpService', httpService);
 		});
 
-		const altitudeMock = { altitude: 5 };
 		const coordinateMock = [21, 42];    
 
 
 		it('loads Altitude', async () => {
 
 			const backendUrl = 'https://backend.url';
-			// const expectedArgs0 = backendUrl + 'dem/altitude/' + coordinateMock[0] + '/' + coordinateMock[1];
-			// const expectedArgs1 = {
-			// 	mode: 'cors'
-			// };
+			const altitudeMock = { altitude: 5 };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 				new Response(
-					JSON.stringify([
+					JSON.stringify(
 						altitudeMock
-					])
+					)
 				)
 			));
-
 
 			const altitude = await loadBvvAltitude(coordinateMock);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(altitude.length).toBe(1);
-			expect(altitude[0]).toEqual(altitudeMock);
+			expect(altitude).toEqual(altitudeMock.altitude);
+
+		});
+
+		it('rejects when altitude cannot be resolved', (done) => {
+
+			const backendUrl = 'https://backend.url';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+				new Response(null, { status: 200 })
+			));
+
+
+			loadBvvAltitude(coordinateMock).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(configServiceSpy).toHaveBeenCalled();
+				expect(httpServiceSpy).toHaveBeenCalled();
+				expect(reason).toContain('Altitude could not be resolved:');
+				done();
+			});
 
 		});
 
 		it('rejects when backend request cannot be fulfilled', (done) => {
 
 			const backendUrl = 'https://backend.url';
-			// const expectedArgs0 = backendUrl + 'dem/altitude/' + coordinateMock[0] + '/' + coordinateMock[1];
-			// const expectedArgs1 = {
-			// 	mode: 'cors'
-			// };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
 
-			loadBvvAltitude(altitudeMock).then(() => {
+			loadBvvAltitude(coordinateMock).then(() => {
 				done(new Error('Promise should not be resolved'));
 			}, (reason) => {
 				expect(configServiceSpy).toHaveBeenCalled();

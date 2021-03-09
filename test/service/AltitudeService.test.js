@@ -28,7 +28,7 @@ describe('AltitudeService', () => {
 				done(new Error('Promise should not be resolved'));
 			}, (reason) => {
 				expect(instanceUnderTest._altitude).toEqual(0);
-				expect(reason).toBe('AltitudeService could not be initialized: Altitude could not be loaded');
+				expect(reason).toBe('AltitudeService could not be loaded: Altitude could not be loaded');
 				done();
 			});
 

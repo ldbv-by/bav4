@@ -10,6 +10,7 @@ export class AltitudeService {
 	/**
      * 
      * @param {Coordinate} coordinate3857 
+	 * @returns {Number} altitude
      */
 	async getAltitude(coordinate3857) {
 		if (coordinate3857) {
@@ -18,20 +19,8 @@ export class AltitudeService {
 				return this._altitude;
 			}
 			catch (e) {
-				return Promise.reject('AltitudeService could not be initialized: ' + e.message);
+				return Promise.reject('AltitudeService could not be loaded: ' + e.message);
 			}
 		}
-		// return this._altitude;
 	}
-	// getAltitude(coordinate3857) {
-	//     this._altitudeProvider(coordinate3857)
-	//     	.then(data => {
-	//     		if (data) {
-	//     			return data.altitude;
-	//     		}
-	//     	}, reason => {
-	//     		console.warn(reason);
-	//     	});
-	// } 
-
 } 

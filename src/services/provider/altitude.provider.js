@@ -3,6 +3,7 @@ import { $injector } from '../../injection';
 /**
  * 
  * @param {Coordinate} coordinate3857
+ * @returns {Number} altitude loaded from backend
  */
 export const loadBvvAltitude = async (coordinate3857) => {
 
@@ -16,7 +17,13 @@ export const loadBvvAltitude = async (coordinate3857) => {
 	});
 
 	if (result.ok) {
-		return await result.json();
+		try {
+			const promise = await result.json();
+			return promise.altitude;
+		}
+		catch (e) {
+			return Promise.reject('Altitude could not be resolved: ' + e.message);
+		} 
 	}
 	throw new Error('Altitude could not be retrieved');
 };
