@@ -2,7 +2,7 @@
  * Action creators to change the list of active layers, update properties of a layer and change the background layer.
  * @module map/action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from './layers.reducer';
+import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED } from './layers.reducer';
 import { $injector } from '../../../injection';
 
 
