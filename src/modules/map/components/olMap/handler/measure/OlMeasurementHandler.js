@@ -1,4 +1,4 @@
-import { Draw, Snap } from 'ol/interaction';
+import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -109,13 +109,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._vectorLayer = prepareInteraction();
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();
+			this._select = this._createSelect();
+			this._modify = this._createModify();
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
+			
 			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
 			this._listeners.push(document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e)));
 
+			olMap.addInteraction(this._select);
 			olMap.addInteraction(this._snap);
+			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._draw);
 		}
 		return this._vectorLayer;
@@ -130,13 +135,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
 		olMap.removeInteraction(this._snap);
+		olMap.removeInteraction(this._select);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
 		this._overlays = [];
 		this._listeners.forEach(l => unByKey(l));
-		// unByKey(this._pointerMoveListener);
-		// unByKey(this._keyboardListener);
-		// unByKey(this._layerVisibilityListener);
-		// unByKey(this._layerOpacityListener);
+		this._listeners = [];
 		this._helpTooltip = null;
 		this._draw = false;
 	}
@@ -246,6 +249,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			unByKey(listener);
 		};
 
+		const addToSelection = (event) => {
+			event.feature.setStyle(measureStyleFunction);
+			this._select.getFeatures().push(event.feature);
+		};
+
 		draw.on('drawstart', event => {
 
 			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);
@@ -263,9 +271,34 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		});
 
-		draw.on('drawend', finishMeasurementTooltip);
+		draw.on('drawend', event => {
+			finishMeasurementTooltip(event);
+			addToSelection(event);
+		}
+		);
 
 		return draw;
+	}
+
+	_createSelect() {
+		const layerFilter = (itemLayer) => {
+			itemLayer === this._vectorLayer;
+		};
+		const featureFilter = (itemFeature, itemLayer) => {
+			if (layerFilter(itemLayer)) {
+				return itemFeature;
+			}
+		};
+		const options = { 
+			layers:layerFilter,
+			filter:featureFilter, style:measureStyleFunction };
+		return new Select(options);
+	}
+
+	_createModify() {
+		const options = { features:this._select.getFeatures() };		
+		const modify = new Modify(options);
+		return modify;
 	}
 
 	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
