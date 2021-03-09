@@ -12,7 +12,7 @@ describe('measureStyleFunction', () => {
 		const styles = measureStyleFunction(feature);
 
 		expect(styles).toBeTruthy();
-		expect(styles.length).toBe(2);
+		expect(styles.length).toBe(3);
 	});
 
 	it('should query the featureGeometry', () => {
