@@ -7,10 +7,11 @@ import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
+import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from './StyleUtils';
 import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
+import { singleClick, noModifierKeys } from 'ol/events/condition';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -294,7 +295,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		const options = { features:this._select.getFeatures() };		
+		const options = { 
+			features:this._select.getFeatures(), 
+			style:modifyStyleFunction,
+			deleteCondition: event => noModifierKeys(event) && singleClick(event) 
+		};		
 		const modify = new Modify(options);
 		return modify;
 	}

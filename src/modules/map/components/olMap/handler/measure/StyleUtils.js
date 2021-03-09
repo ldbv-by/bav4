@@ -72,6 +72,21 @@ export const measureStyleFunction = (feature) => {
 	return styles;
 };
 
+export const modifyStyleFunction = () => {
+	return [new Style({
+		image: new CircleStyle({
+			radius: 8,
+			stroke: new Stroke({
+				color:RED_COLOR,
+				width:1 }),
+			fill: new Fill({
+				color: WHITE_COLOR,
+			}),				
+		}),
+	})]
+	;
+};
+
 export const generateSketchStyleFunction = (styleFunction) => {
 	
 	const sketchPolygon = new Style({ fill: new Fill({
