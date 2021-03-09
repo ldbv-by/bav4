@@ -48,7 +48,7 @@ describe('GeoResourceService', () => {
 			const georesources = await instanceUnderTest.init();
 
 			expect(georesources.length).toBe(1);
-			expect(georesources[0].id).toBe('fallBackground');
+			expect(georesources[0].id).toBe('atkis');
 			expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 		});
 	});

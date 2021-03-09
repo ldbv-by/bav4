@@ -94,7 +94,7 @@ export class GeoResourceService {
 	 * @private
 	 */
 	_newFallbackGeoResource() {
-		const wmtsGeoResource = new WMTSGeoResource('fallBackground', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
+		const wmtsGeoResource = new WMTSGeoResource('atkis', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
 		wmtsGeoResource.background = true;
 		return wmtsGeoResource;
 	}
