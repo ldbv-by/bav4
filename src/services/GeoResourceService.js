@@ -30,9 +30,10 @@ export class GeoResourceService {
 
 	/**
 	 * Initializes this service, which means all available GeoResources are loaded and can be served in the future from the internal cache.
+	 * If initialsation fails, a fallback is delivered. 
 	 * @public
 	 * @async
-	 * @returns {Promise<Array.<GeoResource>> | Promise.reject}
+	 * @returns {Promise<Array.<GeoResource>>}
 	 */
 	async init() {
 		if (!this._georesources) {
