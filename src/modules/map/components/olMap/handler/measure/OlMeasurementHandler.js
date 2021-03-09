@@ -11,7 +11,7 @@ import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction 
 import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
-import { singleClick, noModifierKeys } from 'ol/events/condition';
+import { noModifierKeys, click } from 'ol/events/condition';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -206,6 +206,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawend', event => {
 			finishMeasurementTooltip(event);
 			addToSelection(event);
+			draw.setActive(false);
 		}
 		);
 
@@ -291,6 +292,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = { 
 			layers:layerFilter,
 			filter:featureFilter, style:measureStyleFunction };
+		
 		return new Select(options);
 	}
 
@@ -298,10 +300,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = { 
 			features:this._select.getFeatures(), 
 			style:modifyStyleFunction,
-			deleteCondition: event => noModifierKeys(event) && singleClick(event) 
+			deleteCondition: event => {							
+				const isDeletable = (noModifierKeys(event) && click(event));
+				return  isDeletable;
+			} 
 		};		
-		const modify = new Modify(options);
-		return modify;
+		return new Modify(options);
 	}
 
 	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
