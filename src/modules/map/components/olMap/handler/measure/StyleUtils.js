@@ -58,8 +58,11 @@ export const measureStyleFunction = (feature) => {
 				}),				
 			}),
 			geometry: function (feature) {
-			// return the coordinates of the first ring of the polygon
-				const coordinates = feature.getGeometry().getCoordinates()[0];
+				// return the coordinates of the first ring of the polygon
+				let coordinates = feature.getGeometry().getCoordinates();
+				if (feature.getGeometry().getType() === 'Polygon') {
+					coordinates = feature.getGeometry().getCoordinates()[0];
+				}
 				return new MultiPoint(coordinates);
 			},
 			zIndex:ZPOINT
