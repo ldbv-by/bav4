@@ -21,9 +21,9 @@ export class OlMapContextMenuContent extends BaElement {
 		this._coordinateService = coordinateService;
 		this._translationService = translastionService;
 		this._shareService = shareService;
-		this._altitudeServiceProvider = altitudeProviderService.getAltitudeProvider();
+		this._altitudeServiceProvider = altitudeProviderService;
 
-		this._altitude = 0;
+		this._altitude = null;
 	}
 
 	set coordinate(coordinateInMapSrid) {
@@ -37,6 +37,17 @@ export class OlMapContextMenuContent extends BaElement {
 		this._altitude = altitude;
 		this.render();
 	}
+
+	async _getAltitude () {
+		await this._altitudeServiceProvider.getAltitude(this._coordinate)
+			.then( data => {
+				if (data) {
+					this._updateAltitude(data.altitude);
+				} 
+			}, reason => {
+				console.warn(reason);
+			});
+	} 
 
 
 	createView() {
@@ -60,17 +71,7 @@ export class OlMapContextMenuContent extends BaElement {
 				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
-			// const getAltitude = async() => {
-			// 	await this._altitudeServiceProvider(this._coordinate[0], this._coordinate[1])
-			// 	.then(data => {
-			// 		if (data) {
-			// 			console.log(data.altitude)
-			// 			this._updateAltitude(data.altitude);
-			// 		}
-			// 	}, reason => {
-			// 		console.warn(reason);
-			// 	});
-			// }; 
+			// this._getAltitude();
 			
 			return html`
 			<style>${css}</style>
@@ -84,7 +85,6 @@ export class OlMapContextMenuContent extends BaElement {
 			`;
 
 		}
-
 		return nothing;
 	}
 

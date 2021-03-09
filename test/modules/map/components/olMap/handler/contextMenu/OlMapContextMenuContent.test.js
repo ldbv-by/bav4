@@ -19,7 +19,7 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { },
 	};
 	const altitudeServiceMock = {
-		getAltitudeProvider() {} 
+		getAltitude() {} 
 	}; 
 
 	const setup = () => {
