@@ -1,6 +1,6 @@
 
 /**
- * An async function that that provice an array of
+ * An async function that that provides an array of
  * {@link GeoResource}s.
  *
  * @async
