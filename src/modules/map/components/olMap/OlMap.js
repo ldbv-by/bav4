@@ -192,7 +192,7 @@ export class OlMap extends BaElement {
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+			const olLayer = resource ? toOlLayer(resource, this._map.getTarget()) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = layers.find(layer => layer.id === id);

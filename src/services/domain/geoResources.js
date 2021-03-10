@@ -176,6 +176,32 @@ export class VectorGeoResource extends GeoResource {
 /**
  * @class
  */
+export class VectorTileGeoResource extends GeoResource {
+	constructor(id, label, styleLabels, styleUrls) {
+		super(id, label);
+		this._styleLabels = styleLabels;
+		this._styleUrls = styleUrls;
+	}
+
+	get styleLabels() {
+		return this._styleLabels;
+	}
+
+	get styleUrls() {
+		return this.__styleUrls;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VECTOR_TILES;
+	}
+}
+
+/**
+ * @class
+ */
 export class AggregateGeoResource extends GeoResource {
 	constructor(id, label, geoResourceIds) {
 		super(id, label);

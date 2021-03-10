@@ -1,5 +1,5 @@
 import { GeoResourceTypes, VectorSourceType } from '../../../../services/domain/geoResources';
-import { Image as ImageLayer, Vector as VectorLayer, Group as LayerGroup } from 'ol/layer';
+import { Image as ImageLayer, Vector as VectorLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
@@ -7,12 +7,21 @@ import VectorSource from 'ol/source/Vector';
 import { KML, GPX, GeoJSON } from 'ol/format';
 import { $injector } from '../../../../injection';
 import { load as featureLoader } from './utils/feature.provider';
+import { Map as MbMap } from 'mapbox-gl';
+import { toLonLat } from 'ol/proj';
+import { observe } from '../../../../utils/storeUtils';
 
 
 const getUrlService = () => {
 
 	const { UrlService: urlService } = $injector.inject('UrlService');
 	return urlService;
+};
+
+const getStoreService = () => {
+
+	const { StoreService: storeService } = $injector.inject('StoreService');
+	return storeService;
 };
 
 export const iconUrlFunction = (url) => getUrlService().proxifyInstant(url);
@@ -32,7 +41,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 	throw new Error(sourceType + ' currently not supported');
 };
 
-export const toOlLayer = (georesource) => {
+export const toOlLayer = (georesource, mapContainer) => {
 
 	switch (georesource.getType()) {
 		case GeoResourceTypes.WMS:
@@ -73,6 +82,9 @@ export const toOlLayer = (georesource) => {
 				layers: georesource.geoResourceIds.map(id => toOlLayer(id))
 			});
 		}
+
+		case GeoResourceTypes.VECTOR_TILES:
+			return createMbLayer(georesource.id, mapContainer);
 	}
 
 	throw new Error(georesource.getType() + ' currently not supported');
@@ -94,4 +106,74 @@ export const toOlLayerFromHandler = (id, handler, map) => {
 		olLayer.set('id', id);
 	}
 	return olLayer;
+};
+
+const createMbLayer = (id, mapContainer) => {
+
+
+
+	const mbMap = new MbMap({
+		style: 'https://adv-smart.de/styles/public/de_style_colour_light.json',
+		attributionControl: false,
+		boxZoom: false,
+		center: [0, 0],
+		container: mapContainer,
+		doubleClickZoom: false,
+		dragPan: false,
+		dragRotate: false,
+		interactive: false,
+		keyboard: false,
+		pitchWithRotate: false,
+		scrollZoom: false,
+		touchZoomRotate: false
+	});
+
+
+	const setStyle = (theme) => {
+		if (theme === 'dark') {
+			mbMap.setStyle('https://adv-smart.de/styles/public/de_style_night.json');
+		}
+		else {
+			mbMap.setStyle('https://adv-smart.de/styles/public/de_style_colour_light.json');
+		}
+
+	};
+	setStyle(getStoreService().getStore().getState().uiTheme.theme);
+	observe(getStoreService().getStore(), state => state.uiTheme.theme, setStyle);
+
+
+
+	const mbLayer = new Layer({
+		id: id,
+		render: function (frameState) {
+			const canvas = mbMap.getCanvas();
+			const viewState = frameState.viewState;
+			const visible = mbLayer.getVisible();
+			canvas.style.display = visible ? 'block' : 'none';
+			const opacity = mbLayer.getOpacity();
+			canvas.style.opacity = opacity;
+			// adjust view parameters in mapbox
+			const rotation = viewState.rotation;
+			if (rotation) {
+				mbMap.rotateTo(-rotation * 180 / Math.PI, {
+					animate: false
+				});
+			}
+			mbMap.jumpTo({
+				center: toLonLat(viewState.center),
+				zoom: viewState.zoom - 1,
+				animate: false
+			});
+			// cancel the scheduled update & trigger synchronous redraw
+			// see https://github.com/mapbox/mapbox-gl-js/issues/7893#issue-408992184
+			// NOTE: THIS MIGHT BREAK WHEN UPDATING MAPBOX
+			if (mbMap._frame) {
+				mbMap._frame.cancel();
+				mbMap._frame = null;
+			}
+			mbMap._render();
+			return canvas;
+		}
+	});
+	return mbLayer;
 };

@@ -7,7 +7,7 @@
  * @typedef {function():(Array<geoResource>)} georesourceProvider
  */
 
-import { WMTSGeoResource } from './domain/geoResources';
+import { VectorTileGeoResource } from './domain/geoResources';
 import { loadBvvGeoResources } from './provider/geoResource.provider';
 
 
@@ -95,7 +95,10 @@ export class GeoResourceService {
 	 * @private
 	 */
 	_newFallbackGeoResource() {
-		const wmtsGeoResource = new WMTSGeoResource('fallback', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
-		return wmtsGeoResource;
+		// const wmtsGeoResource = new WMTSGeoResource('fallback', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
+		// return wmtsGeoResource;
+
+		const vectorTilesGeoResource = new VectorTileGeoResource('fallback', 'Webkarte');
+		return vectorTilesGeoResource;
 	}
 }
