@@ -289,25 +289,11 @@ describe('OlMap', () => {
 
 	describe('olLayer management', () => {
 
-		it('intial attaches one olLayer', async () => {
+		it('initially has no olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
-			expect(map.getLayers().getLength()).toBe(1);
-		});
-
-		it('adds an olLayer with default settings', async () => {
-			const element = await setup();
-			const map = element._map;
-
-			addLayer('id0');
-
-			expect(map.getLayers().getLength()).toBe(2);
-
-			const layer = map.getLayers().item(1);
-			expect(layer.get('id')).toBe('id0');
-			expect(layer.getOpacity()).toBe(1);
-			expect(layer.getVisible()).toBeTrue();
+			expect(map.getLayers().getLength()).toBe(0);
 		});
 
 		it('adds an olLayer with custom settings', async () => {
@@ -316,9 +302,9 @@ describe('OlMap', () => {
 
 			addLayer('id0', { visible: false, opacity: .5 });
 
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 
-			const layer = map.getLayers().item(1);
+			const layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe('id0');
 			expect(layer.getOpacity()).toBe(.5);
 			expect(layer.getVisible()).toBeFalse();
@@ -330,10 +316,10 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1', { zIndex: 0 });
-			expect(map.getLayers().getLength()).toBe(3);
-			const layer1 = map.getLayers().item(1);
+			expect(map.getLayers().getLength()).toBe(2);
+			const layer1 = map.getLayers().item(0);
 			expect(layer1.get('id')).toBe('id1');
-			const layer0 = map.getLayers().item(2);
+			const layer0 = map.getLayers().item(1);
 			expect(layer0.get('id')).toBe('id0');
 		});
 
@@ -344,11 +330,11 @@ describe('OlMap', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 
 			addLayer('id0');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 
 			addLayer('unknown');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
 		});
@@ -358,12 +344,12 @@ describe('OlMap', () => {
 			const map = element._map;
 
 			addLayer('id0');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 
 			removeLayer('id0');
 
-			expect(map.getLayers().getLength()).toBe(1);
-			expect(map.getLayers().item(0).get('id')).not.toBe('id0');
+			expect(map.getLayers().getLength()).toBe(0);
+			// expect(map.getLayers().item(0).get('id')).not.toBe('id0');
 		});
 
 		it('modifys the visibility of an olLayer', async () => {
@@ -372,16 +358,16 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1');
-			expect(map.getLayers().getLength()).toBe(3);
+			expect(map.getLayers().getLength()).toBe(2);
 
 			modifyLayer('id0', { visible: false, opacity: .5 });
 
-			const layer0 = map.getLayers().item(1);
+			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id0');
 			expect(layer0.getVisible()).toBeFalse();
 			expect(layer0.getOpacity()).toBe(.5);
 
-			const layer1 = map.getLayers().item(2);
+			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id1');
 			expect(layer1.getVisible()).toBeTrue();
 			expect(layer1.getOpacity()).toBe(1);
@@ -393,14 +379,14 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1');
-			expect(map.getLayers().getLength()).toBe(3);
+			expect(map.getLayers().getLength()).toBe(2);
 
 			modifyLayer('id0', { zIndex: 2 });
 
-			const layer0 = map.getLayers().item(1);
+			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id1');
 
-			const layer1 = map.getLayers().item(2);
+			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id0');
 		});
 	});
