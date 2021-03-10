@@ -36,22 +36,20 @@ describe('GeoResourceService', () => {
 			expect(georesources.length).toBe(1);
 		});
 
-		it('rejects when backend is not available', (done) => {
+		it('loads a fallback GeoResouce when provider cannot fulfill', async () => {
 
 			const instanceUnderTest = setup(async () => {
 				throw new Error('GeoResources could not be loaded');
 			});
+			const warnSpy = spyOn(console, 'warn');
 
 			expect(instanceUnderTest._georesources).toBeNull();
 
-			instanceUnderTest.init().then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(instanceUnderTest._georesources).toBeNull();
-				expect(reason).toBe('GeoResourceService could not be initialized: GeoResources could not be loaded');
-				done();
-			});
+			const georesources = await instanceUnderTest.init();
 
+			expect(georesources.length).toBe(1);
+			expect(georesources[0].id).toBe('fallback');
+			expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 		});
 	});
 
@@ -99,7 +97,7 @@ describe('GeoResourceService', () => {
 		it('logs a warn statement when when service hat not been initialized', () => {
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			expect(instanceUnderTest.byId('unknownId')).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('GeoResourceService not yet initialized');
 		});

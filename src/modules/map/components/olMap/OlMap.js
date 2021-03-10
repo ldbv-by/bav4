@@ -3,8 +3,6 @@ import { BaElement } from '../../../BaElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
 import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter } from '../../store/position.action';
@@ -53,7 +51,6 @@ export class OlMap extends BaElement {
 	initialize() {
 		this._geoResourceService.init();
 
-		const BACKGROUND_LAYER_ID = 'g_atkis';
 		const { zoom, center } = this._state;
 
 		this._view = new View({
@@ -61,23 +58,8 @@ export class OlMap extends BaElement {
 			zoom: zoom,
 		});
 
-		const baseLayer = new TileLayer({
-			id: BACKGROUND_LAYER_ID,
-			source: new XYZ({
-				projection: 'EPSG:3857',
-				url: `https://intergeo37.bayernwolke.de/betty/${BACKGROUND_LAYER_ID}/{z}/{x}/{y}`,
-				attributions: '&#169; ' +
-					'<a href="https://www.geodaten.bayern.de" target="_blank">Bayerische Vermessungsverwaltung</a> ',
-
-				attributionsCollapsible: false
-			})
-		});
-		baseLayer.set('id', 'g_atkis');
-
 		this._map = new MapOl({
-			layers: [
-				baseLayer
-			],
+			layers: [],
 			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
@@ -147,8 +129,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { position: { zoom, center, fitRequest }, layers: { active: overlayLayers, background: backgroundLayer } } = store;
-		return { zoom, center, fitRequest, overlayLayers, backgroundLayer };
+		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = store;
+		return { zoom, center, fitRequest, layers };
 	}
 
 	/**
@@ -184,13 +166,11 @@ export class OlMap extends BaElement {
 	}
 
 	_syncOverlayLayer() {
-		const { overlayLayers } = this._state;
+		const { layers } = this._state;
 
-		const updatedIds = overlayLayers.map(layer => layer.id);
+		const updatedIds = layers.map(layer => layer.id);
 		const currentIds = this._map.getLayers()
 			.getArray()
-			//exclude background layer
-			.slice(1)
 			.map(olLayer => olLayer.get('id'));
 
 		// array intersection
@@ -215,10 +195,9 @@ export class OlMap extends BaElement {
 			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
-				const layer = overlayLayers.find(layer => layer.id === id);
+				const layer = layers.find(layer => layer.id === id);
 				updateOlLayer(olLayer, layer);
-				//+1: regard baselayer
-				this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+				this._map.getLayers().insertAt(layer.zIndex, olLayer);
 			}
 			else {
 				console.warn('Could not add an olLayer for id \'' + id + '\'');
@@ -227,12 +206,11 @@ export class OlMap extends BaElement {
 		});
 
 		toBeUpdated.forEach(id => {
-			const layer = overlayLayers.find(layer => layer.id === id);
+			const layer = layers.find(layer => layer.id === id);
 			const olLayer = this._getOlLayerById(id);
 			updateOlLayer(olLayer, layer);
 			this._map.getLayers().remove(olLayer);
-			//+1: regard baselayer
-			this._map.getLayers().insertAt(layer.zIndex + 1, olLayer);
+			this._map.getLayers().insertAt(layer.zIndex, olLayer);
 		});
 	}
 
