@@ -223,10 +223,6 @@ export class OlMap extends BaElement {
 		});
 	}
 
-	_syncBackgroundLayer() {
-
-	}
-
 	/**
 	 * @override
 	 */
