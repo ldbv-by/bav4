@@ -36,6 +36,10 @@ describe('OlMap', () => {
 		init() { }
 	};
 
+	const environmentServiceMock = {
+		isTouch() { }
+	};
+
 	const contextMenuEventHandlerMock = {
 		register() { },
 		get id() {
@@ -82,6 +86,7 @@ describe('OlMap', () => {
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
+			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
@@ -204,18 +209,50 @@ describe('OlMap', () => {
 
 	describe('contextmenu', () => {
 
-		describe('when contextmenu click', () => {
-			it('updates the \'contextclick\' property in pointer store', async () => {
-				const element = await setup();
-				const map = element._map;
-				const coordinate = [38, 75];
-				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+		beforeEach(async () => {
+			jasmine.clock().install();
+		});
 
-				simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
 
-				expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
-				expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+		describe('contextmenu event handling', () => {
+
+			describe('on non touch device', () => {
+
+				it('updates the \'contextclick\' property in pointer store', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+				});
+			});
+
+			describe('on touch device', () => {
+				it('updates the \'contextclick\' property in pointer store', async () => {
+					const defaultDelay = 300;
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate);
+					jasmine.clock().tick(defaultDelay + 100);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+				});
 			});
 		});
 	});
@@ -251,6 +288,7 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();
+
 			setTimeout(function () {
 				//check if flag is reset
 				expect(element._viewSyncBlocked).toBeFalse();
