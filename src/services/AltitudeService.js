@@ -4,7 +4,7 @@ export class AltitudeService {
 
 	constructor(altitudeProvider = loadBvvAltitude) {
 		this._altitudeProvider = altitudeProvider;
-		this._altitude = 0;
+		this._altitude = null;
 	} 
 
 	/**
@@ -22,5 +22,8 @@ export class AltitudeService {
 				return Promise.reject('AltitudeService could not be loaded: ' + e.message);
 			}
 		}
+		else {
+			throw new Error('No coordinates committed: ' + coordinate3857);
+		} 
 	}
 } 

@@ -19,7 +19,8 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { },
 	};
 	const altitudeServiceMock = {
-		getAltitude() {} 
+		getAltitude() {
+		} 
 	}; 
 
 	const setup = () => {
@@ -49,6 +50,7 @@ describe('OlMapContextMenuContent', () => {
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs([1000, 2000]).and.returnValue(42);
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
@@ -60,6 +62,13 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelector('.label').innerText).toBe('code42');
 			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
+
+			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_olMap_handler_contextMenu_content_altitude_label');
+	
+			window.requestAnimationFrame(() => {
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('42');
+			});
+
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
@@ -69,6 +78,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
+			expect(altitudeMock).toHaveBeenCalledOnceWith([1000, 2000]);
 
 		});
 
@@ -109,6 +119,22 @@ describe('OlMapContextMenuContent', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+				done();
+			});
+		});
+
+		it('logs a warn statement when Altitude Service is not available', async  (done) => {
+			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('something got wrong')));
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup();
+
+			element.coordinate = [1000, 2000];
+			//after we set the coordinate, we need to trigger rendering manually in this case
+			element.render();
+
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('something got wrong');
 				done();
 			});
 		});
