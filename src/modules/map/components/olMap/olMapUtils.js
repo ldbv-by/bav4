@@ -97,10 +97,10 @@ export const toOlLayerFromHandler = (id, handler, map) => {
 };
 
 /**
- * Registers a listener on long touch/click events
+ * Registers a listener on long touch/click events.
  * @param {OlMap} map 
  * @param {function(MapBrowserEvent)} callback callback with a MapBrowserEvent as argument
- * @param {number} delay deleay in ms
+ * @param {number} [delay] delay in ms (default=300)
  */
 export const registerLongPressListener = (map, callback, delay = 300) => {
 
