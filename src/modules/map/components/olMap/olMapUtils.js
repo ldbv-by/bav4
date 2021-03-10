@@ -7,7 +7,7 @@ import VectorSource from 'ol/source/Vector';
 import { KML, GPX, GeoJSON } from 'ol/format';
 import { $injector } from '../../../../injection';
 import { load as featureLoader } from './utils/feature.provider';
-import { Map as MbMap } from 'mapbox-gl';
+import { Map as MlMap } from 'maplibre-gl';
 import { toLonLat } from 'ol/proj';
 import { observe } from '../../../../utils/storeUtils';
 
@@ -84,7 +84,7 @@ export const toOlLayer = (georesource, mapContainer) => {
 		}
 
 		case GeoResourceTypes.VECTOR_TILES:
-			return createMbLayer(georesource.id, mapContainer);
+			return createMlLayer(georesource.id, mapContainer);
 	}
 
 	throw new Error(georesource.getType() + ' currently not supported');
@@ -108,11 +108,11 @@ export const toOlLayerFromHandler = (id, handler, map) => {
 	return olLayer;
 };
 
-const createMbLayer = (id, mapContainer) => {
+const createMlLayer = (id, mapContainer) => {
 
 
 
-	const mbMap = new MbMap({
+	const mlMap = new MlMap({
 		style: 'https://adv-smart.de/styles/public/de_style_colour_light.json',
 		attributionControl: false,
 		boxZoom: false,
@@ -131,10 +131,10 @@ const createMbLayer = (id, mapContainer) => {
 
 	const setStyle = (theme) => {
 		if (theme === 'dark') {
-			mbMap.setStyle('https://adv-smart.de/styles/public/de_style_night.json');
+			mlMap.setStyle('https://adv-smart.de/styles/public/de_style_night.json');
 		}
 		else {
-			mbMap.setStyle('https://adv-smart.de/styles/public/de_style_colour_light.json');
+			mlMap.setStyle('https://adv-smart.de/styles/public/de_style_colour_light.json');
 		}
 
 	};
@@ -143,23 +143,23 @@ const createMbLayer = (id, mapContainer) => {
 
 
 
-	const mbLayer = new Layer({
+	const mlLayer = new Layer({
 		id: id,
 		render: function (frameState) {
-			const canvas = mbMap.getCanvas();
+			const canvas = mlMap.getCanvas();
 			const viewState = frameState.viewState;
-			const visible = mbLayer.getVisible();
+			const visible = mlLayer.getVisible();
 			canvas.style.display = visible ? 'block' : 'none';
-			const opacity = mbLayer.getOpacity();
+			const opacity = mlLayer.getOpacity();
 			canvas.style.opacity = opacity;
 			// adjust view parameters in mapbox
 			const rotation = viewState.rotation;
 			if (rotation) {
-				mbMap.rotateTo(-rotation * 180 / Math.PI, {
+				mlMap.rotateTo(-rotation * 180 / Math.PI, {
 					animate: false
 				});
 			}
-			mbMap.jumpTo({
+			mlMap.jumpTo({
 				center: toLonLat(viewState.center),
 				zoom: viewState.zoom - 1,
 				animate: false
@@ -167,13 +167,13 @@ const createMbLayer = (id, mapContainer) => {
 			// cancel the scheduled update & trigger synchronous redraw
 			// see https://github.com/mapbox/mapbox-gl-js/issues/7893#issue-408992184
 			// NOTE: THIS MIGHT BREAK WHEN UPDATING MAPBOX
-			if (mbMap._frame) {
-				mbMap._frame.cancel();
-				mbMap._frame = null;
+			if (mlMap._frame) {
+				mlMap._frame.cancel();
+				mlMap._frame = null;
 			}
-			mbMap._render();
+			mlMap._render();
 			return canvas;
 		}
 	});
-	return mbLayer;
+	return mlLayer;
 };
