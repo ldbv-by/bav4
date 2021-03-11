@@ -59,7 +59,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._overlays.forEach(o => o.getElement().style.opacity = layer.getOpacity());
 		};
 
-		const prepareInteraction = () => {
+		const createLayer = () => {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
@@ -108,7 +108,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		if (this._draw === false) {
 			this._map = olMap;
-			this._vectorLayer = prepareInteraction();
+			this._vectorLayer = createLayer();
 			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
