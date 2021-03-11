@@ -76,25 +76,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (event.dragging) {
 				return;
 			}
-			/** @type {string} */
 			let helpMsg = translate('map_olMap_handler_measure_start');
-
-			if (this._activeSketch) {
-				this._activeSketch.getGeometry();
-				helpMsg = translate('map_olMap_handler_measure_continue_line');
-
-				if (this._isFinishOnFirstPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_first_point');
-				}
-				else if (this._isSnapOnLastPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_last_point');
-				}
-
-				if (this._pointCount > 2) {
-					helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
-				}
+			if (this._draw.getActive()) {
+				if (this._activeSketch) {
+					this._activeSketch.getGeometry();
+					helpMsg = translate('map_olMap_handler_measure_continue_line');
+	
+					if (this._isFinishOnFirstPoint) {
+						helpMsg = translate('map_olMap_handler_measure_snap_first_point');
+					}
+					else if (this._isSnapOnLastPoint) {
+						helpMsg = translate('map_olMap_handler_measure_snap_last_point');
+					}
+	
+					if (this._pointCount > 2) {
+						helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
+					}
+				}	
 			}
 
+			if (this._modify.getActive()) {
+				helpMsg = translate('map_olMap_handler_measure_modify_start');				
+			}
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
 
@@ -105,6 +108,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
 			this._modify = this._createModify();
+			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			
@@ -112,10 +116,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
-			olMap.addInteraction(this._select);
-			olMap.addInteraction(this._snap);
+			olMap.addInteraction(this._select);		
+			olMap.addInteraction(this._draw);	
 			olMap.addInteraction(this._modify);
-			olMap.addInteraction(this._draw);
+			olMap.addInteraction(this._snap);			
 		}
 		return this._vectorLayer;
 	}
