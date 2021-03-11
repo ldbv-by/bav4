@@ -125,16 +125,15 @@ describe('OlMapContextMenuContent', () => {
 
 		it('logs a warn statement when Altitude Service is not available', async  (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('something got wrong')));
+			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('Altitude Error')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
+			element.coordinate = [1000, 2000]; 
 
 			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('something got wrong');
+				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
 				done();
 			});
 		});

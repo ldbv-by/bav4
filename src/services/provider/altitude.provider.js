@@ -12,17 +12,15 @@ export const loadBvvAltitude = async (coordinate3857) => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/altitude';
 
 
-	const result = await httpService.fetch(`${url}/${coordinate3857[0]}/${coordinate3857[1]} `, {
+	const result = await httpService.fetch(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`, {
 		mode: 'cors'
 	});
 
 	if (result.ok) {
-		try {
-			const promise = await result.json();
-			return promise.altitude;
-		}
-		catch (e) {
-			return Promise.reject('Altitude could not be resolved: ' + e.message);
+		const payload = await result.json();
+		const altitude = payload.altitude;
+		if (Number.isInteger(altitude)) {
+			return altitude;
 		} 
 	}
 	throw new Error('Altitude could not be retrieved');

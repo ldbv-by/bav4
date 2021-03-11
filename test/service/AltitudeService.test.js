@@ -21,7 +21,6 @@ describe('AltitudeService', () => {
 		});
 
 		it('provides the altitude', async () => {
-
 			const mockAltitude = 42;
 			const instanceUnderTest = setup( async () => {
 				return mockAltitude;
@@ -29,47 +28,24 @@ describe('AltitudeService', () => {
 
 			const mockCoordinate = [0, 0]; 
 
-			instanceUnderTest.getAltitude(mockCoordinate).then(() => {
-				expect(instanceUnderTest._altitude).toEqual(mockAltitude);
+			instanceUnderTest.getAltitude(mockCoordinate).then((returnValue) => {
+				expect(returnValue).toEqual(mockAltitude);
 			});
-
 		}); 
 
-		it('rejects with no coordinates committed', (done) => {
-			const mockAltitude = 42;
-			const instanceUnderTest = setup( async () => {
-				return mockAltitude;
-			});
-
-			const mockCoordinate = null; 
-
-			instanceUnderTest.getAltitude(mockCoordinate).then(() => {
-				done(new Error('No coordinates committed: '));
-			}, (reason) => {
-				expect(instanceUnderTest._altitude).toBeNull();
-				expect(reason).toEqual(new Error ('No coordinates committed: ' + mockCoordinate));
-				done();
-			});
-		});
-
 		it('rejects when backend is not available', (done) => {
-
 			const instanceUnderTest = setup(async () => {
-				throw new Error('Altitude could not be loaded');
+				throw new Error('Altitude Provider error');
 			});
 
-			expect(instanceUnderTest._altitude).toBeNull();
 			const mockCoordinate = [0, 0]; 
 
 			instanceUnderTest.getAltitude(mockCoordinate).then(() => {
 				done(new Error('Promise should not be resolved'));
 			}, (reason) => {
-				expect(instanceUnderTest._altitude).toBeNull();
-				expect(reason).toBe('AltitudeService could not be loaded: Altitude could not be loaded');
+				expect(reason.message).toBe('Could not load altitude from provider: Altitude Provider error');
 				done();
 			});
-
 		});
 	});
-
 });
