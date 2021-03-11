@@ -19,7 +19,7 @@ export const loadBvvAltitude = async (coordinate3857) => {
 	if (result.ok) {
 		const payload = await result.json();
 		const altitude = payload.altitude;
-		if (Number.isInteger(altitude)) {
+		if (Number.isFinite(altitude)) {
 			return altitude;
 		} 
 	}
