@@ -98,14 +98,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
 
-		const removeLastPoint = (draw, event) => {
-			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				if (draw) {
-					draw.removeLastPoint();
-				}
-			}
-		};
-
 		if (this._draw === false) {
 			this._map = olMap;
 			this._vectorLayer = createLayer();
@@ -118,7 +110,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			
 			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
-			this._listeners.push(document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e)));
+			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
 			olMap.addInteraction(this._select);
 			olMap.addInteraction(this._snap);
@@ -155,6 +147,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_removeOverlayFromMap(map, overlay) {
 		this._overlays = this._overlays.filter(o => o !== overlay);
 		map.removeOverlay(overlay);
+	}
+
+	_removeLast(event) {
+		if (this._draw && this._draw.getActive()) {
+			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+				this._draw.removeLastPoint();				
+			}
+		}
+
+		if (this._modify && this._modify.getActive()) {
+			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+				this._reset();		
+			}
+		}
+	}
+
+	_reset() {
+		this._draw.setActive(true);
+		this._select.getFeatures().clear();
+		this._modify.setActive(false);
+		this._overlays.forEach(o => this._map.removeOverlay(o));
+		this._overlays = [];
+		this._vectorLayer.getSource().clear();
+		this._addOverlayToMap(this._map, this._helpTooltip);		
 	}
 
 	_createDraw(source) {
