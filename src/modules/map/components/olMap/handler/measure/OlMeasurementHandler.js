@@ -162,7 +162,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
-			snapTolerance: 4,
+			snapTolerance: this._getSnapTolerancePerDevice(),
 			style: generateSketchStyleFunction(measureStyleFunction)
 		});
 
@@ -186,7 +186,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			unByKey(listener);
 		};
 
-		const addToSelection = (event) => {
+		const activateModify = (event) => {
+			draw.setActive(false);
+			this._modify.setActive(true);
 			event.feature.setStyle(measureStyleFunction);
 			this._select.getFeatures().push(event.feature);
 			event.feature.on('change', event => this._updateMeasureTooltips(event.target));
@@ -205,8 +207,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', event => {
 			finishMeasurementTooltip(event);
-			addToSelection(event);
-			draw.setActive(false);
+			activateModify(event);
 		}
 		);
 
