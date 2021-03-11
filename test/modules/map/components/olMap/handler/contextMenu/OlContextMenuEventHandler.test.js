@@ -25,7 +25,7 @@ describe('ContextMenuEventHandler', () => {
 	};
 
 	const altitudeServiceMock = {
-		getAltitudeProvider() {} 
+		getAltitude() {} 
 	}; 
 
 	const setup = (state = initialState) => {
