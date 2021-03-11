@@ -6,11 +6,7 @@
  */
 export class ProcessEnvConfigService {
 	constructor() {
-		// eslint-disable-next-line no-undef
-		if (Object.keys(process.env).length === 0) {
-			console.warn('No config properties could be found. This is likely because the .env file is missing.');
-		}
-
+		
 		this._properties = new Map();
 		// eslint-disable-next-line no-undef
 		this._properties.set('RUNTIME_MODE', process.env.NODE_ENV);
@@ -24,6 +20,12 @@ export class ProcessEnvConfigService {
 		this._properties.set('PROXY_URL', process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
 		this._properties.set('BACKEND_URL', process.env.BACKEND_URL);
+
+		this._properties.forEach((value, key) => {
+			if (value === undefined) {
+				console.warn('No config property found for ' + key + '. This is likely because the .env file is missing or you have to append this key to the .env file.');
+			}
+		});
 	}
 
 	/**

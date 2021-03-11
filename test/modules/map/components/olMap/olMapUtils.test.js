@@ -1,9 +1,11 @@
 import BaseLayer from 'ol/layer/Base';
 import { $injector } from '../../../../../src/injection';
 import { Map } from 'ol';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { iconUrlFunction, mapVectorSourceTypeToFormat, registerLongPressListener, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { load } from '../../../../../src/modules/map/components/olMap/utils/feature.provider';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { simulateMouseEvent } from './mapTestUtils';
 
 
 describe('olMapUtils', () => {
@@ -131,13 +133,105 @@ describe('olMapUtils', () => {
 			expect(myLayer.get('id')).toBe('someId');
 		});
 	});
-	
+
 	describe('iconUrlFunction', () => {
 		it('it updates the properties of a olLayer', () => {
 			const iconUrl = 'https://some.url';
 			spyOn(urlService, 'proxifyInstant').withArgs(iconUrl).and.returnValue('https://proxy.url?url=' + iconUrl);
 
 			expect(iconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
+		});
+	});
+
+	describe('registerLongPressListener', () => {
+
+		beforeEach(async () => {
+			jasmine.clock().install();
+		});
+
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+
+		it('it register a listener on long press events with default delay (I)', () => {
+			const defaultDelay = 300;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(defaultDelay - 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('it register a listener on long press events with default delay (II)', () => {
+			const defaultDelay = 300;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(defaultDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
+				{
+					type: MapBrowserEventType.POINTERDOWN
+				}
+			));
+		});
+
+		it('it register a listener on long press events with default delay (III)', () => {
+			const defaultDelay = 300;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			//a second pointer event!
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(defaultDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
+				{
+					type: MapBrowserEventType.POINTERDOWN
+				}
+			));
+		});
+
+		it('it register a listener on long press events with custom delay', () => {
+			const customDelay = 100;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy, customDelay);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(customDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
+				{
+					type: MapBrowserEventType.POINTERDOWN
+				}
+			));
+		});
+
+		it('it cancels the timeout on pointer move with dragging)', () => {
+			const defaultDelay = 300;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy);
+
+			
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, true);
+			jasmine.clock().tick(defaultDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 });

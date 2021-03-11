@@ -7,7 +7,7 @@ import { defaults as defaultControls } from 'ol/control';
 import { removeLayer } from '../../store/layers.action';
 import { changeZoomAndCenter } from '../../store/position.action';
 import { $injector } from '../../../../injection';
-import { toOlLayer, updateOlLayer, toOlLayerFromHandler } from './olMapUtils';
+import { toOlLayer, updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
@@ -24,12 +24,14 @@ export class OlMap extends BaElement {
 		super();
 		const {
 			GeoResourceService: georesourceService,
+			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
-		
+		} = $injector.inject('GeoResourceService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
+
 		this._geoResourceService = georesourceService;
+		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
 		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
@@ -82,11 +84,18 @@ export class OlMap extends BaElement {
 			setBeingMoved(false);
 		});
 
-		this._map.addEventListener('contextmenu', (evt) => {
-			// evt.preventDefault();
+		const contextHandler = (evt) => {
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
-		});
+		};
+
+		if (this._environmentService.isTouch()) {
+			registerLongPressListener(this._map, contextHandler);
+		}
+		else {
+			this._map.addEventListener('contextmenu', contextHandler);
+		}
+
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
@@ -212,10 +221,6 @@ export class OlMap extends BaElement {
 			this._map.getLayers().remove(olLayer);
 			this._map.getLayers().insertAt(layer.zIndex, olLayer);
 		});
-	}
-
-	_syncBackgroundLayer() {
-
 	}
 
 	/**

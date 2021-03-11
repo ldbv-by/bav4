@@ -95,3 +95,28 @@ export const toOlLayerFromHandler = (id, handler, map) => {
 	}
 	return olLayer;
 };
+
+/**
+ * Registers a listener on long touch/click events.
+ * @param {OlMap} map 
+ * @param {function(MapBrowserEvent)} callback callback with a MapBrowserEvent as argument
+ * @param {number} [delay] delay in ms (default=300)
+ */
+export const registerLongPressListener = (map, callback, delay = 300) => {
+
+	let timeoutID;
+	map.on('pointerdown', (evt) => {
+		if (timeoutID) {
+			window.clearTimeout(timeoutID);
+		}
+		timeoutID = window.setTimeout(() => callback(evt), delay);
+	});
+	map.on('pointerup', () => {
+		window.clearTimeout(timeoutID);
+	});
+	map.on('pointermove', (event) => {
+		if (event.dragging) {
+			window.clearTimeout(timeoutID);
+		}
+	});
+};
