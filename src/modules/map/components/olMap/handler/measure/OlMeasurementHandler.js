@@ -1,8 +1,9 @@
 import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
+import { squaredDistance } from 'ol/coordinate';
 import { unByKey } from 'ol/Observable';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
@@ -70,6 +71,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return layer;
 		};
 
+		
+
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
 
@@ -96,7 +99,42 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 
 			if (this._modify.getActive()) {
-				helpMsg = translate('map_olMap_handler_measure_modify_start');				
+				helpMsg = 'map_olMap_handler_measure_modify_key_for_delete';//translate('map_olMap_handler_measure_modify_key_for_delete');	
+				const snappingModifyDistance = 10;
+				const interactionLayer = this._vectorLayer;
+				const featureSnapOption = {
+					hitTolerance: 10,
+					layerFilter: function (layer) {
+						return layer === interactionLayer;
+					}, };
+				
+				this._map.forEachFeatureAtPixel(event.pixel, feature => {
+					const pointerCoordinates = this._map.getCoordinateFromPixel(event.pixel);
+					const featureGeometry = feature.getGeometry();
+					const snappingFeatureCoordinates = featureGeometry.getClosestPoint(pointerCoordinates);
+					const snappingFeaturePixel = this._map.getPixelFromCoordinate(snappingFeatureCoordinates);
+					const snappingFeaturePixelDistance = Math.sqrt(squaredDistance(event.pixel, snappingFeaturePixel));
+					const snappedToFeature = snappingFeaturePixelDistance < snappingModifyDistance;
+					
+					if (snappedToFeature) {
+						helpMsg = 'map_olMap_handler_measure_modify_click_new_point';// translate('map_olMap_handler_measure_modify_click_new_point');
+						let featureCoordinates = featureGeometry.getCoordinates();
+						if (featureGeometry instanceof Polygon) {
+							featureCoordinates  = featureGeometry.getCoordinates()[0];
+						}
+						const snappingVertexGeometry = new MultiPoint(featureCoordinates);
+						const snappingVertexCoordinates = snappingVertexGeometry.getClosestPoint(pointerCoordinates);
+						const snappingVertexPixel = this._map.getPixelFromCoordinate(snappingVertexCoordinates);
+						const snappingVertexPixelDistance = Math.sqrt(squaredDistance(event.pixel, snappingVertexPixel));
+						
+						const snappedToVertex = snappingVertexPixelDistance < snappingModifyDistance;
+						if ( snappedToVertex) {
+							helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');	
+						}
+					}
+					
+				}, featureSnapOption );
+				
 			}
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
