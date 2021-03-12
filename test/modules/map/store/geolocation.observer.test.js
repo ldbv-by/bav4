@@ -1,4 +1,4 @@
-import { GeolocationHandler, GEOLOCATION_LAYER_ID, register } from '../../../../src/modules/map/store/geolocation.observer';
+import { GeolocationObserver, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/geolocation.observer';
 import { activate, deactivate, setTracking } from '../../../../src/modules/map/store/geolocation.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
@@ -51,30 +51,51 @@ describe('geolocationObserver', () => {
 
 	describe('register', () => {
 
+		it('calls #init', () => {
+			const store = setup();
+			const instanceUnderTest = new GeolocationObserver();
+			const initSpy = spyOn(instanceUnderTest, '_init').and.callThrough();
+
+			instanceUnderTest.register(store);
+
+			expect(initSpy).toHaveBeenCalledWith(store);
+			expect(instanceUnderTest._coordinateService).toBeDefined();
+			expect(instanceUnderTest._environmentService).toBeDefined();
+			expect(instanceUnderTest._translationService).toBeDefined();
+			expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
+			expect(instanceUnderTest._geolocationWatcherId).toBeNull();
+			expect(instanceUnderTest._store).toEqual(store);
+		});
+
 		it('activates and deactivates the geolocation handler', () => {
 			const store = setup();
+			const instanceUnderTest = new GeolocationObserver();
+			const activateSpy = spyOn(instanceUnderTest, '_activate');
+			const deactivateSpy = spyOn(instanceUnderTest, '_deactivate');
 
-			const mockGeolocationHandler = jasmine.createSpyObj('GeolocationHandler', ['activate', 'deactivate']);
-			register(store, mockGeolocationHandler);
+			instanceUnderTest.register(store);
 
-			expect(mockGeolocationHandler.activate).not.toHaveBeenCalled();
-			expect(mockGeolocationHandler.deactivate).not.toHaveBeenCalled();
+			expect(activateSpy).not.toHaveBeenCalled();
+			expect(deactivateSpy).not.toHaveBeenCalled();
 
 			activate();
 
-			expect(mockGeolocationHandler.activate).toHaveBeenCalledWith();
-			expect(mockGeolocationHandler.deactivate).not.toHaveBeenCalled();
+			expect(activateSpy).toHaveBeenCalledWith();
+			expect(deactivateSpy).not.toHaveBeenCalled();
 
 			deactivate();
 
-			expect(mockGeolocationHandler.activate).toHaveBeenCalled();
-			expect(mockGeolocationHandler.deactivate).toHaveBeenCalled();
+			expect(activateSpy).toHaveBeenCalled();
+			expect(deactivateSpy).toHaveBeenCalled();
 		});
 
 		it('adds and removes the geolocation layer', () => {
 			const store = setup();
-			const mockGeolocationHandler = jasmine.createSpyObj('GeolocationHandler', ['activate', 'deactivate']);
-			register(store, mockGeolocationHandler);
+			const instanceUnderTest = new GeolocationObserver();
+			spyOn(instanceUnderTest, '_activate');
+			spyOn(instanceUnderTest, '_deactivate');
+
+			instanceUnderTest.register(store);
 
 			activate();
 
@@ -88,7 +109,9 @@ describe('geolocationObserver', () => {
 
 		it('registers an observer for beingDragged changes', () => {
 			const store = setup();
-			register(store);
+			const instanceUnderTest = new GeolocationObserver();
+
+			instanceUnderTest.register(store);
 
 			setTracking(true);
 			activate();
@@ -100,26 +123,14 @@ describe('geolocationObserver', () => {
 
 	describe('GeolocationHandler', () => {
 
-		describe('constructor', () => {
-
-			it('initializes the handler', () => {
-				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
-
-				expect(instanceUnderTest._coordinateService).toBeDefined();
-				expect(instanceUnderTest._environmentService).toBeDefined();
-				expect(instanceUnderTest._translationService).toBeDefined();
-				expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
-				expect(instanceUnderTest._geolocationWatcherId).toBeNull();
-				expect(instanceUnderTest._store).toEqual(store);
-			});
-		});
+		
 
 		describe('_transformPositionTo3857', () => {
 
 			it('transforms a position to 3857', () => {
 				const expectedCoord = [38, 57];
-				const instanceUnderTest = new GeolocationHandler(setup());
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(setup());
 				spyOn(coordinateServiceMock, 'fromLonLat').and.returnValue(expectedCoord);
 
 				const transformedCoord = instanceUnderTest._transformPositionTo3857({ coords: { longitude: 43, latitude: 26 } });
@@ -132,7 +143,8 @@ describe('geolocationObserver', () => {
 
 			it('handles a PERMISSION_DENIED position error', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				spyOn(window, 'alert');
 				const warnSpy = spyOn(console, 'warn');
 				// code PERMISSION_DENIED
@@ -148,11 +160,12 @@ describe('geolocationObserver', () => {
 
 			it('handles other position errors', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				spyOn(window, 'alert');
 				const warnSpy = spyOn(console, 'warn');
 				// code PERMISSION_DENIED
-				const error = { code: 2,  POSITION_UNAVAILABLE :2 };
+				const error = { code: 2, POSITION_UNAVAILABLE: 2 };
 
 				instanceUnderTest._handlePositionError(error);
 
@@ -168,7 +181,8 @@ describe('geolocationObserver', () => {
 				const expectedCoord = [38, 57];
 				const expectedAccuracy = 42;
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: expectedAccuracy } };
 				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
 
@@ -186,7 +200,8 @@ describe('geolocationObserver', () => {
 					}
 				};
 				const store = setup(state);
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				instanceUnderTest._firstTimeActivatingGeolocation = false;
 
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
@@ -204,7 +219,8 @@ describe('geolocationObserver', () => {
 					}
 				};
 				const store = setup(state);
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
 
@@ -216,7 +232,8 @@ describe('geolocationObserver', () => {
 
 			it('disables the denied flag', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
 				const fitSpy = spyOn(instanceUnderTest, '_fit');
@@ -233,7 +250,8 @@ describe('geolocationObserver', () => {
 
 			it('watches position successfully ', (done) => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 				const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
 				spyOn(window.navigator.geolocation, 'watchPosition').and.callFake(success => Promise.resolve(success(position)));
@@ -249,7 +267,8 @@ describe('geolocationObserver', () => {
 
 			it('watches position unsuccessfully ', (done) => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const errorMessage = 'some error';
 				const handlePositionErrorSpy = spyOn(instanceUnderTest, '_handlePositionError');
 				spyOn(window.navigator.geolocation, 'watchPosition').and.callFake((success, error) => Promise.resolve(error(errorMessage)));
@@ -266,7 +285,8 @@ describe('geolocationObserver', () => {
 		describe('_fit', () => {
 			it('calculates an extent and updates the state', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const mapSrid = 2100;
 				const geodeticSrid = 4200;
 				const geodeticExtent = [42, 10, 42, 10];
@@ -293,11 +313,12 @@ describe('geolocationObserver', () => {
 
 			it('activates the handler', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 
 				const watchPositionSpy = spyOn(instanceUnderTest, '_watchPosition');
 
-				instanceUnderTest.activate();
+				instanceUnderTest._activate();
 
 				expect(store.getState().geolocation.tracking).toBeTrue();
 				expect(watchPositionSpy).toHaveBeenCalled();
@@ -305,12 +326,13 @@ describe('geolocationObserver', () => {
 
 			it('deactivates the handler', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				instanceUnderTest._geolocationWatcherId = 42;
 				instanceUnderTest._firstTimeActivatingGeolocation = false;
 				const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
 
-				instanceUnderTest.deactivate();
+				instanceUnderTest._deactivate();
 
 				expect(clearWatchSpy).toHaveBeenCalledOnceWith(42);
 				// expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
@@ -318,10 +340,11 @@ describe('geolocationObserver', () => {
 
 			it('calls deactivate on inactive handler', () => {
 				const store = setup();
-				const instanceUnderTest = new GeolocationHandler(store);
+				const instanceUnderTest = new GeolocationObserver();
+				instanceUnderTest._init(store);
 				const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
 
-				instanceUnderTest.deactivate();
+				instanceUnderTest._deactivate();
 
 				expect(clearWatchSpy).not.toHaveBeenCalledOnceWith(42);
 			});
