@@ -12,24 +12,6 @@ export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
 export class GeolocationObserver extends BaObserver {
 
-	// constructor(store) {
-	// 	super();
-	// 	const {
-	// 		TranslationService: translationService,
-	// 		CoordinateService: coordinateService,
-	// 		EnvironmentService: environmentService,
-	// 		MapService: mapService
-	// 	}
-	// 		= $injector.inject('TranslationService', 'CoordinateService', 'EnvironmentService', 'MapService');
-	// 	this._translationService = translationService;
-	// 	this._coordinateService = coordinateService;
-	// 	this._environmentService = environmentService;
-	// 	this._mapService = mapService;
-
-	// 	this._firstTimeActivatingGeolocation = true;
-	// 	this._geolocationWatcherId = null;
-	// 	this._store = store;
-	// }
 
 	_handlePositionError(error) {
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
