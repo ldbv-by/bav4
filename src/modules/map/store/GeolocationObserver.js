@@ -157,27 +157,3 @@ export class GeolocationObserver extends BaObserver {
 		});
 	}
 }
-
-// export const register = (store, geolocationHandler = new GeolocationHandler(store)) => {
-
-// 	const onGeolocationActivityChange = (active) => {
-
-// 		if (active) {
-// 			geolocationHandler.activate();
-// 			addLayer(GEOLOCATION_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-// 		}
-// 		else {
-// 			geolocationHandler.deactivate();
-// 			removeLayer(GEOLOCATION_LAYER_ID);
-// 		}
-// 	};
-
-// 	observe(store, state => state.geolocation.active, onGeolocationActivityChange);
-
-// 	//disable tracking when map is dragged  by user
-// 	observe(store, state => state.pointer.beingDragged, (beingDragged, state) => {
-// 		if (state.geolocation.active && beingDragged) {
-// 			setTracking(false);
-// 		}
-// 	});
-// };

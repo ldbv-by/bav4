@@ -1,4 +1,4 @@
-import { GeolocationObserver, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/geolocation.observer';
+import { GeolocationObserver, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/GeolocationObserver';
 import { activate, deactivate, setTracking } from '../../../../src/modules/map/store/geolocation.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
