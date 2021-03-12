@@ -7,8 +7,6 @@ import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 import { layersReducer } from '../modules/map/store/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
-import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
-import { register as registerGeolocationObserver } from '../modules/map/store/geolocation.observer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
@@ -49,16 +47,16 @@ export class StoreService {
 		$injector.onReady(() => {
 
 			const {
+				GeolocationObserver: geolocationObserver,
 				LayersObserver: layersObserver,
 				PositionObserver: positionObserver
 			}
-				= $injector.inject('LayersObserver', 'PositionObserver');
+				= $injector.inject('GeolocationObserver', 'LayersObserver', 'PositionObserver');
 	
-				
-			registerMeasurementObserver(this._store);
-			registerGeolocationObserver(this._store);
-			layersObserver.register(this.store);
-			positionObserver.register(this.store);
+			// registerMeasurementObserver(this._store);
+			geolocationObserver.register(this._store);
+			layersObserver.register(this._store);
+			positionObserver.register(this._store);
 		});
 	}
 
