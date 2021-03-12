@@ -113,6 +113,10 @@ export class GeolocationObserver extends BaObserver {
 		this._store = store;
 	}
 
+	/**
+	 * @override
+	 * @param {Store} store 
+	 */
 	register(store) {
 		
 		this._init(store);

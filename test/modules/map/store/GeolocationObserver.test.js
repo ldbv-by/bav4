@@ -9,7 +9,7 @@ import { pointerReducer } from '../../../../src/modules/map/store/pointer.reduce
 import { setBeingDragged } from '../../../../src/modules/map/store/pointer.action';
 
 
-describe('geolocationObserver', () => {
+describe('GeolocationObserver', () => {
 
 	const windowMock = {
 		navigator: {
