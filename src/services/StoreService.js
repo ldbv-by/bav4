@@ -10,7 +10,6 @@ import ReduxQuerySync from 'redux-query-sync';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { register as registerMeasurementObserver } from '../modules/map/store/measurement.observer';
 import { register as registerGeolocationObserver } from '../modules/map/store/geolocation.observer';
-import { register as registerLayersObserver } from '../modules/map/store/layers.observer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
@@ -91,9 +90,16 @@ export class StoreService {
 		this._store = createStore(rootReducer, storeEnhancer);
 
 		$injector.onReady(() => {
+
+			const {
+				LayersObserver: layersObserver
+			}
+				= $injector.inject('LayersObserver', 'PositionObserver');
+	
+				
 			registerMeasurementObserver(this._store);
 			registerGeolocationObserver(this._store);
-			registerLayersObserver(this._store);
+			layersObserver.register(this.store);
 		});
 	}
 
