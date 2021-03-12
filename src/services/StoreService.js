@@ -92,7 +92,8 @@ export class StoreService {
 		$injector.onReady(() => {
 
 			const {
-				LayersObserver: layersObserver
+				LayersObserver: layersObserver,
+				PositionObserver: positionObserver
 			}
 				= $injector.inject('LayersObserver', 'PositionObserver');
 	
@@ -100,6 +101,7 @@ export class StoreService {
 			registerMeasurementObserver(this._store);
 			registerGeolocationObserver(this._store);
 			layersObserver.register(this.store);
+			positionObserver.register(this.store);
 		});
 	}
 
