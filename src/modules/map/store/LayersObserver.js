@@ -101,12 +101,3 @@ export class LayersObserver extends BaObserver {
 		this._init();
 	}
 }
-
-// export const register = (store, handler = new LayersHandler()) => {
-
-// 	handler.init();
-
-//will come later
-// const onLayersChanged = () => {};
-// observe(store, state => state.layers.active, onLayersChanged);
-// };
