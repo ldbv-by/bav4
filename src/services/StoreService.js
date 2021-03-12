@@ -47,13 +47,14 @@ export class StoreService {
 		$injector.onReady(() => {
 
 			const {
+				MeasurementObserver: measurementObserver,
 				GeolocationObserver: geolocationObserver,
 				LayersObserver: layersObserver,
 				PositionObserver: positionObserver
 			}
-				= $injector.inject('GeolocationObserver', 'LayersObserver', 'PositionObserver');
+				= $injector.inject('GeolocationObserver', 'MeasurementObserver', 'LayersObserver', 'PositionObserver');
 	
-			// registerMeasurementObserver(this._store);
+			measurementObserver.register(this._store);
 			geolocationObserver.register(this._store);
 			layersObserver.register(this._store);
 			positionObserver.register(this._store);
