@@ -10,7 +10,7 @@ import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
 import { getPartitionDelta } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
-import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
+import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
