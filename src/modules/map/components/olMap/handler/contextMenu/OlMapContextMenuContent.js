@@ -36,7 +36,7 @@ export class OlMapContextMenuContent extends BaElement {
 	 */
 	async _getAltitude() {
 		try {
-			this._altitude = await this._altitudeService.getAltitude(this._coordinate);
+			this._altitude = await this._altitudeService.getAltitude(this._coordinate) + ' (m)';
 		}
 		catch (e) {
 			this._altitude = '-';

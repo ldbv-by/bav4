@@ -9,10 +9,11 @@ describe('AltitudeService', () => {
 
 	describe('init', () => {
 
-		it('initializes the service', async () => {
-			const instanceUnderTest = setup();
+		it('initializes the service with custom provider', async () => {
+			const customProvider = async () => { }; 
+			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._altitudeProvider).toBeDefined();
-			expect(instanceUnderTest._altitudeProvider).toEqual(loadBvvAltitude);
+			expect(instanceUnderTest._altitudeProvider).toEqual(customProvider);
 		});
 
 		it('initializes the service with default provider', async () => {
