@@ -52,11 +52,11 @@ describe('LayersObserver', () => {
 
 	describe('_init', () => {
 
-		it('initializes the georesource service calls #_addLayersFromConfig', async () => {
+		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
 			setup();
 			const instanceUnderTest = new LayersObserver();
-			const addLayersFromQueryParamsMock = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
-			const addLayersFromConfigMock = spyOn(instanceUnderTest, '_addLayersFromConfig');
+			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
+			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve([
 				new WMTSGeoResource('atkis', 'someLabel', 'someUrl')
 			]));
@@ -64,16 +64,16 @@ describe('LayersObserver', () => {
 			await instanceUnderTest._init();
 
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
-			expect(addLayersFromQueryParamsMock).not.toHaveBeenCalled();
-			expect(addLayersFromConfigMock).toHaveBeenCalledTimes(1);
+			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
+			expect(addLayersFromConfigSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('initializes the georesource service calls #_addLayersFromQueryParams', async () => {
+		it('initializes the georesource service and calls #_addLayersFromQueryParams', async () => {
 			setup();
 			const queryParam = QueryParameters.LAYER + '=some';
 			const instanceUnderTest = new LayersObserver();
-			const addLayersFromQueryParamsMock = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
-			const addLayersFromConfigMock = spyOn(instanceUnderTest, '_addLayersFromConfig');
+			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
+			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve([
 				new WMTSGeoResource('atkis', 'someLabel', 'someUrl')
 			]));
@@ -82,8 +82,8 @@ describe('LayersObserver', () => {
 			await instanceUnderTest._init();
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
-			expect(addLayersFromQueryParamsMock).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
-			expect(addLayersFromConfigMock).not.toHaveBeenCalled();
+			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
+			expect(addLayersFromConfigSpy).not.toHaveBeenCalled();
 		});
 
 		describe('_addLayersFromConfig', () => {
@@ -120,6 +120,7 @@ describe('LayersObserver', () => {
 		});
 
 		describe('_addLayersFromQueryParams', () => {
+
 			it('initializes the georesource service', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = QueryParameters.LAYER + '=some0,some1';
@@ -144,7 +145,7 @@ describe('LayersObserver', () => {
 
 			it('initializes the georesource service considering layer visibility', () => {
 				//geoResource service does not know id 'unknown'
-				const queryParam = QueryParameters.LAYER + '=some0,some1&' + QueryParameters.LAYER_VISIBILITY + '=true,false';
+				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`;
 				const store = setup();
 				const instanceUnderTest = new LayersObserver();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -166,9 +167,9 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('initializes the georesource service considering layer visibility with unusable params', () => {
+			it('initializes the georesource service considering layer visibility with unuseable params', () => {
 				//geoResource service does not know id 'unknown'
-				const queryParam = QueryParameters.LAYER + '=some0,some1&' + QueryParameters.LAYER_VISIBILITY + '=some,thing';
+				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersObserver();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -192,7 +193,7 @@ describe('LayersObserver', () => {
 
 			it('initializes the georesource service considering layer opacity', () => {
 				//geoResource service does not know id 'unknown'
-				const queryParam = QueryParameters.LAYER + '=some0,some1&' + QueryParameters.LAYER_OPACITY + '=0.8,.6';
+				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`;
 				const store = setup();
 				const instanceUnderTest = new LayersObserver();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -214,9 +215,9 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('initializes the georesource service considering layer opacity with unusable params', () => {
+			it('initializes the georesource service considering layer opacity with unuseable params', () => {
 				//geoResource service does not know id 'unknown'
-				const queryParam = QueryParameters.LAYER + '=some0,some1&' + QueryParameters.LAYER_OPACITY + '=some,thinf';
+				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersObserver();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);

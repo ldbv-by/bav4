@@ -6,10 +6,6 @@ import { addLayer } from './layers.action';
 
 export class LayersObserver extends BaObserver {
 
-	constructor() {
-		super();
-	}
-
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
