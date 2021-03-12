@@ -36,7 +36,7 @@ describe('LayersObserver', () => {
 
 	describe('register', () => {
 
-		it('calls the handlers #init', () => {
+		it('calls #register', () => {
 			const store = setup();
 			const instanceUnderTest = new LayersObserver();
 			const spy = spyOn(instanceUnderTest, '_init');
