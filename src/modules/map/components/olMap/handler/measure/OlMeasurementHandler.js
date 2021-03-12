@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from './StyleUtils';
-import { getPartitionDelta } from './GeometryUtils';
+import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
 import { noModifierKeys, click } from 'ol/events/condition';
@@ -117,15 +117,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (vertexFeature) {
 					helpMsg = 'map_olMap_handler_measure_modify_click_new_point';// translate('map_olMap_handler_measure_modify_click_new_point');
 
-					const vertexCoordinate = vertexFeature.getGeometry().getCoordinates();
+					const vertexGeometry = vertexFeature.getGeometry();
 					const snappedFeature = vertexFeature.get('features')[0];
 					const snappedGeometry = snappedFeature.getGeometry();
-					let snappedCoordinates = snappedGeometry.getCoordinates();
-					if (snappedGeometry instanceof Polygon) {
-						snappedCoordinates = snappedGeometry.getCoordinates()[0];
-					}
-					const isSnapped = snappedCoordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
-					if (isSnapped) {
+					
+					if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
 						helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');
 					}
 				}

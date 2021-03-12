@@ -1,4 +1,4 @@
-import { LineString, Polygon, LinearRing, Circle } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 
@@ -194,3 +194,24 @@ export const getFormattedArea = (area) =>  {
 	}
 	return formatted;
 };	
+
+
+/**
+ * Tests whether the vertex candidate is part of the geometry vertices
+ * @param {Geometry} geometry the geometry
+ * @param {Point} vertexCandidate the candidate point to test against the geometry
+ * @returns {boolean}
+ */
+export const isVertexOfGeometry = (geometry, vertexCandidate) => {
+	const isPoint = vertexCandidate instanceof Point;
+	if (!isPoint) {
+		return false;
+	}
+	const vertexCoordinate = vertexCandidate.getCoordinates();
+	let coordinates = geometry.getCoordinates();
+	if (geometry instanceof Polygon) {
+		coordinates = geometry.getCoordinates()[0];
+	}
+	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
+	return result ? true : false;
+};
