@@ -1,1 +1,16 @@
 /* default style for all BaElements */
+
+/* global variables (custom properties) */
+*,
+::before,
+::after{
+    box-sizing: border-box; 
+    font-size: 1em;
+    font-size: calc(0.5em+1vw);
+    margin: 0;
+    padding: 0;
+    color: var(--color);
+    bg-color: var(--primary-bg-color);
+    font-family: var(--font-family);
+}
+  

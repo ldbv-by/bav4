@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { sidePanelReducer } from '../../../../src/modules/menue/store/sidePanel.reducer';
+import { contentPanelReducer } from '../../../../src/modules/menue/store/contentPanel.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -17,12 +17,12 @@ describe('Header', () => {
 		const { embed = false } = config;
 
 		const state = {
-			sidePanel: {
+			contentPanel: {
 				open: false
 			},
 			modal: { title: false, content: false }
 		};
-		store = TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded : () => embed })
@@ -64,9 +64,9 @@ describe('Header', () => {
 
 			expect(element._menueButtonLocked).toBeFalse();
 
-			expect(store.getState().sidePanel.open).toBe(false);
+			expect(store.getState().contentPanel.open).toBe(false);
 			element.shadowRoot.querySelector('.toggle-side-panel').click();
-			expect(store.getState().sidePanel.open).toBe(true);
+			expect(store.getState().contentPanel.open).toBe(true);
 			expect(element._menueButtonLocked).toBeTrue();
 			// expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Close menue');
 
@@ -75,7 +75,7 @@ describe('Header', () => {
 			expect(element._menueButtonLocked).toBeFalse();
 
 			element.shadowRoot.querySelector('.toggle-side-panel').click();
-			expect(store.getState().sidePanel.open).toBe(false);
+			expect(store.getState().contentPanel.open).toBe(false);
 			// expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Open menue');
 		});
 	});

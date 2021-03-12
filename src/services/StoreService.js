@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer, initialState as initialMapState, ZOOM_CHANGED, CENTER_CHANGED } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
+import { contentPanelReducer } from '../modules/menue/store/contentPanel.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
@@ -77,6 +78,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
+			contentPanel: contentPanelReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,

@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { toggleSidePanel } from '../../menue/store/sidePanel.action';
+import { toggleContentPanel } from '../../menue/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import { changeZoomAndCenter } from '../../map/store/position.action';
@@ -32,15 +32,15 @@ export class Header extends BaElement {
 
 		// const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
 		const getTitle = () => {
-			const { sidePanelIsOpen } = this._state;
-			return sidePanelIsOpen ? 'Close menue' : 'Open menue';
+			const { contentPanelIsOpen } = this._state;
+			return contentPanelIsOpen ? 'Close menue' : 'Open menue';
 		};
 
-		const toggleSidePanelGuarded = () => {
+		const toggleContentPanelGuarded = () => {
 
 			if (!this._menueButtonLocked) {
 				this._menueButtonLocked = true;
-				toggleSidePanel();
+				toggleContentPanel();
 				window.setTimeout(() => this._menueButtonLocked = false, Header.menueButtonLockDuration);
 			}
 		};
@@ -70,7 +70,7 @@ export class Header extends BaElement {
 					<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._locationSearchResultProvider}></ba-autocomplete-search>
 					<div class="item2">
 						<div class='menue-button'>
-							<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
+							<a title="${getTitle()}" @click="${toggleContentPanelGuarded}">
 								<span class='icon toggle-side-panel'></span>
 							</a>
 						</div>
@@ -85,8 +85,8 @@ export class Header extends BaElement {
 	 * @param {@override} store 
 	 */
 	extractState(store) {
-		const { sidePanel: { open } } = store;
-		return { sidePanelIsOpen: open };
+		const { contentPanel: { open } } = store;
+		return { contentPanelIsOpen: open };
 	}
 
 	static get tag() {

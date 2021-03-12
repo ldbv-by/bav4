@@ -1,11 +1,8 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import cssmain from '../../../../main.css';
 import css from './contentPanel.css';
-import { closeSidePanel } from '../../store/sidePanel.action';
+import { closeContentPanel } from '../../store/contentPanel.action';
 import { $injector } from '../../../../injection';
-// import { fit } from '../../store/position.action';
-
 
 /**
  *  
@@ -18,7 +15,21 @@ export class ContentPanel extends BaElement {
 		super();
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
+		this._portrait = false;
+	}
 
+	initialize() {
+
+		//MediaQuery for 'orientation'
+		const mediaQuery = window.matchMedia('(orientation: portrait)');
+		const handleOrientationChange = (e) => {
+			this._portrait = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQuery.addEventListener('change',  handleOrientationChange);
+		//initial set of local state
+		handleOrientationChange(mediaQuery);
 	}
 
 	/**
@@ -28,17 +39,22 @@ export class ContentPanel extends BaElement {
 
 		const { open } = this._state;
 
-		const getOverlayClass = () => {			
-			return open ? 'is-open' : '';			
+		const getOrientationClass = () => {
+			return this._portrait ? 'portrait' : 'landscape';
 		};
-		
+
+		const getOverlayClass = () => {
+			return open ? 'is-open' : '';
+		};
+
 		return html`
-			<style>${cssmain}</style>
 			<style>${css}</style>
-			<div class="content-panel ${getOverlayClass()}">            
-			<button @click="${closeSidePanel}" class="content-panel__close-button">
-				<span class='arrow'></span>	
-			</button>
+			<div @  class="${getOrientationClass()}">
+				<div class="content-panel ${getOverlayClass()}">            
+					<button @click="${closeContentPanel}" class="content-panel__close-button">
+						<span class='arrow'></span>	
+					</button>
+				</div>			
 			</div>			
 		`;
 	}
@@ -52,7 +68,7 @@ export class ContentPanel extends BaElement {
 	 * @param {Object} store 
 	 */
 	extractState(store) {
-		const { sidePanel: { open } } = store;
+		const { contentPanel: { open } } = store;
 		return { open };
 	}
 
