@@ -5,7 +5,7 @@ import css from './baElement.css';
 
 
 /**
- * Abstract Base-Class for all BaElements.
+ * Abstract base class for all BaElements.
  * BaElement classes represent the view model within the MVVM pattern.
  * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
  * 
