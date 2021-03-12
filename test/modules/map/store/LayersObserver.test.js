@@ -6,7 +6,7 @@ import { WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
-describe('layersObserver', () => {
+describe('LayersObserver', () => {
 
 	const geoResourceServiceMock = {
 		async init() { },
