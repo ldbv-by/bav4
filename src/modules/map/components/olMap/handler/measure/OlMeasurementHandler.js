@@ -1,9 +1,8 @@
 import { Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import { squaredDistance } from 'ol/coordinate';
 import { unByKey } from 'ol/Observable';
-import { Point, LineString, Polygon, MultiPoint } from 'ol/geom';
+import { Point, LineString, Polygon } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
@@ -66,12 +65,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				source: source,
 				style: measureStyleFunction
 			});
-			this._listeners.push( layer.on('change:visible', visibleChangedHandler));
-			this._listeners.push( layer.on('change:opacity', opacityChangedHandler));
+			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
+			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
 			return layer;
 		};
 
-		
+
 
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
@@ -84,57 +83,52 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (this._activeSketch) {
 					this._activeSketch.getGeometry();
 					helpMsg = translate('map_olMap_handler_measure_continue_line');
-	
+
 					if (this._isFinishOnFirstPoint) {
 						helpMsg = translate('map_olMap_handler_measure_snap_first_point');
 					}
 					else if (this._isSnapOnLastPoint) {
 						helpMsg = translate('map_olMap_handler_measure_snap_last_point');
 					}
-	
+
 					if (this._pointCount > 2) {
 						helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
 					}
-				}	
+				}
 			}
 
 			if (this._modify.getActive()) {
 				helpMsg = 'map_olMap_handler_measure_modify_key_for_delete';//translate('map_olMap_handler_measure_modify_key_for_delete');	
-				const snappingModifyDistance = 10;
 				const interactionLayer = this._vectorLayer;
 				const featureSnapOption = {
 					hitTolerance: 10,
-					layerFilter: function (layer) {
-						return layer === interactionLayer;
-					}, };
-				
-				this._map.forEachFeatureAtPixel(event.pixel, feature => {
-					const pointerCoordinates = this._map.getCoordinateFromPixel(event.pixel);
-					const featureGeometry = feature.getGeometry();
-					const snappingFeatureCoordinates = featureGeometry.getClosestPoint(pointerCoordinates);
-					const snappingFeaturePixel = this._map.getPixelFromCoordinate(snappingFeatureCoordinates);
-					const snappingFeaturePixelDistance = Math.sqrt(squaredDistance(event.pixel, snappingFeaturePixel));
-					const snappedToFeature = snappingFeaturePixelDistance < snappingModifyDistance;
-					
-					if (snappedToFeature) {
-						helpMsg = 'map_olMap_handler_measure_modify_click_new_point';// translate('map_olMap_handler_measure_modify_click_new_point');
-						let featureCoordinates = featureGeometry.getCoordinates();
-						if (featureGeometry instanceof Polygon) {
-							featureCoordinates  = featureGeometry.getCoordinates()[0];
-						}
-						const snappingVertexGeometry = new MultiPoint(featureCoordinates);
-						const snappingVertexCoordinates = snappingVertexGeometry.getClosestPoint(pointerCoordinates);
-						const snappingVertexPixel = this._map.getPixelFromCoordinate(snappingVertexCoordinates);
-						const snappingVertexPixelDistance = Math.sqrt(squaredDistance(event.pixel, snappingVertexPixel));
-						
-						const snappedToVertex = snappingVertexPixelDistance < snappingModifyDistance;
-						if ( snappedToVertex) {
-							helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');	
-						}
+					layerFilter: itemLayer => {
+						return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
+					},
+				};
+				let vertexFeature = null;
+				this._map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+					if (!layer && feature.get('features').length > 0) {
+						vertexFeature = feature;
+						return;
 					}
-					
-				}, featureSnapOption );
-				
+				}, featureSnapOption);
+
+				if (vertexFeature) {
+					helpMsg = 'map_olMap_handler_measure_modify_click_new_point';// translate('map_olMap_handler_measure_modify_click_new_point');
+
+					const vertexCoordinate = vertexFeature.getGeometry().getCoordinates();
+					const snappedFeature = vertexFeature.get('features')[0];
+					const snappedGeometry = snappedFeature.getGeometry();
+					let snappedCoordinates = snappedGeometry.getCoordinates();
+					if (snappedGeometry instanceof Polygon) {
+						snappedCoordinates = snappedGeometry.getCoordinates()[0];
+					}
+					const isSnapped = snappedCoordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
+					if (isSnapped) {
+						helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');
+					}
+				}
 			}
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
@@ -149,15 +143,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
-			
+
 			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
-			olMap.addInteraction(this._select);		
-			olMap.addInteraction(this._draw);	
+			olMap.addInteraction(this._select);
 			olMap.addInteraction(this._modify);
-			olMap.addInteraction(this._snap);			
+			olMap.addInteraction(this._draw);
+			olMap.addInteraction(this._snap);
 		}
 		return this._vectorLayer;
 	}
@@ -170,6 +164,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
+		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
@@ -194,13 +189,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_removeLast(event) {
 		if (this._draw && this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._draw.removeLastPoint();				
+				this._draw.removeLastPoint();
 			}
 		}
 
 		if (this._modify && this._modify.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._reset();		
+				this._reset();
 			}
 		}
 	}
@@ -212,7 +207,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._overlays.forEach(o => this._map.removeOverlay(o));
 		this._overlays = [];
 		this._vectorLayer.getSource().clear();
-		this._addOverlayToMap(this._map, this._helpTooltip);		
+		this._addOverlayToMap(this._map, this._helpTooltip);
 	}
 
 	_createDraw(source) {
@@ -260,7 +255,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._isSnapOnLastPoint = false;
 			event.feature.set('measurement', measureTooltip);
 			listener = event.feature.on('change', event => this._updateMeasureTooltips(event.target, true));
-			this._addOverlayToMap(this._map, measureTooltip);			
+			this._addOverlayToMap(this._map, measureTooltip);
 		});
 
 		draw.on('drawend', event => {
@@ -273,7 +268,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateMeasureTooltips(feature, isDrawing = false) {
-		let measureGeometry = feature.getGeometry();			
+		let measureGeometry = feature.getGeometry();
 		const measureTooltip = feature.get('measurement');
 
 		if (feature.getGeometry() instanceof Polygon) {
@@ -348,22 +343,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				return itemFeature;
 			}
 		};
-		const options = { 
-			layers:layerFilter,
-			filter:featureFilter, style:measureStyleFunction };
-		
+		const options = {
+			layers: layerFilter,
+			filter: featureFilter, style: measureStyleFunction
+		};
+
 		return new Select(options);
 	}
 
 	_createModify() {
-		const options = { 
-			features:this._select.getFeatures(), 
-			style:modifyStyleFunction,
-			deleteCondition: event => {							
+		const options = {
+			features: this._select.getFeatures(),
+			style: modifyStyleFunction,
+			deleteCondition: event => {
 				const isDeletable = (noModifierKeys(event) && click(event));
-				return  isDeletable;
-			} 
-		};		
+				return isDeletable;
+			}
+		};
 		return new Modify(options);
 	}
 
