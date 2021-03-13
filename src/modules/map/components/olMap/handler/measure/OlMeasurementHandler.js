@@ -373,6 +373,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measurementOverlay.type = type;
 		measurementOverlay.projectionHints = projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
+		this._createDragOn(overlay, this._map);
 		return overlay;
 	}
 
@@ -381,6 +382,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measurementOverlay.value = value;
 		measurementOverlay.geometry = geometry;
 		overlay.setPosition(measurementOverlay.position);
+	}
+
+	_createDragOn(overlay, map) {
+		const element = overlay.getElement();
+		
+		const handleMouseDown = () => {
+			const body = document.querySelector('body');
+			const handleDragging = (event) => {
+				const position = map.getEventCoordinate(event);
+				overlay.setOffset([0, 0]);
+				overlay.setPositioning('center-cendetr');
+				overlay.setPosition(position);
+				overlay.set('manualPositioning', true);
+			};
+			const handleMouseUp = () => {
+				const body = document.querySelector('body');
+				body.removeEventListener('mouseup', handleMouseUp);
+				body.removeEventListener('mousemove', handleDragging);
+			};			
+			body.addEventListener('mouseup', handleMouseUp);
+			body.addEventListener('mousemove', handleDragging);
+		
+		};
+		element.addEventListener('mousedown', handleMouseDown);
 	}
 
 	_getSnapTolerancePerDevice() {
