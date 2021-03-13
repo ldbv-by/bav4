@@ -11,7 +11,7 @@ import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction 
 import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
-import { noModifierKeys, click } from 'ol/events/condition';
+import { noModifierKeys, click, primaryAction } from 'ol/events/condition';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -348,11 +348,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
+		let isInsertFirst = false;
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction,
+			insertVertexCondition: event => {
+				isInsertFirst = primaryAction(event);
+				return isInsertFirst;
+			},
 			deleteCondition: event => {
 				const isDeletable = (noModifierKeys(event) && click(event));
+				if (isDeletable && isInsertFirst) {
+					isInsertFirst = false;
+					return false;
+				}				
 				return isDeletable;
 			}
 		};
