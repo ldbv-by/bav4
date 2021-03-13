@@ -12,6 +12,11 @@ export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
 export class GeolocationObserver extends BaObserver {
 
+	constructor() {
+		super();
+		this._firstTimeActivatingGeolocation = true;
+		this._geolocationWatcherId = null;
+	}
 
 	_handlePositionError(error) {
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -40,25 +45,31 @@ export class GeolocationObserver extends BaObserver {
 	}
 
 	_fit(position) {
+		const { MapService: mapService, CoordinateService: coordinateService } = $injector.inject('MapService', 'CoordinateService');
+
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		const extent3857 = [...positionEpsg3857, ...positionEpsg3857];
-		const geodeticExtent = this._coordinateService.transformExtent(
+		const geodeticExtent = coordinateService.transformExtent(
 			extent3857,
-			this._mapService.getSrid(),
-			this._mapService.getDefaultGeodeticSrid()
+			mapService.getSrid(),
+			mapService.getDefaultGeodeticSrid()
 		);
-		const extent = this._coordinateService.transformExtent(
-			this._coordinateService.buffer(geodeticExtent, position.coords.accuracy),
-			this._mapService.getDefaultGeodeticSrid(),
-			this._mapService.getSrid()
+		const extent = coordinateService.transformExtent(
+			coordinateService.buffer(geodeticExtent, position.coords.accuracy),
+			mapService.getDefaultGeodeticSrid(),
+			mapService.getSrid()
 		);
 		setFit(extent, { maxZoom: 16 });
 	}
 
 	_handlePositionAndUpdateStore(position) {
+		const {
+			StoreService: storeService,
+		}
+			= $injector.inject('StoreService');
 
 		//if geolocation was previously denied, we reset the flag
-		if (this._store.getState().geolocation.denied) {
+		if (storeService.getStore().getState().geolocation.denied) {
 			setDenied(false);
 		}
 
@@ -71,7 +82,7 @@ export class GeolocationObserver extends BaObserver {
 			this._fit(position);
 		}
 		// if tracking is active, we center the view of the map
-		else if (this._store.getState().geolocation.tracking) {
+		else if (storeService.getStore().getState().geolocation.tracking) {
 			changeCenter(positionEpsg3857);
 		}
 	}
@@ -95,32 +106,12 @@ export class GeolocationObserver extends BaObserver {
 		}
 	}
 
-	_init(store) {
-		const {
-			TranslationService: translationService,
-			CoordinateService: coordinateService,
-			EnvironmentService: environmentService,
-			MapService: mapService
-		}
-			= $injector.inject('TranslationService', 'CoordinateService', 'EnvironmentService', 'MapService');
-		this._translationService = translationService;
-		this._coordinateService = coordinateService;
-		this._environmentService = environmentService;
-		this._mapService = mapService;
-
-		this._firstTimeActivatingGeolocation = true;
-		this._geolocationWatcherId = null;
-		this._store = store;
-	}
-
 	/**
 	 * @override
 	 * @param {Store} store 
 	 */
 	register(store) {
 		
-		this._init(store);
-
 		const onGeolocationActivityChange = (active) => {
 
 			if (active) {
