@@ -120,7 +120,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					const vertexGeometry = vertexFeature.getGeometry();
 					const snappedFeature = vertexFeature.get('features')[0];
 					const snappedGeometry = snappedFeature.getGeometry();
-					
+
 					if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
 						helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');
 					}
@@ -142,6 +142,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
+			this._listeners.push(olMap.on('dblclick', () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
 			olMap.addInteraction(this._select);
@@ -361,7 +362,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (isDeletable && isInsertFirst) {
 					isInsertFirst = false;
 					return false;
-				}				
+				}
 				return isDeletable;
 			}
 		};
@@ -386,7 +387,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createDragOn(overlay, map) {
 		const element = overlay.getElement();
-		
+
 		const handleMouseDown = () => {
 			const body = document.querySelector('body');
 			const handleDragging = (event) => {
@@ -400,10 +401,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const body = document.querySelector('body');
 				body.removeEventListener('mouseup', handleMouseUp);
 				body.removeEventListener('mousemove', handleDragging);
-			};			
+			};
 			body.addEventListener('mouseup', handleMouseUp);
 			body.addEventListener('mousemove', handleDragging);
-		
+
 		};
 		element.addEventListener('mousedown', handleMouseDown);
 	}
