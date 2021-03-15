@@ -3,6 +3,13 @@
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
     --font-family: "Verdana", Courier, monospace;
+
+    --z-footer: 100;
+    --z-toolbox: 200;
+    --z-mapbuttons: 300;
+    --z-contentpanel: 400;
+    --z-header: 500;
+    --z-modal: 600;
 }
 
 .light-theme {

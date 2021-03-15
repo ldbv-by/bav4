@@ -1,14 +1,13 @@
 .zoom-buttons {
-  position: absolute;
-  right: 30px;
-  top: 100px;
-  display: inline-block;
-  vertical-align: top;
-  width: 20px;
-  height: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.zoom-in {
+.zoom-buttons :first-child{
+  margin:0 0 .4em 0;  
+}
+
+.zoom-in {  
   mask: url('assets/plus-circle-fill.svg');
   -webkit-mask-image: url('assets/plus-circle-fill.svg');
 }

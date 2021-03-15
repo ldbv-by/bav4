@@ -1,12 +1,12 @@
 .content-panel {    
     position: fixed;    
+    z-index: var(--z-contentpanel);
     background-color: var(--primary-bg-color);
     padding: 7em 0em 0em;
     bottom: 0;
     top: 0;
     left: -28em;
     width: 28em;   
-    z-index: 10;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     overflow-x: hidden;
     overflow-y: auto;

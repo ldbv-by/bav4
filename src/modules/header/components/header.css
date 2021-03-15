@@ -1,8 +1,8 @@
 .header {
   position: fixed;
+  z-index: var(--z-header);
   top: 0em;
   left: 0em;
-  z-index: 100;
   font-size: 1em;
   color: var(--primary-color);
   width: 28em;  

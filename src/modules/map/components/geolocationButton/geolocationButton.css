@@ -1,10 +1,10 @@
-.geolocation {
+/* .geolocation {
   position: absolute;
   right: 10px;
   top: 300px;
   display: inline-block;
   vertical-align: top;
-}
+} */
 
 .geolocation-icon {
   mask: url("./assets/geo-alt-fill.svg");

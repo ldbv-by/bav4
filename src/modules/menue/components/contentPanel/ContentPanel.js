@@ -49,7 +49,7 @@ export class ContentPanel extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div @  class="${getOrientationClass()}">
+			<div class="${getOrientationClass()}">
 				<div class="content-panel ${getOverlayClass()}">            
 					<button @click="${closeContentPanel}" class="content-panel__close-button">
 						<span class='arrow'></span>	
