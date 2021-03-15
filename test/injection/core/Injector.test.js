@@ -51,6 +51,14 @@ describe('Injector', () => {
 
 			expect(returnValue).toEqual($injector);
 		});
+
+		it('resets the ready flag', () => {
+			
+			$injector.ready();
+			const returnValue = $injector.reset();
+
+			expect(returnValue._ready).toBeFalse();
+		});
 	});
 
 	describe('ready', () => {
