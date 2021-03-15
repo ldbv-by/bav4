@@ -20,6 +20,8 @@ export class ProcessEnvConfigService {
 		this._properties.set('PROXY_URL', process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
 		this._properties.set('BACKEND_URL', process.env.BACKEND_URL);
+		// eslint-disable-next-line no-undef
+		this._properties.set('SHORTENING_SERVICE_URL', process.env.SHORTENING_SERVICE_URL);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {
