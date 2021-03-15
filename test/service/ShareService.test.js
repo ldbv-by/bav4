@@ -149,7 +149,7 @@ describe('ShareService', () => {
 				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['some', 'other'] });
 
-				const encoded = instanceUnderTest.encode();
+				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
 				expect(encoded.includes(window.location.href)).toBeTrue();
