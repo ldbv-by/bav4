@@ -1,5 +1,6 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
-import { Point, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
 		const lineString = new LineString([[0, 0], [1, 0]]);
@@ -15,14 +16,14 @@ describe('getGeometryLength', () => {
 		expect(length).toBe(4);
 	});
 
-	it('calculates length of Polygon', () => {		
+	it('calculates length of Polygon', () => {
 		const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
 		const length = getGeometryLength(polygon);
 
 		expect(length).toBe(4);
 	});
 
-	
+
 	it('calculates not length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
 		const length = getGeometryLength(circle);
@@ -38,21 +39,21 @@ describe('canShowAzimuthCircle', () => {
 		expect(canShowAzimuthCircle(twoPointLineString)).toBeTrue();
 	});
 
-	
+
 	it('can show for a pseudo-2-point-line', () => {
 		const threePointLineString = new LineString([[0, 0], [1, 0], [1, 0]]);
 
 		expect(canShowAzimuthCircle(threePointLineString)).toBeTrue();
 	});
 
-	
+
 	it('can NOT show for a point', () => {
 		const point = new Point([0, 0]);
 
 		expect(canShowAzimuthCircle(point)).toBeFalse();
 	});
 
-	
+
 	it('can NOT show for lineString', () => {
 		const threePointLineString = new LineString([[0, 0], [1, 0], [2, 1]]);
 
@@ -170,7 +171,7 @@ describe('getCoordinateAt', () => {
 		const coord = getCoordinateAt(circle, 0.5);
 
 		expect(coord).toBeNull();
-		
+
 	});
 });
 
@@ -179,21 +180,121 @@ describe('getArea', () => {
 		const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
 		const area = getArea(polygon);
 
-		expect(area).toBe(1);		
+		expect(area).toBe(1);
 	});
 
 	it('returns 0 for a non-area-like geometry', () => {
 		const point = new Point([0, 0]);
 		const lineString = new LineString([[0, 0], [2, 0]]);
-		const linearRing = new LinearRing([[0, 0], [2, 0]]);		
-		
+		const linearRing = new LinearRing([[0, 0], [2, 0]]);
+
 		const pointArea = getArea(point);
 		const lineStringArea = getArea(lineString);
 		const linearRingArea = getArea(linearRing);
 
-		expect(pointArea).toBe(0);	
+		expect(pointArea).toBe(0);
 		expect(lineStringArea).toBe(0);
 		expect(linearRingArea).toBe(0);
 	});
+});
 
+describe('isVertexOfGeometry', () => {
+	it('resolves a Point as Vertex of a Point', () => {
+		const geometry = new Point([0, 0]);
+		const vertexCandidate = new Point([0, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeTrue();
+	});
+
+	it('resolves NOT a Point as Vertex of a Point', () => {
+		const geometry = new Point([0, 0]);
+		const vertexCandidate = new Point([0, 1]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
+
+	it('resolves a Point as Vertex of a MultiPoint', () => {
+		const geometry = new MultiPoint([[0, 0], [0, 1]]);
+		const vertexCandidate = new Point([0, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeTrue();
+	});
+
+	it('resolves NOT a Point as Vertex of a MultiPoint', () => {
+		const geometry = new MultiPoint([[0, 0], [0, 1]]);
+		const vertexCandidate = new Point([0, 2]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
+
+	it('resolves a Point as Vertex of a LineString', () => {
+		const geometry = new LineString([[0, 0], [2, 0]]);
+		const vertexCandidate = new Point([0, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeTrue();
+	});
+
+	it('resolves NOT a Point as Vertex of a LineString', () => {
+		const geometry = new LineString([[0, 0], [2, 0]]);
+		const vertexCandidate = new Point([1, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
+
+	it('resolves a Point as Vertex of a LinearRing', () => {
+		const geometry = new LinearRing([[0, 0], [2, 0]]);
+		const vertexCandidate = new Point([0, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeTrue();
+	});
+
+	it('resolves NOT a Point as Vertex of a LinearRing', () => {
+		const geometry = new LinearRing([[0, 0], [2, 0]]);
+		const vertexCandidate = new Point([1, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
+
+	it('resolves a Point as Vertex of a Polygon', () => {
+		const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const vertexCandidate = new Point([0, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeTrue();
+	});
+
+	it('resolves NOT a Point as Vertex of a Polygon', () => {
+		const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const vertexCandidate = new Point([0.5, 0]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
+
+	it('resolves to false when vertexCandidate is NOT Point', () => {
+		const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const vertexCandidate = new LineString([[0, 0], [1, 0]]);
+
+		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
+
+		expect(isVertex).toBeFalse();
+	});
 });
