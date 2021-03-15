@@ -45,9 +45,6 @@ export const loadBvvGeoResources = async () => {
 		return geoResources;
 	}
 	throw new Error('GeoResources could not be loaded');
-
-
-
 };
 
 export const loadExampleGeoResources = async () => {

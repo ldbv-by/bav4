@@ -1,12 +1,10 @@
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_MODIFIED = 'layer/modified';
-export const BACKGROUND_CHANGED = 'background/changed';
 
 
 export const initialState = {
 	active: [],
-	background: null
 };
 
 /**
@@ -122,13 +120,6 @@ export const layersReducer = (state = initialState, action) => {
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);
-		}
-		case BACKGROUND_CHANGED: {
-
-			return {
-				...state,
-				background: payload
-			};
 		}
 	}
 
