@@ -456,6 +456,80 @@ describe('OlMeasurementHandler', () => {
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
 		});
 
+		describe('change message in helpTooltip, when switching to modify', () => {
+			it('pointer is not snapped on sketch', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+
+				classUnderTest.activate(map);
+				const baOverlay = classUnderTest._helpTooltip.getElement();
+
+				const geometry = new LineString([[0, 0], [100, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.getGeometry().dispatchEvent('change');
+				geometry.setCoordinates([[[0, 0], [100, 0], [100, 100]]]);
+				feature.getGeometry().dispatchEvent('change');
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+
+				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_key_for_delete');
+			});
+
+			fit('pointer is snapped to sketch boundary', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+
+				const geometry = new LineString([[0, 0], [100, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				const vertexFeature = new Feature({
+					features: [feature],
+					geometry: [0, 0]
+				});
+				classUnderTest.activate(map);
+				// fake the result to trigger the handling of the vertexFeature in OlMeasurementHandler
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback, option) => {
+					callback(undefined, vertexFeature);
+				});
+
+				const baOverlay = classUnderTest._helpTooltip.getElement();
+
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.getGeometry().dispatchEvent('change');
+				geometry.setCoordinates([[[0, 0], [100, 0], [100, 100]]]);
+				feature.getGeometry().dispatchEvent('change');
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_key_for_delete');
+			});
+
+			it('pointer is snapped to sketch vertex', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const geometry = new LineString([[0, 0], [100, 0]]);
+				const feature = new Feature({ geometry: geometry });
+
+				const vertexFeature = new Feature({
+					features: [feature],
+					geometry: [0, 0]
+				});
+				const map = setupMap();
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.returnValue((pixel, callback) => {
+					callback(undefined, vertexFeature);
+				});
+				classUnderTest.activate(map);
+				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+				const baOverlay = classUnderTest._helpTooltip.getElement();
+
+
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_or_drag');
+			});
+		});
+
 	});
 
 	describe('when measurement-layer changes', () => {
