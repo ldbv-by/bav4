@@ -74,11 +74,11 @@ export class LayersObserver extends BaObserver {
 
 		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService }
 			= $injector.inject('GeoResourceService', 'EnvironmentService');
+		
+		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		//no try-catch needed, service at least delivers a fallback
 		await geoResourceService.init();
-
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		//from query params
 		if (queryParams.has(QueryParameters.LAYER)) {
