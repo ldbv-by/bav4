@@ -17,9 +17,12 @@ export class ShowCase extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService } = $injector.inject('CoordinateService', 'EnvironmentService');
+		const { CoordinateService, EnvironmentService, ShareService, UrlService } = $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
+		this._urlService = UrlService;
+		this._shareService = ShareService;
+		this._url = '';
 	}
 
 	/**
@@ -55,6 +58,13 @@ export class ShowCase extends BaElement {
 			closeModal();
 		};
 
+		const onGenerateUrlButtonClick = async () => {
+			const url = this._shareService.encodeState();
+			await this._shareService.copyToClipboard(url);
+			this._url = url;
+			this.render();
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -69,6 +79,10 @@ export class ShowCase extends BaElement {
 			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
 			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="secondary" @click=${deactivateMeasrementTool}></ba-button>	
 			
+			<p>Url of State</p>
+			<ba-button id='buttonActivateMeasureDistance' label='Copy Url' type="primary" @click=${onGenerateUrlButtonClick}></ba-button>	
+			<input readonly='readonly' value=${this._url}></input>	
+
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
 			<div class='icons'>		
