@@ -1,5 +1,5 @@
 import { OlMeasurementHandler } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
-import { LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon } from 'ol/geom';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -335,11 +335,11 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when pointer move', () => {
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
+		let target;
 		const setupMap = () => {
-
-			return new Map({
+			target = document.createElement('div');
+			target.style.height = '256px';
+			const map = new Map({
 				layers: [
 					new TileLayer({
 						source: new OSM(),
@@ -347,12 +347,15 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug(),
 					})],
-				target: 'map',
+				target: target,
 				view: new View({
-					center: initialCenter,
+					center: [0, 0],
 					zoom: 1,
 				}),
 			});
+
+			map.renderSync();
+			return map;
 
 		};
 
@@ -457,6 +460,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		describe('change message in helpTooltip, when switching to modify', () => {
+
 			it('pointer is not snapped on sketch', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
@@ -477,53 +481,48 @@ describe('OlMeasurementHandler', () => {
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_key_for_delete');
 			});
 
-			fit('pointer is snapped to sketch boundary', () => {
+			it('pointer is snapped to sketch boundary', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
 				const geometry = new LineString([[0, 0], [100, 0]]);
 				const feature = new Feature({ geometry: geometry });
-				const vertexFeature = new Feature({
-					features: [feature],
-					geometry: [0, 0]
+
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+					callback({
+						get: () => [feature],
+						getGeometry: () => new Point([50, 0])
+					}, undefined);
 				});
 				classUnderTest.activate(map);
-				// fake the result to trigger the handling of the vertexFeature in OlMeasurementHandler
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback, option) => {
-					callback(undefined, vertexFeature);
-				});
+				classUnderTest._modify.setActive(true);
+
 
 				const baOverlay = classUnderTest._helpTooltip.getElement();
 
-				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-				feature.getGeometry().dispatchEvent('change');
-				geometry.setCoordinates([[[0, 0], [100, 0], [100, 100]]]);
-				feature.getGeometry().dispatchEvent('change');
-				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
-				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_key_for_delete');
+				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_new_point');
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
 				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+
 				const geometry = new LineString([[0, 0], [100, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
-				const vertexFeature = new Feature({
-					features: [feature],
-					geometry: [0, 0]
-				});
-				const map = setupMap();
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.returnValue((pixel, callback) => {
-					callback(undefined, vertexFeature);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+					callback({
+						get: () => [feature],
+						getGeometry: () => new Point([0, 0])
+					}, undefined);
 				});
 				classUnderTest.activate(map);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+				classUnderTest._modify.setActive(true);
+
+
 				const baOverlay = classUnderTest._helpTooltip.getElement();
-
-
-				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_or_drag');
