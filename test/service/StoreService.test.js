@@ -17,13 +17,13 @@ describe('StoreService', () => {
 		const positionObserverMock = {
 			register() { }
 		};
+		const windowMock = {
+			history: {
+				replaceState() { }
+			}
+		};
 
-		beforeEach(() => {
-
-
-		});
-
-		it('registers all reducer', () => {
+		it('registers all reducers', () => {
 
 			const instanceUnderTest = new StoreService();
 
@@ -58,6 +58,7 @@ describe('StoreService', () => {
 				.registerSingleton('GeolocationObserver', geolocationObserverMock)
 				.registerSingleton('LayersObserver', layersObserverMock)
 				.registerSingleton('PositionObserver', positionObserverMock)
+				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.ready();
 
 			const store = instanceUnderTest.getStore();
@@ -65,6 +66,25 @@ describe('StoreService', () => {
 			expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
 			expect(layersObserverSpy).toHaveBeenCalledWith(store);
 			expect(positionObserverSpy).toHaveBeenCalledWith(store);
+		});
+
+		it('removes all query params by calling #replaceState on history', (done) => {
+			const replaceStateMock = spyOn(windowMock.history, 'replaceState');
+			new StoreService();
+			
+			$injector
+				.reset()
+				.registerSingleton('MeasurementObserver', measurementObserverMock)
+				.registerSingleton('GeolocationObserver', geolocationObserverMock)
+				.registerSingleton('LayersObserver', layersObserverMock)
+				.registerSingleton('PositionObserver', positionObserverMock)
+				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
+				.ready();
+
+			setTimeout(() => {
+				expect(replaceStateMock).toHaveBeenCalled();
+				done();
+			});
 		});
 	});
 });

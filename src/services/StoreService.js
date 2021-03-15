@@ -13,8 +13,6 @@ import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 
 
-
-
 /**
  * Service which configures, initializes and holds the redux store.
  * @class
@@ -50,14 +48,20 @@ export class StoreService {
 				MeasurementObserver: measurementObserver,
 				GeolocationObserver: geolocationObserver,
 				LayersObserver: layersObserver,
-				PositionObserver: positionObserver
+				PositionObserver: positionObserver,
+				EnvironmentService: environmentService
 			}
-				= $injector.inject('GeolocationObserver', 'MeasurementObserver', 'LayersObserver', 'PositionObserver');
+				= $injector.inject('GeolocationObserver', 'MeasurementObserver', 'LayersObserver', 'PositionObserver', 'EnvironmentService');
 	
 			measurementObserver.register(this._store);
 			geolocationObserver.register(this._store);
 			layersObserver.register(this._store);
 			positionObserver.register(this._store);
+
+			//we remove all query params shown in the browsers address bar
+			setTimeout(() => {
+				environmentService.getWindow().  history.replaceState(null, '', location.href.split('?')[0]);
+			});
 		});
 	}
 
