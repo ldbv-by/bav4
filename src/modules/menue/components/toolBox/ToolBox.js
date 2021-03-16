@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
-import { toggleToolBox, closeToolBox } from '../../store/toolBox.action';
+import { toggleToolBox } from '../../store/toolBox.action';
 import { $injector } from '../../../../injection';
 
 
@@ -51,7 +51,7 @@ export class ToolBox extends BaElement {
 
 		return html`
 			<style>${css}</style>		
-			<div @blur="${closeToolBox}" tabindex="0" class="${getOrientationClass()}">
+			<div class="${getOrientationClass()}">
 				<button  @click="${toggleToolBox}"  class="action-button">
 					<div class="action-button__icon">
 					</div>

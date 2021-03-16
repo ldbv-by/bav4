@@ -1,5 +1,7 @@
 /* global variables (custom properties) */
 :root {
+    font-size: calc(0.5em + 1vw);
+
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
     --font-family: "Verdana", Courier, monospace;
@@ -10,6 +12,12 @@
     --z-contentpanel: 400;
     --z-header: 500;
     --z-modal: 600;
+}
+
+@media (min-width:55em){
+    :root {
+    font-size: 1em;
+    }
 }
 
 .light-theme {
@@ -37,12 +45,8 @@
 ::before,
 ::after{
     box-sizing: border-box; 
-    font-size: 1em;
-    font-size: calc(0.5em+1vw);
     margin: 0;
     padding: 0;
-    color: var(--color);
-    bg-color: var(--primary-bg-color);
+    color: var(--color); 
     font-family: var(--font-family);
-}
-  
+}  
