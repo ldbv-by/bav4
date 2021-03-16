@@ -457,27 +457,30 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._pointCount).toBe(5);
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
-		});
+		});			
 
 		describe('change message in helpTooltip, when switching to modify', () => {
-
+			const geometry = new LineString([[0, 0], [100, 0]]);			
+			const feature = new Feature({ geometry: geometry });
+			const createSnappingFeatureMock = (coordinate) => {
+				return {
+					get: () => [feature],
+					getGeometry: () => new Point(coordinate)
+				};
+			};
 			it('pointer is not snapped on sketch', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callThrough();
+				
+
 				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
 				const baOverlay = classUnderTest._helpTooltip.getElement();
-
-				const geometry = new LineString([[0, 0], [100, 0]]);
-				const feature = new Feature({ geometry: geometry });
-				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-				feature.getGeometry().dispatchEvent('change');
-				geometry.setCoordinates([[[0, 0], [100, 0], [100, 100]]]);
-				feature.getGeometry().dispatchEvent('change');
-				simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
-
 				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_key_for_delete');
 			});
 
@@ -485,46 +488,35 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
-				const geometry = new LineString([[0, 0], [100, 0]]);
-				const feature = new Feature({ geometry: geometry });
-
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback({
-						get: () => [feature],
-						getGeometry: () => new Point([50, 0])
-					}, undefined);
+				const snappingFeatureMock = createSnappingFeatureMock([50, 0]);//createSnappingFeatureMock([50, 0]);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {					
+					callback(snappingFeatureMock, undefined);
 				});
+
 				classUnderTest.activate(map);
 				classUnderTest._modify.setActive(true);
-
-
 				const baOverlay = classUnderTest._helpTooltip.getElement();
-
 				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_new_point');
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-
-				const geometry = new LineString([[0, 0], [100, 0]]);
-				const feature = new Feature({ geometry: geometry });
-
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback({
-						get: () => [feature],
-						getGeometry: () => new Point([0, 0])
-					}, undefined);
+			
+				const snappingFeatureMock = createSnappingFeatureMock([0, 0]);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {					
+					callback(snappingFeatureMock, undefined);
 				});
+				
 				classUnderTest.activate(map);
 				classUnderTest._modify.setActive(true);
-
-
 				const baOverlay = classUnderTest._helpTooltip.getElement();
-
 				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_or_drag');
 			});
 		});
@@ -613,4 +605,6 @@ describe('OlMeasurementHandler', () => {
 		});
 	});
 });
+
+
 
