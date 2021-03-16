@@ -2,10 +2,6 @@
 
 /* global variables (custom properties) */
 
-:root {
-    font-size: calc(0.5em + 1vw);
-}
-
 *,
 ::before,
 ::after{
