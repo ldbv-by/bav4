@@ -113,7 +113,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 
 			if (this._modify.getActive()) {
-				helpMsg = 'map_olMap_handler_measure_modify_key_for_delete';//translate('map_olMap_handler_measure_modify_key_for_delete');	
+				helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');	
 				const interactionLayer = this._vectorLayer;
 				const featureSnapOption = {
 					hitTolerance: 10,
@@ -130,14 +130,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}, featureSnapOption);
 
 				if (vertexFeature) {
-					helpMsg = 'map_olMap_handler_measure_modify_click_new_point';// translate('map_olMap_handler_measure_modify_click_new_point');
+					helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
 
 					const vertexGeometry = vertexFeature.getGeometry();
 					const snappedFeature = vertexFeature.get('features')[0];
 					const snappedGeometry = snappedFeature.getGeometry();
 
 					if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-						helpMsg = 'map_olMap_handler_measure_modify_click_or_drag';//translate('map_olMap_handler_measure_modify_click_or_drag');
+						helpMsg = translate('map_olMap_handler_measure_modify_click_or_drag');
 					}
 				}
 			}
