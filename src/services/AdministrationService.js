@@ -9,7 +9,7 @@ export class AdministrationService {
 	/**
      * 
      * @param {Coordinate} coordinate3857 
-	 * @returns {Array} array with community and district loaded from backend
+	 * @returns {Object} with community and district string property, loaded from backend
      */
 	async getAdministration(coordinate3857) {
 	
