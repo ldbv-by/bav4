@@ -23,6 +23,7 @@ export class ShowCase extends BaElement {
 		this._urlService = UrlService;
 		this._shareService = ShareService;
 		this._url = '';
+		this._shortUrl = '';
 	}
 
 	/**
@@ -60,8 +61,10 @@ export class ShowCase extends BaElement {
 
 		const onGenerateUrlButtonClick = async () => {
 			const url = this._shareService.encodeState();
+			const shortUrl = await this._urlService.shorten(url);
 			await this._shareService.copyToClipboard(url);
 			this._url = url;
+			this._shortUrl = shortUrl;
 			this.render();
 		};
 
@@ -82,6 +85,7 @@ export class ShowCase extends BaElement {
 			<p>Url of State</p>
 			<ba-button id='buttonActivateMeasureDistance' label='Copy Url' type="primary" @click=${onGenerateUrlButtonClick}></ba-button>	
 			<input readonly='readonly' value=${this._url}></input>	
+			<input readonly='readonly' value=${this._shortUrl}></input>	
 
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
