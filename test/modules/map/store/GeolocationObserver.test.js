@@ -296,13 +296,13 @@ describe('GeolocationObserver', () => {
 		it('deactivates the observer', () => {
 			setup();
 			const instanceUnderTest = new GeolocationObserver();
-			instanceUnderTest._geolocationWatcherId = 42;
+			instanceUnderTest._geolocationWatcherId = 0;
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
 			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
 
 			instanceUnderTest._deactivate();
 
-			expect(clearWatchSpy).toHaveBeenCalledOnceWith(42);
+			expect(clearWatchSpy).toHaveBeenCalledOnceWith(0);
 		});
 
 		it('calls deactivate on inactive observer', () => {
@@ -312,7 +312,7 @@ describe('GeolocationObserver', () => {
 
 			instanceUnderTest._deactivate();
 
-			expect(clearWatchSpy).not.toHaveBeenCalledOnceWith(42);
+			expect(clearWatchSpy).not.toHaveBeenCalled();
 		});
 	});
 });
