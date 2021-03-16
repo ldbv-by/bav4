@@ -15,6 +15,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import { preventDefault } from 'ol/events/Event';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -221,11 +222,13 @@ describe('OlMap', () => {
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate,  false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+					expect(preventDefault).toHaveBeenCalled();
 				});
 			});
 
@@ -238,13 +241,15 @@ describe('OlMap', () => {
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
 					jasmine.clock().tick(defaultDelay + 100);
 					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+					expect(preventDefault).toHaveBeenCalled();
 				});
 			});
 		});
