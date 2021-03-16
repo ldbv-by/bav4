@@ -52,7 +52,7 @@ describe('OlMeasurementHandler', () => {
 		document.dispatchEvent(keyEvent);
 	};
 
-	xdescribe('when activated over olMap', () => {
+	describe('when activated over olMap', () => {
 		
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
@@ -74,7 +74,7 @@ describe('OlMeasurementHandler', () => {
 
 		};
 
-		xdescribe('uses Interactions', () => {
+		describe('uses Interactions', () => {
 			it('adds a Draw-Interaction', () => {				
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
