@@ -61,19 +61,6 @@ describe('GeoResource provider', () => {
 			});
 
 		});
-
-		it('rejects when url is not defined', (done) => {
-
-			const urlToShorten = undefined;
-
-			shortenBvvUrls(urlToShorten).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('Parameter \'url\' must be a string');
-				done();
-			});
-
-		});
 	});
 });
 
