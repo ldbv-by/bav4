@@ -393,7 +393,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const handleDragging = (event) => {
 				const position = map.getEventCoordinate(event);
 				overlay.setOffset([0, 0]);
-				overlay.setPositioning('center-cendetr');
+				overlay.setPositioning('center-center');
 				overlay.setPosition(position);
 				overlay.set('manualPositioning', true);
 			};
