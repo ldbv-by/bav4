@@ -24,6 +24,7 @@ export class UrlService {
 	/**
 	* Proxifies a url.
 	* @param {string} url 
+	* @returns {string} proxified url
 	*/
 	proxifyInstant(url) {
 		if (!isString(url)) {
@@ -36,6 +37,7 @@ export class UrlService {
 	* Proxifies a url when needed.
 	* @param {string} url
 	* @public
+	* @returns {Promise<string>|Promise.reject} proxified url
 	*/
 	async proxify(url) {
 		if (!isString(url)) {
@@ -48,11 +50,11 @@ export class UrlService {
 		return this._templateProvider(this._proxyUrl, encodeURIComponent(url));
 	}
 
-
 	/**
 	* Tests if the remote resource enables CORS by using a head request
 	* @param {string} url
 	* @public
+	* @returns {Promise<boolean>|Promise.reject} `true`, if cors is enabled
 	*/
 	async isCorsEnabled(url) {
 		if (!isString(url)) {
@@ -64,7 +66,6 @@ export class UrlService {
 			method: 'HEAD'
 		});
 		return result.ok;
-
 	}
 
 	/**
@@ -72,6 +73,7 @@ export class UrlService {
 	 * @param {string} url 
 	 * @async 
 	 * @public
+	 * @returns {Promise<string>|Promise.reject} shortened url
 	 */
 	async shorten(url) {
 		if (!isString(url)) {
