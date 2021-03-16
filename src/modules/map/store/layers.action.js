@@ -10,7 +10,7 @@ import { $injector } from '../../../injection';
  * Reflects the state of a layer.
  * @typedef {Object} LayerProperties
  * @property {string} opacity Id of this layer
- * @property {name} label Label of this layer
+ * @property {label} label Label of this layer
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.

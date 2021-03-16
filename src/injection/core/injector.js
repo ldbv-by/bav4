@@ -23,6 +23,7 @@ export class Injector {
 	 */
 	reset() {
 		this._dependencies = [];
+		this._ready = false;
 		return this;
 	}
 

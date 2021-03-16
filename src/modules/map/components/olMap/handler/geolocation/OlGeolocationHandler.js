@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
-import { GEOLOCATION_LAYER_ID } from '../../../../store/geolocation.observer';
+import { GEOLOCATION_LAYER_ID } from '../../../../store/GeolocationObserver';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
