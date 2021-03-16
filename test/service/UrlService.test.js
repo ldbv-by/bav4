@@ -7,7 +7,7 @@ describe('UrlService', () => {
 	let instanceUnderTest;
 	const configService = {
 		getValueAsPath: () => {
-			return 'https://proxy.url'; 
+			return 'https://proxy.url';
 		}
 	};
 
@@ -22,7 +22,18 @@ describe('UrlService', () => {
 	});
 
 	beforeEach(() => {
-		instanceUnderTest = new UrlService();
+		//we us a mocked urlShorteningProvider
+		instanceUnderTest = new UrlService(async () => 'https://much.shorter');
+	});
+
+
+	describe('constructor', () => {
+		it('sets default providers', async () => {
+			const service = new UrlService();
+
+			expect(service._templateProvider).toBeDefined();
+			expect(service._urlShorteningProvider).toBeDefined();
+		});
 	});
 
 	describe('cors availability', () => {
@@ -31,8 +42,7 @@ describe('UrlService', () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
 				timeout: 1500,
-				method: 'HEAD',
-				mode: 'cors'
+				method: 'HEAD'
 			};
 			const spy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: true
@@ -48,8 +58,7 @@ describe('UrlService', () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
 				timeout: 1500,
-				method: 'HEAD',
-				mode: 'cors'
+				method: 'HEAD'
 			};
 			const spy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: false
@@ -60,39 +69,94 @@ describe('UrlService', () => {
 			expect(spy).toHaveBeenCalled();
 			expect(result).toBeFalse();
 		});
+
+		it('rejects when argument is not a string', (done) => {
+
+			instanceUnderTest.isCorsEnabled(123).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'url\' must be a string');
+				done();
+			});
+		});
 	});
 
 	describe('proxify urls', () => {
-		it('proxyfies a url instant', () => {
-			const url = 'https://some.url';
 
-			const result =  instanceUnderTest.proxifyInstant(url);
+		describe('instantly', () => {
+			it('proxyfies a url instantly', () => {
+				const url = 'https://some.url';
 
-			expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+				const result = instanceUnderTest.proxifyInstant(url);
+
+				expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+			});
+
+			it('rejects when argument is not a string', () => {
+
+				expect(() => instanceUnderTest.proxifyInstant(123)).toThrowError(TypeError, /Parameter 'url' must be a string/);
+			});
 		});
 
-		it('proxyfies a url with cors check (needs proxy)', async () => {
+		describe('on demand', () => {
+
+			it('proxyfies a url with cors check (needs proxy)', async () => {
+				const url = 'https://some.url';
+				const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+					ok: false
+				}));
+
+				const result = await instanceUnderTest.proxify(url);
+
+				expect(httpServiceSpy).toHaveBeenCalled();
+				expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+			});
+
+			it('proxyfies a url with cors check (does not need proxy)', async () => {
+				const url = 'https://some.url';
+				const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+					ok: true
+				}));
+
+				const result = await instanceUnderTest.proxify(url);
+
+				expect(httpServiceSpy).toHaveBeenCalled();
+				expect(result).toBe(url);
+			});
+
+			it('rejects when argument is not a string', (done) => {
+
+				instanceUnderTest.proxify(123).then(() => {
+					done(new Error('Promise should not be resolved'));
+				}, (reason) => {
+					expect(reason).toEqual(jasmine.any(TypeError));
+					expect(reason.message).toBe('Parameter \'url\' must be a string');
+					done();
+				});
+			});
+		});
+	});
+
+	describe('shortens urls', () => {
+
+		it('shortens urls by using a provider', async () => {
 			const url = 'https://some.url';
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				ok: false
-			}));
 
-			const result = await instanceUnderTest.proxify(url);
+			const result = await instanceUnderTest.shorten(url);
 
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+			expect(result).toBe('https://much.shorter');
 		});
 
-		it('proxyfies a url with cors check (does not need proxy)', async () => {
-			const url = 'https://some.url';
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				ok: true
-			}));
+		it('rejects when argument is not a string', (done) => {
 
-			const result = await instanceUnderTest.proxify(url);
-
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(result).toBe(url);
+			instanceUnderTest.shorten(123).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'url\' must be a string');
+				done();
+			});
 		});
 	});
 });
