@@ -1,4 +1,4 @@
-import { Draw, Modify, Select, Snap } from 'ol/interaction';
+import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -12,6 +12,7 @@ import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
 import { noModifierKeys, click, primaryAction } from 'ol/events/condition';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -70,12 +71,26 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return layer;
 		};
 
-
+		const pointerUpHandler = () => {
+			const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
+			if (draggingOverlay) {
+				draggingOverlay.set('dragging', false);				
+			}		
+		};
 
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
 
-			if (event.dragging) {
+			if (!this._dragPan.getActive()) {
+				const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
+				if (draggingOverlay) {
+					draggingOverlay.setOffset([0, 0]);
+					draggingOverlay.set('manualPositioning', true);
+					draggingOverlay.setPosition(event.coordinate);
+				}
+			}
+
+			if (event.dragging) {								
 				return;
 			}
 			let helpMsg = translate('map_olMap_handler_measure_start');
@@ -139,9 +154,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
-
+			this._dragPan = new DragPan();
 			this._addOverlayToMap(olMap, this._helpTooltip);
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
+			this._listeners.push(olMap.on('pointerup', pointerUpHandler));
 			this._listeners.push(olMap.on('dblclick', () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
@@ -149,6 +165,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
+			olMap.addInteraction(this._dragPan);
 		}
 		return this._vectorLayer;
 	}
@@ -164,6 +181,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
+		olMap.removeInteraction(this._dragPan);
 		this._overlays.forEach(o => olMap.removeOverlay(o));
 		this._overlays = [];
 		this._listeners.forEach(l => unByKey(l));
@@ -171,7 +189,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip = null;
 		this._draw = false;
 		this._map = null;
-	}
+	}	
 
 	_addOverlayToMap(map, overlay) {
 		this._overlays.push(overlay);
@@ -374,39 +392,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measurementOverlay.type = type;
 		measurementOverlay.projectionHints = projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
-		this._createDragOn(overlay, this._map);
+		this._createDragOn(overlay);
 		return overlay;
 	}
 
 	_updateOverlay(overlay, geometry, value) {
-		const measurementOverlay = overlay.getElement();
-		measurementOverlay.value = value;
-		measurementOverlay.geometry = geometry;
-		overlay.setPosition(measurementOverlay.position);
+		const element = overlay.getElement();
+		element.value = value;
+		element.geometry = geometry;
+		if (!overlay.get('manualPositioning')) {
+			overlay.setPosition(element.position);
+		}
 	}
 
-	_createDragOn(overlay, map) {
+	_createDragOn(overlay) {
 		const element = overlay.getElement();
+		const dragPan = this._dragPan;
 
 		const handleMouseDown = () => {
-			const body = document.querySelector('body');
-			const handleDragging = (event) => {
-				const position = map.getEventCoordinate(event);
-				overlay.setOffset([0, 0]);
-				overlay.setPositioning('center-center');
-				overlay.setPosition(position);
-				overlay.set('manualPositioning', true);
-			};
-			const handleMouseUp = () => {
-				const body = document.querySelector('body');
-				body.removeEventListener('mouseup', handleMouseUp);
-				body.removeEventListener('mousemove', handleDragging);
-			};
-			body.addEventListener('mouseup', handleMouseUp);
-			body.addEventListener('mousemove', handleDragging);
-
+			dragPan.setActive(false);
+			overlay.set('dragging', true);
 		};
-		element.addEventListener('mousedown', handleMouseDown);
+		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 	}
 
 	_getSnapTolerancePerDevice() {
