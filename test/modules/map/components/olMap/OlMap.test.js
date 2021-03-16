@@ -40,12 +40,6 @@ describe('OlMap', () => {
 		isTouch() { }
 	};
 
-	const contextMenuEventHandlerMock = {
-		register() { },
-		get id() {
-			return 'contextMenuEventHandlerMock';
-		}
-	};
 	const measurementLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -87,7 +81,6 @@ describe('OlMap', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
 
@@ -428,17 +421,6 @@ describe('OlMap', () => {
 			expect(layer1.get('id')).toBe('id0');
 		});
 	});
-
-	describe('contextmenue handler', () => {
-		it('registers the handler', async () => {
-			const registerSpy = spyOn(contextMenuEventHandlerMock, 'register');
-			const element = await setup();
-
-			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
-			expect(registerSpy).toHaveBeenCalledOnceWith(element._map);
-		});
-	});
-
 
 	describe('measurement handler', () => {
 		it('registers the handler', async () => {
