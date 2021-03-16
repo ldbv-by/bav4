@@ -35,7 +35,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
-		this._helpTooltip;
+		this._helpTooltip = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
@@ -93,6 +93,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (event.dragging) {								
 				return;
 			}
+
+			if (this._helpTooltip == null) {
+				return;
+			}
 			let helpMsg = translate('map_olMap_handler_measure_start');
 			if (this._draw.getActive()) {
 				if (this._activeSketch) {
@@ -147,7 +151,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw === false) {
 			this._map = olMap;
 			this._vectorLayer = createLayer();
-			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
 			this._modify = this._createModify();
@@ -155,7 +158,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
-			this._addOverlayToMap(olMap, this._helpTooltip);
+			if (!this._environmentService.isTouch()) {
+				this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
+				this._addOverlayToMap(olMap, this._helpTooltip);
+			}			
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
 			this._listeners.push(olMap.on('pointerup', pointerUpHandler));
 			this._listeners.push(olMap.on('dblclick', () => false));
@@ -222,7 +228,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._overlays.forEach(o => this._map.removeOverlay(o));
 		this._overlays = [];
 		this._vectorLayer.getSource().clear();
-		this._addOverlayToMap(this._map, this._helpTooltip);
+		if (!this._environmentService.isTouch()) {
+			this._addOverlayToMap(this._map, this._helpTooltip);
+		}		
 	}
 
 	_createDraw(source) {

@@ -483,6 +483,17 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._helpTooltip.getPosition()).toEqual([10, 0]);
 		});
 
+		it('creates NO helpTooltip', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(classUnderTest._helpTooltip).toBeNull();			
+			expect( environmentSpy).toHaveBeenCalled();
+		});
+
 		it('no move when dragging', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
