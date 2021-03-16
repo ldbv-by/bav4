@@ -36,7 +36,6 @@ describe('UrlService', () => {
 		});
 	});
 
-
 	describe('cors availability', () => {
 
 		it('checks if cors is enabled (it is)', async () => {
@@ -135,6 +134,28 @@ describe('UrlService', () => {
 					expect(reason.message).toBe('Parameter \'url\' must be a string');
 					done();
 				});
+			});
+		});
+	});
+
+	describe('shortens urls', () => {
+
+		it('shortens urls by using a provider', async () => {
+			const url = 'https://some.url';
+
+			const result = await instanceUnderTest.shorten(url);
+
+			expect(result).toBe('https://much.shorter');
+		});
+
+		it('rejects when argument is not a string', (done) => {
+
+			instanceUnderTest.shorten(123).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'url\' must be a string');
+				done();
 			});
 		});
 	});
