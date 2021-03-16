@@ -1,3 +1,5 @@
+import { isNumber } from './checks';
+
 /**
  * Rounds the given value according to how many decimals are wanted
  * @param {number} value
@@ -5,7 +7,7 @@
  * @returns {number} value rounded
  */
 export function round(value, decimals = 0) {
-	if (!isNumber(value)) {
+	if (!isNumber(value, false)) {
 		return undefined;
 	}
 	if (decimals === 0) {
@@ -15,14 +17,3 @@ export function round(value, decimals = 0) {
 	return Math.round(value * pow) / pow;
 }
 
-/**
- * Returns true if value represents or is a number (a string containing a valid number will return true)
- * @param {any} value
- * @returns {boolean}
- */
-export function isNumber(value) {
-	return value !== null
-        && value !== undefined
-        && !Number.isNaN(Number(value))
-        && (typeof value !== 'string' || value.length !== 0);
-}

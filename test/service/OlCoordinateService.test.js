@@ -131,7 +131,7 @@ describe('OlCoordinateService', () => {
 					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
 
 					expect(() => {
-						instanceUnderTest.transform(extent25832, 25832, 25834);
+						instanceUnderTest.transformExtent(extent25832, 25832, 25834);
 					})
 						.toThrowError(/Unsupported SRID: 25834/);
 				});
