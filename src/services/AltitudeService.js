@@ -1,4 +1,5 @@
 import { loadBvvAltitude } from './provider/altitude.provider';
+import { isCoordinate } from '../utils/checks';
 
 export class AltitudeService {
 
@@ -12,6 +13,9 @@ export class AltitudeService {
 	 * @returns {Number} altitude
      */
 	async getAltitude(coordinate3857) {
+		if (!isCoordinate(coordinate3857)) {
+			throw new TypeError('Parameter \'coordinate3857\' must be a coordinate');
+		}
 		try {
 			const altitude = await this._altitudeProvider(coordinate3857);
 			return altitude;

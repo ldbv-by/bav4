@@ -33,6 +33,9 @@ describe('AltitudeService', () => {
 				expect(returnValue).toEqual(mockAltitude);
 			});
 		}); 
+	});
+
+	describe('Error handling', () => { 
 
 		it('rejects when backend is not available', (done) => {
 			const instanceUnderTest = setup(async () => {
@@ -45,6 +48,18 @@ describe('AltitudeService', () => {
 				done(new Error('Promise should not be resolved'));
 			}, (reason) => {
 				expect(reason.message).toBe('Could not load altitude from provider: Altitude Provider error');
+				done();
+			});
+		});
+
+		it('rejects when argument is not a coordinate', (done) => {
+			const instanceUnderTest = setup();
+
+			instanceUnderTest.getAltitude('False Input').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
 				done();
 			});
 		});
