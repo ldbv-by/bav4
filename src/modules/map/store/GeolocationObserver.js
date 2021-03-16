@@ -100,7 +100,7 @@ export class GeolocationObserver extends BaObserver {
 	}
 
 	_deactivate() {
-		if (this._geolocationWatcherId) {
+		if (this._geolocationWatcherId !== null) {
 			navigator.geolocation.clearWatch(this._geolocationWatcherId);
 			this._geolocationWatcherId = null;
 		}
