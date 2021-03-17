@@ -15,6 +15,8 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementObserver';
+import { ModifyEvent } from 'ol/interaction/Modify';
+
 
 
 const environmentServiceMock = { isTouch: () => false };
@@ -53,7 +55,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	describe('when activated over olMap', () => {
-		
+
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 		const setupMap = () => {
@@ -75,25 +77,25 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		describe('uses Interactions', () => {
-			it('adds a Draw-Interaction', () => {				
+			it('adds a Draw-Interaction', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
 
 				classUnderTest.activate(map);
-	
+
 				// adds Interaction for select, draw, modify,snap, dragPan
 				expect(map.addInteraction).toHaveBeenCalledTimes(5);
 			});
-	
-			it('removes Interaction', () => {				
+
+			it('removes Interaction', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const layerStub = {};
 				map.removeInteraction = jasmine.createSpy();
-	
+
 				classUnderTest.deactivate(map, layerStub);
-				
+
 				// removes Interaction for select, draw, modify, snap, dragPan
 				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
 			});
@@ -140,7 +142,7 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._snap).toBeInstanceOf(Snap);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
-			});			
+			});
 
 			it('adds a dragPan interaction', () => {
 				const classUnderTest = new OlMeasurementHandler();
@@ -151,11 +153,11 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
-			});	
+			});
 		});
 
 
-		it('removes all registered mapOverlays', () => {			
+		it('removes all registered mapOverlays', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			map.removeOverlay = jasmine.createSpy();
@@ -399,11 +401,11 @@ describe('OlMeasurementHandler', () => {
 		it('removes drawn feature if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest._reset = jasmine.createSpy().and.callThrough();
-			const map = setupMap();			
+			const map = setupMap();
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
-			
+
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -466,7 +468,7 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 			expect(map.getView().getZoom()).toBe(1);
-			
+
 			simulateMapMouseEvent(map, MapBrowserEventType.DBLCLICK, 10, 0);
 
 			expect(map.getView().getZoom()).toBe(1);
@@ -490,8 +492,8 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(classUnderTest._helpTooltip).toBeNull();			
-			expect( environmentSpy).toHaveBeenCalled();
+			expect(classUnderTest._helpTooltip).toBeNull();
+			expect(environmentSpy).toHaveBeenCalled();
 		});
 
 		it('no move when dragging', () => {
@@ -562,26 +564,26 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._pointCount).toBe(5);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
-		});		
-		
+		});
+
 		it('adds the drawn feature to select after drawends', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
-			classUnderTest.activate(map);		
+			classUnderTest.activate(map);
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-					
+
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-		});		
+		});
 
-		describe('change message in helpTooltip, when switching to modify', () => {
-			const geometry = new LineString([[0, 0], [100, 0]]);			
+		describe('when switching to modify', () => {
+			const geometry = new LineString([[0, 0], [100, 0]]);
 			const feature = new Feature({ geometry: geometry });
 			const createSnappingFeatureMock = (coordinate) => {
 				return {
@@ -594,7 +596,7 @@ describe('OlMeasurementHandler', () => {
 				const map = setupMap();
 
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callThrough();
-				
+
 
 				classUnderTest.activate(map);
 				classUnderTest._modify.setActive(true);
@@ -609,8 +611,8 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
-				const snappingFeatureMock = createSnappingFeatureMock([50, 0]);//createSnappingFeatureMock([50, 0]);
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {					
+				const snappingFeatureMock = createSnappingFeatureMock([50, 0]);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
 					callback(snappingFeatureMock, undefined);
 				});
 
@@ -626,12 +628,12 @@ describe('OlMeasurementHandler', () => {
 			it('pointer is snapped to sketch vertex', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-			
+
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0]);
-				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {					
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
 					callback(snappingFeatureMock, undefined);
 				});
-				
+
 				classUnderTest.activate(map);
 				classUnderTest._modify.setActive(true);
 				const baOverlay = classUnderTest._helpTooltip.getElement();
@@ -640,15 +642,58 @@ describe('OlMeasurementHandler', () => {
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_or_drag');
 			});
+
+
+			it('adds/removes style for grab on vertex', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const mapContainer = map.getTarget();
+
+
+				const snappingFeatureMock = createSnappingFeatureMock([0, 0]);
+				let toggleOnce = true;
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+					if (toggleOnce) {
+						callback(snappingFeatureMock, undefined);
+						toggleOnce = false;
+					}
+				});
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(mapContainer.classList.contains('grab')).toBeTrue();
+				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+				expect(mapContainer.classList.contains('grab')).toBeFalse();
+			});
+
+			it('adds/removes style for grabbing while modifying', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const mapContainer = map.getTarget();
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+
+
+				expect(mapContainer.classList.contains('grabbing')).toBeTrue();
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+				expect(mapContainer.classList.contains('grabbing')).toBeFalse();
+			});
 		});
+
+
 
 		describe('drags overlays', () => {
 
 			it('change overlay-property on pointerdown', () => {
 				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();				
-				classUnderTest.activate(map);		
-			
+				const map = setupMap();
+				classUnderTest.activate(map);
+
 				const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 				const feature = new Feature({ geometry: geometry });
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -656,17 +701,17 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 				const overlay = feature.get('measurement');
 				const element = overlay.getElement();
-			
+
 				element.dispatchEvent(new Event('pointerdown'));
-			
+
 				expect(overlay.get('dragging')).toBeTrue();
 			});
 
 			it('changes position of overlay on pointermove', () => {
 				const classUnderTest = new OlMeasurementHandler();
-				const map = setupMap();				
-				classUnderTest.activate(map);		
-			
+				const map = setupMap();
+				classUnderTest.activate(map);
+
 				const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 				const feature = new Feature({ geometry: geometry });
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -674,9 +719,9 @@ describe('OlMeasurementHandler', () => {
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
 				const overlay = feature.get('measurement');
 				const element = overlay.getElement();
-			
+
 				element.dispatchEvent(new Event('pointerdown'));
-			
+
 				expect(overlay.get('dragging')).toBeTrue();
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 500);
 				expect(overlay.get('manualPositioning')).toBeTrue();
