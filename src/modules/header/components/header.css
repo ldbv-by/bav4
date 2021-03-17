@@ -1,14 +1,98 @@
+
+/* NEU */
+.header{
+  position: fixed;
+  z-index: var(--z-header);
+  width: auto;
+  min-width: 28em;
+  padding: 2em 1em;
+  top: 0;
+  left: 0;
+  background: var(--secondary-color);;
+}
+.header__button{
+  margin: .8em 0 0 0 ;
+  padding: .5em;
+  font-size: .9em;
+  border-radius: 2.5em;
+  background-color: var(--primary-bg-color);
+  color: rgb(58,132,195);
+  font-weight: bold;
+  border-color: rgb(58,132,195);
+  border-style: solid;
+  border-width: 2px;
+}
+.header__nav{
+  position: absolute;
+}
+.header input{
+  font-size: .9rem;
+  display: block;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: .5em .5em;
+}
+.header__modal-button{   
+  flex-shrink: 1;
+  height: inherit;
+  margin: 0;
+  padding: 0 .5em;
+}
+.header__button-container{                             
+  position: absolute;
+  display: flex
+}
+.header__button-container button{
+  height: 2em;
+  margin: 0.8em 0 0 0;
+  padding: .4em 0.6em;
+  color: rgb(58,132,195);
+  background: var(--primary-bg-color);
+  border-color: rgb(58,132,195);
+  border-width: 2px;
+  border-style: solid;
+}
+
+.header__button-container button:first-child{
+  border-radius:2em  0 0 2em;
+  border-right:0;
+}
+.header__button-container button:nth-last-child(2){
+  border-radius:0 2em 2em 0;
+}
+.header__button-container button:last-child{
+  border-radius: 2em;
+  margin-left: .8em;
+}
+
+
+
+.portrait .header{
+  right: 0;
+  min-width: inherit;
+}
+
+
+
+
+
+
+
+/* 
+
+
+
 .header {
+  display: none;
   position: fixed;
   z-index: var(--z-header);
   top: 0em;
   left: 0em;
-  font-size: 1em;
   color: var(--primary-color);
   width: 28em;  
   background-color: var(--secondary-color);
-  /* TODO: raus wenn suche in ContentPanel */
-  height: 50px;
+  height: 6em;
 }
 
 .content {
@@ -30,6 +114,7 @@
 }
 
 .item2 {
+  position: absolute;
   padding-right: 10px;
   padding-top: 10px;
   flex-grow: 1;
@@ -102,13 +187,4 @@
   .header {
       width: 100%;
   }
-}
-
-
-/* .logo-desktop {
-  float: right;
-}
-
-.logo-mobile {
-  float: left;
 } */

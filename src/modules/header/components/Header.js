@@ -3,7 +3,7 @@ import { BaElement } from '../../BaElement';
 import { toggleContentPanel } from '../../menue/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
-import { changeZoomAndCenter } from '../../map/store/position.action';
+// import { changeZoomAndCenter } from '../../map/store/position.action';
 import css from './header.css';
 
 
@@ -22,7 +22,23 @@ export class Header extends BaElement {
 		this._environmentService = EnvironmentService;
 		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
 		this._menueButtonLocked = false;
+		this._portrait = false;
 	}
+
+	initialize() {
+
+		//MediaQuery for 'orientation'
+		const mediaQuery = window.matchMedia('(orientation: portrait)');
+		const handleOrientationChange = (e) => {
+			this._portrait = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQuery.addEventListener('change',  handleOrientationChange);
+		//initial set of local state
+		handleOrientationChange(mediaQuery);
+	}
+
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
@@ -50,33 +66,35 @@ export class Header extends BaElement {
 			openModal(payload);
 		};
 
-		const onSelect = (data) => {
-			changeZoomAndCenter({
-				zoom: 16,
-				center: this._coordinateService.fromLonLat([data.center[0], data.center[1]])
-			});
+		const getOrientationClass = () => {
+			return this._portrait ? 'portrait' : 'landscape';
 		};
+
+
 
 		return html`
 			<style>${css}</style>
-			<div class="header header-desktop">
-				<div class="content">
-					<div class="item0">
-						<div class='ci'>
-							<h3 class='ci-text'>BAv4</h3>
-							<div class='ci-logo' @click="${showModalInfo}"></div>
-						</div>
+			<div class="${getOrientationClass()}">
+				<div  class="header">    
+					<div  style="display: flex">
+						<input   type="search"/>             
+						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
+							M
+						</button>
 					</div>
-					<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._locationSearchResultProvider}></ba-autocomplete-search>
-					<div class="item2">
-						<div class='menue-button'>
-							<a title="${getTitle()}" @click="${toggleContentPanelGuarded}">
-								<span class='icon toggle-side-panel'></span>
-							</a>
-						</div>
+					<div  class="header__button-container">
+						<button title="${getTitle()}" @click="${toggleContentPanelGuarded}">
+							Themen
+						</button>
+						<button title="${getTitle()}" @click="${toggleContentPanelGuarded}">
+							Dargestellte Karten
+						</button>
+						<button title="${getTitle()}" @click="${toggleContentPanelGuarded}">
+							mehr
+						</button>
 					</div>
 				</div>
-			</div>
+            </div>
 		`;
 	}
 

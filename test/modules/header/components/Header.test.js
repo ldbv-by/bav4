@@ -36,12 +36,9 @@ describe('Header', () => {
 		it('adds header bar', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.toggle-side-panel')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('a').title).toBe('Open menue');
-			expect(element.shadowRoot.querySelector('a').children[0].className).toBe('icon toggle-side-panel');
-			expect(element.shadowRoot.querySelector('.ci-text')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.ci-logo')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('ba-autocomplete-search')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header__button-container button:first-child').title).toBe('Open menue');
+			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -65,7 +62,7 @@ describe('Header', () => {
 			expect(element._menueButtonLocked).toBeFalse();
 
 			expect(store.getState().contentPanel.open).toBe(false);
-			element.shadowRoot.querySelector('.toggle-side-panel').click();
+			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
 			expect(store.getState().contentPanel.open).toBe(true);
 			expect(element._menueButtonLocked).toBeTrue();
 			// expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Close menue');
@@ -74,21 +71,43 @@ describe('Header', () => {
 			jasmine.clock().tick(500);
 			expect(element._menueButtonLocked).toBeFalse();
 
-			element.shadowRoot.querySelector('.toggle-side-panel').click();
+			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
 			expect(store.getState().contentPanel.open).toBe(false);
 			// expect(element.shadowRoot.querySelector('.content').children[0].title).toBe('Open menue');
 		});
 	});
 
-	describe('when logo is clicked', () => {
+	describe('when Modalbutton is clicked', () => {
 
 		it('shows a modal window with the showcase', async () => {
 			const element = await setup({ mobile: false });
 
-			element.shadowRoot.querySelector('.ci-logo').click();
+			element.shadowRoot.querySelector('.header__modal-button').click();
 
 			expect(store.getState().modal.title).toBe('Showcase');
 		});
 	});
 
+	it('layouts for landscape', async () => {
+						
+		const matchMediaSpy = spyOn(window, 'matchMedia')
+		//mock landscape
+			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+		const element = await setup();
+		expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+		expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+		expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+	});
+	
+	it('layouts for portrait', async () => {
+
+		const matchMediaSpy = spyOn(window, 'matchMedia')
+			//mock  portrait
+			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+		const element = await setup();
+		expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+		expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+		expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+	});
+	
 });

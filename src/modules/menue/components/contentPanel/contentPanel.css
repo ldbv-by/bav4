@@ -15,7 +15,7 @@
 .content-panel__close-button {           
    position: absolute;
    background-color: var(--secondary-bg-color);
-   top: 4.5em;
+   top: 7.5em;
    left: 25.5em;
    border-radius: 2em 0 0 2em;
    padding: 0;
@@ -50,20 +50,22 @@
 .portrait .content-panel__close-button {              
    position: absolute;
    top: unset;
-   left: unset;
+   left: 50%;
    bottom: 0em;
-   right: 0em;    
-   border-radius: 2em  0 0  0;
+   right: 0em;
+   border-radius: 2em 2em 0 0;
+   width: 4em;
+   margin-left: -2em;
    }
 .portrait .arrow {
    position: absolute;
    width: 0;
    height: 0;
    top: .6em;
-   left: 1em;
+   left: 1.5em;
    border-width: .5em;
    border-style: solid;
-   border-color: transparent  transparent gray transparent;
+   border-color: transparent transparent gray transparent;
 }
 
 
