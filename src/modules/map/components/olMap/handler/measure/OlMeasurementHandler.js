@@ -10,9 +10,9 @@ import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from './StyleUtils';
 import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
-import { MEASUREMENT_LAYER_ID } from '../../../../store/measurement.observer';
 import { noModifierKeys, click, primaryAction } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -74,8 +74,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const pointerUpHandler = () => {
 			const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
-				draggingOverlay.set('dragging', false);				
-			}		
+				draggingOverlay.set('dragging', false);
+			}
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -90,7 +90,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 
-			if (event.dragging) {								
+			if (event.dragging) {
 				return;
 			}
 
@@ -117,7 +117,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 
 			if (this._modify.getActive()) {
-				helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');	
+				helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');
 				const interactionLayer = this._vectorLayer;
 				const featureSnapOption = {
 					hitTolerance: 10,
@@ -161,7 +161,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 				this._addOverlayToMap(olMap, this._helpTooltip);
-			}			
+			}
 			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
 			this._listeners.push(olMap.on('pointerup', pointerUpHandler));
 			this._listeners.push(olMap.on('dblclick', () => false));
@@ -195,7 +195,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip = null;
 		this._draw = false;
 		this._map = null;
-	}	
+	}
 
 	_addOverlayToMap(map, overlay) {
 		this._overlays.push(overlay);
@@ -230,7 +230,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer.getSource().clear();
 		if (!this._environmentService.isTouch()) {
 			this._addOverlayToMap(this._map, this._helpTooltip);
-		}		
+		}
 	}
 
 	_createDraw(source) {
