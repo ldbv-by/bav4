@@ -2,17 +2,18 @@
     position: fixed;
     z-index: var(--z-footer);
     bottom: 0;
-    /* height: 45px; */
+    background-color: var(--primary-bg-color-05);
+    transition: transform 0.3s ease-out;     
+}
+.content{
+    font-size: .9rem;
+    padding: 0em .5em;
+}
+.is-open {
+    transform: translate(28em, 0);
+ }
+
+.portrait .footer {   
+    width:100%;   
     background-color: var(--primary-bg-color);
-    /* width: 100%; */
-}
-
-.content {
-    padding: .5em;
-}
-
-@media (orientation: portrait){
-    .footer {
-        width: 100%;
-    }
 }

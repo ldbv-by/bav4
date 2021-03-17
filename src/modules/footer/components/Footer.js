@@ -15,20 +15,49 @@ export class Footer extends BaElement {
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
+		this._portrait = false;
 	}
 
+
+	initialize() {
+
+		//MediaQuery for 'orientation'
+		const mediaQuery = window.matchMedia('(orientation: portrait)');
+		const handleOrientationChange = (e) => {
+			this._portrait = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQuery.addEventListener('change',  handleOrientationChange);
+		//initial set of local state
+		handleOrientationChange(mediaQuery);
+	}
+
+
 	isRenderingSkipped() {
-		const { portrait } = this._environmentService.getScreenOrientation();
-		return this._environmentService.isEmbedded() || portrait;
+		return this._environmentService.isEmbedded();
 	}
 
 	createView() {
 
-		return  html`
+		const { open } = this._state;
+
+		const getOverlayClass = () => {
+			return (open && !this._portrait) ? 'is-open' : '';
+		};
+		
+		const getOrientationClass = () => {
+			return this._portrait ? 'portrait' : 'landscape';
+		};
+
+
+		return html`
 			<style>${css}</style>
-			<div class="footer">
-				<div class="content">	
-					${this.createChildrenView()}
+			<div class="${getOrientationClass()}">
+				<div class="footer ${getOverlayClass()}">
+					<div class="content">	
+						${this.createChildrenView()}
+					</div>
 				</div>
 			</div>
 		`;
@@ -37,6 +66,16 @@ export class Footer extends BaElement {
 	createChildrenView() {
 		return html`<ba-map-info></ba-map-info>`;
 	}
+
+	/**
+	 * @override
+	 * @param {Object} store 
+	 */
+	extractState(store) {
+		const { contentPanel: { open } } = store;
+		return { open };
+	}
+
 
 	static get tag() {
 		return 'ba-footer';
