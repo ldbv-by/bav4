@@ -422,6 +422,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
 		measurementOverlay.isDraggable = isDraggable;
+		measurementOverlay.projectionHints = this._projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
 		if (isDraggable) {
 			this._createDragOn(overlay);
