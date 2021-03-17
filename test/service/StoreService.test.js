@@ -17,6 +17,9 @@ describe('StoreService', () => {
 		const positionObserverMock = {
 			register() { }
 		};
+		const contextClickObserverMock = {
+			register() { }
+		};
 		const windowMock = {
 			history: {
 				replaceState() { }
@@ -50,6 +53,7 @@ describe('StoreService', () => {
 			const geolocationObserverSpy = spyOn(geolocationObserverMock, 'register');
 			const layersObserverSpy = spyOn(layersObserverMock, 'register');
 			const positionObserverSpy = spyOn(positionObserverMock, 'register');
+			const contextClickObserverSpy = spyOn(contextClickObserverMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			$injector
@@ -58,6 +62,7 @@ describe('StoreService', () => {
 				.registerSingleton('GeolocationObserver', geolocationObserverMock)
 				.registerSingleton('LayersObserver', layersObserverMock)
 				.registerSingleton('PositionObserver', positionObserverMock)
+				.registerSingleton('ContextClickObserver', contextClickObserverMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.ready();
 
@@ -66,6 +71,7 @@ describe('StoreService', () => {
 			expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
 			expect(layersObserverSpy).toHaveBeenCalledWith(store);
 			expect(positionObserverSpy).toHaveBeenCalledWith(store);
+			expect(contextClickObserverSpy).toHaveBeenCalledWith(store);
 		});
 
 		it('removes all query params by calling #replaceState on history', (done) => {
@@ -78,6 +84,7 @@ describe('StoreService', () => {
 				.registerSingleton('GeolocationObserver', geolocationObserverMock)
 				.registerSingleton('LayersObserver', layersObserverMock)
 				.registerSingleton('PositionObserver', positionObserverMock)
+				.registerSingleton('ContextClickObserver', contextClickObserverMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.ready();
 
