@@ -19,8 +19,10 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { }
 	};
 	const altitudeServiceMock = {
-		getAltitude() {
-		} 
+		getAltitude() {	} 
+	}; 
+	const administrationServiceMock = {
+		getAdministration() { } 
 	}; 
 
 	const setup = () => {
@@ -31,7 +33,8 @@ describe('OlMapContextMenuContent', () => {
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('AltitudeService', altitudeServiceMock);
+			.registerSingleton('AltitudeService', altitudeServiceMock)
+			.registerSingleton('AdministrationService', administrationServiceMock);
 		return TestUtils.render(MapContextMenuContent.tag);
 	};
 
@@ -45,15 +48,17 @@ describe('OlMapContextMenuContent', () => {
 
 	describe('when screen coordinate available', () => {
 		it('renders the content', async () => {
+			const coordinateMock = [1000, 2000];
 			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
-			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs([1000, 2000]).and.returnValue(42);
+			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
+			const administrationMock = spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
+			element.coordinate = coordinateMock;
 			//after we set the coordinate, we need to trigger rendering manually in this case
 			element.render();
 
@@ -64,9 +69,13 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
 
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_altitude_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_community_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_district_label');
 	
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('42 (m)');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('LDBV');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('Ref42');
 			});
 
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
@@ -79,7 +88,8 @@ describe('OlMapContextMenuContent', () => {
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
-			expect(altitudeMock).toHaveBeenCalledOnceWith([1000, 2000]);
+			expect(altitudeMock).toHaveBeenCalledOnceWith(coordinateMock);
+			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 		});
 
@@ -135,6 +145,22 @@ describe('OlMapContextMenuContent', () => {
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
+				done();
+			});
+		});
+
+		it('logs a warn statement when Administration Service is not available', async  (done) => {
+			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(new Error('Administration Error')));
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup();
+
+			element.coordinate = [1000, 2000]; 
+
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('Administration Error');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('-');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 				done();
 			});
 		});

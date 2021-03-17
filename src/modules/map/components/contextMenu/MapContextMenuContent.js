@@ -12,23 +12,28 @@ export class MapContextMenuContent extends BaElement {
 		const {
 			MapService: mapService,
 			CoordinateService: coordinateService,
-			TranslationService: translastionService,
+			TranslationService: translationService,
 			ShareService: shareService,
-			AltitudeService: altitudeService
-		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService');
+			AltitudeService: altitudeService,
+			AdministrationService: administrationService
+		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService', 'AdministrationService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
-		this._translationService = translastionService;
+		this._translationService = translationService;
 		this._shareService = shareService;
 		this._altitudeService = altitudeService;
+		this._administrationService = administrationService;
 
 		this._altitude = null;
+		this._community = null;
+		this._district = null;
 	}
 
 	set coordinate(coordinateInMapSrid) {
 		this._coordinate = coordinateInMapSrid;
 		this._getAltitude();
+		this._getAdministration();
 	}
 
 	/**
@@ -40,6 +45,23 @@ export class MapContextMenuContent extends BaElement {
 		}
 		catch (e) {
 			this._altitude = '-';
+			console.warn(e.message);
+		}
+		this.render();
+	}
+
+	/**
+	 * @private
+	 */
+	async _getAdministration() {
+		try {
+			const administration = await this._administrationService.getAdministration(this._coordinate);
+			this._community = administration.community;
+			this._district = administration.district;
+		}
+		catch (e) {
+			this._community = '-';
+			this._district = '-';
 			console.warn(e.message);
 		}
 		this.render();
@@ -75,6 +97,8 @@ export class MapContextMenuContent extends BaElement {
   				<ul class="content">
 				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
 				<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
+				<li><span class='label'>${translate('map_contextMenuContent_community_label')}</span><span class='coordinate'>${this._community}</span></li>
+				<li><span class='label'>${translate('map_contextMenuContent_district_label')}</span><span class='coordinate'>${this._district}</span></li>
   				</ul>
 			</div>
 			`;
