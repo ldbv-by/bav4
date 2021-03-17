@@ -1,6 +1,15 @@
 import { loadBvvAdministration } from './provider/administration.provider';
 import { isCoordinate } from '../utils/checks';
 
+/**
+ * An async function that provides an object 
+ * with community and district as string properties.
+ * @async 
+ * @typedef {Object} Administration
+ * @property {string} community The community at the delivered coordinate.
+ * @property {string} district The district at the delivered coordinate.
+ */
+
 export class AdministrationService {
 
 	constructor(administrationProvider = loadBvvAdministration) {
@@ -10,7 +19,7 @@ export class AdministrationService {
 	/**
      * 
      * @param {Coordinate} coordinate3857 
-	 * @returns {Object} with community and district as string properties
+	 * @returns {Administration} administration
      */
 	async getAdministration(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
