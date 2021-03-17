@@ -34,6 +34,9 @@ describe('AdministrationService', () => {
 				expect(returnValue.gemarkung).toEqual(administrationMock.gemarkung);
 			});
 		}); 
+	}); 
+
+	describe('Error handling', () => { 
 
 		it('rejects when backend is not available', (done) => {
 			const instanceUnderTest = setup(async () => {
@@ -56,7 +59,20 @@ describe('AdministrationService', () => {
 			instanceUnderTest.getAdministration().then(() => {
 				done(new Error('Promise should not be resolved'));
 			}, (reason) => {
-				expect(reason.message).toBe('Could not load administration from provider: No registered instance found for HttpService');
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+				done();
+			});
+		});
+
+		it('rejects when false coordinates are delivered', (done) => {
+			const instanceUnderTest = setup();
+
+			instanceUnderTest.getAdministration('false input').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toEqual(jasmine.any(TypeError));
+				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
 				done();
 			});
 		});

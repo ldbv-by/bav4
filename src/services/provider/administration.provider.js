@@ -3,7 +3,7 @@ import { $injector } from '../../injection';
 /**
  * 
  * @param {Coordinate} coordinate3857
- * @returns {Object} with community and district loaded from backend
+ * @returns {Object} with community and district as string properties, loaded from backend
  */
 export const loadBvvAdministration = async (coordinate3857) => {
 
