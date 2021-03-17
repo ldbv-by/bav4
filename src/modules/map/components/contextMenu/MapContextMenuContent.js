@@ -64,7 +64,7 @@ export class MapContextMenuContent extends BaElement {
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
 			
@@ -74,7 +74,7 @@ export class MapContextMenuContent extends BaElement {
 			<div class="container">
   				<ul class="content">
 				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-				<li><span class='label'>${translate('map_olMap_handler_contextMenu_content_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
+				<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
   				</ul>
 			</div>
 			`;

@@ -9,7 +9,8 @@ describe('i18n for context menue', () => {
 		
 		expect(map.map_contextMenu_header).toBe('Location');		
 		expect(map.map_contextMenu_close_button).toBe('Close');		
-		expect(map.map_olMap_handler_contextMenu_content_altitude_label).toBe('Altitude');		
+		expect(map.map_contextMenuContent_altitude_label).toBe('Altitude');
+		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');			
 	});
 
 
@@ -19,11 +20,12 @@ describe('i18n for context menue', () => {
 
 		expect(map.map_contextMenu_header).toBe('Position');		
 		expect(map.map_contextMenu_close_button).toBe('Schließen');	
-		expect(map.map_olMap_handler_contextMenu_content_altitude_label).toBe('Höhe');		
+		expect(map.map_contextMenuContent_altitude_label).toBe('Höhe');
+		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');		
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 3;
+		const expectedSize = 4;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

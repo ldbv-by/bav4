@@ -63,7 +63,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.label').innerText).toBe('code42');
 			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
 
-			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_olMap_handler_contextMenu_content_altitude_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_altitude_label');
 	
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('42 (m)');
@@ -71,6 +71,7 @@ describe('OlMapContextMenuContent', () => {
 
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
+			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			copyIcon.click();
 
 

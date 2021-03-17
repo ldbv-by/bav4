@@ -6,7 +6,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_contextMenu_header: 'Location',					
 				map_contextMenu_close_button: 'Close',
-				map_olMap_handler_contextMenu_content_altitude_label: 'Altitude'				
+				map_contextMenuContent_altitude_label: 'Altitude',	
+				map_contextMenuContent_copy_icon: 'Copy to clipboard'				
 			};
 			
 		case 'de':
@@ -14,7 +15,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_contextMenu_header: 'Position',								
 				map_contextMenu_close_button: 'Schließen',
-				map_olMap_handler_contextMenu_content_altitude_label: 'Höhe'			
+				map_contextMenuContent_altitude_label: 'Höhe',
+				map_contextMenuContent_copy_icon: 'In die Zwischenablage kopieren'		
 			};
 
 		default:
