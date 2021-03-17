@@ -27,14 +27,13 @@ export class OlMap extends BaElement {
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
 			OlGeolocationHandler: geolocationHandler,
-			OlContextMenueMapEventHandler: contextMenueHandler
-		} = $injector.inject('GeoResourceService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlContextMenueMapEventHandler');
+		} = $injector.inject('GeoResourceService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
 
 		this._geoResourceService = georesourceService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
-		this._eventHandler = new Map([[contextMenueHandler.id, contextMenueHandler]]);
+		this._eventHandler = new Map([]);
 	}
 
 	/**
@@ -85,6 +84,7 @@ export class OlMap extends BaElement {
 		});
 
 		const contextHandler = (evt) => {
+			evt.preventDefault();
 			const coord = this._map.getEventCoordinate(evt.originalEvent);
 			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		};
