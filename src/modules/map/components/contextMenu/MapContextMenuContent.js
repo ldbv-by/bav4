@@ -1,11 +1,11 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../../../../BaElement';
-import css from './olMapContextMenuContent.css';
-import { $injector } from '../../../../../../injection';
+import { BaElement } from '../../../BaElement';
+import css from './mapContextMenuContent.css';
+import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 
 
-export class OlMapContextMenuContent extends BaElement {
+export class MapContextMenuContent extends BaElement {
 
 	constructor() {
 		super();
@@ -13,17 +13,36 @@ export class OlMapContextMenuContent extends BaElement {
 			MapService: mapService,
 			CoordinateService: coordinateService,
 			TranslationService: translastionService,
-			ShareService: shareService
-		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService');
+			ShareService: shareService,
+			AltitudeService: altitudeService
+		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
 		this._translationService = translastionService;
 		this._shareService = shareService;
+		this._altitudeService = altitudeService;
+
+		this._altitude = null;
 	}
 
 	set coordinate(coordinateInMapSrid) {
 		this._coordinate = coordinateInMapSrid;
+		this._getAltitude();
+	}
+
+	/**
+	 * @private
+	 */
+	async _getAltitude() {
+		try {
+			this._altitude = await this._altitudeService.getAltitude(this._coordinate) + ' (m)';
+		}
+		catch (e) {
+			this._altitude = '-';
+			console.warn(e.message);
+		}
+		this.render();
 	}
 
 
@@ -45,26 +64,27 @@ export class OlMapContextMenuContent extends BaElement {
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_olMap_handler_contextMenu_content_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
+			
 			return html`
 			<style>${css}</style>
 
 			<div class="container">
   				<ul class="content">
 				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
+				<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
   				</ul>
 			</div>
 			`;
 
 		}
-
 		return nothing;
 	}
 
 	static get tag() {
-		return 'ba-ol-map-context-menu-content';
+		return 'ba-map-context-menu-content';
 	}
 
 }

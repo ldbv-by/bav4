@@ -2,7 +2,7 @@ import { MapBrowserEvent, MapEvent } from 'ol';
 import Event from 'ol/events/Event';
 
 
-export const simulateMouseEvent = (map, type, x, y, dragging) => {
+export const simulateMouseEvent = (map, type, x, y, dragging = false, preventDefaultFunction = () => {}) => {
 	const eventType = type;
 
 	const event = new Event(eventType);
@@ -12,11 +12,11 @@ export const simulateMouseEvent = (map, type, x, y, dragging) => {
 	event.pageX = x;
 	event.pageY = y;
 	event.shiftKey = false;
-	event.preventDefault = function () { };
+	event.preventDefault = preventDefaultFunction;
 
 
 	const mapEvent = new MapBrowserEvent(eventType, map, event);
-	mapEvent.dragging = dragging ? dragging : false;
+	mapEvent.dragging = dragging;
 	map.dispatchEvent(mapEvent);
 };
 
