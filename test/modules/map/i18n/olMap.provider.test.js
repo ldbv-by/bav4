@@ -34,7 +34,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 6;
+		const expectedSize = 9;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
