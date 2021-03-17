@@ -2,7 +2,7 @@
  * Action creators to change the list of active layers, update properties of a layer and change the background layer.
  * @module map/action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, BACKGROUND_CHANGED } from './layers.reducer';
+import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED } from './layers.reducer';
 import { $injector } from '../../../injection';
 
 
@@ -10,7 +10,7 @@ import { $injector } from '../../../injection';
  * Reflects the state of a layer.
  * @typedef {Object} LayerProperties
  * @property {string} opacity Id of this layer
- * @property {name} label Label of this layer
+ * @property {label} label Label of this layer
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end.
@@ -74,17 +74,4 @@ export const removeLayer = (id) => {
 		payload: id
 	});
 };
-
-/**
- * Updates the current background layer
- * @function
- * @param {string} id Id of the layer
- */
-export const changeBackground = (id) => {
-	getStore().dispatch({
-		type: BACKGROUND_CHANGED,
-		payload: id
-	});
-};
-
 

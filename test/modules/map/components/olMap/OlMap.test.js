@@ -36,6 +36,10 @@ describe('OlMap', () => {
 		init() { }
 	};
 
+	const environmentServiceMock = {
+		isTouch() { }
+	};
+
 	const contextMenuEventHandlerMock = {
 		register() { },
 		get id() {
@@ -82,6 +86,7 @@ describe('OlMap', () => {
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
+			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
@@ -204,18 +209,50 @@ describe('OlMap', () => {
 
 	describe('contextmenu', () => {
 
-		describe('when contextmenu click', () => {
-			it('updates the \'contextclick\' property in pointer store', async () => {
-				const element = await setup();
-				const map = element._map;
-				const coordinate = [38, 75];
-				const screenCoordinate = [21, 42];
-				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+		beforeEach(async () => {
+			jasmine.clock().install();
+		});
 
-				simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
 
-				expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
-				expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+		describe('contextmenu event handling', () => {
+
+			describe('on non touch device', () => {
+
+				it('updates the \'contextclick\' property in pointer store', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+				});
+			});
+
+			describe('on touch device', () => {
+				it('updates the \'contextclick\' property in pointer store', async () => {
+					const defaultDelay = 300;
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate);
+					jasmine.clock().tick(defaultDelay + 100);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+				});
 			});
 		});
 	});
@@ -251,6 +288,7 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();
+
 			setTimeout(function () {
 				//check if flag is reset
 				expect(element._viewSyncBlocked).toBeFalse();
@@ -289,25 +327,11 @@ describe('OlMap', () => {
 
 	describe('olLayer management', () => {
 
-		it('intial attaches one olLayer', async () => {
+		it('initially has no olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 
-			expect(map.getLayers().getLength()).toBe(1);
-		});
-
-		it('adds an olLayer with default settings', async () => {
-			const element = await setup();
-			const map = element._map;
-
-			addLayer('id0');
-
-			expect(map.getLayers().getLength()).toBe(2);
-
-			const layer = map.getLayers().item(1);
-			expect(layer.get('id')).toBe('id0');
-			expect(layer.getOpacity()).toBe(1);
-			expect(layer.getVisible()).toBeTrue();
+			expect(map.getLayers().getLength()).toBe(0);
 		});
 
 		it('adds an olLayer with custom settings', async () => {
@@ -316,9 +340,9 @@ describe('OlMap', () => {
 
 			addLayer('id0', { visible: false, opacity: .5 });
 
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 
-			const layer = map.getLayers().item(1);
+			const layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe('id0');
 			expect(layer.getOpacity()).toBe(.5);
 			expect(layer.getVisible()).toBeFalse();
@@ -330,10 +354,10 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1', { zIndex: 0 });
-			expect(map.getLayers().getLength()).toBe(3);
-			const layer1 = map.getLayers().item(1);
+			expect(map.getLayers().getLength()).toBe(2);
+			const layer1 = map.getLayers().item(0);
 			expect(layer1.get('id')).toBe('id1');
-			const layer0 = map.getLayers().item(2);
+			const layer0 = map.getLayers().item(1);
 			expect(layer0.get('id')).toBe('id0');
 		});
 
@@ -344,11 +368,11 @@ describe('OlMap', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 
 			addLayer('id0');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 
 			addLayer('unknown');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
 		});
@@ -358,12 +382,12 @@ describe('OlMap', () => {
 			const map = element._map;
 
 			addLayer('id0');
-			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().getLength()).toBe(1);
 
 			removeLayer('id0');
 
-			expect(map.getLayers().getLength()).toBe(1);
-			expect(map.getLayers().item(0).get('id')).not.toBe('id0');
+			expect(map.getLayers().getLength()).toBe(0);
+			// expect(map.getLayers().item(0).get('id')).not.toBe('id0');
 		});
 
 		it('modifys the visibility of an olLayer', async () => {
@@ -372,16 +396,16 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1');
-			expect(map.getLayers().getLength()).toBe(3);
+			expect(map.getLayers().getLength()).toBe(2);
 
 			modifyLayer('id0', { visible: false, opacity: .5 });
 
-			const layer0 = map.getLayers().item(1);
+			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id0');
 			expect(layer0.getVisible()).toBeFalse();
 			expect(layer0.getOpacity()).toBe(.5);
 
-			const layer1 = map.getLayers().item(2);
+			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id1');
 			expect(layer1.getVisible()).toBeTrue();
 			expect(layer1.getOpacity()).toBe(1);
@@ -393,14 +417,14 @@ describe('OlMap', () => {
 
 			addLayer('id0');
 			addLayer('id1');
-			expect(map.getLayers().getLength()).toBe(3);
+			expect(map.getLayers().getLength()).toBe(2);
 
 			modifyLayer('id0', { zIndex: 2 });
 
-			const layer0 = map.getLayers().item(1);
+			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id1');
 
-			const layer1 = map.getLayers().item(2);
+			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id0');
 		});
 	});
