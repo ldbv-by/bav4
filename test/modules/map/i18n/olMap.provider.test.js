@@ -7,7 +7,6 @@ describe('i18n for map module', () => {
 
 		const map = provide('de');
 
-		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.map_olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
@@ -23,7 +22,6 @@ describe('i18n for map module', () => {
 
 		const map = provide('en');
 
-		expect(map.map_olMap_handler_contextMenu_content_icon).toBe('Copy to clipboard');		
 		expect(map.map_olMap_handler_measure_start).toBe('Click to start measurement');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
@@ -36,14 +34,14 @@ describe('i18n for map module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 10;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);									
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {
