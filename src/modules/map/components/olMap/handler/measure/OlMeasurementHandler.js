@@ -133,6 +133,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				}, featureSnapOption);
 
+				let isGrab = false;
 				if (vertexFeature) {
 					helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
 
@@ -142,7 +143,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 					if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
 						helpMsg = translate('map_olMap_handler_measure_modify_click_or_drag');
+						isGrab = true;
 					}
+				}
+				if (isGrab) {
+					this._mapContainer.classList.add('grab');
+				}
+				else {
+					this._mapContainer.classList.remove('grab');
 				}
 			}
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
@@ -150,6 +158,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		if (this._draw === false) {
 			this._map = olMap;
+			this._mapContainer = olMap.getTarget();
 			this._vectorLayer = createLayer();
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
@@ -158,13 +167,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
+			this._dragPan.setActive(false);
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
 				this._addOverlayToMap(olMap, this._helpTooltip);
 			}
-			this._listeners.push(olMap.on('pointermove', pointerMoveHandler));
-			this._listeners.push(olMap.on('pointerup', pointerUpHandler));
-			this._listeners.push(olMap.on('dblclick', () => false));
+			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
+			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
+			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
 			olMap.addInteraction(this._select);
@@ -271,8 +281,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		draw.on('drawstart', event => {
-
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);
+			const isDraggable = !this._environmentService.isTouch();
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
@@ -318,7 +328,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 
 			if (feature.getGeometry().getArea()) {
-				const areaOverlay = feature.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints);
+				const isDraggable = !this._environmentService.isTouch();
+				const areaOverlay = feature.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
 				this._addOverlayToMap(this._map, areaOverlay);
 				this._updateOverlay(areaOverlay, feature.getGeometry());
 				feature.set('area', areaOverlay);
@@ -336,7 +347,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
-				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
+				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
 
 				this._addOverlayToMap(this._map, partition);
 				partitions.push(partition);
@@ -392,15 +403,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				return isDeletable;
 			}
 		};
-		return new Modify(options);
+
+		const modify = new Modify(options);
+		modify.on('modifystart', (event) => {
+			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
+				this._mapContainer.classList.add('grabbing');
+			}
+		});
+		modify.on('modifyend', event => {
+			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP) {
+				this._mapContainer.classList.remove('grabbing');
+			}
+		});
+		return modify;
 	}
 
-	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
+	_createOverlay(overlayOptions = {}, type, isDraggable = false) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
-		measurementOverlay.projectionHints = projectionHints;
+		measurementOverlay.isDraggable = isDraggable;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
-		this._createDragOn(overlay);
+		if (isDraggable) {
+			this._createDragOn(overlay);
+		}
+
 		return overlay;
 	}
 

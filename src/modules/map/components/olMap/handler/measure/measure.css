@@ -40,3 +40,7 @@
 .static:after{
     border-top: 6px solid #f00;
 }
+
+.draggable {
+    cursor: move;
+}
