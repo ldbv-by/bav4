@@ -4,13 +4,13 @@ import { loadBvvTopics } from '../../src/services/provider/topics.provider';
 
 describe('Topicservice', () => {
 
-	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...');
+	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0']);
 
 	const loadMockTopics = async () => {
 
 		return [
 			topic0,
-			new Topic('topic1', 'Topic 1', 'This is Topic 1...')
+			new Topic('topic1', 'Topic 1', 'This is Topic 1...', 'bg1')
 		];
 	};
 
