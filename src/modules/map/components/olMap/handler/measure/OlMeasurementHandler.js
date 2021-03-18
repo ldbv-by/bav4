@@ -91,12 +91,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 
 			if (event.dragging) {
+				this._hideHelpTooltip();
 				return;
 			}
 
 			if (this._helpTooltip == null) {
 				return;
 			}
+			let isGrab = false;
 			let helpMsg = translate('map_olMap_handler_measure_start');
 			if (this._draw.getActive()) {
 				if (this._activeSketch) {
@@ -133,7 +135,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				}, featureSnapOption);
 
-				let isGrab = false;
+				
 				if (vertexFeature) {
 					helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
 
@@ -146,12 +148,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						isGrab = true;
 					}
 				}
-				if (isGrab) {
-					this._mapContainer.classList.add('grab');
-				}
-				else {
-					this._mapContainer.classList.remove('grab');
-				}
+				
+			}
+			if (isGrab) {
+				this._mapContainer.classList.add('grab');
+			}
+			else {
+				this._mapContainer.classList.remove('grab');
 			}
 			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
@@ -162,6 +165,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._vectorLayer = createLayer();
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
+			this._select.setActive(false);
 			this._modify = this._createModify();
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
@@ -186,6 +190,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return this._vectorLayer;
 	}
 
+	
 	/**
 	 *  @override
 	 *  @param {Map} olMap
@@ -221,6 +226,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw && this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._draw.removeLastPoint();
+				if (this._pointCount === 2) {
+					this._reset();
+				}				
 			}
 		}
 
@@ -333,6 +341,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._addOverlayToMap(this._map, areaOverlay);
 				this._updateOverlay(areaOverlay, feature.getGeometry());
 				feature.set('area', areaOverlay);
+			} 
+			else {
+				const areaOverlay = feature.get('area');
+				if (areaOverlay) {
+					this._removeOverlayFromMap(this._map, areaOverlay);
+				}
 			}
 		}
 
@@ -449,6 +463,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			overlay.set('dragging', true);
 		};
 		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+	}
+
+	_hideHelpTooltip() {
+		this._helpTooltip.setPosition(undefined);
 	}
 
 	_getSnapTolerancePerDevice() {
