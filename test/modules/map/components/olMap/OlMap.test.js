@@ -40,6 +40,12 @@ describe('OlMap', () => {
 		isTouch() { }
 	};
 
+	const contextMenuEventHandlerMock = {
+		register() { },
+		get id() {
+			return 'contextMenuEventHandlerMock';
+		}
+	};
 	const measurementLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -81,6 +87,7 @@ describe('OlMap', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('OlContextMenueMapEventHandler', contextMenuEventHandlerMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
 
@@ -221,13 +228,11 @@ describe('OlMap', () => {
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate,  false, preventDefault);
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
-					expect(preventDefault).toHaveBeenCalled();
 				});
 			});
 
@@ -240,15 +245,13 @@ describe('OlMap', () => {
 					const coordinate = [38, 75];
 					const screenCoordinate = [21, 42];
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate);
 					jasmine.clock().tick(defaultDelay + 100);
 					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
-					expect(preventDefault).toHaveBeenCalled();
 				});
 			});
 		});
@@ -425,6 +428,17 @@ describe('OlMap', () => {
 			expect(layer1.get('id')).toBe('id0');
 		});
 	});
+
+	describe('contextmenue handler', () => {
+		it('registers the handler', async () => {
+			const registerSpy = spyOn(contextMenuEventHandlerMock, 'register');
+			const element = await setup();
+
+			expect(element._eventHandler.get('contextMenuEventHandlerMock')).toEqual(contextMenuEventHandlerMock);
+			expect(registerSpy).toHaveBeenCalledOnceWith(element._map);
+		});
+	});
+
 
 	describe('measurement handler', () => {
 		it('registers the handler', async () => {

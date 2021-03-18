@@ -45,31 +45,22 @@ export class StoreService {
 		$injector.onReady(() => {
 
 			const {
-				GeolocationObserver: geolocationObserver,
 				MeasurementObserver: measurementObserver,
+				GeolocationObserver: geolocationObserver,
 				LayersObserver: layersObserver,
 				PositionObserver: positionObserver,
-				ContextClickObserver: contextClickObserver,
 				EnvironmentService: environmentService
 			}
-				= $injector.inject(
-					'GeolocationObserver',
-					'MeasurementObserver',
-					'LayersObserver',
-					'PositionObserver',
-					'ContextClickObserver',
-					'EnvironmentService'
-				);
-
+				= $injector.inject('GeolocationObserver', 'MeasurementObserver', 'LayersObserver', 'PositionObserver', 'EnvironmentService');
+	
 			measurementObserver.register(this._store);
 			geolocationObserver.register(this._store);
 			layersObserver.register(this._store);
 			positionObserver.register(this._store);
-			contextClickObserver.register(this._store);
 
 			//we remove all query params shown in the browsers address bar
 			setTimeout(() => {
-				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
+				environmentService.getWindow().  history.replaceState(null, '', location.href.split('?')[0]);
 			});
 		});
 	}

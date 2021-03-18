@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
+import { OlMapContextMenuContent } from '../../../../../../../src/modules/map/components/olMap/handler/contextMenu/OlMapContextMenuContent';
+import { TestUtils } from '../../../../../../test-utils';
+import { $injector } from '../../../../../../../src/injection';
+window.customElements.define(OlMapContextMenuContent.tag, OlMapContextMenuContent);
 
 describe('OlMapContextMenuContent', () => {
 
@@ -16,12 +16,8 @@ describe('OlMapContextMenuContent', () => {
 		transform() { }
 	};
 	const shareServiceMock = {
-		copyToClipboard() { }
+		copyToClipboard() { },
 	};
-	const altitudeServiceMock = {
-		getAltitude() {
-		} 
-	}; 
 
 	const setup = () => {
 
@@ -30,9 +26,8 @@ describe('OlMapContextMenuContent', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('AltitudeService', altitudeServiceMock);
-		return TestUtils.render(MapContextMenuContent.tag);
+			.registerSingleton('TranslationService', { translate: (key) => key });
+		return TestUtils.render(OlMapContextMenuContent.tag);
 	};
 
 	describe('when initialized', () => {
@@ -50,7 +45,6 @@ describe('OlMapContextMenuContent', () => {
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
-			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs([1000, 2000]).and.returnValue(42);
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
@@ -62,16 +56,8 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(element.shadowRoot.querySelector('.label').innerText).toBe('code42');
 			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
-
-			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_altitude_label');
-	
-			window.requestAnimationFrame(() => {
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('42 (m)');
-			});
-
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
-			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			copyIcon.click();
 
 
@@ -79,7 +65,6 @@ describe('OlMapContextMenuContent', () => {
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
-			expect(altitudeMock).toHaveBeenCalledOnceWith([1000, 2000]);
 
 		});
 
@@ -120,21 +105,6 @@ describe('OlMapContextMenuContent', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-				done();
-			});
-		});
-
-		it('logs a warn statement when Altitude Service is not available', async  (done) => {
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('Altitude Error')));
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup();
-
-			element.coordinate = [1000, 2000]; 
-
-			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
 				done();
 			});
 		});
