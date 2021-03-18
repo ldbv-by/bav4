@@ -4,11 +4,12 @@
 */
 export class Topic {
 
-	constructor(id, label, description, backgroundLayers, activatedLayers = [], selectedLayers = []) {
+	constructor(id, label, description, defaultBackground, backgroundLayers, activatedLayers = [], selectedLayers = []) {
 
 		this._id = id;
 		this._label = label;
 		this._description = description;
+		this._defaultBackground = defaultBackground;
 		this._backgroundLayers = backgroundLayers;
 		this._activatedLayers = activatedLayers;
 		this._selectedLayers = selectedLayers;
@@ -24,6 +25,10 @@ export class Topic {
 
 	get description() {
 		return this._description;
+	}
+
+	get defaultBackground() {
+		return this._defaultBackground;
 	}
 
 	get backgroundLayers() {
