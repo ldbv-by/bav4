@@ -25,9 +25,13 @@ export class BaObserver {
 
 	/**
 	* Called by the global StoreService after injector is marked as ready.
+	* <br>
+	* Returns a promise when registration is complete. It's up to the implementation to
+	* decide about the payload of the resolved promise.
 	* @abstract
 	* @public
 	* @param {Store} store the redux store
+	* @returns {Promise<?>}
 	*/
 	async register(/*eslint-disable no-unused-vars */store) {
 		// The child has not implemented this method.
