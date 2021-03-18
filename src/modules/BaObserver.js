@@ -18,7 +18,7 @@ export class BaObserver {
 	constructor() {
 		if (this.constructor === BaObserver) {
 			// Abstract class can not be constructed.
-			throw new TypeError('Can not construct abstract class.');
+			throw new Error('Can not construct abstract class.');
 		}
 	}
 
@@ -29,9 +29,9 @@ export class BaObserver {
 	* @public
 	* @param {Store} store the redux store
 	*/
-	register(/*eslint-disable no-unused-vars */store) {
+	async register(/*eslint-disable no-unused-vars */store) {
 		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #register or do not call super.register from child.');
+		throw new Error('Please implement abstract method #register or do not call super.register from child.');
 	}
 
 }
