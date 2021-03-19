@@ -19,9 +19,10 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
  */
 export class GeoResourceService {
 
+	
 	/**
 	 * 
-	 * @param {georesourceProvider} provider 
+	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources] 
 	 */
 	constructor(provider = loadBvvGeoResources) {
 		this._provider = provider;

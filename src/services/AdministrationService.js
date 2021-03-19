@@ -8,8 +8,15 @@ import { isCoordinate } from '../utils/checks';
  * @property {string} district The district at the delivered coordinate.
  */
 
+/**
+ * @class
+ */
 export class AdministrationService {
 
+	/**
+	 * 
+	 * @param {administrationProvider} [administrationProvider=loadBvvAdministration] 
+	 */
 	constructor(administrationProvider = loadBvvAdministration) {
 		this._administrationProvider = administrationProvider;
 	} 

@@ -1,3 +1,6 @@
+/**
+ * @module service/provider
+ */
 import { $injector } from '../../injection';
 
 /**
@@ -20,6 +23,7 @@ import { $injector } from '../../injection';
 
 /**
  * Provider for map releated meta data
+ * @function
  * @returns {MapDefinitions} meta data 
  */
 export const getBvvMapDefinitions = () => {

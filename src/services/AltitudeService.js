@@ -1,8 +1,15 @@
 import { loadBvvAltitude } from './provider/altitude.provider';
 import { isCoordinate } from '../utils/checks';
 
+/**
+ * @class
+ */
 export class AltitudeService {
 
+	/**
+	 * 
+	 * @param {altitudeProvider} [altitudeProvider=loadBvvAltitude] 
+	 */
 	constructor(altitudeProvider = loadBvvAltitude) {
 		this._altitudeProvider = altitudeProvider;
 	} 

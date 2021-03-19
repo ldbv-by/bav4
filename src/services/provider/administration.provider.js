@@ -1,9 +1,20 @@
+/**
+ * @module service/provider
+ */
 import { $injector } from '../../injection';
 
+
 /**
- * 
- * @param {Coordinate} coordinate3857
- * @returns {Object} with community and district as string properties, loaded from backend
+ * A function that takes a coordinate and returns a promise with an administration object. 
+ *
+ * @typedef {function(coordinate) : (Promise<administration>)} administrationProvider
+ */
+
+/**
+ * Uses the BVV service to load an administration object.
+ * @function
+ * @param {coordinate} coordinate3857
+ * @returns {Promise<administration>} with community and district as string properties, loaded from backend
  */
 export const loadBvvAdministration = async (coordinate3857) => {
 
