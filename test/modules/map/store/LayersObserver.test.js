@@ -36,17 +36,16 @@ describe('LayersObserver', () => {
 
 	describe('register', () => {
 
-		it('calls #register', () => {
+		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersObserver();
-			const spy = spyOn(instanceUnderTest, '_init');
+			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
 
-			instanceUnderTest.register(store);
+			const result = await instanceUnderTest.register(store);
 
+			expect(result).toBeTrue();
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
-
-
 	});
 
 
