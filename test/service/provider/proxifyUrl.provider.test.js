@@ -3,19 +3,16 @@ import { bvvProxifyUrlProvider } from '../../../src/services/provider/proxifyUrl
 
 describe('proxyUrlTemplate', () => {
 
-
 	describe('bvv', () => {
 
 		const configService = {
-			getValueAsPath: () => {
-				return 'https://proxy.url';
-			}
+			getValueAsPath: () => 'https://proxy.url'
 		};
+
 		beforeAll(() => {
 			$injector
 				.registerSingleton('ConfigService', configService);
 		});
-
 
 		it('it returns BVV specific proxifiedUrl', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider('https://some.one');
