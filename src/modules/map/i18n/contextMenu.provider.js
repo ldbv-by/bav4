@@ -6,7 +6,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				map_contextMenu_header: 'Location',					
 				map_contextMenu_close_button: 'Close',
-				map_contextMenuContent_altitude_label: 'Altitude',	
+				map_contextMenuContent_altitude_label: 'Alt.',	
 				map_contextMenuContent_community_label: 'Community',
 				map_contextMenuContent_district_label: 'District',
 				map_contextMenuContent_copy_icon: 'Copy to clipboard'				
