@@ -1,11 +1,26 @@
+/**
+ * @module service/provider
+ */
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from '../domain/geoResources';
 import { $injector } from '../../injection';
 
+/**
+ * A function that returns a promise with an array of geoResources. 
+ *
+ * @typedef {function(coordinate) : (Promise<Array<GeoResource>>)} geoResourceProvider
+ */
+
+
+/**
+ * Uses the BVV service to load geoResources.
+ * @function
+ * @returns {Promise<Array<GeoResource>>}
+ */
 export const loadBvvGeoResources = async () => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-    
-    
+
+
 	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources';
 
 	const result = await httpService.fetch(url, {
@@ -47,6 +62,11 @@ export const loadBvvGeoResources = async () => {
 	throw new Error('GeoResources could not be loaded');
 };
 
+/**
+ * Loads example georesource without a backend.
+ * @function
+ * @returns {Promise<Array<GeoResource>>}
+ */
 export const loadExampleGeoResources = async () => {
 	const wms0 = new WmsGeoResource('bodendenkmal', 'Bodendenkmal', 'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi', 'bodendenkmalO', 'image/png');
 	const wms1 = new WmsGeoResource('baudenkmal', 'Baudenkmal', 'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi', 'bauensembleO,einzeldenkmalO', 'image/png');

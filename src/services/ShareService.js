@@ -1,8 +1,15 @@
 import { $injector } from '../injection';
 import { QueryParameters } from './domain/queryParameters';
 
+/**
+ * @class
+ */
 export class ShareService {
 
+	/**
+	 * 
+	 * @param {window} [_window=window] 
+	 */
 	constructor(_window = window) {
 		this._window = _window;
 	}
