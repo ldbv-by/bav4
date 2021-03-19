@@ -22,10 +22,10 @@ describe('ContextClickObserver', () => {
 	};
 
 	describe('on register', () => {
-		it('it inserts the mapcontextmenu container', () => {
+		it('it inserts the mapcontextmenu container', async () => {
 			const store = setup();
 
-			new ContextClickObserver().register(store);
+			await new ContextClickObserver().register(store);
 
 			const element = document.querySelector(MapContextMenu.tag);
 			expect(element).toBeTruthy();

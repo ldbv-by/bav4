@@ -11,6 +11,11 @@ import { buffer } from 'ol/extent';
  */
 export class OlCoordinateService {
 
+	/**
+	 * 
+	 * @param {proj4Provider} [proj4Provider=loadBvvDefinitions]
+	 * @param {stringifyCoordProvider} [stringifyFunction=bvvStringifyFunction]
+	 */
 	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = bvvStringifyFunction) {
 		proj4Provider();
 		this._stringifyFunction = stringifyFunction;

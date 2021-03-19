@@ -93,7 +93,7 @@ export class LayersObserver extends BaObserver {
 	/**
 	 * @override
 	 */
-	register() {
-		this._init();
+	async register() {
+		return await this._init();
 	}
 }

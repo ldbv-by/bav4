@@ -12,6 +12,7 @@ import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/services';
+import { AdministrationService } from  '../services/AdministrationService'; 
 
 
 $injector
@@ -27,6 +28,7 @@ $injector
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)
+	.registerSingleton('AdministrationService', new AdministrationService())
 	.registerModule(mapModule)
 	.ready();
 	

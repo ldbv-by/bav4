@@ -110,7 +110,7 @@ export class GeolocationObserver extends BaObserver {
 	 * @override
 	 * @param {Store} store 
 	 */
-	register(store) {
+	async register(store) {
 		
 		const onGeolocationActivityChange = (active) => {
 

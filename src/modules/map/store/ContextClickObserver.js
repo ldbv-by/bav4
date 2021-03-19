@@ -14,7 +14,7 @@ export class ContextClickObserver extends BaObserver {
 	 * @override
 	 * @param {Store} store 
 	 */
-	register(store) {
+	async register(store) {
 
 		//create and add a MapContextMenu element
 		const mapContextMenu = document.createElement(MapContextMenu.tag);

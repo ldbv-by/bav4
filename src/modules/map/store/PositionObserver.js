@@ -76,7 +76,7 @@ export class PositionObserver extends BaObserver {
 	/**
 	 * @override
 	 */
-	register() {
+	async register() {
 		this._init();
 	}
 }
