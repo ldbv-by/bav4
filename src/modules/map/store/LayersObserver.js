@@ -55,7 +55,7 @@ export class LayersObserver extends BaObserver {
 	_addLayersFromConfig() {
 
 		const { GeoResourceService: georesourceService, TopicsService : topicsService } = $injector.inject('GeoResourceService', 'TopicsService');
-		const { defaultBackground } = topicsService.current();
+		const { defaultBackground } = topicsService.default();
 		const geoResources = georesourceService.all();
 	
 		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBackground);
