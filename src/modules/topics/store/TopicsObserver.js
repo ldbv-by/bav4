@@ -1,5 +1,6 @@
 import { $injector } from '../../../injection';
 import { BaObserver } from '../../BaObserver';
+import { setCurrent } from './topics.action';
 
 
 /**
@@ -11,6 +12,8 @@ export class TopicsObserver extends BaObserver {
 		const { TopicsService: topicsService } = $injector.inject('TopicsService');
 		//no try-catch needed, service at least delivers a fallback
 		await topicsService.init();
+		//update store
+		setCurrent(topicsService.default().id);
 	}
 
 	/**

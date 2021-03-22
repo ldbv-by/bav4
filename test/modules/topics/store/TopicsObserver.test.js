@@ -1,20 +1,21 @@
 import { TopicsObserver } from '../../../../src/modules/topics/store/TopicsObserver';
 import { TestUtils } from '../../../test-utils.js';
-import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { $injector } from '../../../../src/injection';
 import { Topic } from '../../../../src/services/domain/topic';
+import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
 
 
 describe('TopicsObserver', () => {
 
 	const topicsServiceMock = {
 		async init() { },
+		default() {}
 	};
 
 	const setup = (state) => {
 
 		const store = TestUtils.setupStoreAndDi(state, {
-			layers: layersReducer
+			topics: topicsReducer
 		});
 		$injector
 			.registerSingleton('TopicsService', topicsServiceMock);
@@ -38,17 +39,21 @@ describe('TopicsObserver', () => {
 
 	describe('_init', () => {
 
-		it('initializes the topics service', async () => {
-			setup();
+		it('initializes the topics service and update the store', async () => {
+			const store = setup();
+			const topicId = 'someId';
+			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
 			const instanceUnderTest = new TopicsObserver();
-
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve([
-				new Topic('someId', 'label', 'description', ['someLayerId'])
+				topic
 			]));
+			spyOn(topicsServiceMock, 'default').and.returnValue(topic);
+
 
 			await instanceUnderTest._init();
 
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
+			expect(store.getState().topics.current).toBe(topicId);
 		});
 	});
 });
