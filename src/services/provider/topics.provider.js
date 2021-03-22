@@ -15,7 +15,7 @@ export const loadBvvTopics = async () => {
 	if (result.ok) {
 		const topics = []; 
 		const payload = await result.json();
-		payload.topics.forEach(definition => {
+		payload.forEach(definition => {
 			let topic = null;
 			topic = new Topic(
 				definition.id, 

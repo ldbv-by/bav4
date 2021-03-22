@@ -54,13 +54,12 @@ describe('Topics provider', () => {
 			description: 'A 2nd mocked description',
 			notNeeded: 'Value'
 		};
-		const topicsMock = { topics:[topicMock1, topicMock2] }; 
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 			new Response(
-				JSON.stringify(
-					topicsMock       
-				)
+				JSON.stringify([
+					topicMock1, topicMock2
+				])
 			)
 		));
 
@@ -99,9 +98,9 @@ describe('Topics provider', () => {
 		spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
 		spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 			new Response(
-				JSON.stringify(
-					{ topics:[{ backgroundLayers: ['mockBgLayer12'] }] }                    
-				)
+				JSON.stringify([
+					{ backgroundLayers: ['mockBgLayer12'] }
+				])
 			)
 		));
 
