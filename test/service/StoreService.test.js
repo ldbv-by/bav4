@@ -50,7 +50,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(11);
+			expect(reducerKeys.length).toBe(12);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('sidePanel')).toBeTrue();
@@ -61,6 +61,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
 			expect(reducerKeys.includes('measurement')).toBeTrue();
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
+			expect(reducerKeys.includes('topics')).toBeTrue();
 		});
 
 		it('registers all observers', (done) => {
