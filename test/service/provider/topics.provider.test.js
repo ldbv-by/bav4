@@ -100,7 +100,7 @@ describe('Topics provider', () => {
 		spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 			new Response(
 				JSON.stringify(
-					{ topics:[{ }] }                    
+					{ topics:[{ backgroundLayers: ['mockBgLayer12'] }] }                    
 				)
 			)
 		));
