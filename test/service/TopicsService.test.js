@@ -1,16 +1,27 @@
 import { TopicsService } from '../../src/services/TopicsService';
 import { Topic } from '../../src/services/domain/topic';
 import { loadBvvTopics } from '../../src/services/provider/topics.provider';
+import { $injector } from '../../src/injection';
 
 describe('Topicservice', () => {
+	
+	const configService = {
+		getValue: () => { }
+	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('ConfigService', configService);
+	});
 
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0']);
+	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...', ['bg1']);
 
 	const loadMockTopics = async () => {
 
 		return [
 			topic0,
-			new Topic('topic1', 'Topic 1', 'This is Topic 1...', 'bg1')
+			topic1
 		];
 	};
 
@@ -111,13 +122,25 @@ describe('Topicservice', () => {
 		});
 	});
 
-	describe('current', () => {
+	describe('default', () => {
 
-		it('provides the current Topic', () => {
+		it('provides the configured default Topic', () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._topics = [topic0];
+			instanceUnderTest._topics = [topic0, topic1];
+			spyOn(configService, 'getValue').and.returnValue(topic1.id);
 
-			const topic = instanceUnderTest.current();
+			const topic = instanceUnderTest.default();
+
+			expect(topic).toBeTruthy();
+			expect(topic.id).toBe('topic1');
+		});
+
+		it('provides the first available Topic', () => {
+			const instanceUnderTest = setup();
+			instanceUnderTest._topics = [topic0, topic1];
+			spyOn(configService, 'getValue').and.returnValue('unkwown');
+
+			const topic = instanceUnderTest.default();
 
 			expect(topic).toBeTruthy();
 			expect(topic.id).toBe('topic0');
@@ -127,7 +150,7 @@ describe('Topicservice', () => {
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
-			expect(instanceUnderTest.current()).toBeNull();
+			expect(instanceUnderTest.default()).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('TopicsService not yet initialized');
 		});
 	});
