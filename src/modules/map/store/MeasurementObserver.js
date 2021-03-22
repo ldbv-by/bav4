@@ -14,7 +14,7 @@ export class MeasurementObserver extends BaObserver {
 	 * @override
 	 * @param {Store} store 
 	 */
-	register(store) {
+	async register(store) {
 
 		const extract = (state) => {
 			return state.measurement.active;

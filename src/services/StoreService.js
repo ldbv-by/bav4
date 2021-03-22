@@ -42,30 +42,33 @@ export class StoreService {
 
 		this._store = createStore(rootReducer);
 
-		$injector.onReady(() => {
+		$injector.onReady(async () => {
 
 			const {
+				LayersObserver: layersObserver,
+				TopicsObserver: topicsObserver,
 				GeolocationObserver: geolocationObserver,
 				MeasurementObserver: measurementObserver,
-				LayersObserver: layersObserver,
 				PositionObserver: positionObserver,
 				ContextClickObserver: contextClickObserver,
 				EnvironmentService: environmentService
 			}
-				= $injector.inject(
-					'GeolocationObserver',
-					'MeasurementObserver',
-					'LayersObserver',
-					'PositionObserver',
-					'ContextClickObserver',
-					'EnvironmentService'
-				);
+			= $injector.inject(
+				'TopicsObserver',
+				'LayersObserver',
+				'GeolocationObserver',
+				'MeasurementObserver',
+				'PositionObserver',
+				'ContextClickObserver',
+				'EnvironmentService'
+			);
 
-			measurementObserver.register(this._store);
-			geolocationObserver.register(this._store);
-			layersObserver.register(this._store);
-			positionObserver.register(this._store);
-			contextClickObserver.register(this._store);
+			await topicsObserver.register(this._store);
+			await layersObserver.register(this._store);
+			await positionObserver.register(this._store);
+			await measurementObserver.register(this._store);
+			await geolocationObserver.register(this._store);
+			await contextClickObserver.register(this._store);
 
 			//we remove all query params shown in the browsers address bar
 			setTimeout(() => {

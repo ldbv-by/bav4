@@ -1,17 +1,32 @@
+/**
+ * @module service/provider
+ */
 import { createStringXY } from 'ol/coordinate';
 import { $injector } from '../../injection';
 
 /**
  * A function that returns a function which itsself takes a coordinate and returns a string representation.
  *
- * @typedef {function():(function(Coordinate) : (string) stringifyCoordProvider
+ * @typedef {function():(function(Coordinate) : (string))} stringifyCoordProvider
  */
 
 
+/**
+ * @function
+ * @param {number} srid 
+ * @param {object} options 
+ * @returns {stringifyCoordProvider}
+ */
 export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
 	return createStringXY(options.digits);
 };
 
+/**
+ * @function
+ * @param {number} srid 
+ * @param {object} options 
+ * @returns {stringifyCoordProvider}
+ */
 export const bvvStringifyFunction = (srid, options = {}) => {
 	if (srid !== 4326) {
 		return createStringUTM(srid, options.digits || 0);

@@ -54,12 +54,11 @@ export class LayersObserver extends BaObserver {
 
 	_addLayersFromConfig() {
 
-		//Todo: bgLayerIds needs to be loaded from backend at a later moment
-		const bgLayerIds = ['atkis'];
-		const { GeoResourceService: georesourceService } = $injector.inject('GeoResourceService');
+		const { GeoResourceService: georesourceService, TopicsService : topicsService } = $injector.inject('GeoResourceService', 'TopicsService');
+		const { defaultBackground } = topicsService.current();
 		const geoResources = georesourceService.all();
-
-		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === bgLayerIds[0]);
+	
+		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBackground);
 		//fallback: add the first available georesource as bg
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
@@ -93,7 +92,7 @@ export class LayersObserver extends BaObserver {
 	/**
 	 * @override
 	 */
-	register() {
-		this._init();
+	async register() {
+		return await this._init();
 	}
 }

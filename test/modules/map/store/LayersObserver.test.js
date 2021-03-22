@@ -4,6 +4,7 @@ import { layersReducer } from '../../../../src/modules/map/store/layers.reducer'
 import { $injector } from '../../../../src/injection';
 import { WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
+import { Topic } from '../../../../src/services/domain/topic'; 
 
 
 describe('LayersObserver', () => {
@@ -12,6 +13,9 @@ describe('LayersObserver', () => {
 		async init() { },
 		all() { },
 		byId() { }
+	};
+	const topicsServiceMock = {
+		current() { },
 	};
 
 	const windowMock = {
@@ -29,6 +33,7 @@ describe('LayersObserver', () => {
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('TopicsService', topicsServiceMock)
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
 
 		return store;
@@ -36,17 +41,16 @@ describe('LayersObserver', () => {
 
 	describe('register', () => {
 
-		it('calls #register', () => {
+		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersObserver();
-			const spy = spyOn(instanceUnderTest, '_init');
+			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
 
-			instanceUnderTest.register(store);
+			const result = await instanceUnderTest.register(store);
 
+			expect(result).toBeTrue();
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
-
-
 	});
 
 
@@ -97,6 +101,8 @@ describe('LayersObserver', () => {
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
 					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0'),
 				]);
+				spyOn(topicsServiceMock, 'current').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -111,6 +117,7 @@ describe('LayersObserver', () => {
 					new WMTSGeoResource('someId0', 'someLabel0', 'someUrl0'),
 					new WMTSGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
+				spyOn(topicsServiceMock, 'current').and.returnValue(new Topic('topicId', 'label', 'description', ['somethingDifferent']));
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -249,6 +256,7 @@ describe('LayersObserver', () => {
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some0', 'someLabel0', 'someUrl0'),
 				]);
+				spyOn(topicsServiceMock, 'current').and.returnValue(new Topic('topicId', 'label', 'description', ['some0']));
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 

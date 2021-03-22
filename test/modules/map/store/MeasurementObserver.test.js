@@ -18,10 +18,10 @@ describe('MeasurementObserver', () => {
 	};
 
 
-	it('adds or removes the measurement layer', () => {
+	it('adds or removes the measurement layer', async () => {
 		const store = setup();
 		const instanceUnderTest = new MeasurementObserver();
-		instanceUnderTest.register(store);
+		await instanceUnderTest.register(store);
 		
 		activate();
 

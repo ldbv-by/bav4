@@ -4,7 +4,7 @@
 */
 export class Topic {
 
-	constructor(id, label, description, defaultBackground, backgroundLayers, activatedLayers = [], selectedLayers = []) {
+	constructor(id, label, description, backgroundLayers, defaultBackground = backgroundLayers[0], activatedLayers = [], selectedLayers = []) {
 
 		this._id = id;
 		this._label = label;
