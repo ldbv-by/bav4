@@ -65,9 +65,7 @@ describe('LayersObserver', () => {
 			const instanceUnderTest = new LayersObserver();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve([
-				new WMTSGeoResource('atkis', 'someLabel', 'someUrl')
-			]));
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
 
 			await instanceUnderTest._init();
 
@@ -82,9 +80,7 @@ describe('LayersObserver', () => {
 			const instanceUnderTest = new LayersObserver();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve([
-				new WMTSGeoResource('atkis', 'someLabel', 'someUrl')
-			]));
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
 			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 
 			await instanceUnderTest._init();
