@@ -40,12 +40,12 @@ describe('LayersObserver', () => {
 
 	describe('register', () => {
 
-		it('calls #register', () => {
+		it('calls #register', async () => {
 			const store = setup();
 			const instanceUnderTest = new PositionObserver();
 			const spy = spyOn(instanceUnderTest, '_init');
 
-			instanceUnderTest.register(store);
+			await instanceUnderTest.register(store);
 
 			expect(spy).toHaveBeenCalledTimes(1);
 		});

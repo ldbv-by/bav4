@@ -47,7 +47,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 		});
 
-		it('registers all observers', () => {
+		it('registers all observers', (done) => {
 
 			const measurementObserverSpy = spyOn(measurementObserverMock, 'register');
 			const geolocationObserverSpy = spyOn(geolocationObserverMock, 'register');
@@ -67,17 +67,22 @@ describe('StoreService', () => {
 				.ready();
 
 			const store = instanceUnderTest.getStore();
-			expect(measurementObserverSpy).toHaveBeenCalledWith(store);
-			expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
-			expect(layersObserverSpy).toHaveBeenCalledWith(store);
-			expect(positionObserverSpy).toHaveBeenCalledWith(store);
-			expect(contextClickObserverSpy).toHaveBeenCalledWith(store);
+
+			setTimeout(() => {
+
+				expect(measurementObserverSpy).toHaveBeenCalledWith(store);
+				expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
+				expect(layersObserverSpy).toHaveBeenCalledWith(store);
+				expect(positionObserverSpy).toHaveBeenCalledWith(store);
+				expect(contextClickObserverSpy).toHaveBeenCalledWith(store);
+				done();
+			});
 		});
 
 		it('removes all query params by calling #replaceState on history', (done) => {
 			const replaceStateMock = spyOn(windowMock.history, 'replaceState');
 			new StoreService();
-			
+
 			$injector
 				.reset()
 				.registerSingleton('MeasurementObserver', measurementObserverMock)
@@ -89,8 +94,10 @@ describe('StoreService', () => {
 				.ready();
 
 			setTimeout(() => {
-				expect(replaceStateMock).toHaveBeenCalled();
-				done();
+				setTimeout(() => {
+					expect(replaceStateMock).toHaveBeenCalled();
+					done();
+				});
 			});
 		});
 	});

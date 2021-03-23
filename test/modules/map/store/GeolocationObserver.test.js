@@ -51,13 +51,13 @@ describe('GeolocationObserver', () => {
 
 	describe('register', () => {
 
-		it('activates and deactivates the geolocation observer', () => {
+		it('activates and deactivates the geolocation observer', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationObserver();
 			const activateSpy = spyOn(instanceUnderTest, '_activate');
 			const deactivateSpy = spyOn(instanceUnderTest, '_deactivate');
 
-			instanceUnderTest.register(store);
+			await instanceUnderTest.register(store);
 
 			expect(activateSpy).not.toHaveBeenCalled();
 			expect(deactivateSpy).not.toHaveBeenCalled();
@@ -73,13 +73,13 @@ describe('GeolocationObserver', () => {
 			expect(deactivateSpy).toHaveBeenCalled();
 		});
 
-		it('adds and removes the geolocation layer', () => {
+		it('adds and removes the geolocation layer', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationObserver();
 			spyOn(instanceUnderTest, '_activate');
 			spyOn(instanceUnderTest, '_deactivate');
 
-			instanceUnderTest.register(store);
+			await instanceUnderTest.register(store);
 
 			activate();
 
@@ -91,11 +91,11 @@ describe('GeolocationObserver', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 		});
 
-		it('registers an observer for beingDragged changes', () => {
+		it('registers an observer for beingDragged changes', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationObserver();
 
-			instanceUnderTest.register(store);
+			await instanceUnderTest.register(store);
 
 			setTracking(true);
 			activate();

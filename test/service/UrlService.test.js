@@ -5,11 +5,6 @@ import { $injector } from '../../src/injection';
 describe('UrlService', () => {
 
 	let instanceUnderTest;
-	const configService = {
-		getValueAsPath: () => {
-			return 'https://proxy.url';
-		}
-	};
 
 	const httpService = {
 		fetch: async () => { }
@@ -17,21 +12,20 @@ describe('UrlService', () => {
 
 	beforeAll(() => {
 		$injector
-			.registerSingleton('ConfigService', configService)
+			// .registerSingleton('ConfigService', configService)
 			.registerSingleton('HttpService', httpService);
 	});
 
 	beforeEach(() => {
-		//we us a mocked urlShorteningProvider
-		instanceUnderTest = new UrlService(async () => 'https://much.shorter');
+		//we use mocked urlShortening and proxifyUrl provides
+		instanceUnderTest = new UrlService(async () => 'https://much.shorter', (url) => 'https://proxified/' + url);
 	});
-
 
 	describe('constructor', () => {
 		it('sets default providers', async () => {
 			const service = new UrlService();
 
-			expect(service._templateProvider).toBeDefined();
+			expect(service._proxifyUrlProvider).toBeDefined();
 			expect(service._urlShorteningProvider).toBeDefined();
 		});
 	});
@@ -90,7 +84,7 @@ describe('UrlService', () => {
 
 				const result = instanceUnderTest.proxifyInstant(url);
 
-				expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+				expect(result).toBe('https://proxified/' + url);
 			});
 
 			it('rejects when argument is not a string', () => {
@@ -110,7 +104,7 @@ describe('UrlService', () => {
 				const result = await instanceUnderTest.proxify(url);
 
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(result).toBe('https://proxy.url?url=' + encodeURIComponent(url));
+				expect(result).toBe('https://proxified/' + url);
 			});
 
 			it('proxyfies a url with cors check (does not need proxy)', async () => {
