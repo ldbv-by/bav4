@@ -26,10 +26,10 @@
 }
 
 .partition:after{
-    bottom: -11px; 
-    width: 0.5em;
-    height: 0.5em; 
-    border-radius: 0.25em; 
+    bottom: -12px; 
+    width: 0.7em;
+    height: 0.7em; 
+    border-radius: 0.35em; 
     background-color: red;
     margin-left: -0.25em; /* padding/margin:  use em*/
     border: none;

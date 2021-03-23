@@ -15,7 +15,7 @@ export const measureStyleFunction = (feature) => {
 	
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
-		width:1
+		width:3
 	});
 
 	const dashedStroke = new Stroke({
