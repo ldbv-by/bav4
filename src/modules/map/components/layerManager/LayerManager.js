@@ -43,7 +43,7 @@ export class LayerManager extends BaElement {
 			const old = this._draggableItems.filter(item => item.id === layer.id)[0];
 			const displayProperties = {
 				collapsed: true,
-				visible: true
+				visible: layer.visible
 			};
 			if (old) {
 				displayProperties.collapsed = old.collapsed;

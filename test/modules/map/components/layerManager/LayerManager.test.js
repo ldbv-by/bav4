@@ -3,9 +3,11 @@ import { Toggle } from '../../../../../src/modules/commons/components/toggle/Tog
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
 
-window.customElements.define(LayerManager.tag, LayerManager);
 window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(LayerItem.tag, LayerItem);
+window.customElements.define(LayerManager.tag, LayerManager);
 
 
 describe('LayerManager', () => {
@@ -44,6 +46,24 @@ describe('LayerManager', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
+		});
+
+		it('with one not visible layer displays one layer item', async () => {
+			const layer = {
+				...defaultLayerProperties,
+				id: 'id0', label: 'label0', visible: false, zIndex: 0
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+			const element = await setup(state);
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			const toggleElement = layerItem.shadowRoot.querySelector('ba-toggle');
+
+			expect(toggleElement.checked).toBeFalse();
 		});
 
 		it('shows a title', async () => {
