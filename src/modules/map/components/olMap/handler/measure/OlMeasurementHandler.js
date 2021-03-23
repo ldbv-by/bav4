@@ -80,84 +80,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const pointerMoveHandler = (event) => {
-			const translate = (key) => this._translationService.translate(key);
 			this._lastPointerMoveEvent = event;
-			if (!this._dragPan.getActive()) {
-				const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
-				if (draggingOverlay) {
-					draggingOverlay.setOffset([0, 0]);
-					draggingOverlay.set('manualPositioning', true);
-					draggingOverlay.setPosition(event.coordinate);
-				}
-			}
+			
+			const coordinate = event.coordinate;
+			const dragging = event.dragging;
+			const pixel = event.pixel;						
 
-			if (event.dragging) {
-				this._hideHelpTooltip();
-				return;
-			}
-
-			if (this._helpTooltip == null) {
-				return;
-			}
-			let isGrab = false;
-			let helpMsg = translate('map_olMap_handler_measure_start');
-			if (this._draw.getActive()) {
-				if (this._activeSketch) {
-					this._activeSketch.getGeometry();
-					helpMsg = translate('map_olMap_handler_measure_continue_line');
-
-					if (this._isFinishOnFirstPoint) {
-						helpMsg = translate('map_olMap_handler_measure_snap_first_point');
-					}
-					else if (this._isSnapOnLastPoint) {
-						helpMsg = translate('map_olMap_handler_measure_snap_last_point');
-					}
-
-					if (this._pointCount > 2) {
-						helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
-					}
-				}
-			}
-
-			if (this._modify.getActive()) {
-				helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');
-				const interactionLayer = this._vectorLayer;
-				const featureSnapOption = {
-					hitTolerance: 10,
-					layerFilter: itemLayer => {
-						return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-					},
-				};
-				let vertexFeature = null;
-				this._map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-					if (!layer && feature.get('features').length > 0) {
-						vertexFeature = feature;
-						return;
-					}
-				}, featureSnapOption);
-
-				
-				if (vertexFeature) {
-					helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
-
-					const vertexGeometry = vertexFeature.getGeometry();
-					const snappedFeature = vertexFeature.get('features')[0];
-					const snappedGeometry = snappedFeature.getGeometry();
-
-					if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-						helpMsg = translate('map_olMap_handler_measure_modify_click_or_drag');
-						isGrab = true;
-					}
-				}
-				
-			}
-			if (isGrab) {
-				this._mapContainer.classList.add('grab');
-			}
-			else {
-				this._mapContainer.classList.remove('grab');
-			}
-			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
+			this._updateHelpToolTip(coordinate, pixel, dragging);
 		};
 
 		if (this._draw === false) {
@@ -383,6 +312,86 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 		feature.set('partitions', partitions);
+	}
+
+	_updateHelpToolTip(coordinate, pixel, dragging) {
+		const translate = (key) => this._translationService.translate(key);
+		if (!this._dragPan.getActive()) {
+			const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
+			if (draggingOverlay) {
+				draggingOverlay.setOffset([0, 0]);
+				draggingOverlay.set('manualPositioning', true);
+				draggingOverlay.setPosition(coordinate);
+			}
+		}
+
+		if (dragging) {
+			this._hideHelpTooltip();
+			return;
+		}
+
+		if (this._helpTooltip == null) {
+			return;
+		}
+		let isGrab = false;
+		let helpMsg = translate('map_olMap_handler_measure_start');
+		if (this._draw.getActive()) {
+			if (this._activeSketch) {
+				this._activeSketch.getGeometry();
+				helpMsg = translate('map_olMap_handler_measure_continue_line');
+
+				if (this._isFinishOnFirstPoint) {
+					helpMsg = translate('map_olMap_handler_measure_snap_first_point');
+				}
+				else if (this._isSnapOnLastPoint) {
+					helpMsg = translate('map_olMap_handler_measure_snap_last_point');
+				}
+
+				if (this._pointCount > 2) {
+					helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
+				}
+			}
+		}
+
+		if (this._modify.getActive()) {
+			helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');
+			const interactionLayer = this._vectorLayer;
+			const featureSnapOption = {
+				hitTolerance: 10,
+				layerFilter: itemLayer => {
+					return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
+				},
+			};
+			let vertexFeature = null;
+			this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+				if (!layer && feature.get('features').length > 0) {
+					vertexFeature = feature;
+					return;
+				}
+			}, featureSnapOption);
+
+				
+			if (vertexFeature) {
+				helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
+
+				const vertexGeometry = vertexFeature.getGeometry();
+				const snappedFeature = vertexFeature.get('features')[0];
+				const snappedGeometry = snappedFeature.getGeometry();
+
+				if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+					helpMsg = translate('map_olMap_handler_measure_modify_click_or_drag');
+					isGrab = true;
+				}
+			}
+				
+		}
+		if (isGrab) {
+			this._mapContainer.classList.add('grab');
+		}
+		else {
+			this._mapContainer.classList.remove('grab');
+		}
+		this._updateOverlay(this._helpTooltip, new Point(coordinate), helpMsg);
 	}
 
 
