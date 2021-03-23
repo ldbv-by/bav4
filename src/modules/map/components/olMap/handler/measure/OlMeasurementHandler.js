@@ -42,6 +42,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._overlays = [];
 		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
+		this._lastPointerMoveEvent = null;
 	}
 
 	/**
@@ -80,7 +81,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const pointerMoveHandler = (event) => {
 			const translate = (key) => this._translationService.translate(key);
-
+			this._lastPointerMoveEvent = event;
 			if (!this._dragPan.getActive()) {
 				const draggingOverlay = this._overlays.find(o => o.get('dragging') === true);
 				if (draggingOverlay) {
@@ -225,9 +226,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_removeLast(event) {
 		if (this._draw && this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._draw.removeLastPoint();
+				this._draw.removeLastPoint();				
 				if (this._pointCount === 2) {
 					this._reset();
+				}				
+				if (this._lastPointerMoveEvent) {
+					this._draw.handleEvent(this._lastPointerMoveEvent);
 				}				
 			}
 		}

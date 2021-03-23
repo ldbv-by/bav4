@@ -391,11 +391,44 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();			
+			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
 			feature.getGeometry().dispatchEvent('change');
 
 			simulateKeyEvent(deleteKeyCode);
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+		});
+
+		it('removes NOT last point if other keypressed', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 42;
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._draw.removeLastPoint).not.toHaveBeenCalled();
+		});
+
+		it('removes currently drawing two-point feature if keypressed', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest._reset = jasmine.createSpy().and.callThrough();	
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [500, 0], [0, 0]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);									
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateKeyEvent(deleteKeyCode);			
+			expect(classUnderTest._reset).toHaveBeenCalled();	
 		});
 
 		it('removes drawn feature if keypressed', () => {
@@ -564,6 +597,25 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._pointCount).toBe(5);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
+		});
+
+		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();			
+			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
 		});
 
 		it('adds the drawn feature to select after drawends', () => {
