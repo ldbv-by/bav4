@@ -15,34 +15,60 @@ export class OlLayerHandler {
 			throw new TypeError('Can not construct abstract class.');
 		}
 		if (!id) {
-			throw new TypeError('Id of this handler must be defined.');  
+			throw new TypeError('Id of this handler must be defined.');
 		}
 		this._id = id;
+		this._active = false;
 	}
 
 	get id() {
 		return this._id;
 	}
 
-	/**
-     * Activates this handler and creates an ol layer. The layer must not be added to the map.
-     * @abstract
-     * @param {Map} olMap
-     * @returns {BaseLayer} olLayer the layer which shoud be added to the map
-     */
-	activate(/*eslint-disable no-unused-vars */ map) {
-		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #activate or do not call super.activate from child.');
+	get active() {
+		return this._active;
 	}
 
 	/**
-     *  Deactivates this handler. The corresponding layer is already remove from the map.
-     * @abstract
-     * @param {Map} olmap 
-     */
-	deactivate(/*eslint-disable no-unused-vars */ map) {
-		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #deactivate or do not call super.deactivate from child.');
+	 * Activates this handler and creates an ol layer.
+	 * @param {Map} olMap
+	 * @returns {BaseLayer} olLayer the layer which shoud be added to the map
+	 */
+	activate(map) {
+		const layer = this.onActivate(map);
+		this._active = true;
+		return layer;
 	}
 
+	/**
+	 *  Deactivates this handler.
+	 * @param {Map} olmap 
+	 */
+	deactivate(map) {
+		this.onDeactivate(map);
+		this._active = false;
+	}
+
+	/**
+	 * Callback called when this handler is activated. Creates an ol layer. The layer must not be added to the map.
+	 * @abstract
+	 * @protected
+	 * @param {Map} olMap
+	 * @returns {BaseLayer} olLayer the layer which shoud be added to the map
+	 */
+	onActivate(/*eslint-disable no-unused-vars */ map) {
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #onActivate or do not call super.onActivate from child.');
+	}
+
+	/**
+	 * Callback called when this handler is deactivated. The corresponding layer is already removed from the map.
+	 * @abstract
+	 * @protected
+	 * @param {Map} olmap 
+	 */
+	onDeactivate(/*eslint-disable no-unused-vars */ map) {
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.');
+	}
 }

@@ -50,7 +50,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * Activates the Handler.
 	 * @override
 	 */
-	activate(olMap) {
+	onActivate(olMap) {
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
@@ -126,7 +126,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	deactivate(olMap) {
+	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
