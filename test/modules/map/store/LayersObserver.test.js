@@ -4,7 +4,9 @@ import { layersReducer } from '../../../../src/modules/map/store/layers.reducer'
 import { $injector } from '../../../../src/injection';
 import { WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
-import { Topic } from '../../../../src/services/domain/topic'; 
+import { Topic } from '../../../../src/services/domain/topic';
+import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
+import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
 
 
 describe('LayersObserver', () => {
@@ -16,6 +18,7 @@ describe('LayersObserver', () => {
 	};
 	const topicsServiceMock = {
 		default() { },
+		byId() { }
 	};
 
 	const windowMock = {
@@ -29,7 +32,8 @@ describe('LayersObserver', () => {
 	const setup = (state) => {
 
 		const store = TestUtils.setupStoreAndDi(state, {
-			layers: layersReducer
+			layers: layersReducer,
+			topics: topicsReducer
 		});
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -92,16 +96,18 @@ describe('LayersObserver', () => {
 
 		describe('_addLayersFromConfig', () => {
 
-			it('initializes the georesource service and adds the configured layer', () => {
-				const configuredBgId = 'atkis';
+			it('adds the configured layer', () => {
 				const store = setup();
+				const configuredBgId = 'atkis';
+				setCurrent(configuredBgId);
 				const instanceUnderTest = new LayersObserver();
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
 					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0'),
 				]);
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+				// spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
 
 
 				instanceUnderTest._addLayersFromConfig();
@@ -110,14 +116,33 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[0].id).toBe(configuredBgId);
 			});
 
-			it('initializes the georesource service and adds the first found layer ', () => {
+			it('dds the configured layer from default topic', () => {
+				const store = setup();
+				const configuredBgId = 'atkis';
+				setCurrent(configuredBgId);
+				const instanceUnderTest = new LayersObserver();
+
+				spyOn(geoResourceServiceMock, 'all').and.returnValue([
+					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
+					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0'),
+				]);
+				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
+				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+
+				instanceUnderTest._addLayersFromConfig();
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(configuredBgId);
+			});
+
+			it('adds the first found layer ', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersObserver();
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('someId0', 'someLabel0', 'someUrl0'),
 					new WMTSGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', ['somethingDifferent']));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', ['somethingDifferent']));
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -128,7 +153,7 @@ describe('LayersObserver', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 
-			it('initializes the georesource service', () => {
+			it('adds layer', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = QueryParameters.LAYER + '=some0,some1';
 				const store = setup();
@@ -150,7 +175,7 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].id).toBe('some1');
 			});
 
-			it('initializes the georesource service considering layer visibility', () => {
+			it('adds layer considering visibility', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`;
 				const store = setup();
@@ -174,7 +199,7 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('initializes the georesource service considering layer visibility with unuseable params', () => {
+			it('adds layer considering unuseable visibility params', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
@@ -198,7 +223,7 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
-			it('initializes the georesource service considering layer opacity', () => {
+			it('adds layer considering opacity', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`;
 				const store = setup();
@@ -222,7 +247,7 @@ describe('LayersObserver', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('initializes the georesource service considering layer opacity with unuseable params', () => {
+			it('adds layer considering unuseable opacity params', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
@@ -247,7 +272,7 @@ describe('LayersObserver', () => {
 			});
 
 
-			it('initializes the georesource service by calling #_addLayersFromConfig as fallback', () => {
+			it('adds layer by calling #_addLayersFromConfig as fallback', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = QueryParameters.LAYER + '=unknown';
 				const store = setup();
