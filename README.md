@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 [![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Next-generation web map viewer based on web standards.
+Next-generation web-map viewer based on web standards.
 
 #### Table of Contents
 1. [Concept](#concept)
