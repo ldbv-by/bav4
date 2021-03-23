@@ -479,7 +479,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_hideHelpTooltip() {
-		this._helpTooltip.setPosition(undefined);
+		if (this._helpTooltip) {
+			this._helpTooltip.setPosition(undefined);
+		}		
 	}
 
 	_getSnapTolerancePerDevice() {
