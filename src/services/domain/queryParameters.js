@@ -7,5 +7,6 @@ export const QueryParameters = Object.freeze({
 	CENTER: 'c',
 	LAYER: 'l',
 	LAYER_VISIBILITY: 'l_v',
-	LAYER_OPACITY: 'l_o'
+	LAYER_OPACITY: 'l_o',
+	TOPIC: 't'
 });

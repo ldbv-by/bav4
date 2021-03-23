@@ -33,6 +33,10 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 };
 
 export const toOlLayer = (georesource) => {
+	
+	const {
+		GeoResourceService: georesourceService,
+	} = $injector.inject('GeoResourceService');
 
 	switch (georesource.getType()) {
 		case GeoResourceTypes.WMS:
@@ -70,7 +74,7 @@ export const toOlLayer = (georesource) => {
 		case GeoResourceTypes.AGGREGATE: {
 			return new LayerGroup({
 				id: georesource.id,
-				layers: georesource.geoResourceIds.map(id => toOlLayer(id))
+				layers: georesource.geoResourceIds.map(id => toOlLayer(georesourceService.byId(id)))
 			});
 		}
 	}
