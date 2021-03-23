@@ -43,6 +43,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
+		this._dragableOverlay = null;
 	}
 
 	/**
@@ -385,6 +386,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 				
 		}
+
+		if (this._dragableOverlay) {
+			helpMsg = translate('map_olMap_handler_measure_modify_click_drag_overlay');
+		}
 		if (isGrab) {
 			this._mapContainer.classList.add('grab');
 		}
@@ -470,12 +475,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_createDragOn(overlay) {
 		const element = overlay.getElement();
 		const dragPan = this._dragPan;
+		
 
 		const handleMouseDown = () => {
 			dragPan.setActive(false);
 			overlay.set('dragging', true);
 		};
+
+		const handleMouseEnter = () => {
+			this._dragableOverlay = element;
+		};
+
+		const handleMouseLeave = () => {
+			this._dragableOverlay = null;
+		};
 		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+		element.addEventListener('mouseenter', handleMouseEnter);
+		element.addEventListener('mouseleave', handleMouseLeave);
 	}
 
 	_hideHelpTooltip() {

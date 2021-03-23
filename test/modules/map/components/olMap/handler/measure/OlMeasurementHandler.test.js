@@ -599,6 +599,19 @@ describe('OlMeasurementHandler', () => {
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
 		});
 
+		it('change message in helpTooltip, when mouse enters draggable overlay', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			const baOverlay = classUnderTest._helpTooltip.getElement();
+			classUnderTest._dragableOverlay = true;
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+
+
+			expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_drag_overlay');
+		});
+
 		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -780,6 +793,26 @@ describe('OlMeasurementHandler', () => {
 				expect(overlay.getPosition()).toEqual([50, 500]);
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERUP, 50, 500);
 				expect(overlay.get('dragging')).toBeFalse();
+			});
+
+			it('registers overlay as internal-state-object on mouseenter', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				classUnderTest.activate(map);
+
+				const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+				const feature = new Feature({ geometry: geometry });
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				feature.getGeometry().dispatchEvent('change');
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+				const overlay = feature.get('measurement');
+				const element = overlay.getElement();
+
+				element.dispatchEvent(new Event('mouseenter'));
+				expect(classUnderTest._dragableOverlay).toBeTruthy();			
+				
+				element.dispatchEvent(new Event('mouseleave'));
+				expect(classUnderTest._dragableOverlay).toBeNull();			
 			});
 		});
 
