@@ -21,12 +21,12 @@ export const loadBvvTopics = async () => {
 				definition.id, 
 				definition.label, 
 				definition.description, 
-				definition.backgroundLayers, 
-				definition.defaultBackground, 
+				definition.baseLayers, 
+				definition.defaultBaseLayer, 
 				definition.activatedLayers, 
 				definition.selectedLayers);
-			//at least the id, label, description and backgroundLayers properties should be set
-			if (topic.id && topic.label && topic.description && topic.backgroundLayers) { 
+			//at least the id, label, description and baseLayers properties should be set
+			if (topic.id && topic.label && topic.description && topic.baseLayers) { 
 				topics.push(topic);
 			}
 			else {
