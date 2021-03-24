@@ -21,7 +21,10 @@ export class MapInfo extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class='content'>
-				<div class='theme-toggle'><ba-theme-toggle></ba-theme-toggle></div> 
+				<div class='left-container'>
+					<div class='theme-toggle'><ba-theme-toggle></ba-theme-toggle></div>
+					<div class='scale-line'><ba-scale-line></ba-scale-line></div>
+				</div> 
 				<div class='coordinates'>
 					<ba-coordinate-select></ba-coordinate-select>
 				</div>				
