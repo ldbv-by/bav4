@@ -88,10 +88,10 @@ export class ContextMenue extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { contextMenue: { data } } = store;
+	extractState(state) {
+		const { contextMenue: { data } } = state;
 		return data;
 	}
 

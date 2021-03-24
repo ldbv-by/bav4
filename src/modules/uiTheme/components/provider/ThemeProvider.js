@@ -45,8 +45,8 @@ export class ThemeProvider extends BaElement {
 		this._updateCss();
 	}
 
-	extractState(store) {
-		const { uiTheme: { theme } } = store;
+	extractState(state) {
+		const { uiTheme: { theme } } = state;
 		return { theme };
 	}
 

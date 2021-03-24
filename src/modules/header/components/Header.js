@@ -84,8 +84,8 @@ export class Header extends BaElement {
 	 * 
 	 * @param {@override} store 
 	 */
-	extractState(store) {
-		const { sidePanel: { open } } = store;
+	extractState(state) {
+		const { sidePanel: { open } } = state;
 		return { sidePanelIsOpen: open };
 	}
 
