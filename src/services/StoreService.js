@@ -11,6 +11,7 @@ import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
+import { topicsReducer } from '../modules/topics/store/topics.reducer';
 
 
 /**
@@ -37,7 +38,8 @@ export class StoreService {
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
-			geolocation: geolocationReducer
+			geolocation: geolocationReducer,
+			topics: topicsReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -45,22 +47,25 @@ export class StoreService {
 		$injector.onReady(async () => {
 
 			const {
+				LayersObserver: layersObserver,
+				TopicsObserver: topicsObserver,
 				GeolocationObserver: geolocationObserver,
 				MeasurementObserver: measurementObserver,
-				LayersObserver: layersObserver,
 				PositionObserver: positionObserver,
 				ContextClickObserver: contextClickObserver,
 				EnvironmentService: environmentService
 			}
-				= $injector.inject(
-					'GeolocationObserver',
-					'MeasurementObserver',
-					'LayersObserver',
-					'PositionObserver',
-					'ContextClickObserver',
-					'EnvironmentService'
-				);
+			= $injector.inject(
+				'TopicsObserver',
+				'LayersObserver',
+				'GeolocationObserver',
+				'MeasurementObserver',
+				'PositionObserver',
+				'ContextClickObserver',
+				'EnvironmentService'
+			);
 
+			await topicsObserver.register(this._store);
 			await layersObserver.register(this._store);
 			await positionObserver.register(this._store);
 			await measurementObserver.register(this._store);

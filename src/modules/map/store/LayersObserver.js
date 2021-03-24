@@ -54,12 +54,16 @@ export class LayersObserver extends BaObserver {
 
 	_addLayersFromConfig() {
 
-		//Todo: bgLayerIds needs to be loaded from backend at a later moment
-		const bgLayerIds = ['atkis'];
-		const { GeoResourceService: georesourceService } = $injector.inject('GeoResourceService');
+		const { GeoResourceService: georesourceService, TopicsService: topicsService, StoreService: storeService }
+			= $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
+		
+		//we take the bg layer from the topic configuration
+		const { topics: { current } } = storeService.getStore().getState();
+		const { defaultBaseLayer } = topicsService.byId(current) || topicsService.default();
+		
 		const geoResources = georesourceService.all();
 
-		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === bgLayerIds[0]);
+		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBaseLayer);
 		//fallback: add the first available georesource as bg
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
@@ -74,7 +78,7 @@ export class LayersObserver extends BaObserver {
 
 		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService }
 			= $injector.inject('GeoResourceService', 'EnvironmentService');
-		
+
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		//no try-catch needed, service at least delivers a fallback
