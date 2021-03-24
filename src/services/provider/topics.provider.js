@@ -21,12 +21,12 @@ export const loadBvvTopics = async () => {
 				definition.id, 
 				definition.label, 
 				definition.description, 
-				definition.baseLayers, 
-				definition.defaultBaseLayer, 
-				definition.activatedLayers, 
-				definition.selectedLayers);
+				definition.baseGeoRs, 
+				definition.defaultBaseGeoR, 
+				definition.activatedGeoRs, 
+				definition.selectedGeoRs);
 			//at least the id, label, description and baseLayers properties should be set
-			if (topic.id && topic.label && topic.description && topic.baseLayers) { 
+			if (topic.id && topic.label && topic.description && topic.baseGeoRs) { 
 				topics.push(topic);
 			}
 			else {
