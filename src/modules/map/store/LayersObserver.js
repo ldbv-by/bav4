@@ -59,11 +59,11 @@ export class LayersObserver extends BaObserver {
 		
 		//we take the bg layer from the topic configuration
 		const { topics: { current } } = storeService.getStore().getState();
-		const { defaultBackground } = topicsService.byId(current) || topicsService.default();
+		const { defaultBaseLayer } = topicsService.byId(current) || topicsService.default();
 		
 		const geoResources = georesourceService.all();
 
-		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBackground);
+		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBaseLayer);
 		//fallback: add the first available georesource as bg
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);

@@ -21,11 +21,11 @@ describe('Topics provider', () => {
 
 		const backendUrl = 'https://backend.url';
 		const topicMock1 = {
-			defaultBackground: 'mockBackground',
+			defaultBaseLayer: 'mockBaseLayer',
 			selectedLayers: [
 				'mockSelectedLayer'
 			],
-			backgroundLayers: [
+			baseLayers: [
 				'mockBgLayer1',
 				'mockBgLayer2'
 			],
@@ -38,11 +38,11 @@ describe('Topics provider', () => {
 			notNeeded: 'Value'
 		};
 		const topicMock2 = {
-			defaultBackground: 'mockBackground2',
+			defaultBaseLayer: 'mockBaseLayer2',
 			selectedLayers: [
 				'mockSelectedLayer2'
 			],
-			backgroundLayers: [
+			baseLayers: [
 				'mockBgLayer12',
 				'mockBgLayer22'
 			],
@@ -73,8 +73,8 @@ describe('Topics provider', () => {
 		expect(topic1.id).toBe(topicMock1.id);
 		expect(topic1.label).toBe(topicMock1.label); 
 		expect(topic1.description).toBe(topicMock1.description); 
-		expect(topic1.defaultBackground).toEqual(topicMock1.defaultBackground); 
-		expect(topic1.backgroundLayers).toEqual(topicMock1.backgroundLayers); 
+		expect(topic1.defaultBaseLayer).toEqual(topicMock1.defaultBaseLayer); 
+		expect(topic1.baseLayers).toEqual(topicMock1.baseLayers); 
 		expect(topic1.activatedLayers).toEqual(topicMock1.activatedLayers); 
 		expect(topic1.selectedLayers).toEqual(topicMock1.selectedLayers);
 		expect(topic1.notNeeded).toBeUndefined();
@@ -83,8 +83,8 @@ describe('Topics provider', () => {
 		expect(topic2.id).toBe(topicMock2.id);
 		expect(topic2.label).toBe(topicMock2.label); 
 		expect(topic2.description).toBe(topicMock2.description); 
-		expect(topic2.defaultBackground).toEqual(topicMock2.defaultBackground); 
-		expect(topic2.backgroundLayers).toEqual(topicMock2.backgroundLayers); 
+		expect(topic2.defaultBaseLayer).toEqual(topicMock2.defaultBaseLayer); 
+		expect(topic2.baseLayers).toEqual(topicMock2.baseLayers); 
 		expect(topic2.activatedLayers).toEqual(topicMock2.activatedLayers); 
 		expect(topic2.selectedLayers).toEqual(topicMock2.selectedLayers);
 		expect(topic2.notNeeded).toBeUndefined();
@@ -99,7 +99,7 @@ describe('Topics provider', () => {
 		spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 			new Response(
 				JSON.stringify([
-					{ backgroundLayers: ['mockBgLayer12'] }
+					{ baseLayers: ['mockBgLayer12'] }
 				])
 			)
 		));
