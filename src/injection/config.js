@@ -11,8 +11,10 @@ import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { MapService } from '../services/MapService';
-import { mapModule } from '../modules/map/services';
+import { mapModule } from '../modules/map/injection';
+import { topicsModule } from '../modules/topics/injection';
 import { AdministrationService } from  '../services/AdministrationService'; 
+import { TopicsService } from '../services/TopicsService';
 
 
 $injector
@@ -24,11 +26,13 @@ $injector
 	.registerSingleton('MapService', new MapService())
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
+	.registerSingleton('TopicsService', new TopicsService())
 	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
+	.registerModule(topicsModule)
 	.registerModule(mapModule)
 	.ready();
 	

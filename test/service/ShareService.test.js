@@ -3,6 +3,8 @@ import { addLayer } from '../../src/modules/map/store/layers.action';
 import { layersReducer } from '../../src/modules/map/store/layers.reducer';
 import { changeZoomAndCenter } from '../../src/modules/map/store/position.action';
 import { positionReducer } from '../../src/modules/map/store/position.reducer';
+import { setCurrent } from '../../src/modules/topics/store/topics.action';
+import { topicsReducer } from '../../src/modules/topics/store/topics.reducer';
 import { QueryParameters } from '../../src/services/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
@@ -22,7 +24,8 @@ describe('ShareService', () => {
 
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
-			position: positionReducer
+			position: positionReducer,
+			topics: topicsReducer
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
@@ -141,21 +144,35 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_extractTopic', () => {
+			it('extracts the current topics state', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				setCurrent('someTopic');
+
+				const extract = instanceUnderTest._extractTopic();
+
+				expect(extract[QueryParameters.TOPIC]).toBe('someTopic');
+			});
+		});
+
 		describe('encodeState', () => {
 			
 			it('encodes a state object to url', () => {
 				const instanceUnderTest = new ShareService();
 
 				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
-				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['some', 'other'] });
+				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
 
 				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
 				expect(encoded.includes(window.location.href)).toBeTrue();
-				expect(queryParams.get(QueryParameters.LAYER)).toBe('some,other');
+				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 			});
 		});
 	});
