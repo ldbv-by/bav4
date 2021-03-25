@@ -157,16 +157,13 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
-		it('removes all registered mapOverlays', () => {
+		it('resets overlayManager on deactivate', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			map.removeOverlay = jasmine.createSpy();
-			const overlayStub = {};
-			classUnderTest._overlays = [overlayStub, overlayStub, overlayStub, overlayStub];
+			classUnderTest._overlayManager = { reset:jasmine.createSpy() };
 			classUnderTest.deactivate(map);
 
-			expect(map.removeOverlay).toHaveBeenCalledTimes(4);
-			expect(classUnderTest._overlays.length).toBe(0);
+			expect(classUnderTest._overlayManager.reset).toHaveBeenCalled();			
 		});
 
 	});
