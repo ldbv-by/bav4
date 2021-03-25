@@ -21,15 +21,15 @@ describe('Topics provider', () => {
 
 		const backendUrl = 'https://backend.url';
 		const topicMock1 = {
-			defaultBaseLayer: 'mockBaseLayer',
-			selectedLayers: [
+			defaultBaseGeoR: 'mockBaseLayer',
+			selectedGeoRs: [
 				'mockSelectedLayer'
 			],
-			baseLayers: [
+			baseGeoRs: [
 				'mockBgLayer1',
 				'mockBgLayer2'
 			],
-			activatedLayers: [
+			activatedGeoRs: [
 				'mockActivatedLayer'
 			],
 			id: 'Ref42',
@@ -38,15 +38,15 @@ describe('Topics provider', () => {
 			notNeeded: 'Value'
 		};
 		const topicMock2 = {
-			defaultBaseLayer: 'mockBaseLayer2',
-			selectedLayers: [
+			defaultBaseGeoR: 'mockBaseLayer2',
+			selectedGeoRs: [
 				'mockSelectedLayer2'
 			],
-			baseLayers: [
+			baseGeoRs: [
 				'mockBgLayer12',
 				'mockBgLayer22'
 			],
-			activatedLayers: [
+			activatedGeoRs: [
 				'mockActivatedLayer2'
 			],
 			id: 'Ref422',
@@ -73,20 +73,20 @@ describe('Topics provider', () => {
 		expect(topic1.id).toBe(topicMock1.id);
 		expect(topic1.label).toBe(topicMock1.label); 
 		expect(topic1.description).toBe(topicMock1.description); 
-		expect(topic1.defaultBaseLayer).toEqual(topicMock1.defaultBaseLayer); 
-		expect(topic1.baseLayers).toEqual(topicMock1.baseLayers); 
-		expect(topic1.activatedLayers).toEqual(topicMock1.activatedLayers); 
-		expect(topic1.selectedLayers).toEqual(topicMock1.selectedLayers);
+		expect(topic1.defaultBaseGeoR).toEqual(topicMock1.defaultBaseGeoR); 
+		expect(topic1.baseGeoRs).toEqual(topicMock1.baseGeoRs); 
+		expect(topic1.activatedGeoRs).toEqual(topicMock1.activatedGeoRs); 
+		expect(topic1.selectedGeoRs).toEqual(topicMock1.selectedGeoRs);
 		expect(topic1.notNeeded).toBeUndefined();
         
 		const topic2 = topics[1];
 		expect(topic2.id).toBe(topicMock2.id);
 		expect(topic2.label).toBe(topicMock2.label); 
 		expect(topic2.description).toBe(topicMock2.description); 
-		expect(topic2.defaultBaseLayer).toEqual(topicMock2.defaultBaseLayer); 
-		expect(topic2.baseLayers).toEqual(topicMock2.baseLayers); 
-		expect(topic2.activatedLayers).toEqual(topicMock2.activatedLayers); 
-		expect(topic2.selectedLayers).toEqual(topicMock2.selectedLayers);
+		expect(topic2.defaultBaseGeoR).toEqual(topicMock2.defaultBaseGeoR); 
+		expect(topic2.baseGeoRs).toEqual(topicMock2.baseGeoRs); 
+		expect(topic2.activatedGeoRs).toEqual(topicMock2.activatedGeoRs); 
+		expect(topic2.selectedGeoRs).toEqual(topicMock2.selectedGeoRs);
 		expect(topic2.notNeeded).toBeUndefined();
 
 	});
@@ -99,7 +99,7 @@ describe('Topics provider', () => {
 		spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
 			new Response(
 				JSON.stringify([
-					{ baseLayers: ['mockBgLayer12'] }
+					{ baseGeoRs: ['mockBgLayer12'] }
 				])
 			)
 		));
