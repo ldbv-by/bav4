@@ -1,5 +1,3 @@
-
-
 import { Overlay } from 'ol';
 import { $injector } from '../../../../../../../src/injection';
 import { HelpTooltip } from '../../../../../../../src/modules/map/components/olMap/handler/measure/HelpTooltip';
