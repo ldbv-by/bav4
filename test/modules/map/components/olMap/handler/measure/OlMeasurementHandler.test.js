@@ -602,10 +602,15 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 			const baOverlay = classUnderTest._helpTooltip.getElement();
-			classUnderTest._dragableOverlay = true;
+			const overlayMock = { 
+				set:() => {},
+				get:() => true,
+				setOffset:() => {},
+				setPosition:() => {} };
+			classUnderTest._overlayManager.getOverlays = jasmine.createSpy().and.returnValue([overlayMock]);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
-
+		
 			expect(baOverlay.value).toBe('map_olMap_handler_measure_modify_click_drag_overlay');
 		});
 
@@ -792,7 +797,7 @@ describe('OlMeasurementHandler', () => {
 				expect(overlay.get('dragging')).toBeFalse();
 			});
 
-			it('registers overlay as internal-state-object on mouseenter', () => {
+			it('triggers overlay as dragable', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -806,10 +811,10 @@ describe('OlMeasurementHandler', () => {
 				const element = overlay.getElement();
 
 				element.dispatchEvent(new Event('mouseenter'));
-				expect(classUnderTest._dragableOverlay).toBeTruthy();			
+				expect(overlay.get('dragable')).toBeTrue();			
 				
 				element.dispatchEvent(new Event('mouseleave'));
-				expect(classUnderTest._dragableOverlay).toBeNull();			
+				expect(overlay.get('dragable')).toBeFalse();			
 			});
 		});
 

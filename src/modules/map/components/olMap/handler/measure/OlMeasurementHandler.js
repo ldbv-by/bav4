@@ -43,7 +43,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._dragableOverlay = null;
 		this._overlayManager = null;
 	}
 
@@ -376,8 +375,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 				
 		}
-
-		if (this._dragableOverlay) {
+		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
+		if (dragableOverlay) {
 			helpMsg = translate('map_olMap_handler_measure_modify_click_drag_overlay');
 		}
 		if (isGrab) {
@@ -445,7 +444,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measurementOverlay.type = type;
 		measurementOverlay.isDraggable = isDraggable;
 		measurementOverlay.projectionHints = this._projectionHints;
-		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent:false });
+		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
 		if (isDraggable) {
 			this._createDragOn(overlay);
 		}		
@@ -472,11 +471,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const handleMouseEnter = () => {
-			this._dragableOverlay = element;
+			overlay.set('dragable', true);
 		};
 
 		const handleMouseLeave = () => {
-			this._dragableOverlay = null;
+			overlay.set('dragable', false);
 		};
 		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 		element.addEventListener('mouseenter', handleMouseEnter);
