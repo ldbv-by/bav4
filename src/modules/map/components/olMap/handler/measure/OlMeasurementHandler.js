@@ -2,7 +2,7 @@ import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
@@ -14,10 +14,27 @@ import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, click, primaryAction } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
+import { HelpTooltip } from './HelpTooltip';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
+
+
+export const MeasureStateType = {
+	ACTIVE:'active',
+	DRAW:'draw',
+	MODIFY:'modify',
+	OVERLAY:'overlay',
+	MUTE:'mute'
+};
+
+export const MeasureSnapType = {
+	FIRSTPOINT:'firstPoint',
+	LASTPOINT:'lastPoint',
+	VERTEX:'vertex',
+	EGDE:'edge',	
+};
 
 /**
  * Handler for measurement-interaction with the map
@@ -36,14 +53,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
-		this._helpTooltip = null;
+		
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._overlayManager = null;
+		this._overlayManager = new OverlayManager();
+		this._measureStateHandler = new HelpTooltip(this._overlayManager);
 	}
 
 	/**
@@ -87,7 +105,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;						
 
-			this._updateHelpToolTip(coordinate, pixel, dragging);
+			this._updateMeasureState(coordinate, pixel, dragging);
 		};
 
 		if (this._draw === false) {
@@ -103,10 +121,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
-			this._overlayManager = new OverlayManager(this._map);
+			this._overlayManager.activate(this._map);
+			
 			if (!this._environmentService.isTouch()) {
-				this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
-				this._overlayManager.add(this._helpTooltip);				
+				this._measureStateHandler.activate();			
 			}
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
@@ -135,12 +153,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
-		if (this._overlayManager) {
-			this._overlayManager.reset();
-		}
+		this._measureStateHandler.deactivate();
+		this._overlayManager.deactivate();
 		this._listeners.forEach(l => unByKey(l));
-		this._listeners = [];
-		this._helpTooltip = null;
+		this._listeners = [];		
 		this._draw = false;
 		this._map = null;
 	}		
@@ -170,10 +186,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
 		this._overlayManager.reset();
+		this._measureStateHandler.activate();
 		this._vectorLayer.getSource().clear();
-		if (!this._environmentService.isTouch()) {
-			this._overlayManager.add(this._helpTooltip);
-		}
 	}
 
 	_createDraw(source) {
@@ -304,47 +318,32 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		feature.set('partitions', partitions);
 	}
 
-	_updateHelpToolTip(coordinate, pixel, dragging) {
-		const translate = (key) => this._translationService.translate(key);
-		if (!this._dragPan.getActive()) {
-			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
-			if (draggingOverlay) {
-				draggingOverlay.setOffset([0, 0]);
-				draggingOverlay.set('manualPositioning', true);
-				draggingOverlay.setPosition(coordinate);
-			}
-		}
-
-		if (dragging) {
-			this._hideHelpTooltip();
-			return;
-		}
-
-		if (this._helpTooltip == null) {
-			return;
-		}
-		let isGrab = false;
-		let helpMsg = translate('map_olMap_handler_measure_start');
+	_updateMeasureState(coordinate, pixel, dragging) {	
+		const measureState = { type:null,
+			snap:null,
+			coordinate:coordinate,
+			pointCount:this._pointCount };
+	
 		if (this._draw.getActive()) {
+			measureState.type = MeasureStateType.ACTIVE;
+			
 			if (this._activeSketch) {
 				this._activeSketch.getGeometry();
-				helpMsg = translate('map_olMap_handler_measure_continue_line');
+				measureState.type = MeasureStateType.DRAW;
 
 				if (this._isFinishOnFirstPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_first_point');
+					measureState.snap = MeasureSnapType.FIRSTPOINT;	
 				}
 				else if (this._isSnapOnLastPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_last_point');
-				}
-
-				if (this._pointCount > 2) {
-					helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
+					measureState.snap = MeasureSnapType.LASTPOINT;	
 				}
 			}
 		}
 
+		let isGrab = false;
 		if (this._modify.getActive()) {
-			helpMsg = translate('map_olMap_handler_measure_modify_key_for_delete');
+			measureState.type = MeasureStateType.MODIFY;
+			measureState.snap = null;
 			const interactionLayer = this._vectorLayer;
 			const featureSnapOption = {
 				hitTolerance: 10,
@@ -362,14 +361,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 				
 			if (vertexFeature) {
-				helpMsg = translate('map_olMap_handler_measure_modify_click_new_point');
-
+				measureState.snap = MeasureSnapType.EGDE;
 				const vertexGeometry = vertexFeature.getGeometry();
 				const snappedFeature = vertexFeature.get('features')[0];
 				const snappedGeometry = snappedFeature.getGeometry();
 
 				if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-					helpMsg = translate('map_olMap_handler_measure_modify_click_or_drag');
+					measureState.snap = MeasureSnapType.VERTEX;
 					isGrab = true;
 				}
 			}
@@ -377,15 +375,31 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
 		if (dragableOverlay) {
-			helpMsg = translate('map_olMap_handler_measure_modify_click_drag_overlay');
+			measureState.type = MeasureStateType.OVERLAY;
+		}		
+
+		if (dragging) {
+			measureState.type = MeasureStateType.MUTE;
+			measureState.snap = null;	
 		}
+
+		this._measureStateHandler.notify(measureState);
+
 		if (isGrab) {
 			this._mapContainer.classList.add('grab');
 		}
 		else {
 			this._mapContainer.classList.remove('grab');
 		}
-		this._updateOverlay(this._helpTooltip, new Point(coordinate), helpMsg);
+
+		if (!this._dragPan.getActive()) {
+			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
+			if (draggingOverlay) {
+				draggingOverlay.setOffset([0, 0]);
+				draggingOverlay.set('manualPositioning', true);
+				draggingOverlay.setPosition(coordinate);
+			}
+		}
 	}
 
 
@@ -432,7 +446,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		});
 		modify.on('modifyend', event => {
-			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP) {
+			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
 				this._mapContainer.classList.remove('grabbing');
 			}
 		});
@@ -483,8 +497,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_hideHelpTooltip() {
-		if (this._helpTooltip) {
-			this._helpTooltip.setPosition(undefined);
+		if (this._measureStateHandler) {
+			this._measureStateHandler.setPosition(undefined);
 		}		
 	}
 

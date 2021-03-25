@@ -5,6 +5,15 @@ export class OverlayManager {
 		this._overlays = [];
 	}
 
+	activate(map) {
+		this._map = map;
+		this.reset();
+	}
+
+	deactivate() {
+		this.reset();
+	}
+
 	add(overlay) {
 		this._overlays.push(overlay);
 		this._map.addOverlay(overlay);
@@ -23,6 +32,7 @@ export class OverlayManager {
 		return [...this._overlays];
 	}
 
+	
 	reset() {
 		this._overlays.forEach(o => this._map.removeOverlay(o));
 		this._overlays = [];
