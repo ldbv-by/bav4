@@ -95,10 +95,10 @@ export class MapContextMenuContent extends BaElement {
 
 			<div class="container">
   				<ul class="content">
-				${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-				<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
-				<li><span class='label'>${translate('map_contextMenuContent_community_label')}</span><span class='coordinate'>${this._community}</span></li>
-				<li><span class='label'>${translate('map_contextMenuContent_district_label')}</span><span class='coordinate'>${this._district}</span></li>
+				  	<li><span class='label'>${translate('map_contextMenuContent_community_label')}</span><span class='coordinate'>${this._community}</span></li>
+					<li><span class='label'>${translate('map_contextMenuContent_district_label')}</span><span class='coordinate'>${this._district}</span></li>
+					${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
+					<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${this._altitude}</span></li>
   				</ul>
 			</div>
 			`;
