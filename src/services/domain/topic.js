@@ -4,13 +4,13 @@
 */
 export class Topic {
 
-	constructor(id, label, description, backgroundLayers, defaultBackground = backgroundLayers[0], activatedLayers = [], selectedLayers = []) {
+	constructor(id, label, description, baseLayers, defaultBaseLayer = baseLayers[0], activatedLayers = [], selectedLayers = []) {
 
 		this._id = id;
 		this._label = label;
 		this._description = description;
-		this._defaultBackground = defaultBackground;
-		this._backgroundLayers = backgroundLayers;
+		this._defaultBaseLayer = defaultBaseLayer;
+		this._baseLayers = baseLayers;
 		this._activatedLayers = activatedLayers;
 		this._selectedLayers = selectedLayers;
 	}
@@ -27,12 +27,12 @@ export class Topic {
 		return this._description;
 	}
 
-	get defaultBackground() {
-		return this._defaultBackground;
+	get defaultBaseLayer() {
+		return this._defaultBaseLayer;
 	}
 
-	get backgroundLayers() {
-		return [...this._backgroundLayers];
+	get baseLayers() {
+		return [...this._baseLayers];
 	}
 
 	get selectedLayers() {

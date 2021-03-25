@@ -9,8 +9,8 @@ describe('Topic', () => {
 		expect(topic.id).toBe('id');
 		expect(topic.label).toBe('label');
 		expect(topic.description).toBe('description');
-		expect(topic.defaultBackground).toBe('bg0');
-		expect(topic.backgroundLayers).toEqual(['bg0', 'bg1']);
+		expect(topic.defaultBaseLayer).toBe('bg0');
+		expect(topic.baseLayers).toEqual(['bg0', 'bg1']);
 		expect(topic.activatedLayers).toEqual(['ac0', 'ac2']);
 		expect(topic.selectedLayers).toEqual(['sel0', 'sel2']);
 	});
@@ -18,8 +18,8 @@ describe('Topic', () => {
 	it('provides default properties', () => {
 		const topic = new Topic('id', 'label', 'description', ['bg0', 'bg1']);
 
-		expect(topic.defaultBackground).toBe('bg0');
+		expect(topic.defaultBaseLayer).toBe('bg0');
 		expect(topic.selectedLayers).toEqual([]);
-		expect(topic.selectedLayers).toEqual([]);
+		expect(topic.activatedLayers).toEqual([]);
 	});
 });
