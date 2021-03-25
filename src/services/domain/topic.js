@@ -4,15 +4,15 @@
 */
 export class Topic {
 
-	constructor(id, label, description, baseLayers, defaultBaseLayer = baseLayers[0], activatedLayers = [], selectedLayers = []) {
+	constructor(id, label, description, baseGeoRs, defaultBaseGeoR = baseGeoRs[0], activatedGeoRs = [], selectedGeoRs = []) {
 
 		this._id = id;
 		this._label = label;
 		this._description = description;
-		this._defaultBaseLayer = defaultBaseLayer;
-		this._baseLayers = baseLayers;
-		this._activatedLayers = activatedLayers;
-		this._selectedLayers = selectedLayers;
+		this._defaultBaseGeoR = defaultBaseGeoR;
+		this._baseGeoRs = baseGeoRs;
+		this._activatedGeoRs = activatedGeoRs;
+		this._selectedGeoRs = selectedGeoRs;
 	}
 
 	get id() {
@@ -27,19 +27,19 @@ export class Topic {
 		return this._description;
 	}
 
-	get defaultBaseLayer() {
-		return this._defaultBaseLayer;
+	get defaultBaseGeoR() {
+		return this._defaultBaseGeoR;
 	}
 
-	get baseLayers() {
-		return [...this._baseLayers];
+	get baseGeoRs() {
+		return [...this._baseGeoRs];
 	}
 
-	get selectedLayers() {
-		return [...this._selectedLayers];
+	get selectedGeoRs() {
+		return [...this._selectedGeoRs];
 	}
 
-	get activatedLayers() {
-		return [...this._activatedLayers];
+	get activatedGeoRs() {
+		return [...this._activatedGeoRs];
 	}
 }
