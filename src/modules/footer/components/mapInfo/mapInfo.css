@@ -11,7 +11,19 @@
 }
 
 .coordinates {
-    padding-top: 10px;
     /* flex-grow: 100; */
     display: block;
+}
+
+.geo-rsrc-info {
+    display: block;
+    margin-left: 1.5em;
+    max-width: 30em;
+    max-height: 3em;
+} 
+
+.right-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
