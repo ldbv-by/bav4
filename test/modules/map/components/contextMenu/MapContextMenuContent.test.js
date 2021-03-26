@@ -65,17 +65,16 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 
-			expect(element.shadowRoot.querySelector('.label').innerText).toBe('code42');
-			expect(element.shadowRoot.querySelector('.coordinate').innerText).toBe('stringified coordinate');
-
-			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_altitude_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('map_contextMenuContent_community_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_district_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
+			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_altitude_label');
 	
 			window.requestAnimationFrame(() => {
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('42 (m)');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('LDBV');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('Ref42');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toBe('stringified coordinate');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('42 (m)');
 			});
 
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
@@ -144,7 +143,7 @@ describe('OlMapContextMenuContent', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 				done();
 			});
 		});
@@ -159,8 +158,8 @@ describe('OlMapContextMenuContent', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Administration Error');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[2].innerText).toEqual('-');
-				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('-');
+				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
 				done();
 			});
 		});
