@@ -3,8 +3,28 @@ import { BaElement } from '../../../BaElement';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-
 /**
+ * Clickable icon.
+ * 
+ * Configurable Attributes:
+ * - `label`
+ * - `disabled` (true|false)
+ * - `type` (primary|secondary)
+ * - `onClick()`
+ * 
+ * Observed Attributes:
+ * - `disabled`
+ * - `type`
+ * 
+ * Configurable Properties:
+ * - `disabled` (default=false)
+ * - `type` (default=secondary)
+ * - `onClick()`
+ * 
+ * Observed Properties:
+ * - `disabled`
+ * - `type`
+ * 
  * 
  * @class
  * @author aul
@@ -51,11 +71,18 @@ export class Button extends BaElement {
 	}
 
 	static get observedAttributes() {
-		return ['disabled'];
+		return ['disabled', 'type'];
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
-		this.disabled = newValue;
+		switch (name) {
+			case 'disabled': 
+				this.disabled = newValue; 
+				break;
+			case 'type': 
+				this.type = newValue; 
+				break;
+		} 
 	}
 
 	set disabled(value) {
@@ -67,6 +94,17 @@ export class Button extends BaElement {
 
 	get disabled() {
 		return this._disabled;
+	}
+
+	set type(value) {
+		if (value !== this.type) {
+			this._type = value;
+			this.render();
+		}
+	}
+
+	get type() {
+		return this._type;
 	}
 
 	set onClick(callback) {
