@@ -11,7 +11,7 @@ import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction 
 import { OverlayManager } from './OverlayManager';
 import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
-import { noModifierKeys, click, primaryAction } from 'ol/events/condition';
+import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
 import { HelpTooltip } from './HelpTooltip';
@@ -421,20 +421,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		let isInsertFirst = false;
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction,
-			insertVertexCondition: event => {
-				isInsertFirst = primaryAction(event);
-				return isInsertFirst;
-			},
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && click(event));
-				if (isDeletable && isInsertFirst) {
-					isInsertFirst = false;
-					return false;
-				}
+			deleteCondition: event => {				
+				const isDeletable = (noModifierKeys(event) && singleClick(event));			
 				return isDeletable;
 			}
 		};
