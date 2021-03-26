@@ -3,6 +3,7 @@
     z-index: var(--z-footer);
     bottom: 0;
     background-color: var(--primary-bg-color-05);
+    width:100%;   
     transition: transform 0.3s ease-out;     
 }
 .content{
@@ -12,8 +13,3 @@
 .is-open {
     transform: translate(28em, 0);
  }
-
-.portrait .footer {   
-    width:100%;   
-    background-color: var(--primary-bg-color);
-}
