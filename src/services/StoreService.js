@@ -47,6 +47,8 @@ export class StoreService {
 		$injector.onReady(async () => {
 
 			const {
+				TopicsService: topicsService,
+				GeoResourceService: geoResourceService,
 				LayersObserver: layersObserver,
 				TopicsObserver: topicsObserver,
 				GeolocationObserver: geolocationObserver,
@@ -56,6 +58,8 @@ export class StoreService {
 				EnvironmentService: environmentService
 			}
 			= $injector.inject(
+				'TopicsService',
+				'GeoResourceService',
 				'TopicsObserver',
 				'LayersObserver',
 				'GeolocationObserver',
@@ -64,7 +68,9 @@ export class StoreService {
 				'ContextClickObserver',
 				'EnvironmentService'
 			);
-
+			await topicsService.init();
+			await geoResourceService.init();
+			
 			await topicsObserver.register(this._store);
 			await layersObserver.register(this._store);
 			await positionObserver.register(this._store);

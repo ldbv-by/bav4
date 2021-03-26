@@ -5,6 +5,12 @@ describe('StoreService', () => {
 
 	describe('constructor', () => {
 
+		const topicsServiceMock = {
+			init: () => { }
+		};
+		const geoResourceServiceMock = {
+			init: () => { }
+		};
 		const measurementObserverMock = {
 			register: () => { }
 		};
@@ -32,6 +38,10 @@ describe('StoreService', () => {
 		const setupInjector = () => {
 			$injector
 				.reset()
+
+				.registerSingleton('TopicsService', topicsServiceMock)
+				.registerSingleton('GeoResourceService', geoResourceServiceMock)
+
 				.registerSingleton('MeasurementObserver', measurementObserverMock)
 				.registerSingleton('GeolocationObserver', geolocationObserverMock)
 				.registerSingleton('LayersObserver', layersObserverMock)
@@ -39,6 +49,7 @@ describe('StoreService', () => {
 				.registerSingleton('PositionObserver', positionObserverMock)
 				.registerSingleton('ContextClickObserver', contextClickObserverMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
+
 				.ready();
 		};
 
@@ -62,6 +73,22 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('measurement')).toBeTrue();
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 			expect(reducerKeys.includes('topics')).toBeTrue();
+		});
+
+		it('initializes global services', (done) => {
+		
+			const topicsServicSpy = spyOn(topicsServiceMock, 'init');
+			const geoResourceServicSpy = spyOn(geoResourceServiceMock, 'init');
+			new StoreService();
+
+			setupInjector();
+
+			setTimeout(() => {
+
+				expect(topicsServicSpy).toHaveBeenCalled();
+				expect(geoResourceServicSpy).toHaveBeenCalled();
+				done();
+			});
 		});
 
 		it('registers all observers', (done) => {
