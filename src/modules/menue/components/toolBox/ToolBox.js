@@ -18,6 +18,7 @@ export class ToolBox extends BaElement {
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
 		this._portrait = false;
+		this._minWidth = false;
 	}
 
 	initialize() {
@@ -32,6 +33,18 @@ export class ToolBox extends BaElement {
 		mediaQuery.addEventListener('change', handleOrientationChange);
 		//initial set of local state
 		handleOrientationChange(mediaQuery);
+
+
+		//MediaQuery for 'min-width'
+		const mediaQueryMinWidth = window.matchMedia('(min-width: 80em)');
+		const handleMinWidthChange = (e) => {
+			this._minWidth = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
+		//initial set of local state
+		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
 	/**
@@ -45,58 +58,36 @@ export class ToolBox extends BaElement {
 			return this._portrait ? 'portrait' : 'landscape';
 		};
 
+		const getMinWidthClass = () => {
+			return this._minWidth ?  'is-desktop'  : 'is-tablet';
+		};
+
 		const getOverlayClass = () => {
 			return open ? 'is-open' : '';
 		};
 
 		return html`
 			<style>${css}</style>		
-			<div class="${getOrientationClass()}">
+			<div class="${getOrientationClass()} ${getMinWidthClass()}">  
 				<button  @click="${toggleToolBox}"  class="action-button">
 					<div class="action-button__icon">
 					</div>
 				</button>
 				<div class="tool-box ${getOverlayClass()}">    		
-					<div class="tool-box-buttoninner">
-						<button>
-							T
-						</button>
-						<div class="tool-box-text">
-							Tool
+					<div class="tool-box__button">
+						<div class="tool-box__button_icon pencil">							
+						</div>
+						<div class="tool-box__button-text">
+							Messen
 						</div>  
 					</div>  				               
-					<div class="tool-box-buttoninner">
-						<button>
-							T
-						</button>
-						<div class="tool-box-text">
-							Tool
+					<div  class="tool-box__button">
+						<div class="tool-box__button_icon share">							
+						</div>
+						<div class="tool-box__button-text">
+							Teilen
 						</div>  
-					</div>  				               
-					<div class="tool-box-buttoninner">
-						<button>
-							T
-						</button>
-						<div class="tool-box-text">
-							Tool
-						</div>  
-					</div>  				               
-					<div class="tool-box-buttoninner">
-						<button>
-							T
-						</button>
-						<div class="tool-box-text">
-							Tool
-						</div>  
-					</div>  				               
-					<div class="tool-box-buttoninner">
-						<button>
-							T
-						</button>
-						<div class="tool-box-text">
-							Tool
-						</div>  
-					</div>  				               				 				           
+					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
 		`;

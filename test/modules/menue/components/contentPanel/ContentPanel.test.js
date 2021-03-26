@@ -62,25 +62,24 @@ describe('ContentPanelElement', () => {
 
 			const matchMediaSpy = spyOn(window, 'matchMedia')
 				//mock portrait
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
+				.withArgs('(min-width: 80em)').and.callThrough();
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait', async () => {
 
 			const matchMediaSpy = spyOn(window, 'matchMedia')
 				//mock 
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.callThrough();
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
-
-
-
 	});
 });

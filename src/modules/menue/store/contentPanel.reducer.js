@@ -1,7 +1,7 @@
 export const OPEN_CLOSED_CHANGED = 'components/menue/contentPanel/open';
 
 export const initialState = {
-	open: false
+	open: true
 };
 
 export const contentPanelReducer = (state = initialState, action) => {

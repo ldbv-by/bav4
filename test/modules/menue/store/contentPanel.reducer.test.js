@@ -14,7 +14,7 @@ describe('contentPanelReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().contentPanel.open).toBeFalse();
+		expect(store.getState().contentPanel.open).toBeTrue();
 	});
 	describe('changes the \'open\' property', () => {
 

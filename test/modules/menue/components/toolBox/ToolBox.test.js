@@ -56,26 +56,90 @@ describe('ToolBoxElement', () => {
 
 
 
-		it('layouts for landscape', async () => {
+		// it('layouts for landscape', async () => {
+
+		// 	const matchMediaSpy = spyOn(window, 'matchMedia')
+		// 		//mock portrait
+		// 		.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+		// 	const element = await setup();
+		// 	expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+		// 	expect(element.shadowRoot.querySelector('.tool-box')).toBeFalsy();
+		// 	expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+		// });
+
+		// it('layouts for portrait', async () => {
+
+		// 	const matchMediaSpy = spyOn(window, 'matchMedia')
+		// 		//mock 
+		// 		.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+		// 	const element = await setup();
+		// 	expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+		// 	expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
+		// 	expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+		// });
+
+
+
+
+
+		it('layouts for landscape desktop', async () => {
 
 			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock portrait
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
+				//mock landscape
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('layouts for portrait', async () => {
+		it('layouts for landscape tablet', async () => {
 
 			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock 
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
+				//mock landscape
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
+				.withArgs('(min-width: 80em)').and.callThrough();
+
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('layouts for portrait desktop', async () => {
+
+			const matchMediaSpy = spyOn(window, 'matchMedia')
+				//mock landscape
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('layouts for portrait tablet', async () => {
+
+			const matchMediaSpy = spyOn(window, 'matchMedia')
+				//mock landscape
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.callThrough();
+
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 });
