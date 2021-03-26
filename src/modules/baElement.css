@@ -6,9 +6,126 @@
 ::before,
 ::after{
     font-size: 1em;
-    box-sizing: border-box; 
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
     color: var(--color); 
     font-family: var(--font-family);
 }  
+
+*,*:focus,*:hover{
+    outline:none;
+}
+
+
+/* .button{
+    padding: .5em .9em;
+    background: var(--header-button-bg-color);
+    color: var(--header-button-color);
+    border-color: var(--header-button-bg-color);
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    color: rgba(255,255,255,.8);
+    font-weight: bold;
+} */
+
+.ba-list{
+    margin-top: 7em;
+}
+.ba-list-inline{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.ba-list-inline{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.ba-list-inline li{
+    border-left: 1px lightgray solid;
+    text-align: center;
+}
+.ba-list-inline li:first-child{
+    border-left: 0;
+    text-align: center;
+}
+.ba-list-item{
+    display: flex;
+    /*                font-size: .8rem;*/
+    cursor: pointer;
+}
+.ba-list-item:hover{
+    background: whitesmoke;
+}
+.ba-list-item > *{
+    padding-top: .8em;
+    padding-bottom: .8em;
+}
+.ba-list-item > *:first-child{
+    padding-left: 1.5em;
+}
+.ba-list-item > *:last-child{
+    padding-right: 1.5em;
+}
+
+.ba-list-item__header{
+    background: whitesmoke;
+    font-weight: bold;
+}
+
+.ba-list-item__pre{
+    display: flex;
+    margin: 0 1em 0 0;
+}
+.ba-list-item__after{
+    display: flex;
+    margin: 0 0 0 1em;
+}
+.ba-list-item__image{
+    height: 4em;
+    width: 8em;
+    min-width: 8em;
+    background: lightgray;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.ba-list-item__icon{
+    height: 3em;
+    width: 3em;
+    border-radius: 2em;
+    background: lightgray;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ba-list-item__icon-info{
+    height: 2em;
+    width: 2em;
+    border-radius: 2em;
+    background: lightgray;
+    text-align: center;
+    font-size: 1.4rem;
+}
+.ba-list-item__text{
+    flex-grow: 1;
+}
+
+.ba-list-item__primary-text{               
+    font-size: 1em;
+}
+.ba-list-item__secondary-text{
+    font-size: .95rem;
+    color: gray;
+
+}
+
+.divider {
+    border-bottom: 1px solid lightgray;
+}
