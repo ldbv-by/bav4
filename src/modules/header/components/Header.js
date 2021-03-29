@@ -11,6 +11,7 @@ import css from './header.css';
  * Container element for header stuff. 
  * @class
  * @author aul
+ * @author alsturm
  */
 export class Header extends BaElement {
 
@@ -48,7 +49,6 @@ export class Header extends BaElement {
 		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
 		//initial set of local state
 		handleMinWidthChange(mediaQueryMinWidth);
-
 	}
 
 
@@ -57,6 +57,7 @@ export class Header extends BaElement {
 	}
 
 	createView() {
+
 		const showModalInfo = () => {
 			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
 			openModal(payload);
@@ -83,6 +84,7 @@ export class Header extends BaElement {
 				popup.style.opacity = 0;
 			}
 		};
+
 		const showModalHeader = () => {
 			const popup = this.shadowRoot.getElementById('headerMobile');	
 			if (this._portrait || !this._minWidth) {
@@ -90,7 +92,6 @@ export class Header extends BaElement {
 				window.setTimeout(() => popup.style.opacity = 1, 300);				
 			}
 		};
-		
 
 		return html`
 			<style>${css}</style>
@@ -147,9 +148,5 @@ export class Header extends BaElement {
 
 	static get tag() {
 		return 'ba-header';
-	}
-
-	static get menueButtonLockDuration() {
-		return 500;
 	}
 }
