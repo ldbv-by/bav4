@@ -26,7 +26,8 @@ describe('Header', () => {
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
-			.registerSingleton('SearchResultProviderService', { getLocationSearchResultProvider: () => { } });
+			.registerSingleton('SearchResultProviderService', { getLocationSearchResultProvider: () => { } })
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
 		return TestUtils.render(Header.tag);
@@ -36,8 +37,13 @@ describe('Header', () => {
 		it('adds header bar', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_header_topics_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].innerText).toBe('header_header_maps_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_header_more_button');
 		});
 
 		it('renders nothing when embedded', async () => {

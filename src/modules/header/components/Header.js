@@ -18,9 +18,17 @@ export class Header extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, SearchResultProviderService: providerService } = $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService');
-		this._coordinateService = CoordinateService;
-		this._environmentService = EnvironmentService;
+		const {
+			CoordinateService: coordinateService,
+			EnvironmentService: environmentService,
+			SearchResultProviderService: providerService,
+			TranslationService: translationService
+		}
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService', 'TranslationService');
+
+		this._coordinateService = coordinateService;
+		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
 		this._portrait = false;
 		this._classMobileHeader = '';
@@ -68,7 +76,7 @@ export class Header extends BaElement {
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop'  : 'is-tablet';
+			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const { open } = this._state;
@@ -76,9 +84,9 @@ export class Header extends BaElement {
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
 		};
-		
+
 		const hideModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');	
+			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
@@ -86,12 +94,14 @@ export class Header extends BaElement {
 		};
 
 		const showModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');	
+			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
 				popup.style.display = '';
-				window.setTimeout(() => popup.style.opacity = 1, 300);				
+				window.setTimeout(() => popup.style.opacity = 1, 300);
 			}
 		};
+
+		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>
@@ -123,13 +133,13 @@ export class Header extends BaElement {
 					</div>
 					<div  class="header__button-container">
 						<button title="opens menu 0" @click="${openContentPanel}">
-							Themen
+							${translate('header_header_topics_button')}
 						</button>
 						<button title="opens menu 1" @click="${openContentPanel}">
-							Dargestellte Karten
+						 	${translate('header_header_maps_button')}
 						</button>
 						<button title="opens menu 2" @click="${openContentPanel}">
-							mehr
+							${translate('header_header_more_button')}
 						</button>
 					</div>
 				</div>				
