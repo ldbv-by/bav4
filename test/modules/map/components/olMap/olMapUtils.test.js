@@ -13,10 +13,14 @@ describe('olMapUtils', () => {
 	const urlService = {
 		proxifyInstant: () => { }
 	};
+	const georesourceService = {
+		byId: () => { }
+	};
 
 	beforeAll(() => {
 		$injector
-			.registerSingleton('UrlService', urlService);
+			.registerSingleton('UrlService', urlService)
+			.registerSingleton('GeoResourceService', georesourceService);
 	});
 
 	it('it maps vectorSourceType to olFormats', () => {
@@ -78,17 +82,26 @@ describe('olMapUtils', () => {
 		});
 
 		it('it converts a AggregateGeoresource to a olLayer(Group)', () => {
+
 			const wmtsGeoresource = new WMTSGeoResource('wmtsId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const wmsGeoresource = new WmsGeoResource('wmsId', 'Label', 'https://some.url', 'layer', 'image/png');
-			const aggreggateGeoResource = new AggregateGeoResource('someId', 'label', [wmtsGeoresource, wmsGeoresource]);
+			spyOn(georesourceService, 'byId').and.callFake((id) => {
+				switch (id) {
+					case wmtsGeoresource.id:
+						return wmtsGeoresource;
+					case wmsGeoresource.id:
+						return wmsGeoresource;
+				}
+			});
+			const aggreggateGeoResource = new AggregateGeoResource('someId', 'label', [wmtsGeoresource.id, wmtsGeoresource.id]);
 
 			const olLayerGroup = toOlLayer(aggreggateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe('someId');
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
-			expect(layers.item(0).get('id')).toBe('wmtsId');
-			expect(layers.item(1).get('id')).toBe('wmsId');
+			expect(layers.item(0).get('id')).toBe(wmtsGeoresource.id);
+			expect(layers.item(1).get('id')).toBe(wmtsGeoresource.id);
 		});
 
 
@@ -225,12 +238,11 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			
 			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, true);
 			jasmine.clock().tick(defaultDelay + 100);
 			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
-			
+
 			expect(spy).not.toHaveBeenCalled();
 		});
 	});

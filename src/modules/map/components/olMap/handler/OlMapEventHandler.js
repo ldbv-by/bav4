@@ -21,7 +21,7 @@ export class OlMapEventHandler {
 	}
 
 	/**
-     * Activates this handler and creates an ol layer. The layer must not be added to the map.
+     * Registers this handler.
      * @abstract
      * @param {Map} olMap
      */

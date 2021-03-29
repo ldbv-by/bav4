@@ -5,6 +5,7 @@
  * @author aul
  */
 export class ProcessEnvConfigService {
+	
 	constructor() {
 		
 		this._properties = new Map();

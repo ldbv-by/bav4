@@ -1,10 +1,10 @@
 # BAv4 (#nomigration)
 
-![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js%20CI/badge.svg)
+[![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js%20CI/badge.svg)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 [![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Next generation web-mapviewer based on web standards.
+Next-generation web-map viewer based on web standards.
 
 #### Table of Contents
 1. [Concept](#concept)
@@ -19,32 +19,32 @@ Next generation web-mapviewer based on web standards.
 
 - Use of web standards as far as possible
 - Modern Js (ES9), currently no transpiler
-- Model–view–viewmodel (MVVM) structuring:
-  - Data objects derived from the state store and service classes => *model*
-  - DOM => *view*
-  - Web components  =>  *viewmodel*
+- Model–View–ViewModel (MVVM) structuring:
+  - Data objects derived from the state store and service classes => *Model*
+  - DOM => *View*
+  - Web components  =>  *ViewModel*
 - Built-in dependency injection
 - Map state is decoupled from map implementation
-- Vanilla Css 
+- Vanilla CSS 
 - Tools
-  - [openlayers](https://openlayers.org/): mapping api
-  - [lit-html](https://lit-html.polymer-project.org/): template rendering 
-  - [redux](https://redux.js.org/): application state container 
-  - [webpack](https://webpack.js.org): bundler
+  - [OpenLayers](https://openlayers.org/): Mapping API
+  - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
+  - [redux](https://redux.js.org/): Application state container 
+  - [webpack](https://webpack.js.org): Bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): tests
 - Basic concept inspired by Adam Bien (https://airhacks.io/)
 
 ## Structure
 
-The projects source code is located under `src`, unit and component tests under `test`.
+The project's source code is located under `src`, unit and component tests under `test`.
 
-The source code is distributed among following directories:
+The source code is distributed among the following directories:
 
 ###  `src/injection`
 
 Contains the built-in dependency injection. The central configuration is done in `config.js`.
 
-The common type for injection are service classes.
+The common types of injection are service classes.
 Service classes may retrieve data from an external source by using a provider function. Such provider functions are also interchangeable. 
 Services and provider functions whose names start with 'BVV' are focusing on the LDBV context and infrastructure.
 
@@ -59,9 +59,9 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contain further directories:
-   - `/components` : viewmodel classes and all of their dependencies like css, assets, ...
-   - `/store` : all redux related files like reducers and actions
-   - `/services` : the service, provider and domain classes of the module
+   - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
+   - `/store` : Redux related files like reducers and actions
+   - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
 4. Modules are allowed to use actions from other modules.
@@ -100,7 +100,7 @@ Here's a overview of what project folder structure looks like:
 | command | what it does |
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
-| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking, so that the application is reachable from another device|
+| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
 | `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
@@ -110,26 +110,26 @@ Here's a overview of what project folder structure looks like:
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
-| `npm run analyze-bundle` | Visualize size of webpack output files with an interactive zoomabel tree map |
+| `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
 ## Best Practices
 
 ### State
 
-- Mutation of same parts of global state should be done in just one place at the same moment (single source of truth) <br>
+- Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 - Common places for mutating state are:
   - `BaElement` components
   - `Observer` of the redux store
 
-- If a mutations of global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
+- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
 
 
 ## Pending Questions
 
 - Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
-- Run each set of tests in separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
+- Run each set of tests in a separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
 
 ## Links
 

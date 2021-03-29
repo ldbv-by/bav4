@@ -18,7 +18,9 @@ describe('GeoResourceService', () => {
 
 			const georesources = await instanceUnderTest.init();
 
-			expect(georesources.length).toBe(6);
+			//six gepresources from provider, one from fallback
+			expect(georesources.length).toBe(7);
+			expect(georesources.filter(gr => gr.id === 'fallback').length).toBe(1);
 		});
 
 		it('initializes the service with default provider', async () => {

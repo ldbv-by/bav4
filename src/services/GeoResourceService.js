@@ -19,9 +19,10 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
  */
 export class GeoResourceService {
 
+	
 	/**
 	 * 
-	 * @param {georesourceProvider} provider 
+	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources] 
 	 */
 	constructor(provider = loadBvvGeoResources) {
 		this._provider = provider;
@@ -39,12 +40,13 @@ export class GeoResourceService {
 		if (!this._georesources) {
 			try {
 				this._georesources = await this._provider();
-				return this._georesources;
 			}
 			catch (e) {
-				this._georesources = [this._newFallbackGeoResource()];
+				this._georesources = [];
 				console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			}
+			//we add the fallback geoResource in any case
+			this._georesources.push(this._newFallbackGeoResource());
 		}
 		return this._georesources;
 	}

@@ -27,7 +27,8 @@ export class ShareService {
 	encodeState() {
 		const extractedState = {
 			...this._extractPosition(),
-			...this._extractLayers()
+			...this._extractLayers(),
+			...this._extractTopic()
 		};
 		const searchParams = new URLSearchParams(extractedState);
 		return window.location.href + '?' + decodeURIComponent(searchParams.toString());
@@ -104,5 +105,24 @@ export class ShareService {
 		}
 		return extractedState;
 
+	}
+
+	/**
+	 * @private
+	 * @returns {object} extractedState
+	 */
+	_extractTopic() {
+		const {
+			StoreService: storeService,
+		} = $injector.inject('StoreService');
+
+		const state = storeService.getStore().getState();
+		const extractedState = {};
+
+		//current topic
+		const { topics: { current } } = state;
+
+		extractedState[QueryParameters.TOPIC] = current;
+		return extractedState;
 	}
 }

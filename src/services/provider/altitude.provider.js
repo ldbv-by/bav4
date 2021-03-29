@@ -1,9 +1,20 @@
+/**
+ * @module service/provider
+ */
 import { $injector } from '../../injection';
 
+
 /**
- * 
- * @param {Coordinate} coordinate3857
- * @returns {Number} altitude loaded from backend
+ * A function that takes a coordinate and returns a promise with a number. 
+ *
+ * @typedef {function(coordinate) : (Promise<number>)} altitudeProvider
+ */
+
+/**
+ * Uses the BVV service to load an altitude.
+ * @function
+ * @param {coordinate} coordinate3857
+ * @returns {number} altitude loaded from backend
  */
 export const loadBvvAltitude = async (coordinate3857) => {
 

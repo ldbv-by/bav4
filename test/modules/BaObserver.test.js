@@ -9,15 +9,21 @@ describe('BaObserver', () => {
 
 		describe('constructor', () => {
 			it('throws excepetion when instantiated without inheritance', () => {
-				expect(() => new BaObserver()).toThrowError(TypeError, 'Can not construct abstract class.');
+				expect(() => new BaObserver()).toThrowError(Error, 'Can not construct abstract class.');
 			});
 		});
 
 		describe('methods', () => {
-			it('throws excepetion when abstract #createView is called without overriding', () => {
-				expect(() => new BaObserverNoImpl().register()).toThrowError(TypeError, 'Please implement abstract method #register or do not call super.register from child.');
+			it('throws excepetion when abstract #createView is called without overriding', (done) => {
+
+				new BaObserverNoImpl().register().then(() => {
+					done(new Error('Promise should not be resolved'));
+				}, (reason) => {
+					expect(reason.message).toContain('Please implement abstract method #register or do not call super.register from child.');
+					expect(reason).toBeInstanceOf(Error);
+					done();
+				});
 			});
 		});
-
 	});
 });

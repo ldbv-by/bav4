@@ -1,10 +1,8 @@
 import { $injector } from '../injection';
 import { isString } from '../utils/checks';
+import { bvvProxifyUrlProvider } from './provider/proxifyUrl.provider';
 import { shortenBvvUrls } from './provider/urlShorteningProvider';
 
-const defaultProxyTemplateProvider = (proxyUrl, url) => {
-	return `${proxyUrl}?url=${url}`;
-};
 
 /**
  * Utility service for urls/resources.
@@ -13,11 +11,15 @@ const defaultProxyTemplateProvider = (proxyUrl, url) => {
  */
 export class UrlService {
 
-	constructor(urlShorteningProvider = shortenBvvUrls, templateProvider = defaultProxyTemplateProvider) {
-		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	/**
+	 * 
+	 * @param {shortUrlProvider} [urlShorteningProvider=shortenBvvUrls]
+	 * @param {proxifyUrlProvider} [proxifyUrlProvider=bvvProxifyUrlProvider] 
+	 */
+	constructor(urlShorteningProvider = shortenBvvUrls, proxifyUrlProvider = bvvProxifyUrlProvider) {
+		const { HttpService: httpService } = $injector.inject('HttpService');
 		this._httpService = httpService;
-		this._proxyUrl = configService.getValueAsPath('PROXY_URL');
-		this._templateProvider = templateProvider;
+		this._proxifyUrlProvider = proxifyUrlProvider;
 		this._urlShorteningProvider = urlShorteningProvider;
 	}
 
@@ -30,7 +32,7 @@ export class UrlService {
 		if (!isString(url)) {
 			throw new TypeError('Parameter \'url\' must be a string');
 		}
-		return this._templateProvider(this._proxyUrl, encodeURIComponent(url));
+		return this._proxifyUrlProvider(url);
 	}
 
 	/**
@@ -47,7 +49,7 @@ export class UrlService {
 		if (corsEnabled) {
 			return url;
 		}
-		return this._templateProvider(this._proxyUrl, encodeURIComponent(url));
+		return this._proxifyUrlProvider(url);
 	}
 
 	/**

@@ -1,19 +1,21 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
-import { LineString, Circle } from 'ol/geom';
+import { LineString, Circle, MultiPoint } from 'ol/geom';
 
 
 const ZPOLYGON = 10;
 const ZLINE = 20;
+const ZPOINT = 30;
 const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
+const BLACK_COLOR = [0, 0, 0];
 
 export const measureStyleFunction = (feature) => {
 	
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
-		width:1
+		width:3
 	});
 
 	const dashedStroke = new Stroke({
@@ -44,9 +46,45 @@ export const measureStyleFunction = (feature) => {
 				}
 			},
 			zIndex:0
-		})];
+		}),
+		new Style({
+			image: new CircleStyle({
+				radius: 7,
+				stroke: new Stroke({
+					color:BLACK_COLOR,
+					width:1 }),
+				fill: new Fill({
+					color: WHITE_COLOR,
+				}),				
+			}),
+			geometry: function (feature) {
+				// return the coordinates of the first ring of the polygon
+				let coordinates = feature.getGeometry().getCoordinates();
+				if (feature.getGeometry().getType() === 'Polygon') {
+					coordinates = feature.getGeometry().getCoordinates()[0];
+				}
+				return new MultiPoint(coordinates);
+			},
+			zIndex:ZPOINT
+		}
+		)];
 
 	return styles;
+};
+
+export const modifyStyleFunction = () => {
+	return [new Style({
+		image: new CircleStyle({
+			radius: 8,
+			stroke: new Stroke({
+				color:RED_COLOR,
+				width:1 }),
+			fill: new Fill({
+				color: WHITE_COLOR,
+			}),				
+		}),
+	})]
+	;
 };
 
 export const generateSketchStyleFunction = (styleFunction) => {

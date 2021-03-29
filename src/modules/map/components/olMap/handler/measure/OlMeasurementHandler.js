@@ -1,20 +1,41 @@
-import { Draw, Snap } from 'ol/interaction';
+import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { measureStyleFunction, generateSketchStyleFunction } from './StyleUtils';
-import { getPartitionDelta } from './GeometryUtils';
+import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from './StyleUtils';
+import { OverlayManager } from './OverlayManager';
+import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
+import { noModifierKeys, singleClick } from 'ol/events/condition';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
+import { HelpTooltip } from './HelpTooltip';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
+
+
+export const MeasureStateType = {
+	ACTIVE:'active',
+	DRAW:'draw',
+	MODIFY:'modify',
+	OVERLAY:'overlay',
+	MUTE:'mute'
+};
+
+export const MeasureSnapType = {
+	FIRSTPOINT:'firstPoint',
+	LASTPOINT:'lastPoint',
+	VERTEX:'vertex',
+	EGDE:'edge',	
+};
+
 /**
  * Handler for measurement-interaction with the map
  * 
@@ -23,7 +44,6 @@ if (!window.customElements.get(MeasurementOverlay.tag)) {
  * @author taulinger
  */
 export class OlMeasurementHandler extends OlLayerHandler {
-	//this handler could be statefull
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
 		const { TranslationService, MapService, EnvironmentService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService');
@@ -33,197 +53,152 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
-		this._helpTooltip;
+		
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
-		this._overlays = [];
+		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
+		this._lastPointerMoveEvent = null;
+		this._overlayManager = new OverlayManager();
+		this._measureStateHandler = new HelpTooltip(this._overlayManager);
 	}
 
 	/**
 	 * Activates the Handler.
 	 * @override
 	 */
-	activate(olMap) {
+	onActivate(olMap) {
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
-			this._overlays.forEach(o => o.getElement().style.display = isVisibleStyle);
+			this._overlayManager.apply(o => o.getElement().style.display = isVisibleStyle);
 		};
 
 		const opacityChangedHandler = (event) => {
 			const layer = event.target;
-			this._overlays.forEach(o => o.getElement().style.opacity = layer.getOpacity());
+			this._overlayManager.apply(o => o.getElement().style.opacity = layer.getOpacity());
 		};
 
-		const prepareInteraction = () => {
+		const createLayer = () => {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
 				style: measureStyleFunction
 			});
-			this._layerVisibilityListener = layer.on('change:visible', visibleChangedHandler);
-			this._layerOpacityListener = layer.on('change:opacity', opacityChangedHandler);
+			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
+			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
 			return layer;
 		};
 
-		const pointerMoveHandler = (event) => {
-			const translate = (key) => this._translationService.translate(key);
-
-			if (event.dragging) {
-				return;
+		const pointerUpHandler = () => {
+			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
+			if (draggingOverlay) {
+				draggingOverlay.set('dragging', false);
 			}
-			/** @type {string} */
-			let helpMsg = translate('map_olMap_handler_measure_start');
-
-			if (this._activeSketch) {
-				this._activeSketch.getGeometry();
-				helpMsg = translate('map_olMap_handler_measure_continue_line');
-
-				if (this._isFinishOnFirstPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_first_point');
-				}
-				else if (this._isSnapOnLastPoint) {
-					helpMsg = translate('map_olMap_handler_measure_snap_last_point');
-				}
-
-				if (this._pointCount > 2) {
-					helpMsg += '<br/>' + translate('map_olMap_handler_delete_last_point');
-				}
-			}
-
-			this._updateOverlay(this._helpTooltip, new Point(event.coordinate), helpMsg);
 		};
 
-		const removeLastPoint = (draw, event) => {
-			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				if (draw) {
-					draw.removeLastPoint();
-				}
-			}
+		const pointerMoveHandler = (event) => {
+			this._lastPointerMoveEvent = event;
+			
+			const coordinate = event.coordinate;
+			const dragging = event.dragging;
+			const pixel = event.pixel;						
+
+			this._updateMeasureState(coordinate, pixel, dragging);
 		};
 
 		if (this._draw === false) {
-			this._vectorLayer = prepareInteraction();
-			this._helpTooltip = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
+			this._map = olMap;
+			this._mapContainer = olMap.getTarget();
+			this._vectorLayer = createLayer();
 			const source = this._vectorLayer.getSource();
-			this._draw = this._createInteraction(source);
+			this._select = this._createSelect();
+			this._select.setActive(false);
+			this._modify = this._createModify();
+			this._modify.setActive(false);
+			this._draw = this._createDraw(source);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
-			this._addOverlayToMap(olMap, this._helpTooltip);
-			this._pointerMoveListener = olMap.on('pointermove', pointerMoveHandler);
-			this._keyboardListener = document.addEventListener('keyup', (e) => removeLastPoint(this._draw, e));
+			this._dragPan = new DragPan();
+			this._dragPan.setActive(false);
+			this._overlayManager.activate(this._map);
+			
+			if (!this._environmentService.isTouch()) {
+				this._measureStateHandler.activate();			
+			}
+			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
+			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
+			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
+			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 
-			olMap.addInteraction(this._snap);
+			olMap.addInteraction(this._select);
+			olMap.addInteraction(this._modify);
 			olMap.addInteraction(this._draw);
+			olMap.addInteraction(this._snap);
+			olMap.addInteraction(this._dragPan);
 		}
 		return this._vectorLayer;
 	}
 
+	
 	/**
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	deactivate(olMap) {
+	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
 		olMap.removeInteraction(this._draw);
+		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
-		this._overlays.forEach(o => olMap.removeOverlay(o));
-		this._overlays = [];
-		unByKey(this._pointerMoveListener);
-		unByKey(this._keyboardListener);
-		unByKey(this._layerVisibilityListener);
-		unByKey(this._layerOpacityListener);
-		this._helpTooltip = null;
+		olMap.removeInteraction(this._select);
+		olMap.removeInteraction(this._dragPan);
+		this._measureStateHandler.deactivate();
+		this._overlayManager.deactivate();
+		this._listeners.forEach(l => unByKey(l));
+		this._listeners = [];		
 		this._draw = false;
+		this._map = null;
+	}		
+
+	_removeLast(event) {
+		if (this._draw && this._draw.getActive()) {
+			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+				this._draw.removeLastPoint();				
+				if (this._pointCount === 2) {
+					this._reset();
+				}				
+				if (this._lastPointerMoveEvent) {
+					this._draw.handleEvent(this._lastPointerMoveEvent);
+				}				
+			}
+		}
+
+		if (this._modify && this._modify.getActive()) {
+			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+				this._reset();
+			}
+		}
 	}
 
-	_addOverlayToMap(map, overlay) {
-		this._overlays.push(overlay);
-		map.addOverlay(overlay);
+	_reset() {
+		this._draw.setActive(true);
+		this._select.getFeatures().clear();
+		this._modify.setActive(false);
+		this._overlayManager.reset();
+		this._measureStateHandler.activate();
+		this._vectorLayer.getSource().clear();
 	}
 
-	_removeOverlayFromMap(map, overlay) {
-		this._overlays = this._overlays.filter(o => o !== overlay);
-		map.removeOverlay(overlay);
-	}
-
-	_createInteraction(source) {
+	_createDraw(source) {
 		const draw = new Draw({
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
-			snapTolerance: 4,
+			snapTolerance: this._getSnapTolerancePerDevice(),
 			style: generateSketchStyleFunction(measureStyleFunction)
 		});
 
-		const updateMeasureTooltips = (geometry) => {
-			let measureGeometry = geometry;
-			const map = draw.getMap();
-			const measureTooltip = this._activeSketch.get('measurement');
-
-			if (geometry instanceof Polygon) {
-				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
-
-
-				if (this._pointCount !== lineCoordinates.length) {
-					// a point is added or removed
-					this._pointCount = lineCoordinates.length;
-				}
-				else if (lineCoordinates.length > 1) {
-					const firstPoint = lineCoordinates[0];
-					const lastPoint = lineCoordinates[lineCoordinates.length - 1];
-					const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
-
-					const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-					this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
-
-					this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
-				}
-
-				if (!this._isFinishOnFirstPoint) {
-					measureGeometry = new LineString(lineCoordinates);
-				}
-
-				if (geometry.getArea()) {
-					const areaOverlay = this._activeSketch.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints);
-					this._addOverlayToMap(map, areaOverlay);
-					this._updateOverlay(areaOverlay, geometry);
-					this._activeSketch.set('area', areaOverlay);
-				}
-			}
-
-			this._updateOverlay(measureTooltip, measureGeometry, '');
-
-			// add partition tooltips on the line
-			const partitions = this._activeSketch.get('partitions') || [];
-
-
-			const delta = getPartitionDelta(measureGeometry, this._projectionHints);
-			let partitionIndex = 0;
-			for (let i = delta; i < 1; i += delta, partitionIndex++) {
-				let partition = partitions[partitionIndex] || false;
-				if (partition === false) {
-					partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
-
-					this._addOverlayToMap(map, partition);
-					partitions.push(partition);
-				}
-				this._updateOverlay(partition, measureGeometry, i);
-			}
-
-			if (partitionIndex < partitions.length) {
-				for (let j = partitions.length - 1; j >= partitionIndex; j--) {
-					const removablePartition = partitions[j];
-					if (map) {
-						this._removeOverlayFromMap(map, removablePartition);
-					}
-					partitions.pop();
-				}
-			}
-			this._activeSketch.set('partitions', partitions);
-		};
 		let listener;
 
 		const finishMeasurementTooltip = (event) => {
@@ -235,7 +210,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));
-				this._removeOverlayFromMap(draw.getMap(), this._activeSketch.get('area'));
+				this._overlayManager.remove(this._activeSketch.get('area'));				
 			}
 			else {
 				this._updateOverlay(measureTooltip, geometry);
@@ -244,41 +219,278 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			unByKey(listener);
 		};
 
+		const activateModify = (event) => {
+			draw.setActive(false);
+			this._modify.setActive(true);
+			event.feature.setStyle(measureStyleFunction);
+			this._select.getFeatures().push(event.feature);
+			event.feature.on('change', event => this._updateMeasureTooltips(event.target));
+		};
+
 		draw.on('drawstart', event => {
-
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints);
+			const isDraggable = !this._environmentService.isTouch();
+			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
 			this._activeSketch = event.feature;
-			this._activeSketch.set('measurement', measureTooltip);
-
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
-			listener = event.feature.getGeometry().on('change', event => {
-				updateMeasureTooltips(event.target);
-			});
-			const map = draw.getMap();
-			if (map) {
-				this._addOverlayToMap(map, measureTooltip);
-			}
+			event.feature.set('measurement', measureTooltip);
+			listener = event.feature.on('change', event => this._updateMeasureTooltips(event.target, true));
+			this._overlayManager.add(measureTooltip);
 		});
 
-		draw.on('drawend', finishMeasurementTooltip);
+		draw.on('drawend', event => {
+			finishMeasurementTooltip(event);
+			activateModify(event);
+		}
+		);
 
 		return draw;
 	}
 
-	_createOverlay(overlayOptions = {}, type, projectionHints = {}) {
+	_updateMeasureTooltips(feature, isDrawing = false) {
+		let measureGeometry = feature.getGeometry();
+		const measureTooltip = feature.get('measurement');
+
+		if (feature.getGeometry() instanceof Polygon) {
+			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
+
+
+			if (this._pointCount !== lineCoordinates.length) {
+				// a point is added or removed
+				this._pointCount = lineCoordinates.length;
+			}
+			else if (lineCoordinates.length > 1) {
+				const firstPoint = lineCoordinates[0];
+				const lastPoint = lineCoordinates[lineCoordinates.length - 1];
+				const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
+
+				const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
+				this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
+
+				this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+			}
+
+			if (!this._isFinishOnFirstPoint) {
+				measureGeometry = new LineString(lineCoordinates);
+			}
+
+			if (feature.getGeometry().getArea()) {
+				const isDraggable = !this._environmentService.isTouch();
+				const areaOverlay = feature.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
+				this._overlayManager.add(areaOverlay);
+				this._updateOverlay(areaOverlay, feature.getGeometry());
+				feature.set('area', areaOverlay);
+			} 
+			else {
+				const areaOverlay = feature.get('area');
+				if (areaOverlay) {
+					this._overlayManager.remove(areaOverlay);
+				}
+			}
+		}
+
+		this._updateOverlay(measureTooltip, measureGeometry, '');
+
+		// add partition tooltips on the line
+		const partitions = feature.get('partitions') || [];
+
+
+		const delta = getPartitionDelta(measureGeometry, this._projectionHints);
+		let partitionIndex = 0;
+		for (let i = delta; i < 1; i += delta, partitionIndex++) {
+			let partition = partitions[partitionIndex] || false;
+			if (partition === false) {
+				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
+
+				this._overlayManager.add(partition);
+				partitions.push(partition);
+			}
+			this._updateOverlay(partition, measureGeometry, i);
+		}
+
+		if (partitionIndex < partitions.length) {
+			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
+				const removablePartition = partitions[j];
+				this._overlayManager.remove(removablePartition);
+				partitions.pop();
+			}
+		}
+		feature.set('partitions', partitions);
+	}
+
+	_updateMeasureState(coordinate, pixel, dragging) {	
+		const measureState = { type:null,
+			snap:null,
+			coordinate:coordinate,
+			pointCount:this._pointCount };
+	
+		if (this._draw.getActive()) {
+			measureState.type = MeasureStateType.ACTIVE;
+			
+			if (this._activeSketch) {
+				this._activeSketch.getGeometry();
+				measureState.type = MeasureStateType.DRAW;
+
+				if (this._isFinishOnFirstPoint) {
+					measureState.snap = MeasureSnapType.FIRSTPOINT;	
+				}
+				else if (this._isSnapOnLastPoint) {
+					measureState.snap = MeasureSnapType.LASTPOINT;	
+				}
+			}
+		}
+
+		let isGrab = false;
+		if (this._modify.getActive()) {
+			measureState.type = MeasureStateType.MODIFY;
+			measureState.snap = null;
+			const interactionLayer = this._vectorLayer;
+			const featureSnapOption = {
+				hitTolerance: 10,
+				layerFilter: itemLayer => {
+					return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
+				},
+			};
+			let vertexFeature = null;
+			this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+				if (!layer && feature.get('features').length > 0) {
+					vertexFeature = feature;
+					return;
+				}
+			}, featureSnapOption);
+
+				
+			if (vertexFeature) {
+				measureState.snap = MeasureSnapType.EGDE;
+				const vertexGeometry = vertexFeature.getGeometry();
+				const snappedFeature = vertexFeature.get('features')[0];
+				const snappedGeometry = snappedFeature.getGeometry();
+
+				if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+					measureState.snap = MeasureSnapType.VERTEX;
+					isGrab = true;
+				}
+			}
+				
+		}
+		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
+		if (dragableOverlay) {
+			measureState.type = MeasureStateType.OVERLAY;
+		}		
+
+		if (dragging) {
+			measureState.type = MeasureStateType.MUTE;
+			measureState.snap = null;	
+		}
+
+		this._measureStateHandler.notify(measureState);
+
+		if (isGrab) {
+			this._mapContainer.classList.add('grab');
+		}
+		else {
+			this._mapContainer.classList.remove('grab');
+		}
+
+		if (!this._dragPan.getActive()) {
+			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
+			if (draggingOverlay) {
+				draggingOverlay.setOffset([0, 0]);
+				draggingOverlay.set('manualPositioning', true);
+				draggingOverlay.setPosition(coordinate);
+			}
+		}
+	}
+
+
+	_createSelect() {
+		const layerFilter = (itemLayer) => {
+			itemLayer === this._vectorLayer;
+		};
+		const featureFilter = (itemFeature, itemLayer) => {
+			if (layerFilter(itemLayer)) {
+				return itemFeature;
+			}
+		};
+		const options = {
+			layers: layerFilter,
+			filter: featureFilter, style: measureStyleFunction
+		};
+
+		return new Select(options);
+	}
+
+	_createModify() {
+		const options = {
+			features: this._select.getFeatures(),
+			style: modifyStyleFunction,
+			deleteCondition: event => {				
+				const isDeletable = (noModifierKeys(event) && singleClick(event));			
+				return isDeletable;
+			}
+		};
+
+		const modify = new Modify(options);
+		modify.on('modifystart', (event) => {
+			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
+				this._mapContainer.classList.add('grabbing');
+			}
+		});
+		modify.on('modifyend', event => {
+			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
+				this._mapContainer.classList.remove('grabbing');
+			}
+		});
+		return modify;
+	}
+
+	_createOverlay(overlayOptions = {}, type, isDraggable = false) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
-		measurementOverlay.projectionHints = projectionHints;
-		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay });
+		measurementOverlay.isDraggable = isDraggable;
+		measurementOverlay.projectionHints = this._projectionHints;
+		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
+		if (isDraggable) {
+			this._createDragOn(overlay);
+		}		
 		return overlay;
 	}
 
 	_updateOverlay(overlay, geometry, value) {
-		const measurementOverlay = overlay.getElement();
-		measurementOverlay.value = value;
-		measurementOverlay.geometry = geometry;
-		overlay.setPosition(measurementOverlay.position);
+		const element = overlay.getElement();
+		element.value = value;
+		element.geometry = geometry;
+		if (!overlay.get('manualPositioning')) {
+			overlay.setPosition(element.position);
+		}
+	}
+
+	_createDragOn(overlay) {
+		const element = overlay.getElement();
+		const dragPan = this._dragPan;
+		
+
+		const handleMouseDown = () => {
+			dragPan.setActive(false);
+			overlay.set('dragging', true);
+		};
+
+		const handleMouseEnter = () => {
+			overlay.set('dragable', true);
+		};
+
+		const handleMouseLeave = () => {
+			overlay.set('dragable', false);
+		};
+		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+		element.addEventListener('mouseenter', handleMouseEnter);
+		element.addEventListener('mouseleave', handleMouseLeave);
+	}
+
+	_hideHelpTooltip() {
+		if (this._measureStateHandler) {
+			this._measureStateHandler.setPosition(undefined);
+		}		
 	}
 
 	_getSnapTolerancePerDevice() {

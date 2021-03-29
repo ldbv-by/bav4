@@ -84,9 +84,12 @@ export class OlMap extends BaElement {
 		});
 
 		const contextHandler = (evt) => {
-			evt.preventDefault();
-			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+			//when no layer handler is currently active
+			if ([...this._layerHandler.values()].filter(lh => lh.active).length === 0) {
+				evt.preventDefault();
+				const coord = this._map.getEventCoordinate(evt.originalEvent);
+				setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+			}
 		};
 
 		if (this._environmentService.isTouch()) {
@@ -135,10 +138,10 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = store;
+	extractState(state) {
+		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = state;
 		return { zoom, center, fitRequest, layers };
 	}
 

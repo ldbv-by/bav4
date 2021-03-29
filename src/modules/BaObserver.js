@@ -18,20 +18,24 @@ export class BaObserver {
 	constructor() {
 		if (this.constructor === BaObserver) {
 			// Abstract class can not be constructed.
-			throw new TypeError('Can not construct abstract class.');
+			throw new Error('Can not construct abstract class.');
 		}
 	}
 
 
 	/**
 	* Called by the global StoreService after injector is marked as ready.
+	* <br>
+	* Returns a promise when registration is complete. It's up to the implementation to
+	* decide about the payload of the resolved promise.
 	* @abstract
 	* @public
 	* @param {Store} store the redux store
+	* @returns {Promise<?>}
 	*/
-	register(/*eslint-disable no-unused-vars */store) {
+	async register(/*eslint-disable no-unused-vars */store) {
 		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #register or do not call super.register from child.');
+		throw new Error('Please implement abstract method #register or do not call super.register from child.');
 	}
 
 }

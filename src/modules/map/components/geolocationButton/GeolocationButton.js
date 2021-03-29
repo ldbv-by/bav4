@@ -56,8 +56,8 @@ export class GeolocationButton extends BaElement {
 		`;
 	}
 
-	extractState(store) {
-		const { geolocation: { active, denied } } = store;
+	extractState(state) {
+		const { geolocation: { active, denied } } = state;
 		return { active, denied };
 	}
 

@@ -82,8 +82,8 @@ export class MapContextMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	extractState(store) {
-		const { mapContextMenu: { coordinate, id } } = store;
+	extractState(state) {
+		const { mapContextMenu: { coordinate, id } } = state;
 		return { coordinate, id };
 	}
 

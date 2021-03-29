@@ -11,13 +11,14 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
 * Service for managing map releated meta data
+* @class
 */
 export class MapService {
 
 
 	/**
 	 * 
-	 * @param {mapDefinitionProvider} provider 
+	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
 	 */
 	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
