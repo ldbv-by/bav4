@@ -23,8 +23,9 @@ export class ToolBox extends BaElement {
 
 	initialize() {
 
+		const _window = this._environmentService.getWindow();
 		//MediaQuery for 'orientation'
-		const mediaQuery = window.matchMedia('(orientation: portrait)');
+		const mediaQuery = _window.matchMedia('(orientation: portrait)');
 		const handleOrientationChange = (e) => {
 			this._portrait = e.matches;
 			//trigger a re-render
@@ -36,7 +37,7 @@ export class ToolBox extends BaElement {
 
 
 		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = window.matchMedia('(min-width: 80em)');
+		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
 		const handleMinWidthChange = (e) => {
 			this._minWidth = e.matches;
 			//trigger a re-render

@@ -11,6 +11,10 @@ window.customElements.define(ToolBox.tag, ToolBox);
 
 describe('ToolBoxElement', () => {
 
+	const windowMock = {
+		matchMedia() { }
+	};
+
 	const setup = async (config = {}) => {
 
 		const { embed = false } = config;
@@ -20,10 +24,12 @@ describe('ToolBoxElement', () => {
 				open: true
 			}
 		};
+
 		TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed
+				isEmbedded: () => embed,
+				getWindow: () => windowMock
 			})
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 		return TestUtils.render(ToolBox.tag);
@@ -31,65 +37,47 @@ describe('ToolBoxElement', () => {
 
 
 	describe('when initialized', () => {
+
+		beforeEach(function () {
+			spyOn(windowMock, 'matchMedia')
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+		});
+
 		it('adds a div which holds the toolbox', async () => {
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
-
-
 		});
 
 		it('it closes the toolbox', async () => {
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
 			toggleToolBox();
 			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeFalsy();
-
 		});
 
 		it('renders nothing when embedded', async () => {
 			const element = await setup({ embed: true });
+
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+	});
 
-
-
-		// it('layouts for landscape', async () => {
-
-		// 	const matchMediaSpy = spyOn(window, 'matchMedia')
-		// 		//mock portrait
-		// 		.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
-		// 	const element = await setup();
-		// 	expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
-		// 	expect(element.shadowRoot.querySelector('.tool-box')).toBeFalsy();
-		// 	expect(matchMediaSpy).toHaveBeenCalledTimes(1);
-		// });
-
-		// it('layouts for portrait', async () => {
-
-		// 	const matchMediaSpy = spyOn(window, 'matchMedia')
-		// 		//mock 
-		// 		.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
-		// 	const element = await setup();
-		// 	expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
-		// 	expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-		// 	expect(matchMediaSpy).toHaveBeenCalledTimes(1);
-		// });
-
-
-
-
+	describe('responsive layout ', () => {
 
 		it('layouts for landscape desktop', async () => {
 
-			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock landscape
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
@@ -99,12 +87,12 @@ describe('ToolBoxElement', () => {
 
 		it('layouts for landscape tablet', async () => {
 
-			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock landscape
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.callThrough();
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
@@ -114,12 +102,12 @@ describe('ToolBoxElement', () => {
 
 		it('layouts for portrait desktop', async () => {
 
-			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock landscape
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
@@ -129,12 +117,12 @@ describe('ToolBoxElement', () => {
 
 		it('layouts for portrait tablet', async () => {
 
-			const matchMediaSpy = spyOn(window, 'matchMedia')
-				//mock landscape
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.callThrough();
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
