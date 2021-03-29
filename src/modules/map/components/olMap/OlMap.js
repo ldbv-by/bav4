@@ -138,10 +138,10 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = store;
+	extractState(state) {
+		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = state;
 		return { zoom, center, fitRequest, layers };
 	}
 

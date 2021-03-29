@@ -112,10 +112,10 @@ export class SidePanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { sidePanel: { open } } = store;
+	extractState(state) {
+		const { sidePanel: { open } } = state;
 		return { open };
 	}
 
