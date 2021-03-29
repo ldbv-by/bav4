@@ -16,7 +16,6 @@ export class ContentPanel extends BaElement {
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
 		this._portrait = false;
-		this._menueButtonLocked = false;
 	}
 
 	initialize() {
@@ -49,22 +48,6 @@ export class ContentPanel extends BaElement {
 	 */
 	createView() {
 
-		// const getTitle = () => {
-		// 	const { contentPanelIsOpen } = this._state;
-		// 	return contentPanelIsOpen ? 'Close menue' : 'Open menue';
-		// };
-
-
-		// const toggleContentPanelGuarded = () => {
-
-		// 	if (!this._menueButtonLocked) {
-		// 		this._menueButtonLocked = true;
-		// 		toggleContentPanel();
-		// 		window.setTimeout(() => this._menueButtonLocked = false, Header.menueButtonLockDuration);
-		// 	}
-		// };
-
-
 		const { open } = this._state;
 
 		const getOrientationClass = () => {
@@ -88,112 +71,117 @@ export class ContentPanel extends BaElement {
 					<span class='arrow'></span>	
 					</button>	
 					<div class='content-panel__container'>
-					<ul class="ba-list">
-					<li class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Demo Content
-						</span>
-					</span>
-				</li>
-   
-    <li class="ba-list-item">
-        <span class="ba-list-item__pre">
-            <span class="ba-list-item__icon">
-            </span>
-        </span>
-        <span class="ba-list-item__text">
-            <span class="ba-list-item__primary-text">
-                Freizeit in Bayern
-            </span>              
-        </span>
-    </li>
-    <li class="ba-list-item">
-        <span class="ba-list-item__pre">
-            <span class="ba-list-item__icon">
-            </span>
-        </span>
-        <span class="ba-list-item__text">
-            <span class="ba-list-item__primary-text">
-                Freizeit in Bayern
-            </span>              
-        </span>
-    </li>
-    <li class="ba-list-item">
-        <span class="ba-list-item__pre">
-            <span class="ba-list-item__icon">
-            </span>
-        </span>
-        <span class="ba-list-item__text">
-            <span class="ba-list-item__primary-text">
-                Freizeit in Bayern
-            </span>              
-        </span>
-    </li>          
-    <li  class="ba-list-item">
-        <span class="ba-list-item__text ">
-            <span class="ba-list-item__primary-text">
-                BayernAtlas-plus
-            </span>
-        </span>
-    </li>
-    <li  class="ba-list-item">
-        <span class="ba-list-item__text ">
-            <span class="ba-list-item__primary-text">
-                Hilfe
-            </span>
-        </span>
-    </li>
-    <li  class="ba-list-item">
-        <span class="ba-list-item__text ">
-            <span class="ba-list-item__primary-text">
-                Legende
-            </span>
-        </span>
-    </li>
-    <li class="ba-list-item  ba-list-item__header">
-        <span class="ba-list-item__text ">
-            <span class="ba-list-item__primary-text">
-                weitere Links
-            </span>
-        </span>
-    </li>
-    <li class="ba-list-item">
-        <span class="ba-list-item__text divider">
-            <span class="ba-list-item__primary-text">
-                Geoportal Bayern
-            </span>
-            <span class="ba-list-item__secondary-text">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-            </span>
-        </span>
-    </li>             
-    <li class="ba-list-item">
-        <span class="ba-list-item__text divider">
-            <span class="ba-list-item__primary-text">
-                Geodaten bestellen
-            </span>
-            <span class="ba-list-item__secondary-text">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-            </span>
-        </span>
-    </li>             
-    <li class="ba-list-item">
-        <span class="ba-list-item__text divider">
-            <span class="ba-list-item__primary-text">
-                weitere Portale
-            </span>
-            <span class="ba-list-item__secondary-text">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-            </span>
-        </span>
-    </li>             
-</ul>
-					
-				</div>			
+					${this._demoContent()}
+					</div>			
 				</div>			
 			</div>			
 		`;
+	}
+
+	_demoContent() {
+		return html`
+		<ul class="ba-list">
+		<li class="ba-list-item  ba-list-item__header">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+					Demo Content
+				</span>
+			</span>
+		</li>
+   
+		<li class="ba-list-item">
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon">
+				</span>
+			</span>
+			<span class="ba-list-item__text">
+				<span class="ba-list-item__primary-text">
+					Freizeit in Bayern
+				</span>              
+			</span>
+		</li>
+		<li class="ba-list-item">
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon">
+				</span>
+			</span>
+			<span class="ba-list-item__text">
+				<span class="ba-list-item__primary-text">
+					Freizeit in Bayern
+				</span>              
+			</span>
+		</li>
+		<li class="ba-list-item">
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon">
+				</span>
+			</span>
+			<span class="ba-list-item__text">
+				<span class="ba-list-item__primary-text">
+					Freizeit in Bayern
+				</span>              
+			</span>
+		</li>          
+		<li  class="ba-list-item">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+					BayernAtlas-plus
+				</span>
+			</span>
+		</li>
+		<li  class="ba-list-item">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+					Hilfe
+				</span>
+			</span>
+		</li>
+		<li  class="ba-list-item">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+					Legende
+				</span>
+			</span>
+		</li>
+		<li class="ba-list-item  ba-list-item__header">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+					weitere Links
+				</span>
+			</span>
+		</li>
+		<li class="ba-list-item">
+			<span class="ba-list-item__text divider">
+				<span class="ba-list-item__primary-text">
+					Geoportal Bayern
+				</span>
+				<span class="ba-list-item__secondary-text">
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+				</span>
+			</span>
+		</li>             
+		<li class="ba-list-item">
+			<span class="ba-list-item__text divider">
+				<span class="ba-list-item__primary-text">
+					Geodaten bestellen
+				</span>
+				<span class="ba-list-item__secondary-text">
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+				</span>
+			</span>
+		</li>             
+		<li class="ba-list-item">
+			<span class="ba-list-item__text divider">
+				<span class="ba-list-item__primary-text">
+					weitere Portale
+				</span>
+				<span class="ba-list-item__secondary-text">
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+				</span>
+			</span>
+		</li>             
+	</ul>
+	`;
 	}
 
 	isRenderingSkipped() {
@@ -213,121 +201,3 @@ export class ContentPanel extends BaElement {
 		return 'ba-content-panel';
 	}
 }
-{/* <ul class="ba-list">
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							BayernAtlas-plus
-						</span>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Hilfe
-						</span>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Legende
-						</span>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Vollbild
-						</span>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Dark Mode
-						</span>
-					</span>
-					<span class="ba-list-item__after">
-						<label class="switch">
-							<input type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Feedback zur Karte 
-						</span>
-					</span>
-				</li>
-				<li  class="ba-list-item">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							Datenschutzerklärung
-						</span>
-					</span>
-				</li>
-				<li class="ba-list-item">
-					<span class="ba-list-item__text divider">
-						<span class="ba-list-item__primary-text">
-							Nutzungsbedingungen
-						</span>
-					</span>
-				</li>
-
-				<li class="ba-list-item  ba-list-item__header">
-					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">
-							weitere Links
-						</span>
-					</span>
-				</li>
-
-
-
-
-				<li class="ba-list-item">
-					<!--                        <span class="ba-list-item__pre">
-												<span class="ba-list-item__image">
-												</span>
-											</span>-->
-					<span class="ba-list-item__text divider">
-						<span class="ba-list-item__primary-text">
-							Geoportal Bayern
-						</span>
-						<span class="ba-list-item__secondary-text">
-							Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-						</span>
-					</span>
-				</li>             
-				<li class="ba-list-item">
-					<!--                        <span class="ba-list-item__pre">
-												<span class="ba-list-item__image">
-												</span>
-											</span>-->
-					<span class="ba-list-item__text divider">
-						<span class="ba-list-item__primary-text">
-							Geodaten bestellen
-						</span>
-						<span class="ba-list-item__secondary-text">
-							Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-						</span>
-					</span>
-				</li>             
-				<li class="ba-list-item">
-					<!--                        <span class="ba-list-item__pre">
-												<span class="ba-list-item__image">
-												</span>
-											</span>-->
-					<span class="ba-list-item__text divider">
-						<span class="ba-list-item__primary-text">
-							weitere Portale
-						</span>
-						<span class="ba-list-item__secondary-text">
-							Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-						</span>
-					</span>
-				</li>             
-			</ul> */}

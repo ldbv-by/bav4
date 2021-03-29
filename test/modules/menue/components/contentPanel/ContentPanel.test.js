@@ -26,37 +26,32 @@ describe('ContentPanelElement', () => {
 				isEmbedded: () => embed
 			})
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			
 		return TestUtils.render(ContentPanel.tag);
 	};
 
 
 	describe('when initialized', () => {
+
 		it('adds a div which holds the contentpanel and a close button', async () => {
 
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
-
-
 		});
 
-		it('it closes the contentpanel', async () => {
+		it('adds a container for content and shows demo content', async () => {
 
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
-			toggleContentPanel();
-			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeNull();
-			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
-
+			expect(element.shadowRoot.querySelector('.content-panel__container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.content-panel__container').children.length > 0).toBeTrue();
 		});
 
 		it('renders nothing when embedded', async () => {
+
 			const element = await setup({ embed: true });
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
-
-
 
 		it('layouts for landscape', async () => {
 
@@ -80,6 +75,19 @@ describe('ContentPanelElement', () => {
 			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('when close button clicked', () => {
+
+		it('it closes the contentpanel', async () => {
+
+			const element = await setup();
+			
+			toggleContentPanel();
+
+			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeNull();
+			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
 		});
 	});
 });
