@@ -31,6 +31,7 @@ describe('ToolBoxElement', () => {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
 			})
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 		return TestUtils.render(ToolBox.tag);
 	};
@@ -44,12 +45,15 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('adds a div which holds the toolbox', async () => {
+		it('adds a div which holds the toolbox with tow Tools', async () => {
 
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-box__button').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.pencil')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.share')).toBeTruthy();
 		});
 
 		it('it closes the toolbox', async () => {

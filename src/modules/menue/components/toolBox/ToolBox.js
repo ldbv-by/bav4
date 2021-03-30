@@ -15,8 +15,15 @@ export class ToolBox extends BaElement {
 
 	constructor() {
 		super();
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = EnvironmentService;
+
+		const {		
+			EnvironmentService: environmentService,
+			TranslationService: translationService
+		}
+			= $injector.inject( 'EnvironmentService', 'TranslationService');
+
+		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._portrait = false;
 		this._minWidth = false;
 	}
@@ -67,6 +74,8 @@ export class ToolBox extends BaElement {
 			return open ? 'is-open' : '';
 		};
 
+		const translate = (key) => this._translationService.translate(key);
+
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  
@@ -79,14 +88,14 @@ export class ToolBox extends BaElement {
 						<div class="tool-box__button_icon pencil">							
 						</div>
 						<div class="tool-box__button-text">
-							Messen
+							${translate('menue_toolbox_draw_button')}
 						</div>  
 					</div>  				               
 					<div  class="tool-box__button">
 						<div class="tool-box__button_icon share">							
 						</div>
 						<div class="tool-box__button-text">
-							Teilen
+							${translate('menue_toolbox_share_button')}
 						</div>  
 					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
