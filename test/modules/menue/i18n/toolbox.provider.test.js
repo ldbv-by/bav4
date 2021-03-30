@@ -1,14 +1,14 @@
 import { provide } from '../../../../src/modules/menue/i18n/toolbox.provider';
 
 
-describe('i18n for menue module', () => {
+describe('i18n for menu module', () => {
 
 	it('provides translation for de', () => {
 
 		const map = provide('de');
 
-		expect(map.menue_toolbox_draw_button).toBe('Zeichnen');
-		expect(map.menue_toolbox_share_button).toBe('Teilen');
+		expect(map.menu_toolbox_draw_button).toBe('Zeichnen');
+		expect(map.menu_toolbox_share_button).toBe('Teilen');
 
 	});
 
@@ -16,8 +16,8 @@ describe('i18n for menue module', () => {
 
 		const map = provide('en');
 
-		expect(map.menue_toolbox_draw_button).toBe('Draw');
-		expect(map.menue_toolbox_share_button).toBe('Share');
+		expect(map.menu_toolbox_draw_button).toBe('Draw');
+		expect(map.menu_toolbox_share_button).toBe('Share');
 
 	});
 

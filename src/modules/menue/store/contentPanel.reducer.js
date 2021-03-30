@@ -1,4 +1,4 @@
-export const OPEN_CLOSED_CHANGED = 'components/menue/contentPanel/open';
+export const OPEN_CLOSED_CHANGED = 'components/menu/contentPanel/open';
 
 export const initialState = {
 	open: true

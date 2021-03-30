@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the properties of sidePanel state.
- * @module menue/action
+ * @module menu/action
  */
 import { OPEN_CLOSED_CHANGED } from './sidePanel.reducer';
 import { $injector } from '../../../injection';

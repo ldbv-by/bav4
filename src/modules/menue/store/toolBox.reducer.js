@@ -1,4 +1,4 @@
-export const OPEN_CLOSED_CHANGED = 'components/menue/toolBox/open';
+export const OPEN_CLOSED_CHANGED = 'components/menu/toolBox/open';
 
 export const initialState = {
 	open: false

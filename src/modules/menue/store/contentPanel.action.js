@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the state of the content panel.
- * @module menue/action
+ * @module menu/action
  */
 import { OPEN_CLOSED_CHANGED } from './contentPanel.reducer';
 import { $injector } from '../../../injection';

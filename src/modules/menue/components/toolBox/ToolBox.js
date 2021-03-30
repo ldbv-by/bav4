@@ -88,14 +88,14 @@ export class ToolBox extends BaElement {
 						<div class="tool-box__button_icon pencil">							
 						</div>
 						<div class="tool-box__button-text">
-							${translate('menue_toolbox_draw_button')}
+							${translate('menu_toolbox_draw_button')}
 						</div>  
 					</div>  				               
 					<div  class="tool-box__button">
 						<div class="tool-box__button_icon share">							
 						</div>
 						<div class="tool-box__button-text">
-							${translate('menue_toolbox_share_button')}
+							${translate('menu_toolbox_share_button')}
 						</div>  
 					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
