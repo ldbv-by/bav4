@@ -45,7 +45,7 @@ describe('ContentPanelElement', () => {
 
 			const element = await setup();
 			
-			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
@@ -59,7 +59,7 @@ describe('ContentPanelElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
@@ -73,7 +73,7 @@ describe('ContentPanelElement', () => {
 
 			const element = await setup();
 			
-			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
@@ -87,7 +87,7 @@ describe('ContentPanelElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);

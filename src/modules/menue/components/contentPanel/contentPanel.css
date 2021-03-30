@@ -64,7 +64,7 @@
 
 
 /*portrait */
-.portrait .content-panel {   
+.is-portrait .content-panel {   
    top:-75vh;
    height: calc(75vh + 6.6em);
    left: 0;
@@ -73,7 +73,7 @@
    overflow: auto;
       padding: 3em 0;
    }
-.portrait .content-panel__close-button {              
+.is-portrait .content-panel__close-button {              
    position: absolute;
    top: unset;
    left: 50%;
@@ -83,7 +83,7 @@
    width: 4em;
    margin-left: -2em;
    }
-.portrait .arrow {
+.is-portrait .arrow {
    position: absolute;
    width: 0;
    height: 0;
@@ -93,11 +93,11 @@
    border-style: solid;
    border-color: transparent transparent gray transparent;
 }
-.portrait .is-open {
+.is-portrait .is-open {
    transform: translate(0, 75vh);
    height: calc(75vh);
 }
-.portrait .content-panel__container{
+.is-portrait .content-panel__container{
    overflow-y: auto;
    top: 6.5em;
    bottom: 0;
@@ -106,7 +106,7 @@
    width: 100%;
    padding: 2em 0 3em 0;
 }
-.portrait .content-panel__container *{
+.is-portrait .content-panel__container *{
  font-size: 1.2rem;
 }
 

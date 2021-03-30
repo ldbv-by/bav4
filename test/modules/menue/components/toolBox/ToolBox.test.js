@@ -82,7 +82,7 @@ describe('ToolBoxElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
@@ -97,7 +97,7 @@ describe('ToolBoxElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.landscape')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
@@ -112,7 +112,7 @@ describe('ToolBoxElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
@@ -127,7 +127,7 @@ describe('ToolBoxElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.portrait')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');

@@ -101,7 +101,7 @@
     padding: 0em;
 }
 /* portrait */
-.portrait .tool-box{
+.is-portrait .tool-box{
     flex-direction: row ;
     bottom: -20em;
     left: 0;
@@ -109,17 +109,17 @@
     width: auto;
     max-width: unset;
 }     
-.portrait .is-open {
+.is-portrait .is-open {
     transform: translate(0,-20em);
  }
-.portrait .tool-box__item{                       
+.is-portrait .tool-box__item{                       
     max-width: inherit; 
     width: 100%;
     height: auto;
 }
-.portrait .tool-container__item button {
+.is-portrait .tool-container__item button {
     margin: .8rem .8rem .3rem .8rem;
 }
-.portrait .tool-box{    
+.is-portrait .tool-box{    
     font-size:1rem;
 }

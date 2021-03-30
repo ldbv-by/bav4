@@ -48,7 +48,7 @@ export class Footer extends BaElement {
 		};
 		
 		const getOrientationClass = () => {
-			return this._portrait ? 'portrait' : 'landscape';
+			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 
