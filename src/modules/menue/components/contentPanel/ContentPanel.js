@@ -13,7 +13,7 @@ export class ContentPanel extends BaElement {
 
 	constructor() {
 		super();
-		const { EnvironmentService : environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._portrait = false;
 	}
@@ -96,66 +96,122 @@ export class ContentPanel extends BaElement {
 				<span class="ba-list-item__icon">
 				</span>
 			</span>
-			<span class="ba-list-item__text">
+			<span class="ba-list-item__text verticla-center">
 				<span class="ba-list-item__primary-text">
-					Freizeit in Bayern
+				Lorem ipsum dolor
 				</span>              
 			</span>
+			<span class="ba-list-item__after">
+                <span class="ba-list-item__icon-info">                                
+                </span>
+            </span>
 		</li>
 		<li class="ba-list-item">
 			<span class="ba-list-item__pre">
 				<span class="ba-list-item__icon">
 				</span>
 			</span>
-			<span class="ba-list-item__text">
+			<span class="ba-list-item__text verticla-center">
 				<span class="ba-list-item__primary-text">
-					Freizeit in Bayern
+				Lorem ipsum dolor
 				</span>              
 			</span>
+			<span class="ba-list-item__after">
+			<span class="ba-list-item__icon-info">                                
+			</span>
+		</span>
 		</li>
 		<li class="ba-list-item">
 			<span class="ba-list-item__pre">
 				<span class="ba-list-item__icon">
 				</span>
 			</span>
-			<span class="ba-list-item__text">
+			<span class="ba-list-item__text verticla-center">
 				<span class="ba-list-item__primary-text">
-					Freizeit in Bayern
+				Lorem ipsum dolor
 				</span>              
 			</span>
+			<span class="ba-list-item__after">
+			<span class="ba-list-item__icon-info">                                
+			</span>
+		</span>
 		</li>          
 		<li  class="ba-list-item">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					BayernAtlas-plus
+				Lorem ipsum dolor
 				</span>
 			</span>
 		</li>
 		<li  class="ba-list-item">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					Hilfe
+				Lorem ipsum dolor
 				</span>
 			</span>
 		</li>
 		<li  class="ba-list-item">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					Legende
+				Lorem ipsum dolor
 				</span>
 			</span>
 		</li>
 		<li class="ba-list-item  ba-list-item__header">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					weitere Links
+				Lorem ipsum dolor
 				</span>
 			</span>
 		</li>
+
 		<li class="ba-list-item">
-			<span class="ba-list-item__text divider">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li>          
+		<li class="ba-list-item">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li>          
+		<li class="ba-list-item">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li> 
+
+		<li class="ba-list-item">
+			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					Geoportal Bayern
+				Lorem ipsum
 				</span>
 				<span class="ba-list-item__secondary-text">
 					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
@@ -163,9 +219,9 @@ export class ContentPanel extends BaElement {
 			</span>
 		</li>             
 		<li class="ba-list-item">
-			<span class="ba-list-item__text divider">
+			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					Geodaten bestellen
+				Lorem ipsum 
 				</span>
 				<span class="ba-list-item__secondary-text">
 					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
@@ -173,15 +229,15 @@ export class ContentPanel extends BaElement {
 			</span>
 		</li>             
 		<li class="ba-list-item">
-			<span class="ba-list-item__text divider">
+			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					weitere Portale
+				Lorem ipsum 
 				</span>
 				<span class="ba-list-item__secondary-text">
 					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
 				</span>
 			</span>
-		</li>             
+		</li>          
 	</ul>
 	`;
 	}
