@@ -150,10 +150,10 @@ export class Header extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { contentPanel: { open } } = store;
+	extractState(state) {
+		const { contentPanel: { open } } = state;
 		return { open };
 	}
 

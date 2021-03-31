@@ -109,10 +109,10 @@ export class ToolBox extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} store 
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { toolBox: { open } } = store;
+	extractState(state) {
+		const { toolBox: { open } } = state;
 		return { open };
 	}
 
