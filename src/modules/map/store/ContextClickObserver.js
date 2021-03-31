@@ -1,5 +1,5 @@
 import { observe } from '../../../utils/storeUtils';
-import { BaObserver } from '../../BaObserver';
+import { BaStorePlugin } from '../../../store/BaStorePlugin';
 import { MapContextMenu } from '../components/contextMenu/MapContextMenu';
 import { MapContextMenuContent } from '../components/contextMenu/MapContextMenuContent';
 import { close, open } from './mapContextMenu.action';
@@ -8,7 +8,7 @@ import { close, open } from './mapContextMenu.action';
 /**
  * Observer for contextClick state changes.
  */
-export class ContextClickObserver extends BaObserver {
+export class ContextClickObserver extends BaStorePlugin {
 
 	/**
 	 * @override

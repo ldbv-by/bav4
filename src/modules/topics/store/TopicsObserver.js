@@ -1,13 +1,13 @@
 import { $injector } from '../../../injection';
 import { QueryParameters } from '../../../services/domain/queryParameters';
-import { BaObserver } from '../../BaObserver';
+import { BaStorePlugin } from '../../../store/BaStorePlugin';
 import { setCurrent } from './topics.action';
 
 
 /**
  * @class
  */
-export class TopicsObserver extends BaObserver {
+export class TopicsObserver extends BaStorePlugin {
 
 
 	_addTopicFromQueryParams(queryParams) {

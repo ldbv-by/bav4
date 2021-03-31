@@ -1,13 +1,13 @@
 import { observe } from '../../../utils/storeUtils';
 import { addLayer, removeLayer } from './layers.action';
-import { BaObserver } from '../../BaObserver';
+import { BaStorePlugin } from '../../../store/BaStorePlugin';
 
 /**
  * Id of the layer used for measurement interaction
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
-export class MeasurementObserver extends BaObserver {
+export class MeasurementObserver extends BaStorePlugin {
 
 
 	/**
