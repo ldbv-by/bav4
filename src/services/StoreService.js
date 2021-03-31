@@ -55,7 +55,7 @@ export class StoreService {
 				TopicsObserver: topicsObserver,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
-				PositionObserver: positionObserver,
+				PositionPlugin: positionPlugin,
 				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
@@ -64,14 +64,14 @@ export class StoreService {
 				'LayersPlugin',
 				'GeolocationPlugin',
 				'MeasurementPlugin',
-				'PositionObserver',
+				'PositionPlugin',
 				'ContextClickPlugin',
 				'EnvironmentService'
 			);
 
 			await topicsObserver.register(this._store);
 			await layersPlugin.register(this._store);
-			await positionObserver.register(this._store);
+			await positionPlugin.register(this._store);
 			await measurementPlugin.register(this._store);
 			await geolocationPlugin.register(this._store);
 			await ContextClickPlugin.register(this._store);

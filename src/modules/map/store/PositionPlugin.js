@@ -3,7 +3,7 @@ import { QueryParameters } from '../../../services/domain/queryParameters';
 import { BaStorePlugin } from '../../../store/BaStorePlugin';
 import { changeZoomAndCenter, setFit } from './position.action';
 
-export class PositionObserver extends BaStorePlugin {
+export class PositionPlugin extends BaStorePlugin {
 
 	_setPositionFromQueryParams(queryParams) {
 
