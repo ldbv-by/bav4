@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
-import { ContentPanel } from '../../../../../src/modules/menue/components/contentPanel/ContentPanel';
-import { contentPanelReducer } from '../../../../../src/modules/menue/store/contentPanel.reducer';
-import { toggleContentPanel } from '../../../../../src/modules/menue/store/contentPanel.action';
+import { ContentPanel } from '../../../../../src/modules/menu/components/contentPanel/ContentPanel';
+import { contentPanelReducer } from '../../../../../src/modules/menu/store/contentPanel.reducer';
+import { toggleContentPanel } from '../../../../../src/modules/menu/store/contentPanel.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 

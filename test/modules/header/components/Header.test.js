@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { contentPanelReducer } from '../../../../src/modules/menue/store/contentPanel.reducer';
+import { contentPanelReducer } from '../../../../src/modules/menu/store/contentPanel.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -134,7 +134,7 @@ describe('Header', () => {
 		});
 	});
 
-	describe('when menue button clicked', () => {
+	describe('when menu button clicked', () => {
 
 		beforeEach(function () {
 			spyOn(windowMock, 'matchMedia')

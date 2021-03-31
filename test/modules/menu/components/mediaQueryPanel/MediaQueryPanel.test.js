@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
 import { $injector } from '../../../../../src/injection';
-import { MediaQueryPanel } from '../../../../../src/modules/menue/components/mediaQueryPanel/MediaQueryPanel';
-import { sidePanelReducer } from '../../../../../src/modules/menue/store/sidePanel.reducer';
+import { MediaQueryPanel } from '../../../../../src/modules/menu/components/mediaQueryPanel/MediaQueryPanel';
+import { sidePanelReducer } from '../../../../../src/modules/menu/store/sidePanel.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MediaQueryPanel.tag, MediaQueryPanel);
