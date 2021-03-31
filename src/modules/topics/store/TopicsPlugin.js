@@ -7,7 +7,7 @@ import { setCurrent } from './topics.action';
 /**
  * @class
  */
-export class TopicsObserver extends BaStorePlugin {
+export class TopicsPlugin extends BaStorePlugin {
 
 
 	_addTopicFromQueryParams(queryParams) {

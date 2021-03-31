@@ -52,7 +52,7 @@ export class StoreService {
 
 			const {
 				LayersPlugin: layersPlugin,
-				TopicsObserver: topicsObserver,
+				TopicsPlugin: topicsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
 				PositionPlugin: positionPlugin,
@@ -60,7 +60,7 @@ export class StoreService {
 				EnvironmentService: environmentService
 			}
 			= $injector.inject(
-				'TopicsObserver',
+				'TopicsPlugin',
 				'LayersPlugin',
 				'GeolocationPlugin',
 				'MeasurementPlugin',
@@ -69,7 +69,7 @@ export class StoreService {
 				'EnvironmentService'
 			);
 
-			await topicsObserver.register(this._store);
+			await topicsPlugin.register(this._store);
 			await layersPlugin.register(this._store);
 			await positionPlugin.register(this._store);
 			await measurementPlugin.register(this._store);

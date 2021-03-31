@@ -14,7 +14,7 @@ describe('StoreService', () => {
 		const layersPluginMock = {
 			register: () => { }
 		};
-		const topicsObserverMock = {
+		const topicsPluginMock = {
 			register: () => { }
 		};
 		const positionPluginMock = {
@@ -35,7 +35,7 @@ describe('StoreService', () => {
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
-				.registerSingleton('TopicsObserver', topicsObserverMock)
+				.registerSingleton('TopicsPlugin', topicsPluginMock)
 				.registerSingleton('PositionPlugin', positionPluginMock)
 				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
@@ -72,7 +72,7 @@ describe('StoreService', () => {
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
 			const layersPluginSpy = spyOn(layersPluginMock, 'register');
-			const topicsObserverSpy = spyOn(topicsObserverMock, 'register');
+			const topicsPluginSpy = spyOn(topicsPluginMock, 'register');
 			const positionPluginSpy = spyOn(positionPluginMock, 'register');
 			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
@@ -85,7 +85,7 @@ describe('StoreService', () => {
 				expect(measurementPluginSpy).toHaveBeenCalledWith(store);
 				expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 				expect(layersPluginSpy).toHaveBeenCalledWith(store);
-				expect(topicsObserverSpy).toHaveBeenCalledWith(store);
+				expect(topicsPluginSpy).toHaveBeenCalledWith(store);
 				expect(positionPluginSpy).toHaveBeenCalledWith(store);
 				expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
 				done();
