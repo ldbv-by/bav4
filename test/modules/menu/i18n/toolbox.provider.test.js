@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/menue/i18n/toolbox.provider';
+import { provide } from '../../../../src/modules/menu/i18n/toolbox.provider';
 
 
 describe('i18n for menu module', () => {

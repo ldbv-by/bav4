@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../test-utils.js';
-import { contentPanelReducer } from '../../../../src/modules/menue/store/contentPanel.reducer';
-import { openContentPanel, closeContentPanel, toggleContentPanel } from '../../../../src/modules/menue/store/contentPanel.action';
+import { contentPanelReducer } from '../../../../src/modules/menu/store/contentPanel.reducer';
+import { openContentPanel, closeContentPanel, toggleContentPanel } from '../../../../src/modules/menu/store/contentPanel.action';
 
 
 describe('contentPanelReducer', () => {

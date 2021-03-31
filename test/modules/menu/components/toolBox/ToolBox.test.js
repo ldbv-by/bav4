@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
-import { ToolBox } from '../../../../../src/modules/menue/components/toolBox/ToolBox';
-import { toolBoxReducer } from '../../../../../src/modules/menue/store/toolBox.reducer';
-import { toggleToolBox } from '../../../../../src/modules/menue/store/toolBox.action';
+import { ToolBox } from '../../../../../src/modules/menu/components/toolBox/ToolBox';
+import { toolBoxReducer } from '../../../../../src/modules/menu/store/toolBox.reducer';
+import { toggleToolBox } from '../../../../../src/modules/menu/store/toolBox.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 

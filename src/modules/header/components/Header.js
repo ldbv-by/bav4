@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { openContentPanel } from '../../menue/store/contentPanel.action';
+import { openContentPanel } from '../../menu/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 // import { changeZoomAndCenter } from '../../map/store/position.action';
