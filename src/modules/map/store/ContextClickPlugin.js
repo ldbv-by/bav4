@@ -1,5 +1,5 @@
 import { observe } from '../../../utils/storeUtils';
-import { BaStorePlugin } from '../../../store/BaStorePlugin';
+import { BaPlugin } from '../../../store/BaPlugin';
 import { MapContextMenu } from '../components/contextMenu/MapContextMenu';
 import { MapContextMenuContent } from '../components/contextMenu/MapContextMenuContent';
 import { close, open } from './mapContextMenu.action';
@@ -8,7 +8,7 @@ import { close, open } from './mapContextMenu.action';
 /**
  * Plugin for contextClick state managment.
  */
-export class ContextClickPlugin extends BaStorePlugin {
+export class ContextClickPlugin extends BaPlugin {
 
 	/**
 	 * @override

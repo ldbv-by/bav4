@@ -1,9 +1,9 @@
 import { $injector } from '../../../injection';
 import { QueryParameters } from '../../../services/domain/queryParameters';
-import { BaStorePlugin } from '../../../store/BaStorePlugin';
+import { BaPlugin } from '../../../store/BaPlugin';
 import { changeZoomAndCenter, setFit } from './position.action';
 
-export class PositionPlugin extends BaStorePlugin {
+export class PositionPlugin extends BaPlugin {
 
 	_setPositionFromQueryParams(queryParams) {
 
