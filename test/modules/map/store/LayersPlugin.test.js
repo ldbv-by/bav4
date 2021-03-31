@@ -1,4 +1,4 @@
-import { LayersObserver } from '../../../../src/modules/map/store/LayersObserver';
+import { LayersPlugin } from '../../../../src/modules/map/store/LayersPlugin';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { $injector } from '../../../../src/injection';
@@ -9,7 +9,7 @@ import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
 import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
 
 
-describe('LayersObserver', () => {
+describe('LayersPlugin', () => {
 
 	const geoResourceServiceMock = {
 		async init() { },
@@ -47,7 +47,7 @@ describe('LayersObserver', () => {
 
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
-			const instanceUnderTest = new LayersObserver();
+			const instanceUnderTest = new LayersPlugin();
 			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
 
 			const result = await instanceUnderTest.register(store);
@@ -62,7 +62,7 @@ describe('LayersObserver', () => {
 
 		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
 			setup();
-			const instanceUnderTest = new LayersObserver();
+			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
@@ -77,7 +77,7 @@ describe('LayersObserver', () => {
 		it('initializes the georesource service and calls #_addLayersFromQueryParams', async () => {
 			setup();
 			const queryParam = QueryParameters.LAYER + '=some';
-			const instanceUnderTest = new LayersObserver();
+			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
@@ -96,7 +96,7 @@ describe('LayersObserver', () => {
 				const store = setup();
 				const configuredBgId = 'atkis';
 				setCurrent(configuredBgId);
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
@@ -116,7 +116,7 @@ describe('LayersObserver', () => {
 				const store = setup();
 				const configuredBgId = 'atkis';
 				setCurrent(configuredBgId);
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
@@ -133,7 +133,7 @@ describe('LayersObserver', () => {
 
 			it('adds the first found layer ', () => {
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('someId0', 'someLabel0', 'someUrl0'),
 					new WMTSGeoResource('someId1', 'someLabel1', 'someUrl1')
@@ -153,7 +153,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = QueryParameters.LAYER + '=some0,some1';
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -175,7 +175,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`;
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -199,7 +199,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -223,7 +223,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`;
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -247,7 +247,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
@@ -272,7 +272,7 @@ describe('LayersObserver', () => {
 				//geoResource service does not know id 'unknown'
 				const queryParam = QueryParameters.LAYER + '=unknown';
 				const store = setup();
-				const instanceUnderTest = new LayersObserver();
+				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some0', 'someLabel0', 'someUrl0'),

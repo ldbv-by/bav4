@@ -51,7 +51,7 @@ export class StoreService {
 		$injector.onReady(async () => {
 
 			const {
-				LayersObserver: layersObserver,
+				LayersPlugin: layersPlugin,
 				TopicsObserver: topicsObserver,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementObserver: measurementObserver,
@@ -61,7 +61,7 @@ export class StoreService {
 			}
 			= $injector.inject(
 				'TopicsObserver',
-				'LayersObserver',
+				'LayersPlugin',
 				'GeolocationPlugin',
 				'MeasurementObserver',
 				'PositionObserver',
@@ -70,7 +70,7 @@ export class StoreService {
 			);
 
 			await topicsObserver.register(this._store);
-			await layersObserver.register(this._store);
+			await layersPlugin.register(this._store);
 			await positionObserver.register(this._store);
 			await measurementObserver.register(this._store);
 			await geolocationPlugin.register(this._store);

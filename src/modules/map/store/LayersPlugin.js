@@ -4,7 +4,7 @@ import { BaStorePlugin } from '../../../store/BaStorePlugin';
 import { addLayer } from './layers.action';
 
 
-export class LayersObserver extends BaStorePlugin {
+export class LayersPlugin extends BaStorePlugin {
 
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');

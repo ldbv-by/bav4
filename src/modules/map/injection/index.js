@@ -1,4 +1,4 @@
-import { LayersObserver } from '../store/LayersObserver';
+import { LayersPlugin } from '../store/LayersPlugin';
 import { PositionObserver } from '../store/PositionObserver';
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
@@ -10,7 +10,7 @@ export const mapModule = ($injector) => {
 	$injector
 		.registerSingleton('MeasurementObserver', new MeasurementObserver())
 		.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
-		.registerSingleton('LayersObserver', new LayersObserver())
+		.registerSingleton('LayersPlugin', new LayersPlugin())
 		.registerSingleton('PositionObserver', new PositionObserver())
 		.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
