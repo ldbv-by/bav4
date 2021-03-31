@@ -10,7 +10,7 @@ import { BaStorePlugin } from '../../../store/BaStorePlugin';
  */
 export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
-export class GeolocationObserver extends BaStorePlugin {
+export class GeolocationPlugin extends BaStorePlugin {
 
 	constructor() {
 		super();

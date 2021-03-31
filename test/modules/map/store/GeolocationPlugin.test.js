@@ -1,4 +1,4 @@
-import { GeolocationObserver, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/GeolocationObserver';
+import { GeolocationPlugin, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/GeolocationPlugin';
 import { activate, deactivate, setTracking } from '../../../../src/modules/map/store/geolocation.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
@@ -9,7 +9,7 @@ import { pointerReducer } from '../../../../src/modules/map/store/pointer.reduce
 import { setBeingDragged } from '../../../../src/modules/map/store/pointer.action';
 
 
-describe('GeolocationObserver', () => {
+describe('GeolocationPlugin', () => {
 
 	const coordinateServiceMock = {
 		fromLonLat() { },
@@ -42,7 +42,7 @@ describe('GeolocationObserver', () => {
 
 		it('setups local state', () => {
 			setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 
 			expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
 			expect(instanceUnderTest._geolocationWatcherId).toBeNull();
@@ -53,7 +53,7 @@ describe('GeolocationObserver', () => {
 
 		it('activates and deactivates the geolocation observer', async () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const activateSpy = spyOn(instanceUnderTest, '_activate');
 			const deactivateSpy = spyOn(instanceUnderTest, '_deactivate');
 
@@ -75,7 +75,7 @@ describe('GeolocationObserver', () => {
 
 		it('adds and removes the geolocation layer', async () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			spyOn(instanceUnderTest, '_activate');
 			spyOn(instanceUnderTest, '_deactivate');
 
@@ -93,7 +93,7 @@ describe('GeolocationObserver', () => {
 
 		it('registers an observer for beingDragged changes', async () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 
 			await instanceUnderTest.register(store);
 
@@ -111,7 +111,7 @@ describe('GeolocationObserver', () => {
 		it('transforms a position to 3857', () => {
 			setup();
 			const expectedCoord = [38, 57];
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			spyOn(coordinateServiceMock, 'fromLonLat').and.returnValue(expectedCoord);
 
 			const transformedCoord = instanceUnderTest._transformPositionTo3857({ coords: { longitude: 43, latitude: 26 } });
@@ -124,7 +124,7 @@ describe('GeolocationObserver', () => {
 
 		it('handles a PERMISSION_DENIED position error', () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			spyOn(window, 'alert');
 			const warnSpy = spyOn(console, 'warn');
 			// code PERMISSION_DENIED
@@ -140,7 +140,7 @@ describe('GeolocationObserver', () => {
 
 		it('handles other position errors', () => {
 			setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			spyOn(window, 'alert');
 			const warnSpy = spyOn(console, 'warn');
 			// code PERMISSION_DENIED
@@ -160,7 +160,7 @@ describe('GeolocationObserver', () => {
 			const expectedCoord = [38, 57];
 			const expectedAccuracy = 42;
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: expectedAccuracy } };
 			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue(expectedCoord);
 
@@ -178,7 +178,7 @@ describe('GeolocationObserver', () => {
 				}
 			};
 			const store = setup(state);
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
 
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
@@ -196,7 +196,7 @@ describe('GeolocationObserver', () => {
 				}
 			};
 			const store = setup(state);
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
 
@@ -207,7 +207,7 @@ describe('GeolocationObserver', () => {
 
 		it('disables the denied flag', () => {
 			setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
 			const fitSpy = spyOn(instanceUnderTest, '_fit');
@@ -223,7 +223,7 @@ describe('GeolocationObserver', () => {
 
 		it('watches position successfully ', (done) => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 			const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
 			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake(success => Promise.resolve(success(position)));
@@ -239,7 +239,7 @@ describe('GeolocationObserver', () => {
 
 		it('watches position unsuccessfully ', (done) => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const errorMessage = 'some error';
 			const handlePositionErrorSpy = spyOn(instanceUnderTest, '_handlePositionError');
 			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake((success, error) => Promise.resolve(error(errorMessage)));
@@ -257,7 +257,7 @@ describe('GeolocationObserver', () => {
 
 		it('calculates an extent and updates the state', () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const mapSrid = 2100;
 			const geodeticSrid = 4200;
 			const geodeticExtent = [42, 10, 42, 10];
@@ -284,7 +284,7 @@ describe('GeolocationObserver', () => {
 
 		it('activates the observer', () => {
 			const store = setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const watchPositionSpy = spyOn(instanceUnderTest, '_watchPosition');
 
 			instanceUnderTest._activate();
@@ -295,7 +295,7 @@ describe('GeolocationObserver', () => {
 
 		it('deactivates the observer', () => {
 			setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			instanceUnderTest._geolocationWatcherId = 0;
 			instanceUnderTest._firstTimeActivatingGeolocation = false;
 			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
@@ -307,7 +307,7 @@ describe('GeolocationObserver', () => {
 
 		it('calls deactivate on inactive observer', () => {
 			setup();
-			const instanceUnderTest = new GeolocationObserver();
+			const instanceUnderTest = new GeolocationPlugin();
 			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');
 
 			instanceUnderTest._deactivate();

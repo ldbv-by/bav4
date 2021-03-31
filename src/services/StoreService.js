@@ -53,7 +53,7 @@ export class StoreService {
 			const {
 				LayersObserver: layersObserver,
 				TopicsObserver: topicsObserver,
-				GeolocationObserver: geolocationObserver,
+				GeolocationPlugin: geolocationPlugin,
 				MeasurementObserver: measurementObserver,
 				PositionObserver: positionObserver,
 				ContextClickPlugin: ContextClickPlugin,
@@ -62,7 +62,7 @@ export class StoreService {
 			= $injector.inject(
 				'TopicsObserver',
 				'LayersObserver',
-				'GeolocationObserver',
+				'GeolocationPlugin',
 				'MeasurementObserver',
 				'PositionObserver',
 				'ContextClickPlugin',
@@ -73,7 +73,7 @@ export class StoreService {
 			await layersObserver.register(this._store);
 			await positionObserver.register(this._store);
 			await measurementObserver.register(this._store);
-			await geolocationObserver.register(this._store);
+			await geolocationPlugin.register(this._store);
 			await ContextClickPlugin.register(this._store);
 
 			//we remove all query params shown in the browsers address bar

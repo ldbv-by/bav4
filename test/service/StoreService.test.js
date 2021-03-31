@@ -8,7 +8,7 @@ describe('StoreService', () => {
 		const measurementObserverMock = {
 			register: () => { }
 		};
-		const geolocationObserverMock = {
+		const geolocationPluginMock = {
 			register: () => { }
 		};
 		const layersObserverMock = {
@@ -33,7 +33,7 @@ describe('StoreService', () => {
 			$injector
 				.reset()
 				.registerSingleton('MeasurementObserver', measurementObserverMock)
-				.registerSingleton('GeolocationObserver', geolocationObserverMock)
+				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersObserver', layersObserverMock)
 				.registerSingleton('TopicsObserver', topicsObserverMock)
 				.registerSingleton('PositionObserver', positionObserverMock)
@@ -70,7 +70,7 @@ describe('StoreService', () => {
 		it('registers all observers', (done) => {
 
 			const measurementObserverSpy = spyOn(measurementObserverMock, 'register');
-			const geolocationObserverSpy = spyOn(geolocationObserverMock, 'register');
+			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
 			const layersObserverSpy = spyOn(layersObserverMock, 'register');
 			const topicsObserverSpy = spyOn(topicsObserverMock, 'register');
 			const positionObserverSpy = spyOn(positionObserverMock, 'register');
@@ -83,7 +83,7 @@ describe('StoreService', () => {
 			setTimeout(() => {
 
 				expect(measurementObserverSpy).toHaveBeenCalledWith(store);
-				expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
+				expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 				expect(layersObserverSpy).toHaveBeenCalledWith(store);
 				expect(topicsObserverSpy).toHaveBeenCalledWith(store);
 				expect(positionObserverSpy).toHaveBeenCalledWith(store);
