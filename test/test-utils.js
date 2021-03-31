@@ -92,4 +92,20 @@ export class TestUtils {
 		return store;
 	}
 
+
+	/**
+	 * Returns a MediaQueryList object
+	 * @param {boolean} shouldMatch true if this MediaQueryList should match
+	 * @returns {MediaQueryList} 
+	 */
+	static newMediaQueryList(shouldMatch) {
+		return {
+			addEventListener(type, listener) {
+				listener({ matches: shouldMatch });
+			},
+			removeEventListener() {},
+			matches: shouldMatch
+		};
+	}
+
 }

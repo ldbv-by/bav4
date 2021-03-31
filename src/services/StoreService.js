@@ -1,6 +1,8 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
+import { contentPanelReducer } from '../modules/menue/store/contentPanel.reducer';
+import { toolBoxReducer } from '../modules/menue/store/toolBox.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
@@ -32,6 +34,8 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
+			contentPanel: contentPanelReducer,
+			toolBox: toolBoxReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,

@@ -55,7 +55,14 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * 
+	 * Should not be used anymore.
+	 * Use a media query like
+	 * ```
+	 * window.matchMedia('(orientation: portrait)') 
+	 * ```
+	 * </pre></code>
+	 * instead.
+	 * @deprecated
 	 * @see https://caniuse.com/screen-orientation
 	 */
 	getScreenOrientation() {

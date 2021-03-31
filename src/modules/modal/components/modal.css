@@ -45,8 +45,8 @@
   /* Modal Content */
   .modal {
     display:none;
-    z-index: 100;
     position: fixed;
+    z-index: var( --z-modal);
     top: 0;
     left: 0;
     width: 100%;

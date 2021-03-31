@@ -1,37 +1,72 @@
 /* global variables (custom properties) */
 :root {
+    font-size: calc(0.5em + 1vw);
+
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
-    --font-family: "Courier New", Courier, monospace;
+
+    --border-radius-button: 2.5em;
+    
+    --font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    
+    --z-footer: 100;
+    --z-toolbox: 200;
+    --z-mapbuttons: 300;
+    --z-contentpanel: 400;
+    --z-header: 500;
+    --z-modal: 600;
+
+    --width-contentpanel: 28em;
+    --animationtime-contentpanel: 0.3s;
+}
+
+@media (min-width:55em){
+    :root {
+    font-size: 1em;
+    }
 }
 
 .light-theme {
     --primary-bg-color: white;
+    --primary-bg-color-05: rgba( 255,255,255, 0.6);
     --secondary-bg-color: #e8e8e8;
     --bg-color: var(--primary-bg-color);
     --color: #696969;
     --hover-color: var(--primary-bg-color);
-
+    
     --map-button-bg-color: var(--primary-color);
+    --map-button-bg-hover-color: var(--primary-color);
+    --map-button-bg-hover-color-09: var(--primary-color);
     --map-button-color: var(--primary-bg-color);
-  }
-  
+        
+    --header-button-bg-color:  var(--primary-color);
+    --header-button-color:var(--primary-bg-color);
+    --header-background-color:#ebf2fc;
+}
+
 .dark-theme {
     --primary-bg-color: #212f3d;
+    --primary-bg-color-05: rgba( 0,0,0, 0.6);
     --secondary-bg-color: #354453;
     --color: white;
     --hover-color: var(--color);
     
     --map-button-bg-color: var(--primary-bg-color);
     --map-button-color: var(--primary-color);
+    
+    
+
+    --header-button-bg-color:  var(--secondary-color);
+    --header-button-color: var(--primary-bg-color);
+    --header-background-color:#23374d;
 }
 
-* {
+*,
+::before,
+::after{
+    box-sizing: border-box; 
     margin: 0;
     padding: 0;
-
-    color: var(--color);
-    bg-color: var(--primary-bg-color);
+    color: var(--color); 
     font-family: var(--font-family);
-}
-  
+}  
