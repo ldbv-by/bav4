@@ -51,7 +51,7 @@ describe('GeolocationPlugin', () => {
 
 	describe('register', () => {
 
-		it('activates and deactivates the geolocation observer', async () => {
+		it('activates and deactivates the geolocation plugin', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const activateSpy = spyOn(instanceUnderTest, '_activate');
@@ -282,7 +282,7 @@ describe('GeolocationPlugin', () => {
 
 	describe('activate / deactivate', () => {
 
-		it('activates the observer', () => {
+		it('activates the plugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const watchPositionSpy = spyOn(instanceUnderTest, '_watchPosition');
@@ -293,7 +293,7 @@ describe('GeolocationPlugin', () => {
 			expect(watchPositionSpy).toHaveBeenCalled();
 		});
 
-		it('deactivates the observer', () => {
+		it('deactivates the plugin', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			instanceUnderTest._geolocationWatcherId = 0;
@@ -305,7 +305,7 @@ describe('GeolocationPlugin', () => {
 			expect(clearWatchSpy).toHaveBeenCalledOnceWith(0);
 		});
 
-		it('calls deactivate on inactive observer', () => {
+		it('calls deactivate on inactive plugin', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const clearWatchSpy = spyOn(window.navigator.geolocation, 'clearWatch');

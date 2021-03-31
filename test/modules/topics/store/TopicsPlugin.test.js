@@ -6,7 +6,7 @@ import { topicsReducer } from '../../../../src/modules/topics/store/topics.reduc
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
-describe('TopicsObserver', () => {
+describe('TopicsPlugin', () => {
 
 	const topicsServiceMock = {
 		async init() { },

@@ -67,7 +67,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('topics')).toBeTrue();
 		});
 
-		it('registers all observers', (done) => {
+		it('registers all plugins', (done) => {
 
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');

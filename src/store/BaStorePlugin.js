@@ -5,7 +5,7 @@
 * on state changes during the runtime of the app. In contrast to BaElement, they often act on a higher abstraction level,
 * managing global state being consumed by different BaElements implementations afterwards.
 * <br>
-* Observers must implement {@link BaStorePlugin#register}, which is called by the global {@link StoreService}
+* StorePlugins must implement {@link BaStorePlugin#register}, which is called by the global {@link StoreService}
 * after all dependency injection is done.
 * 
 * @abstract
