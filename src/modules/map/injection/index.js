@@ -3,12 +3,12 @@ import { PositionObserver } from '../store/PositionObserver';
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
 import { GeolocationPlugin } from '../store/GeolocationPlugin';
-import { MeasurementObserver } from '../store/MeasurementObserver';
+import { MeasurementPlugin } from '../store/MeasurementPlugin';
 import { ContextClickPlugin } from '../store/ContextClickPlugin';
 
 export const mapModule = ($injector) => {
 	$injector
-		.registerSingleton('MeasurementObserver', new MeasurementObserver())
+		.registerSingleton('MeasurementPlugin', new MeasurementPlugin())
 		.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
 		.registerSingleton('LayersPlugin', new LayersPlugin())
 		.registerSingleton('PositionObserver', new PositionObserver())

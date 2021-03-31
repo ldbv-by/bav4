@@ -7,7 +7,7 @@ import { BaStorePlugin } from '../../../store/BaStorePlugin';
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
-export class MeasurementObserver extends BaStorePlugin {
+export class MeasurementPlugin extends BaStorePlugin {
 
 
 	/**
