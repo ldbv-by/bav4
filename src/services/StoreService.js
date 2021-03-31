@@ -56,7 +56,7 @@ export class StoreService {
 				GeolocationObserver: geolocationObserver,
 				MeasurementObserver: measurementObserver,
 				PositionObserver: positionObserver,
-				ContextClickObserver: contextClickObserver,
+				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
 			= $injector.inject(
@@ -65,7 +65,7 @@ export class StoreService {
 				'GeolocationObserver',
 				'MeasurementObserver',
 				'PositionObserver',
-				'ContextClickObserver',
+				'ContextClickPlugin',
 				'EnvironmentService'
 			);
 
@@ -74,7 +74,7 @@ export class StoreService {
 			await positionObserver.register(this._store);
 			await measurementObserver.register(this._store);
 			await geolocationObserver.register(this._store);
-			await contextClickObserver.register(this._store);
+			await ContextClickPlugin.register(this._store);
 
 			//we remove all query params shown in the browsers address bar
 			setTimeout(() => {

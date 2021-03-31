@@ -5,7 +5,7 @@ import { setClick, setContextClick } from '../../../../src/modules/map/store/poi
 import { setMoveStart } from '../../../../src/modules/map/store/map.action';
 import { mapContextMenuReducer } from '../../../../src/modules/map/store/mapContextMenu.reducer';
 import { MapContextMenu } from '../../../../src/modules/map/components/contextMenu/MapContextMenu';
-import { ContextClickObserver } from '../../../../src/modules/map/store/ContextClickObserver.js';
+import { ContextClickPlugin } from '../../../../src/modules/map/store/ContextClickPlugin.js';
 
 
 
@@ -25,7 +25,7 @@ describe('ContextClickObserver', () => {
 		it('it inserts the mapcontextmenu container', async () => {
 			const store = setup();
 
-			await new ContextClickObserver().register(store);
+			await new ContextClickPlugin().register(store);
 
 			const element = document.querySelector(MapContextMenu.tag);
 			expect(element).toBeTruthy();
@@ -36,7 +36,7 @@ describe('ContextClickObserver', () => {
 
 		it('updates the mapContextMenu store section', () => {
 			const store = setup();
-			new ContextClickObserver().register(store);
+			new ContextClickPlugin().register(store);
 
 
 			setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
@@ -54,7 +54,7 @@ describe('ContextClickObserver', () => {
 
 		it('updates the mapContextMenu store section', () => {
 			const store = setup();
-			new ContextClickObserver().register(store);
+			new ContextClickPlugin().register(store);
 
 			setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
@@ -70,7 +70,7 @@ describe('ContextClickObserver', () => {
 
 		it('updates the mapContextMenu store section', () => {
 			const store = setup();
-			new ContextClickObserver().register(store);
+			new ContextClickPlugin().register(store);
 
 			setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 

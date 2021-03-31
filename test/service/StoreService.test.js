@@ -20,7 +20,7 @@ describe('StoreService', () => {
 		const positionObserverMock = {
 			register() { }
 		};
-		const contextClickObserverMock = {
+		const contextClickPluginMock = {
 			register() { }
 		};
 		const windowMock = {
@@ -37,7 +37,7 @@ describe('StoreService', () => {
 				.registerSingleton('LayersObserver', layersObserverMock)
 				.registerSingleton('TopicsObserver', topicsObserverMock)
 				.registerSingleton('PositionObserver', positionObserverMock)
-				.registerSingleton('ContextClickObserver', contextClickObserverMock)
+				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.ready();
 		};
@@ -74,7 +74,7 @@ describe('StoreService', () => {
 			const layersObserverSpy = spyOn(layersObserverMock, 'register');
 			const topicsObserverSpy = spyOn(topicsObserverMock, 'register');
 			const positionObserverSpy = spyOn(positionObserverMock, 'register');
-			const contextClickObserverSpy = spyOn(contextClickObserverMock, 'register');
+			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -87,7 +87,7 @@ describe('StoreService', () => {
 				expect(layersObserverSpy).toHaveBeenCalledWith(store);
 				expect(topicsObserverSpy).toHaveBeenCalledWith(store);
 				expect(positionObserverSpy).toHaveBeenCalledWith(store);
-				expect(contextClickObserverSpy).toHaveBeenCalledWith(store);
+				expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
 				done();
 			});
 		});

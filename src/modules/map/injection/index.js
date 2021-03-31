@@ -4,7 +4,7 @@ import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeas
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
 import { GeolocationObserver } from '../store/GeolocationObserver';
 import { MeasurementObserver } from '../store/MeasurementObserver';
-import { ContextClickObserver } from '../store/ContextClickObserver';
+import { ContextClickPlugin } from '../store/ContextClickPlugin';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -12,7 +12,7 @@ export const mapModule = ($injector) => {
 		.registerSingleton('GeolocationObserver', new GeolocationObserver())
 		.registerSingleton('LayersObserver', new LayersObserver())
 		.registerSingleton('PositionObserver', new PositionObserver())
-		.registerSingleton('ContextClickObserver', new ContextClickObserver())
+		.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler);
 };

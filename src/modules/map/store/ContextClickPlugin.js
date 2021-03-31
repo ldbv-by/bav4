@@ -6,9 +6,9 @@ import { close, open } from './mapContextMenu.action';
 
 
 /**
- * Observer for contextClick state changes.
+ * Plugin for contextClick state managment.
  */
-export class ContextClickObserver extends BaStorePlugin {
+export class ContextClickPlugin extends BaStorePlugin {
 
 	/**
 	 * @override
