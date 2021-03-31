@@ -9,7 +9,7 @@ import { ContextClickPlugin } from '../../../../src/modules/map/store/ContextCli
 
 
 
-describe('ContextClickObserver', () => {
+describe('ContextClickPlugin', () => {
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
