@@ -71,7 +71,7 @@ Modules meet the following conventions:
 All global services like the `HttpService`, providers and domain classes are located here.
 
 ### `src/store`
-Global Redux related files like reducers, actions and plugins.
+Global redux related files like reducers, actions and plugins.
 
 ### `src/utils`
 Contains global utilities.
