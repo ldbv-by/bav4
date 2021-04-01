@@ -1,11 +1,11 @@
-import { PositionObserver } from '../../../../src/modules/map/store/PositionObserver';
+import { PositionPlugin } from '../../../../src/modules/map/store/PositionPlugin';
 import { TestUtils } from '../../../test-utils.js';
 import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
 import { $injector } from '../../../../src/injection';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
-describe('LayersObserver', () => {
+describe('PositionPlugin', () => {
 
 	const mapServiceMock = {
 		getDefaultMapExtent() { },
@@ -42,7 +42,7 @@ describe('LayersObserver', () => {
 
 		it('calls #register', async () => {
 			const store = setup();
-			const instanceUnderTest = new PositionObserver();
+			const instanceUnderTest = new PositionPlugin();
 			const spy = spyOn(instanceUnderTest, '_init');
 
 			await instanceUnderTest.register(store);
@@ -55,7 +55,7 @@ describe('LayersObserver', () => {
 
 			it('sets position by calling #_setPositionFromConfig', () => {
 				setup();
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
 				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
 
@@ -68,7 +68,7 @@ describe('LayersObserver', () => {
 			it('sets position by calling #_setPositionFromQueryParams', () => {
 				setup();
 				const queryParam = `${QueryParameters.CENTER}=21,42&${QueryParameters.ZOOM}=5`;
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
 				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -83,7 +83,7 @@ describe('LayersObserver', () => {
 				it('sets position by calling #_setPositionFromConfig', () => {
 					setup();
 					const queryParam = `${QueryParameters.CENTER}=21,42`;
-					const instanceUnderTest = new PositionObserver();
+					const instanceUnderTest = new PositionPlugin();
 					const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
 					const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
 					spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -99,7 +99,7 @@ describe('LayersObserver', () => {
 				it('sets position by calling #_setPositionFromConfig', () => {
 					setup();
 					const queryParam = `${QueryParameters.ZOOM}=5`;
-					const instanceUnderTest = new PositionObserver();
+					const instanceUnderTest = new PositionPlugin();
 					const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
 					const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
 					spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -119,7 +119,7 @@ describe('LayersObserver', () => {
 				const store = setup();
 				const initialFitRequest = store.getState().position.fitRequest;
 
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const mapServiceSpy = spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue([
 					[21, 21, 42, 42]
 				]);
@@ -138,7 +138,7 @@ describe('LayersObserver', () => {
 
 			it('sets position based on geodetic coordinate', () => {
 				const store = setup();
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const geodeticCoord = [604384, 5537812];
 				const expextedCoordinate = [11111, 22222];
 				const expectedZoomLevel = 5;
@@ -156,7 +156,7 @@ describe('LayersObserver', () => {
 
 			it('sets position based on wgs84 coordinate', () => {
 				const store = setup();
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
 				const expectedZoomLevel = 5;
@@ -174,7 +174,7 @@ describe('LayersObserver', () => {
             
 			it('sets position by calling #_setPositionFromConfig as fallback', () => {
 				setup();
-				const instanceUnderTest = new PositionObserver();
+				const instanceUnderTest = new PositionPlugin();
 				const wgs84Coordinate = ['some', 'thing'];
 				const expectedZoomLevel = 'unparseable';
 				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`;

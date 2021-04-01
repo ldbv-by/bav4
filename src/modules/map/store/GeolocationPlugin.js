@@ -3,14 +3,14 @@ import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
 import { changeCenter, setFit } from './position.action';
 import { addLayer, removeLayer } from './layers.action';
-import { BaObserver } from '../../BaObserver';
+import { BaPlugin } from '../../../store/BaPlugin';
 
 /**
  * Id of the layer used for geolocation visualization
  */
 export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
-export class GeolocationObserver extends BaObserver {
+export class GeolocationPlugin extends BaPlugin {
 
 	constructor() {
 		super();

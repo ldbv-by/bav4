@@ -13,7 +13,7 @@ import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementObserver';
+import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
 import { HelpTooltip } from './HelpTooltip';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {

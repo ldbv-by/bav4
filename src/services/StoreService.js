@@ -51,30 +51,30 @@ export class StoreService {
 		$injector.onReady(async () => {
 
 			const {
-				LayersObserver: layersObserver,
-				TopicsObserver: topicsObserver,
-				GeolocationObserver: geolocationObserver,
-				MeasurementObserver: measurementObserver,
-				PositionObserver: positionObserver,
-				ContextClickObserver: contextClickObserver,
+				LayersPlugin: layersPlugin,
+				TopicsPlugin: topicsPlugin,
+				GeolocationPlugin: geolocationPlugin,
+				MeasurementPlugin: measurementPlugin,
+				PositionPlugin: positionPlugin,
+				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
 			= $injector.inject(
-				'TopicsObserver',
-				'LayersObserver',
-				'GeolocationObserver',
-				'MeasurementObserver',
-				'PositionObserver',
-				'ContextClickObserver',
+				'TopicsPlugin',
+				'LayersPlugin',
+				'GeolocationPlugin',
+				'MeasurementPlugin',
+				'PositionPlugin',
+				'ContextClickPlugin',
 				'EnvironmentService'
 			);
 
-			await topicsObserver.register(this._store);
-			await layersObserver.register(this._store);
-			await positionObserver.register(this._store);
-			await measurementObserver.register(this._store);
-			await geolocationObserver.register(this._store);
-			await contextClickObserver.register(this._store);
+			await topicsPlugin.register(this._store);
+			await layersPlugin.register(this._store);
+			await positionPlugin.register(this._store);
+			await measurementPlugin.register(this._store);
+			await geolocationPlugin.register(this._store);
+			await ContextClickPlugin.register(this._store);
 
 			//we remove all query params shown in the browsers address bar
 			setTimeout(() => {

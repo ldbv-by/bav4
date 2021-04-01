@@ -14,7 +14,7 @@ import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementObserver';
+import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 
 

@@ -1,10 +1,10 @@
 import { $injector } from '../../../injection';
 import { QueryParameters } from '../../../services/domain/queryParameters';
-import { BaObserver } from '../../BaObserver';
+import { BaPlugin } from '../../../store/BaPlugin';
 import { addLayer } from './layers.action';
 
 
-export class LayersObserver extends BaObserver {
+export class LayersPlugin extends BaPlugin {
 
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');

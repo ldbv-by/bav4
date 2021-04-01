@@ -1,4 +1,4 @@
-import { TopicsObserver } from '../../../../src/modules/topics/store/TopicsObserver';
+import { TopicsPlugin } from '../../../../src/modules/topics/store/TopicsPlugin';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { Topic } from '../../../../src/services/domain/topic';
@@ -6,7 +6,7 @@ import { topicsReducer } from '../../../../src/modules/topics/store/topics.reduc
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
-describe('TopicsObserver', () => {
+describe('TopicsPlugin', () => {
 
 	const topicsServiceMock = {
 		async init() { },
@@ -37,7 +37,7 @@ describe('TopicsObserver', () => {
 
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			const spy = spyOn(instanceUnderTest, '_init').and.returnValue(Promise.resolve(true));
 
 			const result = await instanceUnderTest.register(store);
@@ -51,7 +51,7 @@ describe('TopicsObserver', () => {
 
 		it('initializes the topics service and calls #_addTopicFromConfig', async () => {
 			setup();
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
@@ -66,7 +66,7 @@ describe('TopicsObserver', () => {
 		it('initializes the topics service and calls #_addTopicFromQueryParams', async () => {
 			setup();
 			const queryParam = QueryParameters.TOPIC + '=some';
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
@@ -88,7 +88,7 @@ describe('TopicsObserver', () => {
 			const store = setup();
 			const topicId = 'someId';
 			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			spyOn(topicsServiceMock, 'default').and.returnValue(topic);
 
 			await instanceUnderTest._addTopicFromConfig();
@@ -105,7 +105,7 @@ describe('TopicsObserver', () => {
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
 			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
 
 			instanceUnderTest._addTopicFromQueryParams(new URLSearchParams(queryParam));
@@ -119,7 +119,7 @@ describe('TopicsObserver', () => {
 			setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
-			const instanceUnderTest = new TopicsObserver();
+			const instanceUnderTest = new TopicsPlugin();
 			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(null);
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 

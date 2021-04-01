@@ -1,5 +1,5 @@
 import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
-import { MeasurementObserver, MEASUREMENT_LAYER_ID } from '../../../../src/modules/map/store/MeasurementObserver';
+import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '../../../../src/modules/map/store/MeasurementPlugin';
 
 import { activate, deactivate } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
@@ -7,7 +7,7 @@ import { layersReducer } from '../../../../src/modules/map/store/layers.reducer'
 
 
 
-describe('MeasurementObserver', () => {
+describe('MeasurementPlugin', () => {
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
@@ -20,7 +20,7 @@ describe('MeasurementObserver', () => {
 
 	it('adds or removes the measurement layer', async () => {
 		const store = setup();
-		const instanceUnderTest = new MeasurementObserver();
+		const instanceUnderTest = new MeasurementPlugin();
 		await instanceUnderTest.register(store);
 		
 		activate();
