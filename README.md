@@ -60,7 +60,7 @@ Modules meet the following conventions:
 
 3. Each module may contain further directories:
    - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
-   - `/store` : Redux related files like reducers and actions
+   - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
@@ -69,6 +69,9 @@ Modules meet the following conventions:
 
 ### `src/services`
 All global services like the `HttpService`, providers and domain classes are located here.
+
+### `src/store`
+Global redux related files like reducers, actions and plugins.
 
 ### `src/utils`
 Contains global utilities.
@@ -121,7 +124,7 @@ Here's a overview of what project folder structure looks like:
 
 - Common places for mutating state are:
   - `BaElement` components
-  - `Observer` of the redux store
+  - `BaPlugin` implementations
 
 - If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
 

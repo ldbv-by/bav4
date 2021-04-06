@@ -1,7 +1,7 @@
 import { provide } from '../../../../src/modules/map/i18n/contextMenu.provider';
 
 
-describe('i18n for context menue', () => {
+describe('i18n for context menu', () => {
 
 	it('provides translation for en', () => {
 

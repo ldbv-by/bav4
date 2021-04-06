@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
-import { GEOLOCATION_LAYER_ID } from '../../../../store/GeolocationObserver';
+import { GEOLOCATION_LAYER_ID } from '../../../../store/GeolocationPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
@@ -34,7 +34,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	 * Activates the Handler.
 	 * @override
 	 */
-	activate(olMap) {
+	onActivate(olMap) {
 		if (this._geolocationLayer === null) {
 			const source = new VectorSource({ wrapX: false, features: [this._accuracyFeature, this._positionFeature] });
 			this._geolocationLayer = new VectorLayer({
@@ -57,7 +57,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	deactivate(/*eslint-disable no-unused-vars */olMap) {
+	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		this._positionFeature.setStyle(nullStyleFunction);
 		this._accuracyFeature.setStyle(nullStyleFunction);
 		this._geolocationLayer = null;

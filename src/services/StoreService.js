@@ -1,6 +1,8 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../modules/map/store/position.reducer';
-import { sidePanelReducer } from '../modules/menue/store/sidePanel.reducer';
+import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
+import { contentPanelReducer } from '../modules/menu/store/contentPanel.reducer';
+import { toolBoxReducer } from '../modules/menu/store/toolBox.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
@@ -32,6 +34,8 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
+			contentPanel: contentPanelReducer,
+			toolBox: toolBoxReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,
@@ -47,36 +51,30 @@ export class StoreService {
 		$injector.onReady(async () => {
 
 			const {
-				TopicsService: topicsService,
-				GeoResourceService: geoResourceService,
-				LayersObserver: layersObserver,
-				TopicsObserver: topicsObserver,
-				GeolocationObserver: geolocationObserver,
-				MeasurementObserver: measurementObserver,
-				PositionObserver: positionObserver,
-				ContextClickObserver: contextClickObserver,
+				LayersPlugin: layersPlugin,
+				TopicsPlugin: topicsPlugin,
+				GeolocationPlugin: geolocationPlugin,
+				MeasurementPlugin: measurementPlugin,
+				PositionPlugin: positionPlugin,
+				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
 			= $injector.inject(
-				'TopicsService',
-				'GeoResourceService',
-				'TopicsObserver',
-				'LayersObserver',
-				'GeolocationObserver',
-				'MeasurementObserver',
-				'PositionObserver',
-				'ContextClickObserver',
+				'TopicsPlugin',
+				'LayersPlugin',
+				'GeolocationPlugin',
+				'MeasurementPlugin',
+				'PositionPlugin',
+				'ContextClickPlugin',
 				'EnvironmentService'
 			);
-			await topicsService.init();
-			await geoResourceService.init();
-			
-			await topicsObserver.register(this._store);
-			await layersObserver.register(this._store);
-			await positionObserver.register(this._store);
-			await measurementObserver.register(this._store);
-			await geolocationObserver.register(this._store);
-			await contextClickObserver.register(this._store);
+
+			await topicsPlugin.register(this._store);
+			await layersPlugin.register(this._store);
+			await positionPlugin.register(this._store);
+			await measurementPlugin.register(this._store);
+			await geolocationPlugin.register(this._store);
+			await ContextClickPlugin.register(this._store);
 
 			//we remove all query params shown in the browsers address bar
 			setTimeout(() => {

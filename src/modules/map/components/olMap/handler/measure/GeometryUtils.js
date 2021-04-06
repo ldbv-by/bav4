@@ -1,10 +1,10 @@
-import { LineString, Polygon, LinearRing, Circle } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 
 	if (fromProjection && toProjection) {
 		return geometry.clone().transform(fromProjection, toProjection);
-	}	
+	}
 	return geometry;
 };
 
@@ -22,13 +22,13 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
 export const getArea = (geometry, calculationHints = {}) => {
-	if (!(geometry instanceof Polygon) && 
-		!(geometry instanceof Circle) && 
+	if (!(geometry instanceof Polygon) &&
+		!(geometry instanceof Circle) &&
 		!(geometry instanceof LinearRing)) {
 		return 0;
-	}	
+	}
 	const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-	return calculationGeometry.getArea();	
+	return calculationGeometry.getArea();
 };
 
 
@@ -50,12 +50,12 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 		}
 		else if (calculationGeometry instanceof Polygon) {
 			lineString = new LineString(calculationGeometry.getLinearRing(0).getCoordinates());
-		}	
-		
+		}
+
 		if (lineString) {
 			return lineString.getLength();
 		}
-	}	
+	}
 	return 0;
 };
 
@@ -77,8 +77,8 @@ export const getCoordinateAt = (geometry, fraction) => {
 	}
 	else if (geometry instanceof Polygon) {
 		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
-	}	
-	
+	}
+
 	if (lineString) {
 		return lineString.getCoordinateAt(fraction);
 	}
@@ -93,7 +93,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 export const canShowAzimuthCircle = (geometry) => {
 	if (geometry instanceof LineString) {
 		const coords = geometry.getCoordinates();
-		if (coords.length === 2 || 
+		if (coords.length === 2 ||
 			(coords.length === 3 && coords[1][0] === coords[2][0] && coords[1][1] === coords[2][1])) {
 			return true;
 		}
@@ -108,8 +108,8 @@ export const canShowAzimuthCircle = (geometry) => {
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
 export const getAzimuth = (geometry) => {
-	if (!(geometry instanceof Polygon) && 
-		!(geometry instanceof LineString) && 
+	if (!(geometry instanceof Polygon) &&
+		!(geometry instanceof LineString) &&
 		!(geometry instanceof LinearRing)) {
 		return null;
 	}
@@ -130,7 +130,7 @@ export const getAzimuth = (geometry) => {
 	const rad = Math.acos(y / Math.sqrt(x * x + y * y));
 	const factor = x > 0 ? 1 : -1;
 
-	return (360 + (factor * rad * 180 / Math.PI)) % 360;	
+	return (360 + (factor * rad * 180 / Math.PI)) % 360;
 };
 
 
@@ -145,10 +145,10 @@ export const getPartitionDelta = (geometry, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
 	let delta = 1;
 	if (length > 200000) {
-		delta = 100000 / length;				
+		delta = 100000 / length;
 	}
 	else if (length > 20000) {
-		delta = 10000 / length;				
+		delta = 10000 / length;
 	}
 	else if (length !== 0) {
 		delta = 1000 / length;
@@ -157,14 +157,14 @@ export const getPartitionDelta = (geometry, calculationHints = {}) => {
 	return delta;
 };
 
- 
+
 /**
  * Appends the appropriate unit of measure to the specified number
  * @param {number} length 
  * @returns {String} the formatted length 
  */
 //todo:intermediate helper-function until kind of FormattingService is in place
-export const getFormattedLength = (length) => {		
+export const getFormattedLength = (length) => {
 	let formatted;
 	if (length > 100) {
 		formatted = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
@@ -173,7 +173,7 @@ export const getFormattedLength = (length) => {
 		formatted = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
 	}
 	return formatted;
-};	
+};
 
 /**
  * Appends the appropriate unit of measure to the specified number
@@ -181,7 +181,7 @@ export const getFormattedLength = (length) => {
  * @returns {String} the formatted length 
  */
 //todo: intermediate helper-function until kind of FormattingService is in place
-export const getFormattedArea = (area) =>  {		
+export const getFormattedArea = (area) => {
 	let formatted;
 	if (area >= 1000000) {
 		formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km&sup2;';
@@ -193,4 +193,29 @@ export const getFormattedArea = (area) =>  {
 		formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
 	}
 	return formatted;
-};	
+};
+
+
+/**
+ * Tests whether the vertex candidate is part of the geometry vertices
+ * @param {Geometry} geometry the geometry
+ * @param {Point} vertexCandidate the candidate point to test against the geometryn if candidate is other than
+ * {Point}, it returns immediately false
+ * @returns {boolean}
+ */
+export const isVertexOfGeometry = (geometry, vertexCandidate) => {
+	const isPoint = vertexCandidate instanceof Point;
+	if (!isPoint) {
+		return false;
+	}
+	const vertexCoordinate = vertexCandidate.getCoordinates();
+	let coordinates = geometry.getCoordinates();
+	if (geometry instanceof Polygon) {
+		coordinates = geometry.getCoordinates()[0];
+	}
+	if (geometry instanceof Point) {
+		coordinates = [geometry.getCoordinates()];
+	}
+	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
+	return result ? true : false;
+};

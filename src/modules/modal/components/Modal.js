@@ -45,10 +45,10 @@ export class Modal extends BaElement {
 	
 	/**
  * @override
- * @param {Object} store 
+ * @param {Object} state 
  */
-	extractState(store) {
-		const { modal: { title, content } } = store;
+	extractState(state) {
+		const { modal: { title, content } } = state;
 		const visible = content;
 		return { title, content, visible };
 	}

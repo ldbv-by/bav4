@@ -12,6 +12,10 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_measure_snap_first_point).toBe('Klicke, um die Fläche zu schliessen');
 		expect(map.map_olMap_handler_measure_snap_last_point).toBe('Klicke, um die Messung abzuschliessen');
+		expect(map.map_olMap_handler_measure_modify_click_new_point).toBe('Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen');
+		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen');
+		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Klicke und ziehen um die Beschriftung zu verschieben');
+		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Letzter Punkt löschen: ENTF Taste');
 	});
 
@@ -24,18 +28,22 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
 		expect(map.map_olMap_handler_measure_snap_first_point).toBe('Click to close the surface');
 		expect(map.map_olMap_handler_measure_snap_last_point).toBe('Click to finish the line');
+		expect(map.map_olMap_handler_measure_modify_click_new_point).toBe('Click, to add point<br/> Click then drag to move the point');
+		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Click to delete the point.<br/> Click then drag to move the point');
+		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Click then drag to move the label');
+		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the drawing');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 6;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);									
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {
