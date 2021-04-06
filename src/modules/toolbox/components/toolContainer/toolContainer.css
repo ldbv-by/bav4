@@ -1,0 +1,41 @@
+.container{               
+    border-radius: .375rem;
+    top: 1rem;
+    right: 1rem;
+    background-color: transparent;               
+    position: fixed;
+    z-index: 100;
+    max-width: 19rem;
+}
+
+
+.is-open {
+    transform: translate(-21em,0);
+}
+/* tablet */
+.is-tablet .container{    
+    font-size:.9rem;
+}
+/* desktop */
+.is-desktop .is-open {
+    transform: translate(0,0);
+}
+.is-desktop .container{    
+    font-size:.9rem;
+    max-width: none;
+    right: 1em;
+    bottom: 1em;
+    padding: 0em;
+}
+/* portrait */
+.is-portrait .container{
+    flex-direction: row ;
+    bottom: -20em;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: unset;
+}     
+.is-portrait .is-open {
+    transform: translate(0,-20em);
+ }
