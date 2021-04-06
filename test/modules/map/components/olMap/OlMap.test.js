@@ -45,6 +45,9 @@ describe('OlMap', () => {
 		deactivate() { },
 		get id() {
 			return 'measurementLayerHandlerMockId';
+		},
+		get active() {
+			return false;
 		}
 	};
 	const geolocationLayerHandlerMock = {
@@ -223,15 +226,32 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate,  false, preventDefault);
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
 					expect(preventDefault).toHaveBeenCalled();
 				});
+
+				it('does nothing when layer handler is active', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					//we set one handler active
+					spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
+
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+
+					expect(preventDefault).not.toHaveBeenCalled();
+				});
 			});
 
 			describe('on touch device', () => {
+				
 				it('updates the \'contextclick\' property in pointer store', async () => {
 					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
@@ -249,6 +269,25 @@ describe('OlMap', () => {
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
 					expect(preventDefault).toHaveBeenCalled();
+				});
+
+				it('does nothing when layer handler is active', async () => {
+					const defaultDelay = 300;
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					//we set one handler active
+					spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
+
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					jasmine.clock().tick(defaultDelay + 100);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+					expect(preventDefault).not.toHaveBeenCalled();
 				});
 			});
 		});

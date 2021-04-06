@@ -1,8 +1,8 @@
 .zoom-to-extent {
-  position: absolute;
+  /* position: absolute;
   top: 250px;
   right: 10px;
-  display: inline-block;
+  display: inline-block; */
 }
 
 .zoom-to-extent-icon {
@@ -16,8 +16,8 @@
   -webkit-mask-size: cover;
   cursor: pointer;
   display: inline-block;
-  height: 30px;
-  width: 30px;
+  height: 1.5em;
+  width: 1.5em;
 }
 
 .icon:hover,
@@ -27,12 +27,12 @@
 .zoom-to-extent-button {
   background-color: var(--map-button-bg-color);
   display: inline-block;
-  height: 40px;
-  width: 40px;
+  height: 2.5em;
+  width: 2.5em;
   border-radius: 50%;
   border: none;
   outline: none;
-  padding: 5px;
+  padding-top: 0.25em;
 }
 
 .zoom-to-extent-button:hover {

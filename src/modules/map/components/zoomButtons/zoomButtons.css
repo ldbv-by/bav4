@@ -1,14 +1,13 @@
 .zoom-buttons {
-  position: absolute;
-  right: 30px;
-  top: 100px;
-  display: inline-block;
-  vertical-align: top;
-  width: 20px;
-  height: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.zoom-in {
+.zoom-buttons :first-child{
+  margin:0 0 .4em 0;  
+}
+
+.zoom-in {  
   mask: url('assets/plus-circle-fill.svg');
   -webkit-mask-image: url('assets/plus-circle-fill.svg');
 }
@@ -24,8 +23,8 @@
   -webkit-mask-size: cover;
   cursor: pointer;
   display: inline-block;
-  height: 40px;
-  width: 40px;
+  height: 2.5em;
+  width: 2.5em;
 }
 
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/:host-context() */
@@ -52,7 +51,7 @@
 .zoom-buttons .button {
   background-color: var(--map-button-color);
   display: inline-block;
-  height: 40px;
-  width: 40px;
+  height: 2.5em;
+  width: 2.5em;
   border-radius: 50%;
 }

@@ -1,18 +1,18 @@
-import { LayersObserver } from '../store/LayersObserver';
-import { PositionObserver } from '../store/PositionObserver';
+import { LayersPlugin } from '../store/LayersPlugin';
+import { PositionPlugin } from '../store/PositionPlugin';
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
-import { GeolocationObserver } from '../store/GeolocationObserver';
-import { MeasurementObserver } from '../store/MeasurementObserver';
-import { ContextClickObserver } from '../store/ContextClickObserver';
+import { GeolocationPlugin } from '../store/GeolocationPlugin';
+import { MeasurementPlugin } from '../store/MeasurementPlugin';
+import { ContextClickPlugin } from '../store/ContextClickPlugin';
 
 export const mapModule = ($injector) => {
 	$injector
-		.registerSingleton('MeasurementObserver', new MeasurementObserver())
-		.registerSingleton('GeolocationObserver', new GeolocationObserver())
-		.registerSingleton('LayersObserver', new LayersObserver())
-		.registerSingleton('PositionObserver', new PositionObserver())
-		.registerSingleton('ContextClickObserver', new ContextClickObserver())
+		.registerSingleton('MeasurementPlugin', new MeasurementPlugin())
+		.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
+		.registerSingleton('LayersPlugin', new LayersPlugin())
+		.registerSingleton('PositionPlugin', new PositionPlugin())
+		.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler);
 };

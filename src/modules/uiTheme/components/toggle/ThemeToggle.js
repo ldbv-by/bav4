@@ -18,8 +18,8 @@ export class ThemeToggle extends BaElement {
 		this._translationService = TranslationService;
 	}
 
-	extractState(store) {
-		const { uiTheme: { theme } } = store;
+	extractState(state) {
+		const { uiTheme: { theme } } = state;
 		return { theme };
 	}
 

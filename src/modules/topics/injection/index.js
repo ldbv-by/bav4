@@ -1,6 +1,6 @@
-import { TopicsObserver } from '../../topics/store/TopicsObserver';
+import { TopicsPlugin } from '../../topics/store/TopicsPlugin';
 
 export const topicsModule = ($injector) => {
 	$injector
-		.registerSingleton('TopicsObserver', new TopicsObserver());
+		.registerSingleton('TopicsPlugin', new TopicsPlugin());
 };

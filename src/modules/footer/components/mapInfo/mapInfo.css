@@ -1,6 +1,6 @@
 .content {
     display: flex;
-    justify-content: space-between;
+    justify-content: normal;
     width: 100%;
 }  
 

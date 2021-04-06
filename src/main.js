@@ -12,7 +12,7 @@ import * as config from './injection/config';
 import './modules/header';
 import './modules/footer';
 import './modules/map';
-import './modules/menue';
+import './modules/menu';
 import './modules/commons';
 import './modules/search';
 import './modules/contextMenue';

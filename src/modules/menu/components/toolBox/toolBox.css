@@ -1,0 +1,125 @@
+.action-button{
+    position: fixed;
+    z-index: calc(var(--z-toolbox) + 10);
+    right: .5em;
+    bottom: .5em;
+    height:5em; 
+    width:5em;
+    border-radius:2.5em;
+    background-color: var(--primary-bg-color);
+    border-color: rgb(58,132,195);
+    border-width:.3em;
+    border-style: solid;
+}
+.action-button__icon{
+    border:none;
+    height:4em;
+    width:4em;
+    margin:.4em .6em;
+    background-image:  url('assets/ba.svg');
+}
+ .tool-box{    
+    position: fixed;
+    z-index: var(--z-toolbox);
+    border-radius: .375em;
+    bottom: .5em;
+    right: -20.5em;
+    background-color: var(--primary-bg-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    padding: 0.5em 5.2em 0.5em 0.5em;
+    max-width: 22em;
+    transition: transform 0.3s ease-out;
+}
+.tool-box__tools-nav{
+    position: absolute;
+    top: 0rem;
+    background: lightgray;
+    border-radius: 0 0 .5em .5em;
+    right: 1rem;
+    opacity: .9;
+}
+.tool-box__tools-nav-button{
+    height: 1rem !important;
+    width: 1rem !important;
+    background: transparent;
+    border: none;
+    border-radius: 2em;
+    margin: .5rem !important;
+}
+.tool-box__button{
+    display: inline-block;
+    cursor: pointer;
+
+}
+.tool-box__button:hover{
+  opacity:.9;
+
+}
+.tool-box__button_icon{
+    height: 2.5em;
+    width: 2.5em;
+    margin: .8rem .8rem .3rem .8rem;
+    padding: 0;
+    /* background:var(--map-button-bg-color); */
+    fill:rgb(58,132,195);
+    background-size:  2.5em  2.5em;
+}
+.share{
+    background-image:  url('assets/share.svg');
+   
+}
+.pencil{
+    background-image:  url('assets/pencil.svg');
+}
+.tool-box__button-text{
+    color: var(--color); 
+    font-size: .8rem; 
+    text-align: center;
+}
+.tool-box__tools{
+    display: none;
+}
+.is-open {
+    transform: translate(-21em,0);
+}
+/* tablet */
+.is-tablet .tool-box{    
+    font-size:.9rem;
+}
+/* desktop */
+.is-desktop .is-open {
+    transform: translate(0,0);
+}
+.is-desktop .action-button{   
+    display:none; 
+}
+.is-desktop .tool-box{    
+    font-size:.9rem;
+    max-width: none;
+    right: 1em;
+    bottom: 1em;
+    padding: 0em;
+}
+/* portrait */
+.is-portrait .tool-box{
+    flex-direction: row ;
+    bottom: -20em;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: unset;
+}     
+.is-portrait .is-open {
+    transform: translate(0,-20em);
+ }
+.is-portrait .tool-box__item{                       
+    max-width: inherit; 
+    width: 100%;
+    height: auto;
+}
+.is-portrait .tool-container__item button {
+    margin: .8rem .8rem .3rem .8rem;
+}
+.is-portrait .tool-box{    
+    font-size:1rem;
+}

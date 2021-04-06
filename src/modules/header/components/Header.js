@@ -1,9 +1,9 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { toggleSidePanel } from '../../menue/store/sidePanel.action';
+import { openContentPanel } from '../../menu/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
-import { changeZoomAndCenter } from '../../map/store/position.action';
+// import { changeZoomAndCenter } from '../../map/store/position.action';
 import css from './header.css';
 
 
@@ -11,18 +11,55 @@ import css from './header.css';
  * Container element for header stuff. 
  * @class
  * @author aul
+ * @author alsturm
  */
 export class Header extends BaElement {
 
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, SearchResultProviderService: providerService } = $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService');
-		this._coordinateService = CoordinateService;
-		this._environmentService = EnvironmentService;
+		const {
+			CoordinateService: coordinateService,
+			EnvironmentService: environmentService,
+			SearchResultProviderService: providerService,
+			TranslationService: translationService
+		}
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService', 'TranslationService');
+
+		this._coordinateService = coordinateService;
+		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
-		this._menueButtonLocked = false;
+		this._portrait = false;
+		this._classMobileHeader = '';
 	}
+
+	initialize() {
+		const _window = this._environmentService.getWindow();
+
+		//MediaQuery for 'orientation'
+		const mediaQuery = _window.matchMedia('(orientation: portrait)');
+		const handleOrientationChange = (e) => {
+			this._portrait = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQuery.addEventListener('change', handleOrientationChange);
+		//initial set of local state
+		handleOrientationChange(mediaQuery);
+
+		//MediaQuery for 'min-width'
+		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
+		const handleMinWidthChange = (e) => {
+			this._minWidth = e.matches;
+			//trigger a re-render
+			this.render();
+		};
+		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
+		//initial set of local state
+		handleMinWidthChange(mediaQueryMinWidth);
+	}
+
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
@@ -30,70 +67,97 @@ export class Header extends BaElement {
 
 	createView() {
 
-		// const getDeviceClass = (prefix) => (mobile ? prefix + '-mobile' : prefix + '-desktop');
-		const getTitle = () => {
-			const { sidePanelIsOpen } = this._state;
-			return sidePanelIsOpen ? 'Close menue' : 'Open menue';
-		};
-
-		const toggleSidePanelGuarded = () => {
-
-			if (!this._menueButtonLocked) {
-				this._menueButtonLocked = true;
-				toggleSidePanel();
-				window.setTimeout(() => this._menueButtonLocked = false, Header.menueButtonLockDuration);
-			}
-		};
-
 		const showModalInfo = () => {
 			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
 			openModal(payload);
 		};
 
-		const onSelect = (data) => {
-			changeZoomAndCenter({
-				zoom: 16,
-				center: this._coordinateService.fromLonLat([data.center[0], data.center[1]])
-			});
+		const getOrientationClass = () => {
+			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
+
+		const getMinWidthClass = () => {
+			return this._minWidth ? 'is-desktop' : 'is-tablet';
+		};
+
+		const { open } = this._state;
+
+		const getOverlayClass = () => {
+			return (open && !this._portrait) ? 'is-open' : '';
+		};
+
+		const hideModalHeader = () => {
+			const popup = this.shadowRoot.getElementById('headerMobile');
+			if (this._portrait || !this._minWidth) {
+				popup.style.display = 'none';
+				popup.style.opacity = 0;
+			}
+		};
+
+		const showModalHeader = () => {
+			const popup = this.shadowRoot.getElementById('headerMobile');
+			if (this._portrait || !this._minWidth) {
+				popup.style.display = '';
+				window.setTimeout(() => popup.style.opacity = 1, 300);
+			}
+		};
+
+		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>
-			<div class="header header-desktop">
-				<div class="content">
-					<div class="item0">
-						<div class='ci'>
-							<h3 class='ci-text'>BAv4 (#nomigration)</h3>
-							<div class='ci-logo' @click="${showModalInfo}"></div>
+			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+				<div class='header__logo'>				
+					<button   class="action-button">
+						<div class="action-button__border">
 						</div>
-					</div>
-					<ba-autocomplete-search class="item1" .onSelect=${onSelect} .provider=${this._locationSearchResultProvider}></ba-autocomplete-search>
-					<div class="item2">
-						<div class='menue-button'>
-							<a title="${getTitle()}" @click="${toggleSidePanelGuarded}">
-								<span class='icon toggle-side-panel'></span>
-							</a>
+						<div class="action-button__icon">
+							<div class="ba">
+							</div>
 						</div>
+					</button>
+					<div class='header__text'>
 					</div>
+					<div class='header__emblem'>
+					</div>
+				</div>			
+				<div id='headerMobile' class='header__text-mobile'>	
 				</div>
-			</div>
+				<div  class="header ${getOverlayClass()}">   
+				<mask class="header__background">
+				</mask>
+					<div class='header__search-container'>
+						<input @focus="${hideModalHeader}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
+						&nbsp;
+						</button>
+					</div>
+					<div  class="header__button-container">
+						<button title="opens menu 0" @click="${openContentPanel}">
+							${translate('header_header_topics_button')}
+						</button>
+						<button title="opens menu 1" @click="${openContentPanel}">
+						 	${translate('header_header_maps_button')}
+						</button>
+						<button title="opens menu 2" @click="${openContentPanel}">
+							${translate('header_header_more_button')}
+						</button>
+					</div>
+				</div>				
+            </div>
 		`;
 	}
 
 	/**
-	 * 
-	 * @param {@override} store 
+	 * @override
+	 * @param {Object} state 
 	 */
-	extractState(store) {
-		const { sidePanel: { open } } = store;
-		return { sidePanelIsOpen: open };
+	extractState(state) {
+		const { contentPanel: { open } } = state;
+		return { open };
 	}
 
 	static get tag() {
 		return 'ba-header';
-	}
-
-	static get menueButtonLockDuration() {
-		return 500;
 	}
 }

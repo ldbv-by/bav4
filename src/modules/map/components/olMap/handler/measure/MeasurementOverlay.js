@@ -7,11 +7,11 @@ import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, g
 import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {
-	TEXT:'text',
-	AREA:'area',
-	DISTANCE:'distance',
-	DISTANCE_PARTITION:'distance-partition',
-	HELP:'help'
+	TEXT: 'text',
+	AREA: 'area',
+	DISTANCE: 'distance',
+	DISTANCE_PARTITION: 'distance-partition',
+	HELP: 'help'
 };
 /**
  * Internal overlay content for measurements on map-components
@@ -40,11 +40,12 @@ export const MeasurementOverlayTypes = {
 export class MeasurementOverlay extends BaElement {
 
 	constructor() {
-		super();	
+		super();
 		this._value = '';
-		this._static = false;		
+		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = false;
+		this._isDraggable = false;
 		this._contentFunction = () => '';
 	}
 
@@ -56,11 +57,12 @@ export class MeasurementOverlay extends BaElement {
 
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
-			area:this._type === MeasurementOverlayTypes.AREA,
+			area: this._type === MeasurementOverlayTypes.AREA,
 			distance: this._type === MeasurementOverlayTypes.DISTANCE,
 			partition: this._type === MeasurementOverlayTypes.DISTANCE_PARTITION,
 			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
-			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP
+			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP,
+			draggable: this._isDraggable
 		};
 
 		return html`
@@ -73,15 +75,15 @@ export class MeasurementOverlay extends BaElement {
 
 	_updatePosition() {
 		switch (this._type) {
-			case MeasurementOverlayTypes.AREA:				
+			case MeasurementOverlayTypes.AREA:
 				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
-				break;				
-			case MeasurementOverlayTypes.DISTANCE:	
-			case MeasurementOverlayTypes.HELP:				
-			case MeasurementOverlayTypes.TEXT:				
+				break;
+			case MeasurementOverlayTypes.DISTANCE:
+			case MeasurementOverlayTypes.HELP:
+			case MeasurementOverlayTypes.TEXT:
 			default:
 				this._position = this.geometry.getLastCoordinate();
 		}
@@ -90,7 +92,7 @@ export class MeasurementOverlay extends BaElement {
 	_setContentFunctionBy(type) {
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
-				this._contentFunction = () => {					
+				this._contentFunction = () => {
 					if (this.geometry instanceof Polygon) {
 						return getFormattedArea(getArea(this._geometry, this._projectionHints));
 					}
@@ -103,10 +105,10 @@ export class MeasurementOverlay extends BaElement {
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
-											
-						return azimuth + '°/' + length;					
+
+						return azimuth + '°/' + length;
 					}
-					return length;					
+					return length;
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
@@ -124,10 +126,10 @@ export class MeasurementOverlay extends BaElement {
 
 	static get tag() {
 		return 'ba-measure-overlay';
-	}	
+	}
 
 	set value(val) {
-		if (val !== this.value) {			
+		if (val !== this.value) {
 			this._value = val;
 			this.render();
 		}
@@ -139,7 +141,7 @@ export class MeasurementOverlay extends BaElement {
 
 	set type(value) {
 		if (value !== this.type) {
-			this._type = value ;
+			this._type = value;
 			this._setContentFunctionBy(value);
 			this.render();
 		}
@@ -147,6 +149,17 @@ export class MeasurementOverlay extends BaElement {
 
 	get type() {
 		return this._type;
+	}
+
+	set isDraggable(value) {
+		if (value !== this.isDraggable) {
+			this._isDraggable = value;
+			this.render();
+		}
+	}
+
+	get isDraggable() {
+		return this._isDraggable;
 	}
 
 	set static(value) {
@@ -160,10 +173,10 @@ export class MeasurementOverlay extends BaElement {
 		return this._static;
 	}
 
-	set geometry(value) {		
+	set geometry(value) {
 		this._geometry = value;
 		this._updatePosition();
-		this.render();		
+		this.render();
 	}
 
 	get geometry() {
@@ -175,11 +188,11 @@ export class MeasurementOverlay extends BaElement {
 	}
 
 	set projectionHints(value) {
-		if (value.toProjection !== this.projectionHints.toProjection || 
+		if (value.toProjection !== this.projectionHints.toProjection ||
 			value.fromProjection !== this.projectionHints.fromProjection) {
 			this._projectionHints = value;
 			this.render();
-		}		
+		}
 	}
 
 	get projectionHints() {

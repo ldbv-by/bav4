@@ -154,10 +154,10 @@ export class LayerManager extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} store 
+	  * @param {Object} state 
 	  */
-	extractState(store) {
-		const { layers: { active } } = store;
+	extractState(state) {
+		const { layers: { active } } = state;
 
 		return { active };
 	}

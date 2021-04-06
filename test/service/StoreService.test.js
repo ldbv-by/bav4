@@ -5,22 +5,22 @@ describe('StoreService', () => {
 
 	describe('constructor', () => {
 
-		const measurementObserverMock = {
+		const measurementPluginMock = {
 			register: () => { }
 		};
-		const geolocationObserverMock = {
+		const geolocationPluginMock = {
 			register: () => { }
 		};
-		const layersObserverMock = {
+		const layersPluginMock = {
 			register: () => { }
 		};
-		const topicsObserverMock = {
+		const topicsPluginMock = {
 			register: () => { }
 		};
-		const positionObserverMock = {
+		const positionPluginMock = {
 			register() { }
 		};
-		const contextClickObserverMock = {
+		const contextClickPluginMock = {
 			register() { }
 		};
 		const windowMock = {
@@ -32,12 +32,12 @@ describe('StoreService', () => {
 		const setupInjector = () => {
 			$injector
 				.reset()
-				.registerSingleton('MeasurementObserver', measurementObserverMock)
-				.registerSingleton('GeolocationObserver', geolocationObserverMock)
-				.registerSingleton('LayersObserver', layersObserverMock)
-				.registerSingleton('TopicsObserver', topicsObserverMock)
-				.registerSingleton('PositionObserver', positionObserverMock)
-				.registerSingleton('ContextClickObserver', contextClickObserverMock)
+				.registerSingleton('MeasurementPlugin', measurementPluginMock)
+				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
+				.registerSingleton('LayersPlugin', layersPluginMock)
+				.registerSingleton('TopicsPlugin', topicsPluginMock)
+				.registerSingleton('PositionPlugin', positionPluginMock)
+				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.ready();
 		};
@@ -50,10 +50,13 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(12);
+			expect(reducerKeys.length).toBe(14);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
+			expect(reducerKeys.includes('position')).toBeTrue();
 			expect(reducerKeys.includes('sidePanel')).toBeTrue();
+			expect(reducerKeys.includes('contentPanel')).toBeTrue();
+			expect(reducerKeys.includes('toolBox')).toBeTrue();
 			expect(reducerKeys.includes('contextMenue')).toBeTrue();
 			expect(reducerKeys.includes('modal')).toBeTrue();
 			expect(reducerKeys.includes('uiTheme')).toBeTrue();
@@ -64,14 +67,14 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('topics')).toBeTrue();
 		});
 
-		it('registers all observers', (done) => {
+		it('registers all plugins', (done) => {
 
-			const measurementObserverSpy = spyOn(measurementObserverMock, 'register');
-			const geolocationObserverSpy = spyOn(geolocationObserverMock, 'register');
-			const layersObserverSpy = spyOn(layersObserverMock, 'register');
-			const topicsObserverSpy = spyOn(topicsObserverMock, 'register');
-			const positionObserverSpy = spyOn(positionObserverMock, 'register');
-			const contextClickObserverSpy = spyOn(contextClickObserverMock, 'register');
+			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
+			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
+			const layersPluginSpy = spyOn(layersPluginMock, 'register');
+			const topicsPluginSpy = spyOn(topicsPluginMock, 'register');
+			const positionPluginSpy = spyOn(positionPluginMock, 'register');
+			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -79,12 +82,12 @@ describe('StoreService', () => {
 
 			setTimeout(() => {
 
-				expect(measurementObserverSpy).toHaveBeenCalledWith(store);
-				expect(geolocationObserverSpy).toHaveBeenCalledWith(store);
-				expect(layersObserverSpy).toHaveBeenCalledWith(store);
-				expect(topicsObserverSpy).toHaveBeenCalledWith(store);
-				expect(positionObserverSpy).toHaveBeenCalledWith(store);
-				expect(contextClickObserverSpy).toHaveBeenCalledWith(store);
+				expect(measurementPluginSpy).toHaveBeenCalledWith(store);
+				expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
+				expect(layersPluginSpy).toHaveBeenCalledWith(store);
+				expect(topicsPluginSpy).toHaveBeenCalledWith(store);
+				expect(positionPluginSpy).toHaveBeenCalledWith(store);
+				expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
 				done();
 			});
 		});
