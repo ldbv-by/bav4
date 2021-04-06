@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
 import { toggleToolBox } from '../../store/toolBox.action';
+import { toggleToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
 
@@ -84,7 +85,7 @@ export class ToolBox extends BaElement {
 					</div>
 				</button>
 				<div class="tool-box ${getOverlayClass()}">    		
-					<div class="tool-box__button">
+					<div  @click="${toggleToolContainer}" class="tool-box__button">
 						<div class="tool-box__button_icon pencil">							
 						</div>
 						<div class="tool-box__button-text">

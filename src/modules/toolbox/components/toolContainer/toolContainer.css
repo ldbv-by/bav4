@@ -1,41 +1,20 @@
 .container{               
-    border-radius: .375rem;
-    top: 1rem;
-    right: 1rem;
-    background-color: transparent;               
-    position: fixed;
-    z-index: 100;
-    max-width: 19rem;
+    top: 6rem;
+    right: 1rem;           
+    position: fixed;    
+    z-index: var(--z-toolbox);
 }
 
+.content{
+    border-radius: .375em;
+    background-color: var(--primary-bg-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    padding: 0.5em 5.2em 0.5em 0.5em;
+    max-width: 22em;
+    transition: transform 0.3s ease-out;
+    display: none;
+}
 
-.is-open {
-    transform: translate(-21em,0);
+ .is-open {
+    display: block;
 }
-/* tablet */
-.is-tablet .container{    
-    font-size:.9rem;
-}
-/* desktop */
-.is-desktop .is-open {
-    transform: translate(0,0);
-}
-.is-desktop .container{    
-    font-size:.9rem;
-    max-width: none;
-    right: 1em;
-    bottom: 1em;
-    padding: 0em;
-}
-/* portrait */
-.is-portrait .container{
-    flex-direction: row ;
-    bottom: -20em;
-    left: 0;
-    right: 0;
-    width: auto;
-    max-width: unset;
-}     
-.is-portrait .is-open {
-    transform: translate(0,-20em);
- }
