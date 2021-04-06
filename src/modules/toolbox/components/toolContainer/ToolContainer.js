@@ -8,14 +8,14 @@ import css from './toolContainer.css';
  * @author thiloSchlemmer
  */
 export class ToolContainer extends BaElement {
-	
+
 	constructor() {
 		super();
 
-		const {		
+		const {
 			EnvironmentService: environmentService
 		}
-			= $injector.inject( 'EnvironmentService');
+			= $injector.inject('EnvironmentService');
 
 		this._environmentService = environmentService;
 		this._portrait = false;
@@ -62,7 +62,7 @@ export class ToolContainer extends BaElement {
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ?  'is-desktop'  : 'is-tablet';
+			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const getOverlayClass = () => {
@@ -72,11 +72,76 @@ export class ToolContainer extends BaElement {
 
 		return html`
 			<style>${css}</style>		
-			<div class="container ${getOrientationClass()} ${getMinWidthClass()}">  				
-				<div class="content ${getOverlayClass()}">    		
-					Content			               				               				 				           					 				               				               				 				            				               				               				 				           
-				</div>		
+			<div class="tool-container ${getOrientationClass()} ${getMinWidthClass()}">  				
+				<div class="tool-container__content ${getOverlayClass()}">    		
+				<div class="ba-tool-container__item ba-tool-menu__zeichnen">
+                    <div>
+                        <span class="tool-container__header">
+                            Zeichnen
+                        </span>
+                    </div>                                      
+                    <div class="tool-container__tools-nav">                        
+                            <button class="tool-container__close-button">
+                                x
+                            </button>                             
+                    </div>
+                    <div class="tool-container__buttons">                                    
+                        <div>
+                            <div  class="tool-container__button_icon pencil">
+                                
+                            </div>
+                            <div class="tool-container__button-text">
+                                Symbol
+                            </div>                   
+                        </div>
+                        <div>
+						<div  class="tool-container__button_icon pencil">
+                            </div>
+							<div class="tool-container__button-text">
+                                Text
+                            </div>                   
+                        </div>
+                        <div>
+						<div  class="tool-container__button_icon pencil">
+                            </div>
+							<div class="tool-container__button-text">
+                                Linie
+                            </div>                   
+                        </div>
+                        <div>
+						<div  class="tool-container__button_icon pencil">
+                            </div>
+							<div class="tool-container__button-text">
+                                Polygon
+                            </div>                   
+                        </div>
+						<div>
+						<div  class="tool-container__button_icon pencil">
+                            </div>
+							<div class="tool-container__button-text">
+                                Messen
+                            </div>                   
+                        </div>
+                    </div>
+                    <div class="tool-container__buttons-secondary">                         
+						<button>                                                                
+							Löschen                                                                           
+						</button>
+						<button>                              
+							Teilen                                 
+						</button>
+						<button >                               
+							Speichern                                
+						</button>                                             
+                    </div>                
+                    <div class="tool-container__info"> 
+                        <span>
+                            Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.
+                        </span>
+                    </div>
+            	</div>	               				               				 				           					 				               				               				 				            				               				               				 				           
 			</div>		
+		</div>		
 		`;
 	}
 
