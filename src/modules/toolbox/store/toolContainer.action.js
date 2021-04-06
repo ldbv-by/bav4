@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the Toolbox.
  * @module menu/action
  */
-import { OPEN_CLOSED_CHANGED } from './toolContainer.reducer';
+import { OPEN_CLOSED_CHANGED, CONTENT_CHANGED } from './toolContainer.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -10,6 +10,17 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
+
+/**
+ * Sets the content to the specified content-id.
+ * @function
+ */
+export const setContainerContent = (id) => {
+	getStore().dispatch({
+		type: CONTENT_CHANGED,
+		payload: id
+	});
+};
 
 /**
  * Opens the Toolbox.

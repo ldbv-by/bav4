@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../test-utils.js';
 import { toolContainerReducer } from '../../../../src/modules/toolbox/store/toolContainer.reducer';
-import { openToolContainer, closeToolContainer, toggleToolContainer } from '../../../../src/modules/toolbox/store/toolContainer.action';
+import { openToolContainer, closeToolContainer, toggleToolContainer, setContainerContent } from '../../../../src/modules/toolbox/store/toolContainer.action';
 
 
 describe('toolContainerReducer', () => {
@@ -15,6 +15,7 @@ describe('toolContainerReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().toolContainer.open).toBeFalse();
+		expect(store.getState().toolContainer.content).toBeFalse();
 	});
 	describe('changes the \'open\' property', () => {
 
@@ -53,4 +54,16 @@ describe('toolContainerReducer', () => {
 
 
 	});
+	describe('changes the \'content\' property', () => {
+
+		it('sets content id', () => {
+			const store = setup();
+
+
+			setContainerContent('foo');
+
+			expect(store.getState().toolContainer.content).toBe('foo');
+		});
+	});
+
 });
