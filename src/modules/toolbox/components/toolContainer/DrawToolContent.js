@@ -29,7 +29,7 @@ export class DrawToolContent extends BaElement {
 			name:'symbol', 
 			active:false, 
 			title: translate('toolbox_drawTool_symbol'),
-			icon:'pencil',
+			icon:'symbol',
 			activate:() => {},
 			deactivate:() => {}	
 		}, {
@@ -37,7 +37,7 @@ export class DrawToolContent extends BaElement {
 			name: 'text',
 			active:false, 
 			title: translate('toolbox_drawTool_text'),
-			icon:'pencil',
+			icon:'text',
 			activate:() => {},
 			deactivate:() => {}	
 		}, {
@@ -45,7 +45,7 @@ export class DrawToolContent extends BaElement {
 			name:'line', 
 			active:false, 
 			title: translate('toolbox_drawTool_line'),
-			icon:'pencil',
+			icon:'line',
 			activate:() => {},
 			deactivate:() => {}	
 		}, {
@@ -53,7 +53,7 @@ export class DrawToolContent extends BaElement {
 			name:'polygon', 
 			active:false, 
 			title: translate('toolbox_drawTool_polygon'),
-			icon:'pencil',
+			icon:'polygon',
 			activate:() => {},
 			deactivate:() => {}        		
 		}, {            
@@ -61,7 +61,7 @@ export class DrawToolContent extends BaElement {
 			name:'measure', 
 			active:false, 
 			title: translate('toolbox_drawTool_measure'),
-			icon:'pencil',
+			icon:'measure',
 			activate:() => activateMeasurement(),
 			deactivate:() => deactivateMeasurement()
 		}] 
@@ -109,10 +109,12 @@ export class DrawToolContent extends BaElement {
 
 			return html`
             <div id=${tool.name}
-                class="${classMap(classes)}" 
+                class="tool-container__button ${classMap(classes)}" 
                 title=${tool.title}
                 @click=${toggle}>
-                <div class="tool-container__button_icon ${tool.icon}"></div>
+                <div class="tool-container__background"></div>
+                <div class="tool-container__icon ${tool.icon}">
+                </div>  
                 <div class="tool-container__button-text">${tool.title}</div>
             </div>
             `;
