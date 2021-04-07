@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
 import { toggleToolBox } from '../../store/toolBox.action';
-import { toggleToolContainer } from '../../../toolbox/store/toolContainer.action';
+import { toggleToolContainer, setContainerContent } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
 
@@ -74,6 +74,10 @@ export class ToolBox extends BaElement {
 		const getOverlayClass = () => {
 			return open ? 'is-open' : '';
 		};
+		const toggleDrawTool = () => {
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+		};
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -85,7 +89,7 @@ export class ToolBox extends BaElement {
 					</div>
 				</button>
 				<div class="tool-box ${getOverlayClass()}">    		
-					<div  @click="${toggleToolContainer}" class="tool-box__button">
+					<div  @click="${toggleDrawTool}" class="tool-box__button">
 						<div class="tool-box__button_icon pencil">							
 						</div>
 						<div class="tool-box__button-text">

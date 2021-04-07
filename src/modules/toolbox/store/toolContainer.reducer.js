@@ -1,9 +1,9 @@
 export const OPEN_CLOSED_CHANGED = 'components/toolContainer/open';
-export const CONTENT_CHANGED = 'components/toolContainer/content';
+export const CONTENT_CHANGED = 'components/toolContainer/contentId';
 
 export const initialState = {
 	open: false,
-	content:false
+	contentId:false
 };
 
 export const toolContainerReducer = (state = initialState, action) => {
@@ -21,7 +21,7 @@ export const toolContainerReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				content: payload
+				contentId: payload
 			};
 		}
 	}

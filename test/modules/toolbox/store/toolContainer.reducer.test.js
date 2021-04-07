@@ -15,7 +15,7 @@ describe('toolContainerReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().toolContainer.open).toBeFalse();
-		expect(store.getState().toolContainer.content).toBeFalse();
+		expect(store.getState().toolContainer.contentId).toBeFalse();
 	});
 	describe('changes the \'open\' property', () => {
 
@@ -29,7 +29,7 @@ describe('toolContainerReducer', () => {
 		});
 
 		it('sets false', () => {
-			const store = setup({ toolContainer: { open: true } });
+			const store = setup({ toolContainer: { open: true, contentId:'foo' } });
 
 			expect(store.getState().toolContainer.open).toBeTrue();
 
@@ -62,7 +62,7 @@ describe('toolContainerReducer', () => {
 
 			setContainerContent('foo');
 
-			expect(store.getState().toolContainer.content).toBe('foo');
+			expect(store.getState().toolContainer.contentId).toBe('foo');
 		});
 	});
 

@@ -2,7 +2,7 @@
 
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
 import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
-import { toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
+import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 
@@ -20,8 +20,9 @@ describe('ToolContainer', () => {
 		const { embed = false } = config;
 
 		const state = {
-			toolBox: {
-				open: true
+			toolContainer: {
+				open: false,
+				contentId:false
 			}
 		};
 
@@ -48,16 +49,19 @@ describe('ToolContainer', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();			
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 		});
 
 		it('opens the toolcontainer', async () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.content.is-open')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-draw-content');
 			toggleToolContainer();
-			expect(element.shadowRoot.querySelector('.content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -76,10 +80,12 @@ describe('ToolContainer', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -90,10 +96,12 @@ describe('ToolContainer', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -104,10 +112,12 @@ describe('ToolContainer', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -118,10 +128,12 @@ describe('ToolContainer', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});

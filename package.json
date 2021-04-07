@@ -32,6 +32,7 @@
     "karma-script-launcher": "^1.0.0",
     "karma-spec-reporter": "^0.0.32",
     "karma-webpack": "^4.0.2",
+    "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^2.0.0",
     "svg-url-loader": "^7.1.1",
@@ -39,8 +40,7 @@
     "webpack": "^4.46.0",
     "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.2",
-    "portfinder-sync": "0.0.2"
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development",

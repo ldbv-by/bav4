@@ -15,10 +15,10 @@ const getStore = () => {
  * Sets the content to the specified content-id.
  * @function
  */
-export const setContainerContent = (id) => {
+export const setContainerContent = (contentId) => {
 	getStore().dispatch({
 		type: CONTENT_CHANGED,
-		payload: id
+		payload: contentId
 	});
 };
 
