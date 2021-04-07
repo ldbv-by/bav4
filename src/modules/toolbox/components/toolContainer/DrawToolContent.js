@@ -1,4 +1,6 @@
 import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
@@ -17,55 +19,104 @@ export class DrawToolContent extends BaElement {
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
 		this._activeTool = false;
+		this._tools = this._buildTools();
 	}
 
-	activateMapTool(toolName) {
-		if (this._activeTool === toolName) {
-			return;
-		}
-
-		this.deactivateMapTool(this._activeTool);
-		this._activeTool = toolName;
-		switch (toolName) {
-			case 'measure':
-				activateMeasurement();
-				break;
-
-			default:
-				break;
-		}
+	_buildTools() {
+		const translate = (key) => this._translationService.translate(key);  
+		return [{ 
+			id:1,
+			name:'symbol', 
+			active:false, 
+			title: translate('toolbox_drawTool_symbol'),
+			icon:'pencil',
+			activate:() => {},
+			deactivate:() => {}	
+		}, {
+			id:2,
+			name: 'text',
+			active:false, 
+			title: translate('toolbox_drawTool_text'),
+			icon:'pencil',
+			activate:() => {},
+			deactivate:() => {}	
+		}, {
+			id:3,			
+			name:'line', 
+			active:false, 
+			title: translate('toolbox_drawTool_line'),
+			icon:'pencil',
+			activate:() => {},
+			deactivate:() => {}	
+		}, {
+			id:4,
+			name:'polygon', 
+			active:false, 
+			title: translate('toolbox_drawTool_polygon'),
+			icon:'pencil',
+			activate:() => {},
+			deactivate:() => {}        		
+		}, {            
+			id:5,
+			name:'measure', 
+			active:false, 
+			title: translate('toolbox_drawTool_measure'),
+			icon:'pencil',
+			activate:() => activateMeasurement(),
+			deactivate:() => deactivateMeasurement()
+		}] 
+		;
 	}
 
-	deactivateMapTool(toolName) {
-		if (this._activeTool !== toolName) {
-			return;
+	_setActiveTool(tool) {
+		if (this._activeTool) {
+			if (this._activeTool !== tool) {
+				this._activeTool.active = false;
+				this._activeTool.deactivate();
+				this._showActive();
+			}			
 		}
-
-		this._activeTool = false;
-		switch (toolName) {
-			case 'measure':
-				deactivateMeasurement();								
-				break;
-
-			default:
-				break;
-		}        
+		this._activeTool = tool;
+		this._showActive();
 	}
 
+	_showActive() {
+		const id = this._activeTool.name;
+		const element = this._root.querySelector('#' + id);
+		if (this._activeTool.active) {
+			element.classList.add('is-active');
+		}
+		else {			
+			element.classList.remove('is-active');
+		}
+	}
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);        
 		
-		const toggle = (toolName) => {
-			if (this._activeTool === toolName) {
-				this.deactivateMapTool(toolName);
-			}
-			else {
-				this.activateMapTool(toolName);
-			}
-		};	
+		const toolTemplate = (tool) => {
+			const classes = { isactive: tool.active };
+			const toggle = () => {				
+				if (tool.active) {
+					tool.deactivate();
+				}
+				else {
+					tool.activate();					
+				}
+				tool.active = !tool.active;
+				this._setActiveTool(tool);
+			};
 
-		const toggleMeasurement = () => toggle('measure');
+			return html`
+            <div id=${tool.name}
+                class="${classMap(classes)}" 
+                title=${tool.title}
+                @click=${toggle}>
+                <div class="tool-container__button_icon ${tool.icon}"></div>
+                <div class="tool-container__button-text">${tool.title}</div>
+            </div>
+            `;
+		};
 
 		return html`
         <style>${css}</style>
@@ -77,42 +128,7 @@ export class DrawToolContent extends BaElement {
                     </span>
                 </div>      
                 <div class="tool-container__buttons">                                    
-                    <div>
-                        <div  class="tool-container__button_icon pencil">
-                            
-                        </div>
-                        <div class="tool-container__button-text">
-                        ${translate('toolbox_drawTool_symbol')}
-                        </div>                   
-                    </div>
-                    <div>
-                    <div  class="tool-container__button_icon pencil">
-                        </div>
-                        <div class="tool-container__button-text">
-                        ${translate('toolbox_drawTool_text')}
-                        </div>                   
-                    </div>
-                    <div>
-                    <div  class="tool-container__button_icon pencil">
-                        </div>
-                        <div class="tool-container__button-text">
-                        ${translate('toolbox_drawTool_line')}
-                        </div>                   
-                    </div>
-                    <div>
-                    <div  class="tool-container__button_icon pencil">
-                        </div>
-                        <div class="tool-container__button-text">
-                        ${translate('toolbox_drawTool_polygon')}
-                        </div>                   
-                    </div>
-                    <div @click=${toggleMeasurement}>
-                    <div class="tool-container__button_icon pencil">
-                        </div>
-                        <div class="tool-container__button-text">
-                            ${translate('toolbox_drawTool_measure')}
-                        </div>                   
-                    </div>
+                ${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
                 </div>
                 <div class="tool-container__buttons-secondary">                         
                     <button>                                 

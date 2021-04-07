@@ -86,10 +86,14 @@
    opacity:1;
   
   }
-  .tool-container__buttons-secondary button:last-child{
+.tool-container__buttons-secondary button:last-child{
    border: none;
-  }
-  .tool-container__info{
+}
+.tool-container__info{
     font-size: .8rem;
     color: gray;
+}
+
+.is-active{
+    border: 2px solid var(--primary-color) !important;    
 }
