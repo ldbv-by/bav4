@@ -5,9 +5,10 @@ import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/t
 import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { DrawToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/DrawToolContent';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
-
+window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
 describe('ToolContainer', () => {
 
@@ -32,6 +33,7 @@ describe('ToolContainer', () => {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
 			})			
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 		return TestUtils.render(ToolContainer.tag);
 	};
