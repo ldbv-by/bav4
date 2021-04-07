@@ -22,13 +22,11 @@ export class MapInfo extends BaElement {
 			<style>${css}</style>
 			<div class='content'>
 				<div class='theme-toggle'><ba-theme-toggle></ba-theme-toggle></div> 
-				<div class='right-container'>
-					<div class='coordinates'>
-						<ba-coordinate-select></ba-coordinate-select>
-					</div>
-					<div class='geo-rsrc-info'>
-						<ba-georesource-info></ba-georesource-info>
-					</div>
+				<div class='geo-rsrc-info'>
+					<ba-georesource-info></ba-georesource-info>
+				</div>
+				<div class='coordinates'>
+					<ba-coordinate-select></ba-coordinate-select>
 				</div>				
 			</div>
 		`;
