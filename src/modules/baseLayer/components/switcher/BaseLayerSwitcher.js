@@ -4,6 +4,11 @@ import { BaElement } from '../../../BaElement';
 import { addLayer, removeLayer } from '../../../map/store/layers.action';
 import css from './baseLayerSwitcher.css';
 
+/**
+ * Component for managing base layers.
+ * @class
+ * @author aul
+ */
 export class BaseLayerSwitcher extends BaElement {
 
 	constructor() {
@@ -62,8 +67,6 @@ export class BaseLayerSwitcher extends BaElement {
 		const { topics: { current: currentTopicId }, layers: { active: activeLayers } } = state;
 		return { currentTopicId, activeLayers };
 	}
-
-
 
 	static get tag() {
 		return 'ba-base-layer-switcher';
