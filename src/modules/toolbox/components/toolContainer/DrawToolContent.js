@@ -1,7 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { closeToolContainer } from '../../store/toolContainer.action'; 
 import css from './drawToolContent.css';
 
 
@@ -31,12 +30,7 @@ export class DrawToolContent extends BaElement {
                     <span class="tool-container__header">
                     ${translate('toolbox_drawTool_header')}
                     </span>
-                </div>                                      
-                <div class="tool-container__tools-nav">                        
-                        <button @click=${closeToolContainer} class="tool-container__close-button">
-                            x
-                        </button>                             
-                </div>
+                </div>      
                 <div class="tool-container__buttons">                                    
                     <div>
                         <div  class="tool-container__button_icon pencil">

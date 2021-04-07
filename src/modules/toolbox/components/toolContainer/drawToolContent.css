@@ -14,23 +14,6 @@
     opacity: .8;
 }
 
-.tool-container__tools-nav{
-    position: absolute;
-    top: 0rem;   
-    right: 1rem;
-    padding:0
-}
-
-.tool-container__close-button{
-    margin: 0;
-    background-color: var(--secondary-bg-color);
-    border-radius: 0 0  2em  2em;
-    padding: 0;
-    width: 2.5em;
-    height: 2.5em;
-    border: 0;
-}
-
 .tool-container__buttons{
     display: flex;
     margin: .8em 0;

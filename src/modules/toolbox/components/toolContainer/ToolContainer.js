@@ -2,6 +2,7 @@ import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from './DrawToolContent';
+import { closeToolContainer } from '../../store/toolContainer.action'; 
 import css from './toolContainer.css';
 
 /**
@@ -86,7 +87,12 @@ export class ToolContainer extends BaElement {
 		return html`
 			<style>${css}</style>		
 			<div class="tool-container ${getOrientationClass()} ${getMinWidthClass()}">  				
-				<div class="tool-container__content ${getOverlayClass()}">    		
+				<div class="tool-container__content ${getOverlayClass()}">    
+				<div class="tool-container__tools-nav">                        
+                        <button @click=${closeToolContainer} class="tool-container__close-button">
+                            x
+                        </button>                             
+                </div>		
 					${content}    				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
