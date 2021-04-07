@@ -7,7 +7,7 @@ import css from './baseLayerSwitcher.css';
 /**
  * Component for managing base layers.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class BaseLayerSwitcher extends BaElement {
 

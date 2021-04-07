@@ -1,6 +1,6 @@
 /**
  * @class
- * @author aul
+ * @author taulinger
  */
 export class HttpService {
 

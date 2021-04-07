@@ -10,7 +10,7 @@ import css from './header.css';
 /**
  * Container element for header stuff. 
  * @class
- * @author aul
+ * @author taulinger
  * @author alsturm
  */
 export class Header extends BaElement {

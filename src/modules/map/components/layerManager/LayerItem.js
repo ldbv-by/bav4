@@ -13,7 +13,7 @@ import removeSvg from './assets/x-square.svg';
  * (remove,change visibility and opacity)
  * @class
  * @author thiloSchlemmer
- * @author tAulinger 
+ * @author taulinger 
  */
 export class LayerItem extends BaElement {
 

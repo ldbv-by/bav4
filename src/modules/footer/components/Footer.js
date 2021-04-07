@@ -6,7 +6,7 @@ import css from './footer.css';
 /**
  * Container element for footer stuff. 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class Footer extends BaElement {
 

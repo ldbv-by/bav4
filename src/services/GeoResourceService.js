@@ -15,7 +15,7 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
  * Service for managing {@link GeoResource}s.
  * 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class GeoResourceService {
 

@@ -17,7 +17,7 @@ import css from './autocompleteSearch.css';
  * Observed Properties:
  * 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class AutocompleteSearch extends BaElement {
 

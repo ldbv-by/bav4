@@ -27,7 +27,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * 
  * 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class Button extends BaElement {
 

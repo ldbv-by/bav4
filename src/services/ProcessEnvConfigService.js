@@ -2,7 +2,7 @@
 /**
  * Service for external configuration properties.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class ProcessEnvConfigService {
 	

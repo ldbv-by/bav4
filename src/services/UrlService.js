@@ -7,7 +7,7 @@ import { shortenBvvUrls } from './provider/urlShorteningProvider';
 /**
  * Utility service for urls/resources.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class UrlService {
 

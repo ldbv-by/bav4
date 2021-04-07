@@ -19,7 +19,7 @@ import { topicsReducer } from '../modules/topics/store/topics.reducer';
 /**
  * Service which configures, initializes and holds the redux store.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class StoreService {
 
