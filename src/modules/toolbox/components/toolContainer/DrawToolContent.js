@@ -1,6 +1,8 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+
 import css from './drawToolContent.css';
 
 
@@ -14,13 +16,56 @@ export class DrawToolContent extends BaElement {
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		
+		this._activeTool = false;
+	}
+
+	activateMapTool(toolName) {
+		if (this._activeTool === toolName) {
+			return;
+		}
+
+		this.deactivateMapTool(this._activeTool);
+		this._activeTool = toolName;
+		switch (toolName) {
+			case 'measure':
+				activateMeasurement();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	deactivateMapTool(toolName) {
+		if (this._activeTool !== toolName) {
+			return;
+		}
+
+		this._activeTool = false;
+		switch (toolName) {
+			case 'measure':
+				deactivateMeasurement();								
+				break;
+
+			default:
+				break;
+		}        
 	}
 
 
 	createView() {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this._translationService.translate(key);        
+		
+		const toggle = (toolName) => {
+			if (this._activeTool === toolName) {
+				this.deactivateMapTool(toolName);
+			}
+			else {
+				this.activateMapTool(toolName);
+			}
+		};	
 
+		const toggleMeasurement = () => toggle('measure');
 
 		return html`
         <style>${css}</style>
@@ -61,11 +106,11 @@ export class DrawToolContent extends BaElement {
                         ${translate('toolbox_drawTool_polygon')}
                         </div>                   
                     </div>
-                    <div>
-                    <div  class="tool-container__button_icon pencil">
+                    <div @click=${toggleMeasurement}>
+                    <div class="tool-container__button_icon pencil">
                         </div>
                         <div class="tool-container__button-text">
-                        ${translate('toolbox_drawTool_measure')}
+                            ${translate('toolbox_drawTool_measure')}
                         </div>                   
                     </div>
                 </div>
