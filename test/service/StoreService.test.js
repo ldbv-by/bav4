@@ -4,6 +4,12 @@ import { StoreService } from '../../src/services/StoreService';
 describe('StoreService', () => {
 
 	describe('constructor', () => {
+		const topicsServiceMock = {
+			init: () => { }
+		};
+		const geoResourceServiceMock = {
+			init: () => { }
+		};
 
 		const measurementPluginMock = {
 			register: () => { }
@@ -32,6 +38,8 @@ describe('StoreService', () => {
 		const setupInjector = () => {
 			$injector
 				.reset()
+				.registerSingleton('TopicsService', topicsServiceMock)
+				.registerSingleton('GeoResourceService', geoResourceServiceMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
@@ -81,15 +89,18 @@ describe('StoreService', () => {
 			setupInjector();
 			const store = instanceUnderTest.getStore();
 
+			//we need setTimeout calls: async plugins registration is done within a timeout function
 			setTimeout(() => {
+				setTimeout(() => {
 
-				expect(measurementPluginSpy).toHaveBeenCalledWith(store);
-				expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
-				expect(layersPluginSpy).toHaveBeenCalledWith(store);
-				expect(topicsPluginSpy).toHaveBeenCalledWith(store);
-				expect(positionPluginSpy).toHaveBeenCalledWith(store);
-				expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
-				done();
+					expect(measurementPluginSpy).toHaveBeenCalledWith(store);
+					expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
+					expect(layersPluginSpy).toHaveBeenCalledWith(store);
+					expect(topicsPluginSpy).toHaveBeenCalledWith(store);
+					expect(positionPluginSpy).toHaveBeenCalledWith(store);
+					expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
+					done();
+				});
 			});
 		});
 
@@ -99,8 +110,10 @@ describe('StoreService', () => {
 
 			setupInjector();
 
+			//we need two setTimeout calls: window history is manipulated within a timeout function
 			setTimeout(() => {
 				setTimeout(() => {
+
 					expect(replaceStateMock).toHaveBeenCalled();
 					done();
 				});
