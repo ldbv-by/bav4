@@ -189,9 +189,9 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when draw a line', () => {
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
+		const initialCenter = fromLonLat([0, 0]);
 
-		const setupMap = () => {
+		const setupMap = (zoom = 10) => {
 
 			return new Map({
 				layers: [
@@ -204,7 +204,7 @@ describe('OlMeasurementHandler', () => {
 				target: 'map',
 				view: new View({
 					center: initialCenter,
-					zoom: 1,
+					zoom: zoom					
 				}),
 			});
 
@@ -225,20 +225,7 @@ describe('OlMeasurementHandler', () => {
 			expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
 		});
 
-		it('creates partition tooltips for long line', () => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			const geometry = new LineString([[0, 0], [1234, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-
-			expect(feature.get('partitions').length).toBe(1);
-		});
-
-		it('creates partition tooltips for longer line', () => {
+		it('creates partition tooltips for line small zoom', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new LineString([[0, 0], [12345, 0]]);
@@ -248,7 +235,46 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
+			expect(feature.get('partitions').length).toBe(1);
+		});
+
+		it('creates partition tooltips for line in big zoom', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap(15);
+			const geometry = new LineString([[0, 0], [1234, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
 			expect(feature.get('partitions').length).toBe(12);
+		});
+
+		it('creates partition tooltips for line in bigger zoom', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap(20);
+			const geometry = new LineString([[0, 0], [123, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(12);
+		});
+
+		it('creates partition tooltips for line in biggest zoom', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap(28);
+			const geometry = new LineString([[0, 0], [12, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(1);
 		});
 
 		it('creates partition tooltips very long line', () => {
@@ -274,13 +300,13 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('partitions').length).toBe(12);
+			expect(feature.get('partitions').length).toBe(123);
 		});
 
 		it('creates partition tooltips for not closed polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500]]]);
+			const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
@@ -293,20 +319,20 @@ describe('OlMeasurementHandler', () => {
 		it('creates partition tooltips for not closed large polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+			const geometry = new Polygon([[[0, 0], [10000, 0], [10000, 10000], [0, 10000]]]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('partitions').length).toBe(10);
+			expect(feature.get('partitions').length).toBe(2);
 		});
 
 		it('removes partition tooltips after shrinking very long line', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const geometry = new LineString([[0, 0], [12345, 0]]);
+			const geometry = new LineString([[0, 0], [123456, 0]]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
@@ -315,7 +341,7 @@ describe('OlMeasurementHandler', () => {
 
 			expect(feature.get('partitions').length).toBe(12);
 
-			geometry.setCoordinates([[0, 0], [1234, 0]]);
+			geometry.setCoordinates([[0, 0], [12345, 0]]);
 			feature.getGeometry().dispatchEvent('change');
 
 			expect(feature.get('partitions').length).toBe(1);

@@ -200,6 +200,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		});
 
 		let listener;
+		let zoomListener;
 
 		const finishMeasurementTooltip = (event) => {
 
@@ -217,6 +218,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			this._activeSketch = null;
 			unByKey(listener);
+			unByKey(zoomListener);
 		};
 
 		const activateModify = (event) => {
@@ -235,6 +237,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._isSnapOnLastPoint = false;
 			event.feature.set('measurement', measureTooltip);
 			listener = event.feature.on('change', event => this._updateMeasureTooltips(event.target, true));
+			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));
 			this._overlayManager.add(measureTooltip);
 		});
 
@@ -293,9 +296,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		// add partition tooltips on the line
 		const partitions = feature.get('partitions') || [];
-
-
-		const delta = getPartitionDelta(measureGeometry, this._projectionHints);
+		const resolution = this._map.getView().getResolution();
+		const delta = getPartitionDelta(measureGeometry, resolution, this._projectionHints);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
