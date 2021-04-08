@@ -4,7 +4,11 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	beforeEach(function () {
 		// eslint-disable-next-line no-undef
-		process.env = {};
+		const process = {
+			env: {
+			}
+		};
+		window.process = process;
 	});
 	describe('test _trailingSlash()', () => {
 		it('appends a trailing slash when needed', () => {
