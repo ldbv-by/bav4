@@ -2,7 +2,7 @@ const webpackConfig = require('./webpack.test.config.js');
 
 module.exports = function (config) {
 	config.set({
-		frameworks: ['jasmine', 'iframes'],
+		frameworks: ['jasmine', 'webpack', 'iframes'],
 		// list of files / patterns to load in the browser
 		files: [
 			{ pattern: 'test/**/*.test.js', watched: false },
