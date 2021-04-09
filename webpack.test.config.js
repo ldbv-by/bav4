@@ -18,8 +18,8 @@ module.exports = {
 				],
 			},
 			{
-				test: /\.svg$/,
-				use: 'svg-url-loader',
+				test: /\.(svg)$/,
+				type: 'asset/inline'
 			},
 			{
 				test: /\.js/,

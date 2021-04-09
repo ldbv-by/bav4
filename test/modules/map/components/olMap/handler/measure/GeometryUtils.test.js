@@ -1,5 +1,6 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, getFormattedLength, getFormattedArea, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+
 
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -296,5 +297,61 @@ describe('isVertexOfGeometry', () => {
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
 		expect(isVertex).toBeFalse();
+	});
+});
+
+describe('getPartitionDelta', () => {
+	
+	it('calculates a default delta', () => {
+		const lineString = new LineString([[0, 0], [15, 0]]);		
+
+		const delta = getPartitionDelta(lineString);
+		
+		expect(delta).toBe(1);
+	});
+
+	it('calculates a delta with standard resolution', () => {
+		const lineString = new LineString([[0, 0], [200, 0]]);		
+
+		const delta = getPartitionDelta(lineString);
+		
+		expect(delta).toBe(0.5);
+	});
+
+	it('calculates a delta with defined resolution', () => {
+		const lineString = new LineString([[0, 0], [5000, 0]]);		
+		const resolution = 50;
+		const delta = getPartitionDelta(lineString, resolution);
+		
+		expect(delta).toBe(1);
+	});
+});
+
+describe('getFormattedLength', () => {	
+	it('formats length with correct units ', () => {
+		const oneHundredMeters = 100;
+		const nineteenHundredNinetyNineMeters = 999;
+		const oneThousandMeters = 1000;
+		const tenThousandMeters = 10000;
+		const oneHundredThousandMeters = 100000;
+
+		expect(getFormattedLength(oneHundredMeters)).toBe('100 m');
+		expect(getFormattedLength(nineteenHundredNinetyNineMeters)).toBe('999 m');
+		expect(getFormattedLength(oneThousandMeters)).toBe('1 km');
+		expect(getFormattedLength(tenThousandMeters)).toBe('10 km');
+		expect(getFormattedLength(oneHundredThousandMeters)).toBe('100 km');
+	});
+});
+
+describe('getFormattedArea', () => {	
+	it('formats length with correct units ', () => {
+		const oneHundredSquaredMeters = 100;
+		const oneHectarinSquaredMeters = 10000;
+		
+		const oneSquaredKilometersInMeters = 1000000;
+
+		expect(getFormattedArea(oneHundredSquaredMeters)).toBe('100 m&sup2;');
+		expect(getFormattedArea(oneHectarinSquaredMeters)).toBe('1 ha');		
+		expect(getFormattedArea(oneSquaredKilometersInMeters)).toBe('1 km&sup2;');
 	});
 });
