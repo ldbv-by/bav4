@@ -16,11 +16,15 @@ describe('olMapUtils', () => {
 	const georesourceService = {
 		byId: () => { }
 	};
+	const mapService = {
+		getSrid: () => { }
+	};
 
 	beforeAll(() => {
 		$injector
 			.registerSingleton('UrlService', urlService)
-			.registerSingleton('GeoResourceService', georesourceService);
+			.registerSingleton('GeoResourceService', georesourceService)
+			.registerSingleton('MapService', mapService);
 	});
 
 	it('it maps vectorSourceType to olFormats', () => {
@@ -40,8 +44,8 @@ describe('olMapUtils', () => {
 			const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png');
 
 			const wmsOlLayer = toOlLayer(wmsGeoresource);
+			
 			expect(wmsOlLayer.get('id')).toBe('someId');
-
 			const wmsSource = wmsOlLayer.getSource();
 			expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
 			expect(wmsSource.constructor.name).toBe('ImageWMS');
@@ -55,22 +59,22 @@ describe('olMapUtils', () => {
 			const wmtsGeoresource = new WMTSGeoResource('someId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const wmtsOlLayer = toOlLayer(wmtsGeoresource);
+			
 			expect(wmtsOlLayer.get('id')).toBe('someId');
-
 			const wmtsSource = wmtsOlLayer.getSource();
 			expect(wmtsOlLayer.constructor.name).toBe('TileLayer');
 			expect(wmtsSource.constructor.name).toBe('XYZ');
 			expect(wmtsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 		});
 
-		it('it converts a VectorGeoresource to a olLayer', () => {
+		it('it converts an external VectorGeoresource to an olLayer', () => {
 			const url = 'https://some.url';
 			spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
 			const vectorGeoresource = new VectorGeoResource('someId', 'Label', url, VectorSourceType.KML);
 
 			const vectorOlLayer = toOlLayer(vectorGeoresource);
+			
 			expect(vectorOlLayer.get('id')).toBe('someId');
-
 			const vectorSource = vectorOlLayer.getSource();
 			expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 			expect(vectorSource.constructor.name).toBe('VectorSource');
@@ -79,6 +83,23 @@ describe('olMapUtils', () => {
 
 			expect(vectorSource.loader_).toEqual(load);
 			expect(vectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
+		});
+
+		it('it converts an internal VectorGeoresource to an olLayer', () => {
+			const srid = 3857;
+			spyOn(mapService, 'getSrid').and.returnValue(srid);
+			const vectorGeoresource = new VectorGeoResource('someId', 'Label', null, VectorSourceType.KML);
+			const sourceAsString = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Zeichnung</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>';
+			vectorGeoresource.setSource(sourceAsString, 4326);
+
+			const vectorOlLayer = toOlLayer(vectorGeoresource);
+
+			expect(vectorOlLayer.get('id')).toBe('someId');
+			const vectorSource = vectorOlLayer.getSource();
+			expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
+			expect(vectorSource.constructor.name).toBe('VectorSource');
+			expect(vectorSource.getFeatures().length).toBe(1);
+			expect(vectorSource.getFeatures()[0].get('srid')).toBe(srid);
 		});
 
 		it('it converts a AggregateGeoresource to a olLayer(Group)', () => {
