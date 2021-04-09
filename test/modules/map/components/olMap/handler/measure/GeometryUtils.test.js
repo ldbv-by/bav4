@@ -1,5 +1,6 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+
 
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -296,5 +297,32 @@ describe('isVertexOfGeometry', () => {
 		const isVertex = isVertexOfGeometry(geometry, vertexCandidate);
 
 		expect(isVertex).toBeFalse();
+	});
+});
+
+describe('getPartitionDelta', () => {
+	
+	it('calculates a default delta', () => {
+		const lineString = new LineString([[0, 0], [15, 0]]);		
+
+		const delta = getPartitionDelta(lineString);
+		
+		expect(delta).toBe(1);
+	});
+
+	it('calculates a delta with standard resolution', () => {
+		const lineString = new LineString([[0, 0], [200, 0]]);		
+
+		const delta = getPartitionDelta(lineString);
+		
+		expect(delta).toBe(0.5);
+	});
+
+	it('calculates a delta with defined resolution', () => {
+		const lineString = new LineString([[0, 0], [5000, 0]]);		
+		const resolution = 50;
+		const delta = getPartitionDelta(lineString, resolution);
+		
+		expect(delta).toBe(1);
 	});
 });

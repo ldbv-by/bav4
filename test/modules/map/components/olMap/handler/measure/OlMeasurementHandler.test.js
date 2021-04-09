@@ -347,6 +347,23 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('partitions').length).toBe(1);
 		});
 
+		it('removes partition tooltips after zoom out', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap(15);
+			const geometry = new LineString([[0, 0], [1234, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+
+			expect(feature.get('partitions').length).toBe(12);
+
+			map.getView().setZoom(13);
+
+			expect(feature.get('partitions').length).toBe(1);
+		});
+
 		it('unregister tooltip-listener after finish drawing', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
