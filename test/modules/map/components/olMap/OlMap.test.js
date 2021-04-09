@@ -36,6 +36,9 @@ describe('OlMap', () => {
 		init() { }
 	};
 
+	const mapServiceMock = {
+	};
+
 	const environmentServiceMock = {
 		isTouch() { }
 	};
@@ -83,6 +86,7 @@ describe('OlMap', () => {
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
+			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
