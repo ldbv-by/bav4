@@ -166,7 +166,6 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 		}	
 		partitionLength = partitionLength * stepFactor;
 	}
-	console.log(delta);
 	return delta;
 };
 
