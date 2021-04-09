@@ -15,13 +15,14 @@ describe('ContentPanelElement', () => {
 		matchMedia() { }
 	};
 
-	const setup = async (config = {}) => {
+	const setup = (config = {}, open = true, tabIndex = 0) => {
 
 		const { embed = false } = config;
 
 		const state = {
 			contentPanel: {
-				open: true
+				open: open,
+				tabIndex: tabIndex
 			}
 		};
 		TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer });
@@ -121,6 +122,22 @@ describe('ContentPanelElement', () => {
 
 			const element = await setup({ embed: true });
 			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
+		it('adds a div which holds the contentpanel content', async () => {
+
+			const element = await setup();
+
+			// expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
+
+			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
+
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
+
 		});
 
 

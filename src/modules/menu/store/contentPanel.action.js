@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the content panel.
  * @module menu/action
  */
-import { OPEN_CLOSED_CHANGED } from './contentPanel.reducer';
+import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './contentPanel.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -42,5 +42,16 @@ export const toggleContentPanel = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open
+	});
+};
+
+/**
+ * Sets the active tab to the index.
+ * @function
+ */
+export const setTabIndex = (index) => {
+	getStore().dispatch({
+		type: INDEX_CHANGED,
+		payload: index
 	});
 };

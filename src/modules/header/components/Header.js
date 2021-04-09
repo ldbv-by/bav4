@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { openContentPanel } from '../../menu/store/contentPanel.action';
+import { openContentPanel, setTabIndex } from '../../menu/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 // import { changeZoomAndCenter } from '../../map/store/position.action';
@@ -80,10 +80,14 @@ export class Header extends BaElement {
 			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open } = this._state;
+		const { open, tabIndex } = this._state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
+		};
+
+		const getActiveClass = (buttonIndex) => {
+			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
 
 		const hideModalHeader = () => {
@@ -100,6 +104,21 @@ export class Header extends BaElement {
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
 			}
+		};
+
+		const openThemeTab = () => {
+			setTabIndex(0);
+			openContentPanel();
+		};
+
+		const openMapLayerTab = () => {
+			setTabIndex(1);
+			openContentPanel();
+		};
+		
+		const openMoreTab = () => {
+			setTabIndex(2);
+			openContentPanel();
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -133,13 +152,14 @@ export class Header extends BaElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button title="opens menu 0" @click="${openContentPanel}">
+						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
 							${translate('header_header_topics_button')}
 						</button>
-						<button title="opens menu 1" @click="${openContentPanel}">
+						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
 						 	${translate('header_header_maps_button')}
-						</button>
-						<button title="opens menu 2" @click="${openContentPanel}">
+							 <span class="badges">1</span>
+							 </button>
+						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
 							${translate('header_header_more_button')}
 						</button>
 					</div>
@@ -153,8 +173,8 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open } } = state;
-		return { open };
+		const { contentPanel: { open, tabIndex } } = state;
+		return { open, tabIndex };
 	}
 
 	static get tag() {
