@@ -87,7 +87,7 @@ export class DrawToolContent extends BaElement {
 		const translate = (key) => this._translationService.translate(key);        
 		
 		const toolTemplate = (tool) => {
-			const classes = { isactive: tool.active };
+			const classes = { 'is-active': tool.active };
 			const toggle = () => {				
 				if (tool.active) {
 					tool.deactivate();

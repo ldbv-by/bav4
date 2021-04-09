@@ -2,6 +2,7 @@
 
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
 import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
+import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -29,7 +30,7 @@ describe('ToolContainer', () => {
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer });
+		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,

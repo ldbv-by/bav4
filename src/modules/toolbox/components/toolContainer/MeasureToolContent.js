@@ -24,21 +24,21 @@ export class MeasureToolContent extends BaElement {
 			icon:'measure',
 			activate:() => activateMeasurement(),
 			deactivate:() => deactivateMeasurement() };
-	}
+	}	
 
 	createView() {
-		const translate = (key) => this._translationService.translate(key);        
+		const translate = (key) => this._translationService.translate(key);    
+		const { active } = this._state;		  
+		this._tool.active = active;
+		const classes = { 'is-active': this._tool.active };
 		
-		const classes = { isactive: this._tool.active };
-		
-		const toggle = () => {				
+		const toggle = () => {	
 			if (this._tool.active) {
 				this._tool.deactivate();
 			}
 			else {
 				this._tool.activate();					
 			}
-			this._tool.active = !this._tool.active;
 		};
 
 		return html`
@@ -81,6 +81,15 @@ export class MeasureToolContent extends BaElement {
         </div>
         `;
 
+	}
+
+	/**
+	 * @override
+	 * @param {Object} state 
+	 */
+	extractState(state) {
+		const { measurement:active } = state;
+		return active;
 	}
 
 	static get tag() {
