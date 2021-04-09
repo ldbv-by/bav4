@@ -1,0 +1,187 @@
+.ba-tool-container__item{                   
+    width: 100%;                                                
+    text-align: center;
+    background-color: var(--primary-bg-color);
+    padding: 2em 1em 1em 1em;                                                            
+}
+
+.tool-container__header{
+    font-weight: bold;
+    font-size: 1em;
+    position: absolute;
+    top: 8px;
+    left: 1em;
+    opacity: .8;
+}
+
+.tool-container__buttons{
+    font-size:1.2rem;
+    display: flex;
+    margin: .8em 0;
+    justify-content: center;
+}
+
+.tool-container__buttons > div {
+    min-width: 3.7em;
+    position: relative;
+    background:transparent;
+    color: var(--header-button-color);
+    border-color: var(--secondary-bg-color);
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    color: rgba(255,255,255,.8);
+}
+.tool-container__buttons > div{
+    border-right: 1px dotted var(--secondary-bg-color);
+    border-left: 0 dotted var(--secondary-bg-color);    
+}
+.tool-container__buttons > div:first-child{
+    border-radius: var(--border-radius-button-b)  0 0 var(--border-radius-button-b);
+    border-left: 1px solid var(--secondary-bg-color);
+
+  }
+  .tool-container__buttons > div:nth-last-child(2){
+      border-radius:0 var(--border-radius-button-b) var(--border-radius-button-b) 0;
+      border-right: 1px solid var(--secondary-bg-color);
+  }
+  .tool-container__buttons > div:last-child{
+    border-radius: var(--border-radius-button-b);
+    border: 1px solid var(--secondary-bg-color);
+    margin-left: .8em;
+  }
+
+
+
+
+.tool-container__button{
+background:red;
+}
+
+.tool-container__background {
+    left: 1.5em;
+    top: 1.5em;
+    height: 0em;
+    width: 0em;
+    margin: 0.3em;
+    background-size: 3em 2em;
+    background-color: var(--secondary-bg-color);
+    border-radius: 2.5em;
+    position: absolute;
+    transition: all .2s ease-in-out;
+    transform: translate(-50%, -50%);
+}
+
+.tool-container__icon{
+    background: var(--color);
+    -webkit-mask-size: cover;
+    background: gray;
+    height: 2em;
+    width: 2em;
+    transition: all .2s ease-in-out;
+    margin: .8em .8em;
+    position: absolute;
+}
+
+.pancil{
+    mask:  url('assets/pencil.svg');
+    -webkit-mask-image:url('assets/pencil.svg');
+}
+
+.measure{
+    mask:  url('assets/measure.svg');
+    -webkit-mask-image:url('assets/measure.svg');
+}
+
+.line{
+    mask:  url('assets/line.svg');
+    -webkit-mask-image:url('assets/line.svg');
+}
+.symbol{
+    mask:  url('assets/symbol.svg');
+    -webkit-mask-image:url('assets/symbol.svg');
+}
+.text{
+    mask:  url('assets/text.svg');
+    -webkit-mask-image:url('assets/text.svg');
+}
+.polygon{
+    mask:  url('assets/polygon.svg');
+    -webkit-mask-image:url('assets/polygon.svg');
+}
+
+
+
+.tool-container__button:hover .tool-container__background{
+    height: 3em;
+    width: 3em;
+    background-color: var(--secondary-bg-color);
+}
+.is-active .tool-container__background{
+    height: 3em;
+    width: 3em;
+    background-color: var(--header-button-bg-color) !important;
+}
+.tool-container__button:hover .tool-container__icon{
+    background: gray;
+}
+.is-active  .tool-container__icon{
+    background: #fff !important;
+}
+.is-active  .tool-container__icon{
+    background: #fff !important;
+}
+
+
+
+  .tool-container__button-text{
+      font-size:.8rem;
+      margin: 5.5em .3em .5em .3em;
+  }
+  .tool-container__button:hover.tool-container__button-text{
+  
+    color: red;
+  }
+
+  .tool-container__button:hover.tool-container__background{
+    height: 3em;
+    width: 3em;
+    background-color: var(--header-button-bg-color);
+  }
+
+.tool-container__buttons-secondary{
+    margin: 0.8em 0 ;
+}
+.tool-container__buttons-secondary button{
+    cursor: pointer;
+    padding: .5em 0.9em;
+   background: transparent;
+   border: none;
+   font-weight: bold;
+   border-right: 1px dotted var(--header-background-color);
+   opacity:.8;
+   transition: all .2s ease-in-out;  
+ }
+  .tool-container__buttons-secondary button:hover{
+   opacity:1;
+  
+  }
+  .tool-container__buttons-secondary button:last-child{
+   border: none;
+  }
+  .tool-container__info{
+    font-size: .8rem;
+    color: gray;
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -3,7 +3,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 
 import css from './drawToolContent.css';
 
@@ -11,6 +10,7 @@ import css from './drawToolContent.css';
 /**
  * @class
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class DrawToolContent extends BaElement {
 	constructor() {
@@ -56,14 +56,6 @@ export class DrawToolContent extends BaElement {
 			icon:'polygon',
 			activate:() => {},
 			deactivate:() => {}        		
-		}, {            
-			id:5,
-			name:'measure', 
-			active:false, 
-			title: translate('toolbox_drawTool_measure'),
-			icon:'measure',
-			activate:() => activateMeasurement(),
-			deactivate:() => deactivateMeasurement()
 		}] 
 		;
 	}

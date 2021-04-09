@@ -36,16 +36,16 @@ describe('DrawToolContent', () => {
 			const element = await setup();
 
 			expect(element._tools).toBeTruthy();
-			expect(element._tools.length).toBe(5);
+			expect(element._tools.length).toBe(4);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(5);
+			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
 
 		it('activates a tool', async() => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#measure');
+			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
 
@@ -65,7 +65,7 @@ describe('DrawToolContent', () => {
 			const lastButton = element.shadowRoot.querySelector('#polygon');
 			lastButton.classList.add('is-active');
 
-			const toolButton = element.shadowRoot.querySelector('#measure');
+			const toolButton = element.shadowRoot.querySelector('#line');
 			toolButton.click();
 
 			expect(lastTool.active).toBeFalse();
@@ -78,7 +78,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#measure');
+			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
 

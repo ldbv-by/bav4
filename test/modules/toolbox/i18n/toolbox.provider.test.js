@@ -12,11 +12,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Linie');
 		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_measure).toBe('Messen');
 		expect(map.toolbox_drawTool_delete).toBe('Löschen');
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_measureTool_header).toBe('Messen');
+		expect(map.toolbox_measureTool_measure).toBe('Messen');
 	});
 
 	it('provides translation for en', () => {
@@ -28,16 +29,17 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Line');
 		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_measure).toBe('Measure');
 		expect(map.toolbox_drawTool_delete).toBe('Delete');
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
+		expect(map.toolbox_measureTool_header).toBe('Measure');
+		expect(map.toolbox_measureTool_measure).toBe('Measure');
 
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -2,6 +2,7 @@ import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from './DrawToolContent';
+import { MeasureToolContent } from './MeasureToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action'; 
 import css from './toolContainer.css';
 
@@ -63,6 +64,9 @@ export class ToolContainer extends BaElement {
 		switch (contentId) {
 			case DrawToolContent.tag:
 				content = html`<ba-tool-draw-content></ba-tool-draw-content>`;
+				break;		
+			case MeasureToolContent.tag:
+				content = html`<ba-tool-measure-content></ba-tool-measure-content>`;
 				break;		
 			default:
 				return nothing;					
