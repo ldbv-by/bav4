@@ -2,6 +2,7 @@
 
 import { ToolBox } from '../../../../../src/modules/menu/components/toolBox/ToolBox';
 import { toolBoxReducer } from '../../../../../src/modules/menu/store/toolBox.reducer';
+import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
 import { toggleToolBox } from '../../../../../src/modules/menu/store/toolBox.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -22,10 +23,15 @@ describe('ToolBoxElement', () => {
 		const state = {
 			toolBox: {
 				open: true
+			},
+			toolContainer:{
+				open:false,
+				contentId:false
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer });
+
+		TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer, toolContainer:toolContainerReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,

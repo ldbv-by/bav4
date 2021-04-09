@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
 import { toggleToolBox } from '../../store/toolBox.action';
-import { toggleToolContainer, setContainerContent } from '../../../toolbox/store/toolContainer.action';
+import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
 
@@ -61,8 +61,9 @@ export class ToolBox extends BaElement {
 	 */
 	createView() {
 
-		const { open } = this._state;
-
+		const { toolBox, toolContainer } = this._state;
+		const toolBoxOpen = toolBox.open;
+		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -72,16 +73,26 @@ export class ToolBox extends BaElement {
 		};
 
 		const getOverlayClass = () => {
-			return open ? 'is-open' : '';
+			return toolBoxOpen ? 'is-open' : '';
+		};
+
+		const toggleTool = (toolId) => {
+			setContainerContent(toolId);
+			if (activeToolId === toolId) {
+				toggleToolContainer();	
+			}
+			else {
+				openToolContainer();
+			}
 		};
 		const toggleDrawTool = () => {
-			setContainerContent('ba-tool-draw-content');
-			toggleToolContainer();
+			const toolId = 'ba-tool-draw-content';
+			toggleTool(toolId);		
 		};
 
 		const toggleMeasureTool = () => {
-			setContainerContent('ba-tool-measure-content');
-			toggleToolContainer();
+			const toolId = 'ba-tool-measure-content';
+			toggleTool(toolId);		
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -129,8 +140,8 @@ export class ToolBox extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { toolBox: { open } } = state;
-		return { open };
+		const { toolBox, toolContainer } = state;
+		return { toolBox:toolBox, toolContainer:toolContainer };
 	}
 
 	static get tag() {
