@@ -146,6 +146,7 @@ export const getAzimuth = (geometry) => {
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
 	const stepFactor = 10;
+	const minDelta = 0.01; // results in max 100 allowed partitions 
 	const minPartitionLength = 10;
 	const maxPartitionLength = 100000;
 	let delta = 1;
@@ -159,11 +160,13 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	while (partitionLength <= maxPartitionLength) {
 		if ( isValidForResolution(partitionLength)) {
 			delta = partitionLength / length;
-			break;
+			if (minDelta < delta) {
+				break;
+			}			
 		}	
 		partitionLength = partitionLength * stepFactor;
 	}
-
+	console.log(delta);
 	return delta;
 };
 

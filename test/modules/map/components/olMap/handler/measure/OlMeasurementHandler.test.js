@@ -300,7 +300,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
-			expect(feature.get('partitions').length).toBe(123);
+			expect(feature.get('partitions').length).toBe(12);
 		});
 
 		it('creates partition tooltips for not closed polygon', () => {
