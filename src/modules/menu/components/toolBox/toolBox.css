@@ -71,6 +71,11 @@
 .pencil{
     background-image:  url('assets/pencil.svg');
 }
+
+.measure{
+    background-image:  url('assets/measure.svg');
+}
+
 .tool-box__button-text{
     color: var(--color); 
     font-size: .8rem; 
