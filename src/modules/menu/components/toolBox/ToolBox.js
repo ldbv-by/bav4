@@ -79,6 +79,11 @@ export class ToolBox extends BaElement {
 			toggleToolContainer();
 		};
 
+		const toggleMeasureTool = () => {
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
@@ -88,7 +93,14 @@ export class ToolBox extends BaElement {
 					<div class="action-button__icon">
 					</div>
 				</button>
-				<div class="tool-box ${getOverlayClass()}">    		
+				<div class="tool-box ${getOverlayClass()}">    	
+					<div  @click="${toggleMeasureTool}" class="tool-box__button">
+						<div class="tool-box__button_icon measure">							
+						</div>
+						<div class="tool-box__button-text">
+							${translate('menu_toolbox_measure_button')}
+						</div>  
+					</div>  	
 					<div  @click="${toggleDrawTool}" class="tool-box__button">
 						<div class="tool-box__button_icon pencil">							
 						</div>

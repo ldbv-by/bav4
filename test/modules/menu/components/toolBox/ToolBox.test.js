@@ -45,13 +45,14 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('adds a div which holds the toolbox with tow Tools', async () => {
+		it('adds a div which holds the toolbox with three Tools', async () => {
 
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-box__button').length).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.tool-box__button').length).toBe(3);
+			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.measure')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.pencil')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.share')).toBeTruthy();
 		});
