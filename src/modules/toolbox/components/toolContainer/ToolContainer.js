@@ -71,10 +71,6 @@ export class ToolContainer extends BaElement {
 			default:
 				return nothing;					
 		}
-		
-		if (!contentId) {
-			return nothing;
-		}
 
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';

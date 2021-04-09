@@ -6,9 +6,11 @@ import { setContainerContent, toggleToolContainer } from '../../../../../src/mod
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/DrawToolContent';
+import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/MeasureToolContent';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
+window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
 describe('ToolContainer', () => {
 
@@ -56,7 +58,7 @@ describe('ToolContainer', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 		});
 
-		it('opens the toolcontainer', async () => {
+		it('opens the toolcontainer with draw-content', async () => {
 
 			const element = await setup();
 
@@ -64,6 +66,26 @@ describe('ToolContainer', () => {
 			setContainerContent('ba-tool-draw-content');
 			toggleToolContainer();
 			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+		});
+
+		it('opens the toolcontainer with measure-content', async () => {
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
+		});
+
+		it('renders nothing when contentId is false', async () => {
+			const element = await setup();
+
+			toggleToolContainer();
+			
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -71,6 +93,8 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+		
 	});
 
 	describe('responsive layout ', () => {
