@@ -137,23 +137,35 @@ export const getAzimuth = (geometry) => {
 /**
  * Calculates delta-value as a factor of the length of a provided geometry, 
  * to get equal-distanced partition points related to the start of the geometry.
+ * The count of the points is based on the resolution of the MapView.
  * @param {Geometry} geometry the linear/area-like geometry
+ * @param {number} resolution the resolution of the MapView, e. g. map.getView().getResolution()
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
-export const getPartitionDelta = (geometry, calculationHints = {}) => {
+export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
+	const stepFactor = 10;
+	const minDelta = 0.01; // results in max 100 allowed partitions 
+	const minPartitionLength = 10;
+	const maxPartitionLength = 100000;
 	let delta = 1;
-	if (length > 200000) {
-		delta = 100000 / length;
-	}
-	else if (length > 20000) {
-		delta = 10000 / length;
-	}
-	else if (length !== 0) {
-		delta = 1000 / length;
-	}
+	const minLengthResolution = 20;
+	const isValidForResolution = (partition) => {
+		const partitionResolution = partition / resolution;
+		return partitionResolution > minLengthResolution && length > partition ;
+	};	
 
+	let partitionLength = minPartitionLength;
+	while (partitionLength <= maxPartitionLength) {
+		if ( isValidForResolution(partitionLength)) {
+			delta = partitionLength / length;
+			if (minDelta < delta) {
+				break;
+			}			
+		}	
+		partitionLength = partitionLength * stepFactor;
+	}
 	return delta;
 };
 
@@ -166,7 +178,7 @@ export const getPartitionDelta = (geometry, calculationHints = {}) => {
 //todo:intermediate helper-function until kind of FormattingService is in place
 export const getFormattedLength = (length) => {
 	let formatted;
-	if (length > 100) {
+	if (length > 999) {
 		formatted = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
 	}
 	else {
