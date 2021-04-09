@@ -2,7 +2,11 @@ import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 
-
+/**
+ * a class for displaying information about the base layer
+ * @class
+ * @author bakir_en 
+ */
 export class GeoResourceInfo extends BaElement {
 
 	constructor() {

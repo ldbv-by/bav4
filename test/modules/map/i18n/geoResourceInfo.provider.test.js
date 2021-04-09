@@ -7,7 +7,7 @@ describe('i18n for georesource info', () => {
 
 		const map = provide('en');
 		
-		expect(map.map_geoResourceInfo_label).toBe('Georesource');		
+		expect(map.map_geoResourceInfo_label).toBe('Base Layer');		
 	});
 
 
@@ -15,7 +15,7 @@ describe('i18n for georesource info', () => {
 
 		const map = provide('de');
 
-		expect(map.map_geoResourceInfo_label).toBe('Georessource');				
+		expect(map.map_geoResourceInfo_label).toBe('Hintergrundkarte');				
 	});
 
 	it('have the expected amount of translations', () => {
