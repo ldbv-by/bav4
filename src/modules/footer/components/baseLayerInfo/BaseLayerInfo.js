@@ -7,7 +7,7 @@ import { $injector } from '../../../../injection';
  * @class
  * @author bakir_en 
  */
-export class GeoResourceInfo extends BaElement {
+export class BaseLayerInfo extends BaElement {
 
 	constructor() {
 		super();
@@ -33,7 +33,7 @@ export class GeoResourceInfo extends BaElement {
 			this._content = geoResource.label;
 			
 			return html`
-            <div><p class='geo-rsrc-info'>${translate('map_geoResourceInfo_label')}: ${this._content} </p></div>
+            <div><p>${translate('map_baseLayerInfo_label')}: ${this._content} </p></div>
 			`;
 		} 
 
@@ -50,6 +50,6 @@ export class GeoResourceInfo extends BaElement {
 	}
 
 	static get tag() {
-		return 'ba-georesource-info';
+		return 'ba-base-layer-info';
 	} 
 }

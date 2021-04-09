@@ -1,13 +1,13 @@
-import { provide } from '../../../../src/modules/map/i18n/geoResourceInfo.provider';
+import { provide } from '../../../../src/modules/footer/i18n/baseLayerInfo.provider';
 
 
-describe('i18n for georesource info', () => {
+describe('i18n for baseLayer info', () => {
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 		
-		expect(map.map_geoResourceInfo_label).toBe('Base Layer');		
+		expect(map.map_baseLayerInfo_label).toBe('Base Layer');		
 	});
 
 
@@ -15,7 +15,7 @@ describe('i18n for georesource info', () => {
 
 		const map = provide('de');
 
-		expect(map.map_geoResourceInfo_label).toBe('Hintergrundkarte');				
+		expect(map.map_baseLayerInfo_label).toBe('Hintergrundkarte');				
 	});
 
 	it('have the expected amount of translations', () => {
