@@ -15,7 +15,7 @@ describe('ToolBoxElement', () => {
 	const windowMock = {
 		matchMedia() { }
 	};
-
+	let store;
 	const setup = async (config = {}) => {
 
 		const { embed = false } = config;
@@ -31,7 +31,7 @@ describe('ToolBoxElement', () => {
 		};
 
 
-		TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer, toolContainer:toolContainerReducer });
+		store = TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer, toolContainer:toolContainerReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -76,6 +76,38 @@ describe('ToolBoxElement', () => {
 			const element = await setup({ embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
+		it('it toggles a tool', async () => {
+
+			const element = await setup();
+			const toolButton = element.shadowRoot.querySelector('.tool-box__button_icon.measure');
+
+			expect(store.getState().toolContainer.open).toBeFalse();
+			toolButton.click();
+			expect(store.getState().toolContainer.open).toBeTrue();
+			toolButton.click();
+			expect(store.getState().toolContainer.open).toBeFalse();
+			
+		});
+
+		it('it toggles and switches the tools', async () => {
+
+			const element = await setup();
+			const measureToolButton = element.shadowRoot.querySelector('.tool-box__button_icon.measure');
+			const drawToolButton = element.shadowRoot.querySelector('.tool-box__button_icon.pencil');
+
+			expect(store.getState().toolContainer.open).toBeFalse();
+			expect(store.getState().toolContainer.contentId).toBeFalse();
+			measureToolButton.click();
+			expect(store.getState().toolContainer.open).toBeTrue();
+			expect(store.getState().toolContainer.contentId).toBe('ba-tool-measure-content');
+			drawToolButton.click();
+			expect(store.getState().toolContainer.open).toBeTrue();
+			expect(store.getState().toolContainer.contentId).toBe('ba-tool-draw-content');
+			drawToolButton.click();
+			expect(store.getState().toolContainer.open).toBeFalse();
+			
 		});
 	});
 
