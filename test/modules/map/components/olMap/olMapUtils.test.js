@@ -70,7 +70,7 @@ describe('olMapUtils', () => {
 		it('it converts an external VectorGeoresource to an olLayer', () => {
 			const url = 'https://some.url';
 			spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
-			const vectorGeoresource = new VectorGeoResource('someId', 'Label', url, VectorSourceType.KML);
+			const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
 
 			const vectorOlLayer = toOlLayer(vectorGeoresource);
 			
@@ -88,9 +88,8 @@ describe('olMapUtils', () => {
 		it('it converts an internal VectorGeoresource to an olLayer', () => {
 			const srid = 3857;
 			spyOn(mapService, 'getSrid').and.returnValue(srid);
-			const vectorGeoresource = new VectorGeoResource('someId', 'Label', null, VectorSourceType.KML);
 			const sourceAsString = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Zeichnung</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>';
-			vectorGeoresource.setSource(sourceAsString, 4326);
+			const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setSource(sourceAsString, 4326);
 
 			const vectorOlLayer = toOlLayer(vectorGeoresource);
 

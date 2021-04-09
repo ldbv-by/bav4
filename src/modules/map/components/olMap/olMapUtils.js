@@ -51,7 +51,7 @@ export const toOlLayer = (georesource) => {
 		}
 
 		//from internal source
-		const features = mapVectorSourceTypeToFormat(georesource.sourceType).readFeatures(geoResource.source);
+		const features = mapVectorSourceTypeToFormat(georesource.sourceType).readFeatures(geoResource.data);
 		features.forEach(f => {
 			f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + mapService.getSrid());
 			f.set('srid', mapService.getSrid(), true);
