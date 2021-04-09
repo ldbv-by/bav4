@@ -102,23 +102,36 @@ describe('GeoResource', () => {
 
 		it('instantiates a VectorGeoResource', () => {
 
-			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
-			expect(vectorGeoResource.url).toBe('url');
+			expect(vectorGeoResource.url).toBeNull();
+			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 		});
 
 
-		it('sets data as the source of a VectorGeoResource', () => {
+		it('instantiates an internal VectorGeoResource', () => {
 			
-			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 			vectorGeoResource.source = 'someData';
 
-			expect(vectorGeoResource.source).toBe('someData');
+			expect(vectorGeoResource.data).toBe('someData');
+			expect(vectorGeoResource.srid).toBe(1234);
 			expect(vectorGeoResource.url).toBeNull();
+		});
+
+		it('instantiates an external VectorGeoResource', () => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
+			vectorGeoResource.source = 'someData';
+
+			expect(vectorGeoResource.url).toBe('someUrl');
+			expect(vectorGeoResource.data).toBeNull();
+			expect(vectorGeoResource.srid).toBeNull();
 		});
 	});
 

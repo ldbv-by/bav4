@@ -138,14 +138,17 @@ export const VectorSourceType = Object.freeze({
 
 
 /**
+ * GeoResource for vector data.
+ * Data could be either loaded externally by Url or internally from a string.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
-	constructor(id, label, url, sourceType) {
+	constructor(id, label, sourceType) {
 		super(id, label);
-		this._url = url;
+		this._url = null;
 		this._sourceType = sourceType;
-		this._source = null;
+		this._data = null;
+		this._srid = null;
 	}
 
 	get url() {
@@ -156,13 +159,37 @@ export class VectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	get source() {
-		return this._source;
+	get data() {
+		return this._data;
 	}
 
-	set source(data) {
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * Sets the Url for this 'external' GeoResource.
+	 * @param {string} url
+	 * @returns `this` for chaining 
+	 */
+	setUrl(url) {
+		this._url = url;
+		this._data = null;
+		this._srid = null;
+		return this;
+	}
+	
+	/**
+	 * Sets the source of this 'internal' GeoResource.
+	 * @param {string} data 
+	 * @param {number} srid 
+	 * @returns `this` for chaining 
+	 */
+	setSource(data, srid) {
 		this._url = null;
-		this._source = data;
+		this._data = data;
+		this._srid = srid;
+		return this;
 	}
 
 	/**

@@ -122,7 +122,7 @@ describe('GeoResourceService', () => {
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
 			instanceUnderTest._georesources = [geoResource];
-			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', 'another url', VectorSourceType.GEOJSON);
+			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON).setUrl('another url');
 
 			instanceUnderTest.addOrReplace(geoResource2);
 			expect(instanceUnderTest._georesources.length).toBe(1);
