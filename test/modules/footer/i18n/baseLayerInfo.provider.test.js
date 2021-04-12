@@ -7,7 +7,7 @@ describe('i18n for baseLayer info', () => {
 
 		const map = provide('en');
 		
-		expect(map.map_baseLayerInfo_label).toBe('Base Layer');		
+		expect(map.map_baseLayerInfo_label).toBe('Basemap');		
 	});
 
 
