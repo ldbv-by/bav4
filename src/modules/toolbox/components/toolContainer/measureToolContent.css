@@ -84,34 +84,10 @@ background:red;
     position: absolute;
 }
 
-.pancil{
-    mask:  url('assets/pencil.svg');
-    -webkit-mask-image:url('assets/pencil.svg');
-}
-
 .measure{
-    mask:  url('assets/measure.svg');
+    mask-image:  url('assets/measure.svg');
     -webkit-mask-image:url('assets/measure.svg');
 }
-
-.line{
-    mask:  url('assets/line.svg');
-    -webkit-mask-image:url('assets/line.svg');
-}
-.symbol{
-    mask:  url('assets/symbol.svg');
-    -webkit-mask-image:url('assets/symbol.svg');
-}
-.text{
-    mask:  url('assets/text.svg');
-    -webkit-mask-image:url('assets/text.svg');
-}
-.polygon{
-    mask:  url('assets/polygon.svg');
-    -webkit-mask-image:url('assets/polygon.svg');
-}
-
-
 
 .tool-container__button:hover .tool-container__background{
     height: 3em;
@@ -132,8 +108,6 @@ background:red;
 .is-active  .tool-container__icon{
     background: #fff !important;
 }
-
-
 
   .tool-container__button-text{
       font-size:.8rem;
