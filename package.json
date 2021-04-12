@@ -18,7 +18,7 @@
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
     "fucazu-minami": "^1.1.7",
-    "html-webpack-plugin": "^4.5.2",
+    "html-webpack-plugin": "^5.3.1",
     "jasmine": "^3.7.0",
     "jsdoc": "^3.6.6",
     "karma": "^6.3.2",
@@ -41,7 +41,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "start": "webpack serve --open --mode=development",
+    "start": "webpack serve --open --mode=development --devtool=inline-source-map",
     "start:nohostcheck": "webpack serve --open --mode=development --disable-host-check --host 0.0.0.0",
     "build:dev": "webpack --mode=development --devtool=inline-source-map",
     "build:prod": "webpack --mode=production",

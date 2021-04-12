@@ -178,7 +178,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 //todo:intermediate helper-function until kind of FormattingService is in place
 export const getFormattedLength = (length) => {
 	let formatted;
-	if (length > 100) {
+	if (length > 999) {
 		formatted = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
 	}
 	else {
