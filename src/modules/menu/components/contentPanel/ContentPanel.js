@@ -28,8 +28,6 @@ export class ContentPanel extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		// const { tabIndex } = this._state;
-
 		this.activateTab(this._activeTabIndex);
 	}
 
@@ -100,12 +98,6 @@ export class ContentPanel extends BaElement {
 			{ name: 'Routing' },
 			{ name: 'Search' }
 		];
-
-		// const onItemClicked = (tabIndex) => {
-		this.activateTab(tabIndex);
-		// };
-
-
 
 		return html`
 			<style>${css}</style>

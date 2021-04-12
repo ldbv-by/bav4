@@ -2,7 +2,6 @@
     position: fixed;    
     z-index: var(--z-contentpanel);
     background-color: var(--primary-bg-color);
-    /* padding: 7em 0em 0em; */
     bottom: 0;
     top: 0;
     left: -28em;
@@ -146,7 +145,6 @@
 }
 .ba-list-item{
    display: flex;
-   /*                font-size: .8rem;*/
    cursor: pointer;
 }
 .ba-list-item:hover{
@@ -164,7 +162,6 @@
 }
 
 .ba-list-item__header{
-   /* background: whitesmoke; */
    font-weight: bold;
 }
 .ba-list-item__header:hover{
