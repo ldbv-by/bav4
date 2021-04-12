@@ -10,7 +10,7 @@ describe('GeoResource provider', () => {
 		};
 
 		const httpService = {
-			fetch: async () => { }
+			get: async () => { }
 		};
 
 		beforeAll(() => {
@@ -26,7 +26,7 @@ describe('GeoResource provider', () => {
 			const expectedShortUrl = 'https://much.shorter';
 			const expectedArgs0 = urlShorteningServiceUrl + '?createcode=' + encodeURIComponent(urlToShorten);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify({
 						shorturl: expectedShortUrl
@@ -47,7 +47,7 @@ describe('GeoResource provider', () => {
 			const urlToShorten = 'https://makeme.shorter';
 			const expectedArgs0 = urlShorteningServiceUrl + '?createcode=' + encodeURIComponent(urlToShorten);
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
