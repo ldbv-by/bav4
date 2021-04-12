@@ -42,14 +42,11 @@
     border-left: 1px solid var(--secondary-bg-color);
 
   }
-  .tool-container__buttons > div:nth-last-child(2){
-      border-radius:0 var(--border-radius-button-b) var(--border-radius-button-b) 0;
-      border-right: 1px solid var(--secondary-bg-color);
-  }
+
   .tool-container__buttons > div:last-child{
-    border-radius: var(--border-radius-button-b);
-    border: 1px solid var(--secondary-bg-color);
-    margin-left: .8em;
+    border-radius: 0 var(--border-radius-button-b)  var(--border-radius-button-b) 0;
+    border-left: none;
+    border-right: 1px solid var(--secondary-bg-color);
   }
 
 
@@ -152,6 +149,7 @@ background:red;
 
 .tool-container__buttons-secondary{
     margin: 0.8em 0 ;
+    display: none;
 }
 .tool-container__buttons-secondary button{
     cursor: pointer;
