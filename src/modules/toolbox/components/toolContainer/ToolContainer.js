@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from './DrawToolContent';
 import { MeasureToolContent } from './MeasureToolContent';
-import { closeToolContainer } from '../../store/toolContainer.action'; 
+import { closeToolContainer } from '../../store/toolContainer.action';
 import css from './toolContainer.css';
 
 /**
@@ -64,12 +64,12 @@ export class ToolContainer extends BaElement {
 		switch (contentId) {
 			case DrawToolContent.tag:
 				content = html`<ba-tool-draw-content></ba-tool-draw-content>`;
-				break;		
+				break;
 			case MeasureToolContent.tag:
 				content = html`<ba-tool-measure-content></ba-tool-measure-content>`;
-				break;		
+				break;
 			default:
-				return nothing;					
+				return nothing;
 		}
 
 		const getOrientationClass = () => {
@@ -83,10 +83,11 @@ export class ToolContainer extends BaElement {
 		const getOverlayClass = () => {
 			return open ? 'is-open' : '';
 		};
-		
+
 		return html`
 			<style>${css}</style>		
-			<div class="tool-container ${getOrientationClass()} ${getMinWidthClass()}">  				
+			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  	
+			<div class="tool-container"> 			
 				<div class="tool-container__content ${getOverlayClass()}">    
 				<div class="tool-container__tools-nav">                        
                         <button @click=${closeToolContainer} class="tool-container__close-button">
@@ -95,6 +96,7 @@ export class ToolContainer extends BaElement {
                 </div>		
 					${content}    				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
+			</div>		
 			</div>		
 		`;
 	}
