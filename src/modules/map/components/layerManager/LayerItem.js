@@ -106,10 +106,12 @@ export class LayerItem extends BaElement {
         <div class='layer'>
 			<div class='layer-header'>
 				<div class='layer-actions'>
-					<ba-icon id='remove' icon='${removeSvg}' size=16 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>					
-					<ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
+				<ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
 				</div>				
 				<span class='layer-label'>${currentLabel}</span>
+				<div class='layer-actions'>
+				<ba-icon id='remove' icon='${removeSvg}' size=16 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>					
+				</div>                
 				<div class='collapse-button'>					
                     <a title="${getCollapseTitle()}" @click="${toggleCollapse}">
                         <i class='icon chevron ${classMap(iconCollapseClass)}'></i>
