@@ -28,4 +28,60 @@ export class HttpService {
 
 		return response;
 	}
+
+	/**
+	 * Convenience method for a GET call. 
+	 * Uses {@link HttpService#fetch}.
+	 * Mode 'cors' ist set by default.
+	 * @param {string} resource URL
+	 * @param {object} options fetch options
+	 * @returns Fetch API Response
+	 */
+	async get(resource, options = {}) {
+		const fetchOptions = {
+			mode: 'cors',
+			...options,
+		};
+		return this.fetch(resource, fetchOptions);
+	}
+
+	/**
+	 * Convenience method for a POST call. 
+	 * Uses {@link HttpService#fetch}.
+	 * Mode 'cors' ist set by default.
+	 * @param {string} resource URL
+	 * @param {object} data POST body
+	 * @param {string} contentType contentType
+	 * @param {object} options fetch options
+	 * @returns Fetch API Response 
+	 */
+	async post(resource, data, contentType, options = {}) {
+		const fetchOptions = {
+			mode: 'cors',
+			method: 'POST',
+			body: data,
+			headers: {
+				'Content-Type': contentType
+			},
+			...options,
+		};
+		return this.fetch(resource, fetchOptions);
+	}
+
+	/**
+	 * Convenience method for a HEAD call. 
+	 * Uses {@link HttpService#fetch}.
+	 * Mode 'cors' ist set by default.
+	 * @param {string} resource URL
+	 * @param {object} options fetch options
+	 * @returns Fetch API Response 
+	 */
+	async head(resource, options = {}) {
+		const fetchOptions = {
+			mode: 'cors',
+			method: 'HEAD',
+			...options,
+		};
+		return this.fetch(resource, fetchOptions);
+	}
 }

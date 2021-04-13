@@ -23,7 +23,7 @@ export const loadBvvAdministration = async (coordinate3857) => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'administration/info';
 
 
-	const result = await httpService.fetch(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`, { });
+	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
 
 	if (result.ok) {
 		const payload = await result.json();

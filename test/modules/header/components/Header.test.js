@@ -17,12 +17,13 @@ describe('Header', () => {
 		matchMedia() { }
 	};
 
-	const setup = (config = {}, open = true) => {
+	const setup = (config = {}, open = true, tabIndex = 0) => {
 		const { embed = false } = config;
 
 		const state = {
 			contentPanel: {
-				open: open
+				open: open,
+				tabIndex: tabIndex
 			}
 		};
 		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer });
@@ -123,9 +124,13 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();  
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_header_topics_button');
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].innerText).toBe('header_header_maps_button');
+			//TODO
+			// expect(element.shadowRoot.querySelector('.header__button-container').children[1].innerText).toBe('header_header_maps_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_header_more_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -167,6 +172,50 @@ describe('Header', () => {
 
 			expect(store.getState().modal.title).toBe('Showcase');
 		});
+	});
+
+	describe('when menu button is clicked', () => {
+
+		beforeEach(function () {
+			spyOn(windowMock, 'matchMedia')
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+		});
+
+		it('click button Theme', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
+		});
+
+		it('click button Map', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeTrue();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
+		});
+
+		it('click button More', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeTrue();  
+		});
+
+		it('it updates the store', async () => {
+			const element = await setup({ mobile: false }, false);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());  
+			expect(store.getState().contentPanel.tabIndex).toBe(0);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());  
+			expect(store.getState().contentPanel.tabIndex).toBe(1);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());  
+			expect(store.getState().contentPanel.tabIndex).toBe(2);
+		});
+
 	});
 
 	describe('when search is focus blur ', () => {

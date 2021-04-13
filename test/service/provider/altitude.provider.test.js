@@ -9,7 +9,7 @@ describe('Altitude provider', () => {
 		};
 
 		const httpService = {
-			fetch: async () => { }
+			get: async () => { }
 		};
 
 		beforeAll(() => {
@@ -26,7 +26,7 @@ describe('Altitude provider', () => {
 			const backendUrl = 'https://backend.url';
 			const altitudeMock = { altitude: 5 };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
 						altitudeMock
@@ -45,7 +45,7 @@ describe('Altitude provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(JSON.stringify({}), { status: 200 })
 			));
 
@@ -63,7 +63,7 @@ describe('Altitude provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(JSON.stringify({ altitude: null }), { status: 200 })
 			));
 
@@ -81,7 +81,7 @@ describe('Altitude provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
