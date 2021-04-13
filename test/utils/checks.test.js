@@ -1,4 +1,4 @@
-import { isCoordinate, isNumber, isString } from '../../src/utils/checks';
+import { isCoordinate, isNumber, isPromise, isString } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
 
@@ -46,5 +46,16 @@ describe('provides checks for commons types', () => {
 		expect(isCoordinate([1, 2, 3])).toBeFalse();
 
 		expect(isCoordinate([21, 42])).toBeTrue();
+	});
+
+	it('checks for a promise', () => {
+		expect(isPromise()).toBeFalse();
+		expect(isPromise(null)).toBeFalse();
+		expect(isPromise([21])).toBeFalse();
+		expect(isPromise({})).toBeFalse();
+		expect(isPromise('some')).toBeFalse();
+		expect(isPromise(5)).toBeFalse();
+
+		expect(isPromise(Promise.resolve())).toBeTrue();
 	});
 });
