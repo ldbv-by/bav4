@@ -93,22 +93,35 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return layer;
 		};
 
+		const clickHandler = (event) => {
+			const pixel = event.pixel;
+			console.log('click:', this._measureState);
+			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
+				this._select.getFeatures().clear();
+			}
+			if (this._measureState.type === MeasureStateType.MODIFY && this._measureState.snap) {
+				const interactionLayer = this._vectorLayer;
+				const featureSnapOption = {
+					hitTolerance: 10,
+					layerFilter: itemLayer => {
+						return itemLayer === interactionLayer ;
+					},
+				};			
+				
+				this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+					if (layer === interactionLayer) {
+						this._select.getFeatures().push(feature);
+					}					
+				}, featureSnapOption);	
+			}
+		};
+
 		const pointerUpHandler = () => {
 			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
 			}
-			console.log(this._measureState);
-
-			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
-				console.log('state for deselect:', this._measureState);
-				this._select.getFeatures().clear();
-				this._measureState.type = MeasureStateType.ACTIVE;
-				this._measureStateHandler.notify(this._measureState);
-				this._select.setActive(true);
-				this._draw.setActive(true);
-
-			}
+			console.log('pointerup:', this._measureState);			
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -139,6 +152,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (!this._environmentService.isTouch()) {
 				this._measureStateHandler.activate();			
 			}
+			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
@@ -235,11 +249,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const activateModify = (event) => {
-			draw.setActive(false);
+			draw.setActive(false);			
 			this._modify.setActive(true);
 			event.feature.setStyle(measureStyleFunction(event.feature));			
 			this._select.getFeatures().push(event.feature);
-			event.feature.on('change', event => this._updateMeasureTooltips(event.target));
+			event.feature.on('change', event => this._updateMeasureTooltips(event.target));			
 		};
 
 		draw.on('drawstart', event => {
@@ -333,12 +347,52 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		feature.set('partitions', partitions);
 	}
 
+	_getSnapState(pixel) {
+		let snapType = null;
+		const interactionLayer = this._vectorLayer;
+		const featureSnapOption = {
+			hitTolerance: 10,
+			layerFilter: itemLayer => {
+				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
+			},
+		};
+		let vertexFeature = null;
+		let featuresFromInteractionLayerCount = 0;
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				featuresFromInteractionLayerCount++;
+			}
+			if (!layer && feature.get('features').length > 0) {
+				vertexFeature = feature;
+				return;
+			}
+		}, featureSnapOption);
+				
+		if (vertexFeature) {
+			snapType = MeasureSnapType.EGDE;
+			const vertexGeometry = vertexFeature.getGeometry();
+			const snappedFeature = vertexFeature.get('features')[0];
+			const snappedGeometry = snappedFeature.getGeometry();
+
+			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+				snapType = MeasureSnapType.VERTEX;
+				
+			}
+		}
+		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
+			snapType = MeasureSnapType.FACE;
+		}
+		return snapType;
+	}
+
 	_updateMeasureState(coordinate, pixel, dragging) {	
 		const measureState = { type:null,
 			snap:null,
 			coordinate:coordinate,
 			pointCount:this._pointCount };
-	
+
+		measureState.snap = this._getSnapState(pixel);				
+
 		if (this._draw.getActive()) {
 			measureState.type = MeasureStateType.ACTIVE;
 			
@@ -354,46 +408,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 		}
-
-		let isGrab = false;
+		
 		if (this._modify.getActive()) {
-			measureState.type = MeasureStateType.MODIFY;
-			measureState.snap = null;
-			const interactionLayer = this._vectorLayer;
-			const featureSnapOption = {
-				hitTolerance: 10,
-				layerFilter: itemLayer => {
-					return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-				},
-			};
-			let vertexFeature = null;
-			let featuresFromInteractionLayerCount = 0;
-			this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-				if (layer === interactionLayer) {
-					featuresFromInteractionLayerCount++;
-				}
-				if (!layer && feature.get('features').length > 0) {
-					vertexFeature = feature;
-					return;
-				}
-			}, featureSnapOption);
-
-				
-			if (vertexFeature) {
-				measureState.snap = MeasureSnapType.EGDE;
-				const vertexGeometry = vertexFeature.getGeometry();
-				const snappedFeature = vertexFeature.get('features')[0];
-				const snappedGeometry = snappedFeature.getGeometry();
-
-				if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-					measureState.snap = MeasureSnapType.VERTEX;
-					isGrab = true;
-				}
-			}
-			if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-				measureState.snap = MeasureSnapType.FACE;
-			}
-				
+			measureState.type = MeasureStateType.MODIFY;		
 		}
 		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
 		if (dragableOverlay) {
@@ -408,7 +425,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._measureState = measureState;
 		this._measureStateHandler.notify(measureState);
 
-		if (isGrab) {
+		if (measureState.snap === MeasureSnapType.VERTEX) {
 			this._mapContainer.classList.add('grab');
 		}
 		else {
