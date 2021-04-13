@@ -65,12 +65,12 @@ export class CoordinateSelect extends BaElement {
 		return html`
 			<style>${css}</style>
             <div class='coordinate-container' >
-				${pointerPosition ? html`<div class='coordinate-label'>${getPointerPositionChange()}</div>` : nothing} 
 				<select class='select-coordinate' @change="${onChange}" title="${translate('footer_coordinate_select')}">
 				${this._items.map((item) => html`
 					<option class="select-coordinate-option" value="${item.code}">${item.label}</option> 
 				`)}
 				</select>
+				${pointerPosition ? html`<div class='coordinate-label'>${getPointerPositionChange()}</div>` : nothing} 
 			</div>				
 		`;
 	} 

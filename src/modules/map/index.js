@@ -6,4 +6,3 @@ import './components/mapButtonsContainer';
 import './components/geolocationButton';
 import './components/contextMenu';
 import './components/olMap';
-

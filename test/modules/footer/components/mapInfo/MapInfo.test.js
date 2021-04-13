@@ -27,8 +27,8 @@ describe('MapInfo', () => {
 
 			element = await TestUtils.render(MapInfo.tag);
 
-			expect(element.shadowRoot.querySelector('ba-theme-toggle')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('ba-coordinate-select')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-base-layer-info')).toBeTruthy();
 		});
 	});
 });
