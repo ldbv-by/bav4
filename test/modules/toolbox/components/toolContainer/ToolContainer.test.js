@@ -6,8 +6,8 @@ import { measurementReducer } from '../../../../../src/modules/map/store/measure
 import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { DrawToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/DrawToolContent';
-import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/MeasureToolContent';
+import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);

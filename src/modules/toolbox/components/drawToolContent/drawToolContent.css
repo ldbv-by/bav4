@@ -73,6 +73,7 @@ background:red;
 .tool-container__icon{
     background: var(--color);
     -webkit-mask-size: cover;
+    mask-size: cover;
     background: gray;
     height: 2em;
     width: 2em;
@@ -84,11 +85,6 @@ background:red;
 .pancil{
     mask-image:  url('assets/pencil.svg');
     -webkit-mask-image:url('assets/pencil.svg');
-}
-
-.measure{
-    mask-image:  url('assets/measure.svg');
-    -webkit-mask-image:url('assets/measure.svg');
 }
 
 .line{

@@ -1,8 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { DrawToolContent } from './DrawToolContent';
-import { MeasureToolContent } from './MeasureToolContent';
+import { DrawToolContent } from '../drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action';
 import css from './toolContainer.css';
 

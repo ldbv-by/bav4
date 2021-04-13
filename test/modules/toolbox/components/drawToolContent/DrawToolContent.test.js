@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { DrawToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/DrawToolContent';
+import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 

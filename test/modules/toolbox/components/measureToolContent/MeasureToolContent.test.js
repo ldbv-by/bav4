@@ -1,7 +1,7 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
-import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/MeasureToolContent';
+import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 

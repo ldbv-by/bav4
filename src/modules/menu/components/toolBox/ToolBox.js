@@ -1,6 +1,8 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
+import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
 import { toggleToolBox } from '../../store/toolBox.action';
 import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
@@ -86,12 +88,12 @@ export class ToolBox extends BaElement {
 			}
 		};
 		const toggleDrawTool = () => {
-			const toolId = 'ba-tool-draw-content';
+			const toolId = DrawToolContent.tag;
 			toggleTool(toolId);		
 		};
 
 		const toggleMeasureTool = () => {
-			const toolId = 'ba-tool-measure-content';
+			const toolId = MeasureToolContent.tag;
 			toggleTool(toolId);		
 		};
 
