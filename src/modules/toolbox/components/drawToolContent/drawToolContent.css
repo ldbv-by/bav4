@@ -82,11 +82,6 @@ background:red;
     position: absolute;
 }
 
-.pancil{
-    mask-image:  url('assets/pencil.svg');
-    -webkit-mask-image:url('assets/pencil.svg');
-}
-
 .line{
     mask-image:  url('assets/line.svg');
     -webkit-mask-image:url('assets/line.svg');
