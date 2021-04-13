@@ -1,3 +1,5 @@
+import { isPromise } from '../../utils/checks';
+
 /**
  * @enum
  */
@@ -159,8 +161,18 @@ export class VectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	get data() {
-		return this._data;
+	/**
+	 * Gets the data of this 'internal' GeoResource.
+	 * If the data object is wrapped by a Promise, it will be resolved 
+	 * and the resolved data will be cached internally.
+	 * @returns {Promise<string>} data
+	 */
+	async getData() {
+		if (!isPromise(this._data)) {
+			return this._data;
+		}
+		//cache the data
+		return this._data = await Promise.resolve(this._data);
 	}
 
 	get srid() {
@@ -181,7 +193,7 @@ export class VectorGeoResource extends GeoResource {
 	
 	/**
 	 * Sets the source of this 'internal' GeoResource.
-	 * @param {string} data 
+	 * @param {Promise<string>|string} data 
 	 * @param {number} srid 
 	 * @returns `this` for chaining 
 	 */

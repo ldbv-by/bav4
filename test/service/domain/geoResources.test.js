@@ -100,7 +100,7 @@ describe('GeoResource', () => {
 
 	describe('VectorGeoResource', () => {
 
-		it('instantiates a VectorGeoResource', () => {
+		it('instantiates a VectorGeoResource', async () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
@@ -108,30 +108,60 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
 			expect(vectorGeoResource.url).toBeNull();
-			expect(vectorGeoResource.data).toBeNull();
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
+			const data = await vectorGeoResource.getData();
+			expect(data).toBeNull();
 		});
 
+		it('sets the url of an external VectorGeoResource', async() => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
 
-		it('instantiates an internal VectorGeoResource', () => {
+			expect(vectorGeoResource.url).toBe('someUrl');
+			expect(vectorGeoResource.srid).toBeNull();
+			const data = await vectorGeoResource.getData();
+			expect(data).toBeNull();
+		});
+
+		it('sets the source of an internal VectorGeoResource by a string', async () => {
 			
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
-			vectorGeoResource.source = 'someData';
 
-			expect(vectorGeoResource.data).toBe('someData');
+			const data = await vectorGeoResource.getData();
+			expect(data).toBe('someData');
 			expect(vectorGeoResource.srid).toBe(1234);
 			expect(vectorGeoResource.url).toBeNull();
 		});
 
-		it('instantiates an external VectorGeoResource', () => {
+		it('sets the source of an internal VectorGeoResource by a promise', async () => {
 			
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
-			vectorGeoResource.source = 'someData';
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
 
-			expect(vectorGeoResource.url).toBe('someUrl');
-			expect(vectorGeoResource.data).toBeNull();
-			expect(vectorGeoResource.srid).toBeNull();
+			const data = await vectorGeoResource.getData();
+			expect(data).toBe('someData');
+			expect(vectorGeoResource.srid).toBe(1234);
+			expect(vectorGeoResource.url).toBeNull();
+		});
+
+		it('caches the data resolved by a source promise', async () => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
+
+			await vectorGeoResource.getData();
+			expect(vectorGeoResource._data).toBe('someData');
+		});
+
+		it('passes the reason of a rejected source promise', (done) => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 1234);
+
+			vectorGeoResource.getData().then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toBe('somethingGotWrong');
+				done();
+			});
 		});
 	});
 
