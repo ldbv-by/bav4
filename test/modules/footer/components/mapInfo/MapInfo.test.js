@@ -29,6 +29,7 @@ describe('MapInfo', () => {
 
 			expect(element.shadowRoot.querySelector('ba-coordinate-select')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('ba-base-layer-info')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-attribution-info')).toBeTruthy();
 		});
 	});
 });

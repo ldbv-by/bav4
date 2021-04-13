@@ -31,10 +31,10 @@ export class AttributionInfo extends BaElement {
 				return nothing;
 			} 
 			// Not yet implemented
-			this._content = geoResource.attribution;
+			geoResource.attribution ? this._content = geoResource.attribution : this._content = 'No data available';
 
 			return html`
-            <div><p>${translate('map_baseLayerInfo_label')}: ${this._content} </p></div>
+            <div><p>${translate('map_attributionInfo_label')}: ${this._content} </p></div>
 			`;
 		} 
 
