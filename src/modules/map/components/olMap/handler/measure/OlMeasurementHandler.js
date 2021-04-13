@@ -7,7 +7,7 @@ import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from './StyleUtils';
+import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
@@ -34,6 +34,7 @@ export const MeasureSnapType = {
 	LASTPOINT:'lastPoint',
 	VERTEX:'vertex',
 	EGDE:'edge',	
+	FACE:'face'
 };
 
 /**
@@ -60,7 +61,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._listeners = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._overlayManager = new OverlayManager();
+		this._overlayManager = new OverlayManager();		
+		this._measureState = null;
 		this._measureStateHandler = new HelpTooltip(this._overlayManager);
 	}
 
@@ -95,6 +97,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
+			}
+			console.log(this._measureState);
+
+			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
+				console.log('state for deselect:', this._measureState);
+				this._select.getFeatures().clear();
+				this._measureState.type = MeasureStateType.ACTIVE;
+				this._measureStateHandler.notify(this._measureState);
+				this._select.setActive(true);
+				this._draw.setActive(true);
+
 			}
 		};
 
@@ -196,7 +209,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: this._getSnapTolerancePerDevice(),
-			style: generateSketchStyleFunction(measureStyleFunction)
+			style: createSketchStyleFunction(measureStyleFunction)
 		});
 
 		let listener;
@@ -224,7 +237,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const activateModify = (event) => {
 			draw.setActive(false);
 			this._modify.setActive(true);
-			event.feature.setStyle(measureStyleFunction);
+			event.feature.setStyle(measureStyleFunction(event.feature));			
 			this._select.getFeatures().push(event.feature);
 			event.feature.on('change', event => this._updateMeasureTooltips(event.target));
 		};
@@ -354,7 +367,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				},
 			};
 			let vertexFeature = null;
+			let featuresFromInteractionLayerCount = 0;
 			this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+				if (layer === interactionLayer) {
+					featuresFromInteractionLayerCount++;
+				}
 				if (!layer && feature.get('features').length > 0) {
 					vertexFeature = feature;
 					return;
@@ -373,6 +390,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					isGrab = true;
 				}
 			}
+			if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
+				measureState.snap = MeasureSnapType.FACE;
+			}
 				
 		}
 		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
@@ -385,6 +405,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			measureState.snap = null;	
 		}
 
+		this._measureState = measureState;
 		this._measureStateHandler.notify(measureState);
 
 		if (isGrab) {
@@ -416,10 +437,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 		const options = {
 			layers: layerFilter,
-			filter: featureFilter, style: measureStyleFunction
+			filter: featureFilter, 
+			style:createSelectStyleFunction(measureStyleFunction)
 		};
 
-		return new Select(options);
+		const select = new Select(options);	
+
+		return select;
 	}
 
 	_createModify() {
