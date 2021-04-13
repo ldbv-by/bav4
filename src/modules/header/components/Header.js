@@ -90,6 +90,10 @@ export class Header extends BaElement {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
 
+		const { layers } = this._state;
+		const layerCount = layers.length;
+
+
 		const hideModalHeader = () => {
 			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
@@ -157,7 +161,7 @@ export class Header extends BaElement {
 						</button>
 						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
 						 	${translate('header_header_maps_button')}
-							 <span class="badges">1</span>
+							 <span class="badges">${layerCount}</span>
 							 </button>
 						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
 							${translate('header_header_more_button')}
@@ -173,8 +177,8 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
-		return { open, tabIndex };
+		const { contentPanel: { open, tabIndex }, layers: { active: layers }  } = state;
+		return { open, tabIndex, layers };
 	}
 
 	static get tag() {
