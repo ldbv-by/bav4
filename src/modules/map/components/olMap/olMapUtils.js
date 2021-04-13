@@ -40,7 +40,7 @@ export const toOlLayer = (georesource) => {
 	} = $injector.inject('GeoResourceService', 'MapService');
 
 	const createVectorSource = (geoResource) => {
-		//from url
+		//external source
 		if (geoResource.url) {
 
 			return new VectorSource({
@@ -50,15 +50,19 @@ export const toOlLayer = (georesource) => {
 			});
 		}
 
-		//from internal source
-		const features = mapVectorSourceTypeToFormat(georesource.sourceType).readFeatures(geoResource.data);
-		features.forEach(f => {
-			f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + mapService.getSrid());
-			f.set('srid', mapService.getSrid(), true);
+		//internal source
+		const vectorSource = new VectorSource();
+		geoResource.getData().then(data => {
+			const features = mapVectorSourceTypeToFormat(georesource.sourceType).readFeatures(data);
+			features.forEach(f => {
+				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + mapService.getSrid());
+				f.set('srid', mapService.getSrid(), true);
+			});
+			vectorSource.addFeatures(features);
+		}, reason => {
+			console.warn(reason);
 		});
-		return new VectorSource({
-			features: features
-		});
+		return vectorSource;
 	};
 
 	switch (georesource.getType()) {
