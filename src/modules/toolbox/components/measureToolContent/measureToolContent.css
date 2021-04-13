@@ -73,6 +73,7 @@ background:red;
 .tool-container__icon{
     background: var(--color);
     -webkit-mask-size: cover;
+    mask-size: cover;
     background: gray;
     height: 2em;
     width: 2em;
