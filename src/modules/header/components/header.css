@@ -178,6 +178,9 @@
 .is-open {
   transform: translate(28em, 0);
 }
+.is-active {
+  color: rgba(255,255,255,1) !important;
+}
 .is-portrait .header{
   left: 0;   
   right: 0;
@@ -243,4 +246,20 @@
 }
 .hide{
   display:none !important;
+}
+
+.badges{
+  border-radius: 2em;
+  background: #2c5a93;
+  color: #fff;
+  padding: 0.2em .5em;
+  font-size: .8rem;
+  position: absolute;
+  top: .3em;
+  left: 19.5em;
+  transform:scale(0);
+  transition: all 0.2s ease-out;  
+}
+.header__button-container button:hover .badges{
+  transform:scale(1);
 }

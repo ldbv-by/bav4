@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './contentPanel.css';
 import { toggleContentPanel } from '../../store/contentPanel.action';
@@ -16,6 +16,19 @@ export class ContentPanel extends BaElement {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._portrait = false;
+		this._activeTabIndex = 0;
+	}
+
+	activateTab(index) {
+		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
+		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
+	}
+
+	/**
+	* @override
+	*/
+	onAfterRender() {
+		this.activateTab(this._activeTabIndex);
 	}
 
 	initialize() {
@@ -45,12 +58,25 @@ export class ContentPanel extends BaElement {
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
+	//needs to be refactored to a seperate component later
+	_createDataPanel() {
+
+		return html`
+		<div>
+			<ba-layer-manager></ba-layer-manager>
+		</div>
+		`;
+	}
+
+
 	/**
 	 * @override
 	 */
 	createView() {
 
-		const { open } = this._state;
+		const { open, tabIndex } = this._state;
+
+		this._activeTabIndex = tabIndex;
 
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
@@ -65,6 +91,14 @@ export class ContentPanel extends BaElement {
 			return open ? 'is-open' : '';
 		};
 
+		const items = [
+			{ name: 'Themen', content: this._demoThemeContent() },
+			{ name: 'Maps', content: this._createDataPanel() },
+			{ name: 'More', content: this._demoMoreContent() },
+			{ name: 'Routing' },
+			{ name: 'Search' }
+		];
+
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
@@ -72,142 +106,62 @@ export class ContentPanel extends BaElement {
 					<button @click="${toggleContentPanel}" class="content-panel__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='content-panel__container'>
-					${this._demoContent()}
-					</div>			
+					<div class='content-panel__container'>					
+					<div class="overlay-content">
+					${items.map(item => html`
+					<div class="tabcontent">						
+							${item.content ? item.content : nothing}
+						</div>								
+					`)}
+					</div>		
+				</div>			
 				</div>			
 			</div>			
 		`;
 	}
 
-	_demoContent() {
+	_demoMoreContent() {
 		return html`
-		<ul class="ba-list">
+		<ul class="ba-list">	
+		<li class="ba-list-item  ba-list-item__header">
+		<span class="ba-list-item__text ">
+			<span class="ba-list-item__primary-text">
+				Settings
+			</span>
+		</span>
+	</li>		
+		<li  class="ba-list-item">
+		<span class="ba-list-item__text verticla-center">
+		<span class="ba-list-item__primary-text">
+		Lorem ipsum dolor
+		</span>              
+	</span>
+	<span class="ba-list-item__after">
+	<ba-theme-toggle></ba-theme-toggle>
+	</span>
+		</li>
+		<li  class="ba-list-item">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+				Lorem ipsum dolor
+				</span>
+			</span>
+		</li>
+		<li  class="ba-list-item">
+			<span class="ba-list-item__text ">
+				<span class="ba-list-item__primary-text">
+				Lorem ipsum dolor
+				</span>
+			</span>
+		</li>
 		<li class="ba-list-item  ba-list-item__header">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
-					Demo Content
+					Links
 				</span>
 			</span>
 		</li>
    
-		<li class="ba-list-item">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon">
-				</span>
-			</span>
-			<span class="ba-list-item__text verticla-center">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>              
-			</span>
-			<span class="ba-list-item__after">
-                <span class="ba-list-item__icon-info">                                
-                </span>
-            </span>
-		</li>
-		<li class="ba-list-item">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon">
-				</span>
-			</span>
-			<span class="ba-list-item__text verticla-center">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>              
-			</span>
-			<span class="ba-list-item__after">
-			<span class="ba-list-item__icon-info">                                
-			</span>
-		</span>
-		</li>
-		<li class="ba-list-item">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon">
-				</span>
-			</span>
-			<span class="ba-list-item__text verticla-center">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>              
-			</span>
-			<span class="ba-list-item__after">
-			<span class="ba-list-item__icon-info">                                
-			</span>
-		</span>
-		</li>          
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-		<li class="ba-list-item  ba-list-item__header">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li>          
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li>          
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li> 
-
 		<li class="ba-list-item">
 			<span class="ba-list-item__text ">
 				<span class="ba-list-item__primary-text">
@@ -238,6 +192,70 @@ export class ContentPanel extends BaElement {
 				</span>
 			</span>
 		</li>          
+		<li class="ba-list-item" style="display:none">
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon">
+				</span>
+			</span>
+			<span class="ba-list-item__text verticla-center">
+				<span class="ba-list-item__primary-text">
+				Lorem ipsum dolor
+				</span>              
+			</span>
+			<span class="ba-list-item__after">
+			<span class="ba-list-item__icon-info">                                
+			</span>
+		</span>
+		</li>  		          
+	</ul>
+	`;
+	}
+
+	_demoThemeContent() {
+		return html`
+		<ul class="ba-list">		
+		<li class="ba-list-item">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li>          
+		<li class="ba-list-item">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li>          
+		<li class="ba-list-item">
+		<span class="ba-list-item__pre">
+			<span class="ba-list-item__image">
+			</span>
+		</span>
+		<span class="ba-list-item__text divider">
+			<span class="ba-list-item__primary-text">
+			Lorem ipsum 
+			</span>
+			<span class="ba-list-item__secondary-text">
+				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</span>
+		</span>
+	</li> 		
 	</ul>
 	`;
 	}
@@ -251,8 +269,8 @@ export class ContentPanel extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open } } = state;
-		return { open };
+		const { contentPanel: { open, tabIndex } } = state;
+		return { open, tabIndex };
 	}
 
 	static get tag() {
