@@ -6,7 +6,7 @@ import { load } from '../../../../../../src/modules/map/components/olMap/utils/f
 describe('feature.provider', () => {
 
 	const httpService = {
-		fetch: async () => { }
+		get: async () => { }
 	};
 
 	beforeAll(() => {
@@ -30,7 +30,7 @@ describe('feature.provider', () => {
 				expectedFeatures.push(...features);
 			}
 		};
-		spyOn(httpService, 'fetch').withArgs(kmlUrl, { timeout: 2000, mode: 'cors' }).and.returnValue(Promise.resolve(
+		spyOn(httpService, 'get').withArgs(kmlUrl, { timeout: 2000 }).and.returnValue(Promise.resolve(
 			new Response(kml)
 		));
 		//we have to bind the mocked vector source        
@@ -53,7 +53,7 @@ describe('feature.provider', () => {
 				return kmlUrl;
 			}
 		};
-		spyOn(httpService, 'fetch').withArgs(kmlUrl, { timeout: 2000, mode: 'cors' }).and.returnValue(Promise.resolve(
+		spyOn(httpService, 'get').withArgs(kmlUrl, { timeout: 2000 }).and.returnValue(Promise.resolve(
 			new Response(null, { status: 404 })
 		));
 		const warnSpy = spyOn(console, 'warn');

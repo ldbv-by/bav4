@@ -1,7 +1,10 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBox.css';
+import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
 import { toggleToolBox } from '../../store/toolBox.action';
+import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
 
@@ -60,8 +63,9 @@ export class ToolBox extends BaElement {
 	 */
 	createView() {
 
-		const { open } = this._state;
-
+		const { toolBox, toolContainer } = this._state;
+		const toolBoxOpen = toolBox.open;
+		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -71,7 +75,26 @@ export class ToolBox extends BaElement {
 		};
 
 		const getOverlayClass = () => {
-			return open ? 'is-open' : '';
+			return toolBoxOpen ? 'is-open' : '';
+		};
+
+		const toggleTool = (toolId) => {
+			setContainerContent(toolId);
+			if (activeToolId === toolId) {
+				toggleToolContainer();	
+			}
+			else {
+				openToolContainer();
+			}
+		};
+		const toggleDrawTool = () => {
+			const toolId = DrawToolContent.tag;
+			toggleTool(toolId);		
+		};
+
+		const toggleMeasureTool = () => {
+			const toolId = MeasureToolContent.tag;
+			toggleTool(toolId);		
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -83,8 +106,15 @@ export class ToolBox extends BaElement {
 					<div class="action-button__icon">
 					</div>
 				</button>
-				<div class="tool-box ${getOverlayClass()}">    		
-					<div class="tool-box__button">
+				<div class="tool-box ${getOverlayClass()}">    	
+					<div  @click="${toggleMeasureTool}" class="tool-box__button">
+						<div class="tool-box__button_icon measure">							
+						</div>
+						<div class="tool-box__button-text">
+							${translate('menu_toolbox_measure_button')}
+						</div>  
+					</div>  	
+					<div  @click="${toggleDrawTool}" class="tool-box__button">
 						<div class="tool-box__button_icon pencil">							
 						</div>
 						<div class="tool-box__button-text">
@@ -112,8 +142,8 @@ export class ToolBox extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { toolBox: { open } } = state;
-		return { open };
+		const { toolBox, toolContainer } = state;
+		return { toolBox:toolBox, toolContainer:toolContainer };
 	}
 
 	static get tag() {

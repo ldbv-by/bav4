@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/menu/i18n/toolbox.provider';
+import { provide } from '../../../../src/modules/menu/i18n/menu.provider';
 
 
 describe('i18n for menu module', () => {
@@ -9,6 +9,7 @@ describe('i18n for menu module', () => {
 
 		expect(map.menu_toolbox_draw_button).toBe('Zeichnen');
 		expect(map.menu_toolbox_share_button).toBe('Teilen');
+		expect(map.menu_toolbox_measure_button).toBe('Messen');
 
 	});
 
@@ -18,11 +19,12 @@ describe('i18n for menu module', () => {
 
 		expect(map.menu_toolbox_draw_button).toBe('Draw');
 		expect(map.menu_toolbox_share_button).toBe('Share');
+		expect(map.menu_toolbox_measure_button).toBe('Measure');
 
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

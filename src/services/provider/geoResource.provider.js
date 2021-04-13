@@ -23,9 +23,8 @@ export const loadBvvGeoResources = async () => {
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources';
 
-	const result = await httpService.fetch(url, {
+	const result = await httpService.get(url, {
 		timeout: 2000,
-		mode: 'cors'
 	});
 
 	if (result.ok) {

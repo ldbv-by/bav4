@@ -13,6 +13,7 @@ import './modules/header';
 import './modules/footer';
 import './modules/map';
 import './modules/menu';
+import './modules/toolbox';
 import './modules/commons';
 import './modules/search';
 import './modules/contextMenue';

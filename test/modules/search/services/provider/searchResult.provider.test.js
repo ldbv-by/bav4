@@ -10,7 +10,7 @@ describe('SearchResult provider', () => {
 	};
 
 	const httpService = {
-		fetch: async () => { }
+		get: async () => { }
 	};
 
 	beforeAll(() => {
@@ -25,11 +25,8 @@ describe('SearchResult provider', () => {
 		it('loads SearchResults for georesources', async () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'search/type/layers/searchText/some';
-			const expectedArgs1 = {
-				mode: 'cors'
-			};
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
 						mockResponse
@@ -58,11 +55,8 @@ describe('SearchResult provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'search/type/layers/searchText/some';
-			const expectedArgs1 = {
-				mode: 'cors'
-			};
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
@@ -87,11 +81,8 @@ describe('SearchResult provider', () => {
 		it('loads SearchResults for locations', async () => {
 
 			const expectedArgs0 = 'https://geoservices.bayern.de/services/ortssuche/v1/adressen/some?srid=4326&api_key=42';
-			const expectedArgs1 = {
-				mode: 'cors'
-			};
 			const configServiceSpy = spyOn(configService, 'getValue').withArgs('SEARCH_SERVICE_API_KEY').and.returnValue('42');
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
 						mockResponse
@@ -121,11 +112,8 @@ describe('SearchResult provider', () => {
 		it('rejects when backend request cannot be fulfilled', (done) => {
 
 			const expectedArgs0 = 'https://geoservices.bayern.de/services/ortssuche/v1/adressen/some?srid=4326&api_key=42';
-			const expectedArgs1 = {
-				mode: 'cors'
-			};
 			const configServiceSpy = spyOn(configService, 'getValue').withArgs('SEARCH_SERVICE_API_KEY').and.returnValue('42');
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 

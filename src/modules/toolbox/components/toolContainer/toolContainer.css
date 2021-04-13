@@ -1,0 +1,43 @@
+.tool-container{               
+    top: 0;
+    right: 0;           
+    position: fixed;    
+    z-index: calc(var(--z-toolbox) + 20);    
+    background-color: var(--primary-bg-color);
+    max-width: 25em;
+}
+.tool-container__tools-nav{
+    position: absolute;
+    top: 0rem;   
+    right: 1rem;
+    padding:0
+}
+.tool-container__close-button{
+    margin: 0;
+    background-color: var(--secondary-bg-color);
+    border-radius: 0 0  2em  2em;
+    padding: 0;
+    width: 2.5em;
+    height: 2.5em;
+    border: 0;
+}
+.tool-container__content{
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);   
+    transition: transform 0.3s ease-out;
+    display: none;
+}
+.is-portrait .tool-container{               
+    bottom: 0;
+    right: 0;           
+    left: 0;           
+    width:100%;
+    top: unset;
+    position: fixed;    
+    background-color: var(--primary-bg-color);
+    max-width: unset;
+}
+ .is-open {
+    display: block;
+}
+
+
