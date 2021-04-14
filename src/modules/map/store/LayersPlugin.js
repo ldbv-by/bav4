@@ -1,10 +1,57 @@
 import { $injector } from '../../../injection';
+import { VectorGeoResource, VectorSourceType } from '../../../services/domain/geoResources';
 import { QueryParameters } from '../../../services/domain/queryParameters';
+import { FileStorageServiceDataTypes } from '../../../services/FileStorageService';
 import { BaPlugin } from '../../../store/BaPlugin';
-import { addLayer } from './layers.action';
+import { addLayer, modifyLayer } from './layers.action';
 
 
 export class LayersPlugin extends BaPlugin {
+
+	_newLabelUpdateHandler(id) {
+		return {
+			set: function (target, prop, value) {
+				if (prop === '_label') {
+					modifyLayer(id, { label: value });
+				}
+				return Reflect.set(...arguments);
+			},
+		};
+	}
+
+	_newVectorGeoResourceLoader(id) {
+		const { FileStorageService: fileStorageService }
+			= $injector.inject('GeoResourceService', 'FileStorageService');
+
+		return async () => {
+			const { data, type, srid } = await fileStorageService.get(id);
+			if (type === FileStorageServiceDataTypes.KML) {
+				return {
+					sourceType: VectorSourceType.KML,
+					data: data,
+					srid: srid
+				};
+			}
+			throw new Error('No VectorGeoResourceLoader available for ' + type);
+		};
+	}
+
+	_registerUnkownGeoResource(id) {
+		const { GeoResourceService: geoResourceService }
+			= $injector.inject('GeoResourceService');
+
+		if (!geoResourceService.byId(id)) {
+		
+			//we let the loader detect which kind of source we are loading
+			const vgr = new VectorGeoResource(id, 'new Layer', null).setLoader(this._newVectorGeoResourceLoader(id));
+			//The definitive label value will be extracted later from the source
+			//Therefore we observe changes of the georesource's label property using a proxy and update the layer then
+			const proxyVgr = new Proxy(vgr, this._newLabelUpdateHandler(id));
+			//register georesource
+			geoResourceService.addOrReplace(proxyVgr);
+		}
+		return id;
+	}
 
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
@@ -12,11 +59,13 @@ export class LayersPlugin extends BaPlugin {
 		//layer
 		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue) => {
 
+			//Todo: parse KML and WMS layer from query params like layerIdOrType||layerLabel||layerUrl||layerOptions
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
 			return layer
+				.map(l => this._registerUnkownGeoResource(l))
 				.map((l, i) => {
 					const geoResource = geoResourceService.byId(l);
 					if (geoResource) {
