@@ -65,8 +65,12 @@ export class BvvFileStorageService {
 
 	constructor() {
 		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-		this._fileStorageUrl = configService.getValueAsPath('BACKEND_URL') + 'files';
 		this._httpService = httpService;
+		this._configService = configService;
+	}
+
+	_getFileStorageUrl() {
+		return this._configService.getValueAsPath('BACKEND_URL') + 'files';
 	}
 
 	_getKeyByValue(object, value) {
@@ -74,7 +78,7 @@ export class BvvFileStorageService {
 	}
 
 	async get(fileId) {
-		const url = `${this._fileStorageUrl}/${fileId}`;
+		const url = `${this._getFileStorageUrl()}/${fileId}`;
 		const result = await this._httpService.get(url);
 		if (result.ok) {
 			const type = this._getKeyByValue(FileStorageServiceDataTypes, result.headers.get('Content-Type'));
@@ -96,7 +100,7 @@ export class BvvFileStorageService {
 	async save(id, content, type) {
 		if (type === FileStorageServiceDataTypes.KML) {
 
-			const url = id ? `${this._fileStorageUrl}/${id}` : this._fileStorageUrl;
+			const url = id ? `${this._getFileStorageUrl()}/${id}` : this._getFileStorageUrl();
 			const result = await this._httpService.post(url, content, type);
 			if (result.ok) {
 				const data = await result.json();
