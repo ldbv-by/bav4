@@ -53,7 +53,16 @@ export const toOlLayer = (georesource) => {
 		//internal source
 		const vectorSource = new VectorSource();
 		geoResource.getData().then(data => {
-			const features = mapVectorSourceTypeToFormat(georesource.sourceType).readFeatures(data);
+			const format = mapVectorSourceTypeToFormat(georesource.sourceType);
+			const features = format.readFeatures(data);
+
+			//If we know now a better name for the geoResource we update the label
+			switch (georesource.sourceType) {
+				case VectorSourceType.KML:
+					geoResource.label = format.readName(data) ?? geoResource.label;
+					break;
+			}
+
 			features.forEach(f => {
 				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + mapService.getSrid());
 				f.set('srid', mapService.getSrid(), true);
@@ -88,12 +97,16 @@ export const toOlLayer = (georesource) => {
 				})
 			});
 
-		case GeoResourceTypes.VECTOR:
+		case GeoResourceTypes.VECTOR: {
 
-			return new VectorLayer({
+			const vgr = new VectorLayer({
 				id: georesource.id,
 				source: createVectorSource(georesource)
 			});
+
+			return vgr;
+		}
+
 
 		case GeoResourceTypes.AGGREGATE: {
 			return new LayerGroup({
