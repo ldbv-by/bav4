@@ -145,9 +145,8 @@ export const VectorSourceType = Object.freeze({
 
 /**
  * Loads the data for VectorGeoResources.
- * @function
- * @name VectorGeoResourceLoader
- * @returns {Promise<VectorGeoResourceLoadResult>} laod result
+ * @callback VectorGeoResourceLoader
+ * @returns {Promise<VectorGeoResourceLoadResult>} load result
  */
 
 /**
@@ -180,7 +179,8 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Loads and caches the data and updates the source type for this Georesource.
+	 * Loads and caches the data, additionally updates the source type and srid of this Georesource
+	 * based on the result of the loader.
 	 * @returns {Promise<string>}
 	 * @private
 	 */
@@ -196,8 +196,8 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * Gets the data of this 'internal' GeoResource.
-	 * If the GeoResource has a loader, it will be used to laod the data and determine the source type. 
-	 * If the data object is wrapped by a Promise, it will be resolved 
+	 * If the GeoResource has a loader, it will be used to load the data and determine the source type. 
+	 * If the data object is a Promise, it will be resolved 
 	 * and the resolved data will be cached internally.
 	 * @returns {Promise<string>} data
 	 */
