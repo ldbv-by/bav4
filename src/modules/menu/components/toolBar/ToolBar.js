@@ -1,9 +1,9 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './toolBox.css';
+import css from './toolBar.css';
 import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
-import { toggleToolBox } from '../../store/toolBox.action';
+import { toggleToolBar } from '../../store/toolBar.action';
 import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
@@ -14,16 +14,16 @@ import { $injector } from '../../../../injection';
  * @class
  * @author alsturm
  */
-export class ToolBox extends BaElement {
+export class ToolBar extends BaElement {
 
 	constructor() {
 		super();
 
-		const {		
+		const {
 			EnvironmentService: environmentService,
 			TranslationService: translationService
 		}
-			= $injector.inject( 'EnvironmentService', 'TranslationService');
+			= $injector.inject('EnvironmentService', 'TranslationService');
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
@@ -63,25 +63,25 @@ export class ToolBox extends BaElement {
 	 */
 	createView() {
 
-		const { toolBox, toolContainer } = this._state;
-		const toolBoxOpen = toolBox.open;
+		const { toolBar, toolContainer } = this._state;
+		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ?  'is-desktop'  : 'is-tablet';
+			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const getOverlayClass = () => {
-			return toolBoxOpen ? 'is-open' : '';
+			return toolBarOpen ? 'is-open' : '';
 		};
 
 		const toggleTool = (toolId) => {
 			setContainerContent(toolId);
 			if (activeToolId === toolId) {
-				toggleToolContainer();	
+				toggleToolContainer();
 			}
 			else {
 				openToolContainer();
@@ -89,12 +89,12 @@ export class ToolBox extends BaElement {
 		};
 		const toggleDrawTool = () => {
 			const toolId = DrawToolContent.tag;
-			toggleTool(toolId);		
+			toggleTool(toolId);
 		};
 
 		const toggleMeasureTool = () => {
 			const toolId = MeasureToolContent.tag;
-			toggleTool(toolId);		
+			toggleTool(toolId);
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -102,30 +102,30 @@ export class ToolBox extends BaElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  
-				<button  @click="${toggleToolBox}"  class="action-button">
+				<button  @click="${toggleToolBar}"  class="action-button">
 					<div class="action-button__icon">
 					</div>
 				</button>
-				<div class="tool-box ${getOverlayClass()}">    	
-					<div  @click="${toggleMeasureTool}" class="tool-box__button">
-						<div class="tool-box__button_icon measure">							
+				<div class="tool-bar ${getOverlayClass()}">    	
+					<div  @click="${toggleMeasureTool}" class="tool-bar__button">
+						<div class="tool-bar__button_icon measure">							
 						</div>
-						<div class="tool-box__button-text">
-							${translate('menu_toolbox_measure_button')}
+						<div class="tool-bar__button-text">
+							${translate('menu_toolbar_measure_button')}
 						</div>  
 					</div>  	
-					<div  @click="${toggleDrawTool}" class="tool-box__button">
-						<div class="tool-box__button_icon pencil">							
+					<div  @click="${toggleDrawTool}" class="tool-bar__button">
+						<div class="tool-bar__button_icon pencil">							
 						</div>
-						<div class="tool-box__button-text">
-							${translate('menu_toolbox_draw_button')}
+						<div class="tool-bar__button-text">
+							${translate('menu_toolbar_draw_button')}
 						</div>  
 					</div>  				               
-					<div  class="tool-box__button">
-						<div class="tool-box__button_icon share">							
+					<div  class="tool-bar__button">
+						<div class="tool-bar__button_icon share">							
 						</div>
-						<div class="tool-box__button-text">
-							${translate('menu_toolbox_share_button')}
+						<div class="tool-bar__button-text">
+							${translate('menu_toolbar_share_button')}
 						</div>  
 					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
@@ -142,11 +142,11 @@ export class ToolBox extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { toolBox, toolContainer } = state;
-		return { toolBox:toolBox, toolContainer:toolContainer };
+		const { toolBar, toolContainer } = state;
+		return { toolBar: toolBar, toolContainer: toolContainer };
 	}
 
 	static get tag() {
-		return 'ba-tool-box';
+		return 'ba-tool-bar';
 	}
 }
