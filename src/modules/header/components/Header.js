@@ -3,7 +3,6 @@ import { BaElement } from '../../BaElement';
 import { openContentPanel, setTabIndex } from '../../menu/store/contentPanel.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
-// import { changeZoomAndCenter } from '../../map/store/position.action';
 import css from './header.css';
 
 
