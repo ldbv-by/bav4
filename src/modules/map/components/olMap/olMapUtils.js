@@ -56,10 +56,10 @@ export const toOlLayer = (georesource) => {
 			const format = mapVectorSourceTypeToFormat(georesource.sourceType);
 			const features = format.readFeatures(data);
 
-			//If we know now a better name for the geoResource we update the label
+			//If we know a better name for the geoResource now we update the label
 			switch (georesource.sourceType) {
 				case VectorSourceType.KML:
-					geoResource.label = format.readName(data) ?? geoResource.label;
+					geoResource.label = format.readName(data) || geoResource.label;
 					break;
 			}
 
