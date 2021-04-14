@@ -1,7 +1,8 @@
 import { AttributionInfo } from '../../../../../src/modules/footer/components/attributionInfo/AttributionInfo';
 import { TestUtils } from '../../../../test-utils.js';
-import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
-import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources'; 
+import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer'; 
+import { addLayer, removeLayer, modifyLayer } from '../../../../../src/modules/map/store/layers.action';
 import { $injector } from '../../../../../src/injection';
 
 
@@ -14,7 +15,10 @@ describe('AttributionInfo', () => {
 	}; 
 
 	const setup = (state) => {
-		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		TestUtils.setupStoreAndDi(state, { 
+			layers: layersReducer,
+			position: positionReducer
+		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector
@@ -31,15 +35,15 @@ describe('AttributionInfo', () => {
 				}
 			};
 
-			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+			// WMTSGeoResource with added attribution field, could look like this in the future
+			const mockedWmts = { id: 'someId', label: 'LDBV', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'Ref42' }; 
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(mockedWmts);
 
 			const element = await setup(state);
 
-			// Not yet implemented so the fallback content is shown
 			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_attributionInfo_label');
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('No data available');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -69,5 +73,49 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('p')).toBeFalsy();
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
+
+		it('updates BaseLayerInfo component', async ()  => {
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
+			const layer2 = { ...defaultLayerProperties, id:'id1', label:'label1', zIndex: 0 }; 
+			const state = {
+				layers: {
+					active: [layer]
+				}
+			};
+
+			const mockedWmts = { id: 'id1', label: 'Label21', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'LDBV' }; 
+			const mockedWmts2 = { id: 'id2', label: 'Label42', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'Ref42' }; 
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
+			geoServiceMock.withArgs(layer.id).and.returnValue(mockedWmts);
+			geoServiceMock.withArgs(layer2.id).and.returnValue(mockedWmts2);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+
+			addLayer(layer2.id, layer2);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
+
+			modifyLayer(layer.id, { zIndex: 0 });
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+
+			removeLayer(layer.id);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
+			
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
+		}); 
 	});
 });

@@ -14,7 +14,6 @@ export class AttributionInfo extends BaElement {
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
-		this._content = null;
 	} 
 
 
@@ -31,7 +30,7 @@ export class AttributionInfo extends BaElement {
 				return nothing;
 			} 
 			// Not yet implemented
-			geoResource.attribution ? this._content = geoResource.attribution : this._content = 'No data available';
+			geoResource.attribution ? this._content = geoResource.attribution : this._content = translate('map_attributionInfo_fallback');
 
 			return html`
             <div><p>${translate('map_attributionInfo_label')}: ${this._content} </p></div>
@@ -46,8 +45,8 @@ export class AttributionInfo extends BaElement {
 	  * @param {Object} state 
 	  */
 	extractState(state) {
-		const { layers: { active } } = state;
-		return { active };
+		const { layers: { active }, position: { zoom } } = state;
+		return { active, zoom };
 	}
 
 	static get tag() {
