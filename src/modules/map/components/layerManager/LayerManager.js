@@ -47,7 +47,6 @@ export class LayerManager extends BaElement {
 			};
 			if (old) {
 				displayProperties.collapsed = old.collapsed;
-				displayProperties.visible = old.visible;
 			}
 			draggableItems.push({ ...layer, isPlaceholder: false, listIndex: j + 1, isDraggable: true, ...displayProperties });
 			draggableItems.push({ zIndex: layer.zIndex + 1, isPlaceholder: true, listIndex: j + 2, isDraggable: false });

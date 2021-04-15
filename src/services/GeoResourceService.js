@@ -81,16 +81,21 @@ export class GeoResourceService {
 	}
 
 	/**
-	 * Adds a GeoResoure to the internal cache.
+	 * Adds a {@link GeoResource} to the internal cache.
+	 * An existing GeoResource will be replaced by the new one.
+	 * The replacement is done based on the id of the GeoResoure.
 	 * @param {GeoResource} georesource 
-	 * @returns {boolean} true, when succesfully added
 	 */
-	add(georesource) {
-		if (!this._georesources.find(_georesource => _georesource.id === georesource.id)) {
-			this._georesources.push(georesource);
-			return true;
+	addOrReplace(georesource) {
+
+		const existingGeoR = this._georesources.find(_georesource => _georesource.id === georesource.id);
+		if (existingGeoR) {
+			const index = this._georesources.indexOf(existingGeoR);
+			this._georesources.splice(index, 1, georesource);
 		}
-		return false;
+		else {
+			this._georesources.push(georesource);
+		}
 	}
 
 	/**

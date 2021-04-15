@@ -29,6 +29,7 @@ import { $injector } from '../../../injection';
  * @property {number} [opacity] Opacity (0, 1).
  * @property {boolean} [visible] Visibility.
  * @property {number} [zIndex] Desired index of this layer within the list of active layers.
+ * @property {string} [label] New label of this layer
  */
 
 

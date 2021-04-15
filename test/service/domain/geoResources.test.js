@@ -54,9 +54,11 @@ describe('GeoResource', () => {
 
 				georesource.opacity = .5;
 				georesource.background = true;
+				georesource.label = 'some label';
 
 				expect(georesource.background).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
+				expect(georesource.label).toBe('some label');
 			});
 		});
 
@@ -100,35 +102,120 @@ describe('GeoResource', () => {
 
 	describe('VectorGeoResource', () => {
 
-		it('instantiates a VectorGeoResource', () => {
+		it('instantiates a VectorGeoResource', async () => {
 
-			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
-			expect(vectorGeoResource.url).toBe('url');
+			expect(vectorGeoResource.url).toBeNull();
+			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
+			const data = await vectorGeoResource.getData();
+			expect(data).toBeNull();
 		});
 
+		it('sets the url of an external VectorGeoResource', async () => {
 
-		it('sets data as the source of a VectorGeoResource', () => {
-			
-			const vectorGeoResource = new VectorGeoResource('id', 'label', 'url', VectorSourceType.KML);
-			vectorGeoResource.source = 'someData';
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
 
-			expect(vectorGeoResource.source).toBe('someData');
+			expect(vectorGeoResource.url).toBe('someUrl');
+			expect(vectorGeoResource.srid).toBeNull();
+			const data = await vectorGeoResource.getData();
+			expect(data).toBeNull();
+		});
+
+		it('sets the source of an internal VectorGeoResource by a string', async () => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
+
+			const data = await vectorGeoResource.getData();
+			expect(data).toBe('someData');
+			expect(vectorGeoResource.srid).toBe(1234);
 			expect(vectorGeoResource.url).toBeNull();
+		});
+
+		it('sets the source of an internal VectorGeoResource by a promise', async () => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
+
+			const data = await vectorGeoResource.getData();
+			expect(data).toBe('someData');
+			expect(vectorGeoResource.srid).toBe(1234);
+			expect(vectorGeoResource.url).toBeNull();
+		});
+
+		it('caches the data resolved by a source promise', async () => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
+
+			await vectorGeoResource.getData();
+			expect(vectorGeoResource._data).toBe('someData');
+		});
+
+		it('passes the reason of a rejected source promise', (done) => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 1234);
+
+			vectorGeoResource.getData().then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toBe('somethingGotWrong');
+				done();
+			});
+		});
+
+		it('sets the source of an internal VectorGeoResource by a loader', async () => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
+				.setLoader(() => Promise.resolve({
+					data: 'someData',
+					srid: 1234,
+					sourceType: VectorSourceType.KML
+				}));
+
+			const data = await vectorGeoResource.getData();
+			expect(data).toBe('someData');
+			expect(vectorGeoResource.srid).toBe(1234);
+			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
+			expect(vectorGeoResource.url).toBeNull();
+		});
+
+		it('caches the data resolved by a loader', async () => {
+
+			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
+				.setLoader(() => Promise.resolve({
+					data: 'someData',
+					srid: 1234,
+					sourceType: VectorSourceType.KML
+				}));
+
+			await vectorGeoResource.getData();
+			expect(vectorGeoResource._data).toBe('someData');
+		});
+
+		it('passes the reason of a rejected loader', (done) => {
+			
+			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
+				.setLoader(() => Promise.reject('somethingGotWrong'));
+
+			vectorGeoResource.getData().then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason).toBe('somethingGotWrong');
+				done();
+			});
 		});
 	});
 
 	describe('AggregateResource', () => {
 
 		it('instantiates a AggregateResource', () => {
-			
+
 			const wmsGeoResource = new WmsGeoResource('wmsId', 'label', 'url', 'layers', 'format');
 			const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'label', 'url');
-			
+
 			const aggregateGeoResource = new AggregateGeoResource('id', 'label', [wmsGeoResource, wmtsGeoResource]);
 
 			expect(aggregateGeoResource.getType()).toEqual(GeoResourceTypes.AGGREGATE);

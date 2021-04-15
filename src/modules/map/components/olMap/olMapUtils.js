@@ -33,10 +33,46 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 };
 
 export const toOlLayer = (georesource) => {
-	
+
 	const {
 		GeoResourceService: georesourceService,
-	} = $injector.inject('GeoResourceService');
+		MapService: mapService
+	} = $injector.inject('GeoResourceService', 'MapService');
+
+	const createVectorSource = (geoResource) => {
+		//external source
+		if (geoResource.url) {
+
+			return new VectorSource({
+				url: getUrlService().proxifyInstant(georesource.url),
+				loader: featureLoader,
+				format: mapVectorSourceTypeToFormat(georesource.sourceType)
+			});
+		}
+
+		//internal source
+		const vectorSource = new VectorSource();
+		geoResource.getData().then(data => {
+			const format = mapVectorSourceTypeToFormat(georesource.sourceType);
+			const features = format.readFeatures(data);
+
+			//If we know a better name for the geoResource now we update the label
+			switch (georesource.sourceType) {
+				case VectorSourceType.KML:
+					geoResource.label = format.readName(data) || geoResource.label;
+					break;
+			}
+
+			features.forEach(f => {
+				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + mapService.getSrid());
+				f.set('srid', mapService.getSrid(), true);
+			});
+			vectorSource.addFeatures(features);
+		}, reason => {
+			console.warn(reason);
+		});
+		return vectorSource;
+	};
 
 	switch (georesource.getType()) {
 		case GeoResourceTypes.WMS:
@@ -61,15 +97,16 @@ export const toOlLayer = (georesource) => {
 				})
 			});
 
-		case GeoResourceTypes.VECTOR:
-			return new VectorLayer({
+		case GeoResourceTypes.VECTOR: {
+
+			const vgr = new VectorLayer({
 				id: georesource.id,
-				source: new VectorSource({
-					url: getUrlService().proxifyInstant(georesource.url),
-					loader: featureLoader,
-					format: mapVectorSourceTypeToFormat(georesource.sourceType)
-				}),
+				source: createVectorSource(georesource)
 			});
+
+			return vgr;
+		}
+
 
 		case GeoResourceTypes.AGGREGATE: {
 			return new LayerGroup({

@@ -15,6 +15,7 @@ import { mapModule } from '../modules/map/injection';
 import { topicsModule } from '../modules/topics/injection';
 import { AdministrationService } from  '../services/AdministrationService'; 
 import { TopicsService } from '../services/TopicsService';
+import { BvvFileStorageService } from '../services/FileStorageService';
 
 
 $injector
@@ -30,6 +31,7 @@ $injector
 	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
+	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
 	.registerModule(topicsModule)
