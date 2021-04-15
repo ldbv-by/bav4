@@ -70,6 +70,25 @@ describe('BaseLayerInfo', () => {
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
+		it('renders fallback content if georesource label is undefined', async () => {
+			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const state = {
+				layers: {
+					active: [layer]
+				}
+			};
+
+			const wmts = new WMTSGeoResource('someId', null, 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_baseLayerInfo_fallback');
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+
+		});
+
 		it('updates BaseLayerInfo component', async ()  => {
 			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
 			const layer2 = { ...defaultLayerProperties, id:'id1', label:'label1', zIndex: 0 }; 
