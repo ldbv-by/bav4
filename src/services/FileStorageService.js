@@ -8,7 +8,7 @@ import { $injector } from '../injection';
  */
 
 /**
- * Loads the the content of a file.
+ * Loads the content of a file.
  * @function
  * @async
  * @name FileStorageService#get
