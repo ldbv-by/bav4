@@ -3,6 +3,10 @@ import { QueryParameters } from '../../../services/domain/queryParameters';
 import { BaPlugin } from '../../../store/BaPlugin';
 import { changeZoomAndCenter, setFit } from './position.action';
 
+/**
+ * @class
+ * @author taulinger
+ */
 export class PositionPlugin extends BaPlugin {
 
 	_setPositionFromQueryParams(queryParams) {

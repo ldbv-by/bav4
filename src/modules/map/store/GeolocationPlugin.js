@@ -7,6 +7,8 @@ import { BaPlugin } from '../../../store/BaPlugin';
 
 /**
  * Id of the layer used for geolocation visualization
+ * @class
+ * @author taulinger
  */
 export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 

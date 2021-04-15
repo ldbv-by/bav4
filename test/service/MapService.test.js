@@ -27,6 +27,13 @@ describe('MapService', () => {
 		return new MapService(definitionsProvider);
 	};
 
+	describe('constructor', () => {
+		it('sets default providers', async () => {
+			const service = new MapService();
+
+			expect(service._definitions).toBeDefined();
+		});
+	});
 
 	describe('provides an extent', () => {
 

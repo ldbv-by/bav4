@@ -7,6 +7,8 @@ import { close, open } from './mapContextMenu.action';
 
 /**
  * Plugin for contextClick state managment.
+ * @class
+ * @author taulinger
  */
 export class ContextClickPlugin extends BaPlugin {
 
