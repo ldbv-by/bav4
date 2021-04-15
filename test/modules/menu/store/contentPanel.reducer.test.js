@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../test-utils.js';
 import { contentPanelReducer } from '../../../../src/modules/menu/store/contentPanel.reducer';
-import { openContentPanel, closeContentPanel, toggleContentPanel } from '../../../../src/modules/menu/store/contentPanel.action';
+import { openContentPanel, closeContentPanel, toggleContentPanel, setTabIndex } from '../../../../src/modules/menu/store/contentPanel.action';
 
 
 describe('contentPanelReducer', () => {
@@ -53,4 +53,17 @@ describe('contentPanelReducer', () => {
 
 
 	});
+	describe('changes the \'tabIndex\' property', () => {
+
+		it('set tabIndex 1', () => {
+			const store = setup();
+
+			setTabIndex(1);		
+			expect(store.getState().contentPanel.tabIndex).toBe(1);
+			setTabIndex(2);
+			expect(store.getState().contentPanel.tabIndex).toBe(2);
+		});
+
+	});
+
 });

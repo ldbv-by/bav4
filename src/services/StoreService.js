@@ -3,6 +3,7 @@ import { positionReducer } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { contentPanelReducer } from '../modules/menu/store/contentPanel.reducer';
 import { toolBoxReducer } from '../modules/menu/store/toolBox.reducer';
+import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
@@ -36,6 +37,7 @@ export class StoreService {
 			sidePanel: sidePanelReducer,
 			contentPanel: contentPanelReducer,
 			toolBox: toolBoxReducer,
+			toolContainer:toolContainerReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,

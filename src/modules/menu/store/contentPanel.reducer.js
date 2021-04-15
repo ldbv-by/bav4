@@ -1,7 +1,9 @@
 export const OPEN_CLOSED_CHANGED = 'components/menu/contentPanel/open';
+export const INDEX_CHANGED =       'components/menu/contentPanel/tabIndex';
 
 export const initialState = {
-	open: true
+	open: true,
+	tabIndex: 0
 };
 
 export const contentPanelReducer = (state = initialState, action) => {
@@ -14,6 +16,15 @@ export const contentPanelReducer = (state = initialState, action) => {
 				open: payload
 			};
 		}
+
+		case INDEX_CHANGED: {
+
+			return {
+				...state,
+				tabIndex: payload
+			};
+		}
+
 	}
 	return state;
 };

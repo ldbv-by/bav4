@@ -8,9 +8,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/layers/searchText';
 
 
-	const result = await httpService.fetch(`${url}/${query}`, {
-		mode: 'cors'
-	});
+	const result = await httpService.get(`${url}/${query}`);
 
 	if (result.ok) {
 		const regex = /(<([^>]+)>)/ig;
@@ -29,9 +27,7 @@ export const loadBvvLocationSearchResults = async (query) => {
 
 	const api_key = configService.getValue('SEARCH_SERVICE_API_KEY');
 	const regex = /(<([^>]+)>)/ig;
-	const result = await httpService.fetch(`https://geoservices.bayern.de/services/ortssuche/v1/adressen/${query}?srid=4326&api_key=${api_key}`, {
-		mode: 'cors'
-	});
+	const result = await httpService.get(`https://geoservices.bayern.de/services/ortssuche/v1/adressen/${query}?srid=4326&api_key=${api_key}`);
 
 	if (result.ok) {
 		const raw = await result.json();

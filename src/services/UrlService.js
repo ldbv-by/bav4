@@ -63,9 +63,8 @@ export class UrlService {
 			throw new TypeError('Parameter \'url\' must be a string');
 		}
 
-		const result = await this._httpService.fetch(url, {
-			timeout: 1500,
-			method: 'HEAD'
+		const result = await this._httpService.head(url, {
+			timeout: 1500
 		});
 		return result.ok;
 	}
