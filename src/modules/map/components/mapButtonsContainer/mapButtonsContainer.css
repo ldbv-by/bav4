@@ -1,7 +1,7 @@
 .map-buttons-container{
     position: fixed;
     z-index:var(--z-mapbuttons);
-    bottom: 5.5em;
+    bottom: 6.5em;
     right: .5em;
     margin: 0 1.25em;
     display: flex;

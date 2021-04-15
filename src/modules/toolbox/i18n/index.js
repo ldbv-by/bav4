@@ -1,4 +1,4 @@
-import { provide as menuProvider } from './menu.provider';
+import { provide as toolboxProvider } from './toolbox.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('menuProvider', menuProvider);
+translationService.register('toolboxProvider', toolboxProvider);

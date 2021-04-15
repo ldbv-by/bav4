@@ -50,13 +50,14 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(14);
+			expect(reducerKeys.length).toBe(15);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
 			expect(reducerKeys.includes('sidePanel')).toBeTrue();
 			expect(reducerKeys.includes('contentPanel')).toBeTrue();
 			expect(reducerKeys.includes('toolBox')).toBeTrue();
+			expect(reducerKeys.includes('toolContainer')).toBeTrue();
 			expect(reducerKeys.includes('contextMenue')).toBeTrue();
 			expect(reducerKeys.includes('modal')).toBeTrue();
 			expect(reducerKeys.includes('uiTheme')).toBeTrue();
