@@ -14,7 +14,6 @@ export class BaseLayerInfo extends BaElement {
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
-		this._content = null;
 	} 
 
 
@@ -30,7 +29,7 @@ export class BaseLayerInfo extends BaElement {
 			if (!geoResource) {
 				return nothing;
 			} 
-			this._content = geoResource.label;
+			geoResource.label ? this._content = geoResource.label : this._content = translate('map_baseLayerInfo_fallback');
 			
 			return html`
             <div><p>${translate('map_baseLayerInfo_label')}: ${this._content} </p></div>
