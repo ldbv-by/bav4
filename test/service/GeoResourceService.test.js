@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { GeoResourceService } from '../../src/services/GeoResourceService';
-import { WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 
 describe('GeoResourceService', () => {
@@ -105,18 +105,29 @@ describe('GeoResourceService', () => {
 		});
 	});
 
-	describe('add', () => {
+	describe('addOrReplace', () => {
 
 		it('adds a GeoResource', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
 
-			let success = instanceUnderTest.add(geoResource);
-			expect(success).toBeTrue();
+			instanceUnderTest.addOrReplace(geoResource);
+			expect(instanceUnderTest._georesources.length).toBe(1);
+			expect(instanceUnderTest._georesources[0]).toEqual(geoResource);
+		});
 
-			success = instanceUnderTest.add(geoResource);
-			expect(success).toBeFalse();
+		it('replaces a GeoResource', async () => {
+			const instanceUnderTest = setup();
+			const geoResourceId = 'geoResId';
+			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
+			instanceUnderTest._georesources = [geoResource];
+			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON).setUrl('another url');
+
+			instanceUnderTest.addOrReplace(geoResource2);
+			expect(instanceUnderTest._georesources.length).toBe(1);
+			expect(instanceUnderTest._georesources[0]).toEqual(geoResource2);
 		});
 	});
 });
+

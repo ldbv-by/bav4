@@ -32,3 +32,13 @@ export const isNumber = (val, strict = true) => {
 export const isCoordinate = (val) => {
 	return Array.isArray(val) && val.length === 2 && isNumber(val[0]) && isNumber(val[1]);
 };
+
+
+/**
+ * Checks if a value is a Promise.
+ * @param {*} val
+ * @returns boolean} true if it is a Promise
+ */
+export const isPromise = (val) => {
+	return Boolean(val && typeof val.then === 'function');
+};
