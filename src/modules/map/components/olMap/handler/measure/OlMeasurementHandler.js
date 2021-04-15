@@ -95,7 +95,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const clickHandler = (event) => {
 			const pixel = event.pixel;
-			console.log('click:', this._measureState);
 			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
 				this._select.getFeatures().clear();
 			}
@@ -120,8 +119,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
-			}
-			console.log('pointerup:', this._measureState);			
+			}	
 		};
 
 		const pointerMoveHandler = (event) => {
