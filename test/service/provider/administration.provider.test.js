@@ -9,7 +9,7 @@ describe('Administration provider', () => {
 		};
 
 		const httpService = {
-			fetch: async () => { }
+			get: async () => { }
 		};
 
 		beforeAll(() => {
@@ -26,7 +26,7 @@ describe('Administration provider', () => {
 			const backendUrl = 'https://backend.url';
 			const administrationMock = { gemeinde: 'LDBV', gemarkung: 'Ref42' };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
 						administrationMock
@@ -46,7 +46,7 @@ describe('Administration provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(JSON.stringify({}), { status: 200 })
 			));
 
@@ -65,7 +65,7 @@ describe('Administration provider', () => {
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const administrationMock = { gemeinde: '', gemarkung: '' };
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(JSON.stringify(administrationMock), { status: 200 })
 			));
 
@@ -84,7 +84,7 @@ describe('Administration provider', () => {
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const administrationMock = { gemeinde: 'LDBV' };
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(JSON.stringify(administrationMock), { status: 200 })
 			));
 
@@ -102,7 +102,7 @@ describe('Administration provider', () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve(
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 

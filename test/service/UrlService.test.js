@@ -7,7 +7,7 @@ describe('UrlService', () => {
 	let instanceUnderTest;
 
 	const httpService = {
-		fetch: async () => { }
+		head: async () => { }
 	};
 
 	beforeAll(() => {
@@ -36,9 +36,8 @@ describe('UrlService', () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
 				timeout: 1500,
-				method: 'HEAD'
 			};
-			const spy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
+			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: true
 			}));
 
@@ -51,10 +50,9 @@ describe('UrlService', () => {
 		it('checks if cors is enabled (it isn\'t)', async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
-				timeout: 1500,
-				method: 'HEAD'
+				timeout: 1500
 			};
-			const spy = spyOn(httpService, 'fetch').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
+			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: false
 			}));
 
@@ -97,7 +95,7 @@ describe('UrlService', () => {
 
 			it('proxyfies a url with cors check (needs proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(Promise.resolve({
 					ok: false
 				}));
 
@@ -109,7 +107,7 @@ describe('UrlService', () => {
 
 			it('proxyfies a url with cors check (does not need proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(Promise.resolve({
 					ok: true
 				}));
 

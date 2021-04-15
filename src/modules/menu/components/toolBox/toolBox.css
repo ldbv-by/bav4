@@ -21,7 +21,7 @@
  .tool-box{    
     position: fixed;
     z-index: var(--z-toolbox);
-    border-radius: .375em;
+    /* border-radius: .375em; */
     bottom: .5em;
     right: -20.5em;
     background-color: var(--primary-bg-color);
@@ -34,7 +34,7 @@
     position: absolute;
     top: 0rem;
     background: lightgray;
-    border-radius: 0 0 .5em .5em;
+    /* border-radius: 0 0 .5em .5em; */
     right: 1rem;
     opacity: .9;
 }
@@ -43,16 +43,18 @@
     width: 1rem !important;
     background: transparent;
     border: none;
-    border-radius: 2em;
+    /* border-radius: 2em; */
     margin: .5rem !important;
 }
 .tool-box__button{
     display: inline-block;
     cursor: pointer;
-
+    background: var(--header-button-color);
+    opacity:.9;
+    
 }
 .tool-box__button:hover{
-  opacity:.9;
+    opacity:1;
 
 }
 .tool-box__button_icon{
@@ -60,19 +62,27 @@
     width: 2.5em;
     margin: .8rem .8rem .3rem .8rem;
     padding: 0;
-    /* background:var(--map-button-bg-color); */
-    fill:rgb(58,132,195);
-    background-size:  2.5em  2.5em;
+    background:var(--header-button-bg-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
 }
 .share{
-    background-image:  url('assets/share.svg');
-   
+    mask-image: url('assets/share.svg');
+    -webkit-mask-image: url('assets/share.svg');
 }
+
 .pencil{
-    background-image:  url('assets/pencil.svg');
+    mask-image: url('assets/pencil.svg');
+    -webkit-mask-image: url('assets/pencil.svg');
 }
+
+.measure{
+    mask-image: url('assets/measure.svg');
+    -webkit-mask-image: url('assets/measure.svg');
+}
+
 .tool-box__button-text{
-    color: var(--color); 
+    /* color: var(--header-button-color);;  */
     font-size: .8rem; 
     text-align: center;
 }
