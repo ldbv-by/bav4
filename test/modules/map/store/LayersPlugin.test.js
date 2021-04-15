@@ -2,7 +2,7 @@ import { LayersPlugin } from '../../../../src/modules/map/store/LayersPlugin';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { $injector } from '../../../../src/injection';
-import { VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { GeoResourceTypes, VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 import { Topic } from '../../../../src/services/domain/topic';
 import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
@@ -45,7 +45,8 @@ describe('LayersPlugin', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TopicsService', topicsServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return store;
 	};
@@ -291,17 +292,24 @@ describe('LayersPlugin', () => {
 		describe('_registerUnkownGeoResource', () => {
 
 			it('registers unknown geoResources', () => {
+				let registeredGeoResource = null;
 				const id = 'unknownId';
 				setup();
 				const instanceUnderTest = new LayersPlugin();
-				const newVectorGeoResourceLoaderSpy = spyOn(instanceUnderTest, '_newVectorGeoResourceLoader').and.returnValue({});
+				spyOn(instanceUnderTest, '_newVectorGeoResourceLoader').and.returnValue({});
 				const newLabelUpdateHandlerSpy = spyOn(instanceUnderTest, '_newLabelUpdateHandler').and.returnValue({});
-				const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+				const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake(geoResource => {
+					registeredGeoResource = geoResource;
+				});
 				const byIdSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
 
 				const value = instanceUnderTest._registerUnkownGeoResource(id);
 
-				expect(newVectorGeoResourceLoaderSpy).toHaveBeenCalledWith(id);
+				expect(registeredGeoResource.id).toBe(id);
+				expect(registeredGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
+				expect(registeredGeoResource.sourceType).toBeNull();
+				expect(registeredGeoResource._loader).not.toBeNull();
+				expect(registeredGeoResource.label).toBe('map_store_layer_default_layer_name');
 				expect(newLabelUpdateHandlerSpy).toHaveBeenCalledWith(id);
 				expect(byIdSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
@@ -377,14 +385,13 @@ describe('LayersPlugin', () => {
 		});
 
 		describe('_newLabelUpdateHandler', () => {
-			
+
 			it('returns a proxy handler which updates the label property of a layer', async () => {
 				const id = 'id';
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				const layer0 = { label: 'label0' };
 				addLayer(id, layer0);
-				
 
 				const handler = instanceUnderTest._newLabelUpdateHandler(id);
 				const vgr = new VectorGeoResource(id, 'new Layer', null);

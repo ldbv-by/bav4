@@ -37,15 +37,21 @@ export class LayersPlugin extends BaPlugin {
 	}
 
 	_registerUnkownGeoResource(id) {
-		const { GeoResourceService: geoResourceService }
-			= $injector.inject('GeoResourceService');
+		const {
+			GeoResourceService: geoResourceService,
+			TranslationService: translationService,
+		}
+			= $injector.inject('GeoResourceService', 'TranslationService');
 
 		if (!geoResourceService.byId(id)) {
-		
-			//we let the loader detect which kind of source we are loading
-			const vgr = new VectorGeoResource(id, 'new Layer', null).setLoader(this._newVectorGeoResourceLoader(id));
-			//The definitive label value will be extracted later from the source
-			//Therefore we observe changes of the georesource's label property using a proxy and update the layer then
+
+			//no source type here, we let the loader decide which kind of source we are loading
+			const vgr = new VectorGeoResource(id, translationService.translate('map_store_layer_default_layer_name'), null)
+				.setLoader(this._newVectorGeoResourceLoader(id));
+			/**
+			 * The definitive label value will be extracted later from the source.
+			 * Therefore we observe changes of the georesource's label property using a proxy and then update the layer
+			 */
 			const proxyVgr = new Proxy(vgr, this._newLabelUpdateHandler(id));
 			//register georesource
 			geoResourceService.addOrReplace(proxyVgr);
@@ -105,11 +111,11 @@ export class LayersPlugin extends BaPlugin {
 
 		const { GeoResourceService: georesourceService, TopicsService: topicsService, StoreService: storeService }
 			= $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
-		
+
 		//we take the bg layer from the topic configuration
 		const { topics: { current } } = storeService.getStore().getState();
 		const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
-		
+
 		const geoResources = georesourceService.all();
 
 		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBaseGeoR);
