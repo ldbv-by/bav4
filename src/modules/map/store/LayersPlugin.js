@@ -5,7 +5,10 @@ import { FileStorageServiceDataTypes } from '../../../services/FileStorageServic
 import { BaPlugin } from '../../../store/BaPlugin';
 import { addLayer, modifyLayer } from './layers.action';
 
-
+/**
+ * @class
+ * @author taulinger
+ */
 export class LayersPlugin extends BaPlugin {
 
 	_newLabelUpdateHandler(id) {
