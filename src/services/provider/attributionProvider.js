@@ -9,7 +9,7 @@
 /**
  * Provides BVV specific determined attributions.
  * @function
- * @returns {Promise<Array<GeoResource>>}
+ * @returns {Attribution}
  */
 export const getBvvAttribution = (georesource, level = 0) => {
 
@@ -27,6 +27,11 @@ export const getBvvAttribution = (georesource, level = 0) => {
 	return attribution;
 };
 
+/**
+ * Default provider function for attributions.
+ * @function
+ * @returns {Attribution}
+ */
 export const getDefaultAttribution = (georesource) => {
 	const attribution = georesource.attribution || '';
 	return getMinimalAttribution(attribution.toString());
