@@ -1,10 +1,10 @@
-export const OPEN_CLOSED_CHANGED = 'components/menu/toolBox/open';
+export const OPEN_CLOSED_CHANGED = 'components/menu/toolBar/open';
 
 export const initialState = {
 	open: false
 };
 
-export const toolBoxReducer = (state = initialState, action) => {
+export const toolBarReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case OPEN_CLOSED_CHANGED: {
