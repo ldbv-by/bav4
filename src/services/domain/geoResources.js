@@ -1,4 +1,5 @@
 import { isPromise } from '../../utils/checks';
+import { getDefaultAttribution } from '../provider/attributionProvider';
 
 
 /**
@@ -46,6 +47,7 @@ export class GeoResource {
 		this._background = false;
 		this._opacity = 1.0;
 		this._attribution = null;
+		this._attributionProvider = getDefaultAttribution;
 	}
 
 	/**
@@ -75,6 +77,10 @@ export class GeoResource {
 		return this._opacity;
 	}
 
+	get attribution() {
+		return this._attribution;
+	}
+
 	set label(label) {
 		this._label = label;
 	}
@@ -87,32 +93,30 @@ export class GeoResource {
 		this._opacity = opacity;
 	}
 
-	/**
-	 * @param {Attribution|Array<Attribution>|null|undefined} attribution 
-	 * @returns `this` for chaining 
-	 */
-	setAttribution(attribution) {
+	set attribution(attribution) {
 		this._attribution = attribution;
+	}
+
+	/**
+	 * Sets the attribution provider for this GeoResource.
+	 * @param {attributionProvider} provider 
+	 * @returns `this` for chaining
+	 */
+	setAttributionProvider(provider) {
+		this._attributionProvider = provider;
 		return this;
 	}
 
 	/**
-	 * Returns an attribution (optionally for a zoom level).
+	 * Returns an attribution determined by the attributionProvider (optionally for a zoom level).
 	 * @param {number} [value=0] index 
-	 * @returns {Attribution|null} attribution 
+	 * @returns {Attribution} attribution 
 	 */
 	getAttribution(value = 0) {
-		if (!this._attribution) {
-			return null;
+		if (this._attributionProvider) {
+			return this._attributionProvider(this, value);
 		}
-		if (Array.isArray(this._attribution)) {
-			const index = Math.round(value);
-			if (index > this._attribution.length - 1) {
-				return null;
-			}
-			return this._attribution[index];
-		}
-		return this._attribution;
+		throw new Error('No attribution provider found');
 	}
 
 	/**
@@ -274,7 +278,7 @@ export class VectorGeoResource extends GeoResource {
 		this._srid = null;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the source of this 'internal' GeoResource.
 	 * @param {Promise<string>|string} data 

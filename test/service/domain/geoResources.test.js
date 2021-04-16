@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource } from '../../../src/services/domain/geoResources';
+import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attributionProvider';
 
 
 describe('GeoResource', () => {
@@ -41,44 +42,31 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
+			
 			it('throws excepetion when abstract #getType is called without overriding', () => {
 				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
 			});
 
-			describe('attribution', () => {
+			it('sets the attribution provider', () => {
+				
+				const provider = jasmine.createSpy();
+				const grs = new GeoResourceImpl('is');
+				grs.setAttributionProvider(provider);
 
-				const getMinimalAttribution = (copyrightLabel) => {
-					return {
-						copyright: {
-							label: copyrightLabel
-						}
-					};
+				expect(grs._attributionProvider).toBe(provider);
+			});
 
-				};
-				const fooAttribution = getMinimalAttribution('foo');
-				const barAttribution = getMinimalAttribution('bar');
+			it('returns an attribution provided by the provider', () => {
+				const minimalAttribution = getMinimalAttribution();
+				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
+				const grs = new GeoResourceImpl('is');
+				grs.attribution = 'foo';
+				grs._attributionProvider = spy;
 
-				it('sets the attribution', () => {
-					expect(new GeoResourceImpl('some').setAttribution(fooAttribution)._attribution).toBe(fooAttribution);
-				});
+				const result = grs.getAttribution(42);
 
-
-				it('returns an optionally index-based attribution', () => {
-					class GeoResourceAttrImpl extends GeoResource {
-						constructor(attribution) {
-							super('id');
-							this._attribution = attribution;
-						}
-					}
-
-					expect(new GeoResourceAttrImpl(null).getAttribution()).toBeNull;
-					expect(new GeoResourceAttrImpl(undefined).getAttribution()).toBeNull();
-					expect(new GeoResourceAttrImpl(fooAttribution).getAttribution()).toEqual(fooAttribution);
-					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution()).toEqual(fooAttribution);
-					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(1)).toEqual(barAttribution);
-					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(2)).toBeNull();
-					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(0.49)).toEqual(fooAttribution);
-				});
+				expect(spy).toHaveBeenCalledWith(grs, 42);
+				expect(result).toEqual(minimalAttribution);
 			});
 		});
 
@@ -89,18 +77,23 @@ describe('GeoResource', () => {
 				expect(georesource.label).toBe('');
 				expect(georesource.background).toBeFalse();
 				expect(georesource.opacity).toBe(1);
+				expect(georesource.attribution).toBeNull();
+				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 			});
 
-			it('provides setter for properties', () => {
+			it('provides setter and getters', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
 				georesource.opacity = .5;
 				georesource.background = true;
 				georesource.label = 'some label';
+				georesource.label = 'some label';
+				georesource.attribution = 'some attribution';
 
 				expect(georesource.background).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
 				expect(georesource.label).toBe('some label');
+				expect(georesource.attribution).toBe('some attribution');
 			});
 		});
 
@@ -238,7 +231,7 @@ describe('GeoResource', () => {
 		});
 
 		it('passes the reason of a rejected loader', (done) => {
-			
+
 			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
 				.setLoader(() => Promise.reject('somethingGotWrong'));
 
