@@ -18,6 +18,12 @@ describe('GeoResource', () => {
 
 	describe('abstract GeoResource', () => {
 
+		class GeoResourceNoImpl extends GeoResource {
+			constructor(id) {
+				super(id);
+			}
+		}
+
 		class GeoResourceImpl extends GeoResource {
 			constructor(id) {
 				super(id);
@@ -29,20 +35,56 @@ describe('GeoResource', () => {
 				expect(() => new GeoResource()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 
-			it('throws excepetion when instantiated without  id', () => {
-				expect(() => new GeoResourceImpl()).toThrowError(TypeError, 'id must not be undefined');
+			it('throws excepetion when instantiated without id', () => {
+				expect(() => new GeoResourceNoImpl()).toThrowError(TypeError, 'id must not be undefined');
 			});
 		});
 
 		describe('methods', () => {
 			it('throws excepetion when abstract #getType is called without overriding', () => {
-				expect(() => new GeoResourceImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+			});
+
+			describe('attribution', () => {
+
+				const getMinimalAttribution = (copyrightLabel) => {
+					return {
+						copyright: {
+							label: copyrightLabel
+						}
+					};
+
+				};
+				const fooAttribution = getMinimalAttribution('foo');
+				const barAttribution = getMinimalAttribution('bar');
+
+				it('sets the attribution', () => {
+					expect(new GeoResourceImpl('some').setAttribution(fooAttribution)._attribution).toBe(fooAttribution);
+				});
+
+
+				it('returns an optionally index-based attribution', () => {
+					class GeoResourceAttrImpl extends GeoResource {
+						constructor(attribution) {
+							super('id');
+							this._attribution = attribution;
+						}
+					}
+
+					expect(new GeoResourceAttrImpl(null).getAttribution()).toBeNull;
+					expect(new GeoResourceAttrImpl(undefined).getAttribution()).toBeNull();
+					expect(new GeoResourceAttrImpl(fooAttribution).getAttribution()).toEqual(fooAttribution);
+					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution()).toEqual(fooAttribution);
+					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(1)).toEqual(barAttribution);
+					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(2)).toBeNull();
+					expect(new GeoResourceAttrImpl([fooAttribution, barAttribution]).getAttribution(0.49)).toEqual(fooAttribution);
+				});
 			});
 		});
 
 		describe('properties', () => {
 			it('provides default properties', () => {
-				const georesource = new GeoResourceImpl('id');
+				const georesource = new GeoResourceNoImpl('id');
 
 				expect(georesource.label).toBe('');
 				expect(georesource.background).toBeFalse();
@@ -50,7 +92,7 @@ describe('GeoResource', () => {
 			});
 
 			it('provides setter for properties', () => {
-				const georesource = new GeoResourceImpl('id');
+				const georesource = new GeoResourceNoImpl('id');
 
 				georesource.opacity = .5;
 				georesource.background = true;

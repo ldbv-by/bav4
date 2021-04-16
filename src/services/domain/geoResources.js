@@ -1,5 +1,22 @@
 import { isPromise } from '../../utils/checks';
 
+
+/**
+ * Attribution data of a GeoResource.
+ * It contains at least a copyright label.
+ * @typedef Attribution
+ * @property {Copyright} copyright
+ * @property {string} [description] description
+ */
+
+/**
+ * Copyright data of an attribution.
+ * @typedef Copyright
+ * @property {string} label copyight label
+ * @property {string} [url] copyright href
+ */
+
+
 /**
  * @enum
  */
@@ -28,6 +45,7 @@ export class GeoResource {
 		this._label = label;
 		this._background = false;
 		this._opacity = 1.0;
+		this._attribution = null;
 	}
 
 	/**
@@ -67,6 +85,34 @@ export class GeoResource {
 
 	set opacity(opacity) {
 		this._opacity = opacity;
+	}
+
+	/**
+	 * @param {Attribution|Array<Attribution>|null|undefined} attribution 
+	 * @returns `this` for chaining 
+	 */
+	setAttribution(attribution) {
+		this._attribution = attribution;
+		return this;
+	}
+
+	/**
+	 * Returns an attribution (optionally for a zoom level).
+	 * @param {number} [value=0] index 
+	 * @returns {Attribution|null} attribution 
+	 */
+	getAttribution(value = 0) {
+		if (!this._attribution) {
+			return null;
+		}
+		if (Array.isArray(this._attribution)) {
+			const index = Math.round(value);
+			if (index > this._attribution.length - 1) {
+				return null;
+			}
+			return this._attribution[index];
+		}
+		return this._attribution;
 	}
 
 	/**
@@ -242,7 +288,7 @@ export class VectorGeoResource extends GeoResource {
 		return this;
 	}
 
-	
+
 	/**
 	 * Sets the loader of this 'internal' GeoResource.
 	 * @param {VectorGeoResourceLoader} loader 
