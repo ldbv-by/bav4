@@ -102,7 +102,7 @@ describe('createSelectionStyleFunction', () => {
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
-		const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
 		const styleFunction = createSelectStyleFunction(measureStyleFunction);
