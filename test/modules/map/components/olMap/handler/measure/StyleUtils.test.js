@@ -51,35 +51,6 @@ describe('measureStyleFunction', () => {
 		expect(nonCircle).toBeFalsy();
 		expect(circleStyle).toBeTruthy();
 	});
-
-	xit('should have a style which creates MultiPoints for the polygon-vertices', () => {
-		const styles = measureStyleFunction(feature);
-
-
-		const vertexStyle = styles.find(style => {
-			const geometryFunction = style.getGeometryFunction();
-			if (geometryFunction) {
-				const renderObject = geometryFunction(feature);
-				return renderObject.getType() === 'MultiPoint';
-			}
-			else {
-				return false;
-			}
-
-		});
-		const geometryFunction = vertexStyle.getGeometryFunction();
-
-
-		const lineFeature = feature;
-		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
-		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-
-
-
-		expect(geometryFunction(lineFeature)).toBeTruthy();
-		expect(geometryFunction(pointFeature)).toBeTruthy();
-		expect(geometryFunction(polygonFeature)).toBeTruthy();
-	});
 });
 
 describe('modifyStyleFunction', () => {
