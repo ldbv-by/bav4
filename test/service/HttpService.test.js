@@ -1,4 +1,6 @@
-import { HttpService } from '../../src/services/HttpService';
+import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { networkReducer } from '../../src/store/network.reducer';
+import { TestUtils } from '../test-utils';
 
 
 
@@ -179,5 +181,56 @@ describe('HttpService', () => {
 			expect(result.ok).toBeTrue();
 		});
 
+	});
+});
+
+describe('NetworkStateSyncHttpService', () => {
+
+	const setup = () => {
+		return TestUtils.setupStoreAndDi({}, {
+			network: networkReducer
+		});
+	};
+
+	describe('fetch', () => {
+
+		it('calls parent\'s fetch and updates the store', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+
+			spyOn(window, 'fetch').and.callFake(() => {
+
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+
+			});
+
+			const result = await instanceUnderTest.fetch('something');
+			expect(store.getState().network.fetching).toBeFalse();
+			expect(result.text()).toBe(42);
+		});
+
+		it('it updates the store when fetch call fails', (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(() => {
+
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.reject('something got wrong');
+
+			});
+
+
+			instanceUnderTest.fetch('something').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
+			});
+		});
 	});
 });

@@ -1,3 +1,5 @@
+import { setFetching } from '../store/network.action';
+
 /**
  * @class
  * @author aul
@@ -83,5 +85,26 @@ export class HttpService {
 			...options,
 		};
 		return this.fetch(resource, fetchOptions);
+	}
+}
+
+/**
+ * {@link HttpService} that updates the 'fetching' property of the network state.
+ * @class
+ * @author aul
+ */
+export class NetworkStateSyncHttpService extends HttpService {
+
+	/**
+	 * @see {@link HttpService#fetch}
+	 */
+	async fetch(resource, options = {}, controller = new AbortController()) {
+		setFetching(true);
+		try {
+			return super.fetch(resource, options, controller);
+		}
+		finally {
+			setFetching(false);
+		}
 	}
 }
