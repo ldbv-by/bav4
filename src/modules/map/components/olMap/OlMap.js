@@ -50,8 +50,6 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
-		this._geoResourceService.init();
-
 		const { zoom, center } = this._state;
 
 		this._view = new View({

@@ -101,14 +101,6 @@ describe('OlMap', () => {
 			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 		});
-
-		it('initialized the geoResourceService', async () => {
-			const geoResourceServiceSpy = spyOn(geoResourceServiceStub, 'init');
-
-			await setup();
-
-			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
-		});
 	});
 
 	describe('map move events', () => {
