@@ -1,4 +1,4 @@
-var baseConfig = require('./karma.conf.js');
+const baseConfig = require('./karma.conf.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -39,7 +39,7 @@ module.exports = function (config) {
 	baseConfig(config);
 
 	config.set({
-		frameworks: ['jasmine'],
+		frameworks: ['jasmine', 'webpack'],
 		// list of files / patterns to load in the browser
 		files: [
 			{ pattern: files[0], watched: false },
