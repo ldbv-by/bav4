@@ -1,8 +1,21 @@
 export const ACTIVE_CHANGED = 'measurement/active';
+export const STATISTIC_CHANGED = 'measurement/statistic';
+export const RESET_REQUESTED = 'measurement/reset';
 
 
 export const initialState = {
-	active: false
+	/**
+	 * @type {boolean}
+	 */
+	active: false,
+	/**
+ 	 * @type {object}
+ 	 */
+	statistic:{ length:0, area:0 },
+	/**
+	 * @type EventLike
+	 */
+	reset:null
 };
 
 export const measurementReducer = (state = initialState, action) => {
@@ -14,6 +27,22 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				active: payload
+
+			};
+		}
+		case STATISTIC_CHANGED: {
+
+			return {
+				...state,
+				statistic: payload
+
+			};
+		}
+		case RESET_REQUESTED: {
+
+			return {
+				...state,
+				reset: payload
 
 			};
 		}

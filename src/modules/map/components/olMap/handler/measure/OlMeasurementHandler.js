@@ -7,9 +7,10 @@ import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
+import { setStatistic } from '../../../../store/measurement.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
-import { getPartitionDelta, isVertexOfGeometry } from './GeometryUtils';
+import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -251,7 +252,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(true);
 			event.feature.setStyle(measureStyleFunction(event.feature));			
 			this._select.getFeatures().push(event.feature);
-			event.feature.on('change', event => this._updateMeasureTooltips(event.target));			
+			const onFeatureChange = (event) => {
+				this._updateMeasureTooltips(event.target, true);
+				this._setStatistics(event.target);
+			};
+			event.feature.on('change', onFeatureChange);			
 		};
 
 		draw.on('drawstart', event => {
@@ -260,8 +265,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
+			const onFeatureChange = (event) => {
+				this._updateMeasureTooltips(event.target, true);
+				this._setStatistics(event.target);
+			};
+
 			event.feature.set('measurement', measureTooltip);
-			listener = event.feature.on('change', event => this._updateMeasureTooltips(event.target, true));
+			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));
 			this._overlayManager.add(measureTooltip);
 		});
@@ -273,6 +283,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		);
 
 		return draw;
+	}
+
+	_setStatistics(feature) {
+		const length =  getGeometryLength(feature.getGeometry(), this._projectionHints );
+		const area = getArea(feature.getGeometry(), this._projectionHints);
+		setStatistic({ length:length, area:area });
 	}
 
 	_updateMeasureTooltips(feature, isDrawing = false) {

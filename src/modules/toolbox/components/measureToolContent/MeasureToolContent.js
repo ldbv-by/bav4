@@ -28,7 +28,8 @@ export class MeasureToolContent extends BaElement {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);    
-		const { active } = this._state;		  
+		const { active  } = this._state;		  
+		
 		this._tool.active = active;
 		const classes = { 'is-active': this._tool.active };
 		
@@ -88,8 +89,8 @@ export class MeasureToolContent extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { measurement:active } = state;
-		return active;
+		const { measurement } = state;
+		return measurement;
 	}
 
 	static get tag() {
