@@ -32,8 +32,7 @@ describe('OlMap', () => {
 					return new WmsGeoResource(id, 'Label1', 'https://something1.url', 'layer1', 'image/png');
 			}
 			return null;
-		},
-		init() { }
+		}
 	};
 
 	const mapServiceMock = {
