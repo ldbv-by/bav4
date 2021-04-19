@@ -6,6 +6,10 @@ import { setFetching } from '../store/network.action';
  */
 export class HttpService {
 
+	static get DefaultRequestMode() {
+		return 'same-origin';
+	}
+
 	/**
 	   * Wraps a Fetch API fetch call, so that a custom timeout can be set. Default is 1000ms.<br>
 	   * If a timeout occurs, the request is cancelled by an <code>AbortController</code>.<br>
@@ -41,7 +45,7 @@ export class HttpService {
 	 */
 	async get(resource, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DefaultRequestMode,
 			...options,
 		};
 		return this.fetch(resource, fetchOptions);
@@ -59,7 +63,7 @@ export class HttpService {
 	 */
 	async post(resource, data, contentType, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DefaultRequestMode,
 			method: 'POST',
 			body: data,
 			headers: {
@@ -80,7 +84,7 @@ export class HttpService {
 	 */
 	async head(resource, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DefaultRequestMode,
 			method: 'HEAD',
 			...options,
 		};

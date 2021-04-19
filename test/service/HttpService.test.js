@@ -14,6 +14,13 @@ describe('HttpService', () => {
 		jasmine.clock().uninstall();
 	});
 
+	describe('static properties', () => {
+
+		it('provides a DefaultRequestMode', () => {
+			expect(HttpService.DefaultRequestMode).toBe('same-origin');
+		});
+	});
+
 	describe('fetch', () => {
 
 		it('provides a result', async () => {
@@ -80,7 +87,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something');
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: 'cors' });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DefaultRequestMode });
 			expect(result.text()).toBe(42);
 		});
 
@@ -95,7 +102,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something', { timeout: 2000 });
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: 'cors', timeout: 2000 });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DefaultRequestMode, timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
 
@@ -116,7 +123,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: 'cors',
+				mode: HttpService.DefaultRequestMode,
 				headers: {
 					'Content-Type': 'someContentType'
 				}
@@ -137,7 +144,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: 'cors',
+				mode: HttpService.DefaultRequestMode,
 				timeout: 2000,
 				headers: {
 					'Content-Type': 'someContentType'
@@ -159,7 +166,7 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: 'cors'
+				mode: HttpService.DefaultRequestMode
 			});
 			expect(result.ok).toBeTrue();
 		});
@@ -175,7 +182,7 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: 'cors',
+				mode: HttpService.DefaultRequestMode,
 				timeout: 2000
 			});
 			expect(result.ok).toBeTrue();
