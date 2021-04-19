@@ -20,13 +20,15 @@ export const getBvvAttribution = (georesource, level = 0) => {
 
 	// aggregated geoResources
 	if (georesource.getType() === GeoResourceTypes.AGGREGATE) {
-		return georesource.geoResourceIds
-			.map(id => {
-				const grs = georesourceService.byId(id);
-				return grs ? grs.getAttribution(level) : null;
-			})
-			.filter(attr => !!attr)
-			.flatMap(attr => attr);
+		return [...new Set(
+			georesource.geoResourceIds
+				.map(id => {
+					const grs = georesourceService.byId(id);
+					return grs ? grs.getAttribution(level) : null;
+				})
+				.filter(attr => !!attr)
+				.flatMap(attr => attr)
+		)];
 	}
 
 	//all other
