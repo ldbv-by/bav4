@@ -50,7 +50,7 @@ describe('GeoResource', () => {
 			it('sets the attribution provider', () => {
 				
 				const provider = jasmine.createSpy();
-				const grs = new GeoResourceImpl('is');
+				const grs = new GeoResourceImpl('id');
 				grs.setAttributionProvider(provider);
 
 				expect(grs._attributionProvider).toBe(provider);
@@ -59,14 +59,61 @@ describe('GeoResource', () => {
 			it('returns an attribution provided by the provider', () => {
 				const minimalAttribution = getMinimalAttribution();
 				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
-				const grs = new GeoResourceImpl('is');
+				const grs = new GeoResourceImpl('id');
 				grs.attribution = 'foo';
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
 
 				expect(spy).toHaveBeenCalledWith(grs, 42);
-				expect(result).toEqual(minimalAttribution);
+				expect(result).toEqual([minimalAttribution]);
+			});
+
+			it('returns an attribution when provider returns an array', () => {
+				const minimalAttribution = getMinimalAttribution();
+				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
+				const grs = new GeoResourceImpl('id');
+				grs.attribution = 'foo';
+				grs._attributionProvider = spy;
+
+				const result = grs.getAttribution(42);
+
+				expect(spy).toHaveBeenCalledWith(grs, 42);
+				expect(result).toEqual([minimalAttribution]);
+			});
+
+			it('returns null when provider returns null', () => {
+				const spy = jasmine.createSpy().and.returnValue(null);
+				const grs = new GeoResourceImpl('id');
+				grs.attribution = 'foo';
+				grs._attributionProvider = spy;
+
+				const result = grs.getAttribution(42);
+
+				expect(spy).toHaveBeenCalledWith(grs, 42);
+				expect(result).toBeNull();
+			});
+
+			it('returns null when provider returns an empyt array', () => {
+				const spy = jasmine.createSpy().and.returnValue([]);
+				const grs = new GeoResourceImpl('id');
+				grs.attribution = 'foo';
+				grs._attributionProvider = spy;
+
+				const result = grs.getAttribution(42);
+
+				expect(spy).toHaveBeenCalledWith(grs, 42);
+				expect(result).toBeNull();
+			});
+
+			it('throws an error when no provider found', () => {
+				const grs = new GeoResourceImpl('id');
+				grs.attribution = 'foo';
+				grs._attributionProvider = null;
+
+				expect(() => {
+					grs.getAttribution(42);
+				}).toThrowError('No attribution provider found');
 			});
 		});
 

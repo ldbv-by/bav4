@@ -108,13 +108,19 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns an attribution determined by the attributionProvider (optionally for a zoom level).
-	 * @param {number} [value=0] index 
-	 * @returns {Attribution} attribution 
+	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
+	 * for this GeoResouce. 
+	 * It returns `null` when no attributions are available.
+	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map) 
+	 * @returns {Array<Attribution>|null} attributions 
+	 * @throws Error when no attribution provider is found
 	 */
 	getAttribution(value = 0) {
 		if (this._attributionProvider) {
-			return this._attributionProvider(this, value);
+			const attributions = this._attributionProvider(this, value);
+			return Array.isArray(attributions)
+				? attributions.length > 0 ? attributions : null
+				: attributions ? [attributions] : null;
 		}
 		throw new Error('No attribution provider found');
 	}
