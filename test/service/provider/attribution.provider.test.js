@@ -1,12 +1,17 @@
-import { GeoResource } from '../../../src/services/domain/geoResources';
+import { $injector } from '../../../src/injection';
+import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/services/domain/geoResources';
 import { getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attributionProvider';
 
 describe('Attribution provider', () => {
 
 	class GeoResourceImpl extends GeoResource {
-		constructor(attribution) {
-			super('id');
+		constructor(attribution, id = 'id') {
+			super(id);
 			this._attribution = attribution;
+		}
+
+		getType() {
+			return GeoResourceTypes.VECTOR;
 		}
 	}
 
@@ -21,8 +26,17 @@ describe('Attribution provider', () => {
 	});
 
 	describe('Bvv GeoResource provider', () => {
+
+		const geoResourceServiceMock = {
+			byId: () => { } 
+		}; 
+
+		beforeAll(() => {
+			$injector
+				.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		});
 		
-		it('provides an arribution for a GeoResources', () => {
+		it('provides an attribution for a GeoResource', () => {
 
 			const fooAttribution = getMinimalAttribution('foo');
 			const barAttribution = getMinimalAttribution('bar');
@@ -35,11 +49,31 @@ describe('Attribution provider', () => {
 			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 2)).toBeNull();
 			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 0.49)).toEqual(fooAttribution);
 		});
+
+		it('provides an attribution for an AggregatedGeoResource', () => {
+			const fooAttribution = getMinimalAttribution('foo');
+			const barAttribution = getMinimalAttribution('bar');
+			const gr0 = new GeoResourceImpl(fooAttribution, 'gr0').setAttributionProvider(getBvvAttribution);
+			const gr1 = new GeoResourceImpl(barAttribution, 'gr1').setAttributionProvider(getBvvAttribution);
+			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				switch (id) {
+					case gr0.id:
+						return gr0;
+					case gr1.id:
+						return gr1;
+					default:
+						return null;
+				}
+			});
+			const agr = new AggregateGeoResource('id', 'label', ['gr0', 'gr1', 'unknown']);
+
+			expect(getBvvAttribution(agr)).toEqual([fooAttribution, barAttribution]);
+		});
 	});
 
 	describe('default GeoResource provider', () => {
 
-		it('provides an attribution for a GeoResources', () => {
+		it('provides an attribution for a GeoResource', () => {
 
 			expect(getDefaultAttribution(new GeoResourceImpl(null))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl(undefined))).toEqual(getMinimalAttribution(''));

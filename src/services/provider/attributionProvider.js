@@ -1,10 +1,13 @@
 /**
- * A function that returns an attribution.
+ * A function that returns an attribution (or an array of them).
  * @typedef {Function} attributionProvider
  * @param {GeoResource} geoResource
- * @param {number} [level] level (index-like, can be a zoom level of a map)
- * @returns {Attribution}
+ * @param {number} [level] level (index-like value, can be a zoom level of a map)
+ * @returns {Attribution|Array<Attribution>}
  */
+
+import { $injector } from '../../injection';
+import { GeoResourceTypes } from '../domain/geoResources';
 
 /**
  * Provides BVV specific determined attributions.
@@ -13,6 +16,20 @@
  */
 export const getBvvAttribution = (georesource, level = 0) => {
 
+	const { GeoResourceService: georesourceService } = $injector.inject('GeoResourceService');
+
+	// aggregated geoResources
+	if (georesource.getType() === GeoResourceTypes.AGGREGATE) {
+		return georesource.geoResourceIds
+			.map(id => {
+				const grs = georesourceService.byId(id);
+				return grs ? grs.getAttribution(level) : null;
+			})
+			.filter(attr => !!attr)
+			.flatMap(attr => attr);
+	}
+
+	//all other
 	const attribution = georesource.attribution;
 	if (!attribution) {
 		return null;
