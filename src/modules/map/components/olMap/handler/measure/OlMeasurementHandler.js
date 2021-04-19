@@ -10,11 +10,12 @@ import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
-import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
+import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea, getFormattedLength, getFormattedArea } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
+import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
@@ -48,10 +49,11 @@ export const MeasureSnapType = {
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService');
+		const { TranslationService, MapService, EnvironmentService, StoreService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService' );
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
+		this._storeService = StoreService;
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
@@ -65,6 +67,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._overlayManager = new OverlayManager();		
 		this._measureState = null;
 		this._measureStateHandler = new HelpTooltip(this._overlayManager);
+		this._unregister = this._register(this._storeService.getStore());
 	}
 
 	/**
@@ -98,6 +101,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const pixel = event.pixel;
 			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
 				this._select.getFeatures().clear();
+				setStatistic({ length:0 });
 			}
 			if (this._measureState.type === MeasureStateType.MODIFY && this._measureState.snap) {
 				const interactionLayer = this._vectorLayer;
@@ -181,11 +185,25 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._dragPan);
 		this._measureStateHandler.deactivate();
 		this._overlayManager.deactivate();
+		this._unregister();
 		this._listeners.forEach(l => unByKey(l));
 		this._listeners = [];		
 		this._draw = false;
 		this._map = null;
 	}		
+
+	_register(store) {
+		const extract = (state) => {
+			return state.measurement.reset;
+		};
+
+		const onChange = () => {
+			this._startNew();
+		};
+
+		return observe(store, extract, onChange);
+	}
+
 
 	_removeLast(event) {
 		if (this._draw && this._draw.getActive()) {
@@ -208,12 +226,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_reset() {
+		this._vectorLayer.getSource().clear();		
+		this._overlayManager.reset();
+		this._startNew();
+	}
+
+	_startNew() {
 		this._draw.setActive(true);
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
-		this._overlayManager.reset();
 		this._measureStateHandler.activate();
-		this._vectorLayer.getSource().clear();
 	}
 
 	_createDraw(source) {
@@ -254,7 +276,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._select.getFeatures().push(event.feature);
 			const onFeatureChange = (event) => {
 				this._updateMeasureTooltips(event.target, true);
-				this._setStatistics(event.target);
+				this._updateStatistics();
 			};
 			event.feature.on('change', onFeatureChange);			
 		};
@@ -285,10 +307,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-	_setStatistics(feature) {
+	_setStatistics(feature) {		
 		const length =  getGeometryLength(feature.getGeometry(), this._projectionHints );
 		const area = getArea(feature.getGeometry(), this._projectionHints);
-		setStatistic({ length:length, area:area });
+		setStatistic({ length:getFormattedLength(length), area:getFormattedArea(area) });
+	}
+
+	_updateStatistics() {
+		let length = 0;
+		let area = 0;
+		if (this._select) {
+			this._select.getFeatures().forEach(f => {
+				length = length +  getGeometryLength(f.getGeometry(), this._projectionHints );
+				area = area + getArea(f.getGeometry(), this._projectionHints);					
+			});
+			setStatistic({ length:getFormattedLength(length), area:getFormattedArea(area) });
+		}
+		
 	}
 
 	_updateMeasureTooltips(feature, isDrawing = false) {
@@ -471,8 +506,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			filter: featureFilter, 
 			style:createSelectStyleFunction(measureStyleFunction)
 		};
-
 		const select = new Select(options);	
+		select.getFeatures().on('change:length', this._updateStatistics);
+
 
 		return select;
 	}

@@ -38,7 +38,7 @@ describe('MeasureToolContent', () => {
 
 			expect(element._tool).toBeTruthy();			
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('#measure').length).toBe(1);
 		});
 
 		it('activates the tool', async() => {

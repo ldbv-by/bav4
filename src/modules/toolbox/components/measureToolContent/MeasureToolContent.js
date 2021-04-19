@@ -1,8 +1,9 @@
 import { html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
 /**
@@ -28,10 +29,13 @@ export class MeasureToolContent extends BaElement {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);    
-		const { active  } = this._state;		  
+		const { active, statistic  } = this._state;		  
 		
+		const isNewMeasurement = statistic.length === 0;
+
 		this._tool.active = active;
-		const classes = { 'is-active': this._tool.active };
+		const toolClasses = { 'is-active': this._tool.active };
+		const measurementClasses = { 'is-new': isNewMeasurement };
 		
 		const toggle = () => {	
 			if (this._tool.active) {
@@ -42,6 +46,9 @@ export class MeasureToolContent extends BaElement {
 			}
 		};
 
+		const onClick = () => {
+			reset();
+		};
 		return html`
         <style>${css}</style>
             <div class="container">
@@ -52,16 +59,29 @@ export class MeasureToolContent extends BaElement {
                     </span>
                 </div>      
                 <div class="tool-container__buttons">                                    
-                <div id=${this._tool.name}
-                class="tool-container__button ${classMap(classes)}" 
-                title=${translate(this._tool.title)}
-                @click=${toggle}>
-                <div class="tool-container__background"></div>
-                <div class="tool-container__icon ${this._tool.icon}">
-                </div>  
-                <div class="tool-container__button-text">${translate(this._tool.title)}</div>
-            </div>
+					<div id=${this._tool.name}
+						class="tool-container__button ${classMap(toolClasses)}" 
+						title=${translate(this._tool.title)}
+						@click=${toggle}>				
+							<div class="tool-container__background"></div>
+							<div class="tool-container__icon ${this._tool.icon}">
+							</div>  
+							<div class="tool-container__button-text">${translate(this._tool.title)}
+							</div>				
+					</div>
+					<div class="tool-container__button ${classMap(measurementClasses)}" 
+						title=${translate(this._tool.title)}
+						@click=${onClick}>								
+						<div class="tool-container__background"></div>		
+						<div class="tool-container__icon start-new">
+						</div>  
+						<div class="tool-container__button-text">Start new</div>
+					</div>					
                 </div>
+				<div class="tool-container__statistic ${classMap(measurementClasses)}" >								
+					<div class="tool-container__statistic-text">Length: ${statistic.length}</div>
+					<div class="tool-container__statistic-text">Area: ${unsafeHTML(statistic.area)}</div>
+				</div>
                 <div class="tool-container__buttons-secondary">                         
                     <button>                                 
                     ${translate('toolbox_drawTool_delete')}

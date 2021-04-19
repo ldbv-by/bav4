@@ -16,15 +16,25 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
+import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 
 
 
 const environmentServiceMock = { isTouch: () => false };
-
-TestUtils.setupStoreAndDi({},);
-$injector.registerSingleton('TranslationService', { translate: (key) => key });
-$injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
-$injector.registerSingleton('EnvironmentService', environmentServiceMock);
+const initialState = {
+	active: false,
+	statistic: { length:0, area:0 },
+	reset:null
+};
+const setup = (state = initialState) => {
+	const measurementState = {
+		measurement: state,
+	};
+	TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });	
+	$injector.registerSingleton('TranslationService', { translate: (key) => key });
+	$injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
+	$injector.registerSingleton('EnvironmentService', environmentServiceMock);
+};
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -32,7 +42,9 @@ register(proj4);
 
 
 describe('OlMeasurementHandler', () => {
-
+	beforeEach(() => {
+		setup();
+	});
 	it('has two methods', () => {
 		const handler = new OlMeasurementHandler();
 		expect(handler).toBeTruthy();

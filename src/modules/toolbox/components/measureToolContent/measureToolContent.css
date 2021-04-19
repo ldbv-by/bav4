@@ -87,12 +87,21 @@ background:red;
     -webkit-mask-image:url('assets/measure.svg');
 }
 
-.tool-container__button:hover .tool-container__background{
+.start-new{
+    mask-image:  url('assets/plus.svg');
+    -webkit-mask-image:url('assets/plus.svg');
+}
+
+.is-new{
+    display:none
+}
+
+.tool-container__button:hover .tool-container__background .tool-container__statistic{
     height: 3em;
     width: 3em;
     background-color: var(--secondary-bg-color);
 }
-.is-active .tool-container__background{
+.is-active .tool-container__background {
     height: 3em;
     width: 3em;
     background-color: var(--header-button-bg-color) !important;
