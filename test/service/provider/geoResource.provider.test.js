@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { getBvvAttribution } from '../../../src/services/provider/attributionProvider';
+import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
 import { loadBvvGeoResources, loadExampleGeoResources, parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
 
 describe('GeoResource provider', () => {

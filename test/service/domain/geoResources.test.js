@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource } from '../../../src/services/domain/geoResources';
-import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attributionProvider';
+import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
 describe('GeoResource', () => {

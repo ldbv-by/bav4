@@ -1,5 +1,5 @@
 import { isPromise } from '../../utils/checks';
-import { getDefaultAttribution } from '../provider/attributionProvider';
+import { getDefaultAttribution } from '../provider/attribution.provider';
 
 
 /**
