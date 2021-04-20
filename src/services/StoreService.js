@@ -15,6 +15,7 @@ import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../modules/topics/store/topics.reducer';
+import { networkReducer } from '../store/network.reducer';
 
 
 /**
@@ -45,7 +46,8 @@ export class StoreService {
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			geolocation: geolocationReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			network: networkReducer
 		});
 
 		this._store = createStore(rootReducer);
