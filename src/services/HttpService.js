@@ -1,4 +1,5 @@
 import { setFetching } from '../store/network.action';
+import { sleep } from '../utils/sleep';
 
 /**
  * @class
@@ -22,6 +23,9 @@ export class HttpService {
 	   * @see credits: https://dmitripavlutin.com/timeout-fetch-request/
 	   */
 	async fetch(resource, options = {}, controller = new AbortController()) {
+
+		// await sleep(2000);
+
 		const { timeout = 1000 } = options;
 
 		const id = setTimeout(() => controller.abort(), timeout);
@@ -99,16 +103,25 @@ export class HttpService {
  */
 export class NetworkStateSyncHttpService extends HttpService {
 
+	constructor() {
+		super();
+		this._pendingResponse = 0;
+	}
+
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController()) {
 		setFetching(true);
+		this._pendingResponse++;
 		try {
-			return super.fetch(resource, options, controller);
+			return await super.fetch(resource, options, controller);
 		}
 		finally {
-			setFetching(false);
+			this._pendingResponse--;
+			if (this._pendingResponse < 1) {
+				setFetching(false);
+			}
 		}
 	}
 }

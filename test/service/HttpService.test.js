@@ -1,5 +1,6 @@
 import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
 import { networkReducer } from '../../src/store/network.reducer';
+import { sleep } from '../../src/utils/sleep';
 import { TestUtils } from '../test-utils';
 
 
@@ -193,6 +194,14 @@ describe('HttpService', () => {
 
 describe('NetworkStateSyncHttpService', () => {
 
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
+
+	afterEach(function () {
+		jasmine.clock().uninstall();
+	});
+
 	const setup = () => {
 		return TestUtils.setupStoreAndDi({}, {
 			network: networkReducer
@@ -219,6 +228,39 @@ describe('NetworkStateSyncHttpService', () => {
 			const result = await instanceUnderTest.fetch('something');
 			expect(store.getState().network.fetching).toBeFalse();
 			expect(result.text()).toBe(42);
+		});
+
+		it('regards pending responses', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {});
+			
+			instanceUnderTest.fetch('first');
+			instanceUnderTest.fetch('second');
+
+			expect(instanceUnderTest._pendingResponse).toBe(2);
+			expect(store.getState().network.fetching).toBeTrue();
+
+			await instanceUnderTest.fetch('third');
+
+			expect(instanceUnderTest._pendingResponse).toBe(0);
+			expect(store.getState().network.fetching).toBeFalse();
+		});
+
+		it('regards pending responses when not resolved',  (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {
+				throw new Error('oops');
+			});
+			
+			instanceUnderTest.fetch('first').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(instanceUnderTest._pendingResponse).toBe(0);
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
+			});
 		});
 
 		it('it updates the store when fetch call fails', (done) => {
