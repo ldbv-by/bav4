@@ -101,7 +101,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const pixel = event.pixel;
 			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
 				this._select.getFeatures().clear();
-				setStatistic({ length:0 });
+				setStatistic({ length:0, area:0 });
 			}
 			if (this._measureState.type === MeasureStateType.MODIFY && this._measureState.snap) {
 				const interactionLayer = this._vectorLayer;

@@ -79,8 +79,8 @@ export class MeasureToolContent extends BaElement {
 					</div>					
                 </div>
 				<div class="tool-container__statistic ${classMap(measurementClasses)}" >								
-					<div class="tool-container__statistic-text">Length: ${statistic.length}</div>
-					<div class="tool-container__statistic-text">Area: ${unsafeHTML(statistic.area)}</div>
+					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_length')}: ${statistic.length}</div>
+					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(statistic.area)}</div>
 				</div>
                 <div class="tool-container__buttons-secondary">                         
                     <button>                                 

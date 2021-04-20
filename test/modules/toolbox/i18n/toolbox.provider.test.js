@@ -18,6 +18,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
+		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
+		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 	});
 
 	it('provides translation for en', () => {
@@ -35,11 +37,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
-
+		expect(map.toolbox_measureTool_stats_length).toBe('Length');
+		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 11;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

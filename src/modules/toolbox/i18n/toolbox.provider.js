@@ -14,7 +14,9 @@ export const provide = (lang) => {
 				toolbox_drawTool_save:'Save',
 				toolbox_drawTool_info:'Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.',
 				toolbox_measureTool_header:'Measure',
-				toolbox_measureTool_measure:'Measure',
+				toolbox_measureTool_measure:'Measure',				
+				toolbox_measureTool_stats_length:'Length',
+				toolbox_measureTool_stats_area:'Area',
 			};
 
 		case 'de':
@@ -31,6 +33,8 @@ export const provide = (lang) => {
 				toolbox_drawTool_info:'Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.',
 				toolbox_measureTool_header:'Messen',
 				toolbox_measureTool_measure:'Messen',
+				toolbox_measureTool_stats_length:'Länge',
+				toolbox_measureTool_stats_area:'Fläche',
 			};
 
 		default:
