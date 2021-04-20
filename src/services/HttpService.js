@@ -7,7 +7,7 @@ import { setFetching } from '../store/network.action';
 export class HttpService {
 
 	static get DefaultRequestMode() {
-		return 'same-origin';
+		return 'cors';
 	}
 
 	/**

@@ -17,7 +17,7 @@ describe('HttpService', () => {
 	describe('static properties', () => {
 
 		it('provides a DefaultRequestMode', () => {
-			expect(HttpService.DefaultRequestMode).toBe('same-origin');
+			expect(HttpService.DefaultRequestMode).toBe('cors');
 		});
 	});
 
