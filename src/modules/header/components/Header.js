@@ -79,10 +79,14 @@ export class Header extends BaElement {
 			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex } = this._state;
+		const { open, tabIndex, fetching } = this._state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
+		};
+
+		const getAnimatedBorderClass = () => {
+			return fetching ? 'animated-action-button__border' : '';
 		};
 
 		const getActiveClass = (buttonIndex) => {
@@ -114,20 +118,19 @@ export class Header extends BaElement {
 			setTabIndex(1);
 			openContentPanel();
 		};
-		
+
 		const openMoreTab = () => {
 			setTabIndex(2);
 			openContentPanel();
 		};
 
 		const translate = (key) => this._translationService.translate(key);
-
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
 					<button   class="action-button">
-						<div class="action-button__border">
+						<div class="action-button__border ${getAnimatedBorderClass()}">
 						</div>
 						<div class="action-button__icon">
 							<div class="ba">
@@ -172,8 +175,8 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
-		return { open, tabIndex };
+		const { contentPanel: { open, tabIndex }, network: { fetching } } = state;
+		return { open, tabIndex, fetching };
 	}
 
 	static get tag() {
