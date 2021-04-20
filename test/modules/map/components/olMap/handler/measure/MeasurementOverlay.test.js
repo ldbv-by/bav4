@@ -1,5 +1,7 @@
 import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
+import { UnitsService } from '../../../../../../../src/services/UnitsService';
 import { LineString, Polygon } from 'ol/geom';
+import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 
 import proj4 from 'proj4';
@@ -10,7 +12,10 @@ describe('MeasurementOverlay', () => {
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});			
-
+		$injector.registerSingleton('ConfigService', {
+			getValue: () => { }
+		});
+		$injector.registerSingleton('UnitsService', new UnitsService());
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});

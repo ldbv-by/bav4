@@ -11,7 +11,7 @@ const PROVIDER_METRIC = {
     */
 	distance:(distance) => {
 		let formatted;
-		if (distance >= KILOMETER_IN_METERS) {
+		if (distance > KILOMETER_IN_METERS - 1) {
 			formatted = Math.round((distance / KILOMETER_IN_METERS) * 100) / 100 + ' ' + 'km';
 		}
 		else {
