@@ -33,13 +33,13 @@ export const getBvvAttribution = (georesource, level = 0) => {
 
 	//all other
 	const attribution = georesource.attribution;
-	if (!attribution) {
+	if (!attribution || level < 0) {
 		return null;
 	}
 	if (Array.isArray(attribution)) {
 		const index = Math.round(level);
 		if (index > attribution.length - 1) {
-			return null;
+			return attribution[attribution.length - 1];
 		}
 		return attribution[index];
 	}

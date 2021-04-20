@@ -46,8 +46,11 @@ describe('Attribution provider', () => {
 			expect(getBvvAttribution(new GeoResourceImpl(fooAttribution))).toEqual(fooAttribution);
 			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]))).toEqual(fooAttribution);
 			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 1)).toEqual(barAttribution);
-			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 2)).toBeNull();
 			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 0.49)).toEqual(fooAttribution);
+			//index higher than attribution length
+			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), 4)).toBe(barAttribution);
+			//index lower than attribution length
+			expect(getBvvAttribution(new GeoResourceImpl([fooAttribution, barAttribution]), -1)).toBeNull();
 		});
 
 		it('provides an distinct attribution for an AggregatedGeoResource', () => {
