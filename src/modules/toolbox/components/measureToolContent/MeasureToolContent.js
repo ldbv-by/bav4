@@ -69,7 +69,7 @@ export class MeasureToolContent extends BaElement {
 							<div class="tool-container__button-text">${translate(this._tool.title)}
 							</div>				
 					</div>
-					<div class="tool-container__button ${classMap(measurementClasses)}" 
+					<div id=startnew class="tool-container__button ${classMap(measurementClasses)}" 
 						title=${translate(this._tool.title)}
 						@click=${onClick}>								
 						<div class="tool-container__background"></div>		

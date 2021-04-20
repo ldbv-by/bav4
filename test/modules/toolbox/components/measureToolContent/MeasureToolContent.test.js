@@ -2,6 +2,7 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
@@ -69,5 +70,14 @@ describe('MeasureToolContent', () => {
 			expect(store.getState().measurement.active).toBeFalse();
 			expect(toolButton.classList.contains('is-active')).toBeFalse();
 		});		
+
+		it('resets the measurement', async() => {
+			const element = await setup();
+			const resetButton = element.shadowRoot.querySelector('#startnew');
+
+			resetButton.click();
+
+			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);			
+		});
 	});
 });
