@@ -1,5 +1,4 @@
 import { setFetching } from '../store/network.action';
-import { sleep } from '../utils/sleep';
 
 /**
  * @class
