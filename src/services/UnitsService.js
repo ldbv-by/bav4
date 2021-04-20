@@ -1,5 +1,8 @@
 import { $injector } from '../injection';
 
+const KILOMETER_IN_METERS = 1000;
+const SQUAREDKILOMETER_IN_SQUAREDMETERS = 1000000;
+const HEKTAR_IN_SQUAREDMETERS = 10000;
 const PROVIDER_METRIC = {
 	/**
     * Appends the metric unit of distance to the specified number
@@ -8,8 +11,8 @@ const PROVIDER_METRIC = {
     */
 	distance:(distance) => {
 		let formatted;
-		if (length > 999) {
-			formatted = Math.round((distance / 1000) * 100) / 100 + ' ' + 'km';
+		if (distance >= KILOMETER_IN_METERS) {
+			formatted = Math.round((distance / KILOMETER_IN_METERS) * 100) / 100 + ' ' + 'km';
 		}
 		else {
 			formatted = distance !== 0 ? Math.round(distance * 100) / 100 + ' ' + 'm' : '0 m';
@@ -23,11 +26,11 @@ const PROVIDER_METRIC = {
     */
 	area:(area) => {
 		let formatted;
-		if (area >= 1000000) {
-			formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km&sup2;';
+		if (area >= SQUAREDKILOMETER_IN_SQUAREDMETERS) {
+			formatted = Math.round((area / SQUAREDKILOMETER_IN_SQUAREDMETERS) * 100) / 100 + ' ' + 'km&sup2;';
 		}
-		else if (area >= 10000) {
-			formatted = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
+		else if (area >= HEKTAR_IN_SQUAREDMETERS) {
+			formatted = Math.round((area / HEKTAR_IN_SQUAREDMETERS) * 100) / 100 + ' ' + 'ha';
 		}
 		else {
 			formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
