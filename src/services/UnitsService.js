@@ -1,18 +1,18 @@
 import { $injector } from '../injection';
 
-const KILOMETER_IN_METERS = 1000;
-const SQUAREDKILOMETER_IN_SQUAREDMETERS = 1000000;
-const HEKTAR_IN_SQUAREDMETERS = 10000;
-const PROVIDER_METRIC = {
+const Kilometer_In_Meters = 1000;
+const Squaredkilometer_In_Squaredmeters = 1000000;
+const Hektar_In_Squaredmeters = 10000;
+const Provider_Metric = {
 	/**
     * Appends the metric unit of distance to the specified number
     * @param {number} distance 
     * @returns {String} the formatted value 
     */
-	distance:(distance) => {
+	distance(distance) {
 		let formatted;
-		if (distance > KILOMETER_IN_METERS - 1) {
-			formatted = Math.round((distance / KILOMETER_IN_METERS) * 100) / 100 + ' ' + 'km';
+		if (distance > Kilometer_In_Meters - 1) {
+			formatted = Math.round((distance / Kilometer_In_Meters) * 100) / 100 + ' ' + 'km';
 		}
 		else {
 			formatted = distance !== 0 ? Math.round(distance * 100) / 100 + ' ' + 'm' : '0 m';
@@ -24,13 +24,13 @@ const PROVIDER_METRIC = {
     * @param {number} area 
     * @returns {String} the formatted value 
     */
-	area:(area) => {
+	area(area) {
 		let formatted;
-		if (area >= SQUAREDKILOMETER_IN_SQUAREDMETERS) {
-			formatted = Math.round((area / SQUAREDKILOMETER_IN_SQUAREDMETERS) * 100) / 100 + ' ' + 'km&sup2;';
+		if (area >= Squaredkilometer_In_Squaredmeters) {
+			formatted = Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100 + ' ' + 'km&sup2;';
 		}
-		else if (area >= HEKTAR_IN_SQUAREDMETERS) {
-			formatted = Math.round((area / HEKTAR_IN_SQUAREDMETERS) * 100) / 100 + ' ' + 'ha';
+		else if (area >= Hektar_In_Squaredmeters) {
+			formatted = Math.round((area / Hektar_In_Squaredmeters) * 100) / 100 + ' ' + 'ha';
 		}
 		else {
 			formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
@@ -61,7 +61,7 @@ export class UnitsService {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return PROVIDER_METRIC.distance(distance);
+				return Provider_Metric.distance(distance);
 		}
 	}
 
@@ -74,7 +74,7 @@ export class UnitsService {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return PROVIDER_METRIC.area(area);
+				return Provider_Metric.area(area);
 		}
 	}
 	

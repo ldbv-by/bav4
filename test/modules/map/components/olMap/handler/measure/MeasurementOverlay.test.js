@@ -1,5 +1,4 @@
 import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
-import { UnitsService } from '../../../../../../../src/services/UnitsService';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
@@ -11,11 +10,14 @@ window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 describe('MeasurementOverlay', () => {
 
 	beforeEach(async () => {
-		TestUtils.setupStoreAndDi({});			
-		$injector.registerSingleton('ConfigService', {
-			getValue: () => { }
-		});
-		$injector.registerSingleton('UnitsService', new UnitsService());
+		TestUtils.setupStoreAndDi({});		
+	
+		$injector.registerSingleton('UnitsService', { formatDistance:(distance) => {
+			return distance + ' m';
+		},
+		formatArea:(area) => {
+			return area + ' m²';
+		} });
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});
