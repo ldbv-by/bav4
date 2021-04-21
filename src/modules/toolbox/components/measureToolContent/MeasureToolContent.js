@@ -25,24 +25,25 @@ export class MeasureToolContent extends BaElement {
 			icon:'measure',
 			activate:() => activateMeasurement(),
 			deactivate:() => deactivateMeasurement() };
+		this._isFirstMeasurement = true;
 	}	
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);    
-		const { active, statistic  } = this._state;		  
-		
-		const isNewMeasurement = statistic.length === 0;
+		const { active, statistic  } = this._state;		  		
 
 		this._tool.active = active;
 		const toolClasses = { 'is-active': this._tool.active };
-		const measurementClasses = { 'is-new': isNewMeasurement };
+		const measurementClasses = { 'is-first': this._isFirstMeasurement };
 		
 		const toggle = () => {	
 			if (this._tool.active) {
+				this._isFirstMeasurement = true;
 				this._tool.deactivate();
 			}
 			else {
-				this._tool.activate();					
+				this._tool.activate();	
+				this._isFirstMeasurement = false;				
 			}
 		};
 
@@ -78,7 +79,7 @@ export class MeasureToolContent extends BaElement {
 						<div class="tool-container__button-text">Start new</div>
 					</div>					
                 </div>
-				<div class="tool-container__statistic ${classMap(measurementClasses)}" >								
+				<div class="tool-container__statistic" >								
 					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_length')}: ${statistic.length}</div>
 					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(statistic.area)}</div>
 				</div>

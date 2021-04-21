@@ -92,7 +92,8 @@ background:red;
     -webkit-mask-image:url('assets/plus.svg');
 }
 
-.is-new{
+
+.is-first {
     opacity: 0.4;
 }
 
