@@ -29,11 +29,18 @@ describe('ToolContainer', () => {
 				contentId:false
 			}
 		};
-
 		
 		class MockClass {
 			constructor() {
 				this.get = 'I\'m a UnitsService.';
+			}
+			
+			formatDistance(distance) {
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: 3 }).format(distance) + 'm';
+			}
+
+			formatArea(area) {
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: 3 }).format(area) + 'm²';
 			}
 		}
 
