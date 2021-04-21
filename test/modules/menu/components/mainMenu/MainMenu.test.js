@@ -49,7 +49,7 @@ describe('MainMenu', () => {
 			
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -63,7 +63,7 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -77,7 +77,7 @@ describe('MainMenu', () => {
 			
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -91,7 +91,7 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});
@@ -108,15 +108,15 @@ describe('MainMenu', () => {
 		it('adds a div which holds the main menu and a close button', async () => {
 
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
 		});
 
 		it('adds a container for content and shows demo content', async () => {
 
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.content-panel__container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.content-panel__container').children.length > 0).toBeTrue();
+			expect(element.shadowRoot.querySelector('.main-menu__container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__container').children.length > 0).toBeTrue();
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -230,8 +230,8 @@ describe('MainMenu', () => {
 
 			toggle();
 
-			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeNull();
-			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
 		});
 	});
 });

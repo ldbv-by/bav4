@@ -102,11 +102,11 @@ export class MainMenu extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
-				<div class="content-panel ${getOverlayClass()}">            
-					<button @click="${toggle}" class="content-panel__close-button">
+				<div class="main-menu ${getOverlayClass()}">            
+					<button @click="${toggle}" class="main-menu__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='content-panel__container'>					
+					<div class='main-menu__container'>					
 					<div class="overlay-content">
 					${items.map(item => html`
 					<div class="tabcontent">						
