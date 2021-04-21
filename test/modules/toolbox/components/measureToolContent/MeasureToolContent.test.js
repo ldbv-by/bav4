@@ -21,6 +21,12 @@ describe('MeasureToolContent', () => {
 				contentId:false
 			}
 		};
+		
+		class MockClass {
+			constructor() {
+				this.get = 'I\'m a UnitsService.';
+			}
+		}
 
 		store = TestUtils.setupStoreAndDi(state, { measurement:measurementReducer } );
 		$injector
@@ -28,7 +34,8 @@ describe('MeasureToolContent', () => {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
 			})			
-			.registerSingleton('TranslationService', { translate: (key) => key });			
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.register('UnitsService', MockClass);			
 		return TestUtils.render(MeasureToolContent.tag);
 	};
 

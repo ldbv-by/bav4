@@ -15,8 +15,9 @@ export class MeasureToolContent extends BaElement {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, UnitsService: unitsService } = $injector.inject('TranslationService', 'UnitsService');
 		this._translationService = translationService;
+		this._unitsService = unitsService;
 		this._isToolActive = false;
 		this._tool = { 
 			name:'measure', 
