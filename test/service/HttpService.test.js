@@ -1,4 +1,6 @@
-import { HttpService } from '../../src/services/HttpService';
+import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { networkReducer } from '../../src/store/network.reducer';
+import { TestUtils } from '../test-utils';
 
 
 
@@ -12,53 +14,271 @@ describe('HttpService', () => {
 		jasmine.clock().uninstall();
 	});
 
-	it('provides a result', async () => {
-		const httpService = new HttpService();
-		const spy = spyOn(window, 'fetch').and.returnValue(Promise.resolve({
-			text: () => {
-				return 42;
-			}
-		}));
+	describe('static properties', () => {
 
-		const results = await httpService.fetch('something');
-
-		expect(spy).toHaveBeenCalled();
-		expect(results.text()).toBe(42);
+		it('provides a DefaultRequestMode', () => {
+			expect(HttpService.DEFAULT_REQUEST_MODE).toBe('cors');
+		});
 	});
 
-	it('provides a result with customized timeout ', async () => {
-		const httpService = new HttpService();
-		
-		const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
-			// we wait 2000ms in order to exceed the default timeout limit
-			jasmine.clock().tick(2000);
-			// and return mocked result
-			return Promise.resolve({
+	describe('fetch', () => {
+
+		it('provides a result', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(window, 'fetch').and.returnValue(Promise.resolve({
 				text: () => {
 					return 42;
 				}
+			}));
+
+			const result = await httpService.fetch('something');
+
+			expect(spy).toHaveBeenCalled();
+			expect(result.text()).toBe(42);
+		});
+
+		it('provides a result with customized timeout ', async () => {
+			const httpService = new HttpService();
+
+			const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
+				// we wait 2000ms in order to exceed the default timeout limit
+				jasmine.clock().tick(2000);
+				// and return mocked result
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+			});
+
+			const result = await httpService.fetch('something', { timeout: 3000 });
+
+			expect(fetchSpy).toHaveBeenCalled();
+			expect(result.text()).toBe(42);
+		});
+
+		it('aborts the request when default timeout limit is exceeded', async () => {
+			const httpService = new HttpService();
+
+			const controller = new AbortController();
+			const controllerSpy = spyOn(controller, 'abort');
+			const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
+				// we wait 2000ms in order to exceed the default timeout limit
+				jasmine.clock().tick(2000);
+			});
+
+			await httpService.fetch('something', {}, controller);
+
+			expect(fetchSpy).toHaveBeenCalled();
+			expect(controllerSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('get', () => {
+
+		it('provides a result with default options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+
+			const result = await httpService.get('something');
+
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE });
+			expect(result.text()).toBe(42);
+		});
+
+		it('provides a result with custom options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+
+			const result = await httpService.get('something', { timeout: 2000 });
+
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
+			expect(result.text()).toBe(42);
+		});
+
+	});
+
+	describe('post', () => {
+
+		it('post data and provides a result with default options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+			const result = await httpService.post('something', 'someData', 'someContentType');
+
+			expect(spy).toHaveBeenCalledWith('something', {
+				method: 'POST',
+				body: 'someData',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
+				headers: {
+					'Content-Type': 'someContentType'
+				}
+			});
+			expect(result.text()).toBe(42);
+		});
+
+		it('post data and provides a result with custom options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+			const result = await httpService.post('something', 'someData', 'someContentType', { timeout: 2000 });
+
+			expect(spy).toHaveBeenCalledWith('something', {
+				method: 'POST',
+				body: 'someData',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
+				timeout: 2000,
+				headers: {
+					'Content-Type': 'someContentType'
+				}
+			});
+			expect(result.text()).toBe(42);
+		});
+	});
+
+	describe('head', () => {
+
+		it('provides a result with default options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				ok: true
+			}));
+
+			const result = await httpService.head('something');
+
+			expect(spy).toHaveBeenCalledWith('something', {
+				method: 'HEAD',
+				mode: HttpService.DEFAULT_REQUEST_MODE
+			});
+			expect(result.ok).toBeTrue();
+		});
+
+		it('provides a result with custom options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				ok: true
+			}));
+
+
+			const result = await httpService.head('something', { timeout: 2000 });
+
+			expect(spy).toHaveBeenCalledWith('something', {
+				method: 'HEAD',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
+				timeout: 2000
+			});
+			expect(result.ok).toBeTrue();
+		});
+
+	});
+});
+
+describe('NetworkStateSyncHttpService', () => {
+
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
+
+	afterEach(function () {
+		jasmine.clock().uninstall();
+	});
+
+	const setup = () => {
+		return TestUtils.setupStoreAndDi({}, {
+			network: networkReducer
+		});
+	};
+
+	describe('fetch', () => {
+
+		it('calls parent\'s fetch and updates the store', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+
+			spyOn(window, 'fetch').and.callFake(() => {
+
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+
+			});
+
+			const result = await instanceUnderTest.fetch('something');
+			expect(store.getState().network.fetching).toBeFalse();
+			expect(result.text()).toBe(42);
+		});
+
+		it('regards pending responses', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {});
+			
+			instanceUnderTest.fetch('first');
+			instanceUnderTest.fetch('second');
+
+			expect(instanceUnderTest._pendingResponse).toBe(2);
+			expect(store.getState().network.fetching).toBeTrue();
+
+			await instanceUnderTest.fetch('third');
+
+			expect(instanceUnderTest._pendingResponse).toBe(0);
+			expect(store.getState().network.fetching).toBeFalse();
+		});
+
+		it('regards pending responses when not resolved',  (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {
+				throw new Error('oops');
+			});
+			
+			instanceUnderTest.fetch('first').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(instanceUnderTest._pendingResponse).toBe(0);
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
 			});
 		});
 
-		const results = await httpService.fetch('something', { timeout: 3000 });
+		it('it updates the store when fetch call fails', (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(() => {
 
-		expect(fetchSpy).toHaveBeenCalled();
-		expect(results.text()).toBe(42);
-	});
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.reject('something got wrong');
 
-	it('aborts the request when default timeout limit is exceeded', async () => {
-		const httpService = new HttpService();
+			});
 
-		const controller = new AbortController();
-		const controllerSpy = spyOn(controller, 'abort');
-		const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
-			// we wait 2000ms in order to exceed the default timeout limit
-			jasmine.clock().tick(2000);
+
+			instanceUnderTest.fetch('something').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
+			});
 		});
-
-		await httpService.fetch('something', {}, controller);
-
-		expect(fetchSpy).toHaveBeenCalled();
-		expect(controllerSpy).toHaveBeenCalled();
 	});
 });

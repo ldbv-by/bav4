@@ -4,6 +4,7 @@ import { layersReducer, defaultLayerProperties } from '../../../../../src/module
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
+import { modifyLayer } from '../../../../../src/modules/map/store/layers.action';
 
 window.customElements.define(Toggle.tag, Toggle);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -305,7 +306,77 @@ describe('LayerManager', () => {
 		});
 	});
 
+	describe('when layers are modified', () => { 		
 
+		it('renders changed layer.label', async() => {
+			const layer = {
+				...defaultLayerProperties,
+				id: 'id0', label: 'Foo'
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+			const modifyableLayerProperties = { label:'Bar' };
+
+			const element = await setup(state);
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			const layerLabel = layerItem.shadowRoot.querySelector('.layer-label');
+			expect(layerLabel.innerText).toBe('Foo');
+
+			modifyLayer('id0', modifyableLayerProperties);
+			expect(store.getState().layers.active[0].label).toBe(modifyableLayerProperties.label);
+			expect(layerLabel.innerText).toBe(modifyableLayerProperties.label);
+		});
+
+		it('renders changed layer.opacity', async() => {
+			const layer = {
+				...defaultLayerProperties, id: 'id0',
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+			const modifyableLayerProperties = {  opacity:.55 };
+
+			const element = await setup(state);
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			
+			const slider = layerItem.shadowRoot.querySelector('.opacity-slider');
+			
+			expect(slider.value).toBe('100');
+
+			modifyLayer('id0', modifyableLayerProperties);
+			expect(store.getState().layers.active[0].opacity).toBe(.55);
+			expect(slider.value).toBe('55');
+		});
+
+		it('renders changed layer.visible', async() => {
+			const layer = {
+				...defaultLayerProperties, id: 'id0', visible: false
+			};
+			const state = {
+				layers: {					
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+			const modifyableLayerProperties = {  visible:true };
+
+			const element = await setup(state);
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			const toggle = layerItem.shadowRoot.querySelector('ba-toggle');		
+			expect(toggle.checked).toBe(false);
+			
+			modifyLayer('id0', modifyableLayerProperties);
+			expect(store.getState().layers.active[0].visible).toBe(true);
+			expect(toggle.checked).toBe(true);
+		});		
+	});
 
 
 });

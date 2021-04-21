@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the Toolbox.
  * @module menu/action
  */
-import { OPEN_CLOSED_CHANGED } from './toolBox.reducer';
+import { OPEN_CLOSED_CHANGED, CONTENT_CHANGED } from './toolContainer.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -12,10 +12,21 @@ const getStore = () => {
 
 
 /**
+ * Sets the content to the specified content-id.
+ * @function
+ */
+export const setContainerContent = (contentId) => {
+	getStore().dispatch({
+		type: CONTENT_CHANGED,
+		payload: contentId
+	});
+};
+
+/**
  * Opens the Toolbox.
  * @function
  */
-export const openToolBox = () => {
+export const openToolContainer = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: true
@@ -26,7 +37,7 @@ export const openToolBox = () => {
  * Closes the Toolbox.
  * @function
  */
-export const closeToolBox = () => {
+export const closeToolContainer = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: false
@@ -37,8 +48,8 @@ export const closeToolBox = () => {
  * Toggles the visibility of the Toolbox.
  * @function
  */
-export const toggleToolBox = () => {
-	const { toolBox: { open } } = getStore().getState();
+export const toggleToolContainer = () => {
+	const { toolContainer: { open } } = getStore().getState();
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open

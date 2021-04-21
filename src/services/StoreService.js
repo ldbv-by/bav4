@@ -2,7 +2,8 @@ import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { contentPanelReducer } from '../modules/menu/store/contentPanel.reducer';
-import { toolBoxReducer } from '../modules/menu/store/toolBox.reducer';
+import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
+import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
@@ -14,6 +15,7 @@ import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../modules/topics/store/topics.reducer';
+import { networkReducer } from '../store/network.reducer';
 
 
 /**
@@ -35,7 +37,8 @@ export class StoreService {
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
 			contentPanel: contentPanelReducer,
-			toolBox: toolBoxReducer,
+			toolBar: toolBarReducer,
+			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,
@@ -43,7 +46,8 @@ export class StoreService {
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			geolocation: geolocationReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			network: networkReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -59,15 +63,15 @@ export class StoreService {
 				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
-			= $injector.inject(
-				'TopicsPlugin',
-				'LayersPlugin',
-				'GeolocationPlugin',
-				'MeasurementPlugin',
-				'PositionPlugin',
-				'ContextClickPlugin',
-				'EnvironmentService'
-			);
+				= $injector.inject(
+					'TopicsPlugin',
+					'LayersPlugin',
+					'GeolocationPlugin',
+					'MeasurementPlugin',
+					'PositionPlugin',
+					'ContextClickPlugin',
+					'EnvironmentService'
+				);
 
 			await topicsPlugin.register(this._store);
 			await layersPlugin.register(this._store);

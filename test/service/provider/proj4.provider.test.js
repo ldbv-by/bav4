@@ -5,7 +5,7 @@ describe('Proj4 provider', () => {
 
 	describe('Bvv specific provider', () => {
 
-		it('it registers BVV specific definitions', () => {
+		it('registers BVV specific definitions', () => {
 			loadBvvDefinitions();
 
 			expect(get('EPSG:25832').getCode()).toBe('EPSG:25832');

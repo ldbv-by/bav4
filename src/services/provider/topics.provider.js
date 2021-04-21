@@ -10,7 +10,7 @@ export const loadBvvTopics = async () => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'topics';
 
 
-	const result = await httpService.fetch(`${url}`, { });
+	const result = await httpService.get(`${url}`);
 
 	if (result.ok) {
 		const topics = []; 

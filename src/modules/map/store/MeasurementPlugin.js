@@ -7,6 +7,10 @@ import { BaPlugin } from '../../../store/BaPlugin';
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
+/**
+ * @class
+ * @author taulinger
+ */
 export class MeasurementPlugin extends BaPlugin {
 
 

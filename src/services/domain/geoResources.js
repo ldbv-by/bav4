@@ -1,3 +1,5 @@
+import { isPromise } from '../../utils/checks';
+
 /**
  * @enum
  */
@@ -53,6 +55,10 @@ export class GeoResource {
 
 	get opacity() {
 		return this._opacity;
+	}
+
+	set label(label) {
+		this._label = label;
 	}
 
 	set background(background) {
@@ -138,14 +144,30 @@ export const VectorSourceType = Object.freeze({
 
 
 /**
+ * Loads the data for VectorGeoResources.
+ * @callback VectorGeoResourceLoader
+ * @returns {Promise<VectorGeoResourceLoadResult>} load result
+ */
+
+/**
+ * @typedef {Object} VectorGeoResourceLoadResult
+ * @property {string} data The raw data of a VectorGeoResource
+ * @property {VectorSourceType} sourceType The source type of the data
+ * @property {number} srid The srid of the data
+ */
+
+/**
+ * GeoResource for vector data.
+ * Data could be either loaded externally by Url or internally from a string.
  * @class
  */
 export class VectorGeoResource extends GeoResource {
-	constructor(id, label, url, sourceType) {
+	constructor(id, label, sourceType) {
 		super(id, label);
-		this._url = url;
+		this._url = null;
 		this._sourceType = sourceType;
-		this._source = null;
+		this._data = null;
+		this._srid = null;
 	}
 
 	get url() {
@@ -156,13 +178,83 @@ export class VectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	get source() {
-		return this._source;
+	/**
+	 * Loads and caches the data, additionally updates the source type and srid of this Georesource
+	 * based on the result of the loader.
+	 * @returns {Promise<string>}
+	 * @private
+	 */
+	async _load() {
+		if (!this._data) {
+			const { sourceType, data, srid } = await this._loader();
+			this._sourceType = sourceType;
+			this._data = data;
+			this._srid = srid;
+		}
+		return this._data;
 	}
 
-	set source(data) {
+	/**
+	 * Gets the data of this 'internal' GeoResource.
+	 * If the GeoResource has a loader, it will be used to load the data and determine the source type. 
+	 * If the data object is a Promise, it will be resolved 
+	 * and the resolved data will be cached internally.
+	 * @returns {Promise<string>} data
+	 */
+	async getData() {
+		if (this._loader) {
+			return await this._load();
+		}
+
+		if (!isPromise(this._data)) {
+			return this._data;
+		}
+		//cache the data
+		return this._data = await Promise.resolve(this._data);
+	}
+
+	get srid() {
+		return this._srid;
+	}
+
+	/**
+	 * Sets the Url for this 'external' GeoResource.
+	 * @param {string} url
+	 * @returns `this` for chaining 
+	 */
+	setUrl(url) {
+		this._url = url;
+		this._data = null;
+		this._srid = null;
+		return this;
+	}
+	
+	/**
+	 * Sets the source of this 'internal' GeoResource.
+	 * @param {Promise<string>|string} data 
+	 * @param {number} srid 
+	 * @returns `this` for chaining 
+	 */
+	setSource(data, srid) {
 		this._url = null;
-		this._source = data;
+		this._data = data;
+		this._srid = srid;
+		return this;
+	}
+
+	
+	/**
+	 * Sets the loader of this 'internal' GeoResource.
+	 * @param {VectorGeoResourceLoader} loader 
+	 * @returns `this` for chaining 
+	 */
+	setLoader(loader) {
+		this._sourceType = null;
+		this._url = null;
+		this._data = null;
+		this._srid = null;
+		this._loader = loader;
+		return this;
 	}
 
 	/**

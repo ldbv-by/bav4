@@ -1,15 +1,19 @@
 /* eslint-disable no-undef */
 
-import { ToolBox } from '../../../../../src/modules/menu/components/toolBox/ToolBox';
-import { toolBoxReducer } from '../../../../../src/modules/menu/store/toolBox.reducer';
-import { toggleToolBox } from '../../../../../src/modules/menu/store/toolBox.action';
+import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
+import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
+import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
+import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 
-window.customElements.define(ToolBox.tag, ToolBox);
+window.customElements.define(ToolContainer.tag, ToolContainer);
+window.customElements.define(DrawToolContent.tag, DrawToolContent);
+window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
-
-describe('ToolBoxElement', () => {
+describe('ToolContainer', () => {
 
 	const windowMock = {
 		matchMedia() { }
@@ -20,20 +24,21 @@ describe('ToolBoxElement', () => {
 		const { embed = false } = config;
 
 		const state = {
-			toolBox: {
-				open: true
+			toolContainer: {
+				open: false,
+				contentId:false
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, { toolBox: toolBoxReducer });
+		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
-			})
+			})			
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
-		return TestUtils.render(ToolBox.tag);
+		return TestUtils.render(ToolContainer.tag);
 	};
 
 
@@ -45,24 +50,43 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('adds a div which holds the toolbox with tow Tools', async () => {
+		it('adds a div which holds the container', async () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-box__button').length).toBe(2);
-			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.pencil')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-box__button_icon.share')).toBeTruthy();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 		});
 
-		it('it closes the toolbox', async () => {
+		it('opens the toolcontainer with draw-content', async () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeTruthy();
-			toggleToolBox();
-			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+		});
+
+		it('opens the toolcontainer with measure-content', async () => {
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
+		});
+
+		it('renders nothing when contentId is false', async () => {
+			const element = await setup();
+
+			toggleToolContainer();
+			
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -70,6 +94,8 @@ describe('ToolBoxElement', () => {
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+		
 	});
 
 	describe('responsive layout ', () => {
@@ -81,11 +107,12 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -96,11 +123,12 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -111,11 +139,12 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -126,11 +155,12 @@ describe('ToolBoxElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-box')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});

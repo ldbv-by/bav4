@@ -14,9 +14,8 @@ export const load = async function (extent, resolution, targetProj) {
 	const { HttpService: httpService } = $injector.inject('HttpService');
 
 	const url = vectorSource.getUrl();
-	const result = await httpService.fetch(url, {
+	const result = await httpService.get(url, {
 		timeout: 2000,
-		mode: 'cors'
 	});
 	if (result.ok) {
 		const raw = await result.text();
