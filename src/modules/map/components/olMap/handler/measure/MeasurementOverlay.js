@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../../../BaElement';
+import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea, getFormattedArea, getFormattedLength } from './GeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from './GeometryUtils';
 import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {
@@ -41,6 +42,8 @@ export class MeasurementOverlay extends BaElement {
 
 	constructor() {
 		super();
+		const { UnitsService } = $injector.inject('UnitsService');
+		this._unitsService = UnitsService;
 		this._value = '';
 		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
@@ -94,14 +97,14 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.AREA:
 				this._contentFunction = () => {
 					if (this.geometry instanceof Polygon) {
-						return getFormattedArea(getArea(this._geometry, this._projectionHints));
+						return this._unitsService.formatArea(getArea(this._geometry, this._projectionHints));
 					}
 					return '';
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = getFormattedLength(getGeometryLength(this._geometry, this._projectionHints));
+					const length = this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints));
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
@@ -114,7 +117,7 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._contentFunction = () => {
 					const length = getGeometryLength(this._geometry, this.projectionHints);
-					return getFormattedLength(length * this._value);
+					return this._unitsService.formatDistance(length * this._value);
 				};
 				break;
 			case MeasurementOverlayTypes.HELP:
