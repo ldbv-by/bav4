@@ -73,7 +73,7 @@ export class Footer extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open } } = state;
+		const { mainMenu: { open } } = state;
 		return { open };
 	}
 
