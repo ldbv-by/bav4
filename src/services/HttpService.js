@@ -6,7 +6,7 @@ import { setFetching } from '../store/network.action';
  */
 export class HttpService {
 
-	static get DefaultRequestMode() {
+	static get DEFAULT_REQUEST_MODE() {
 		return 'cors';
 	}
 
@@ -46,7 +46,7 @@ export class HttpService {
 	 */
 	async get(resource, options = {}) {
 		const fetchOptions = {
-			mode: HttpService.DefaultRequestMode,
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			...options,
 		};
 		return this.fetch(resource, fetchOptions);
@@ -64,7 +64,7 @@ export class HttpService {
 	 */
 	async post(resource, data, contentType, options = {}) {
 		const fetchOptions = {
-			mode: HttpService.DefaultRequestMode,
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'POST',
 			body: data,
 			headers: {
@@ -85,7 +85,7 @@ export class HttpService {
 	 */
 	async head(resource, options = {}) {
 		const fetchOptions = {
-			mode: HttpService.DefaultRequestMode,
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'HEAD',
 			...options,
 		};

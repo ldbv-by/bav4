@@ -17,7 +17,7 @@ describe('HttpService', () => {
 	describe('static properties', () => {
 
 		it('provides a DefaultRequestMode', () => {
-			expect(HttpService.DefaultRequestMode).toBe('cors');
+			expect(HttpService.DEFAULT_REQUEST_MODE).toBe('cors');
 		});
 	});
 
@@ -87,7 +87,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something');
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DefaultRequestMode });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE });
 			expect(result.text()).toBe(42);
 		});
 
@@ -102,7 +102,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something', { timeout: 2000 });
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DefaultRequestMode, timeout: 2000 });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
 
@@ -123,7 +123,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: HttpService.DefaultRequestMode,
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				headers: {
 					'Content-Type': 'someContentType'
 				}
@@ -144,7 +144,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: HttpService.DefaultRequestMode,
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				timeout: 2000,
 				headers: {
 					'Content-Type': 'someContentType'
@@ -166,7 +166,7 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: HttpService.DefaultRequestMode
+				mode: HttpService.DEFAULT_REQUEST_MODE
 			});
 			expect(result.ok).toBeTrue();
 		});
@@ -182,7 +182,7 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: HttpService.DefaultRequestMode,
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				timeout: 2000
 			});
 			expect(result.ok).toBeTrue();
