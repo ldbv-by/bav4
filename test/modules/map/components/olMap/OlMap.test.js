@@ -291,7 +291,7 @@ describe('OlMap', () => {
 	describe('olView management', () => {
 
 
-		it('it updates zoom and center', async () => {
+		it('updates zoom and center', async () => {
 			const element = await setup();
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'animate');
@@ -305,7 +305,7 @@ describe('OlMap', () => {
 			});
 		});
 
-		it('it fits to an extent', async (done) => {
+		it('fits to an extent', async (done) => {
 			const element = await setup();
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
@@ -330,7 +330,7 @@ describe('OlMap', () => {
 			});
 		});
 
-		it('it fits to an extent with custom maxZoom option', async (done) => {
+		it('fits to an extent with custom maxZoom option', async (done) => {
 			const element = await setup();
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();

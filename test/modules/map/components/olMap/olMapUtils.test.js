@@ -27,7 +27,7 @@ describe('olMapUtils', () => {
 			.registerSingleton('MapService', mapService);
 	});
 
-	it('it maps vectorSourceType to olFormats', () => {
+	it('maps vectorSourceType to olFormats', () => {
 
 		expect(mapVectorSourceTypeToFormat(VectorSourceType.KML).constructor.name).toBe('KML');
 		expect(mapVectorSourceTypeToFormat(VectorSourceType.GPX).constructor.name).toBe('GPX');
@@ -42,7 +42,7 @@ describe('olMapUtils', () => {
 
 		describe('VectorGeoresource', () => {
 
-			it('it converts an external VectorGeoresource to an olLayer', () => {
+			it('converts an external VectorGeoresource to an olLayer', () => {
 				const url = 'https://some.url';
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
@@ -59,7 +59,7 @@ describe('olMapUtils', () => {
 				expect(vectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
 			});
 
-			it('it converts an internal VectorGeoresource to an olLayer', (done) => {
+			it('converts an internal VectorGeoresource to an olLayer', (done) => {
 				const srid = 3857;
 				const kmlName = '';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -82,7 +82,7 @@ describe('olMapUtils', () => {
 				});
 			});
 
-			it('it updates the label of an internal VectorGeoresource if possible', (done) => {
+			it('updates the label of an internal VectorGeoresource if possible', (done) => {
 				const srid = 3857;
 				const kmlName = 'kmlName';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -98,7 +98,7 @@ describe('olMapUtils', () => {
 				});
 			});
 
-			it('it logs a warn statemennt when source can not be resolved', (done) => {
+			it('logs a warn statemennt when source can not be resolved', (done) => {
 				const warnSpy = spyOn(console, 'warn');
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 4326);
 
@@ -112,7 +112,7 @@ describe('olMapUtils', () => {
 			});
 		});
 
-		it('it converts a WmsGeoresource to a olLayer', () => {
+		it('converts a WmsGeoresource to a olLayer', () => {
 			const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png');
 
 			const wmsOlLayer = toOlLayer(wmsGeoresource);
@@ -127,7 +127,7 @@ describe('olMapUtils', () => {
 			expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 		});
 
-		it('it converts a WmtsGeoresource to a olLayer', () => {
+		it('converts a WmtsGeoresource to a olLayer', () => {
 			const wmtsGeoresource = new WMTSGeoResource('someId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const wmtsOlLayer = toOlLayer(wmtsGeoresource);
@@ -140,7 +140,7 @@ describe('olMapUtils', () => {
 		});
 
 
-		it('it converts a AggregateGeoresource to a olLayer(Group)', () => {
+		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
 
 			const wmtsGeoresource = new WMTSGeoResource('wmtsId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const wmsGeoresource = new WmsGeoResource('wmsId', 'Label', 'https://some.url', 'layer', 'image/png');
@@ -164,7 +164,7 @@ describe('olMapUtils', () => {
 		});
 
 
-		it('it throws an error when georesource type is not supported', () => {
+		it('throws an error when georesource type is not supported', () => {
 
 			expect(() => {
 				toOlLayer({
@@ -179,7 +179,7 @@ describe('olMapUtils', () => {
 	});
 
 	describe('updateOlLayer', () => {
-		it('it updates the properties of a olLayer', () => {
+		it('updates the properties of a olLayer', () => {
 
 			const olLayer = new BaseLayer({});
 			const layer = { visible: false, opacity: .5 };
@@ -192,7 +192,7 @@ describe('olMapUtils', () => {
 	});
 
 	describe('toOlLayerFromHandler', () => {
-		it('it retrieves an olLayer from a handler', () => {
+		it('retrieves an olLayer from a handler', () => {
 			const mockHandler = {
 				activate() { }
 			};
@@ -207,7 +207,7 @@ describe('olMapUtils', () => {
 	});
 
 	describe('iconUrlFunction', () => {
-		it('it updates the properties of a olLayer', () => {
+		it('updates the properties of a olLayer', () => {
 			const iconUrl = 'https://some.url';
 			spyOn(urlService, 'proxifyInstant').withArgs(iconUrl).and.returnValue('https://proxy.url?url=' + iconUrl);
 
@@ -225,7 +225,7 @@ describe('olMapUtils', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('it register a listener on long press events with default delay (I)', () => {
+		it('register a listener on long press events with default delay (I)', () => {
 			const defaultDelay = 300;
 			const spy = jasmine.createSpy();
 			const map = new Map();
@@ -238,7 +238,7 @@ describe('olMapUtils', () => {
 			expect(spy).not.toHaveBeenCalled();
 		});
 
-		it('it register a listener on long press events with default delay (II)', () => {
+		it('register a listener on long press events with default delay (II)', () => {
 			const defaultDelay = 300;
 			const spy = jasmine.createSpy();
 			const map = new Map();
@@ -255,7 +255,7 @@ describe('olMapUtils', () => {
 			));
 		});
 
-		it('it register a listener on long press events with default delay (III)', () => {
+		it('register a listener on long press events with default delay (III)', () => {
 			const defaultDelay = 300;
 			const spy = jasmine.createSpy();
 			const map = new Map();
@@ -274,7 +274,7 @@ describe('olMapUtils', () => {
 			));
 		});
 
-		it('it register a listener on long press events with custom delay', () => {
+		it('register a listener on long press events with custom delay', () => {
 			const customDelay = 100;
 			const spy = jasmine.createSpy();
 			const map = new Map();
@@ -291,7 +291,7 @@ describe('olMapUtils', () => {
 			));
 		});
 
-		it('it cancels the timeout on pointer move with dragging)', () => {
+		it('cancels the timeout on pointer move with dragging)', () => {
 			const defaultDelay = 300;
 			const spy = jasmine.createSpy();
 			const map = new Map();
