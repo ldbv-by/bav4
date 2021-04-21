@@ -197,7 +197,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return state.measurement.reset;
 		};
 
-		const onChange = () => {
+		const onChange = () => {			
 			this._startNew();
 		};
 
@@ -235,6 +235,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw.setActive(true);
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
+		this._measureStateHandler.deactivate();
 		this._measureStateHandler.activate();
 	}
 
