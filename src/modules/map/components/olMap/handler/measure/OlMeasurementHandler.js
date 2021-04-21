@@ -27,6 +27,7 @@ export const MeasureStateType = {
 	ACTIVE:'active',
 	DRAW:'draw',
 	MODIFY:'modify',
+	SELECT:'select',
 	OVERLAY:'overlay',
 	MUTE:'mute'
 };
@@ -102,8 +103,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
 				this._select.getFeatures().clear();
 				setStatistic({ length:0, area:0 });
+				this._measureState = { ...this._measureState, type:MeasureStateType.ACTIVE, snap:null };
+				this._measureStateHandler.notify(this._measureState);
 			}
-			if (this._measureState.type === MeasureStateType.MODIFY && this._measureState.snap) {
+			if ([MeasureStateType.MODIFY, MeasureStateType.SELECT].includes(this._measureState.type) && this._measureState.snap) {
 				const interactionLayer = this._vectorLayer;
 				const featureSnapOption = {
 					hitTolerance: 10,
@@ -220,7 +223,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._reset();
+				this._removeSelectedFeatures();				
 			}
 		}
 	}
@@ -237,6 +240,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(false);
 		this._measureStateHandler.deactivate();
 		this._measureStateHandler.activate();
+	}
+
+	_removeSelectedFeatures() {
+		this._select.getFeatures().forEach(f => {
+			const overlaysToDelete = [];
+			overlaysToDelete.push( f.get('measurement'));
+			overlaysToDelete.push(f.get('area'));	
+			const partitions = f.get('partitions');
+			if (partitions) {
+				partitions.forEach(p =>		overlaysToDelete.push( p));
+			}
+	
+			overlaysToDelete.forEach(o => {
+				if (o) {
+					this._overlayManager.remove(o);
+				}
+			}
+			);
+
+			this._vectorLayer.getSource().removeFeature(f);
+		});
+		this._select.getFeatures().clear();
 	}
 
 	_createDraw(source) {
@@ -460,7 +485,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		
 		if (this._modify.getActive()) {
-			measureState.type = MeasureStateType.MODIFY;		
+			measureState.type = this._select.getFeatures().getLength() === 0 ? MeasureStateType.SELECT : MeasureStateType.MODIFY;		
 		}
 		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
 		if (dragableOverlay) {

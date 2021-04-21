@@ -60,6 +60,10 @@ export class HelpTooltip {
 			}	
 		}
 
+		if (measureState.type === MeasureStateType.SELECT) {
+			message = translate('map_olMap_handler_measure_select');	
+		}
+
 		if (measureState.type === MeasureStateType.OVERLAY) {
 			message = translate('map_olMap_handler_measure_modify_click_drag_overlay');	
 		}
