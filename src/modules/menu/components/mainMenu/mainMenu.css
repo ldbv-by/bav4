@@ -1,6 +1,6 @@
 .content-panel {    
     position: fixed;    
-    z-index: var(--z-contentpanel);
+    z-index: var(--z-mainmenu);
     background-color: var(--primary-bg-color);
     bottom: 0;
     top: 0;
@@ -21,7 +21,7 @@
 
 .content-panel__close-button {           
    position: absolute;
-   z-index: calc(var(--z-contentpanel) + 10);
+   z-index: calc(var(--z-mainmenu) + 10);
    background-color: var(--secondary-bg-color);
    border-radius: 0;
    padding: 0;
