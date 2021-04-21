@@ -75,7 +75,7 @@ describe('LayerManager', () => {
 			};
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelector('.title').innerText).toBe('map_layerManager_title (0)');
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('map_layerManager_title');
 		});
 	});
 
