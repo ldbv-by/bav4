@@ -86,7 +86,7 @@ export class Header extends BaElement {
 		};
 
 		const getAnimatedBorderClass = () => {
-			return fetching ? 'animated-action-button__border' : '';
+			return fetching ? 'animated-action-button__border__running' : '';
 		};
 
 		const getActiveClass = (buttonIndex) => {
@@ -129,8 +129,8 @@ export class Header extends BaElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
-					<button   class="action-button">
-						<div class="action-button__border ${getAnimatedBorderClass()}">
+					<button class="action-button">
+						<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 						</div>
 						<div class="action-button__icon">
 							<div class="ba">

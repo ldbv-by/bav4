@@ -269,13 +269,13 @@ describe('Header', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('it adds or remove the border animation class', async () => {
+		it('runs or pauses the border animation class', async () => {
 			const element = await setup({ mobile: false }, false);
-			expect(element.shadowRoot.querySelector('.action-button__border').classList.contains('animated-action-button__border')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 			setFetching(true);
-			expect(element.shadowRoot.querySelector('.action-button__border').classList.contains('animated-action-button__border')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
 			setFetching(false);
-			expect(element.shadowRoot.querySelector('.action-button__border').classList.contains('animated-action-button__border')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 		});
 	});
 });
