@@ -1,9 +1,14 @@
 /* global variables (custom properties) */
 :root {
-    font-size: calc(0.5em + 1vw);
+    font-size: calc(0.7em + 0.15vw);
 
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
+
+    --error-color: #900603;
+
+    --icon-default-color: gray;
+    --text-default-color: #fff;
 
     --border-radius-button: 2.5em;
     
@@ -19,14 +24,15 @@
     --width-contentpanel: 28em;
     --animationtime-contentpanel: 0.3s;
 }
-
-@media (min-width:55em){
+@media (min-width:200em){
     :root {
     font-size: 1em;
     }
 }
 
 .light-theme {
+    --primary-color-theme: var(--primary-color);
+    --secondary-color-theme: var(--secondary-color);
     --primary-bg-color: white;
     --primary-bg-color-05: rgba( 255,255,255, 0.6);
     --secondary-bg-color: #e8e8e8;
@@ -45,6 +51,9 @@
 }
 
 .dark-theme {
+    --primary-color-theme: var(--secondary-color);
+    --secondary-color-theme: var(--primary-color);
+
     --primary-bg-color: #212f3d;
     --primary-bg-color-05: rgba( 0,0,0, 0.6);
     --secondary-bg-color: #354453;
