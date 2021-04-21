@@ -2,7 +2,7 @@ import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { contentPanelReducer } from '../modules/menu/store/contentPanel.reducer';
-import { toolBoxReducer } from '../modules/menu/store/toolBox.reducer';
+import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
@@ -36,8 +36,8 @@ export class StoreService {
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
 			contentPanel: contentPanelReducer,
-			toolBox: toolBoxReducer,
-			toolContainer:toolContainerReducer,
+			toolBar: toolBarReducer,
+			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			uiTheme: uiThemeReducer,
@@ -61,15 +61,15 @@ export class StoreService {
 				ContextClickPlugin: ContextClickPlugin,
 				EnvironmentService: environmentService
 			}
-			= $injector.inject(
-				'TopicsPlugin',
-				'LayersPlugin',
-				'GeolocationPlugin',
-				'MeasurementPlugin',
-				'PositionPlugin',
-				'ContextClickPlugin',
-				'EnvironmentService'
-			);
+				= $injector.inject(
+					'TopicsPlugin',
+					'LayersPlugin',
+					'GeolocationPlugin',
+					'MeasurementPlugin',
+					'PositionPlugin',
+					'ContextClickPlugin',
+					'EnvironmentService'
+				);
 
 			setTimeout(async() => {
 				//register plugins

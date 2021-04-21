@@ -1,8 +1,8 @@
 /**
- * Action creators to change/update the state of the Toolbox.
+ * Action creators to change/update the state of the Toolbar.
  * @module menu/action
  */
-import { OPEN_CLOSED_CHANGED } from './toolBox.reducer';
+import { OPEN_CLOSED_CHANGED } from './toolBar.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -12,10 +12,10 @@ const getStore = () => {
 
 
 /**
- * Opens the Toolbox.
+ * Opens the Toolbar.
  * @function
  */
-export const openToolBox = () => {
+export const openToolBar = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: true
@@ -23,10 +23,10 @@ export const openToolBox = () => {
 };
 
 /**
- * Closes the Toolbox.
+ * Closes the Toolbar.
  * @function
  */
-export const closeToolBox = () => {
+export const closeToolBar = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: false
@@ -34,11 +34,11 @@ export const closeToolBox = () => {
 };
 
 /**
- * Toggles the visibility of the Toolbox.
+ * Toggles the visibility of the Toolbar.
  * @function
  */
-export const toggleToolBox = () => {
-	const { toolBox: { open } } = getStore().getState();
+export const toggleToolBar = () => {
+	const { toolBar: { open } } = getStore().getState();
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open

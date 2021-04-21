@@ -223,6 +223,21 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[0].zIndex).toBe(0);
 	});
 
+	it('it modifies the \'label\' property of a layer', () => {
+		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
+		const store = setup({
+			layers: {
+				active: index([layer0])
+			}
+		});
+
+		expect(store.getState().layers.active[0].label).toBe('label0');
+
+		modifyLayer('id0', { label: 'label0Modified' });
+
+		expect(store.getState().layers.active[0].label).toBe('label0Modified');
+	});
+
 	it('it modifies the \'visible\' property of a layer', () => {
 		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
 		const store = setup({

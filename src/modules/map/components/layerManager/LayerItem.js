@@ -132,5 +132,6 @@ export class LayerItem extends BaElement {
 
 	set layer(value) {
 		this._layer = value;
+		this.render();
 	}
 }

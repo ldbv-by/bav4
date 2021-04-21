@@ -40,7 +40,7 @@ export const loadBvvGeoResources = async () => {
 					geoResource = new WMTSGeoResource(definition.id, definition.label, definition.url);
 					break;
 				case 'vector':
-					geoResource = new VectorGeoResource(definition.id, definition.label, definition.url, Symbol.for(definition.sourceType));
+					geoResource = new VectorGeoResource(definition.id, definition.label, Symbol.for(definition.sourceType)).setUrl(definition.url);
 					break;
 				case 'aggregate':
 					geoResource = new AggregateGeoResource(definition.id, definition.label, definition.geoResourceIds);
@@ -71,7 +71,7 @@ export const loadExampleGeoResources = async () => {
 	const wms1 = new WmsGeoResource('baudenkmal', 'Baudenkmal', 'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi', 'bauensembleO,einzeldenkmalO', 'image/png');
 	const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
 	const wmts0 = new WMTSGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
-	const vector0 = new VectorGeoResource('huetten', 'Hütten', 'http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml', VectorSourceType.KML);
+	const vector0 = new VectorGeoResource('huetten', 'Hütten', VectorSourceType.KML).setUrl('http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['wmts0', 'wms0']);
 
 	return [wms0, wms1, wms2, wmts0, vector0, aggregate0];
