@@ -63,11 +63,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._listeners = [];
+		
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
 		this._overlayManager = new OverlayManager();		
-		this._measureState = null;
+		this._measureState =  { type:null,
+			snap:null,
+			coordinate:null,
+			pointCount:this._pointCount };
 		this._measureStateHandler = new HelpTooltip(this._overlayManager);
+		this._measureStateChangedListeners = [];
 		this._unregister = this._register(this._storeService.getStore());
 	}
 
@@ -103,7 +108,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (this._measureState.type === MeasureStateType.MODIFY && !this._measureState.snap) {
 				this._select.getFeatures().clear();
 				setStatistic({ length:0, area:0 });
-				this._measureState = { ...this._measureState, type:MeasureStateType.ACTIVE, snap:null };
+				this._setMeasureState({ ...this._measureState, type:MeasureStateType.ACTIVE, snap:null });
 				this._measureStateHandler.notify(this._measureState);
 			}
 			if ([MeasureStateType.MODIFY, MeasureStateType.SELECT].includes(this._measureState.type) && this._measureState.snap) {
@@ -157,7 +162,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			
 			if (!this._environmentService.isTouch()) {
 				this._measureStateHandler.activate();			
-			}
+				this._measureStateChangedListeners.push((measureState) => this._measureStateHandler.notify(measureState));
+			}			
+
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
@@ -172,7 +179,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		return this._vectorLayer;
 	}
-
 	
 	/**
 	 *  @override
@@ -193,7 +199,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._listeners = [];		
 		this._draw = false;
 		this._map = null;
-	}		
+	}
+
+	_setMeasureState(value) {
+		if (value !== this._measureState) {
+			this._measureState = value;
+			this._measureStateChangedListeners.forEach(l => l(value));
+		}
+	}
+
+	_onMeasureStateChanged(listener) {
+		this._measureStateChangedListeners.push(listener);
+	}	
 
 	_register(store) {
 		const extract = (state) => {
@@ -494,8 +511,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			measureState.snap = null;	
 		}
 
-		this._measureState = measureState;
-		this._measureStateHandler.notify(measureState);
+		this._setMeasureState(measureState);
 
 		if (measureState.snap === MeasureSnapType.VERTEX) {
 			this._mapContainer.classList.add('grab');
