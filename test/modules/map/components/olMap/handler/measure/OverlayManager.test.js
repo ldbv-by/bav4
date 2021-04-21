@@ -51,4 +51,18 @@ describe('OverlayManager', () => {
 
 		expect(callbackSpy).toHaveBeenCalledTimes(3);
 	});
+
+	it('resets state', () => {
+		const removeSpy = jasmine.createSpy();
+		const mapMock = { removeOverlay:removeSpy };
+		
+		const classUnderTest = new OverlayManager(mapMock);
+		classUnderTest._overlays = [{}, {}, {}];
+		expect(classUnderTest.getOverlays().length).toBe(3);
+		classUnderTest.reset();
+
+		expect(removeSpy).toHaveBeenCalledTimes(3);
+	});
+
+
 });
