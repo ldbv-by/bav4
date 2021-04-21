@@ -3,7 +3,7 @@ import { StoreService } from '../services/StoreService';
 import { OlCoordinateService } from '../services/OlCoordinateService';
 import { EnvironmentService } from '../services/EnvironmentService';
 import { ProcessEnvConfigService } from '../services/ProcessEnvConfigService';
-import { HttpService } from '../services/HttpService';
+import { NetworkStateSyncHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
@@ -20,7 +20,7 @@ import { BvvFileStorageService } from '../services/FileStorageService';
 
 
 $injector
-	.register('HttpService', HttpService)
+	.registerSingleton('HttpService', new NetworkStateSyncHttpService())
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)
 	.registerSingleton('CoordinateService', new OlCoordinateService())

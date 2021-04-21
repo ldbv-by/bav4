@@ -1,4 +1,6 @@
-import { HttpService } from '../../src/services/HttpService';
+import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { networkReducer } from '../../src/store/network.reducer';
+import { TestUtils } from '../test-utils';
 
 
 
@@ -10,6 +12,13 @@ describe('HttpService', () => {
 
 	afterEach(function () {
 		jasmine.clock().uninstall();
+	});
+
+	describe('static properties', () => {
+
+		it('provides a DefaultRequestMode', () => {
+			expect(HttpService.DEFAULT_REQUEST_MODE).toBe('cors');
+		});
 	});
 
 	describe('fetch', () => {
@@ -78,7 +87,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something');
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: 'cors' });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE });
 			expect(result.text()).toBe(42);
 		});
 
@@ -93,7 +102,7 @@ describe('HttpService', () => {
 
 			const result = await httpService.get('something', { timeout: 2000 });
 
-			expect(spy).toHaveBeenCalledWith('something', { mode: 'cors', timeout: 2000 });
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
 
@@ -114,7 +123,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: 'cors',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				headers: {
 					'Content-Type': 'someContentType'
 				}
@@ -135,7 +144,7 @@ describe('HttpService', () => {
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'POST',
 				body: 'someData',
-				mode: 'cors',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				timeout: 2000,
 				headers: {
 					'Content-Type': 'someContentType'
@@ -157,7 +166,7 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: 'cors'
+				mode: HttpService.DEFAULT_REQUEST_MODE
 			});
 			expect(result.ok).toBeTrue();
 		});
@@ -173,11 +182,103 @@ describe('HttpService', () => {
 
 			expect(spy).toHaveBeenCalledWith('something', {
 				method: 'HEAD',
-				mode: 'cors',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
 				timeout: 2000
 			});
 			expect(result.ok).toBeTrue();
 		});
 
+	});
+});
+
+describe('NetworkStateSyncHttpService', () => {
+
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
+
+	afterEach(function () {
+		jasmine.clock().uninstall();
+	});
+
+	const setup = () => {
+		return TestUtils.setupStoreAndDi({}, {
+			network: networkReducer
+		});
+	};
+
+	describe('fetch', () => {
+
+		it('calls parent\'s fetch and updates the store', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+
+			spyOn(window, 'fetch').and.callFake(() => {
+
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				});
+
+			});
+
+			const result = await instanceUnderTest.fetch('something');
+			expect(store.getState().network.fetching).toBeFalse();
+			expect(result.text()).toBe(42);
+		});
+
+		it('regards pending responses', async () => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {});
+			
+			instanceUnderTest.fetch('first');
+			instanceUnderTest.fetch('second');
+
+			expect(instanceUnderTest._pendingResponse).toBe(2);
+			expect(store.getState().network.fetching).toBeTrue();
+
+			await instanceUnderTest.fetch('third');
+
+			expect(instanceUnderTest._pendingResponse).toBe(0);
+			expect(store.getState().network.fetching).toBeFalse();
+		});
+
+		it('regards pending responses when not resolved',  (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(async () => {
+				throw new Error('oops');
+			});
+			
+			instanceUnderTest.fetch('first').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(instanceUnderTest._pendingResponse).toBe(0);
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
+			});
+		});
+
+		it('it updates the store when fetch call fails', (done) => {
+			const store = setup();
+			const instanceUnderTest = new NetworkStateSyncHttpService();
+			spyOn(window, 'fetch').and.callFake(() => {
+
+				expect(store.getState().network.fetching).toBeTrue();
+				return Promise.reject('something got wrong');
+
+			});
+
+
+			instanceUnderTest.fetch('something').then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, () => {
+				expect(store.getState().network.fetching).toBeFalse();
+				done();
+			});
+		});
 	});
 });

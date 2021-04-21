@@ -224,7 +224,7 @@ describe('ContentPanelElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('it closes the contentpanel', async () => {
+		it('closes the contentpanel', async () => {
 
 			const element = await setup();
 

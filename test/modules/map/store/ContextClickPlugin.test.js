@@ -22,7 +22,7 @@ describe('ContextClickPlugin', () => {
 	};
 
 	describe('on register', () => {
-		it('it inserts the mapcontextmenu container', async () => {
+		it('inserts the mapcontextmenu container', async () => {
 			const store = setup();
 
 			await new ContextClickPlugin().register(store);
