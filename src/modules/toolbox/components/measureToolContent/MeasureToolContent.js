@@ -51,6 +51,9 @@ export class MeasureToolContent extends BaElement {
 		const onClick = () => {
 			reset();
 		};
+
+		const formattedDistance = this._unitsService.formatDistance(statistic.length);
+		const formattedArea = this._unitsService.formatArea(statistic.area);
 		return html`
         <style>${css}</style>
             <div class="container">
@@ -81,8 +84,8 @@ export class MeasureToolContent extends BaElement {
 					</div>					
                 </div>
 				<div class="tool-container__statistic" >								
-					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_length')}: ${statistic.length}</div>
-					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(statistic.area)}</div>
+					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_length')}: ${formattedDistance}</div>
+					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(formattedArea)}</div>
 				</div>
                 <div class="tool-container__buttons-secondary">                         
                     <button>                                 
