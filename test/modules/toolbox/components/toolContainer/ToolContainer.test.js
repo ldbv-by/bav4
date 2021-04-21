@@ -30,6 +30,13 @@ describe('ToolContainer', () => {
 			}
 		};
 
+		
+		class MockClass {
+			constructor() {
+				this.get = 'I\'m a UnitsService.';
+			}
+		}
+
 		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -37,7 +44,8 @@ describe('ToolContainer', () => {
 				getWindow: () => windowMock
 			})			
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
+			.register('UnitsService', MockClass);
 		return TestUtils.render(ToolContainer.tag);
 	};
 
