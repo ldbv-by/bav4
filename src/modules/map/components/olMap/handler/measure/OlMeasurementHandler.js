@@ -209,7 +209,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 
 	_removeLast(event) {
-		if (this._draw && this._draw.getActive()) {
+		if (this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._draw.removeLastPoint();				
 				if (this._pointCount === 2) {
@@ -221,17 +221,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 
-		if (this._modify && this._modify.getActive()) {
+		if (this._modify.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._removeSelectedFeatures();				
 			}
 		}
-	}
-
-	_reset() {
-		this._vectorLayer.getSource().clear();		
-		this._overlayManager.reset();
-		this._startNew();
 	}
 
 	_startNew() {
@@ -243,13 +237,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_removeSelectedFeatures() {
-		this._select.getFeatures().forEach(f => {
+		const selectedFeatures = this._select.getFeatures();
+		
+		if (selectedFeatures.getLength() === 0) {
+			return;
+		}	
+		selectedFeatures.forEach(f => {
 			const overlaysToDelete = [];
 			overlaysToDelete.push( f.get('measurement'));
 			overlaysToDelete.push(f.get('area'));	
 			const partitions = f.get('partitions');
 			if (partitions) {
-				partitions.forEach(p =>		overlaysToDelete.push( p));
+				partitions.forEach(p =>	overlaysToDelete.push( p));
 			}
 	
 			overlaysToDelete.forEach(o => {
@@ -258,10 +257,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 			);
-
-			this._vectorLayer.getSource().removeFeature(f);
+			if (this._vectorLayer.getSource().hasFeature(f)) {
+				this._vectorLayer.getSource().removeFeature(f);
+			}			
 		});
-		this._select.getFeatures().clear();
+		selectedFeatures.clear();	
 	}
 
 	_createDraw(source) {
