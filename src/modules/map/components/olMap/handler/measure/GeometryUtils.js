@@ -169,45 +169,6 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	return delta;
 };
 
-
-/**
- * Appends the appropriate unit of measure to the specified number
- * @param {number} length 
- * @returns {String} the formatted length 
- */
-//todo:intermediate helper-function until kind of FormattingService is in place
-export const getFormattedLength = (length) => {
-	let formatted;
-	if (length > 999) {
-		formatted = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
-	}
-	else {
-		formatted = length !== 0 ? Math.round(length * 100) / 100 + ' ' + 'm' : '0 m';
-	}
-	return formatted;
-};
-
-/**
- * Appends the appropriate unit of measure to the specified number
- * @param {number} area 
- * @returns {String} the formatted length 
- */
-//todo: intermediate helper-function until kind of FormattingService is in place
-export const getFormattedArea = (area) => {
-	let formatted;
-	if (area >= 1000000) {
-		formatted = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km&sup2;';
-	}
-	else if (area >= 10000) {
-		formatted = Math.round((area / 10000) * 100) / 100 + ' ' + 'ha';
-	}
-	else {
-		formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
-	}
-	return formatted;
-};
-
-
 /**
  * Tests whether the vertex candidate is part of the geometry vertices
  * @param {Geometry} geometry the geometry

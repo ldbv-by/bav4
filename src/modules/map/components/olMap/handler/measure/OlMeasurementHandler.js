@@ -10,7 +10,7 @@ import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
-import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea, getFormattedLength, getFormattedArea } from './GeometryUtils';
+import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -333,7 +333,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_setStatistics(feature) {		
 		const length =  getGeometryLength(feature.getGeometry(), this._projectionHints );
 		const area = getArea(feature.getGeometry(), this._projectionHints);
-		setStatistic({ length:getFormattedLength(length), area:getFormattedArea(area) });
+		setStatistic({ length:length, area:area });
 	}
 
 	_updateStatistics() {
@@ -344,7 +344,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				length = length +  getGeometryLength(f.getGeometry(), this._projectionHints );
 				area = area + getArea(f.getGeometry(), this._projectionHints);					
 			});
-			setStatistic({ length:getFormattedLength(length), area:getFormattedArea(area) });
+			setStatistic({ length:length, area:area });
 		}
 		
 	}
