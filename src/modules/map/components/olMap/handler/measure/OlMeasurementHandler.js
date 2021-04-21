@@ -239,9 +239,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_removeSelectedFeatures() {
 		const selectedFeatures = this._select.getFeatures();
 		
-		if (selectedFeatures.getLength() === 0) {
-			return;
-		}	
 		selectedFeatures.forEach(f => {
 			const overlaysToDelete = [];
 			overlaysToDelete.push( f.get('measurement'));
@@ -604,12 +601,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 		element.addEventListener('mouseenter', handleMouseEnter);
 		element.addEventListener('mouseleave', handleMouseLeave);
-	}
-
-	_hideHelpTooltip() {
-		if (this._measureStateHandler) {
-			this._measureStateHandler.setPosition(undefined);
-		}		
 	}
 
 	_getSnapTolerancePerDevice() {

@@ -499,7 +499,7 @@ describe('OlMeasurementHandler', () => {
 
 		it('removes drawn feature if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			classUnderTest._removeSelectedFeatures = jasmine.createSpy();
+			classUnderTest._removeSelectedFeatures = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
 			const map = setupMap();
 			const deleteKeyCode = 46;
 
@@ -507,13 +507,17 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			
+			classUnderTest._vectorLayer.getSource().addFeature(feature);					
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);			
 			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);	
+			
+			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 			
 			simulateKeyEvent(deleteKeyCode);
 			expect(classUnderTest._removeSelectedFeatures).toHaveBeenCalled();
+			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
+			
 		});
 	});
 
