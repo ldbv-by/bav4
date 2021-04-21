@@ -156,14 +156,22 @@ export class Header extends BaElement {
 					</div>
 					<div  class="header__button-container">
 						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
-							${translate('header_header_topics_button')}
+							<span>
+								${translate('header_header_topics_button')}
+							</span>
 						</button>
 						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
-						 	${translate('header_header_maps_button')}
-							 <span class="badges">${layerCount}</span>
-							 </button>
+							<span>
+								${translate('header_header_maps_button')}
+							</span>
+							 <span class="badges">
+							 	${layerCount}
+							</span>
+						</button>
 						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
-							${translate('header_header_more_button')}
+							<span>
+								${translate('header_header_more_button')}
+							</span>
 						</button>
 					</div>
 				</div>				

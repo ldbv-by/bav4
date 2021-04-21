@@ -5,6 +5,7 @@ import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer'
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
+import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 
 window.customElements.define(Header.tag, Header);
 
@@ -17,16 +18,19 @@ describe('Header', () => {
 		matchMedia() { }
 	};
 
-	const setup = (config = {}, open = true, tabIndex = 0) => {
+	const setup = (config = {}, open = true, tabIndex = 0, layers = ['test']) => {
 		const { embed = false } = config;
 
 		const state = {
 			contentPanel: {
 				open: open,
 				tabIndex: tabIndex
+			},
+			layers: {
+				active: layers
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer, layers: layersReducer  });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
@@ -126,9 +130,11 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();  
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_header_topics_button');
-			//TODO
-			// expect(element.shadowRoot.querySelector('.header__button-container').children[1].innerText).toBe('header_header_maps_button');
+			
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_header_maps_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_header_more_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
 		});
@@ -137,6 +143,13 @@ describe('Header', () => {
 			const element = await setup({ embed: true });
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+
+		it('with 3 active Layers', async () => {
+			const element = await setup({}, true, 0, ['test', 'test', 'test']);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('3');			
+		});
+
 	});
 
 	describe('when menu button clicked', () => {
