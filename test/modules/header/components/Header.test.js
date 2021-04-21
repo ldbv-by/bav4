@@ -152,7 +152,7 @@ describe('Header', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('it updates the store', async () => {
+		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
 			expect(store.getState().contentPanel.open).toBe(false);
 			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
@@ -211,7 +211,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeTrue();
 		});
 
-		it('it updates the store', async () => {
+		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
 			expect(store.getState().contentPanel.tabIndex).toBe(0);

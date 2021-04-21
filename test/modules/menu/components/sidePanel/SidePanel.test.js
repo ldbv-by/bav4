@@ -76,14 +76,14 @@ describe('SidePanelElement', () => {
 	});
 
 	describe('when close button clicked', () => {
-		it('it closes the sidepanel (landscape)', async () => {
+		it('closes the sidepanel (landscape)', async () => {
 			const element = await setup({ portrait: false });
 			element.shadowRoot.querySelector('.close').click();
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-landscape.overlay-landscape-closed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.overlay-landscape-open')).toBeFalsy();
 		});
 
-		it('it closes the sidepanel (portrait)', async () => {
+		it('closes the sidepanel (portrait)', async () => {
 			const element = await setup({ portrait: true });
 			toggleSidePanel();
 			expect(element.shadowRoot.querySelector('.sidePanel.overlay.overlay-portrait.overlay-portrait-closed')).toBeTruthy();
@@ -92,7 +92,7 @@ describe('SidePanelElement', () => {
 	});
 
 	describe('when tab clicked', () => {
-		it('it displays the current tab and its content and preserves the index', async () => {
+		it('displays the current tab and its content and preserves the index', async () => {
 			const element = await setup({ portrait: false });
 			const firstTab = element.shadowRoot.querySelectorAll('.tablink')[0];
 			const secondTab = element.shadowRoot.querySelectorAll('.tablink')[1];
