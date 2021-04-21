@@ -323,7 +323,7 @@ describe('LayerManager', () => {
 
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
-			const layerLabel = layerItem.shadowRoot.querySelector('.layer-label');
+			const layerLabel = layerItem.shadowRoot.querySelector('.layer-header__text');
 			expect(layerLabel.innerText).toBe('Foo');
 
 			modifyLayer('id0', modifyableLayerProperties);
