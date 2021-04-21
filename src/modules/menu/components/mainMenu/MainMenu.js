@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './contentPanel.css';
-import { toggleContentPanel } from '../../store/contentPanel.action';
+import css from './mainMenu.css';
+import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 
 /**
@@ -9,7 +9,7 @@ import { $injector } from '../../../../injection';
  * @class
  * @author alsturm
  */
-export class ContentPanel extends BaElement {
+export class MainMenu extends BaElement {
 
 	constructor() {
 		super();
@@ -103,7 +103,7 @@ export class ContentPanel extends BaElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
 				<div class="content-panel ${getOverlayClass()}">            
-					<button @click="${toggleContentPanel}" class="content-panel__close-button">
+					<button @click="${toggle}" class="content-panel__close-button">
 					<span class='arrow'></span>	
 					</button>	
 					<div class='content-panel__container'>					
@@ -269,11 +269,11 @@ export class ContentPanel extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
+		const { mainMenu: { open, tabIndex } } = state;
 		return { open, tabIndex };
 	}
 
 	static get tag() {
-		return 'ba-content-panel';
+		return 'ba-main-menu';
 	}
 }

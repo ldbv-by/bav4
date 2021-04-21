@@ -1,16 +1,16 @@
 /* eslint-disable no-undef */
 
-import { ContentPanel } from '../../../../../src/modules/menu/components/contentPanel/ContentPanel';
-import { contentPanelReducer } from '../../../../../src/modules/menu/store/contentPanel.reducer';
-import { toggleContentPanel } from '../../../../../src/modules/menu/store/contentPanel.action';
+import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { mainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
+import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { setTabIndex } from '../../../../../src/modules/menu/store/contentPanel.action';
+import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
 
-window.customElements.define(ContentPanel.tag, ContentPanel);
+window.customElements.define(MainMenu.tag, MainMenu);
 
 
-describe('ContentPanelElement', () => {
+describe('MainMenu', () => {
 
 	const windowMock = {
 		matchMedia() { }
@@ -21,12 +21,12 @@ describe('ContentPanelElement', () => {
 		const { embed = false } = config;
 
 		const state = {
-			contentPanel: {
+			mainMenu: {
 				open: open,
 				tabIndex: tabIndex
 			}
 		};
-		TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer });
+		TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -34,7 +34,7 @@ describe('ContentPanelElement', () => {
 			})
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
 
-		return TestUtils.render(ContentPanel.tag);
+		return TestUtils.render(MainMenu.tag);
 	};
 
 	describe('responsive layout ', () => {
@@ -105,7 +105,7 @@ describe('ContentPanelElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('adds a div which holds the contentpanel and a close button', async () => {
+		it('adds a div which holds the main menu and a close button', async () => {
 
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeTruthy();
@@ -125,7 +125,7 @@ describe('ContentPanelElement', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('adds a div which holds the contentpanel content', async () => {
+		it('adds a div which holds the main menu content', async () => {
 
 			const element = await setup();
 
@@ -224,11 +224,11 @@ describe('ContentPanelElement', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('closes the contentpanel', async () => {
+		it('closes the main menu', async () => {
 
 			const element = await setup();
 
-			toggleContentPanel();
+			toggle();
 
 			expect(element.shadowRoot.querySelector('.content-panel.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.content-panel__close-button')).toBeTruthy();
