@@ -32,7 +32,7 @@ $injector
 	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
 	.registerSingleton('ShareService', new ShareService())
-	.registerSingleton('UnitsService', new UnitsService())
+	.register('UnitsService', new UnitsService())
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
