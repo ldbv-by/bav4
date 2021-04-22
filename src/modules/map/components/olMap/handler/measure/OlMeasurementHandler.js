@@ -104,35 +104,25 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const clickHandler = (event) => {
-			const hasFeature = (feature, featureCollection) => {
-				let returnValue = false;
-				featureCollection.forEach(f => {
-					if (f === feature) {
-						returnValue = true;
-					}
-				});
-				return returnValue;
-			};
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
 			const pixel = event.pixel;	
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
 
-
 			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
 				setStatistic({ length:0, area:0 });
 				this._setMeasureState({ ...this._measureState, type:MeasureStateType.ACTIVE, snap:null });
 			}
+
 			if ([MeasureStateType.MODIFY, MeasureStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
-					
-					if (!hasFeature(f, this._select.getFeatures() )) {
+					const hasFeature = this._isInCollection(f, this._select.getFeatures());
+					if (!hasFeature) {
 						this._select.getFeatures().push(f);
 					}
-				}
-				);
+				});
 			}
 		};
 
@@ -648,4 +638,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		return 4;
 	}
+
+	/**
+	 * todo: extract Util-method to kind of 'OlMapUtils'-file
+	 */
+	_isInCollection(item, itemCollection) {		
+		let isInCollection = false;
+		itemCollection.forEach(i => {
+			if (i === item) {
+				isInCollection = true;
+			}
+		});
+		return isInCollection;			
+	}
+
 }

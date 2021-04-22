@@ -5,7 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
-import { Feature } from 'ol';
+import { Collection, Feature } from 'ol';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
@@ -1085,6 +1085,38 @@ describe('OlMeasurementHandler', () => {
 			expect(overlayElement.style.opacity).toBe('0.3');
 
 		});
+	});
+
+	describe('when using util _isInCollection', () => {
+
+		it('finds a item', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const item = { id:'foo' };
+			const items = [item, { id:'bar' }, { id:'baz' }];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeTrue();		
+		});
+
+		it('finds NOT a item', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const item = { id:'42' };
+			const items = [{ id:'foo' }, { id:'bar' }, { id:'baz' }];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();		
+		});
+
+		
+		it('finds NOT a item in empty collection', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const item = { id:'42' };
+			const items = [];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();		
+		});
+
 	});
 });
 
