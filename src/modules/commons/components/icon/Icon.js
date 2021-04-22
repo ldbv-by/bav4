@@ -7,8 +7,9 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * 
  * Configurable Attributes:
  * - `icon` (svg)
- * - `size` (in px)
+ * - `size` (in em)
  * - `color` (css color value)
+ * - `color_hover` (css color value)
  * - `title` 
  * - `disabled` (default=false)
  * - `onClick()`
