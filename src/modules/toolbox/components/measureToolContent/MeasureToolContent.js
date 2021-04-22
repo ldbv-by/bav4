@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement, reset } from '../../../map/store/measurement.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement, remove, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
 /**
@@ -48,8 +48,12 @@ export class MeasureToolContent extends BaElement {
 			}
 		};
 
-		const onClick = () => {
+		const onClickReset = () => {
 			reset();
+		};
+
+		const onClickRemove = () => {
+			remove();
 		};
 
 		const formattedDistance = this._unitsService.formatDistance(statistic.length);
@@ -76,7 +80,7 @@ export class MeasureToolContent extends BaElement {
 					</div>
 					<div id=startnew class="tool-container__button ${classMap(measurementClasses)}" 
 						title=${translate(this._tool.title)}
-						@click=${onClick}>								
+						@click=${onClickReset}>								
 						<div class="tool-container__background"></div>		
 						<div class="tool-container__icon start-new">
 						</div>  
@@ -88,7 +92,7 @@ export class MeasureToolContent extends BaElement {
 					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(formattedArea)}</div>
 				</div>
                 <div class="tool-container__buttons-secondary">                         
-                    <button>                                 
+                    <button id=remove @click=${onClickRemove}>                                 
                     ${translate('toolbox_drawTool_delete')}
                     </button>
                     <button>                            

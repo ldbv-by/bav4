@@ -17,7 +17,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
-import { reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
 
 
@@ -183,6 +183,18 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				reset();				
 				expect(startNewSpy).toHaveBeenCalled();
+			});
+
+
+			it('register observer for remove-request', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const removeSpy = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
+
+				classUnderTest.activate(map);
+				remove();				
+				expect(removeSpy).toHaveBeenCalled();
 			});
 		});
 

@@ -73,7 +73,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			dragging:false };
 		this._measureStateHandler = new HelpTooltip(this._overlayManager);
 		this._measureStateChangedListeners = [];
-		this._unregister = this._register(this._storeService.getStore());
+		this._registeredObservers = this._register(this._storeService.getStore());
 	}
 
 	/**
@@ -161,9 +161,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._measureStateHandler.activate();			
 				this._measureStateChangedListeners.push((measureState) => this._measureStateHandler.notify(measureState));
 			}			
-			// this._measureStateChangedListeners.push((measureState) => console.log(measureState));
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
-			// this._listeners.push(olMap.on(MapBrowserEventType.CLICK, () => console.log('click event')));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
@@ -192,7 +190,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._dragPan);
 		this._measureStateHandler.deactivate();
 		this._overlayManager.deactivate();
-		this._unregister();
+		this._registeredObservers.forEach(o => o());
 		this._listeners.forEach(l => unByKey(l));
 		this._listeners = [];		
 		this._draw = false;
@@ -211,15 +209,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}	
 
 	_register(store) {
-		const extract = (state) => {
-			return state.measurement.reset;
-		};
-
-		const onChange = () => {			
-			this._startNew();
-		};
-
-		return observe(store, extract, onChange);
+		return [observe(store, state => state.measurement.reset, () => this._startNew()),
+			observe(store, state => state.measurement.remove, () => this._removeSelectedFeatures())];
 	}
 
 
@@ -257,18 +248,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		selectedFeatures.forEach(f => {
 			const overlaysToDelete = [];
 			overlaysToDelete.push( f.get('measurement'));
-			overlaysToDelete.push(f.get('area'));	
+			overlaysToDelete.push( f.get('area'));	
 			const partitions = f.get('partitions');
 			if (partitions) {
-				partitions.forEach(p =>	overlaysToDelete.push( p));
+				partitions.forEach(p =>	overlaysToDelete.push(p));
 			}
-	
-			overlaysToDelete.forEach(o => {
-				if (o) {
-					this._overlayManager.remove(o);
-				}
-			}
-			);
+			overlaysToDelete.forEach(o => this._overlayManager.remove(o));
 			if (this._vectorLayer.getSource().hasFeature(f)) {
 				this._vectorLayer.getSource().removeFeature(f);
 			}			
@@ -394,8 +379,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			if (feature.getGeometry().getArea()) {
 				const isDraggable = !this._environmentService.isTouch();
-				const areaOverlay = feature.get('area') || this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
-				this._overlayManager.add(areaOverlay);
+				let areaOverlay = feature.get('area');				
+				if (!areaOverlay) {
+					areaOverlay = this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
+					this._overlayManager.add(areaOverlay);
+				}				
 				this._updateOverlay(areaOverlay, feature.getGeometry());
 				feature.set('area', areaOverlay);
 			} 

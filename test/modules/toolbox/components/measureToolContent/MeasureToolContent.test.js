@@ -94,5 +94,14 @@ describe('MeasureToolContent', () => {
 
 			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);			
 		});
+
+		it('removes the selected measurement', async() => {
+			const element = await setup();
+			const removeButton = element.shadowRoot.querySelector('#remove');
+
+			removeButton.click();
+
+			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);			
+		});
 	});
 });
