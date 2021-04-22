@@ -109,11 +109,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const pixel = event.pixel;	
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
-
-			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0) {
+			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {				
 				this._select.getFeatures().clear();
 				setStatistic({ length:0, area:0 });
-				this._setMeasureState({ ...this._measureState, type:MeasureStateType.ACTIVE, snap:null });
+				this._setMeasureState({ ...this._measureState, type:MeasureStateType.ACTIVE, snap:null });				
 			}
 
 			if ([MeasureStateType.MODIFY, MeasureStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
@@ -124,6 +123,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				});
 			}
+			this._modifyActivated = false;
 		};
 
 		const pointerUpHandler = () => {
@@ -312,11 +312,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify.setActive(true);
 			event.feature.setStyle(measureStyleFunction(event.feature));			
 			this._select.getFeatures().push(event.feature);
+			this._modifyActivated = true;
 			const onFeatureChange = (event) => {
 				this._updateMeasureTooltips(event.target, true);
 				this._updateStatistics();
 			};
-			event.feature.on('change', onFeatureChange);			
+			event.feature.on('change', onFeatureChange);									
 		};
 
 		draw.on('drawstart', event => {
@@ -462,8 +463,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const snappedGeometry = snappedFeature.getGeometry();
 
 			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = MeasureSnapType.VERTEX;
-				
+				snapType = MeasureSnapType.VERTEX;				
 			}
 		}
 		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
@@ -651,5 +651,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		});
 		return isInCollection;			
 	}
+
 
 }
