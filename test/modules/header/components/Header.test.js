@@ -7,7 +7,7 @@ import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
 import { networkReducer } from '../../../../src/store/network.reducer';
 import { setFetching } from '../../../../src/store/network.action';
-import { MainMenuContentIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 
 window.customElements.define(Header.tag, Header);
 
@@ -215,11 +215,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuContentIndex.TOPICS);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuContentIndex.MAPS);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuContentIndex.MORE);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MORE.id);
 		});
 
 	});
@@ -242,7 +242,7 @@ describe('Header', () => {
 			const element = await setup();
 			element.shadowRoot.querySelector('.header__search-container input').focus();
 
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuContentIndex.SEARCH);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 

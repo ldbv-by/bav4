@@ -4,7 +4,7 @@ import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.act
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
-import { MainMenuContentIndex } from '../../menu/components/mainMenu/MainMenu';
+import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 
 
 /**
@@ -95,7 +95,7 @@ export class Header extends BaElement {
 		};
 
 		const onFocusInput = () => {
-			setTabIndex(MainMenuContentIndex.SEARCH);
+			setTabIndex(MainMenuTabIndex.SEARCH);
 			if (this._portrait || !this._minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -111,18 +111,18 @@ export class Header extends BaElement {
 			}
 		};
 
-		const openThemeTab = () => {
-			setTabIndex(0);
+		const openTopicsTab = () => {
+			setTabIndex(MainMenuTabIndex.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(1);
+			setTabIndex(MainMenuTabIndex.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(2);
+			setTabIndex(MainMenuTabIndex.MORE);
 			openMainMenu();
 		};
 
@@ -156,7 +156,7 @@ export class Header extends BaElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
+						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openTopicsTab}">
 							${translate('header_header_topics_button')}
 						</button>
 						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
