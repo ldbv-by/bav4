@@ -119,7 +119,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
 
-			
+
 			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
 				setStatistic({ length:0, area:0 });
@@ -579,8 +579,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction,
-			deleteCondition: event => {		
-				console.log('in deleteCondition:', event);		
+			deleteCondition: event => {						
 				const isDeletable = (noModifierKeys(event) && singleClick(event));			
 				return isDeletable;
 			}
