@@ -22,15 +22,29 @@ export class AttributionInfo extends BaElement {
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = this._state;
+		const { active, zoom } = this._state;
 
 		if (typeof active !== undefined && active.length > 0) {
+
 			const geoResource = this._georesourceService.byId(active[0].id);
+
 			if (!geoResource) {
 				return nothing;
 			} 
-			// Not yet implemented
-			geoResource.attribution ? this._content = geoResource.attribution : this._content = translate('map_attributionInfo_fallback');
+
+			const attributions = geoResource.getAttribution(zoom);
+
+			if (!attributions) {
+				return nothing;
+			} 
+
+			const attributionCopyright = [] ;
+
+			attributions.forEach(attribution => {
+				attributionCopyright.push(attribution.copyright.label);
+			});
+			
+			attributionCopyright ? this._content = attributionCopyright.join() : this._content = translate('map_attributionInfo_fallback');
 
 			return html`
             <div><p>${translate('map_attributionInfo_label')}: ${this._content} </p></div>

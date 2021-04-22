@@ -3,7 +3,10 @@ import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
 import { positionReducer } from '../../../../../src/modules/map/store/position.reducer'; 
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/modules/map/store/layers.action';
+import { changeZoom } from '../../../../../src/modules/map/store/position.action';
+import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources'; 
 import { $injector } from '../../../../../src/injection';
+import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';
 
 
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
@@ -32,18 +35,21 @@ describe('AttributionInfo', () => {
 			const state = {
 				layers: {
 					active: [layer]
-				}
+				},
+				position:{
+					zoom: 12
+				} 
 			};
 
-			// WMTSGeoResource with added attribution field, could look like this in the future
-			const mockedWmts = { id: 'someId', label: 'LDBV', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'Ref42' }; 
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(mockedWmts);
+			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			wmts.attribution = [42, 21] ;
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_attributionInfo_label');
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerText).toEqual('map_attributionInfo_label: 42,21');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -80,42 +86,93 @@ describe('AttributionInfo', () => {
 			const state = {
 				layers: {
 					active: [layer]
-				}
+				},
+				position: {
+					zoom: 12
+				} 
 			};
 
-			const mockedWmts = { id: 'id1', label: 'Label21', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'LDBV' }; 
-			const mockedWmts2 = { id: 'id2', label: 'Label42', url: 'https://some{1-2}/layer/{z}/{x}/{y}', attribution: 'Ref42' }; 
+			const arrayAttribution1 = ['LDBV', 'Ref42']; 
+			const arrayAttribution2 = ['foo', 'baz'];
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			wmts.attribution = arrayAttribution1;
+			const wmts2 = new WMTSGeoResource('someId2', 'someLabel2', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			wmts2.attribution = arrayAttribution2;
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(mockedWmts);
-			geoServiceMock.withArgs(layer2.id).and.returnValue(mockedWmts2);
+			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer2.id).and.returnValue(wmts2);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution2);
 
+			// layer2 now on zIndex 0
 			addLayer(layer2.id, layer2);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution1);
 
 			modifyLayer(layer.id, { zIndex: 0 });
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution2);
 
 			removeLayer(layer.id);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution1);
 			
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
 		}); 
+
+		it('updates BaseLayerInfo component on zoom change', async () => {
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
+			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+
+			const attribution1 = getMinimalAttribution('Ref42');
+			const attribution2 = getMinimalAttribution('LDBV');
+			const arrayAttr12 = [attribution1, attribution2]; 
+
+			const attribution11 = getMinimalAttribution('baz');
+			const attribution21 = getMinimalAttribution('foo');
+			const arrayAttr11 = [attribution11, attribution21]; 
+
+			const getAttrMock = spyOn(wmts, 'getAttribution');
+			getAttrMock.withArgs(12).and.returnValue(arrayAttr12);
+			getAttrMock.withArgs(11).and.returnValue(arrayAttr11);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
+
+			changeZoom(11);
+
+			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('baz');
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('foo');
+
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledWith(11);
+			expect(getAttrMock).toHaveBeenCalledWith(12);
+		});
 	});
 });
