@@ -61,10 +61,11 @@ describe('HelpTooltip', () => {
 	describe('when notified', () => {
         
 		const measureStateTemplate = {
-			type:MeasureStateType.MUTE,
+			type:null,
 			snap:null,
 			coordinate:[0, 0], 
-			pointCount:42
+			pointCount:42,
+			dragging:false
 		};
 
 		it('with measurestate \'active\' create overlay text', () => {
@@ -125,14 +126,14 @@ describe('HelpTooltip', () => {
 			
 		});
 
-		it('with measurestate \'mute\' hide overlay', () => {
+		it('with measurestate \'dragging\' hide overlay', () => {
 			
 			const overlayManagerMock = { add:() => {} };
 			const classUnderTest = new HelpTooltip(overlayManagerMock);
 			// classUnderTest._hide = jasmine.createSpy().and.callThrough();
 			
 			classUnderTest.activate();
-			classUnderTest.notify(measureStateTemplate);
+			classUnderTest.notify({ ...measureStateTemplate, dragging:true });
 			
 			// expect(classUnderTest._hide).toHaveBeenCalled();
 			expect(classUnderTest._overlay.getPosition()).toBeUndefined();

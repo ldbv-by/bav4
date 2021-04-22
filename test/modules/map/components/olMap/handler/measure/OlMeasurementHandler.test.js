@@ -620,7 +620,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0, true);
 
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MUTE, snap: null, coordinate: [10, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: jasmine.anything(), snap: null, coordinate: [10, 0], pointCount: 0, dragging:true });
 		});
 
 		it('change measureState, when sketch is changing', () => {
@@ -632,10 +632,10 @@ describe('OlMeasurementHandler', () => {
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 			classUnderTest._activeSketch = new Feature({ geometry: new LineString([[0, 0], [1, 0]]) });
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 		});
 
 		it('change measureState, when sketch is snapping to first point', () => {
@@ -649,14 +649,14 @@ describe('OlMeasurementHandler', () => {
 			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
 			feature.getGeometry().dispatchEvent('change');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: MeasureSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: MeasureSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5, dragging:jasmine.any(Boolean) });
 		});
 
 		it('change measureState, when sketch is snapping to last point', () => {
@@ -669,13 +669,13 @@ describe('OlMeasurementHandler', () => {
 			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]]);
 			feature.getGeometry().dispatchEvent('change');
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: MeasureSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 5 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.DRAW, snap: MeasureSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 5, dragging:jasmine.any(Boolean) });
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {
@@ -695,7 +695,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.OVERLAY, snap: null, coordinate: [10, 0], pointCount: 0 });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.OVERLAY, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 		});
 
 		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
@@ -753,7 +753,7 @@ describe('OlMeasurementHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0 });
+				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
 			});
 
 			it('pointer is snapped to sketch boundary', () => {
@@ -773,7 +773,7 @@ describe('OlMeasurementHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: MeasureSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything() });
+				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: MeasureSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging:jasmine.any(Boolean) });
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
@@ -791,7 +791,7 @@ describe('OlMeasurementHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: MeasureSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything() });
+				expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.MODIFY, snap: MeasureSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging:jasmine.any(Boolean) });
 			});
 
 
