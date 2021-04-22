@@ -59,6 +59,12 @@ export class Header extends BaElement {
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
+	
+	onWindowLoad() {
+		if (!this.isRenderingSkipped()) {
+			this._root.querySelector('.preload').classList.remove('preload');
+		}
+	}
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
@@ -131,7 +137,7 @@ export class Header extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="preload ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
 					<button class="action-button">
 						<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">

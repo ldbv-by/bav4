@@ -126,6 +126,11 @@ describe('Header', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
+		it('removes a preload css class', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
+		});
+
 		it('adds header bar', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();

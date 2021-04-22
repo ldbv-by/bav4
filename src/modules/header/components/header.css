@@ -1,3 +1,10 @@
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+}
+
 .header{
   position: fixed;
   z-index: var(--z-header);
