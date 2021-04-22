@@ -4,6 +4,7 @@ import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.act
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
+import { MainMenuContentIndex } from '../../menu/components/mainMenu/MainMenu';
 
 
 /**
@@ -93,17 +94,18 @@ export class Header extends BaElement {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
 
-		const hideModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
+		const onFocusInput = () => {
+			setTabIndex(MainMenuContentIndex.SEARCH);
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
 		};
 
 		const showModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
 			}
@@ -148,7 +150,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${hideModalHeader}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
