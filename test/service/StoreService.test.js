@@ -55,7 +55,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
 			expect(reducerKeys.includes('sidePanel')).toBeTrue();
-			expect(reducerKeys.includes('contentPanel')).toBeTrue();
+			expect(reducerKeys.includes('mainMenu')).toBeTrue();
 			expect(reducerKeys.includes('toolBar')).toBeTrue();
 			expect(reducerKeys.includes('toolContainer')).toBeTrue();
 			expect(reducerKeys.includes('contextMenue')).toBeTrue();

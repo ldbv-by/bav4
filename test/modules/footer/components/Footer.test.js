@@ -3,6 +3,7 @@
 import { Footer } from '../../../../src/modules/footer/components/Footer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
+import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 
 window.customElements.define(Footer.tag, Footer);
 
@@ -17,12 +18,12 @@ describe('Footer', () => {
 		const { embed = false } = config;
 
 		const state = {
-			contentPanel: {
+			mainMenu: {
 				open: true
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state);
+		TestUtils.setupStoreAndDi(state,  { mainMenu: mainMenuReducer });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
 			getWindow: () => windowMock
@@ -32,7 +33,7 @@ describe('Footer', () => {
 	};
 
 	describe('responsive layout ', () => {
-		it('layouts with open contentpanel for landscape mode', async () => {
+		it('layouts with open main menu for landscape mode', async () => {
 
 			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false));
@@ -45,7 +46,7 @@ describe('Footer', () => {
 			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('layouts with open contentpanel for portrait mode', async () => {
+		it('layouts with open main menu for portrait mode', async () => {
 
 			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));

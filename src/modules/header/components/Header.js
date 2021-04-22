@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { openContentPanel, setTabIndex } from '../../menu/store/contentPanel.action';
+import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -115,17 +115,17 @@ export class Header extends BaElement {
 
 		const openThemeTab = () => {
 			setTabIndex(0);
-			openContentPanel();
+			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
 			setTabIndex(1);
-			openContentPanel();
+			openMainMenu();
 		};
 
 		const openMoreTab = () => {
 			setTabIndex(2);
-			openContentPanel();
+			openMainMenu();
 		};
 
 		const translate = (key) => this._translationService.translate(key);
@@ -187,7 +187,7 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex }, network: { fetching }, layers: { active: layers }  } = state;
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = state;
 		return { open, tabIndex, fetching, layers };
 	}
 

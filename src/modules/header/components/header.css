@@ -2,12 +2,12 @@
   position: fixed;
   z-index: var(--z-header);
   top: 0;
-  left:  calc(var(--width-contentpanel) * -1); 
+  left:  calc(var(--width-mainmenu) * -1); 
   width: auto;
-  min-width:var(--width-contentpanel);
+  min-width:var(--width-mainmenu);
   padding: 7.5em 1em 2em 1em;
   border-bottom: 1px solid  var(--header-background-color);;
-  transition: transform var(--animationtime-contentpanel) ease-out;  
+  transition: transform var(--animationtime-mainmenu) ease-out;  
 }
 .header__background{
   position: absolute;

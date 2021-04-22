@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { contentPanelReducer } from '../../../../src/modules/menu/store/contentPanel.reducer';
+import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -24,7 +24,7 @@ describe('Header', () => {
 		const { embed = false } = config;
 
 		const state = {
-			contentPanel: {
+			mainMenu: {
 				open: open,
 				tabIndex: tabIndex
 			},
@@ -35,7 +35,7 @@ describe('Header', () => {
 				active: layers
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer, network: networkReducer, layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer, modal: modalReducer, network: networkReducer, layers: layersReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
@@ -167,11 +167,11 @@ describe('Header', () => {
 
 		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
-			expect(store.getState().contentPanel.open).toBe(false);
+			expect(store.getState().mainMenu.open).toBe(false);
 			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().contentPanel.open).toBe(true);
+			expect(store.getState().mainMenu.open).toBe(true);
 			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().contentPanel.open).toBe(true);
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 
@@ -227,11 +227,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().contentPanel.tabIndex).toBe(0);
+			expect(store.getState().mainMenu.tabIndex).toBe(0);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().contentPanel.tabIndex).toBe(1);
+			expect(store.getState().mainMenu.tabIndex).toBe(1);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().contentPanel.tabIndex).toBe(2);
+			expect(store.getState().mainMenu.tabIndex).toBe(2);
 		});
 
 	});
