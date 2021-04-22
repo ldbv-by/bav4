@@ -35,7 +35,9 @@ export class AttributionInfo extends BaElement {
 			const attributions = geoResource.getAttribution(zoom);
 
 			if (!attributions) {
-				return nothing;
+				return html`
+            		<div><p>${translate('map_attributionInfo_fallback')}</p></div>
+				`;
 			} 
 
 			const attributionCopyright = [] ;
@@ -44,7 +46,13 @@ export class AttributionInfo extends BaElement {
 				attributionCopyright.push(attribution.copyright.label);
 			});
 			
-			attributionCopyright ? this._content = attributionCopyright.join() : this._content = translate('map_attributionInfo_fallback');
+			// At least the first element should not be null
+			if (attributionCopyright[0] != null ) {
+				this._content = attributionCopyright.join();
+			}
+			else {
+				this._content = translate('map_attributionInfo_fallback');
+			}
 
 			return html`
             <div><p>${translate('map_attributionInfo_label')}: ${this._content} </p></div>

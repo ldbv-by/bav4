@@ -80,6 +80,55 @@ describe('AttributionInfo', () => {
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
+		it('renders fallback when no attribution provided', async  () => {
+			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+
+			const getAttrMock = spyOn(wmts, 'getAttribution').and.returnValue(null);
+
+			const element = await setup(state);			
+
+			expect(element.shadowRoot.querySelector('p').innerText).toEqual('map_attributionInfo_fallback');
+
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+		});
+
+		it('renders fallback when no attribution.label provided', async  () => {
+			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+
+			const attribution = getMinimalAttribution(null);
+			const getAttrMock = spyOn(wmts, 'getAttribution').and.returnValue([attribution]);
+
+			const element = await setup(state);			
+
+			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_attributionInfo_fallback');
+
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+		});
+
 		it('updates BaseLayerInfo component', async ()  => {
 			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
 			const layer2 = { ...defaultLayerProperties, id:'id1', label:'label1', zIndex: 0 }; 
