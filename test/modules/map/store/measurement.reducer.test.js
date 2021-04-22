@@ -1,5 +1,5 @@
 import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
-import { activate, deactivate, setStatistic, reset } from '../../../../src/modules/map/store/measurement.action';
+import { activate, deactivate, setStatistic, reset, remove } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
 import { EventLike } from '../../../../src/utils/storeUtils';
 
@@ -48,5 +48,13 @@ describe('measurementReducer', () => {
 		reset();
 
 		expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the remove property', () => {
+		const store = setup();		
+		
+		remove();
+
+		expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 	});
 });

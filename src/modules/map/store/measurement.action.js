@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the measurement tool
  * @module map/action
  */
-import { ACTIVE_CHANGED, STATISTIC_CHANGED, RESET_REQUESTED } from './measurement.reducer';
+import { ACTIVE_CHANGED, STATISTIC_CHANGED, RESET_REQUESTED, REMOVE_REQUESTED } from './measurement.reducer';
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
 
@@ -55,5 +55,16 @@ export const reset = () => {
 	getStore().dispatch({
 		type: RESET_REQUESTED,
 		payload: new EventLike('reset')
+	});
+};
+
+/**
+ * set the delete request.
+ * @function
+ */
+export const remove = () => {
+	getStore().dispatch({
+		type: REMOVE_REQUESTED,
+		payload: new EventLike('remove')
 	});
 };

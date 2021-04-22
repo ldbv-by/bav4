@@ -1,6 +1,7 @@
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const RESET_REQUESTED = 'measurement/reset';
+export const REMOVE_REQUESTED = 'measurement/remove';
 
 
 export const initialState = {
@@ -43,6 +44,14 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				reset: payload
+
+			};
+		}
+		case REMOVE_REQUESTED: {
+
+			return {
+				...state,
+				remove: payload
 
 			};
 		}
