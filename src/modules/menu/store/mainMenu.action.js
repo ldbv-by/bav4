@@ -46,12 +46,12 @@ export const toggle = () => {
 };
 
 /**
- * Sets the active tab to the index.
- * @function
+ * Displays the tab for this index.
+ * @param {MainMenuTabIndex} index 
  */
 export const setTabIndex = (index) => {
 	getStore().dispatch({
 		type: INDEX_CHANGED,
-		payload: index
+		payload: index.id
 	});
 };
