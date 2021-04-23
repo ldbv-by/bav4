@@ -7,8 +7,9 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * 
  * Configurable Attributes:
  * - `icon` (svg)
- * - `size` (in px)
+ * - `size` (in em)
  * - `color` (css color value)
+ * - `color_hover` (css color value)
  * - `title` 
  * - `disabled` (default=false)
  * - `onClick()`
@@ -39,8 +40,9 @@ export class Icon extends BaElement {
 		this._onClick = () => { };
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this._title = this.getAttribute('title') || '';
-		this._size = this.getAttribute('size') ? parseInt(this.getAttribute('size')) : 25;
+		this._size = this.getAttribute('size') ? parseFloat(this.getAttribute('size')) : 2;
 		this._color = this.getAttribute('color') ? this.getAttribute('color') : 'var(--primary-color)';
+		this._color_hover = this.getAttribute('color_hover') ? this.getAttribute('color_hover') : 'var(--primary-color)';
 	}
 
 
@@ -56,8 +58,11 @@ export class Icon extends BaElement {
 		};
 
 		const iconClass = `.icon {
-			--size: ${this._size}px; 
+			--size: ${this._size}em; 
 			background: ${this._color}; 
+		}`;
+		const anchorClassHover = `.anchor:hover .icon{
+			background: ${this._color_hover}; 
 		}`;
 		const customIconClass = this._icon ? `.icon-custom {
 			mask : url("${this._icon}");
@@ -71,6 +76,7 @@ export class Icon extends BaElement {
 		return html`
 		<style>
 		${iconClass}
+		${anchorClassHover}
 		${customIconClass}
 		${css}
 		</style>	

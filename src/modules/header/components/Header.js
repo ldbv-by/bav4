@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { openContentPanel, setTabIndex } from '../../menu/store/contentPanel.action';
+import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -59,6 +59,12 @@ export class Header extends BaElement {
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
+	
+	onWindowLoad() {
+		if (!this.isRenderingSkipped()) {
+			this._root.querySelector('.preload').classList.remove('preload');
+		}
+	}
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
@@ -79,15 +85,23 @@ export class Header extends BaElement {
 			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex } = this._state;
+		const { open, tabIndex, fetching } = this._state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
 		};
 
+		const getAnimatedBorderClass = () => {
+			return fetching ? 'animated-action-button__border__running' : '';
+		};
+
 		const getActiveClass = (buttonIndex) => {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
+
+		const { layers } = this._state;
+		const layerCount = layers.length;
+
 
 		const hideModalHeader = () => {
 			const popup = this.shadowRoot.getElementById('headerMobile');
@@ -107,27 +121,26 @@ export class Header extends BaElement {
 
 		const openThemeTab = () => {
 			setTabIndex(0);
-			openContentPanel();
+			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
 			setTabIndex(1);
-			openContentPanel();
+			openMainMenu();
 		};
-		
+
 		const openMoreTab = () => {
 			setTabIndex(2);
-			openContentPanel();
+			openMainMenu();
 		};
 
 		const translate = (key) => this._translationService.translate(key);
-
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="preload ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
-					<button   class="action-button">
-						<div class="action-button__border">
+					<button class="action-button">
+						<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 						</div>
 						<div class="action-button__icon">
 							<div class="ba">
@@ -152,14 +165,22 @@ export class Header extends BaElement {
 					</div>
 					<div  class="header__button-container">
 						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
-							${translate('header_header_topics_button')}
+							<span>
+								${translate('header_header_topics_button')}
+							</span>
 						</button>
 						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
-						 	${translate('header_header_maps_button')}
-							 <span class="badges">1</span>
-							 </button>
+							<span>
+								${translate('header_header_maps_button')}
+							</span>
+							 <span class="badges">
+							 	${layerCount}
+							</span>
+						</button>
 						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
-							${translate('header_header_more_button')}
+							<span>
+								${translate('header_header_more_button')}
+							</span>
 						</button>
 					</div>
 				</div>				
@@ -172,8 +193,8 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
-		return { open, tabIndex };
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = state;
+		return { open, tabIndex, fetching, layers };
 	}
 
 	static get tag() {

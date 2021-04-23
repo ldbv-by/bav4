@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './contentPanel.css';
-import { toggleContentPanel } from '../../store/contentPanel.action';
+import css from './mainMenu.css';
+import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 
 /**
@@ -9,7 +9,7 @@ import { $injector } from '../../../../injection';
  * @class
  * @author alsturm
  */
-export class ContentPanel extends BaElement {
+export class MainMenu extends BaElement {
 
 	constructor() {
 		super();
@@ -102,11 +102,11 @@ export class ContentPanel extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
-				<div class="content-panel ${getOverlayClass()}">            
-					<button @click="${toggleContentPanel}" class="content-panel__close-button">
+				<div class="main-menu ${getOverlayClass()}">            
+					<button @click="${toggle}" class="main-menu__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='content-panel__container'>					
+					<div class='main-menu__container'>					
 					<div class="overlay-content">
 					${items.map(item => html`
 					<div class="tabcontent">						
@@ -269,11 +269,11 @@ export class ContentPanel extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
+		const { mainMenu: { open, tabIndex } } = state;
 		return { open, tabIndex };
 	}
 
 	static get tag() {
-		return 'ba-content-panel';
+		return 'ba-main-menu';
 	}
 }

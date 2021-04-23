@@ -52,14 +52,14 @@ describe('LayerItem', () => {
 	
 		it('displays label-property in label', async () => {
 			const element = await setup({ id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true });
-			const label = element.shadowRoot.querySelector('.layer-label');
+			const label = element.shadowRoot.querySelector('.layer-header__text');
 			
 			expect(label.innerText).toBe('label0');			
 		});
 
 		it('displays id-property when label is empty in label', async () => {
 			const element = await setup({ id:'id0', label:'', visible: true, zIndex:0, opacity:1, collapsed:true });
-			const label = element.shadowRoot.querySelector('.layer-label');
+			const label = element.shadowRoot.querySelector('.layer-header__text');
 			
 			expect(label.innerText).toBe('id0');			
 		});
@@ -119,6 +119,12 @@ describe('LayerItem', () => {
 			expect(dragstartSliderSpy).toHaveBeenCalled();
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
 		});
+
+		it('displays info button', async () => {
+			const element = await setup({ id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true });
+			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();		
+		});
+
 	});
 
 	describe('when user interacts with layer item', () => {
@@ -169,7 +175,7 @@ describe('LayerItem', () => {
 			const element =  await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer, collapsed:true };			
 
-			const collapseButton = element.shadowRoot.querySelector('.collapse-button a');          
+			const collapseButton = element.shadowRoot.querySelector('.collapse-button');          
 			collapseButton.click();			
 			
 			expect(element._layer.collapsed).toBeFalse();

@@ -5,7 +5,7 @@ describe('StringifyCoord provider', () => {
 
 	describe('default provider', () => {
 
-		it('it stringifies a coordinate', () => {
+		it('stringifies a coordinate', () => {
 
 			const coord4326 = [11.57245, 48.14021];
 
@@ -25,7 +25,7 @@ describe('StringifyCoord provider', () => {
 				.registerSingleton('CoordinateService', coordinateService);
 		});
 
-		it('it stringifies a 4326 coordinate', () => {
+		it('stringifies a 4326 coordinate', () => {
 
 			const coord4326 = [11.57245, 48.14021];
 
@@ -34,7 +34,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('11.572, 48.140');
 		});
 
-		it('it stringifies a 25832 zone U coordinate', () => {
+		it('stringifies a 25832 zone U coordinate', () => {
 
 			spyOn(coordinateService, 'transform').and.returnValue([9.94835, 50.00210]);
 			const coord25832 = [567962, 5539295];
@@ -43,7 +43,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('32U 567962, 5539295');
 		});
 
-		it('it stringifies a 25832 zone T coordinate', () => {
+		it('stringifies a 25832 zone T coordinate', () => {
 			
 			spyOn(coordinateService, 'transform').and.returnValue([10.39210, 47.79677]);
 			const coord25832 = [604250, 5294651];
@@ -52,7 +52,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('32T 604250, 5294651');
 		});
 
-		it('it stringifies a 25833 zone U coordinate', () => {
+		it('stringifies a 25833 zone U coordinate', () => {
 
 			spyOn(coordinateService, 'transform').and.returnValue([12.07646, 49.89823]);
 			const coord25832 = [290052, 5531414];
@@ -61,7 +61,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('33U 290052, 5531414');
 		});
 
-		it('it stringifies a 25833 zone T coordinate', () => {
+		it('stringifies a 25833 zone T coordinate', () => {
 			
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 47.87963]);
 			const coord25832 = [327250, 5305507];
@@ -70,7 +70,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('33T 327250, 5305507');
 		});
 
-		it('it stringifies a 25833 coordinate with a latitude value > 54°', () => {
+		it('stringifies a 25833 coordinate with a latitude value > 54°', () => {
 			
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 54.87963]);
 			const coord25832 = [327250, 5305507];
@@ -79,7 +79,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('33 327250, 5305507');
 		});
 
-		it('it stringifies a 25833 coordinate with a latitude value < 42°', () => {
+		it('stringifies a 25833 coordinate with a latitude value < 42°', () => {
 			
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 41.87963]);
 			const coord25832 = [327250, 5305507];

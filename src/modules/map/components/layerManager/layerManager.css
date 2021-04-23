@@ -1,27 +1,22 @@
-.layermanager {
-    padding: 0px;    
-    background-color: var(--secondary-bg-color);
-    border: 1px solid var(--primary-color);
+.layermanager {    
+    padding: 0 0 2em 0;
+   
 }
 
 .title {
-    text-decoration-color: var(--secondary-color);
-    background-color: var(--secondary-bg-color);       
-    border-bottom: 1px solid var(--primary-color); 
+    font-weight: bold;
+    padding:.8em 1.5em;
 }
 
 ul {
-    margin:0px;
-    padding:0 px;
-    padding-inline-start: 0px;
     display: flex;
     flex-direction: column-reverse;
-    margin-bottom: 0px;
     list-style:none;    
 }
 
 li {
     flex: 0 0 auto;
+    
 }
 
 
@@ -30,10 +25,7 @@ li {
 }
 
 .placeholder {
-    padding: 2px;
-    margin:2px;
-    height: 5px;
-    background-color:var(--secondary-bg-color);
+   /* border: 1px solid var(--header-background-color) */
 }
 .over {
     height: 25px;

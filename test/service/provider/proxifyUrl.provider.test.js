@@ -14,7 +14,7 @@ describe('proxyUrlTemplate', () => {
 				.registerSingleton('ConfigService', configService);
 		});
 
-		it('it returns BVV specific proxifiedUrl', () => {
+		it('returns BVV specific proxifiedUrl', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider('https://some.one');
 
 			expect(proxifiedUrl).toBe('https://proxy.url?url=https%3A%2F%2Fsome.one');

@@ -1,7 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../modules/map/store/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
-import { contentPanelReducer } from '../modules/menu/store/contentPanel.reducer';
+import { mainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
@@ -15,6 +15,7 @@ import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../modules/topics/store/topics.reducer';
+import { networkReducer } from '../store/network.reducer';
 
 
 /**
@@ -35,7 +36,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
-			contentPanel: contentPanelReducer,
+			mainMenu: mainMenuReducer,
 			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,
@@ -45,7 +46,8 @@ export class StoreService {
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			geolocation: geolocationReducer,
-			topics: topicsReducer
+			topics: topicsReducer,
+			network: networkReducer
 		});
 
 		this._store = createStore(rootReducer);
