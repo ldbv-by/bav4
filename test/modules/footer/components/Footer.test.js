@@ -68,6 +68,11 @@ describe('Footer', () => {
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
+		it('removes a preload css class', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
+		});
+
 		it('adds footer elements and css classes for landscape mode', async () => {
 
 			const element = await setup({ portrait: false });

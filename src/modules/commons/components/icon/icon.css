@@ -12,7 +12,7 @@
     cursor: not-allowed;   
 }
   
-.icon:hover {
+.anchor:hover .icon {
     transform: scale(1.1);
 }
   
