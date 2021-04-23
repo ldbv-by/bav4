@@ -3,7 +3,7 @@ import { setFetching, setOffline } from '../../src/store/network/network.action'
 import { TestUtils } from '../test-utils.js';
 
 
-describe('positionReducer', () => {
+describe('networkReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
