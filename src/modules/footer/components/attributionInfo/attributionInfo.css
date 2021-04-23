@@ -1,0 +1,13 @@
+.attribution-container {
+    display: flex;
+    margin: auto;
+    user-select: none;
+}
+
+.attribution-link {
+    margin-left: .2em;
+} 
+
+.attribution-label {
+    margin-left: .2em;
+} 

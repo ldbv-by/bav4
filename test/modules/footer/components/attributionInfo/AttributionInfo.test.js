@@ -49,7 +49,8 @@ describe('AttributionInfo', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerText).toEqual('map_attributionInfo_label: 42,21');
+			expect(element.shadowRoot.querySelectorAll('p')[0].innerText).toEqual('map_attributionInfo_label:');
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerText).toEqual('42,21');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -155,25 +156,25 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution1);
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution2);
 
 			// layer2 now on zIndex 0
 			addLayer(layer2.id, layer2);
 
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution2);
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution1);
 
 			modifyLayer(layer.id, { zIndex: 0 });
 
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution1);
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution2);
 
 			removeLayer(layer.id);
 
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain(arrayAttribution2);
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution1);
 			
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
@@ -209,19 +210,86 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelectorAll('p')[2].innerHTML).toContain('LDBV');
 
 			changeZoom(11);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('baz');
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('foo');
+			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain('baz');
+			expect(element.shadowRoot.querySelectorAll('p')[2].innerHTML).toContain('foo');
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledWith(11);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
+		});
+
+		it('renders link when attribution.url parameter provided', async () => {
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
+			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+
+			const attribution = { copyright:{ label: 'Ref42', url: 'https://ima/link' } };
+
+			const getAttrMock = spyOn(wmts, 'getAttribution');
+			getAttrMock.withArgs(12).and.returnValue([attribution]);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('a')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('a').innerText).toEqual(attribution.copyright.label);
+			expect(element.shadowRoot.querySelector('a').href).toEqual(attribution.copyright.url);
+
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledWith(12);
+		}); 
+
+		it('renders link and label', async () => {
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
+			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+
+			const attribution1 = { copyright:{ label: 'Ref42', url: 'https://ima/link' } };
+			const attribution2 = getMinimalAttribution('LDBV');
+
+			const getAttrMock = spyOn(wmts, 'getAttribution');
+			getAttrMock.withArgs(12).and.returnValue([attribution1, attribution2]);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('a')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('a').innerText).toEqual(attribution1.copyright.label+',');
+			expect(element.shadowRoot.querySelector('a').href).toEqual(attribution1.copyright.url);
+
+			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('p')[1].innerText).toContain(attribution2.copyright.label);
+
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledWith(12);
+			
 		});
 	});
 });

@@ -13,7 +13,7 @@ import { getDefaultAttribution } from '../provider/attribution.provider';
 /**
  * Copyright data of an attribution.
  * @typedef Copyright
- * @property {string} label copyight label
+ * @property {string} label copyright label
  * @property {string} [url] copyright href
  */
 

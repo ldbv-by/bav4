@@ -1,6 +1,7 @@
 import { html, nothing } from 'lit-html'; 
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
+import css from './attributionInfo.css';
 
 /**
  * a class for displaying the attribution of the basemap
@@ -38,24 +39,43 @@ export class AttributionInfo extends BaElement {
 				return html`
             		<div><p>${translate('map_attributionInfo_fallback')}</p></div>
 				`;
-			} 
+			}
 
 			const attributionCopyright = [] ;
+			const attributionsLength = attributions.length;
 
-			attributions.forEach(attribution => {
-				attributionCopyright.push(attribution.copyright.label);
+			attributions.forEach((attribution, index) => {
+				if (attribution.copyright.url  != null) {
+					if (index < attributionsLength - 1) {
+						attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}, </a>`);
+					}
+					else {
+						attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label} </a>`);
+					} 
+				}
+				else if (attribution.copyright.label != null) {
+					if (index < attributionsLength - 1) {
+						attributionCopyright.push(html`<p class='attribution-label'> ${attribution.copyright.label}, </p>`);
+					}
+					else {
+						attributionCopyright.push(html`<p class='attribution-label'> ${attribution.copyright.label} </p>`);
+					} 
+				} 
 			});
 			
 			// At least the first element should not be null
-			if (attributionCopyright[0] != null ) {
-				this._content = attributionCopyright.join();
-			}
-			else {
-				this._content = translate('map_attributionInfo_fallback');
+			if (attributionCopyright[0] === null || attributionCopyright[0] === undefined) {
+				return html`
+            		<div><p>${translate('map_attributionInfo_fallback')}</p></div>
+				`;
 			}
 
 			return html`
-            <div><p>${translate('map_attributionInfo_label')}: ${this._content} </p></div>
+			<style>${css}</style>
+            <div class='attribution-container'>
+				<p>${translate('map_attributionInfo_label')}: </p>
+				${attributionCopyright} 
+			</div>
 			`;
 		} 
 
