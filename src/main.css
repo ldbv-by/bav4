@@ -1,6 +1,6 @@
 /* global variables (custom properties) */
 :root {
-    font-size: calc(0.7em + 0.15vw);
+    font-size: calc(0.7em + 0.225vw);
 
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
@@ -25,7 +25,7 @@
     --width-mainmenu: 28em;
     --animationtime-mainmenu: 0.3s;
 }
-@media (min-width:200em){
+@media (min-width:135em){
     :root {
     font-size: 1em;
     }
