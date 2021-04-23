@@ -15,7 +15,7 @@ import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../modules/topics/store/topics.reducer';
-import { networkReducer } from '../store/network.reducer';
+import { networkReducer } from '../store/network/network.reducer';
 
 
 /**
