@@ -33,13 +33,13 @@ export class MeasureToolContent extends BaElement {
 		const { active, statistic } = this._state;
 		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
 		this._tool.active = active;
-		// const toolClasses = { 'is-active': this._tool.active };
+
 		const measurementClasses = { 'is-first': this._isFirstMeasurement };
-		// const removeAllowed = statistic.length > 0;
-		// const removeClasses = {
-		// 	'is-remove': removeAllowed,
-		// 	'is-not-remove': !removeAllowed
-		// };
+		const removeAllowed = statistic.length > 0;
+		const removeClasses = {
+			'is-remove': removeAllowed,
+			'is-not-remove': !removeAllowed
+		};
 
 		const onClickReset = () => {
 			reset();
@@ -93,11 +93,13 @@ export class MeasureToolContent extends BaElement {
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
 					<button id=startnew class="tool-container__button ${classMap(measurementClasses)}" 
-					title=${translate(this._tool.title)}
+					title=${translate('toolbox_measureTool_start_new')}
 						@click=${onClickReset}>								
-							neue&nbsp;Messung
+							${translate('toolbox_measureTool_start_new')}
 						</button>				
-						<button id=remove @click=${onClickRemove}>                                 
+					<button id=remove class="tool-container__button ${classMap(removeClasses)}"
+						title=${translate('toolbox_drawTool_delete')}
+						@click=${onClickRemove}>
 						${translate('toolbox_drawTool_delete')}
 						</button>
 						<button>                            

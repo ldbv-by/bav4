@@ -40,6 +40,9 @@
     opacity: 0.4;
 }
 
+.is-not-remove {
+    opacity: 0.4;
+}
 
 
 .tool-container__text {
