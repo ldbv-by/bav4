@@ -11,17 +11,21 @@ describe('MeasureToolContent', () => {
 	const windowMock = {
 		matchMedia() { }
 	};
-	const setup = async (config = {}) => {
+
+	const defaultState = {
+		measurement: {
+			active: true,
+			statistic: { length: 0, area: 0 },
+			reset: null,
+			remove: null,
+		}
+	};
+
+	const setup = async (state = defaultState, config = {}) => {
 
 		const { embed = false } = config;
 
-		const state = {
-			toolContainer: {
-				open: false,
-				contentId:false
-			}
-		};
-		
+
 		class MockClass {
 			constructor() {
 				this.get = 'I\'m a UnitsService.';
@@ -36,72 +40,60 @@ describe('MeasureToolContent', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { measurement:measurementReducer } );
+		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
-			})			
+			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.register('UnitsService', MockClass);			
+			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
 
 	describe('when initialized', () => {
 
-		it('builds the tool', async() => {
+		it('builds the tool', async () => {
 			const element = await setup();
 
-			expect(element._tool).toBeTruthy();			
+			expect(element._tool).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('#measure').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('#remove').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll('#startnew').length).toBe(1);
 		});
 
-		it('activates the tool', async() => {
-
-			const element = await setup();
-			const toolButton = element.shadowRoot.querySelector('#measure');
-
-			toolButton.click();
-			
-			expect(element._tool.active).toBeTrue();
-			expect(store.getState().measurement.active).toBeTrue();
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
-		});		
-
-		it('deactivates the tool', async() => {
-
-			const element = await setup();
-			const toolButton = element.shadowRoot.querySelector('#measure');
-
-			toolButton.click();
-			
-			expect(element._tool.active).toBeTrue();
-			expect(store.getState().measurement.active).toBeTrue();
-			expect(toolButton.classList.contains('is-active')).toBeTrue();
-
-			toolButton.click();
-			expect(element._tool.active).toBeFalse();
-			expect(store.getState().measurement.active).toBeFalse();
-			expect(toolButton.classList.contains('is-active')).toBeFalse();
-		});		
-
-		it('resets the measurement', async() => {
-			const element = await setup();
+		it('resets the measurement', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
 			const resetButton = element.shadowRoot.querySelector('#startnew');
 
 			resetButton.click();
 
-			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);			
+			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);
 		});
 
-		it('removes the selected measurement', async() => {
-			const element = await setup();
+		it('removes the selected measurement', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
 			const removeButton = element.shadowRoot.querySelector('#remove');
 
 			removeButton.click();
 
-			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);			
+			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 	});
 });

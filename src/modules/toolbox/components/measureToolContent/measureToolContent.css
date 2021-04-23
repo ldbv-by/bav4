@@ -5,6 +5,12 @@
     padding: 2em 1em 1em 1em;                                                            
 }
 
+.is-active {
+     -webkit-box-shadow:inset  0em 0em 0em 0.2em var(--primary-color);
+    -moz-box-shadow:inset 0em 0em 0em 0.2em var(--primary-color);
+    box-shadow:inset 0em 0em 0em 0.2em var(--primary-color);
+}
+
 .tool-container__header{
     font-weight: bold;
     font-size: 1em;
@@ -94,7 +100,7 @@ background:red;
 
 
 .is-first {
-    opacity: 0.4;
+    opacity: 0.2;
 }
 
 .tool-container__button:hover .tool-container__background .tool-container__statistic{
@@ -109,12 +115,6 @@ background:red;
 }
 .tool-container__button:hover .tool-container__icon{
     background: gray;
-}
-.is-active  .tool-container__icon{
-    background: #fff !important;
-}
-.is-active  .tool-container__icon{
-    background: #fff !important;
 }
 
   .tool-container__button-text{

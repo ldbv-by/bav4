@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement, remove, reset } from '../../../map/store/measurement.action';
+import { remove, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
 /**
@@ -18,14 +18,11 @@ export class MeasureToolContent extends BaElement {
 		const { TranslationService: translationService, UnitsService: unitsService } = $injector.inject('TranslationService', 'UnitsService');
 		this._translationService = translationService;
 		this._unitsService = unitsService;
-		this._isToolActive = false;
 		this._tool = {
 			name: 'measure',
 			active: false,
 			title: 'toolbox_measureTool_measure',
-			icon: 'measure',
-			activate: () => activateMeasurement(),
-			deactivate: () => deactivateMeasurement()
+			icon: 'measure'
 		};
 		this._isFirstMeasurement = true;
 	}
@@ -33,24 +30,14 @@ export class MeasureToolContent extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, statistic } = this._state;
-
+		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
 		this._tool.active = active;
 		const toolClasses = { 'is-active': this._tool.active };
 		const measurementClasses = { 'is-first': this._isFirstMeasurement };
+		const removeAllowed = statistic.length > 0;
 		const removeClasses = {
-			'is-remove': statistic.length > 0,
-			'is-not-remove': statistic.length === 0
-		};
-
-		const toggle = () => {
-			if (this._tool.active) {
-				this._isFirstMeasurement = true;
-				this._tool.deactivate();
-			}
-			else {
-				this._tool.activate();
-				this._isFirstMeasurement = false;
-			}
+			'is-remove': removeAllowed,
+			'is-not-remove': !removeAllowed
 		};
 
 		const onClickReset = () => {
@@ -66,30 +53,20 @@ export class MeasureToolContent extends BaElement {
 		return html`
         <style>${css}</style>
             <div class="container">
-                <div class="ba-tool-container__item ba-tool-menu__zeichnen">
+                <div class="ba-tool-container__item ba-tool-menu__zeichnen  ${classMap(toolClasses)}">
                 <div>
                     <span class="tool-container__header">
                     ${translate('toolbox_measureTool_header')}
                     </span>
                 </div>      
-                <div class="tool-container__buttons">                                    
-					<div id=${this._tool.name}
-						class="tool-container__button ${classMap(toolClasses)}" 
-						title=${translate(this._tool.title)}
-						@click=${toggle}>				
-							<div class="tool-container__background"></div>
-							<div class="tool-container__icon ${this._tool.icon}">
-							</div>  
-							<div class="tool-container__button-text">${translate(this._tool.title)}
-							</div>				
-					</div>
-					<div id=startnew class="tool-container__button ${classMap(measurementClasses)}" 
+                <div class="tool-container__buttons">                              
+					<div id=startnew  ?disabled=${this._isFirstMeasurement} class="tool-container__button ${classMap(measurementClasses)}"
 						title=${translate(this._tool.title)}
 						@click=${onClickReset}>								
 						<div class="tool-container__background"></div>		
 						<div class="tool-container__icon start-new">
 						</div>  
-						<div class="tool-container__button-text">Start new</div>
+						<div class="tool-container__button-text">${translate('toolbox_measureTool_start_new')}</div>
 					</div>					
                 </div>
 				<div class="tool-container__statistic" >								
@@ -97,7 +74,7 @@ export class MeasureToolContent extends BaElement {
 					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(formattedArea)}</div>
 				</div>
                 <div class="tool-container__buttons-secondary">                         
-                    <button id='remove' class="utility ${classMap(removeClasses)}" @click=${onClickRemove}>
+                    <button id='remove'  ?disabled=${!removeAllowed} class="utility ${classMap(removeClasses)}" @click=${onClickRemove}>
                     ${translate('toolbox_drawTool_delete')}
                     </button>
                     <button class="utility">
