@@ -19,7 +19,6 @@ export class LayerManager extends BaElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._draggableItems = [];
-		this._layerCount = 0;
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 	}
 
@@ -61,7 +60,6 @@ export class LayerManager extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 		const { active } = this._state;
-		const layerCount = active.length;
 		this._buildDraggableItems(active);
 
 		const isNeighbour = (index, otherIndex) => {
@@ -134,7 +132,7 @@ export class LayerManager extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
-				<div class='title'>${translate('map_layerManager_title')} (${layerCount})</div> 
+				<div class='title'>${translate('map_layerManager_title')}</div> 
 				<ul class='layers'>
                     ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex + '_' + layerItem.id, (layerItem, index) => html`
 					<li draggable=${layerItem.isDraggable} 
@@ -146,7 +144,7 @@ export class LayerManager extends BaElement {
 						@dragleave=${onDragLeave}
 						index=${index}> ${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}						
 					</li>`)}
-                </ol>	
+                </ul>								
 			</div>
 		`;
 	}
