@@ -135,7 +135,7 @@ background:red;
 .tool-container__buttons-secondary{
     margin: 0.8em 0 ;
 }
-.tool-container__buttons-secondary button{
+.tool-container__buttons-secondary .utility{
     cursor: pointer;
     padding: .5em 0.9em;
    background: transparent;
@@ -145,14 +145,33 @@ background:red;
    opacity:.8;
    transition: all .2s ease-in-out;  
  }
-  .tool-container__buttons-secondary button:hover{
-   opacity:1;
-  
-  }
-  .tool-container__buttons-secondary button:last-child{
-   border: none;
-  }
-  .tool-container__info{
+
+.is-not-remove {
+    opacity: .4 !important
+}
+
+
+.is-not-remove:hover{
+    opacity: .4 !important
+}
+
+.is-remove {
+    opacity: .8 !important
+}
+
+.is-remove:hover {
+    opacity: 1 !important
+}
+
+.tool-container__buttons-secondary .utility:hover{
+    opacity:1;
+}
+
+.tool-container__buttons-secondary .utility:last-child{
+    border: none;
+}
+
+.tool-container__info{
     font-size: .8rem;
     color: gray;
 }

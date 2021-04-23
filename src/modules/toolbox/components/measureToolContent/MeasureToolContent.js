@@ -19,32 +19,37 @@ export class MeasureToolContent extends BaElement {
 		this._translationService = translationService;
 		this._unitsService = unitsService;
 		this._isToolActive = false;
-		this._tool = { 
-			name:'measure', 
-			active:false, 
+		this._tool = {
+			name: 'measure',
+			active: false,
 			title: 'toolbox_measureTool_measure',
-			icon:'measure',
-			activate:() => activateMeasurement(),
-			deactivate:() => deactivateMeasurement() };
+			icon: 'measure',
+			activate: () => activateMeasurement(),
+			deactivate: () => deactivateMeasurement()
+		};
 		this._isFirstMeasurement = true;
-	}	
+	}
 
 	createView() {
-		const translate = (key) => this._translationService.translate(key);    
-		const { active, statistic  } = this._state;		  		
+		const translate = (key) => this._translationService.translate(key);
+		const { active, statistic } = this._state;
 
 		this._tool.active = active;
 		const toolClasses = { 'is-active': this._tool.active };
 		const measurementClasses = { 'is-first': this._isFirstMeasurement };
-		
-		const toggle = () => {	
+		const removeClasses = {
+			'is-remove': statistic.length > 0,
+			'is-not-remove': statistic.length === 0
+		};
+
+		const toggle = () => {
 			if (this._tool.active) {
 				this._isFirstMeasurement = true;
 				this._tool.deactivate();
 			}
 			else {
-				this._tool.activate();	
-				this._isFirstMeasurement = false;				
+				this._tool.activate();
+				this._isFirstMeasurement = false;
 			}
 		};
 
@@ -92,13 +97,13 @@ export class MeasureToolContent extends BaElement {
 					<div class="tool-container__statistic-text">${translate('toolbox_measureTool_stats_area')}: ${unsafeHTML(formattedArea)}</div>
 				</div>
                 <div class="tool-container__buttons-secondary">                         
-                    <button id=remove @click=${onClickRemove}>                                 
+                    <button id='remove' class="utility ${classMap(removeClasses)}" @click=${onClickRemove}>
                     ${translate('toolbox_drawTool_delete')}
                     </button>
-                    <button>                            
+                    <button class="utility">
                     ${translate('toolbox_drawTool_share')}
                     </button>
-                    <button>                          
+                    <button class="utility">
                     ${translate('toolbox_drawTool_save')}
                     </button>                                             
                 </div>                
