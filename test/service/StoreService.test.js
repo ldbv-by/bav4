@@ -50,7 +50,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(16);
+			expect(reducerKeys.length).toBe(17);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -67,6 +67,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 			expect(reducerKeys.includes('topics')).toBeTrue();
 			expect(reducerKeys.includes('network')).toBeTrue();
+			expect(reducerKeys.includes('search')).toBeTrue();
 		});
 
 		it('registers all plugins', (done) => {

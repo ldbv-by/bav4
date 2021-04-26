@@ -1,13 +1,29 @@
 /* eslint-disable no-undef */
 
-import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { mainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
 import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
+import { SearchContentPanel } from '../../../../../src/modules/search/components/menu/SearchContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
+
+describe('MainMenuTabIndex', () => {
+
+	it('is an enum with an id and a tag property', () => {
+
+		expect(Object.entries(MainMenuTabIndex).length).toBe(6);
+		expect(Object.isFrozen(MainMenuTabIndex)).toBeTrue();
+		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, tag: null });
+		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, tag: null });
+		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, tag: null });
+		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, tag: null });
+		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, tag: SearchContentPanel.tag });
+		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, tag: null });
+	});
+});
 
 
 describe('MainMenu', () => {
@@ -46,7 +62,7 @@ describe('MainMenu', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
@@ -74,7 +90,7 @@ describe('MainMenu', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
 
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
@@ -125,99 +141,85 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('adds a div which holds the main menu content', async () => {
+
+		it('renders the content panels', async () => {
 
 			const element = await setup();
 
-			// expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
-
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
-
+			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
+			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			for (let i = 0; i < contentPanels.length; i++) {
+				// //Todo check all content panels when implemented
+				if (i === MainMenuTabIndex.SEARCH.id) {
+					expect(contentPanels[i].innerHTML.toString().includes(SearchContentPanel.tag)).toBeTrue();
+				}
+			}
 		});
 
+		it('display the content panel for default index = 0', async () => {
 
+			const element = await setup();
+
+			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
+			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			for (let i = 0; i < contentPanels.length; i++) {
+				expect(contentPanels[i].style.display).toBe(i === 0 ? 'block' : 'none');
+			}
+		});
+
+		it('displays the content panel for non default index', async () => {
+			const activeTabIndex = 2;
+			const element = await setup({}, true, activeTabIndex);
+
+			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
+			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			for (let i = 0; i < contentPanels.length; i++) {
+				expect(contentPanels[i].style.display).toBe(i === activeTabIndex ? 'block' : 'none');
+			}
+		});
 	});
 
-	describe('change tab index', () => {
+	describe('when tab-index changes', () => {
 
-				
+		const check = (index, panels) => {
+			for (let i = 0; i < panels.length; i++) {
+				expect(panels[i].style.display).toBe(i === index.id ? 'block' : 'none');
+			}
+		};
+
 		beforeEach(function () {
 			spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('with init 2', async () => {
-
-			const element = await setup({}, true, 2);
-			
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
-			
-		});
-		
-
-		it('change tabindex form 0 to 1 to 3 to 0 to 4', async () => {
+		it('displays the corresponding content panel', async () => {
 
 			const element = await setup();
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
+			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
+
+			setTabIndex(MainMenuTabIndex.MAPS);
+			check(MainMenuTabIndex.MAPS, contentPanels);
 			
-			setTabIndex(1);
-			
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
+			setTabIndex(MainMenuTabIndex.MORE);
+			check(MainMenuTabIndex.MORE, contentPanels);
 
-			setTabIndex(3);
+			setTabIndex(MainMenuTabIndex.ROUTING);
+			check(MainMenuTabIndex.ROUTING, contentPanels);
 
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
+			setTabIndex(MainMenuTabIndex.SEARCH);
+			check(MainMenuTabIndex.SEARCH, contentPanels);
 
-			setTabIndex(0);
+			setTabIndex(MainMenuTabIndex.FEATUREINFO);
+			check(MainMenuTabIndex.FEATUREINFO, contentPanels);
 
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('block');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('none');
-
-			setTabIndex(4);
-
-			expect(element.shadowRoot.querySelectorAll('.tabcontent').length).toBe(5);
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[0].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[1].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[2].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[3].style.display).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('.tabcontent')[4].style.display).toBe('block');
+			setTabIndex(MainMenuTabIndex.TOPICS);
+			check(MainMenuTabIndex.TOPICS, contentPanels);
 		});
-
-
 	});
+
 	describe('when close button clicked', () => {
-		
+
 		beforeEach(function () {
 			spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))

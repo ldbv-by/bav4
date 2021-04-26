@@ -6,8 +6,9 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
-import { networkReducer } from '../../../../src/store/network.reducer';
-import { setFetching } from '../../../../src/store/network.action';
+import { networkReducer } from '../../../../src/store/network/network.reducer';
+import { setFetching } from '../../../../src/store/network/network.action';
+import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 
 window.customElements.define(Header.tag, Header);
 
@@ -232,16 +233,16 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(0);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(1);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(2);
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MORE.id);
 		});
 
 	});
 
-	describe('when search is focus blur ', () => {
+	describe('when search input is focused or blurred ', () => {
 
 		beforeEach(function () {
 			jasmine.clock().install();
@@ -249,6 +250,18 @@ describe('Header', () => {
 
 		afterEach(function () {
 			jasmine.clock().uninstall();
+		});
+
+		it('sets the correct tab index for the search-content-panel', async () => {
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+			
+			const element = await setup();
+			element.shadowRoot.querySelector('.header__search-container input').focus();
+
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('hide mobile header and show again', async () => {
