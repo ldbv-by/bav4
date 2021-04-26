@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const QUERY_CHANGED = 'search/query';
 
 export const initialState = {
@@ -5,7 +7,7 @@ export const initialState = {
 	/**
      * @type {EventLike<string>}
      */
-	query: null,
+	query: new EventLike(null),
 };
 
 export const searchReducer = (state = initialState, action) => {
