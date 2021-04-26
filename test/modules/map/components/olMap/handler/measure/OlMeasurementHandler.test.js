@@ -196,6 +196,8 @@ describe('OlMeasurementHandler', () => {
 				remove();				
 				expect(removeSpy).toHaveBeenCalled();
 			});
+
+			
 		});
 
 
@@ -206,7 +208,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);
 
 			expect(classUnderTest._overlayManager.deactivate).toHaveBeenCalled();
-		});
+		});	
 
 	});
 
@@ -404,6 +406,24 @@ describe('OlMeasurementHandler', () => {
 			map.getView().setZoom(13);
 
 			expect(feature.get('partitions').length).toBe(1);
+		});
+
+		it('removes area tooltip after finish drawing', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
+			const feature = new Feature({ geometry: snappedGeometry });
+
+			classUnderTest.activate(map);
+			const removeSpy = spyOn(classUnderTest._overlayManager, 'remove').and.callThrough();
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			const areaOverlay = feature.get('area');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			
+
+			expect(removeSpy).toHaveBeenCalledWith(areaOverlay);
+			expect(feature.get('area')).toBeFalsy();
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {
@@ -609,8 +629,8 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 
-			expect(classUnderTest._measureStateHandler).toBeDefined();
-			expect(classUnderTest._measureStateHandler.active).toBeTrue();
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBeTrue();
 		});
 
 		it('creates and NOT activates helpTooltip', () => {
@@ -619,14 +639,14 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			expect(classUnderTest._measureStateHandler).toBeDefined();
-			expect(classUnderTest._measureStateHandler.active).toBeFalse();
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBeFalse();
 			expect(environmentSpy).toHaveBeenCalled();
 		});
 
 		it('no move when dragging', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 			const map = setupMap();
 
 			classUnderTest.activate(map);
@@ -640,7 +660,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
@@ -658,7 +678,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
@@ -678,7 +698,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging:jasmine.any(Boolean) });
@@ -695,7 +715,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			const overlayMock = {
 				set: () => { },
@@ -756,7 +776,7 @@ describe('OlMeasurementHandler', () => {
 				const map = setupMap();
 
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callThrough();
-				const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 				classUnderTest.activate(map);
 				classUnderTest._select.getFeatures().push(feature);
@@ -772,7 +792,7 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 			
-				const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
 					callback(snappingFeatureMock, undefined);
@@ -791,7 +811,7 @@ describe('OlMeasurementHandler', () => {
 			it('pointer is snapped to sketch vertex', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const measureStateSpy = spyOn(classUnderTest._measureStateHandler, 'notify');
+				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
 					callback(snappingFeatureMock, undefined);

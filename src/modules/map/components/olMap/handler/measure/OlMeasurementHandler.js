@@ -73,7 +73,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			pointCount: this._pointCount,
 			dragging: false
 		};
-		this._measureStateHandler = new HelpTooltip(this._overlayManager);
+		this._helpTooltip = new HelpTooltip(this._overlayManager);
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
@@ -160,8 +160,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._overlayManager.activate(this._map);
 
 			if (!this._environmentService.isTouch()) {
-				this._measureStateHandler.activate();
-				this._measureStateChangedListeners.push((measureState) => this._measureStateHandler.notify(measureState));
+				this._helpTooltip.activate();
+				this._onMeasureStateChanged((measureState) => this._helpTooltip.notify(measureState));
 			}
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
@@ -190,13 +190,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
-		this._measureStateHandler.deactivate();
-		this._overlayManager.deactivate();
-		this._registeredObservers.forEach(o => o());
-		this._listeners.forEach(l => unByKey(l));
-		this._listeners = [];
+		this._helpTooltip.deactivate();
+		this._overlayManager.deactivate();		
+		
+		this._unreg(this._listeners);
+		this._unreg(this._registeredObservers);
+		this._unreg(this._measureStateChangedListeners);
+
 		this._draw = false;
 		this._map = null;
+	}
+
+	_unreg(listeners) {
+		unByKey(listeners);
+		listeners = [];
 	}
 
 	_setMeasureState(value) {
@@ -241,8 +248,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._draw.setActive(true);
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
-		this._measureStateHandler.deactivate();
-		this._measureStateHandler.activate();
+		this._helpTooltip.deactivate();
+		this._helpTooltip.activate();
 	}
 
 	_removeSelectedFeatures() {
