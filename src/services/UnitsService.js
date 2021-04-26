@@ -6,7 +6,8 @@ const Hektar_In_Squaredmeters = 10000;
 const Provider_Metric = {
 	/**
     * Appends the metric unit of distance to the specified number
-    * @param {number} distance 
+    * @param {number} distance the distance value
+	* @param {number} decimals the number of digits after the decimal point
     * @returns {String} the formatted value 
     */
 	distance(distance, decimals) {
@@ -21,10 +22,11 @@ const Provider_Metric = {
 	},
 	/**
     * Appends the metric unit of area to the specified number
-    * @param {number} area 
+    * @param {number} area the area value
+	* @param {number} decimals the number of digits after the decimal point
     * @returns {String} the formatted value 
     */
-	area(area, decimals) {
+	area(area, decimals ) {
 		let formatted;
 		if (area >= Squaredkilometer_In_Squaredmeters) {
 			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'km&sup2;';
@@ -54,11 +56,11 @@ export class UnitsService {
 	/**
     * Appends the appropriate unit of distance to the specified number.
     * The current unit of distance is set per config.
-    * @param {number} distance 
-	* @param {number} decimals
+    * @param {number} distance the distance value
+	* @param {number} decimals  Optional, the number of digits after the decimal point. Default is 2
     * @returns {String} the formatted value 
     */
-	formatDistance(distance, decimals) {
+	formatDistance(distance, decimals = 2) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
@@ -69,10 +71,10 @@ export class UnitsService {
 	/**
     * Appends the appropriate areal unit to the specified number
     * @param {number} area 
-	* @param {number} decimals
+	* @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
     * @returns {String} the formatted value 
     */
-	formatArea(area, decimals) {
+	formatArea(area, decimals = 2) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
