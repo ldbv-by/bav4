@@ -422,8 +422,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			
 
-			expect(removeSpy).toHaveBeenCalledWith(areaOverlay);
-			expect(feature.get('area')).toBeFalsy();
+			expect(removeSpy).toHaveBeenCalledWith(areaOverlay);			
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {
