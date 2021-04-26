@@ -68,7 +68,7 @@ export class MeasureToolContent extends BaElement {
 							${formattedDistance}
 						</span>											
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=24} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
 							</ba-icon>
 						</span>											
 					</div>
@@ -80,7 +80,7 @@ export class MeasureToolContent extends BaElement {
 								${unsafeHTML(formattedArea)}
 						</span>
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=24} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
 							</ba-icon>
 						</ba-icon>
 					</span>			
