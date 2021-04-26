@@ -4,6 +4,7 @@ import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.act
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
+import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 
 
 /**
@@ -59,7 +60,7 @@ export class Header extends BaElement {
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
-	
+
 	onWindowLoad() {
 		if (!this.isRenderingSkipped()) {
 			this._root.querySelector('.preload').classList.remove('preload');
@@ -102,35 +103,35 @@ export class Header extends BaElement {
 		const { layers } = this._state;
 		const layerCount = layers.length;
 
-
-		const hideModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
+		const onFocusInput = () => {
+			setTabIndex(MainMenuTabIndex.SEARCH);
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
 		};
 
 		const showModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
 			}
 		};
 
-		const openThemeTab = () => {
-			setTabIndex(0);
+		const openTopicsTab = () => {
+			setTabIndex(MainMenuTabIndex.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(1);
+			setTabIndex(MainMenuTabIndex.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(2);
+			setTabIndex(MainMenuTabIndex.MORE);
 			openMainMenu();
 		};
 
@@ -158,13 +159,13 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${hideModalHeader}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
+						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openTopicsTab}">
 							<span>
 								${translate('header_header_topics_button')}
 							</span>

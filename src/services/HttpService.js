@@ -1,4 +1,4 @@
-import { setFetching } from '../store/network.action';
+import { setFetching } from '../store/network/network.action';
 
 /**
  * @class

@@ -1,5 +1,5 @@
 import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
-import { networkReducer } from '../../src/store/network.reducer';
+import { networkReducer } from '../../src/store/network/network.reducer';
 import { TestUtils } from '../test-utils';
 
 

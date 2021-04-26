@@ -1,8 +1,8 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { BaElement } from '../../BaElement';
-import { debounced } from '../../../utils/timer';
+import { BaElement } from '../../../BaElement';
+import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';
 
 /**
