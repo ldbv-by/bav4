@@ -33,7 +33,7 @@ export class MeasureToolContent extends BaElement {
 		const { active, statistic } = this._state;
 		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
 		this._tool.active = active;
-
+		const areaClasses = { 'is-area': statistic.area > 0 };
 		const measurementClasses = { 'is-first': this._isFirstMeasurement };
 		const removeAllowed = statistic.length > 0;
 		const removeClasses = {
@@ -72,7 +72,7 @@ export class MeasureToolContent extends BaElement {
 							</ba-icon>
 						</span>											
 					</div>
-					<div class='tool-container__text-item'>
+					<div class='tool-container__text-item area ${classMap(areaClasses)}'>
 						<span>
 							${translate('toolbox_measureTool_stats_area')}:		
 						</span>						
