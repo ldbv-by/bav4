@@ -5,6 +5,7 @@ import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
+import { setQuery } from '../../../store/search/search.action';
 
 
 /**
@@ -112,6 +113,8 @@ export class Header extends BaElement {
 			}
 		};
 
+		const onInput = (evt) => setQuery(evt.target.value);
+
 		const showModalHeader = () => {
 			if (this._portrait || !this._minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
@@ -159,7 +162,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
