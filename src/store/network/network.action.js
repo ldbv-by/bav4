@@ -3,7 +3,7 @@
  * @module network/action
  */
 import { FETCHING_CHANGED, OFFLINE_CHANGED } from './network.reducer';
-import { $injector } from '../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

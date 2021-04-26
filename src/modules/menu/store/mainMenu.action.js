@@ -1,8 +1,8 @@
 /**
- * Action creators to change/update the state of the content panel.
+ * Action creators to change/update the state of the main menu.
  * @module menu/action
  */
-import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './contentPanel.reducer';
+import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../../injection';
 
 const getStore = () => {
@@ -12,10 +12,10 @@ const getStore = () => {
 
 
 /**
- * Opens the content panel.
+ * Opens the main menu.
  * @function
  */
-export const openContentPanel = () => {
+export const open = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: true
@@ -23,10 +23,10 @@ export const openContentPanel = () => {
 };
 
 /**
- * Closes the content panel.
+ * Closes the main menu.
  * @function
  */
-export const closeContentPanel = () => {
+export const close = () => {
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: false
@@ -34,11 +34,11 @@ export const closeContentPanel = () => {
 };
 
 /**
- * Toggles the visibility of the content panel.
+ * Toggles the visibility of the main menu.
  * @function
  */
-export const toggleContentPanel = () => {
-	const { contentPanel: { open } } = getStore().getState();
+export const toggle = () => {
+	const { mainMenu: { open } } = getStore().getState();
 	getStore().dispatch({
 		type: OPEN_CLOSED_CHANGED,
 		payload: !open
@@ -46,12 +46,12 @@ export const toggleContentPanel = () => {
 };
 
 /**
- * Sets the active tab to the index.
- * @function
+ * Displays the tab for this index.
+ * @param {MainMenuTabIndex} index 
  */
 export const setTabIndex = (index) => {
 	getStore().dispatch({
 		type: INDEX_CHANGED,
-		payload: index
+		payload: index.id
 	});
 };

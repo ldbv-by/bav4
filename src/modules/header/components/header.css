@@ -1,13 +1,20 @@
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+}
+
 .header{
   position: fixed;
   z-index: var(--z-header);
   top: 0;
-  left:  calc(var(--width-contentpanel) * -1); 
+  left:  calc(var(--width-mainmenu) * -1); 
   width: auto;
-  min-width:var(--width-contentpanel);
+  min-width:var(--width-mainmenu);
   padding: 7.5em 1em 2em 1em;
   border-bottom: 1px solid  var(--header-background-color);;
-  transition: transform var(--animationtime-contentpanel) ease-out;  
+  transition: transform var(--animationtime-mainmenu) ease-out;  
 }
 .header__background{
   position: absolute;
@@ -42,18 +49,6 @@
   background-image:  url('assets/Coat_of_arms_of_Bavaria.svg');
   background-repeat: no-repeat;
 }
-.header__button{
-  font-size: .9rem;
-  font-weight: bold;
-  margin: .8em 0 0 0 ;
-  padding: .5em;
-  color: rgb(58,132,195);
-  background-color: var(--primary-bg-color);
-  border-radius: var(--border-radius-button);
-  border-color: rgb(58,132,195);
-  border-style: solid;
-  border-width: 2px;
-}
 .header__nav{
   position: absolute;
 }
@@ -79,17 +74,21 @@
   margin: 0.8em 0 0 0;
   padding: .5em 0.9em;
   background: var(--header-button-bg-color);
-  color: var(--header-button-color);
+  color: var(--text-default-color);
   border-color: var(--header-button-bg-color);
   border-width: 1px;
   border-style: solid;
   cursor: pointer;
   transition: all .2s ease-in-out;
-  color: rgba(255,255,255,.8);
   font-weight: bold;
+  position: relative;
 }
-.header__button-container button:hover {
-  color: rgba(255,255,255,1);
+.header__button-container  span{
+  color: var(--text-default-color);
+  opacity: .8;
+}
+.header__button-container button:hover span{
+  opacity: 1;
 }
 .header__button-container button:first-child{
   border-radius: var(--border-radius-button)  0 0 var(--border-radius-button);
@@ -102,6 +101,24 @@
 .header__button-container button:last-child{
   border-radius: var(--border-radius-button);
   margin-left: .8em;
+}
+.badges{
+  border-radius: 2em;
+  background: var(--secondary-color-theme);
+  color: var(--text-default-color);
+  padding: 0.2em .5em;
+  font-size: .8rem;
+  position: absolute;
+  top: -.7em;
+  right: 0;
+  transform:scale(0);
+  transition: all 0.2s ease-out;  
+}
+.header__button-container button:hover .badges{
+  transform:scale(1);
+}
+.header__button-container .is-active .badges{
+  transform:scale(1);
 }
 .action-button{
   position: fixed;
@@ -182,8 +199,8 @@
 .is-open {
   transform: translate(28em, 0);
 }
-.is-active {
-  color: rgba(255,255,255,1) !important;
+.is-active  span{
+  opacity:1;
 }
 .is-portrait .header{
   left: 0;   
@@ -250,20 +267,4 @@
 }
 .hide{
   display:none !important;
-}
-
-.badges{
-  border-radius: 2em;
-  background: #2c5a93;
-  color: #fff;
-  padding: 0.2em .5em;
-  font-size: .8rem;
-  position: absolute;
-  top: .3em;
-  left: 19.5em;
-  transform:scale(0);
-  transition: all 0.2s ease-out;  
-}
-.header__button-container button:hover .badges{
-  transform:scale(1);
 }

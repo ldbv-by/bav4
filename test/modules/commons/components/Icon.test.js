@@ -21,7 +21,7 @@ describe('Icon', () => {
 			expect(element.icon).toBeNull;
 			expect(element.title).toBe('');
 			expect(element.disabled).toBeFalse();
-			expect(element.size).toBe(25);
+			expect(element.size).toBe(2);
 			expect(element.color).toBe('var(--primary-color)');
 
 		});

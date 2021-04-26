@@ -86,7 +86,7 @@ export class MapContextMenuContent extends BaElement {
 
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
 				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=16} @click=${copyCoordinate}></ba-icon></span>`;
+				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
 			
