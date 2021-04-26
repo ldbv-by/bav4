@@ -12,10 +12,11 @@
  * <pre>
  *  const myHandler = (event) => // do something with the event
  *  const tHandler = throttled(200, myHandler);
- *  domNode.addEventListener("mousemove", tHandler);
+ *  tHandler(event)
  * </pre>
  * @param {*} delay 
  * @param {*} fn 
+ * @returns a function which execution calls the wrapped function in a throttled manner
  */
 export function throttled(delay, fn) {
 	let lastCall = 0;
@@ -37,10 +38,11 @@ export function throttled(delay, fn) {
  * <pre>
  *  const myHandler = (event) => // do something with the event
  *  const dHandler = debounced(200, myHandler);
- *  domNode.addEventListener("input", dHandler);
+ *  dHandler(event)
  * </pre>
  * @param {*} delay 
- * @param {*} fn 
+ * @param {*} fn
+ * @returns a function which execution calls the wrapped function in a debounced manner
  */
 export function debounced(delay, fn) {
 	let timerId;
