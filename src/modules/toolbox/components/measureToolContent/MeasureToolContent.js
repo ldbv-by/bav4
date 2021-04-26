@@ -49,8 +49,8 @@ export class MeasureToolContent extends BaElement {
 			remove();
 		};
 
-		const formattedDistance = this._unitsService.formatDistance(statistic.length);
-		const formattedArea = this._unitsService.formatArea(statistic.area);
+		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
+		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		return html`
         <style>${css}</style>
             	<div class="ba-tool-container__item">

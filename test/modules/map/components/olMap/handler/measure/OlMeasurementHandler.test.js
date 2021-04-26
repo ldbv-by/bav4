@@ -35,12 +35,15 @@ const setup = (state = initialState) => {
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 	$injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
 	$injector.registerSingleton('EnvironmentService', environmentServiceMock);
-	$injector.registerSingleton('UnitsService', { formatDistance:(distance) => {
-		return distance + ' m';
-	},
-	formatArea:(area) => {
-		return area + ' m²';
-	} });
+	$injector.registerSingleton('UnitsService', { 
+		// eslint-disable-next-line no-unused-vars
+		formatDistance:(distance, decimals) => {
+			return distance + ' m';
+		},
+		// eslint-disable-next-line no-unused-vars
+		formatArea:(area, decimals) => {
+			return area + ' m²';
+		} });
 };
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');

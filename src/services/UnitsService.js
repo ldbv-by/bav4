@@ -9,13 +9,13 @@ const Provider_Metric = {
     * @param {number} distance 
     * @returns {String} the formatted value 
     */
-	distance(distance) {
+	distance(distance, decimals) {
 		let formatted;
 		if (distance > Kilometer_In_Meters - 1) {
-			formatted = Math.round((distance / Kilometer_In_Meters) * 100) / 100 + ' ' + 'km';
+			formatted = (Math.round((distance / Kilometer_In_Meters) * 100) / 100).toFixed(decimals) + ' ' + 'km';
 		}
 		else {
-			formatted = distance !== 0 ? Math.round(distance * 100) / 100 + ' ' + 'm' : '0 m';
+			formatted = distance !== 0 ? (Math.round(distance * 100) / 100).toFixed(decimals) + ' ' + 'm' : '0 m';
 		}
 		return formatted;
 	},
@@ -24,16 +24,16 @@ const Provider_Metric = {
     * @param {number} area 
     * @returns {String} the formatted value 
     */
-	area(area) {
+	area(area, decimals) {
 		let formatted;
 		if (area >= Squaredkilometer_In_Squaredmeters) {
-			formatted = Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100 + ' ' + 'km&sup2;';
+			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'km&sup2;';
 		}
 		else if (area >= Hektar_In_Squaredmeters) {
-			formatted = Math.round((area / Hektar_In_Squaredmeters) * 100) / 100 + ' ' + 'ha';
+			formatted = (Math.round((area / Hektar_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'ha';
 		}
 		else {
-			formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
+			formatted = (Math.round(area * 100) / 100).toFixed(2) + ' ' + 'm&sup2;';
 		}
 		return formatted;
 	}
@@ -55,26 +55,28 @@ export class UnitsService {
     * Appends the appropriate unit of distance to the specified number.
     * The current unit of distance is set per config.
     * @param {number} distance 
+	* @param {number} decimals
     * @returns {String} the formatted value 
     */
-	formatDistance(distance) {
+	formatDistance(distance, decimals) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return Provider_Metric.distance(distance);
+				return Provider_Metric.distance(distance, decimals);
 		}
 	}
 
 	/**
     * Appends the appropriate areal unit to the specified number
     * @param {number} area 
+	* @param {number} decimals
     * @returns {String} the formatted value 
     */
-	formatArea(area) {
+	formatArea(area, decimals) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return Provider_Metric.area(area);
+				return Provider_Metric.area(area, decimals);
 		}
 	}
 	

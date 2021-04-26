@@ -97,14 +97,14 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.AREA:
 				this._contentFunction = () => {
 					if (this.geometry instanceof Polygon) {
-						return this._unitsService.formatArea(getArea(this._geometry, this._projectionHints));
+						return this._unitsService.formatArea(getArea(this._geometry, this._projectionHints), 2);
 					}
 					return '';
 				};
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 				this._contentFunction = () => {
-					const length = this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints));
+					const length = this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
 					if (canShowAzimuthCircle(this.geometry)) {
 						const azimuthValue = getAzimuth(this.geometry);
 						const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
@@ -117,7 +117,7 @@ export class MeasurementOverlay extends BaElement {
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._contentFunction = () => {
 					const length = getGeometryLength(this._geometry, this.projectionHints);
-					return this._unitsService.formatDistance(length * this._value);
+					return this._unitsService.formatDistance(length * this._value, 0);
 				};
 				break;
 			case MeasurementOverlayTypes.HELP:

@@ -6,12 +6,15 @@ import { TestUtils } from '../../../../../../test-utils.js';
 
 
 TestUtils.setupStoreAndDi({},);
-$injector.registerSingleton('UnitsService', { formatDistance:(distance) => {
-	return distance + ' m';
-},
-formatArea:(area) => {
-	return area + ' m²';
-} });
+$injector.registerSingleton('UnitsService', { 
+	// eslint-disable-next-line no-unused-vars
+	formatDistance:(distance, decimals) => {
+		return distance + ' m';
+	},
+	// eslint-disable-next-line no-unused-vars
+	formatArea:(area, decimals) => {
+		return area + ' m²';
+	} });
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('HelpTooltip', () => {
