@@ -42,15 +42,16 @@ describe('AttributionInfo', () => {
 			};
 
 			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			wmts.attribution = [42, 21] ;
+			const attribution = [42, 21];
+			wmts.attribution = attribution;
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('p')[0].innerText).toEqual('map_attributionInfo_label:');
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerText).toEqual('42,21');
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('map_attributionInfo_label: ' + attribution);
+
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -63,7 +64,7 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelector('p')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeFalsy();
 		});
 
 		it('renders nothing when geo resource could not be fetched', async  () => {
@@ -77,7 +78,7 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);			
 
-			expect(element.shadowRoot.querySelector('p')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeFalsy();
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -99,38 +100,13 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);			
 
-			expect(element.shadowRoot.querySelector('p').innerText).toEqual('map_attributionInfo_fallback');
+			expect(element.shadowRoot.querySelector('div').innerText).toEqual('map_attributionInfo_fallback');
 
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
 		});
 
-		it('renders fallback when no attribution.label provided', async  () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
-			const state = {
-				layers: {
-					active: [layer]
-				},
-				position: {
-					zoom: 12
-				} 
-			};
-
-			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
-
-			const attribution = getMinimalAttribution(null);
-			const getAttrMock = spyOn(wmts, 'getAttribution').and.returnValue([attribution]);
-
-			const element = await setup(state);			
-
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_attributionInfo_fallback');
-
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
-			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
-		});
-
-		it('updates BaseLayerInfo component', async ()  => {
+		it('updates AttributionInfo component on layer action', async ()  => {
 			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
 			const layer2 = { ...defaultLayerProperties, id:'id1', label:'label1', zIndex: 0 }; 
 			const state = {
@@ -156,31 +132,31 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution1);
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution2);
 
 			// layer2 now on zIndex 0
 			addLayer(layer2.id, layer2);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution2);
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution1);
 
 			modifyLayer(layer.id, { zIndex: 0 });
 
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution1);
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution2);
 
 			removeLayer(layer.id);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain(arrayAttribution2);
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).not.toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution2);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution1);
 			
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
 		}); 
 
-		it('updates BaseLayerInfo component on zoom change', async () => {
+		it('updates AttributionInfo component on zoom change', async () => {
 			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
 			const state = {
 				layers: {
@@ -210,15 +186,15 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelectorAll('p')[2].innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('LDBV');
 
 			changeZoom(11);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerHTML).toContain('baz');
-			expect(element.shadowRoot.querySelectorAll('p')[2].innerHTML).toContain('foo');
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('baz');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('foo');
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledWith(11);
@@ -254,6 +230,34 @@ describe('AttributionInfo', () => {
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
+		});
+		
+		it('renders text when attribution.url parameter is not provided', async () => {
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', zIndex:0 };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
+
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
+			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+
+			const getAttrMock = spyOn(wmts, 'getAttribution');
+			getAttrMock.withArgs(12).and.returnValue([getMinimalAttribution('Ref42')]);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('a')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain('Ref42');
+
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledWith(12);
 		}); 
 
 		it('renders link and label', async () => {
@@ -281,11 +285,11 @@ describe('AttributionInfo', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('a')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('a').innerText).toEqual(attribution1.copyright.label+',');
+			expect(element.shadowRoot.querySelector('a').innerText).toEqual(attribution1.copyright.label);
 			expect(element.shadowRoot.querySelector('a').href).toEqual(attribution1.copyright.url);
 
-			expect(element.shadowRoot.querySelectorAll('p')[1]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('p')[1].innerText).toContain(attribution2.copyright.label);
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain(attribution2.copyright.label);
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledWith(12);

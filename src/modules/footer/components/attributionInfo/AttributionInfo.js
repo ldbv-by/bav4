@@ -37,43 +37,28 @@ export class AttributionInfo extends BaElement {
 
 			if (!attributions) {
 				return html`
-            		<div><p>${translate('map_attributionInfo_fallback')}</p></div>
+            		<div>${translate('map_attributionInfo_fallback')}</div>
 				`;
 			}
 
 			const attributionCopyright = [] ;
-			const attributionsLength = attributions.length;
 
 			attributions.forEach((attribution, index) => {
 				if (attribution.copyright.url  != null) {
-					if (index < attributionsLength - 1) {
-						attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}, </a>`);
-					}
-					else {
-						attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label} </a>`);
-					} 
+					attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}</a>`);
 				}
-				else if (attribution.copyright.label != null) {
-					if (index < attributionsLength - 1) {
-						attributionCopyright.push(html`<p class='attribution-label'> ${attribution.copyright.label}, </p>`);
-					}
-					else {
-						attributionCopyright.push(html`<p class='attribution-label'> ${attribution.copyright.label} </p>`);
-					} 
+				else {
+					attributionCopyright.push(html` ${attribution.copyright.label}`);
+				} 
+				if (index < attributions.length - 1) {
+					attributionCopyright.push(html`, `);
 				} 
 			});
-			
-			// At least the first element should not be null
-			if (attributionCopyright[0] === null || attributionCopyright[0] === undefined) {
-				return html`
-            		<div><p>${translate('map_attributionInfo_fallback')}</p></div>
-				`;
-			}
 
 			return html`
 			<style>${css}</style>
             <div class='attribution-container'>
-				<p>${translate('map_attributionInfo_label')}: </p>
+				${translate('map_attributionInfo_label')}: 
 				${attributionCopyright} 
 			</div>
 			`;
