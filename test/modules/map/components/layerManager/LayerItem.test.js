@@ -46,7 +46,6 @@ describe('LayerItem', () => {
 			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
 			const  element = await TestUtils.render(LayerItem.tag);
 			element.layer =  layer ;
-			element.render();
 			return element;
 		};
 	
@@ -94,7 +93,6 @@ describe('LayerItem', () => {
 			expect(layerBody.classList.contains('expand')).toBeTrue();
 
 			element.layer = { ...element.layer, collapsed:true };
-			element.render();
 			expect(layerBody.classList.contains('expand')).toBeFalse();
 			expect(collapseButton.classList.contains('iconexpand')).toBeFalse();
 		});
