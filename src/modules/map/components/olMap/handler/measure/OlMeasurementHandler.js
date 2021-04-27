@@ -185,6 +185,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later		
+		setStatistic({ length: 0, area: 0 });
 		olMap.removeInteraction(this._draw);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
