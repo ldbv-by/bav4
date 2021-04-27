@@ -20,10 +20,7 @@ export class MapInfo extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div class='content'>
-				<div class='attribution-info'>
-					<ba-attribution-info></attribution-info>
-				</div>				
+			<div class='content'>				
 				<div class='base-layer-info'>
 					<ba-base-layer-info></ba-base-layer-info>
 				</div>

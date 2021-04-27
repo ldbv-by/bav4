@@ -2,12 +2,13 @@
     display: flex;
     margin: auto;
     user-select: none;
+    position: fixed;
+    top: 61.5em;
+    right: 14em;
+    background-color: var(--primary-bg-color-05);
 }
 
 .attribution-link {
     margin-left: .2em;
 } 
-
-.attribution-label {
-    margin-left: .2em;
-} 
+ 

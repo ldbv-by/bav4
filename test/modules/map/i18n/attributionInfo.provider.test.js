@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/footer/i18n/attributionInfo.provider';
+import { provide } from '../../../../src/modules/map/i18n/attributionInfo.provider';
 
 
 describe('i18n for attribution info', () => {

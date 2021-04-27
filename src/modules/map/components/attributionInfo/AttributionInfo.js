@@ -58,7 +58,7 @@ export class AttributionInfo extends BaElement {
 			return html`
 			<style>${css}</style>
             <div class='attribution-container'>
-				${translate('map_attributionInfo_label')}: 
+				© ${translate('map_attributionInfo_label')}: 
 				${attributionCopyright} 
 			</div>
 			`;

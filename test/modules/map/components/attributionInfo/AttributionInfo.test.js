@@ -1,4 +1,4 @@
-import { AttributionInfo } from '../../../../../src/modules/footer/components/attributionInfo/AttributionInfo';
+import { AttributionInfo } from '../../../../../src/modules/map/components/attributionInfo/AttributionInfo';
 import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
 import { positionReducer } from '../../../../../src/modules/map/store/position.reducer'; 
@@ -50,7 +50,7 @@ describe('AttributionInfo', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('map_attributionInfo_label: ' + attribution);
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label: ' + attribution);
 
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
