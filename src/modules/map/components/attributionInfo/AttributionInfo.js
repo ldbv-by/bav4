@@ -25,46 +25,41 @@ export class AttributionInfo extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = this._state;
 
-		if (typeof active !== undefined && active.length > 0) {
+		const geoResource = active[0] ?  this._georesourceService.byId(active[0].id) : null;
 
-			const geoResource = this._georesourceService.byId(active[0].id);
+		if (!geoResource) {
+			return nothing;
+		} 
 
-			if (!geoResource) {
-				return nothing;
-			} 
+		const attributions = geoResource.getAttribution(zoom);
 
-			const attributions = geoResource.getAttribution(zoom);
-
-			if (!attributions) {
-				return html`
+		if (!attributions) {
+			return html`
             		<div>${translate('map_attributionInfo_fallback')}</div>
 				`;
+		}
+
+		const attributionCopyright = [] ;
+
+		attributions.forEach((attribution, index) => {
+			if (attribution.copyright.url  != null) {
+				attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}</a>`);
 			}
+			else {
+				attributionCopyright.push(html` ${attribution.copyright.label}`);
+			} 
+			if (index < attributions.length - 1) {
+				attributionCopyright.push(html`, `);
+			} 
+		});
 
-			const attributionCopyright = [] ;
-
-			attributions.forEach((attribution, index) => {
-				if (attribution.copyright.url  != null) {
-					attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}</a>`);
-				}
-				else {
-					attributionCopyright.push(html` ${attribution.copyright.label}`);
-				} 
-				if (index < attributions.length - 1) {
-					attributionCopyright.push(html`, `);
-				} 
-			});
-
-			return html`
+		return html`
 			<style>${css}</style>
             <div class='attribution-container'>
 				© ${translate('map_attributionInfo_label')}: 
 				${attributionCopyright} 
 			</div>
 			`;
-		} 
-
-		return nothing;
 	} 
 
 	/**
