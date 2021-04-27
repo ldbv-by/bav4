@@ -302,7 +302,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._select.getFeatures().push(event.feature);
 			this._modifyActivated = true;
 			const onFeatureChange = (event) => {
-				this._updateMeasureTooltips(event.target, true);
+				this._updateMeasureTooltips(event.target, false);
 				this._updateStatistics();
 			};
 			event.feature.on('change', onFeatureChange);
@@ -389,12 +389,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 				this._updateOverlay(areaOverlay, feature.getGeometry());
 				feature.set('area', areaOverlay);
-			}
-			else {
-				const areaOverlay = feature.get('area');
-				if (areaOverlay) {
-					this._overlayManager.remove(areaOverlay);
-				}
 			}
 		}
 
