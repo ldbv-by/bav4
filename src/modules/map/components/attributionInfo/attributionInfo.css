@@ -3,8 +3,9 @@
     margin: auto;
     user-select: none;
     position: fixed;
-    top: 61.5em;
-    right: 14em;
+    /* top: 70.7em; */
+    bottom: 2em;
+    right: 13em;
     background-color: var(--primary-bg-color-05);
 }
 
