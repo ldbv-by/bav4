@@ -302,7 +302,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._select.getFeatures().push(event.feature);
 			this._modifyActivated = true;
 			const onFeatureChange = (event) => {
-				this._updateMeasureTooltips(event.target, false);
+				this._updateMeasureTooltips(event.target);
 				this._updateStatistics();
 			};
 			event.feature.on('change', onFeatureChange);
@@ -353,7 +353,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	}
 
-	_updateMeasureTooltips(feature, isDrawing = false) {
+	_updateMeasureTooltips(feature, isDrawing) {
 		let measureGeometry = feature.getGeometry();
 		const measureTooltip = feature.get('measurement');
 
