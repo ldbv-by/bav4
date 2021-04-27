@@ -1,6 +1,23 @@
 import { SearchResult, SearchResultTypes } from '../searchResult';
 import { $injector } from '../../../../injection';
 
+/**
+ *A async function that returns a promise with an array of SearchResults with type LOCATION.
+ * @callback LocationResultProvider
+ * @param  {string} term The query term
+ * @async
+ * @returns {Promise<SearchResult>} results
+ */
+
+/**
+ *A async function that returns a promise with an array of SearchResults with type GEORESOURCE.
+ * @callback GeoresourceResultProvider
+ * @param  {string} term The query term
+ * @async
+ * @returns {Promise<SearchResult>} results
+ */
+
+
 export const loadBvvGeoResourceSearchResults = async (query) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
