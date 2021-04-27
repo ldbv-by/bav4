@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { openContentPanel, setTabIndex } from '../../menu/store/contentPanel.action';
+import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
+import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 
 
 /**
@@ -60,6 +61,12 @@ export class Header extends BaElement {
 	}
 
 
+	onWindowLoad() {
+		if (!this.isRenderingSkipped()) {
+			this._root.querySelector('.preload').classList.remove('preload');
+		}
+	}
+
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
 	}
@@ -79,55 +86,62 @@ export class Header extends BaElement {
 			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex } = this._state;
+		const { open, tabIndex, fetching } = this._state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
+		};
+
+		const getAnimatedBorderClass = () => {
+			return fetching ? 'animated-action-button__border__running' : '';
 		};
 
 		const getActiveClass = (buttonIndex) => {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
 
-		const hideModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
+		const { layers } = this._state;
+		const layerCount = layers.length;
+
+		const onFocusInput = () => {
+			setTabIndex(MainMenuTabIndex.SEARCH);
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
 		};
 
 		const showModalHeader = () => {
-			const popup = this.shadowRoot.getElementById('headerMobile');
 			if (this._portrait || !this._minWidth) {
+				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
 			}
 		};
 
-		const openThemeTab = () => {
-			setTabIndex(0);
-			openContentPanel();
+		const openTopicsTab = () => {
+			setTabIndex(MainMenuTabIndex.TOPICS);
+			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(1);
-			openContentPanel();
+			setTabIndex(MainMenuTabIndex.MAPS);
+			openMainMenu();
 		};
-		
+
 		const openMoreTab = () => {
-			setTabIndex(2);
-			openContentPanel();
+			setTabIndex(MainMenuTabIndex.MORE);
+			openMainMenu();
 		};
 
 		const translate = (key) => this._translationService.translate(key);
-
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="preload ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
-					<button   class="action-button">
-						<div class="action-button__border">
+					<button class="action-button">
+						<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 						</div>
 						<div class="action-button__icon">
 							<div class="ba">
@@ -145,21 +159,29 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${hideModalHeader}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openThemeTab}">
-							${translate('header_header_topics_button')}
+						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openTopicsTab}">
+							<span>
+								${translate('header_header_topics_button')}
+							</span>
 						</button>
 						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
-						 	${translate('header_header_maps_button')}
-							 <span class="badges">1</span>
-							 </button>
+							<span>
+								${translate('header_header_maps_button')}
+							</span>
+							 <span class="badges">
+							 	${layerCount}
+							</span>
+						</button>
 						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
-							${translate('header_header_more_button')}
+							<span>
+								${translate('header_header_more_button')}
+							</span>
 						</button>
 					</div>
 				</div>				
@@ -172,8 +194,8 @@ export class Header extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
-		return { open, tabIndex };
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = state;
+		return { open, tabIndex, fetching, layers };
 	}
 
 	static get tag() {

@@ -34,6 +34,11 @@ export class Footer extends BaElement {
 		handleOrientationChange(mediaQuery);
 	}
 
+	onWindowLoad() {
+		if (!this.isRenderingSkipped()) {
+			this._root.querySelector('.preload').classList.remove('preload');
+		}
+	}
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
@@ -54,7 +59,7 @@ export class Footer extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()}">
+			<div class="preload ${getOrientationClass()}">
 				<div class="footer ${getOverlayClass()}">
 					<div class="content">	
 						${this.createChildrenView()}
@@ -73,7 +78,7 @@ export class Footer extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open } } = state;
+		const { mainMenu: { open } } = state;
 		return { open };
 	}
 

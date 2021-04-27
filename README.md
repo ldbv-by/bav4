@@ -50,7 +50,7 @@ Services and provider functions whose names start with 'BVV' are focusing on the
 
 ### `src/modules`
 
-Modules are single and independent (as far as possible) units of code. They have a concrete context and focus on one or more use cases of the application. 
+Modules are single and independent (as far as possible) units of code. They have a concrete context and/or focus on one or more use cases of the application. 
 
 Modules meet the following conventions: 
 
@@ -64,7 +64,7 @@ Modules meet the following conventions:
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module:
 
-4. Modules are allowed to use actions from other modules.
+4. Modules are allowed to use actions from the global store and components from other modules.
 
 
 ### `src/services`
@@ -77,7 +77,7 @@ Global redux related files like reducers, actions and plugins.
 Contains global utilities.
 
 ### Overview
-Here's a overview of what project folder structure looks like:
+Here's an overview of what project folder structure looks like:
 ```
     .
     + -- src # source code
@@ -89,6 +89,7 @@ Here's a overview of what project folder structure looks like:
     |    |    |    + -- index.js
     |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
     |    + -- services
+    |    + -- store
     |    + -- utils
     + -- test # test code
 ```

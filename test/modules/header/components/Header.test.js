@@ -1,10 +1,14 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { contentPanelReducer } from '../../../../src/modules/menu/store/contentPanel.reducer';
+import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
+import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
+import { networkReducer } from '../../../../src/store/network/network.reducer';
+import { setFetching } from '../../../../src/store/network/network.action';
+import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 
 window.customElements.define(Header.tag, Header);
 
@@ -17,16 +21,22 @@ describe('Header', () => {
 		matchMedia() { }
 	};
 
-	const setup = (config = {}, open = true, tabIndex = 0) => {
+	const setup = (config = {}, open = true, tabIndex = 0, fetching = false, layers = ['test']) => {
 		const { embed = false } = config;
 
 		const state = {
-			contentPanel: {
+			mainMenu: {
 				open: open,
 				tabIndex: tabIndex
+			},
+			network: {
+				fetching: fetching
+			},		
+			layers: {
+				active: layers
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { contentPanel: contentPanelReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer, modal: modalReducer, network: networkReducer, layers: layersReducer });
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
@@ -117,6 +127,11 @@ describe('Header', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
+		it('removes a preload css class', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
+		});
+
 		it('adds header bar', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
@@ -124,19 +139,28 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_header_topics_button');
-			//TODO
-			// expect(element.shadowRoot.querySelector('.header__button-container').children[1].innerText).toBe('header_header_maps_button');
+			
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_header_maps_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_header_more_button');
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
 
 		it('renders nothing when embedded', async () => {
 			const element = await setup({ embed: true });
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+
+		it('with 3 active Layers', async () => {
+			const element = await setup({}, true, 0, false, ['test', 'test', 'test']);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('3');			
+		});
+
 	});
 
 	describe('when menu button clicked', () => {
@@ -147,13 +171,13 @@ describe('Header', () => {
 				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 		});
 
-		it('it updates the store', async () => {
+		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
-			expect(store.getState().contentPanel.open).toBe(false);
+			expect(store.getState().mainMenu.open).toBe(false);
 			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().contentPanel.open).toBe(true);
+			expect(store.getState().mainMenu.open).toBe(true);
 			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().contentPanel.open).toBe(true);
+			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 
@@ -184,41 +208,41 @@ describe('Header', () => {
 
 		it('click button Theme', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
 
 		it('click button Map', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeTrue();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
 
 		it('click button More', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();  
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeTrue();  
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeTrue();
 		});
 
-		it('it updates the store', async () => {
+		it('updates the store', async () => {
 			const element = await setup({ mobile: false }, false);
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());  
-			expect(store.getState().contentPanel.tabIndex).toBe(0);
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());  
-			expect(store.getState().contentPanel.tabIndex).toBe(1);
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());  
-			expect(store.getState().contentPanel.tabIndex).toBe(2);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MORE.id);
 		});
 
 	});
 
-	describe('when search is focus blur ', () => {
+	describe('when search input is focused or blurred ', () => {
 
 		beforeEach(function () {
 			jasmine.clock().install();
@@ -226,6 +250,18 @@ describe('Header', () => {
 
 		afterEach(function () {
 			jasmine.clock().uninstall();
+		});
+
+		it('sets the correct tab index for the search-content-panel', async () => {
+			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+			
+			const element = await setup();
+			element.shadowRoot.querySelector('.header__search-container input').focus();
+
+			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
+			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('hide mobile header and show again', async () => {
@@ -253,6 +289,24 @@ describe('Header', () => {
 			expect(container.style.opacity).toBe('1');
 
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('network fetching state', () => {
+
+		beforeEach(function () {
+			spyOn(windowMock, 'matchMedia')
+				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
+				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+		});
+
+		it('runs or pauses the border animation class', async () => {
+			const element = await setup({ mobile: false }, false);
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			setFetching(true);
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
+			setFetching(false);
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 		});
 	});
 });

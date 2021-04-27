@@ -1,61 +1,107 @@
 .layer {
-    padding: 2px;
-    margin:2px;
     text-decoration-color: var(--secondary-color);
-    background-color: var(--primary-bg-color); 
+    /* background-color: var(--secondary-bg-color);  */
+    border-left: .3em solid var(--primary-bg-color); 
+}
+.layer:hover{
+    border-left: .3em solid var(--secondary-color); ;
+}
+
+.layer-content{
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease-out;    
+}
+.layer-content:hover{
+    /* box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+    background: #f4f4f4; */
+}
+
+.is-dragabel{
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+    background: #f4f4f4;
 }
 
 .layer-header{
+    display: flex;   
+ }
+ .layer-header > *{
+    padding-top: .8em;
+    padding-bottom: .8em;
+ }
+ .layer-header > *:first-child{
+    padding-left: 1.5em;
+ }
+ .layer-header > *:last-child{
+    padding-right: 1.5em;
+    padding-left: 1.5em;
+    cursor: pointer;
+ }
+
+.layer-header__pre{  
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;    
+    margin: 0 1em 0 0;
 }
 
-.layer-actions{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;    
-}
-
-.layer-actions ba-icon{
-    padding: 0px 5px;
-}
-
-
-.layer-label {
-    padding:0px 10px;
+.layer-header__text{  
+    flex-grow: 1;
+    cursor: handl;
 }
 
 .layer-body {
-    display:none;
-    max-height: 0;
+    display: flex;   
+    height:1px;
     overflow: hidden;
-    transition: max-height 0.2s ease-out;
-}
-.slider-container{
-    background: var(--primary-bg-color);  
-    padding: 0 5px;  
-    width:80%;
-    margin:auto;
+    transition: all 0.2s ease-out;
 }
 
-.opacity-slider{
-    width:100%
+.layer-body__after{
+    display: flex;
+    flex-grow: 1;
+
+    margin: 0 0 0 0em;
+ }
+
+.layer-body__pre{  
+    width: 3.5em;
+    display: flex;
+    margin: 0 1em 0 0;
 }
+
+.layer-body__slider{  
+    /* padding-top:1em; */
+    /* flex-grow: 1; */
+    width:70%;
+}
+
+.slider-container{
+    margin-top:.3em;
+}
+
 
 .expand{
-    display:flex;
-    max-height:50px;
-    overflow: none;
-    transition: max-height 0.2s ease-out;
+    height:5em;
 }
 
-.layer-move-buttons{
-    width:20%;
-    display: flex;
-    flex-direction: row;
+.layer-buttons{
+    padding-left:.5em;
+    width:100%;
 }
 
+.layer-buttons ba-icon{
+    background: var(--secondary-bg-color);
+    display: inline-block;
+    border-radius: 8em;
+    width: 2em;
+    height: 2em;
+    margin-left:.3em;
+    position: relative;
+}
+.layer-buttons ba-icon:hover{
+    background:var(--header-button-bg-color);
+}
+#remove:hover{
+    background: var(--error-color);
+}
 .layer-remove{
     display: flex;
     justify-content: center;
@@ -69,6 +115,12 @@
     -webkit-mask-image: url('assets/chevron-right.svg'); 
     mask-image: url('assets/chevron-right.svg')}
 
+.chevron-all {
+    position: relative;
+    mask: url('assets/chevron.svg');
+    -webkit-mask-image: url('assets/chevron.svg'); 
+    mask-image: url('assets/chevron.svg')}
+
 .icon {
     background: var(--primary-color);
     mask-size: cover;
@@ -77,9 +129,9 @@
     display: inline-block;
     height: 16px;
     width: 10px;
-    -moz-transform:rotate(180deg);
-    -webkit-transform:rotate(180deg);
-    transform:rotate(180deg);
+    -moz-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
 }
 
 .icon:hover, .icon:focus {
@@ -91,7 +143,47 @@
 }
 
 .iconexpand {
-    -moz-transform:rotate(90deg);
-    -webkit-transform:rotate(90deg);
-    transform:rotate(90deg);
+    -moz-transform:rotate(270deg);
+    -webkit-transform:rotate(270deg);
+    transform:rotate(270deg);
+    transition: all .2s ease-in-out;
 }
+
+
+
+
+.opacity-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    margin: 0 .5em;
+    height: .4em;
+    border-radius: .2em;  
+    background: var(--primary-color);
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.2em;
+    height:  1.2em;
+    border-radius: .6em;
+    background: var(--primary-color);
+    cursor: pointer;
+  }
+  
+  .opacity-slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.2em;
+    height:  1.2em;
+    border-radius: .6em;
+    background: var(--primary-color);
+    cursor: pointer;
+  }
+
+  .divider {
+    border-bottom: 1px solid var(--header-background-color);
+ }

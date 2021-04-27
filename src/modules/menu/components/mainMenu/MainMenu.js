@@ -1,15 +1,31 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './contentPanel.css';
-import { toggleContentPanel } from '../../store/contentPanel.action';
+import css from './mainMenu.css';
+import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
+import { SearchContentPanel } from '../../../search/components/menu/SearchContentPanel';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+
+/**
+ * @enum
+ */
+export const MainMenuTabIndex = Object.freeze({
+	TOPICS: { id: 0, tag: null },
+	MAPS: { id: 1, tag: null },
+	MORE: { id: 2, tag: null },
+	ROUTING: { id: 3, tag: null },
+	SEARCH: { id: 4, tag: SearchContentPanel.tag },
+	FEATUREINFO: { id: 5, tag: null }
+});
+
 
 /**
  *  
  * @class
  * @author alsturm
+ * @author taulinger
  */
-export class ContentPanel extends BaElement {
+export class MainMenu extends BaElement {
 
 	constructor() {
 		super();
@@ -19,7 +35,7 @@ export class ContentPanel extends BaElement {
 		this._activeTabIndex = 0;
 	}
 
-	activateTab(index) {
+	_activateTab(index) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
 	}
@@ -28,7 +44,7 @@ export class ContentPanel extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		this.activateTab(this._activeTabIndex);
+		this._activateTab(this._activeTabIndex);
 	}
 
 	initialize() {
@@ -58,17 +74,6 @@ export class ContentPanel extends BaElement {
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
-	//needs to be refactored to a seperate component later
-	_createDataPanel() {
-
-		return html`
-		<div>
-			<ba-layer-manager></ba-layer-manager>
-		</div>
-		`;
-	}
-
-
 	/**
 	 * @override
 	 */
@@ -91,32 +96,54 @@ export class ContentPanel extends BaElement {
 			return open ? 'is-open' : '';
 		};
 
-		const items = [
-			{ name: 'Themen', content: this._demoThemeContent() },
-			{ name: 'Maps', content: this._createDataPanel() },
-			{ name: 'More', content: this._demoMoreContent() },
-			{ name: 'Routing' },
-			{ name: 'Search' }
-		];
+		const contentPanels = Object.values(MainMenuTabIndex)
+		//Todo: refactor me when all content panels are real components	
+			.map(v => this._getContentPanel(v));
+
 
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
-				<div class="content-panel ${getOverlayClass()}">            
-					<button @click="${toggleContentPanel}" class="content-panel__close-button">
+				<div class="main-menu ${getOverlayClass()}">            
+					<button @click="${toggle}" class="main-menu__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='content-panel__container'>					
-					<div class="overlay-content">
-					${items.map(item => html`
-					<div class="tabcontent">						
-							${item.content ? item.content : nothing}
-						</div>								
-					`)}
-					</div>		
-				</div>			
+					<div class='main-menu__container'>					
+						<div class="overlay-content">
+							${contentPanels.map(item => html`
+								<div class="tabcontent">						
+									${item ? item : nothing}
+								</div>								
+							`)}
+						</div>		
+					</div>			
 				</div>			
 			</div>			
+		`;
+	}
+
+	_getContentPanel(index) {
+		//Todo: can be removed when all content panels are real components
+		switch (index) {
+			case MainMenuTabIndex.TOPICS:
+				return this._demoTopicsContent();
+			case MainMenuTabIndex.MAPS:
+				return this._demoMapContent();
+			case MainMenuTabIndex.MORE:
+				return this._demoMoreContent();
+			case MainMenuTabIndex.SEARCH:
+				return html`${unsafeHTML(`<${index.tag}/>`)}`;
+			default:
+				return nothing;
+		}
+	}
+
+	_demoMapContent() {
+
+		return html`
+		<div>
+			<ba-layer-manager></ba-layer-manager>
+		</div>
 		`;
 	}
 
@@ -211,7 +238,7 @@ export class ContentPanel extends BaElement {
 	`;
 	}
 
-	_demoThemeContent() {
+	_demoTopicsContent() {
 		return html`
 		<ul class="ba-list">		
 		<li class="ba-list-item">
@@ -269,11 +296,11 @@ export class ContentPanel extends BaElement {
 	 * @param {Object} state 
 	 */
 	extractState(state) {
-		const { contentPanel: { open, tabIndex } } = state;
+		const { mainMenu: { open, tabIndex } } = state;
 		return { open, tabIndex };
 	}
 
 	static get tag() {
-		return 'ba-content-panel';
+		return 'ba-main-menu';
 	}
 }

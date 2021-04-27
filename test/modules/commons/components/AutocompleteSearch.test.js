@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { AutocompleteSearch } from '../../../../src/modules/search/components/AutocompleteSearch';
+import { AutocompleteSearch } from '../../../../src/modules/commons/components/autocomplete/AutocompleteSearch';
 import { TestUtils } from '../../../test-utils.js';
 import { SearchResult } from '../../../../src/modules/search/services/searchResult';
 

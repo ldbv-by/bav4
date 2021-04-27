@@ -1,8 +1,14 @@
+import { setFetching } from '../store/network/network.action';
+
 /**
  * @class
  * @author aul
  */
 export class HttpService {
+
+	static get DEFAULT_REQUEST_MODE() {
+		return 'cors';
+	}
 
 	/**
 	   * Wraps a Fetch API fetch call, so that a custom timeout can be set. Default is 1000ms.<br>
@@ -16,6 +22,7 @@ export class HttpService {
 	   * @see credits: https://dmitripavlutin.com/timeout-fetch-request/
 	   */
 	async fetch(resource, options = {}, controller = new AbortController()) {
+
 		const { timeout = 1000 } = options;
 
 		const id = setTimeout(() => controller.abort(), timeout);
@@ -39,7 +46,7 @@ export class HttpService {
 	 */
 	async get(resource, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			...options,
 		};
 		return this.fetch(resource, fetchOptions);
@@ -57,7 +64,7 @@ export class HttpService {
 	 */
 	async post(resource, data, contentType, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'POST',
 			body: data,
 			headers: {
@@ -78,10 +85,40 @@ export class HttpService {
 	 */
 	async head(resource, options = {}) {
 		const fetchOptions = {
-			mode: 'cors',
+			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'HEAD',
 			...options,
 		};
 		return this.fetch(resource, fetchOptions);
+	}
+}
+
+/**
+ * {@link HttpService} that updates the 'fetching' property of the network state.
+ * @class
+ * @author aul
+ */
+export class NetworkStateSyncHttpService extends HttpService {
+
+	constructor() {
+		super();
+		this._pendingResponse = 0;
+	}
+
+	/**
+	 * @see {@link HttpService#fetch}
+	 */
+	async fetch(resource, options = {}, controller = new AbortController()) {
+		setFetching(true);
+		this._pendingResponse++;
+		try {
+			return await super.fetch(resource, options, controller);
+		}
+		finally {
+			this._pendingResponse--;
+			if (this._pendingResponse < 1) {
+				setFetching(false);
+			}
+		}
 	}
 }

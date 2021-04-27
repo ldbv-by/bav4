@@ -63,7 +63,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.share')).toBeTruthy();
 		});
 
-		it('it closes the toolbar', async () => {
+		it('closes the toolbar', async () => {
 
 			const element = await setup();
 
@@ -78,7 +78,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('it toggles a tool', async () => {
+		it('toggles a tool', async () => {
 
 			const element = await setup();
 			const toolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.measure');
@@ -91,7 +91,7 @@ describe('ToolBarElement', () => {
 
 		});
 
-		it('it toggles and switches the tools', async () => {
+		it('toggles and switches the tools', async () => {
 
 			const element = await setup();
 			const measureToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.measure');

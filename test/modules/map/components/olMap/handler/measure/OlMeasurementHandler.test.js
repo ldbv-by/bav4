@@ -25,6 +25,12 @@ TestUtils.setupStoreAndDi({},);
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 $injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
 $injector.registerSingleton('EnvironmentService', environmentServiceMock);
+$injector.registerSingleton('UnitsService', { formatDistance:(distance) => {
+	return distance + ' m';
+},
+formatArea:(area) => {
+	return area + ' m²';
+} });
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
