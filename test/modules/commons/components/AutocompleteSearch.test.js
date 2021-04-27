@@ -2,7 +2,7 @@
 
 import { AutocompleteSearch } from '../../../../src/modules/commons/components/autocomplete/AutocompleteSearch';
 import { TestUtils } from '../../../test-utils.js';
-import { SearchResult } from '../../../../src/modules/search/services/searchResult';
+import { SearchResult } from '../../../../src/services/domain/searchResult';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
 

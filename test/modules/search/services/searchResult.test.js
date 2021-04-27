@@ -1,4 +1,4 @@
-import { SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/searchResult';
+import { SearchResult, SearchResultTypes } from '../../../../src/services/domain/searchResult';
 
 describe('searchResult', () => {
 	describe('SearchResultTypes', () => {

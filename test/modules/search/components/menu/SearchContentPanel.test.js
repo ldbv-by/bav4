@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { SearchContentPanel } from '../../../../../src/modules/search/components/menu/SearchContentPanel';
-import { SearchResult, SearchResultTypes } from '../../../../../src/modules/search/services/searchResult';
+import { SearchResult, SearchResultTypes } from '../../../../../src/services/domain/searchResult';
 import { setQuery } from '../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../../src/utils/storeUtils';

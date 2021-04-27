@@ -1,4 +1,4 @@
-import { SearchResult, SearchResultTypes } from '../searchResult';
+import { SearchResult, SearchResultTypes } from '../../../../services/domain/searchResult';
 import { $injector } from '../../../../injection';
 
 /**
