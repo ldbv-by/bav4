@@ -32,10 +32,22 @@ export class OverlayManager {
 		return [...this._overlays];
 	}
 
-	
+
 	reset() {
 		this._overlays.forEach(o => this._map.removeOverlay(o));
 		this._overlays = [];
 	}
-	
+
+
+	removeFrom(feature) {
+		const overlaysToDelete = [];
+		overlaysToDelete.push(feature.get('measurement'));
+		overlaysToDelete.push(feature.get('area'));
+		const partitions = feature.get('partitions');
+		if (partitions) {
+			partitions.forEach(p => overlaysToDelete.push(p));
+		}
+		overlaysToDelete.forEach(o => this.remove(o));
+	}
+
 }

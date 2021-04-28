@@ -1,4 +1,4 @@
-import { measureStyleFunction, generateSketchStyleFunction, modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 
@@ -12,7 +12,7 @@ describe('measureStyleFunction', () => {
 		const styles = measureStyleFunction(feature);
 
 		expect(styles).toBeTruthy();
-		expect(styles.length).toBe(3);
+		expect(styles.length).toBe(2);
 	});
 
 	it('should query the featureGeometry', () => {
@@ -51,35 +51,6 @@ describe('measureStyleFunction', () => {
 		expect(nonCircle).toBeFalsy();
 		expect(circleStyle).toBeTruthy();
 	});
-
-	it('should have a style which creates MultiPoints for the polygon-vertices', () => {
-		const styles = measureStyleFunction(feature);
-
-
-		const vertexStyle = styles.find(style => {
-			const geometryFunction = style.getGeometryFunction();
-			if (geometryFunction) {
-				const renderObject = geometryFunction(feature);
-				return renderObject.getType() === 'MultiPoint';
-			}
-			else {
-				return false;
-			}
-
-		});
-		const geometryFunction = vertexStyle.getGeometryFunction();
-
-
-		const lineFeature = feature;
-		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
-		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-
-
-
-		expect(geometryFunction(lineFeature)).toBeTruthy();
-		expect(geometryFunction(pointFeature)).toBeTruthy();
-		expect(geometryFunction(polygonFeature)).toBeTruthy();
-	});
 });
 
 describe('modifyStyleFunction', () => {
@@ -92,11 +63,41 @@ describe('modifyStyleFunction', () => {
 	});
 });
 
-describe('generateSketchStyleFunction', () => {
+describe('createSelectionStyleFunction', () => {
 
 	it('should create a stylefunction', () => {
 
-		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styleFunction = createSelectStyleFunction(measureStyleFunction);
+
+		expect(styleFunction).toBeDefined();
+	});
+
+	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		const styleFunction = createSelectStyleFunction(measureStyleFunction);
+		const styles = styleFunction(feature);
+
+		const vertexStyle = styles[2];
+		const geometryFunction = vertexStyle.getGeometryFunction();
+
+
+		const lineFeature = feature;
+		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
+		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+
+		expect(geometryFunction(lineFeature)).toBeTruthy();
+		expect(geometryFunction(pointFeature)).toBeTruthy();
+		expect(geometryFunction(polygonFeature)).toBeTruthy();
+	});
+});
+
+describe('createSketchStyleFunction', () => {
+
+	it('should create a stylefunction', () => {
+
+		const styleFunction = createSketchStyleFunction(measureStyleFunction);
 
 		expect(styleFunction).toBeDefined();
 	});
@@ -106,7 +107,7 @@ describe('generateSketchStyleFunction', () => {
 		const feature = new Feature({ geometry: geometry });
 		const geometrySpy = spyOn(feature, 'getGeometry').and.returnValue(geometry);
 
-		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styleFunction = createSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -117,7 +118,7 @@ describe('generateSketchStyleFunction', () => {
 		const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 		const feature = new Feature({ geometry: geometry });
 
-		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styleFunction = createSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
@@ -128,7 +129,7 @@ describe('generateSketchStyleFunction', () => {
 		const geometry = new Point([0, 0]);
 		const feature = new Feature({ geometry: geometry });
 
-		const styleFunction = generateSketchStyleFunction(measureStyleFunction);
+		const styleFunction = createSketchStyleFunction(measureStyleFunction);
 		const styles = styleFunction(feature, null);
 
 		expect(styles).toBeTruthy();
