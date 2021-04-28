@@ -38,11 +38,7 @@ export class LocationResultsPanel extends BaElement {
 			if (term) {
 				requestLocationDataAndUpdateViewHandler(term);
 			}
-		});
-		const { term } = this._state;
-		if (term) {
-			requestLocationDataAndUpdateViewHandler(term);
-		}
+		}, true);
 	}
 
 	onStateChanged() {
