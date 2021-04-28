@@ -58,7 +58,7 @@ export class LocationResultsPanel extends BaElement {
 		return html`
         <style>${css}</style>
 			<div class="location-results-panel">
-				<div class="location-label">${translate('search_menu_contentPanel_location_label')}:</div>
+				<div class="location-label">${translate('search_menu_locationResultsPanel_label')}:</div>
 					<ul class="location-items">
 						${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
 					</ul>

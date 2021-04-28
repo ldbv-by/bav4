@@ -58,7 +58,7 @@ export class GeoResouceResultsPanel extends BaElement {
 		return html`
         <style>${css}</style>
 			<div class="georesource-results-panel">
-				<div class="georesource-label">${translate('search_menu_contentPanel_georesources_label')}:</div>
+				<div class="georesource-label">${translate('search_menu_geoResourceResultsPanel_label')}:</div>
 				<ul class="georesource-items">
 					${this._geoRersourceSearchResults.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
 				</ul>

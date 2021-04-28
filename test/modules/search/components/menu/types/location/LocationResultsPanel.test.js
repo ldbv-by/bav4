@@ -56,7 +56,7 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_contentPanel_location_label:');
+				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
 			});
 		});
@@ -79,7 +79,7 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_contentPanel_location_label:');
+				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_contentPanel_location_label:');
+				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();

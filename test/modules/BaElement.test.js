@@ -117,7 +117,7 @@ const setupStoreAndDi = () => {
 };
 
 
-describe('BaElement', () => {
+xdescribe('BaElement', () => {
 
 	beforeEach(() => {
 

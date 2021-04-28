@@ -7,16 +7,16 @@ describe('i18n for search module', () => {
 
 		const map = provide('de');
 
-		expect(map.search_menu_contentPanel_location_label).toBe('Orte');
-		expect(map.search_menu_contentPanel_georesources_label).toBe('Daten');
+		expect(map.search_menu_locationResultsPanel_label).toBe('Orte');
+		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Daten');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.search_menu_contentPanel_location_label).toBe('Places');
-		expect(map.search_menu_contentPanel_georesources_label).toBe('Data');
+		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
+		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Data');
 	});
 
 	it('have the expected amount of translations', () => {
