@@ -117,7 +117,7 @@ const setupStoreAndDi = () => {
 };
 
 
-xdescribe('BaElement', () => {
+describe('BaElement', () => {
 
 	beforeEach(() => {
 
@@ -243,30 +243,55 @@ xdescribe('BaElement', () => {
 			expect(element.onAfterRenderCalled).toBe(9);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
 		});
-
-		it('calls registered observer', async () => {
+	});
+	
+	describe('observe', () => {
+		
+		it('registers observers', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
 			const someUnknownFieldCallback = jasmine.createSpy();
 			const someWhatNullFieldCallback = jasmine.createSpy();
-			const warnSpy = spyOn(console, 'warn');
+			const errorSpy = spyOn(console, 'error');
 			element.observe('elementStateIndex', elementStateIndexCallback);
 			element.observe('someUnknowField', someUnknownFieldCallback);
 			element.observe('someWhatNull', someWhatNullFieldCallback);
 
-
+			//change state after registration
 			store.dispatch({
 				type: INDEX_CHANGED,
 				payload: 42
 			});
 
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
-			expect(warnSpy).toHaveBeenCalledOnceWith('\'someUnknowField\' is not a field in the state of this BaElement');
 			expect(someWhatNullFieldCallback).not.toHaveBeenCalled();
-			expect(warnSpy).not.toHaveBeenCalledOnceWith('\'someWhatNull\' is not a field in the state of this BaElement');
+			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the state of BaElementImpl');
 		});
-	});
 
+		it('registers observers and calls the callbacks immediately', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+			const elementStateIndexCallback = jasmine.createSpy();
+			const someUnknownFieldCallback = jasmine.createSpy();
+			const someWhatNullFieldCallback = jasmine.createSpy();
+			const errorSpy = spyOn(console, 'error');
+			
+			//change state before registration
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+			element.observe('elementStateIndex', elementStateIndexCallback, true);
+			element.observe('someUnknowField', someUnknownFieldCallback, true);
+			element.observe('someWhatNull', someWhatNullFieldCallback, true);
+
+			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
+			expect(someWhatNullFieldCallback).toHaveBeenCalledWith(null);
+			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the state of BaElementImpl');
+		});
+		
+	});
 	describe('default css', () => {
 
 		it('checks if a template result contains content', async () => {

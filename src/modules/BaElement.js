@@ -66,7 +66,7 @@ export class BaElement extends HTMLElement {
 
 		/** 
 		 * The state of this Element. Usually the state object is an extract of the application-wide store.
-		 * Local state should be managed individually in subclasses.
+		 * Other local state should be managed individually in subclasses.
 		 * @see {@link BaElement#extractState}
 		 * @see {@link BaElement#onStateChanged}
 		 * @member  {Object}  
@@ -295,26 +295,33 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 * @param {string} name Name of the observed field
 	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
+	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediatly after registration
 	 */
-	observe(name, onChange) {
+	observe(name, onChange, immediately = false) {
+
 		const createObserver = (name, onChange) => {
 			let currentState = this._state[name];
 
 			return () => {
-				if (this._state[name] !== undefined) {
-					const nextState = this._state[name];
-					if (!equals(nextState, currentState)) {
-						currentState = nextState;
-						onChange(currentState);
-					}
-				}
-				else {
-					console.warn('\'' + name + '\' is not a field in the state of this BaElement');
+				const nextState = this._state[name];
+				if (!equals(nextState, currentState)) {
+					currentState = nextState;
+					onChange(currentState);
 				}
 			};
 
 		};
 
-		this._observer.push(createObserver(name, onChange));
+		if (this._state[name] !== undefined) {
+
+			this._observer.push(createObserver(name, onChange));
+
+			if (immediately) {
+				onChange(this._state[name]);
+			}
+		}
+		else {
+			console.error(`Could not register observer --> '${name}' is not a field in the state of ${this.constructor.name}`);
+		}
 	}
 }
