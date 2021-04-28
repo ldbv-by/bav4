@@ -7,7 +7,6 @@ import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 const ZPOLYGON = 10;
 const ZLINE = 20;
 const ZPOINT = 30;
-const ZSKETCH = 10;
 const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
@@ -95,7 +94,7 @@ export const createSelectStyleFunction = (styleFunction) => {
 			return feature.getGeometry();
 	
 		},
-		zIndex:ZSKETCH - 1
+		zIndex:ZPOINT - 1
 	});
 	
 
