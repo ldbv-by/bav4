@@ -6,7 +6,7 @@ import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
-import { SearchContentPanel } from '../../../../../src/modules/search/components/menu/SearchContentPanel';
+import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -20,7 +20,7 @@ describe('MainMenuTabIndex', () => {
 		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, tag: null });
 		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, tag: null });
 		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, tag: null });
-		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, tag: SearchContentPanel.tag });
+		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, tag: SearchResultsPanel.tag });
 		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, tag: null });
 	});
 });
@@ -151,7 +151,7 @@ describe('MainMenu', () => {
 			for (let i = 0; i < contentPanels.length; i++) {
 				// //Todo check all content panels when implemented
 				if (i === MainMenuTabIndex.SEARCH.id) {
-					expect(contentPanels[i].innerHTML.toString().includes(SearchContentPanel.tag)).toBeTrue();
+					expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 				}
 			}
 		});

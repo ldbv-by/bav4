@@ -3,8 +3,8 @@ import { BaElement } from '../../../BaElement';
 import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
-import { SearchContentPanel } from '../../../search/components/menu/SearchContentPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 
 /**
  * @enum
@@ -14,7 +14,7 @@ export const MainMenuTabIndex = Object.freeze({
 	MAPS: { id: 1, tag: null },
 	MORE: { id: 2, tag: null },
 	ROUTING: { id: 3, tag: null },
-	SEARCH: { id: 4, tag: SearchContentPanel.tag },
+	SEARCH: { id: 4, tag: SearchResultsPanel.tag },
 	FEATUREINFO: { id: 5, tag: null }
 });
 

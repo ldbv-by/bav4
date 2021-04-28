@@ -1,6 +1,6 @@
-import { GeoResourceResultItem } from '../../../../../../src/modules/search/components/menu/items/geoResource/GeoResourceResultItem';
-import { SearchResult, SearchResultTypes } from '../../../../../../src/services/domain/searchResult';
-import { TestUtils } from '../../../../../test-utils.js';
+import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/items/geoResource/GeoResourceResultItem';
+import { SearchResult, SearchResultTypes } from '../../../../../../../src/services/domain/searchResult';
+import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
