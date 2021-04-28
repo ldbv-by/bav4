@@ -1,10 +1,10 @@
-import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/items/location/LocationResultItem';
+import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
-window.customElements.define(LocationResultItem.tag, LocationResultItem);
+window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
-describe('LocationResultItem', () => {
+describe('GeoResourceResultItem', () => {
 
 
 	beforeEach(async () => {
@@ -15,13 +15,13 @@ describe('LocationResultItem', () => {
 
 		it('renders nothing when no data available', async () => {
 
-			const element = await TestUtils.render(LocationResultItem.tag);
+			const element = await TestUtils.render(GeoResourceResultItem.tag);
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders the view', async () => {
-			const data = new SearchResult('id', 'label', 'labelFormated', SearchResultTypes.LOCATION);
-			const element = await TestUtils.render(LocationResultItem.tag);
+			const data = new SearchResult('id', 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
+			const element = await TestUtils.render(GeoResourceResultItem.tag);
 
 			element.data = data;
 

@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../../../src/injection';
-import { GeoResouceResultsPanel } from '../../../../../../../src/modules/search/components/menu/items/geoResource/GeoResourceResultsPanel';
+import { GeoResouceResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';

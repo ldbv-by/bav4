@@ -1,4 +1,4 @@
-import { requestData } from '../../../../../../src/modules/search/components/menu/items/resultPanelUtils';
+import { requestData } from '../../../../../../src/modules/search/components/menu/types/resultPanelUtils';
 
 
 describe('requestData', () => {

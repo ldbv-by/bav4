@@ -1,8 +1,8 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../../BaElement';
-import { LocationResultsPanel } from './items/location/LocationResultsPanel';
-import { GeoResouceResultsPanel } from './items/geoResource/GeoResourceResultsPanel';
+import { LocationResultsPanel } from './types/location/LocationResultsPanel';
+import { GeoResouceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import css from './searchResultsPanel.css';
 
 /**

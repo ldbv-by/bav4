@@ -1,5 +1,5 @@
-import { GeoResouceResultsPanel } from '../../../../../src/modules/search/components/menu/items/geoResource/GeoResourceResultsPanel';
-import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/items/location/LocationResultsPanel';
+import { GeoResouceResultsPanel } from '../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
+import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '../../../../test-utils.js';
 
