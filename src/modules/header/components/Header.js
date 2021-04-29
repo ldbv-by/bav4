@@ -22,15 +22,13 @@ export class Header extends BaElement {
 		const {
 			CoordinateService: coordinateService,
 			EnvironmentService: environmentService,
-			SearchResultProviderService: providerService,
 			TranslationService: translationService
 		}
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService', 'TranslationService');
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'TranslationService');
 
 		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
 		this._portrait = false;
 		this._classMobileHeader = '';
 	}

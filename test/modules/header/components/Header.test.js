@@ -51,7 +51,6 @@ describe('Header', () => {
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
-			.registerSingleton('SearchResultProviderService', { getLocationSearchResultProvider: () => { } })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
