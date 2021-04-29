@@ -142,6 +142,7 @@ export class MainMenu extends BaElement {
 
 		return html`
 		<div>
+			<ba-base-layer-switcher></ba-base-layer-switcher>
 			<ba-layer-manager></ba-layer-manager>
 		</div>
 		`;

@@ -53,7 +53,15 @@ export class BaseLayerSwitcher extends BaElement {
 
 			return html`
 				<style>${css}</style>
-				<div>${geoRs.map((geoR) => html`<div class='container'><ba-button label=${geoR.label} @click=${() => onClick(geoR)} type=${getType(geoR)}></ba-button></div>`)}</div>
+				<div class="title">
+					Basiskarte
+				</div>
+				<div class="baselayer__container">
+					${geoRs.map((geoR) => html`
+							<div class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)} title=${geoR.label} >
+							</div>
+						`)}
+				</div>
 			`;
 		}
 		//Todo: in this case we should render a placeholder

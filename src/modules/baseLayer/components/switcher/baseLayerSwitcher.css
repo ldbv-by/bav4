@@ -1,0 +1,81 @@
+
+
+.title {
+    font-weight: bold;
+    padding:.8em 1.5em;
+}
+
+
+.baselayer__container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding:.8em 1.5em;
+    
+}
+
+
+ .baselayer__button[type="primary"]{
+    transform: scale(1.1) !important;
+    border: 3px solid var(--primary-color) !important;
+    border: 3px solid var(--primary-color) !important;
+    z-index:2 !important;
+}
+
+
+
+.baselayer__button{
+    border-radius:0em;
+    /* border-radius:5em; */
+    transform: scale(1);
+    flex-grow: 1;   
+    width: auto;
+    height: 5em;
+    /* border: 3px solid var(--primary-bg-color); */
+    transition: transform 0.3s ease-out;    
+    background-image: url('assets/baselayer.webp');
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.baselayer__button:hover{
+    /* border: 3px solid var(--secondary-bg-color); */
+    transform: scale(1.1);
+    z-index:1;
+}
+
+.baselayer__label{
+    display:none;
+    font-size: .8rem;
+    padding:.5em;
+    position: absolute;
+   width:100%;
+   bottom:0em;
+   left:0;
+   background:var(--secondary-color-theme);
+   color: var(--text-default-color); 
+    opacity:.9;
+    z-index:1;
+   
+}
+
+.atkis{
+    background-position: 0px 0px;
+}
+.luftbild_labels{
+    background-position: 344px 0px;
+}
+.tk{
+    background-position: 540px 0px;
+}
+.historisch{
+    background-position: 182px 0px;
+}
+.atkis_sw{
+    background-position: 719px 0px;
+}
+
+
+
+
+
+
