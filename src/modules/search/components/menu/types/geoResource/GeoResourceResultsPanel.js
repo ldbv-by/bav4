@@ -34,11 +34,7 @@ export class GeoResouceResultsPanel extends BaElement {
 				this.render();
 			});
 
-		this.observe('term', (term) => {
-			if (term) {
-				requestGeoResourceDataAndUpdateViewHandler(term);
-			}
-		}, true);
+		this.observe('term', (term) => requestGeoResourceDataAndUpdateViewHandler(term), true);
 	}
 
 	onStateChanged() {

@@ -16,7 +16,7 @@ export class LocationResultsPanel extends BaElement {
 
 	constructor() {
 		super();
-		const { SearchResultProviderService: providerService,  TranslationService: translationService }
+		const { SearchResultProviderService: providerService, TranslationService: translationService }
 			= $injector.inject('SearchResultProviderService', 'TranslationService');
 
 		this._providerService = providerService;
@@ -34,11 +34,7 @@ export class LocationResultsPanel extends BaElement {
 				this.render();
 			});
 
-		this.observe('term', (term) => {
-			if (term) {
-				requestLocationDataAndUpdateViewHandler(term);
-			}
-		}, true);
+		this.observe('term', term => requestLocationDataAndUpdateViewHandler(term), true);
 	}
 
 	onStateChanged() {
@@ -50,7 +46,7 @@ export class LocationResultsPanel extends BaElement {
 	 * @override
 	 */
 	createView() {
-		const translate = (key) => this._translationService.translate(key);  
+		const translate = (key) => this._translationService.translate(key);
 		return html`
         <style>${css}</style>
 			<div class="location-results-panel">
