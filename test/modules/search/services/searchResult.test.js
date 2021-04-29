@@ -1,6 +1,7 @@
 import { SearchResult, SearchResultTypes } from '../../../../src/services/domain/searchResult';
 
 describe('searchResult', () => {
+	
 	describe('SearchResultTypes', () => {
 
 		it('provides an enum of all available types', () => {
@@ -10,9 +11,8 @@ describe('searchResult', () => {
 		});
 	});
 });
+
 describe('SearchResult', () => {
-
-
 
 	it('test constructor and getters', () => {
 		const searchResult = new SearchResult('id', 'label', 'labelFormated', SearchResultTypes.LOCATION);
@@ -24,8 +24,8 @@ describe('SearchResult', () => {
 		expect(searchResult.center).toBeNull();
 		expect(searchResult.extent).toBeNull();
 
-
 		const searchResult2 = new SearchResult('id1', 'label1', 'labelFormated1',  SearchResultTypes.GEORESOURCE, [0, 0], [0, 0, 1, 1]);
 		expect(searchResult2.extent).toEqual([0, 0, 1, 1]);
 	});
 });
+
