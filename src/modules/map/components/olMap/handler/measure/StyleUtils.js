@@ -1,7 +1,7 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
-import { LineString, Circle, MultiPoint } from 'ol/geom';
+import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 
 
 const ZPOLYGON = 10;
@@ -47,27 +47,7 @@ export const measureStyleFunction = (feature) => {
 			},
 			zIndex:0
 		}),
-		new Style({
-			image: new CircleStyle({
-				radius: 7,
-				stroke: new Stroke({
-					color:BLACK_COLOR,
-					width:1 }),
-				fill: new Fill({
-					color: WHITE_COLOR,
-				}),				
-			}),
-			geometry: function (feature) {
-				// return the coordinates of the first ring of the polygon
-				let coordinates = feature.getGeometry().getCoordinates();
-				if (feature.getGeometry().getType() === 'Polygon') {
-					coordinates = feature.getGeometry().getCoordinates()[0];
-				}
-				return new MultiPoint(coordinates);
-			},
-			zIndex:ZPOINT
-		}
-		)];
+	];
 
 	return styles;
 };
@@ -87,7 +67,47 @@ export const modifyStyleFunction = () => {
 	;
 };
 
-export const generateSketchStyleFunction = (styleFunction) => {
+export const createSelectStyleFunction = (styleFunction) => {
+	const appendableVertexStyle = new Style({
+		image: new CircleStyle({
+			radius: 7,
+			stroke: new Stroke({
+				color:BLACK_COLOR,
+				width:1 }),
+			fill: new Fill({
+				color: WHITE_COLOR,
+			}),				
+		}),	
+		geometry: (feature) => {
+			let coordinates = false;
+			const geometry = feature.getGeometry();
+			if (geometry instanceof LineString) {
+				coordinates = feature.getGeometry().getCoordinates();	
+				return new MultiPoint(coordinates);
+			} 
+			
+			if (geometry instanceof Polygon) {
+				coordinates = feature.getGeometry().getCoordinates()[0];
+				return new MultiPoint(coordinates);
+			}
+	
+			return feature.getGeometry();
+	
+		},
+		zIndex:ZPOINT - 1
+	});
+	
+
+	return (feature, resolution) => {
+	
+		const styles = styleFunction(feature, resolution);
+	
+		
+		return styles.concat([appendableVertexStyle]);
+	};
+};
+
+export const createSketchStyleFunction = (styleFunction) => {
 	
 	const sketchPolygon = new Style({ fill: new Fill({
 		color:WHITE_COLOR.concat([0.4])
@@ -113,7 +133,8 @@ export const generateSketchStyleFunction = (styleFunction) => {
 				width:3
 			});
 			const sketchCircle = new Style({
-				image:new CircleStyle({ radius:4, fill:fill, stroke:stroke })
+				image:new CircleStyle({ radius:4, fill:fill, stroke:stroke }),
+				zIndex:ZPOINT
 			});
 			styles = [sketchCircle];
 		}
