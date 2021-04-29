@@ -4,6 +4,7 @@ import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import css from './toolContainer.css';
 
 /**
@@ -23,6 +24,7 @@ export class ToolContainer extends BaElement {
 		this._environmentService = environmentService;
 		this._portrait = false;
 		this._minWidth = false;
+		this._lastContentId = false;
 	}
 
 
@@ -72,6 +74,18 @@ export class ToolContainer extends BaElement {
 				return nothing;
 		}
 
+		if (this._lastContentId !== contentId) {
+			this._deactivateByContentId(this._lastContentId);
+			this._activateByContentId(contentId);
+		}
+
+		if (!open) {
+			this._deactivateByContentId(this._lastContentId);
+		}
+		else {
+			this._lastContentId = contentId;
+		}
+
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -106,9 +120,9 @@ export class ToolContainer extends BaElement {
 	}
 
 	/**
-	 * @override
-	 * @param {Object} state 
-	 */
+ * @override
+ * @param {Object} state 
+ */
 	extractState(state) {
 		const { toolContainer } = state;
 		return toolContainer;
@@ -117,5 +131,24 @@ export class ToolContainer extends BaElement {
 	static get tag() {
 		return 'ba-tool-container';
 	}
+
+	_activateByContentId(contentId) {
+		switch (contentId) {
+			case MeasureToolContent.tag:
+				activateMeasurement();
+				break;
+		}
+	}
+
+	_deactivateByContentId(contentId) {
+		switch (contentId) {
+			case MeasureToolContent.tag:
+				deactivateMeasurement();
+				break;
+		}
+		this._lastContentId = false;
+	}
+
+
 
 }

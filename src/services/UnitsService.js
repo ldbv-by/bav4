@@ -6,34 +6,61 @@ const Hektar_In_Squaredmeters = 10000;
 const Provider_Metric = {
 	/**
     * Appends the metric unit of distance to the specified number
-    * @param {number} distance 
+    * @param {number} distance the distance value
+	* @param {number} decimals the number of digits after the decimal point
     * @returns {String} the formatted value 
     */
-	distance(distance) {
+	distance(distance, decimals) {
 		let formatted;
 		if (distance > Kilometer_In_Meters - 1) {
-			formatted = Math.round((distance / Kilometer_In_Meters) * 100) / 100 + ' ' + 'km';
+			if (decimals) {
+				formatted = (Math.round((distance / Kilometer_In_Meters) * 100) / 100).toFixed(decimals) + ' ' + 'km';
+			}
+			else {
+				formatted = (Math.round((distance / Kilometer_In_Meters) * 100) / 100) + ' ' + 'km';
+			}			
 		}
 		else {
-			formatted = distance !== 0 ? Math.round(distance * 100) / 100 + ' ' + 'm' : '0 m';
+			if (decimals) {
+				formatted = distance !== 0 ? (Math.round(distance * 100) / 100).toFixed(decimals) + ' ' + 'm' : '0 m';
+			}
+			else {
+				formatted = distance !== 0 ? (Math.round(distance * 100) / 100) + ' ' + 'm' : '0 m';
+			}
 		}
 		return formatted;
 	},
 	/**
     * Appends the metric unit of area to the specified number
-    * @param {number} area 
+    * @param {number} area the area value
+	* @param {number} decimals the number of digits after the decimal point
     * @returns {String} the formatted value 
     */
-	area(area) {
+	area(area, decimals ) {
 		let formatted;
 		if (area >= Squaredkilometer_In_Squaredmeters) {
-			formatted = Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100 + ' ' + 'km&sup2;';
+			if (decimals) {
+				formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'km&sup2;';
+			}
+			else {
+				formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100) + ' ' + 'km&sup2;';
+			}			
 		}
 		else if (area >= Hektar_In_Squaredmeters) {
-			formatted = Math.round((area / Hektar_In_Squaredmeters) * 100) / 100 + ' ' + 'ha';
+			if (decimals) {
+				formatted = (Math.round((area / Hektar_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'ha';
+			}
+			else {
+				formatted = (Math.round((area / Hektar_In_Squaredmeters) * 100) / 100) + ' ' + 'ha';
+			}
 		}
 		else {
-			formatted = Math.round(area * 100) / 100 + ' ' + 'm&sup2;';
+			if (decimals) {
+				formatted = (Math.round(area * 100) / 100).toFixed(decimals) + ' ' + 'm&sup2;';
+			}
+			else {
+				formatted = (Math.round(area * 100) / 100) + ' ' + 'm&sup2;';
+			}
 		}
 		return formatted;
 	}
@@ -54,27 +81,29 @@ export class UnitsService {
 	/**
     * Appends the appropriate unit of distance to the specified number.
     * The current unit of distance is set per config.
-    * @param {number} distance 
+    * @param {number} distance the distance value
+	* @param {number} decimals  Optional, the number of digits after the decimal point. Default is 2
     * @returns {String} the formatted value 
     */
-	formatDistance(distance) {
+	formatDistance(distance, decimals = 2) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return Provider_Metric.distance(distance);
+				return Provider_Metric.distance(distance, decimals);
 		}
 	}
 
 	/**
     * Appends the appropriate areal unit to the specified number
     * @param {number} area 
+	* @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
     * @returns {String} the formatted value 
     */
-	formatArea(area) {
+	formatArea(area, decimals = 2) {
 		switch (this._systemOfUnits) {
 			case 'metric':                
 			default:
-				return Provider_Metric.area(area);
+				return Provider_Metric.area(area, decimals);
 		}
 	}
 	

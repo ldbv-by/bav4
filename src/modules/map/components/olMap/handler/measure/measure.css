@@ -26,12 +26,12 @@
 }
 
 .partition:after{
-    bottom: -12px; 
-    width: 0.7em;
-    height: 0.7em; 
-    border-radius: 0.35em; 
+    bottom: -14px;
+    width:8px;
+    height: 8px;
+    border-radius: 4px;
     background-color: red;
-    margin-left: -0.25em; /* padding/margin:  use em*/
+    margin-left: -4px;
     border: none;
 }
 

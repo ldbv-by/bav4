@@ -29,6 +29,20 @@ describe('ToolContainer', () => {
 				contentId:false
 			}
 		};
+		
+		class MockClass {
+			constructor() {
+				this.get = 'I\'m a UnitsService.';
+			}
+			
+			formatDistance(distance, decimals) {
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + 'm';
+			}
+
+			formatArea(area, decimals) {
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + 'm²';
+			}
+		}
 
 		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
 		$injector
@@ -37,7 +51,8 @@ describe('ToolContainer', () => {
 				getWindow: () => windowMock
 			})			
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
+			.register('UnitsService', MockClass);
 		return TestUtils.render(ToolContainer.tag);
 	};
 

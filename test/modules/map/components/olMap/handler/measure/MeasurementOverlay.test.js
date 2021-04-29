@@ -12,11 +12,11 @@ describe('MeasurementOverlay', () => {
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});		
 		// eslint-disable-next-line no-unused-vars
-		$injector.registerSingleton('UnitsService', { formatDistance(distance) {
+		$injector.registerSingleton('UnitsService', { formatDistance(distance, decimals) {
 			return 'THE DISTANCE IN m';
 		},
 		// eslint-disable-next-line no-unused-vars
-		formatArea(area) {
+		formatArea(area, decimals) {
 			return 'THE AREA IN m²';
 		} });
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
