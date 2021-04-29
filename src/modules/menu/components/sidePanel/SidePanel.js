@@ -10,6 +10,7 @@ import { addLayer } from '../../../map/store/layers.action';
  *  
  * @class
  * @author aul
+ * @deprecated
  */
 export class SidePanel extends BaElement {
 
