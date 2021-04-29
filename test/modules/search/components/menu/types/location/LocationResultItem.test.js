@@ -1,5 +1,5 @@
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
-import { SearchResult, SearchResultTypes } from '../../../../../../../src/services/domain/searchResult';
+import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 

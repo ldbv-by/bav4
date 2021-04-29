@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { SearchResultTypes } from '../../../../../src/services/domain/searchResult';
+import { SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../../src/modules/search/services/provider/searchResult.provider';
 
 describe('SearchResult provider', () => {
