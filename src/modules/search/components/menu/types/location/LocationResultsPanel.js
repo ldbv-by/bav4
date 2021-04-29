@@ -27,7 +27,8 @@ export class LocationResultsPanel extends BaElement {
 
 	initialize() {
 		const locationProvider = this._providerService.getLocationSearchResultProvider();
-
+		
+		//requestData call has to be debounced
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
 			async (term) => {
 				this._locationSearchResults = await requestData(term, locationProvider, LocationResultsPanel.Min_Query_Length);

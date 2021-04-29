@@ -28,6 +28,7 @@ export class GeoResouceResultsPanel extends BaElement {
 	initialize() {
 		const geoResourceProvider = this._providerService.getGeoresourceSearchResultProvider();
 
+		//requestData call has to be debounced
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
 			async (term) => {
 				this._geoRersourceSearchResults = await requestData(term, geoResourceProvider, GeoResouceResultsPanel.Min_Query_Length);
