@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html'; 
+import { html } from 'lit-html'; 
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './attributionInfo.css';
@@ -25,32 +25,47 @@ export class AttributionInfo extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = this._state;
 
-		const geoResource = active[0] ?  this._georesourceService.byId(active[0].id) : null;
+		const attributionsRaw = new Array(); 
 
-		if (!geoResource) {
-			return nothing;
-		} 
+		for (const layer of active)  {
+			if (!layer.visible) {
+				continue;
+			} 
+			
+			const geoResource = this._georesourceService.byId(layer.id);
 
-		const attributions = geoResource.getAttribution(zoom);
+			if (!geoResource) {
+				continue;
+			} 
 
-		if (!attributions) {
+			attributionsRaw.push(geoResource.getAttribution(zoom));
+		}
+
+
+		// render fallback if no layers are set or visible
+		if (attributionsRaw[0] === null || attributionsRaw[0] === undefined) {
 			return html`
             		<div>${translate('map_attributionInfo_fallback')}</div>
 				`;
 		}
+		
+		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case  
+		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);		
 
 		const attributionCopyright = [] ;
 
 		attributions.forEach((attribution, index) => {
-			if (attribution.copyright.url  != null) {
-				attributionCopyright.push(html`<a class='attribution-link' target='new' href=${attribution.copyright.url} > ${attribution.copyright.label}</a>`);
-			}
-			else {
-				attributionCopyright.push(html` ${attribution.copyright.label}`);
-			} 
-			if (index < attributions.length - 1) {
-				attributionCopyright.push(html`, `);
-			} 
+			attribution.forEach((element) => {
+				if (element.copyright.url  != null) {
+					attributionCopyright.push(html`<a class='attribution-link' target='new' href=${element.copyright.url} > ${element.copyright.label}</a>`);
+				}
+				else {
+					attributionCopyright.push(html` ${element.copyright.label}`);
+				} 
+				if (index < attributions.length - 1) {
+					attributionCopyright.push(html`, `);
+				} 
+			}); 
 		});
 
 		return html`
