@@ -334,6 +334,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			event.feature.set('measurement', measureTooltip);
+			event.feature.setId('measurement' + '_' +
+				new Date().getTime());
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));
 			this._overlayManager.add(measureTooltip);
