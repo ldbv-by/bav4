@@ -637,21 +637,21 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const label = 'FooBarBaz';
 		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
 		const format = new KML({ writeStyles: true });
-		const data = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
-		console.log(data);
-		try {
-			const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
-			//create a georesource and set the data as source
-			const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
-			//register georesource
-			this._geoResourceService.addOrReplace(vgr);
-			//add a layer that displays the georesource in the map
-			addLayer(fileId, { label: label });
+		if (this._vectorLayer) {
+			const data = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
+			try {
+				const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
+				//create a georesource and set the data as source
+				const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
+				//register georesource
+				this._geoResourceService.addOrReplace(vgr);
+				//add a layer that displays the georesource in the map
+				addLayer(fileId, { label: label });
+			}
+			catch (error) {
+				console.error(error);
+			}
 		}
-		catch (error) {
-			console.error(error);
-		}
-
 	}
 
 	_getSnapTolerancePerDevice() {
@@ -662,8 +662,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: extract Util-method to kind of 'OlMapUtils'-file
-	 */
+ * todo: extract Util-method to kind of 'OlMapUtils'-file
+ */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;
 		itemCollection.forEach(i => {
