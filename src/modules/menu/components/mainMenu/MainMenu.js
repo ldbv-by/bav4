@@ -4,6 +4,7 @@ import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 
 /**
@@ -115,7 +116,8 @@ export class MainMenu extends BaElement {
 									${item ? item : nothing}
 								</div>								
 							`)}
-						</div>		
+						</div>
+						${unsafeHTML(`<${DevInfo.tag}/>`)}	
 					</div>			
 				</div>			
 			</div>			

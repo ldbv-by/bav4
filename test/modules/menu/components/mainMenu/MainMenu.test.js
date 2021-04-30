@@ -6,6 +6,7 @@ import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
+import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
@@ -168,6 +169,7 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
+			
 			const activeTabIndex = 2;
 			const element = await setup({}, true, activeTabIndex);
 
@@ -176,6 +178,13 @@ describe('MainMenu', () => {
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].style.display).toBe(i === activeTabIndex ? 'block' : 'none');
 			}
+		});
+
+		it('contains a dev info', async () => {
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.main-menu__container').querySelector(DevInfo.tag)).toBeTruthy();
 		});
 	});
 
