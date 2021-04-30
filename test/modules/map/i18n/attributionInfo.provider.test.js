@@ -8,7 +8,6 @@ describe('i18n for attribution info', () => {
 		const map = provide('en');
 		
 		expect(map.map_attributionInfo_label).toBe('Data');
-		expect(map.map_attributionInfo_fallback).toBe('No data available');				
 	});
 
 
@@ -17,11 +16,10 @@ describe('i18n for attribution info', () => {
 		const map = provide('de');
 
 		expect(map.map_attributionInfo_label).toBe('Daten');
-		expect(map.map_attributionInfo_fallback).toBe('Keine Daten verfügbar');								
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

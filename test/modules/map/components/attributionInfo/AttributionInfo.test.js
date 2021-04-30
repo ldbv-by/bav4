@@ -55,7 +55,7 @@ describe('AttributionInfo', () => {
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
-		it('renders fallback when no layers are set', async  () => {
+		it('renders no content when no layers are set', async  () => {
 			const stateEmpty = {
 				layers: {
 					active: []
@@ -64,10 +64,10 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toEqual('map_attributionInfo_fallback');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 		});
 
-		it('renders fallback when geo resource could not be fetched', async  () => {
+		it('renders no content when geo resource could not be fetched', async  () => {
 			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
 			const state = {
 				layers: {
@@ -78,11 +78,11 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);			
 
-			expect(element.shadowRoot.querySelector('div').innerText).toEqual('map_attributionInfo_fallback');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
-		it('renders fallback when no attribution provided', async  () => {
+		it('renders no content when no attribution provided', async  () => {
 			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
 			const state = {
 				layers: {
@@ -100,13 +100,13 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);			
 
-			expect(element.shadowRoot.querySelector('div').innerText).toEqual('map_attributionInfo_fallback');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
 		});
 
-		it('renders fallback when no visible layers are available', async  () => {
+		it('renders no content when no visible layers are available', async  () => {
 			const layer = { id:'id0', label:'label0', visible: false, zIndex:0, opacity:1, collapsed:true };
 			const state = {
 				layers: {
@@ -123,7 +123,7 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);			
 
-			expect(element.shadowRoot.querySelector('div').innerText).toEqual('map_attributionInfo_fallback');
+			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 
 			expect(geoServiceMock).not.toHaveBeenCalledOnceWith(layer.id);
 		});
