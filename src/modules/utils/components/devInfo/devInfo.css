@@ -1,19 +1,9 @@
 .container {
-    position: absolute;
-    padding: 5px;
-    padding-left: 10px;
+    position: fixed;
+    padding: .75em;
+    font-size: .75rem;
+    bottom: 0;
     color: var(--color);
+    width: 100%;
     background: var(--primary-bg-color);
-    font-size: 11px;
-    border-top-right-radius: 5px;
-}
-
-.container-landscape{
-    bottom: 45px;
-    left: 0;
-}
-
-.container-portrait{
-    bottom: 0px;
-    left: 0;
 }
