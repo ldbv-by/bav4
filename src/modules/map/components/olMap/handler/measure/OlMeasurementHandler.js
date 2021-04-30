@@ -8,6 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
+import { addLayer } from '../../../../store/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
@@ -17,6 +18,9 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
+import { KML } from 'ol/format';
+import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
+import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -49,11 +53,13 @@ export const MeasureSnapType = {
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
+		this._geoResourceService = GeoResourceService;
+		this._fileStorageService = FileStorageService;
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
@@ -192,16 +198,22 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._dragPan);
 
 		this._helpTooltip.deactivate();
-		this._overlayManager.deactivate();		
-		
+		this._overlayManager.deactivate();
+
 		setStatistic({ length: 0, area: 0 });
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
 
+		this._persistLayer();
+
 		this._draw = false;
-		this._map = null;		
+		this._modify = false;
+		this._select = false;
+		this._snap = false;
+		this._dragPan = false;
+		this._map = null;
 	}
 
 	_unreg(listeners) {
@@ -228,7 +240,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 
 	_removeLast(event) {
-		if (this._draw.getActive()) {
+		if (this._draw && this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._draw.removeLastPoint();
 				if (this._pointCount === 2) {
@@ -240,7 +252,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 
-		if (this._modify.getActive()) {
+		if (this._modify && this._modify.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._removeSelectedFeatures();
 			}
@@ -619,6 +631,27 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 		element.addEventListener('mouseenter', handleMouseEnter);
 		element.addEventListener('mouseleave', handleMouseLeave);
+	}
+
+	async _persistLayer() {
+		const label = 'FooBarBaz';
+		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
+		const format = new KML({ writeStyles: true });
+		const data = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
+		console.log(data);
+		try {
+			const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
+			//create a georesource and set the data as source
+			const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
+			//register georesource
+			this._geoResourceService.addOrReplace(vgr);
+			//add a layer that displays the georesource in the map
+			addLayer(fileId, { label: label });
+		}
+		catch (error) {
+			console.error(error);
+		}
+
 	}
 
 	_getSnapTolerancePerDevice() {
