@@ -20,42 +20,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
-const geoResourceServiceMock = {
-	addOrReplace() { }
-};
 
-const fileStorageServiceMock = {
-	async save() {
-		return { fileId:'fooBarBazId' };
-	}
-};
-const environmentServiceMock = { isTouch: () => false };
-const initialState = {
-	active: false,
-	statistic: { length: 0, area: 0 },
-	reset: null
-};
-const setup = (state = initialState) => {
-	const measurementState = {
-		measurement: state,
-	};
-	TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
-	$injector.registerSingleton('TranslationService', { translate: (key) => key });
-	$injector.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 });
-	$injector.registerSingleton('EnvironmentService', environmentServiceMock);
-	$injector.registerSingleton('UnitsService', {
-		// eslint-disable-next-line no-unused-vars
-		formatDistance: (distance, decimals) => {
-			return distance + ' m';
-		},
-		// eslint-disable-next-line no-unused-vars
-		formatArea: (area, decimals) => {
-			return area + ' m²';
-		}
-	});
-	$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
-	$injector.registerSingleton('FileStorageService', fileStorageServiceMock);
-};
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -63,6 +28,43 @@ register(proj4);
 
 
 describe('OlMeasurementHandler', () => {
+	const geoResourceServiceMock = {
+		addOrReplace() {}		
+	};
+	
+	const fileStorageServiceMock = {
+		async save() {
+			return { fileId:'fooBarBazId' };
+		}
+	};
+	const environmentServiceMock = { isTouch: () => false };
+	const initialState = {
+		active: false,
+		statistic: { length: 0, area: 0 },
+		reset: null
+	};
+	const setup = (state = initialState) => {
+		const measurementState = {
+			measurement: state,
+		};
+		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('FileStorageService', fileStorageServiceMock)
+			.registerSingleton('UnitsService', {
+			// eslint-disable-next-line no-unused-vars
+				formatDistance: (distance, decimals) => {
+					return distance + ' m';
+				},
+				// eslint-disable-next-line no-unused-vars
+				formatArea: (area, decimals) => {
+					return area + ' m²';
+				}
+			});
+	};
+
 	beforeEach(() => {
 		setup();
 	});
@@ -258,35 +260,37 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save');
+			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooId' } ));
+			
 			classUnderTest.activate(map);			
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
 			classUnderTest.deactivate(map);
+			
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 			expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
 		});
 
-		xit('adds a vectorGeoResource for persisting purpose', () => {
+		it('adds a vectorGeoResource for persisting purpose', (done) => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const geoResourceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.resolve({ fileId: 'fooBarId' } )
+			);			
+			
 			classUnderTest.activate(map);			
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			classUnderTest.deactivate(map);			
+			
+			setTimeout(() => {
+				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);		
+				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+					id: 'fooBarId', 
+					label:'map_olMap_handler_measure_layer_label' }));		
+				done();
+			});	
 
-			classUnderTest.deactivate(map);
-			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
-			expect(geoResourceServiceMock.addOrReplace).toHaveBeenCalled();
-			expect(geoResourceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-				id: 'fooBarBazId', 
-				label:'map_olMap_handler_measure_layer_label' }));			
 		});
 
 	});

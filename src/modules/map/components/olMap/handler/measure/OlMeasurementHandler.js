@@ -642,16 +642,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const format = new KML({ writeStyles: true });
 		if (this._vectorLayer) {
 			const data = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
-			try {
+			try {				
 				const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
 				//create a georesource and set the data as source
 				const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
 				//register georesource
-				this._geoResourceService.addOrReplace(vgr);
+				this._geoResourceService.addOrReplace(vgr);				
 				//add a layer that displays the georesource in the map
 				addLayer(fileId, { label: label });
 			}
 			catch (error) {
+				alert(error);
 				console.error(error);
 			}
 		}
