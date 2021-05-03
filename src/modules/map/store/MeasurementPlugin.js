@@ -3,11 +3,19 @@ import { addLayer, removeLayer } from './layers.action';
 import { BaPlugin } from '../../../store/BaPlugin';
 
 /**
- * Id of the layer used for measurement interaction
+ * Id of the layer used for measurement interaction.  
+ * LayerHandler of a map implementation will also use this id as their key.
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
 /**
+ * This plugin observes the 'active' property of the measurements store.
+ * On changes, it adds a layer with a specific and constant id 
+ * to the layers store or removes this layer from the store (see: {@link MEASUREMENT_LAYER_ID}).   
+ * 
+ * As a result of the change of the layers store, a map implementation will search for a handler registered for that id,
+ * and, if found, will activate or deactivate this handler.
+ * 
  * @class
  * @author taulinger
  */
