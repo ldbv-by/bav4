@@ -636,7 +636,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	async _persistLayer() {
-		const label = 'FooBarBaz';
+		const translate = (key) => this._translationService.translate(key);
+		const label = translate('map_olMap_handler_measure_layer_label');
 		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
 		const format = new KML({ writeStyles: true });
 		if (this._vectorLayer) {
