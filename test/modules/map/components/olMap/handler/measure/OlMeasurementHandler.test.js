@@ -13,13 +13,12 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
+import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
-
-
 
 const geoResourceServiceMock = {
 	addOrReplace() { }
@@ -27,7 +26,7 @@ const geoResourceServiceMock = {
 
 const fileStorageServiceMock = {
 	async save() {
-		return 'fooBarBazId';
+		return { fileId:'fooBarBazId' };
 	}
 };
 const environmentServiceMock = { isTouch: () => false };
@@ -223,6 +222,71 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);
 
 			expect(classUnderTest._overlayManager.deactivate).toHaveBeenCalled();
+		});
+
+	});
+
+	describe('when deactivated over olMap', () => {
+
+		const initialCenter = fromLonLat([11.57245, 48.14021]);
+
+		const setupMap = () => {
+			return new Map({
+				layers: [
+					new TileLayer({
+						source: new OSM(),
+					}),
+					new TileLayer({
+						source: new TileDebug(),
+					})],
+				target: 'map',
+				view: new View({
+					center: initialCenter,
+					zoom: 1,
+				}),
+			});
+
+		};
+
+		const createFeature = () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			//feature.set('foo', 'bar');
+			return feature;
+		};
+
+		it('writes features to kml format for persisting purpose', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save');
+			classUnderTest.activate(map);			
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			classUnderTest.deactivate(map);
+			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+			expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+		});
+
+		xit('adds a vectorGeoResource for persisting purpose', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			classUnderTest.activate(map);			
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			classUnderTest.deactivate(map);
+			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+			expect(geoResourceServiceMock.addOrReplace).toHaveBeenCalled();
+			expect(geoResourceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+				id: 'fooBarBazId', 
+				label:'map_olMap_handler_measure_layer_label' }));			
 		});
 
 	});
