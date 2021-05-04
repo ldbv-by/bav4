@@ -1,3 +1,4 @@
+import { $injector } from '../../../../../../../src/injection';
 import { addLayer } from '../../../../../../../src/modules/map/store/layers.action';
 import { layersReducer } from '../../../../../../../src/modules/map/store/layers.reducer';
 import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
@@ -10,13 +11,23 @@ window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 describe('GeoResourceResultItem', () => {
 
+	const windowMock = {
+		matchMedia() { }
+	};
+
 
 	let store;
-	const setup = (state = {}) => {
+	const setup = (portraitOrientation = false) => {
 
-		store = TestUtils.setupStoreAndDi(state, {
+		spyOn(windowMock, 'matchMedia')
+			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(portraitOrientation));
+
+		store = TestUtils.setupStoreAndDi({}, {
 			layers: layersReducer,
 			mainMenu: mainMenuReducer,
+		});
+		$injector.registerSingleton('EnvironmentService', {
+			getWindow: () => windowMock
 		});
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
@@ -88,19 +99,22 @@ describe('GeoResourceResultItem', () => {
 		describe('on click', () => {
 
 			const id = 'id';
-			let element;
 
-			beforeEach(async () => {
+			const setUpOnClickTests = async (portraitOrientation) => {
+				
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				element = await setup();
+				const element = await setup(portraitOrientation);
 				element.data = data;
 				addLayer(element._tmpLayerId(id));
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().mainMenu.tabIndex).toBe(0);
-			});
+				expect(store.getState().mainMenu.open).toBeTrue();
+				return element;
+			};
 
 			it('removes the preview layer and adds the real layer', async () => {
+				const element = await setUpOnClickTests();
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
@@ -109,12 +123,24 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].id).toBe(id);
 			});
 
-			it('opens the "maps" tab of the main menu', async () => {
+			it('opens the "maps" tab of the main menu in landscape orientation', async () => {
+				const element = await setUpOnClickTests(false);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
 				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
+				expect(store.getState().mainMenu.open).toBeTrue;
+			});
+
+			it('closes the main menu in portrait orientation', async () => {
+				const element = await setUpOnClickTests(true);
+
+				const target = element.shadowRoot.querySelector('li');
+				target.click();
+
+				expect(store.getState().mainMenu.tabIndex).toBe(0);
+				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});
 	});

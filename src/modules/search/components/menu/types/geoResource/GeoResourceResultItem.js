@@ -1,9 +1,10 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { $injector } from '../../../../../../injection';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../map/store/layers.action';
 import { MainMenuTabIndex } from '../../../../../menu/components/mainMenu/MainMenu';
-import { setTabIndex } from '../../../../../menu/store/mainMenu.action';
+import { close, setTabIndex } from '../../../../../menu/store/mainMenu.action';
 import itemCss from '../item.css';
 import css from './geoResourceResultItem.css';
 
@@ -22,7 +23,28 @@ import css from './geoResourceResultItem.css';
  * @author taulinger
  */
 export class GeoResourceResultItem extends BaElement {
+	
+	constructor() {
+		super();
 
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = EnvironmentService;
+		this._portrait = false;
+	}
+
+
+	initialize() {
+
+		const _window = this._environmentService.getWindow();
+		//MediaQuery for 'orientation'
+		const mediaQuery = _window.matchMedia('(orientation: portrait)');
+		const handleOrientationChange = (e) => {
+			this._portrait = e.matches;
+		};
+		mediaQuery.addEventListener('change',  handleOrientationChange);
+		//initial set of local state
+		handleOrientationChange(mediaQuery);
+	}
 
 	set data(geoResourceSearchResult) {
 		this._georesourceSearchResult = geoResourceSearchResult;
@@ -51,8 +73,15 @@ export class GeoResourceResultItem extends BaElement {
 			removeLayer(this._tmpLayerId(result.id));
 			//add the "real" layer 
 			addLayer(result.id, { label: result.label });
-			//switch to "maps" tab in main menu
-			setTabIndex(MainMenuTabIndex.MAPS);
+			
+			if (this._portrait) {
+				//close the main menu
+				close();
+			}
+			else {
+				//switch to "maps" tab in main menu
+				setTabIndex(MainMenuTabIndex.MAPS);
+			}
 		};
 
 		if (this._georesourceSearchResult) {
