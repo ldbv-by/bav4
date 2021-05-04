@@ -35,7 +35,7 @@ export class GeoResourceResultItem extends BaElement {
 
 	createView() {
 		/**
-		 * Uses mouseenter and mouseleave events for adding/removing a preview layers.
+		 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
