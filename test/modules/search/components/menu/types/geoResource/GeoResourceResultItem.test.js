@@ -1,5 +1,7 @@
 import { addLayer } from '../../../../../../../src/modules/map/store/layers.action';
 import { layersReducer } from '../../../../../../../src/modules/map/store/layers.reducer';
+import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
@@ -13,7 +15,8 @@ describe('GeoResourceResultItem', () => {
 	const setup = (state = {}) => {
 
 		store = TestUtils.setupStoreAndDi(state, {
-			layers: layersReducer
+			layers: layersReducer,
+			mainMenu: mainMenuReducer,
 		});
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
@@ -46,7 +49,7 @@ describe('GeoResourceResultItem', () => {
 		});
 	});
 
-	describe('preview layer', () => {
+	describe('events', () => {
 
 		describe('on mouse enter', () => {
 
@@ -84,20 +87,34 @@ describe('GeoResourceResultItem', () => {
 
 		describe('on click', () => {
 
-			it('removes the preview layer and adds the real layer', async () => {
-				const id = 'id';
+			const id = 'id';
+			let element;
+
+			beforeEach(async () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup();
+				element = await setup();
 				element.data = data;
 				addLayer(element._tmpLayerId(id));
 
 				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().mainMenu.tabIndex).toBe(0);
+			});
+
+			it('removes the preview layer and adds the real layer', async () => {
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(id);
+			});
+
+			it('opens the "maps" tab of the main menu', async () => {
+
+				const target = element.shadowRoot.querySelector('li');
+				target.click();
+
+				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
 			});
 		});
 	});
