@@ -31,7 +31,7 @@ describe('AttributionInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders AttributionInfo component', async () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -70,7 +70,7 @@ describe('AttributionInfo', () => {
 		});
 		
 		it('renders no content when geo resource could not be fetched', async  () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties,  id:'id0', label:'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -86,7 +86,7 @@ describe('AttributionInfo', () => {
 		});
 		
 		it('renders no content when no attribution provided', async  () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -111,7 +111,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders no content when no visible layers are available', async  () => {
-			const layer = { id:'id0', label:'label0', visible: false, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', visible: false };
 			const state = {
 				layers: {
 					active: [layer]
@@ -358,7 +358,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('show and hide collapse on click', async () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties, id:'id0', label:'label0' };
 			const state = {
 				layers: {
 					active: [layer]
