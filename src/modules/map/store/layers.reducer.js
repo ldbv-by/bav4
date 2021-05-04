@@ -56,6 +56,7 @@ const addLayer = (state, payload) => {
 
 	const layer = {
 		...defaultLayerProperties,
+		geoResourceId: id,
 		...properties,
 		id: id
 	};
