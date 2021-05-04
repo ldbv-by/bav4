@@ -34,7 +34,18 @@ export class GeoResourceResultItem extends BaElement {
 	}
 
 	createView() {
-	
+		/**
+		 * Uses mouseenter and mouseleave events for adding/removing a preview layers.
+		 * These events are not fired on touch devices, so there's no extra handling needed.
+		 */
+		const onMouseEnter = (result) => {
+			//add a preview layer
+			addLayer(this._tmpLayerId(result.id), { label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
+		};
+		const onMouseLeave = (result) => {
+			//remove the preview layer
+			removeLayer(this._tmpLayerId(result.id));
+		};
 		const onClick = (result) => {
 			//remove the preview layer
 			removeLayer(this._tmpLayerId(result.id));
@@ -42,14 +53,6 @@ export class GeoResourceResultItem extends BaElement {
 			addLayer(result.id, { label: result.label });
 			//switch to "maps" tab in main menu
 			setTabIndex(MainMenuTabIndex.MAPS);
-		};
-		const onMouseEnter = (result) => {
-			//add a preview layer
-			addLayer(this._tmpLayerId(result.id), { label: result.label, geoResourceId:result.id, constraints: { hidden: true, alwaysTop: true } });
-		};
-		const onMouseLeave = (result) => {
-			//remove the preview layer
-			removeLayer(this._tmpLayerId(result.id));
 		};
 
 		if (this._georesourceSearchResult) {
