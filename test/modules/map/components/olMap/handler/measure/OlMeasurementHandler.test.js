@@ -19,6 +19,7 @@ import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { sleep } from '../../../../../../../src/utils/sleep';
 
 
 
@@ -526,6 +527,29 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});
 
+		it('try to store the feature after finish drawing', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.resolve({ fileId: 'fooBarId' } )
+			);			
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storeContent).toBeFalsy();
+				done();
+			});	
+			
+		});
+
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -639,6 +663,96 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
 
 		});
+	});
+
+	describe('when modify a feature', () => {
+		
+		let target;
+		const setupMap = () => {
+			target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			const map = new Map({
+				layers: [
+					new TileLayer({
+						source: new OSM(),
+					}),
+					new TileLayer({
+						source: new TileDebug(),
+					})],
+				target: target,
+				view: new View({
+					center: [0, 0],
+					zoom: 1,
+				}),
+			});
+
+			map.renderSync();
+			return map;
+
+		};
+
+
+		it('try to store the feature after finish modify', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.resolve({ fileId: 'fooBarId' } )
+			);			
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			// classUnderTest._modify.setActive(true);					
+			await sleep(100);
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(saveSpy).toHaveBeenCalledWith('fooBarId', jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
+			});	
+			
+		});		
+
+		it('logs warning on failed store of feature after finish modify', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			spyOn(fileStorageServiceMock, 'save').and.returnValues(
+				Promise.resolve({ fileId: 'fooBarId' } ),
+				Promise.reject('Failed')
+			);			
+			const warnSpy = spyOn(console, 'warn');
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			// classUnderTest._modify.setActive(true);	
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(warnSpy).toHaveBeenCalledTimes(1);
+				done();
+			});	
+			
+		});	
+
+		
 	});
 
 	const createSnappingFeatureMock = (coordinate, feature) => {

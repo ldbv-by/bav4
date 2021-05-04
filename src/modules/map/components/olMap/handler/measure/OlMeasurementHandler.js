@@ -344,6 +344,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawend', event => {
 			finishMeasurementTooltip(event);
 			activateModify(event);
+			this._save();
 		}
 		);
 
@@ -367,6 +368,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			setStatistic({ length: length, area: area });
 		}
 
+	}
+
+	async _save() {
+		
+		if (this._vectorLayer) {
+			const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
+			const format = new KML({ writeStyles: true });
+			this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
+		}
+
+		if (!this._storeID) {
+			try {
+				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);	
+				this._storeID = fileId;				
+			}
+			catch (error) {
+				console.warn('Could not store content initially:', error);			
+			}
+		}			
+		else {
+			this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML).catch(reason =>  console.warn('Could not store content:', reason));			
+		}
 	}
 
 	_updateMeasureTooltips(feature, isDrawing) {
@@ -588,6 +611,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
 				this._mapContainer.classList.remove('grabbing');
 			}
+			this._save();
 		});
 		return modify;
 	}
@@ -638,25 +662,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	async _persistLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
-		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
-		const format = new KML({ writeStyles: true });
-		if (this._vectorLayer) {
-			const data = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
-			try {				
-				const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
-				//create a georesource and set the data as source
-				const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
-				//register georesource
-				this._geoResourceService.addOrReplace(vgr);				
-				//add a layer that displays the georesource in the map
-				addLayer(fileId, { label: label });
-			}
-			catch (error) {
-				alert(error);
-				console.error(error);
-			}
+		
+		if (!this._storedContent) {
+			await this._save();		
+		}
+		
+		let id = this._storeID;
+		if (!id) {
+			console.warn('Could not store layer-data. The data will get lost after this session.');	
+			id = 'temp_measure_id';
+			// TODO: offline-support is needed to properly working with temporary ids
+		}
+		
+		try {//create a georesource and set the data as source
+			const vgr = new VectorGeoResource(id, label, VectorSourceType.KML).setSource(this._storedContent, 4326);
+			//register georesource
+			this._geoResourceService.addOrReplace(vgr);				
+			//add a layer that displays the georesource in the map
+			addLayer(this._storeID, { label: label });
+		}
+		catch (error) {
+			console.error(error);
 		}
 	}
+
 
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
