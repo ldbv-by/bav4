@@ -294,6 +294,32 @@ describe('OlMeasurementHandler', () => {
 
 		});
 
+		it('logs warn while persisting layer failed', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.reject('42' )
+			);			
+			const warnSpy = spyOn(console, 'warn');
+			
+			classUnderTest.activate(map);			
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);			
+			
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', '42');
+				expect(warnSpy).toHaveBeenCalledWith('Could not store layer-data. The data will get lost after this session.');
+				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);	
+				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+					id: 'temp_measure_id', 
+					label:'map_olMap_handler_measure_layer_label' }));		
+				done();
+			});	
+
+		});
+
 	});
 
 	describe('when using EnvironmentService for snapTolerance', () => {
@@ -550,6 +576,31 @@ describe('OlMeasurementHandler', () => {
 			
 		});
 
+		it('logs warning on failed store of feature after finish drawing', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.reject('Failed')
+			);			
+			const warnSpy = spyOn(console, 'warn');
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBeUndefined();
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', 'Failed');
+				done();
+			});	
+			
+		});	
+
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -721,38 +772,7 @@ describe('OlMeasurementHandler', () => {
 				done();
 			});	
 			
-		});		
-
-		it('logs warning on failed store of feature after finish modify', async (done) => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			spyOn(fileStorageServiceMock, 'save').and.returnValues(
-				Promise.resolve({ fileId: 'fooBarId' } ),
-				Promise.reject('Failed')
-			);			
-			const warnSpy = spyOn(console, 'warn');
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			// classUnderTest._modify.setActive(true);	
-			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
-			
-			setTimeout(() => {								
-				expect(classUnderTest._storeID).toBe('fooBarId');
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(warnSpy).toHaveBeenCalledTimes(1);
-				done();
-			});	
-			
-		});	
-
-		
+		});				
 	});
 
 	const createSnappingFeatureMock = (coordinate, feature) => {
