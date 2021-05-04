@@ -109,9 +109,19 @@ export class Header extends BaElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+			//in portrait mode we open the main menu to display existing results
+			if (this._portrait) {
+				const value  = this.shadowRoot.querySelector('#input').value;
+				if (value.length > 0) {
+					openMainMenu();
+				}
+			}
 		};
 
-		const onInput = (evt) => setQuery(evt.target.value);
+		const onInput = (evt) => {
+			openMainMenu();
+			setQuery(evt.target.value);
+		};
 
 		const showModalHeader = () => {
 			if (this._portrait || !this._minWidth) {
@@ -160,7 +170,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
+						<input id='input' @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>

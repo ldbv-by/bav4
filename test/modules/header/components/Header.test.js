@@ -262,23 +262,52 @@ describe('Header', () => {
 					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 				const element = await setup();
 				
-				const inputElement = element.shadowRoot.querySelector('.header__search-container input');
+				const inputElement = element.shadowRoot.querySelector('#input');
 				inputElement.value = 'foo';
 				inputElement.dispatchEvent(new Event('input'));
 
 				expect(store.getState().search.query.payload).toBe('foo');
 			});
+
+			it('opens the main menu', async () => {
+				spyOn(windowMock, 'matchMedia')
+					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+				const element = await setup({}, false) ;
+				
+				expect(store.getState().mainMenu.open).toBeFalse();
+
+				const inputElement = element.shadowRoot.querySelector('#input');
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(store.getState().mainMenu.open).toBeTrue();
+			});
 		});
 
 		describe('when input is focused or blurred ', () => {
 
-			beforeEach(function () {
-				jasmine.clock().install();
+			describe('in portrait mode', () => {
+				it('opens the main menu when input has content', async () => {
+					spyOn(windowMock, 'matchMedia')
+						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+	
+					const element = await setup({}, false) ;
+					const input = 	element.shadowRoot.querySelector('#input');
+					
+					input.focus();
+	
+					expect(store.getState().mainMenu.open).toBeFalse();
+	
+					input.blur();
+					input.value = 'foo';
+					input.focus();
+	
+					expect(store.getState().mainMenu.open).toBeTrue();
+				});
 			});
 
-			afterEach(function () {
-				jasmine.clock().uninstall();
-			});
 
 			it('sets the correct tab index for the search-content-panel', async () => {
 				spyOn(windowMock, 'matchMedia')
@@ -286,41 +315,52 @@ describe('Header', () => {
 					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
 
 				const element = await setup();
-				element.shadowRoot.querySelector('.header__search-container input').focus();
+				element.shadowRoot.querySelector('#input').focus();
 
 				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
 			});
+			
+			describe('in portrait mode and min-width < 80em', () => {
 
-			it('hide mobile header and show again', async () => {
-				const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+	
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
 
-				const element = await setup();
-
-				const container = element.shadowRoot.querySelector('#headerMobile');
-				expect(window.getComputedStyle(container).display).toBe('block');
-				expect(window.getComputedStyle(container).opacity).toBe('1');
-				element.shadowRoot.querySelector('.header__search-container input').focus();
-				expect(window.getComputedStyle(container).display).toBe('none');
-				expect(window.getComputedStyle(container).opacity).toBe('0');
-				element.shadowRoot.querySelector('.header__search-container input').blur();
-				expect(window.getComputedStyle(container).display).toBe('block');
-				expect(window.getComputedStyle(container).opacity).toBe('0');
-				jasmine.clock().tick(800);
-				/**
-				 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-				 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-				 * --> So we have to test for 'style' here
-				 */
-				expect(container.style.opacity).toBe('1');
-
-				expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+				it('hide mobile header and show again', async () => {
+					const matchMediaSpy = spyOn(windowMock, 'matchMedia')
+						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
+	
+					const element = await setup();
+	
+					const container = element.shadowRoot.querySelector('#headerMobile');
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('1');
+					element.shadowRoot.querySelector('#input').focus();
+					expect(window.getComputedStyle(container).display).toBe('none');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					element.shadowRoot.querySelector('#input').blur();
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					jasmine.clock().tick(800);
+					/**
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
+					expect(container.style.opacity).toBe('1');
+	
+					expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+				});
 			});
 		});
 	});
 
-	describe('network fetching state', () => {
+	describe('when network fetching state changes', () => {
 
 		beforeEach(function () {
 			spyOn(windowMock, 'matchMedia')
