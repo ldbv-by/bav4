@@ -1,12 +1,64 @@
 .attribution-container {
-    font-size: .9rem;
     user-select: none;
-    background-color: var(--secondary-bg-color);
-    padding: .1em 1em;
-    display: inherit;
+    font-size: .9rem;
+    background-color: var(--primary-bg-color-05);
+    padding: .4em 2em .4em 1em;
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow: hidden;
+    width: 25em;
+    white-space: nowrap;
+    vertical-align: middle;
+    position: relative;
 }
-
 .attribution-link {
     margin-left: .2em;
 } 
- 
+.collapse-button{
+    padding: 0.4em 1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    cursor: pointer;
+}
+.chevron {
+    position: relative;
+    mask: url('assets/chevron-right.svg');
+    -webkit-mask-image: url('assets/chevron-right.svg'); 
+    mask-image: url('assets/chevron-right.svg');
+} 
+.icon {
+    background: var(--primary-color);
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    display: inline-block;
+    height: 16px;
+    width: 10px;
+    transform: rotate(270deg);
+}
+.isopen{
+    white-space: unset;   
+    overflow: hidden; 
+    padding: .4em 1em;
+}
+.isopen a{
+    display:block;
+    margin: .5em;
+}
+.isopen .icon{
+    -moz-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg);
+    transform:rotate(90deg);
+}
+.isopen .collapse-button{
+    padding: 0.5em 1em;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    right: 0;    
+}
+
+.is-collapse{
+    display: block;
+}

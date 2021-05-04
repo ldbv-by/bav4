@@ -1,6 +1,7 @@
 import { html } from 'lit-html'; 
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
+import { classMap } from 'lit-html/directives/class-map.js';
 import css from './attributionInfo.css';
 
 /**
@@ -15,6 +16,7 @@ export class AttributionInfo extends BaElement {
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
+		this._isOpen = false;
 	} 
 
 
@@ -41,6 +43,15 @@ export class AttributionInfo extends BaElement {
 			attributionsRaw.push(geoResource.getAttribution(zoom));
 		}
 		
+		const toggleOpen = () => {		
+			this._isOpen = !this._isOpen;
+			this.render();
+		};
+
+		const classes = {
+			isopen:this._isOpen,
+		};
+
 		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case  
 		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);		
 
@@ -62,12 +73,18 @@ export class AttributionInfo extends BaElement {
 				}); 
 			}	
 		});
+		const getCollapseClass = () => {
+			return attributionCopyright.length > 1 ? 'is-collapse' : '';
+		};
 
 		return html`
 			<style>${css}</style>
-            <div class='attribution-container'>
+            <div class='attribution-container ${classMap(classes)}'>
 				© ${translate('map_attributionInfo_label')}: 
 				${attributionCopyright} 
+				<div @click=${toggleOpen} class="collapse-button ${getCollapseClass()}" title="${translate('map_attributionInfo_collapse_title')}">
+				<i class="icon chevron  "></i>
+				</div>
 			</div>
 			`;
 	} 

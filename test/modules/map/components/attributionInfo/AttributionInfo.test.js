@@ -51,7 +51,8 @@ describe('AttributionInfo', () => {
 
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label: ' + attribution);
-
+			expect(element.shadowRoot.querySelector('.collapse-button')).toBeTruthy();
+			
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
@@ -65,8 +66,9 @@ describe('AttributionInfo', () => {
 			const element = await setup(stateEmpty);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
-
+		
 		it('renders no content when geo resource could not be fetched', async  () => {
 			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
 			const state = {
@@ -75,13 +77,14 @@ describe('AttributionInfo', () => {
 				}
 			};
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
-
+			
 			const element = await setup(state);			
-
+			
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
-
+		
 		it('renders no content when no attribution provided', async  () => {
 			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
 			const state = {
@@ -92,18 +95,19 @@ describe('AttributionInfo', () => {
 					zoom: 12
 				} 
 			};
-
+			
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
-
+			
 			const getAttrMock = spyOn(wmts, 'getAttribution').and.returnValue(null);
-
+			
 			const element = await setup(state);			
-
+			
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
-
+			
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		it('renders no content when no visible layers are available', async  () => {
@@ -126,6 +130,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 
 			expect(geoServiceMock).not.toHaveBeenCalledOnceWith(layer.id);
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		it('updates AttributionInfo component on layer action', async ()  => {
@@ -157,22 +162,27 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution1);
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution2);
-
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
+			
 			addLayer(layer2.id, layer2);
-
+			
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution2);
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution1);
-
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeTruthy();
+			
 			modifyLayer(layer.id, { zIndex: 0 });
-
+			
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution1);
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution2);
-
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeTruthy();
+			
 			removeLayer(layer.id);
-
+			
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain(arrayAttribution2);
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).not.toContain(arrayAttribution1);
+			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 			
+
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
 		});
@@ -344,6 +354,36 @@ describe('AttributionInfo', () => {
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
+			
+		});
+
+		it('show and hide collapse on click', async () => {
+			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position:{
+					zoom: 12
+				} 
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const attribution = [42, 21];
+			wmts.attribution = attribution;
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.isopen')).toBeFalsy();
+			const toggle = element.shadowRoot.querySelector('.collapse-button');          			
+			toggle.click();
+			expect(element.shadowRoot.querySelector('.isopen')).toBeTruthy();
+			toggle.click();
+			expect(element.shadowRoot.querySelector('.isopen')).toBeFalsy();
+
+
+
 			
 		});
 	});
