@@ -61,20 +61,20 @@ export class AttributionInfo extends BaElement {
 			// we have to check if 'attribution' is an array, otherwise the 'forEach'-function throws an error
 			if (Array.isArray(attributions[0])) {
 				attribution.forEach((element) => {
-					if (element.copyright.url  != null) {
-						attributionCopyright.push(html`<a class='attribution-link' target='new' href=${element.copyright.url} > ${element.copyright.label}</a>`);
-					}
-					else {
-						attributionCopyright.push(html` ${element.copyright.label}`);
-					} 
-					if (index < attributions.length - 1) {
-						attributionCopyright.push(html`, `);
-					} 
+					const separator = index === attributions.length - 1 ? '' : ',';
+					attributionCopyright.push(element.copyright.url  != null ?						
+						html`<a class='attribution attribution-link' target='new' href=${element.copyright.url} >  ${element.copyright.label}${separator}</a>` :
+						html`<span class='attribution' > ${element.copyright.label}${separator}</span>`);
 				}); 
 			}	
 		});
+
 		const getCollapseClass = () => {
-			return attributionCopyright.length > 1 ? 'is-collapse' : '';
+			return (attributionCopyright.length > 1 || this._isOpen ) ? 'is-collapse' : '';
+		};
+
+		const getTitle = () => {
+			return this._isOpen ? 'map_attributionInfo_collapse_title_close' : 'map_attributionInfo_collapse_title_open';
 		};
 
 		return html`
@@ -82,7 +82,7 @@ export class AttributionInfo extends BaElement {
             <div class='attribution-container ${classMap(classes)}'>
 				© ${translate('map_attributionInfo_label')}: 
 				${attributionCopyright} 
-				<div @click=${toggleOpen} class="collapse-button ${getCollapseClass()}" title="${translate('map_attributionInfo_collapse_title')}">
+				<div @click=${toggleOpen} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
 				<i class="icon chevron  "></i>
 				</div>
 			</div>

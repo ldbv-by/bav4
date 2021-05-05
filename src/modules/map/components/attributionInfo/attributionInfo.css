@@ -42,7 +42,7 @@
     overflow: hidden; 
     padding: .4em 1em;
 }
-.isopen a{
+.isopen .attribution{
     display:block;
     margin: .5em;
 }
