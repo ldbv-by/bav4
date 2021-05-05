@@ -210,7 +210,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
 
-		this._persistLayer();
+		this._convertToPermanentLayer();
 
 		this._draw = false;
 		this._modify = false;
@@ -665,7 +665,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		element.addEventListener('mouseleave', handleMouseLeave);
 	}
 
-	async _persistLayer() {
+	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 		
@@ -678,6 +678,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			console.warn('Could not store layer-data. The data will get lost after this session.');	
 			id = 'temp_measure_id';
 			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: propagate the failing to UI-feedback-channel 
 		}
 		
 		try {//create a georesource and set the data as source
