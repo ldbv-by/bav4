@@ -13,7 +13,8 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_click_or_drag:'Click to delete the point.<br/> Click then drag to move the point',
 				map_olMap_handler_measure_modify_click_drag_overlay:'Click then drag to move the label',
 				map_olMap_handler_measure_modify_key_for_delete:'Press DEL to delete the drawing',
-				map_olMap_handler_delete_last_point:'Press DEL to remove the last point drawn'
+				map_olMap_handler_delete_last_point:'Press DEL to remove the last point drawn',
+				map_olMap_handler_measure_select:'Select existing or start new measurement'
 			};
 
 		case 'de':
@@ -28,7 +29,8 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_click_or_drag:'Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen',
 				map_olMap_handler_measure_modify_click_drag_overlay:'Klicke und ziehen um die Beschriftung zu verschieben',
 				map_olMap_handler_measure_modify_key_for_delete:'Zeichnung löschen: ENTF Taste',
-				map_olMap_handler_delete_last_point:'Letzter Punkt löschen: ENTF Taste'
+				map_olMap_handler_delete_last_point:'Letzter Punkt löschen: ENTF Taste',
+				map_olMap_handler_measure_select:'bestehende Messung auswählen oder neue Messung beginnen'
 			};
 
 		default:

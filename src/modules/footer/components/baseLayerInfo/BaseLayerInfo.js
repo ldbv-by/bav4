@@ -22,21 +22,23 @@ export class BaseLayerInfo extends BaElement {
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = this._state;
+		const { active, zoom } = this._state;
 
-		if (typeof active !== undefined && active.length > 0) {
-			const geoResource = this._georesourceService.byId(active[0].id);
-			if (!geoResource) {
-				return nothing;
-			} 
-			geoResource.label ? this._content = geoResource.label : this._content = translate('map_baseLayerInfo_fallback');
-			
-			return html`
-            <div><p>${translate('map_baseLayerInfo_label')}: ${this._content} </p></div>
-			`;
+		const geoResource = active[0] ? this._georesourceService.byId(active[0].id) : null;
+
+		if (!geoResource) {
+			return nothing;
 		} 
+			
+		const description = geoResource.getAttribution(zoom)[0].description;
 
-		return nothing;
+		const label = description ? description : geoResource.label;
+
+		label ? this._content = label : this._content = translate('map_baseLayerInfo_fallback');		
+			
+		return html`
+            <div>${translate('map_baseLayerInfo_label')}: ${this._content} </div>
+			`;
 	} 
 
 	/**
@@ -44,8 +46,8 @@ export class BaseLayerInfo extends BaElement {
 	  * @param {Object} state 
 	  */
 	extractState(state) {
-		const { layers: { active } } = state;
-		return { active };
+		const { layers: { active }, position: { zoom } } = state;
+		return { active, zoom };
 	}
 
 	static get tag() {

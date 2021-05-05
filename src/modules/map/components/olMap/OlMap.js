@@ -178,7 +178,7 @@ export class OlMap extends BaElement {
 	_syncOverlayLayer() {
 		const { layers } = this._state;
 
-		const updatedIds = layers.map(layer => layer.id);
+		const updatedIds = layers.map(layer => layer.geoResourceId);
 		const currentIds = this._map.getLayers()
 			.getArray()
 			.map(olLayer => olLayer.get('id'));
@@ -205,7 +205,7 @@ export class OlMap extends BaElement {
 			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
-				const layer = layers.find(layer => layer.id === id);
+				const layer = layers.find(layer => layer.geoResourceId === id);
 				updateOlLayer(olLayer, layer);
 				this._map.getLayers().insertAt(layer.zIndex, olLayer);
 			}
@@ -216,7 +216,7 @@ export class OlMap extends BaElement {
 		});
 
 		toBeUpdated.forEach(id => {
-			const layer = layers.find(layer => layer.id === id);
+			const layer = layers.find(layer => layer.geoResourceId === id);
 			const olLayer = this._getOlLayerById(id);
 			updateOlLayer(olLayer, layer);
 			this._map.getLayers().remove(olLayer);

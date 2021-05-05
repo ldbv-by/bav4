@@ -36,18 +36,9 @@ describe('DevInfo', () => {
 
 			const element = await setup({ portrait: false, softwareInfo: '42', runtimeMode: 'development' });
 
-			expect(element.shadowRoot.querySelector('.container.container-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.container').innerHTML.includes('42')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 		});
 		
-		it('adds dev-info elements and css classes for landscape', async () => {
-
-			const element = await setup({ portrait: true, softwareInfo: '42', runtimeMode: 'development' });
-
-			expect(element.shadowRoot.querySelector('.container.container-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.container').innerHTML.includes('42')).toBeTrue();
-		});
-
 		it('adds nothing when SOFTWARE_INFO property is missing', async () => {
 
 			const element = await setup({ portrait: true, softwareInfo: undefined, runtimeMode: 'development' });

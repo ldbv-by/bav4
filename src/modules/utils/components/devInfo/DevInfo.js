@@ -16,8 +16,6 @@ export class DevInfo extends BaElement {
 		super();
 		const { ConfigService } = $injector.inject('ConfigService');
 		this._configService = ConfigService;
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = EnvironmentService;
 	}
 	
 	isRenderingSkipped() {
@@ -25,13 +23,11 @@ export class DevInfo extends BaElement {
 	}
 
 	createView() {
-		const { portrait } = this._environmentService.getScreenOrientation();
 		const info = this._configService.getValue('SOFTWARE_INFO', false);
-		const getDevInfoClass = () => portrait ? 'container-portrait' : 'container-landscape';
 
 		return html`
 			<style>${css}</style>
-			<div class='container ${getDevInfoClass()}'>${info}</div>
+			<div class='container'>${info}</div>
 		`;
 	}
 

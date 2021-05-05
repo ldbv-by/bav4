@@ -6,12 +6,15 @@ import { TestUtils } from '../../../../../../test-utils.js';
 
 
 TestUtils.setupStoreAndDi({},);
-$injector.registerSingleton('UnitsService', { formatDistance:(distance) => {
-	return distance + ' m';
-},
-formatArea:(area) => {
-	return area + ' m²';
-} });
+$injector.registerSingleton('UnitsService', { 
+	// eslint-disable-next-line no-unused-vars
+	formatDistance:(distance, decimals) => {
+		return distance + ' m';
+	},
+	// eslint-disable-next-line no-unused-vars
+	formatArea:(area, decimals) => {
+		return area + ' m²';
+	} });
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('HelpTooltip', () => {
@@ -61,10 +64,11 @@ describe('HelpTooltip', () => {
 	describe('when notified', () => {
         
 		const measureStateTemplate = {
-			type:MeasureStateType.MUTE,
+			type:null,
 			snap:null,
 			coordinate:[0, 0], 
-			pointCount:42
+			pointCount:42,
+			dragging:false
 		};
 
 		it('with measurestate \'active\' create overlay text', () => {
@@ -125,14 +129,14 @@ describe('HelpTooltip', () => {
 			
 		});
 
-		it('with measurestate \'mute\' hide overlay', () => {
+		it('with measurestate \'dragging\' hide overlay', () => {
 			
 			const overlayManagerMock = { add:() => {} };
 			const classUnderTest = new HelpTooltip(overlayManagerMock);
 			// classUnderTest._hide = jasmine.createSpy().and.callThrough();
 			
 			classUnderTest.activate();
-			classUnderTest.notify(measureStateTemplate);
+			classUnderTest.notify({ ...measureStateTemplate, dragging:true });
 			
 			// expect(classUnderTest._hide).toHaveBeenCalled();
 			expect(classUnderTest._overlay.getPosition()).toBeUndefined();

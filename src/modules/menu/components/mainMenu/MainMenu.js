@@ -5,6 +5,7 @@ import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 import { SearchContentPanel } from '../../../search/components/menu/SearchContentPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 
 /**
  * @enum
@@ -115,7 +116,8 @@ export class MainMenu extends BaElement {
 									${item ? item : nothing}
 								</div>								
 							`)}
-						</div>		
+						</div>
+						${unsafeHTML(`<${DevInfo.tag}/>`)}	
 					</div>			
 				</div>			
 			</div>			
