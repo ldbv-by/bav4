@@ -67,6 +67,27 @@ describe('LayerManager', () => {
 			expect(toggleElement.checked).toBeFalse();
 		});
 
+		it('with one hidden of two layer displays one layer item', async () => {
+			const layer = {
+				...defaultLayerProperties,
+				id: 'id0', label: 'label0', visible: true, zIndex: 0
+			};
+
+			const hiddenLayer = {
+				...defaultLayerProperties,
+				id: 'id1', label: 'label1', visible: false, zIndex: 0, constraints:{ hidden:true, alwaysOnTop:false }
+			};
+			const state = {
+				layers: {
+					active: [layer, hiddenLayer],
+					background: 'bg0'
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
+		});
+
 		it('shows a title', async () => {
 			const stateEmpty = {
 				layers: {
