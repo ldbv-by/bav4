@@ -390,7 +390,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}			
 		else {
-			this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML).catch(error => console.warn('Could not store content:', error));										
+			try {
+				await this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML);	
+			}
+			catch (error) {
+				console.warn('Could not store content:', error);
+			}	
 		}
 	}
 
