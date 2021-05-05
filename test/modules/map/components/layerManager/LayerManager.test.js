@@ -67,7 +67,7 @@ describe('LayerManager', () => {
 			expect(toggleElement.checked).toBeFalse();
 		});
 
-		it('with one hidden of two layer displays one layer item', async () => {
+		it('displays one out of two layers - one is hidden', async () => {
 			const layer = {
 				...defaultLayerProperties,
 				id: 'id0', label: 'label0', visible: true, zIndex: 0
