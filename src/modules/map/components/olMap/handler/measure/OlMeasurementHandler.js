@@ -89,6 +89,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
@@ -108,6 +109,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			});
 			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
 			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
+			this._listeners.push(source.on('addfeature', () => this._save()));
+			this._listeners.push(source.on('changefeature', () => this._save()));
+			this._listeners.push(source.on('removefeature', () => this._save()));
 			return layer;
 		};
 
@@ -344,7 +348,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawend', event => {
 			finishMeasurementTooltip(event);
 			activateModify(event);
-			this._save();
 		}
 		);
 
@@ -372,15 +375,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	async _save() {
 		
-		if (this._vectorLayer) {
-			const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
-			const format = new KML({ writeStyles: true });
-			this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
-		}
+		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
+		const format = new KML({ writeStyles: true });
+		this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
 
+		
 		if (!this._storeID) {
 			try {
-				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);	
+				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);					
 				this._storeID = fileId;				
 			}
 			catch (error) {
@@ -388,7 +390,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}			
 		else {
-			this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML).catch(reason =>  console.warn('Could not store content:', reason));			
+			this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML).catch(error => console.warn('Could not store content:', error));										
 		}
 	}
 
@@ -611,7 +613,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
 				this._mapContainer.classList.remove('grabbing');
 			}
-			this._save();
 		});
 		return modify;
 	}
@@ -663,7 +664,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 		
-		if (!this._storedContent) {
+		if (!this._storeID || !this._storedContent ) {
 			await this._save();		
 		}
 		

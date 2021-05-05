@@ -129,7 +129,7 @@ describe('OlMeasurementHandler', () => {
 				const map = setupMap();
 				const layerStub = {};
 				map.removeInteraction = jasmine.createSpy();
-
+				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
 				// removes Interaction for select, draw, modify, snap, dragPan
@@ -221,10 +221,12 @@ describe('OlMeasurementHandler', () => {
 		it('deactivates overlayManager on deactivate', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			classUnderTest._overlayManager = { deactivate: jasmine.createSpy() };
+			
+			classUnderTest.activate(map);
+			const spy = spyOn(classUnderTest._overlayManager, 'deactivate');
 			classUnderTest.deactivate(map);
 
-			expect(classUnderTest._overlayManager.deactivate).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalled();
 		});
 
 	});
@@ -305,6 +307,7 @@ describe('OlMeasurementHandler', () => {
 			const warnSpy = spyOn(console, 'warn');
 			
 			classUnderTest.activate(map);			
+			expect(classUnderTest._vectorLayer).toBeTruthy();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);			
 			
@@ -553,55 +556,6 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});
 
-		it('try to store the feature after finish drawing', (done) => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' } )
-			);			
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			
-			setTimeout(() => {								
-				expect(classUnderTest._storeID).toBe('fooBarId');
-				expect(classUnderTest._storeContent).toBeFalsy();
-				done();
-			});	
-			
-		});
-
-		it('logs warning on failed store of feature after finish drawing', async (done) => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.reject('Failed')
-			);			
-			const warnSpy = spyOn(console, 'warn');
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			
-			setTimeout(() => {								
-				expect(classUnderTest._storeID).toBeUndefined();
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', 'Failed');
-				done();
-			});	
-			
-		});	
-
-
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -716,7 +670,7 @@ describe('OlMeasurementHandler', () => {
 		});
 	});
 
-	describe('when modify a feature', () => {
+	describe('when storing layer', () => {
 		
 		let target;
 		const setupMap = () => {
@@ -744,7 +698,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 
-		it('try to store the feature after finish modify', async (done) => {
+		it('stores after adding a feature', async (done) => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -754,14 +708,31 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
-
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			// classUnderTest._modify.setActive(true);					
-			await sleep(100);
-			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(saveSpy).toHaveBeenCalledTimes(1);
+				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);				
+				done();
+			});	
+			
+		});			
+		
+		it('stores after a feature is changed', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.resolve({ fileId: 'fooBarId' } )
+			);			
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			await sleep(10);
+			feature.getGeometry().dispatchEvent('change');			
 			
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBe('fooBarId');
@@ -772,8 +743,58 @@ describe('OlMeasurementHandler', () => {
 				done();
 			});	
 			
-		});				
-	});
+		});		
+
+
+		it('stores after a feature is removed', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.resolve({ fileId: 'fooBarId' } )
+			);			
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			await sleep(10);
+			classUnderTest._vectorLayer.getSource().removeFeature(feature);
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(saveSpy).toHaveBeenCalledWith('fooBarId', jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
+			});	
+			
+		});		
+
+		it('logs warning on failed initial store ', async (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
+				Promise.reject('Failed')
+			);			
+			const warnSpy = spyOn(console, 'warn');
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			
+			setTimeout(() => {								
+				expect(classUnderTest._storeID).toBeUndefined();
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', 'Failed');
+				done();
+			});	
+			
+		});	
+
+		
+	});	
 
 	const createSnappingFeatureMock = (coordinate, feature) => {
 		return {
