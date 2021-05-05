@@ -8,8 +8,8 @@ describe('i18n for attribution info', () => {
 		const map = provide('en');
 		
 		expect(map.map_attributionInfo_label).toBe('Data');
-		expect(map.map_attributionInfo_collapse_title_open).toBe('show all');
-		expect(map.map_attributionInfo_collapse_title_close).toBe('close');
+		expect(map.map_attributionInfo_collapse_title_open).toBe('Show all');
+		expect(map.map_attributionInfo_collapse_title_close).toBe('Close');
 	});
 	
 	
@@ -18,8 +18,8 @@ describe('i18n for attribution info', () => {
 		const map = provide('de');
 		
 		expect(map.map_attributionInfo_label).toBe('Daten');
-		expect(map.map_attributionInfo_collapse_title_open).toBe('alle anzeigen');
-		expect(map.map_attributionInfo_collapse_title_close).toBe('schließen');
+		expect(map.map_attributionInfo_collapse_title_open).toBe('Alle anzeigen');
+		expect(map.map_attributionInfo_collapse_title_close).toBe('Schließen');
 	});
 
 	it('have the expected amount of translations', () => {
