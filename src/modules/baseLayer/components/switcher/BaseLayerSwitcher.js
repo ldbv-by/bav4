@@ -58,9 +58,9 @@ export class BaseLayerSwitcher extends BaElement {
 				</div>
 				<div class="baselayer__container">
 					${geoRs.map((geoR) => html`
-							<div class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)} title=${geoR.label} >
-							</div>
-						`)}
+							<div class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
+								<div class="baselayer__label">${geoR.label}</div>
+							</div>`)}
 				</div>
 			`;
 		}

@@ -70,13 +70,13 @@ describe('BaseLayerSwitcher', () => {
 
 			const element = await setup(state);
 
-			const container = element.shadowRoot.querySelector('.container');
+			const container = element.shadowRoot.querySelector('.baselayer__container');
 			expect(container).toBeTruthy();
-			const buttons = element.shadowRoot.querySelectorAll('ba-button');
+			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 			expect(buttons.length).toBe(2);
-			expect(buttons[0].getAttribute('label')).toBe('someLabel0');
+			expect(buttons[0].children[0].innerText).toBe('someLabel0');
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
-			expect(buttons[1].getAttribute('label')).toBe('someLabel1');
+			expect(buttons[1].children[0].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
 		});
 	});
@@ -112,13 +112,13 @@ describe('BaseLayerSwitcher', () => {
 
 			setCurrent(topicsId);
 
-			const container = element.shadowRoot.querySelector('.container');
+			const container = element.shadowRoot.querySelector('.baselayer__container');
 			expect(container).toBeTruthy();
-			const buttons = element.shadowRoot.querySelectorAll('ba-button');
+			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 			expect(buttons.length).toBe(2);
-			expect(buttons[0].getAttribute('label')).toBe('someLabel0');
+			expect(buttons[0].children[0].innerText).toBe('someLabel0');
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
-			expect(buttons[1].getAttribute('label')).toBe('someLabel1');
+			expect(buttons[1].children[0].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
 		});
 	});
@@ -147,7 +147,7 @@ describe('BaseLayerSwitcher', () => {
 				return new WMTSGeoResource(id, 'someLabel', 'someUrl');
 			});
 			const element = await setup(state);
-			const buttons = element.shadowRoot.querySelectorAll('ba-button');
+			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 			buttons[0].click();
 
