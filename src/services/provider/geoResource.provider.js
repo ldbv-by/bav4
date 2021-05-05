@@ -3,6 +3,7 @@
  */
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from '../domain/geoResources';
 import { $injector } from '../../injection';
+import { getBvvAttribution } from './attribution.provider';
 
 /**
  * A function that returns a promise with an array of geoResources. 
@@ -12,7 +13,7 @@ import { $injector } from '../../injection';
 
 
 /**
- * Uses the BVV service to load geoResources.
+ * Uses the BVV endpoint to load geoResources.
  * @function
  * @returns {Promise<Array<GeoResource>>}
  */
@@ -48,6 +49,8 @@ export const loadBvvGeoResources = async () => {
 
 			}
 			if (geoResource) {
+				geoResource.setAttributionProvider(getBvvAttribution);
+				geoResource.attribution = parseBvvAttributionDefinition(definition);
 				geoResource.background = definition.background;
 				geoResource.opacity = definition.opacity;
 				geoResources.push(geoResource);
@@ -59,6 +62,45 @@ export const loadBvvGeoResources = async () => {
 		return geoResources;
 	}
 	throw new Error('GeoResources could not be loaded');
+};
+
+/**
+ * Helper function to parse BVV attributions.
+ * @param {object} definition BVV geoResouce definition
+ * @returns  {<Array<Attribution>|null}
+ */
+export const parseBvvAttributionDefinition = (definition) => {
+
+	if (!definition.attribution) {
+		return null;
+	}
+
+	//basic attribution values
+	const { description, copyright, href } = definition.attribution;
+
+	if (Array.isArray(definition.extendedAttributions)) {
+		return definition
+			.extendedAttributions
+			.map(extAtt => {
+				//supplement each attribution with basic attribution values if needed
+				return {
+					copyright: {
+						label: extAtt.copyright || copyright,
+						url: extAtt.href || href
+					},
+					description: extAtt.description || description
+				};
+			});
+	}
+	else {
+		return [{
+			copyright: {
+				label: copyright,
+				url: href
+			},
+			description: description
+		}];
+	}
 };
 
 /**
