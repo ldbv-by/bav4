@@ -5,7 +5,7 @@ import { TestUtils } from '../../../test-utils.js';
 describe('defaultLayerProperties', () => {
 
 	it('returns a layer object with default settings', () => {
-	
+
 		expect(Object.isFrozen(defaultLayerProperties)).toBeTrue();
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.label).toBe('');
@@ -81,16 +81,18 @@ describe('layersReducer', () => {
 		const store = setup();
 
 		const layer0 = { label: 'label0' };
-		const layer1 = { label: 'label1' };
+		const layer1 = { label: 'label1', geoResourceId: 'geoResourceId1' };
 
 		addLayer('id0', layer0);
 		addLayer('id1', layer1);
 
 		expect(store.getState().layers.active.length).toBe(2);
 		expect(store.getState().layers.active[0].id).toBe('id0');
+		expect(store.getState().layers.active[0].geoResourceId).toBe('id0');
 		expect(store.getState().layers.active[0].label).toBe('label0');
 		expect(store.getState().layers.active[0].zIndex).toBe(0);
 		expect(store.getState().layers.active[1].id).toBe('id1');
+		expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 		expect(store.getState().layers.active[1].label).toBe('label1');
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
 	});
@@ -207,7 +209,7 @@ describe('layersReducer', () => {
 
 	it('removes a layer', () => {
 		const layer0 = { id: 'id0', label: 'label0' };
-		const layer1 = { id: 'id1', label: 'label1' };
+		const layer1 = { id: 'id1', label: 'label1', geoResourceId: 'geoResourceId1' };
 		const store = setup({
 			layers: {
 				active: [layer0, layer1]
@@ -220,6 +222,7 @@ describe('layersReducer', () => {
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].id).toBe('id1');
+		expect(store.getState().layers.active[0].geoResourceId).toBe('geoResourceId1');
 		expect(store.getState().layers.active[0].zIndex).toBe(0);
 	});
 
