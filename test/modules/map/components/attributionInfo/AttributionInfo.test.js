@@ -367,24 +367,22 @@ describe('AttributionInfo', () => {
 					zoom: 12
 				} 
 			};
-
 			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const attribution = [42, 21];
 			wmts.attribution = attribution;
-
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.isopen')).toBeFalsy();
+			
 			const toggle = element.shadowRoot.querySelector('.collapse-button');          			
 			toggle.click();
-			expect(element.shadowRoot.querySelector('.isopen')).toBeTruthy();
-			toggle.click();
-			expect(element.shadowRoot.querySelector('.isopen')).toBeFalsy();
-
-
-
 			
+			expect(element.shadowRoot.querySelector('.isopen')).toBeTruthy();
+			
+			toggle.click();
+			
+			expect(element.shadowRoot.querySelector('.isopen')).toBeFalsy();
 		});
 	});
 });
