@@ -77,6 +77,14 @@ describe('OlMeasurementHandler', () => {
 		expect(handler.activate).toBeTruthy();
 		expect(handler.deactivate).toBeTruthy();
 		expect(handler.id).toBe(MEASUREMENT_LAYER_ID);
+	});	
+
+	describe('static properties', () => {
+
+		it('defines a debounce time', async () => {
+			expect(OlMeasurementHandler.Debounce_Delay).toBe(1000);
+		});
+
 	});
 
 	const simulateDrawEvent = (type, draw, feature) => {
@@ -727,7 +735,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
-				jasmine.clock().tick(3000);				
+				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);				
 
 				expect(saveSpy).toHaveBeenCalledTimes(2);
 			});		
@@ -747,7 +755,7 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
-				jasmine.clock().tick(3000);				
+				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);				
 
 				expect(saveSpy).toHaveBeenCalledTimes(2);
 			});		

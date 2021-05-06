@@ -44,7 +44,7 @@ export const MeasureSnapType = {
 	FACE: 'face'
 };
 
-const Debounce_Delay = 2000;
+const Debounce_Delay = 1000;
 
 /**
  * Handler for measurement-interaction with the map
@@ -718,5 +718,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return isInCollection;
 	}
 
+	static get Debounce_Delay() {
+		return Debounce_Delay; 
+	
+	}
 
 }
