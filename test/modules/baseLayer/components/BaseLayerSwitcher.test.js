@@ -176,7 +176,7 @@ describe('BaseLayerSwitcher', () => {
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
-			//if we we detect the custom id, the state wasn't modified
+			//if we detect the custom id, the state wasn't modified
 			expect(store.getState().layers.active[0].customId).toBe('test');
 		});
 	});
