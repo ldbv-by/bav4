@@ -110,11 +110,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				source: source,
 				style: measureStyleFunction
 			});
+			const saveDebounced = debounced(Debounce_Delay, () => this._save());
 			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
 			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
 			this._listeners.push(source.on('addfeature', () => this._save()));
-			this._listeners.push(source.on('changefeature', () => this._saveDebounced())); 
-			this._listeners.push(source.on('removefeature', () => this._saveDebounced()));
+			this._listeners.push(source.on('changefeature', () => saveDebounced())); 
+			this._listeners.push(source.on('removefeature', () => saveDebounced()));
 			return layer;
 		};
 
@@ -401,10 +402,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_saveDebounced() {		
-		const save = debounced(Debounce_Delay, async() => await this._save());
-		save();
-	}
 
 	_updateMeasureTooltips(feature, isDrawing) {
 		let measureGeometry = feature.getGeometry();
