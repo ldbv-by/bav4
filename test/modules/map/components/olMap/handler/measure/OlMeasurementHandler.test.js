@@ -673,14 +673,6 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when storing layer', () => {
-		
-		beforeEach(function () {
-			jasmine.clock().install();
-		});
-	
-		afterEach(function () {
-			jasmine.clock().uninstall();
-		});
 
 		let target;
 		const setupMap = () => {
@@ -714,7 +706,52 @@ describe('OlMeasurementHandler', () => {
 			});
 			return layer;
 		};
+		describe('debouncing takes place', () => {
+		
+			beforeEach(function () {
+				jasmine.clock().install();
+			});
+		
+			afterEach(function () {
+				jasmine.clock().uninstall();
+			});
+			it('stores twice after a single change of a feature', async () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+					Promise.resolve({ fileId: 'fooBarId' } )
+				);			
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+	
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
+				jasmine.clock().tick(3000);				
 
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+			});		
+
+			it('stores only twice after multiple changes of a feature', async () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+					Promise.resolve({ fileId: 'fooBarId' } )
+				);			
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+	
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
+				feature.getGeometry().dispatchEvent('change');
+				feature.getGeometry().dispatchEvent('change');
+				feature.getGeometry().dispatchEvent('change');
+				jasmine.clock().tick(3000);				
+
+				expect(saveSpy).toHaveBeenCalledTimes(2);
+			});		
+		});
 
 		it('stores after adding a feature', async () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -731,39 +768,16 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBe('fooBarId');
 				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(saveSpy).toHaveBeenCalledTimes(1);
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);	
 			});	
 			
 		});			
-		
-		it('stores after a feature is changed', async () => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' } )
-			);			
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			feature.getGeometry().dispatchEvent('change');			
-			jasmine.clock().tick(3000);
-
-			setTimeout(() => {								
-				expect(classUnderTest._storeID).toBe('fooBarId');
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(saveSpy).toHaveBeenCalledTimes(2);
-			});	
-			
-		});		
 
 
 		it('stores after a feature is removed', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.resolve({ fileId: 'fooBarId' } )
 			);			
 			const geometry = new LineString([[0, 0], [1, 0]]);
@@ -771,14 +785,11 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._vectorLayer.getSource().removeFeature(feature);
-		
+			classUnderTest._vectorLayer.getSource().removeFeature(feature);		
 
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBe('fooBarId');
-				expect(classUnderTest._storedContent).toBeTruthy();				
-				expect(saveSpy).toHaveBeenCalledTimes(1);		
-				jasmine.clock().tick(3000);		
+				expect(classUnderTest._storedContent).toBeTruthy();		
 			});	
 		});		
 
