@@ -389,7 +389,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._storeID = fileId;				
 			}
 			catch (error) {
-				console.warn('Could not store content initially:', error);			
+				console.warn('Could not store content initially:', error.message);			
 			}
 		}			
 		else {
@@ -397,7 +397,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				await this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML);	
 			}
 			catch (error) {
-				console.warn('Could not store content:', error);
+				console.warn('Could not store content:', error.message);
 			}	
 		}
 	}
@@ -693,7 +693,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			addLayer(this._storeID, { label: label });
 		}
 		catch (error) {
-			console.error(error);
+			console.error(error.message);
 		}
 	}
 

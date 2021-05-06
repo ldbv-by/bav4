@@ -312,7 +312,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.reject('42' )
+				Promise.reject(new Error('42') )
 			);			
 			const warnSpy = spyOn(console, 'warn');
 			
@@ -838,7 +838,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBeUndefined();
 				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(String));
 			});	
 			
 		});	
@@ -859,7 +859,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._save();
 			
 			setTimeout(() => {							
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));				
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(String));				
 			});	
 			
 		});	
