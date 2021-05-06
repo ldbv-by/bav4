@@ -36,6 +36,15 @@ export const sort = (list) => {
 	return index(sorted);
 };
 
+/**
+ * Creates a layer containing all required properties set to default values.
+ * @param {string} id The id of the layer
+ * @returns a layer with default properties
+ */
+export const createDefaultLayer = (id) => {
+	return { id: id, geoResourceId: id, ...defaultLayerProperties };
+};
+
 export const defaultLayerProperties = Object.freeze({
 	label: '',
 	visible: true,

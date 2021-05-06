@@ -1,10 +1,10 @@
-import { layersReducer, index, sort, defaultLayerProperties } from '../../../../src/modules/map/store/layers.reducer';
+import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../../src/modules/map/store/layers.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../src/modules/map/store/layers.action';
 import { TestUtils } from '../../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
 
-	it('returns a layer object with default settings', () => {
+	it('returns a object containing default layer properties', () => {
 
 		expect(Object.isFrozen(defaultLayerProperties)).toBeTrue();
 		expect(defaultLayerProperties.visible).toBeTrue();
@@ -13,6 +13,23 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
 		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
+	});
+});
+
+describe('createDefaultLayer', () => {
+
+	it('returns a layer object with default properties and values', () => {
+
+		const layer = createDefaultLayer('foo');
+
+		expect(layer.id).toBe('foo');
+		expect(layer.geoResourceId).toBe('foo');
+		expect(layer.visible).toBeTrue();
+		expect(layer.label).toBe('');
+		expect(layer.opacity).toBe(1);
+		expect(layer.zIndex).toBe(-1);
+		expect(layer.constraints.alwaysTop).toBeFalse();
+		expect(layer.constraints.hidden).toBeFalse();
 	});
 });
 
