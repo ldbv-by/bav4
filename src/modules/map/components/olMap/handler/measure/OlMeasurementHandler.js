@@ -19,6 +19,7 @@ import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
 import { KML } from 'ol/format';
+import { debounced } from '../../../../../../utils/timer';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 
@@ -42,6 +43,8 @@ export const MeasureSnapType = {
 	EGDE: 'edge',
 	FACE: 'face'
 };
+
+const Debounce_Delay = 2000;
 
 /**
  * Handler for measurement-interaction with the map
@@ -110,8 +113,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
 			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
 			this._listeners.push(source.on('addfeature', () => this._save()));
-			this._listeners.push(source.on('changefeature', () => this._save()));
-			this._listeners.push(source.on('removefeature', () => this._save()));
+			this._listeners.push(source.on('changefeature', () => this._saveDebounced())); 
+			this._listeners.push(source.on('removefeature', () => this._saveDebounced()));
 			return layer;
 		};
 
@@ -373,8 +376,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	}
 
-	async _save() {
-		
+	async _save() {		
 		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
 		const format = new KML({ writeStyles: true });
 		this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
@@ -397,6 +399,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				console.warn('Could not store content:', error);
 			}	
 		}
+	}
+
+	_saveDebounced() {		
+		const save = debounced(Debounce_Delay, async() => await this._save());
+		save();
 	}
 
 	_updateMeasureTooltips(feature, isDrawing) {

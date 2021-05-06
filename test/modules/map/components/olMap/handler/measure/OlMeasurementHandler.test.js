@@ -674,6 +674,14 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when storing layer', () => {
 		
+		beforeEach(function () {
+			jasmine.clock().install();
+		});
+	
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+
 		let target;
 		const setupMap = () => {
 			target = document.createElement('div');
@@ -708,7 +716,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 
-		it('stores after adding a feature', async (done) => {
+		it('stores after adding a feature', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -724,13 +732,12 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._storeID).toBe('fooBarId');
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledTimes(1);
-				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);				
-				done();
+				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);	
 			});	
 			
 		});			
 		
-		it('stores after a feature is changed', async (done) => {
+		it('stores after a feature is changed', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -742,18 +749,18 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			feature.getGeometry().dispatchEvent('change');			
-			
+			jasmine.clock().tick(3000);
+
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBe('fooBarId');
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledTimes(2);
-				done();
 			});	
 			
 		});		
 
 
-		it('stores after a feature is removed', async (done) => {
+		it('stores after a feature is removed', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -765,16 +772,17 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest._vectorLayer.getSource().removeFeature(feature);
+		
 
 			setTimeout(() => {								
 				expect(classUnderTest._storeID).toBe('fooBarId');
 				expect(classUnderTest._storedContent).toBeTruthy();				
-				expect(saveSpy).toHaveBeenCalledTimes(2);
-				done();
+				expect(saveSpy).toHaveBeenCalledTimes(1);		
+				jasmine.clock().tick(3000);		
 			});	
 		});		
 
-		it('stores with storeId on second store ', async (done) => {
+		it('stores with storeId on second store ', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.resolve({ fileId: 'fooBarId' } )
@@ -790,13 +798,12 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {							
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledTimes(1);
-				expect(saveSpy).toHaveBeenCalledWith('fooBarId', jasmine.any(String), FileStorageServiceDataTypes.KML);	
-				done();
+				expect(saveSpy).toHaveBeenCalledWith('fooBarId', jasmine.any(String), FileStorageServiceDataTypes.KML);				
 			});	
 			
 		});	
 
-		it('logs warning on failed initial store ', async (done) => {
+		it('logs warning on failed initial store ', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -813,12 +820,11 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._storeID).toBeUndefined();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
-				done();
 			});	
 			
 		});	
 
-		it('logs warning on second store ', async (done) => {
+		it('logs warning on second store ', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('Failed'))
@@ -834,8 +840,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._save();
 			
 			setTimeout(() => {							
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
-				done();
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));				
 			});	
 			
 		});	
