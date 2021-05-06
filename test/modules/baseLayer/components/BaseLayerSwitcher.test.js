@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { BaseLayerSwitcher } from '../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
-import { defaultLayerProperties, layersReducer } from '../../../../src/modules/map/store/layers.reducer';
+import { createDefaultLayer, layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
 import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
 import { TestUtils } from '../../../test-utils.js';
@@ -46,11 +46,7 @@ describe('BaseLayerSwitcher', () => {
 
 			const topicsId = 'topicId';
 			const activeGeoResourceId = 'geoRsId1';
-			const activeLayer = {
-				...defaultLayerProperties,
-				id: activeGeoResourceId,
-				geoResourceId: activeGeoResourceId
-			};
+			const activeLayer = createDefaultLayer(activeGeoResourceId);
 			const state = {
 				topics: {
 					current: topicsId
@@ -88,11 +84,7 @@ describe('BaseLayerSwitcher', () => {
 
 			const topicsId = 'topicId';
 			const activeGeoResourceId = 'geoRsId1';
-			const activeLayer = {
-				...defaultLayerProperties,
-				id: activeGeoResourceId,
-				geoResourceId: activeGeoResourceId
-			};
+			const activeLayer = createDefaultLayer(activeGeoResourceId);
 			const state = {
 				layers: {
 					active: [activeLayer]
@@ -133,20 +125,14 @@ describe('BaseLayerSwitcher', () => {
 			const geoResoureceId0 = 'geoRsId0';
 			const geoResoureceId1 = 'geoRsId1';
 			const geoResoureceId2 = 'geoRsId2';
-			const baseLayerLayer0 = {
-				...defaultLayerProperties,
-				id: geoResoureceId0
-			};
-			const otherLayer = {
-				...defaultLayerProperties,
-				id: geoResoureceId1
-			};
+			const baseLayer0 = createDefaultLayer(geoResoureceId0);
+			const otherLayer = createDefaultLayer(geoResoureceId1);
 			const state = {
 				topics: {
 					current: topicsId
 				},
 				layers: {
-					active: [baseLayerLayer0, otherLayer]
+					active: [baseLayer0, otherLayer]
 				}
 			};
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
@@ -168,19 +154,14 @@ describe('BaseLayerSwitcher', () => {
 			const topicsId = 'topicId';
 			const geoResoureceId0 = 'geoRsId0';
 			const geoResoureceId1 = 'geoRsId1';
-			const baseLayerLayer0 = {
-				...defaultLayerProperties,
-				id: geoResoureceId0,
-				geoResourceId: geoResoureceId0,
-				customId: 'test'
-			};
+			const baseLayer0 = { ...createDefaultLayer(geoResoureceId0), customId: 'test' };
 			
 			const state = {
 				topics: {
 					current: topicsId
 				},
 				layers: {
-					active: [baseLayerLayer0]
+					active: [baseLayer0]
 				}
 			};
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId1]));
