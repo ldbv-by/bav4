@@ -31,7 +31,8 @@ export class BaseLayerSwitcher extends BaElement {
 		if (currentTopicId) {
 
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
-			const currentBaseLayerId = activeLayers[0] ? activeLayers[0].id : null;
+			const currentBaseLayerId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
+
 
 			const geoRs = baseGeoRIds
 				.map(grId => this._geoResourceService.byId(grId))
@@ -39,12 +40,14 @@ export class BaseLayerSwitcher extends BaElement {
 
 
 			const onClick = (geoR) => {
-				//Remove existing
-				geoRs.forEach(geoR => {
-					removeLayer(geoR.id);
-				});
-				//add current
-				addLayer(geoR.id);
+				if (activeLayers[0].geoResourceId !== geoR.id) {
+					//Remove existing
+					geoRs.forEach(geoR => {
+						removeLayer(geoR.id);
+					});
+					//add current
+					addLayer(geoR.id, { zIndex: 0 });
+				}
 			};
 
 			const getType = (geoR) => {

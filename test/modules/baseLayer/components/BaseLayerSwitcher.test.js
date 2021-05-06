@@ -45,10 +45,11 @@ describe('BaseLayerSwitcher', () => {
 		it('renders two buttons', async () => {
 
 			const topicsId = 'topicId';
-			const activeGeoResoureceId = 'geoRsId1';
+			const activeGeoResourceId = 'geoRsId1';
 			const activeLayer = {
 				...defaultLayerProperties,
-				id: activeGeoResoureceId
+				id: activeGeoResourceId,
+				geoResourceId: activeGeoResourceId
 			};
 			const state = {
 				topics: {
@@ -58,13 +59,13 @@ describe('BaseLayerSwitcher', () => {
 					active: [activeLayer]
 				}
 			};
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', ['geoRsId0', activeGeoResoureceId]));
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', ['geoRsId0', activeGeoResourceId]));
 			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 				switch (id) {
 					case 'geoRsId0':
 						return new WMTSGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
-					case activeGeoResoureceId:
-						return new WMTSGeoResource(activeGeoResoureceId, 'someLabel1', 'someUrl1');
+					case activeGeoResourceId:
+						return new WMTSGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 				}
 			});
 
@@ -86,23 +87,24 @@ describe('BaseLayerSwitcher', () => {
 		it('updates the view', async () => {
 
 			const topicsId = 'topicId';
-			const activeGeoResoureceId = 'geoRsId1';
+			const activeGeoResourceId = 'geoRsId1';
 			const activeLayer = {
 				...defaultLayerProperties,
-				id: activeGeoResoureceId
+				id: activeGeoResourceId,
+				geoResourceId: activeGeoResourceId
 			};
 			const state = {
 				layers: {
 					active: [activeLayer]
 				}
 			};
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', ['geoRsId0', activeGeoResoureceId]));
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', ['geoRsId0', activeGeoResourceId]));
 			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 				switch (id) {
 					case 'geoRsId0':
 						return new WMTSGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
-					case activeGeoResoureceId:
-						return new WMTSGeoResource(activeGeoResoureceId, 'someLabel1', 'someUrl1');
+					case activeGeoResourceId:
+						return new WMTSGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 				}
 			});
 
@@ -125,34 +127,76 @@ describe('BaseLayerSwitcher', () => {
 
 	describe('when element clicked ', () => {
 
-		it('it removes the current and adds the new layer', async () => {
+		it('removes the current base layer and adds the new layer on index 0', async () => {
 
 			const topicsId = 'topicId';
-			const inActiveGeoResoureceId = 'geoRsId0';
-			const activeGeoResoureceId = 'geoRsId1';
-			const activeLayer = {
+			const geoResoureceId0 = 'geoRsId0';
+			const geoResoureceId1 = 'geoRsId1';
+			const geoResoureceId2 = 'geoRsId2';
+			const baseLayerLayer0 = {
 				...defaultLayerProperties,
-				id: activeGeoResoureceId
+				id: geoResoureceId0
+			};
+			const otherLayer = {
+				...defaultLayerProperties,
+				id: geoResoureceId1
 			};
 			const state = {
 				topics: {
 					current: topicsId
 				},
 				layers: {
-					active: [activeLayer]
+					active: [baseLayerLayer0, otherLayer]
 				}
 			};
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [inActiveGeoResoureceId, activeGeoResoureceId]));
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
 			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 				return new WMTSGeoResource(id, 'someLabel', 'someUrl');
 			});
 			const element = await setup(state);
 			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
+			//let's add the second baseLayer
+			buttons[1].click();
+
+			expect(store.getState().layers.active.length).toBe(2);
+			expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
+		});
+
+		it('does nothing when layer is already on map', async () => {
+
+			const topicsId = 'topicId';
+			const geoResoureceId0 = 'geoRsId0';
+			const geoResoureceId1 = 'geoRsId1';
+			const baseLayerLayer0 = {
+				...defaultLayerProperties,
+				id: geoResoureceId0,
+				geoResourceId: geoResoureceId0,
+				customId: 'test'
+			};
+			
+			const state = {
+				topics: {
+					current: topicsId
+				},
+				layers: {
+					active: [baseLayerLayer0]
+				}
+			};
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId1]));
+			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+			});
+			const element = await setup(state);
+			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+
+			//let's try to add the first baseLayer again
 			buttons[0].click();
 
 			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe(inActiveGeoResoureceId);
+			expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
+			//if we we detect the custom id, the state wasn't modified
+			expect(store.getState().layers.active[0].customId).toBe('test');
 		});
 	});
 });
