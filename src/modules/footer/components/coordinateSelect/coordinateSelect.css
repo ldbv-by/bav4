@@ -2,6 +2,8 @@
     display: flex;
     margin: auto;
     user-select: none;
+    border-left: 1px dotted var(--color);
+    padding: 0 1em;
 }
 
 @media (max-width: 600px){
@@ -12,7 +14,7 @@
 
 
 .coordinate-label {
-    padding-left: .5em;
+    padding-left: 5.5em;
     margin: auto;
     display: block;
 }
@@ -25,13 +27,15 @@
     cursor: pointer;
     user-select: none;
     font-family: var(--font-family);
-    font-size: 14px;
+    font-size: .9rem;
     font-weight: bold;
     border-radius: 10%;
     width: min-content;
     height: min-content;
     outline: none;
     margin: auto;
+    position: absolute;
+    bottom:.3em;
 } 
 
 .select-coordinate-option{    

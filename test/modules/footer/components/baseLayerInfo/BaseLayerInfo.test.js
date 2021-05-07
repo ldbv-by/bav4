@@ -1,8 +1,9 @@
 import { BaseLayerInfo } from '../../../../../src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
 import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
+import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/modules/map/store/layers.action';
-import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources'; 
+import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 
 
@@ -11,11 +12,14 @@ window.customElements.define(BaseLayerInfo.tag, BaseLayerInfo);
 describe('BaseLayerInfo', () => {
 
 	const geoResourceServiceMock = {
-		byId: () => { } 
-	}; 
+		byId: () => { }
+	};
 
 	const setup = (state) => {
-		TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+		TestUtils.setupStoreAndDi(state, {
+			layers: layersReducer,
+			position: positionReducer
+		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector
@@ -25,10 +29,13 @@ describe('BaseLayerInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders BaseLayerInfo component', async () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
+				},
+				position: {
+					zoom: 12
 				}
 			};
 
@@ -37,44 +44,81 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_baseLayerInfo_label');
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV42');
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV42');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
-		it('renders nothing when no layers are set', async  () => {
+		it('renders BaseLayerInfo component with georesource.getAttribution', async () => {
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				}
+			};
+
+			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+
+			const attribution = { description: 'Ref42' };
+			const getAttrMock = spyOn(wmts, 'getAttribution');
+			getAttrMock.withArgs(12).and.returnValue([attribution]);
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain(attribution.description);
+
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+		});
+
+		it('renders nothing when no layers are set', async () => {
 			const stateEmpty = {
 				layers: {
 					active: []
+				},
+				position: {
+					zoom: 12
 				}
 			};
 
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelector('p')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('div')).toBeFalsy();
 		});
 
-		it('renders nothing when geo resource could not be fetched', async  () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+		it('renders nothing when geo resource could not be fetched', async () => {
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
+				},
+				position: {
+					zoom: 12
 				}
 			};
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
 
-			const element = await setup(state);			
+			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('div')).toBeFalsy();
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
-		it('renders fallback content if georesource label is undefined', async () => {
-			const layer = { id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
+		it('renders fallback content if label is undefined', async () => {
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
+				},
+				position: {
+					zoom: 12
 				}
 			};
 
@@ -83,15 +127,15 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('map_baseLayerInfo_fallback');
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_fallback');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 
 		});
 
-		it('updates BaseLayerInfo component', async ()  => {
-			const layer = { ...defaultLayerProperties, id:'id0', label:'label0', visible: true, zIndex:0, opacity:1, collapsed:true };
-			const layer2 = { ...defaultLayerProperties, id:'id1', label:'label1', zIndex: 0 }; 
+		it('updates BaseLayerInfo component', async () => {
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -107,30 +151,30 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('Ref42');
 
 			addLayer(layer2.id, layer2);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('LDBV');
 
 			modifyLayer(layer.id, { zIndex: 0 });
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('Ref42');
 
 			removeLayer(layer.id);
 
-			expect(element.shadowRoot.querySelector('p')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('p').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('p').innerHTML).not.toContain('LDBV');
-			
+			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('LDBV');
+
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
-		}); 
+		});
 	});
 });

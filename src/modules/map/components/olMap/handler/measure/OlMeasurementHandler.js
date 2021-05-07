@@ -8,6 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
+import { addLayer } from '../../../../store/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
@@ -17,6 +18,10 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
+import { KML } from 'ol/format';
+import { debounced } from '../../../../../../utils/timer';
+import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
+import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
@@ -39,6 +44,8 @@ export const MeasureSnapType = {
 	FACE: 'face'
 };
 
+const Debounce_Delay = 1000;
+
 /**
  * Handler for measurement-interaction with the map
  * 
@@ -49,11 +56,13 @@ export const MeasureSnapType = {
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
+		this._geoResourceService = GeoResourceService;
+		this._fileStorageService = FileStorageService;
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
@@ -83,6 +92,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
@@ -100,8 +110,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				source: source,
 				style: measureStyleFunction
 			});
+			const saveDebounced = debounced(Debounce_Delay, () => this._save());
 			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
 			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
+			this._listeners.push(source.on('addfeature', () => this._save()));
+			this._listeners.push(source.on('changefeature', () => saveDebounced())); 
+			this._listeners.push(source.on('removefeature', () => saveDebounced()));
 			return layer;
 		};
 
@@ -192,16 +206,22 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._dragPan);
 
 		this._helpTooltip.deactivate();
-		this._overlayManager.deactivate();		
-		
+		this._overlayManager.deactivate();
+
 		setStatistic({ length: 0, area: 0 });
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
 
+		this._convertToPermanentLayer();
+
 		this._draw = false;
-		this._map = null;		
+		this._modify = false;
+		this._select = false;
+		this._snap = false;
+		this._dragPan = false;
+		this._map = null;
 	}
 
 	_unreg(listeners) {
@@ -228,7 +248,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 
 	_removeLast(event) {
-		if (this._draw.getActive()) {
+		if (this._draw && this._draw.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._draw.removeLastPoint();
 				if (this._pointCount === 2) {
@@ -240,7 +260,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 
-		if (this._modify.getActive()) {
+		if (this._modify && this._modify.getActive()) {
 			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 				this._removeSelectedFeatures();
 			}
@@ -322,6 +342,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			event.feature.set('measurement', measureTooltip);
+			event.feature.setId('measurement' + '_' +
+				new Date().getTime());
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));
 			this._overlayManager.add(measureTooltip);
@@ -354,6 +376,32 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 	}
+
+	async _save() {		
+		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
+		const format = new KML({ writeStyles: true });
+		this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
+
+		
+		if (!this._storeID) {
+			try {
+				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);					
+				this._storeID = fileId;				
+			}
+			catch (error) {
+				console.warn('Could not store content initially:', error.message);			
+			}
+		}			
+		else {
+			try {
+				await this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML);	
+			}
+			catch (error) {
+				console.warn('Could not store content:', error.message);
+			}	
+		}
+	}
+
 
 	_updateMeasureTooltips(feature, isDrawing) {
 		let measureGeometry = feature.getGeometry();
@@ -621,6 +669,35 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		element.addEventListener('mouseleave', handleMouseLeave);
 	}
 
+	async _convertToPermanentLayer() {
+		const translate = (key) => this._translationService.translate(key);
+		const label = translate('map_olMap_handler_measure_layer_label');
+		
+		if (!this._storeID || !this._storedContent ) {
+			await this._save();		
+		}
+		
+		let id = this._storeID;
+		if (!id) {
+			console.warn('Could not store layer-data. The data will get lost after this session.');	
+			id = 'temp_measure_id';
+			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: propagate the failing to UI-feedback-channel 
+		}
+		
+		try {//create a georesource and set the data as source
+			const vgr = new VectorGeoResource(id, label, VectorSourceType.KML).setSource(this._storedContent, 4326);
+			//register georesource
+			this._geoResourceService.addOrReplace(vgr);				
+			//add a layer that displays the georesource in the map
+			addLayer(id, { label: label });
+		}
+		catch (error) {
+			console.error(error.message);
+		}
+	}
+
+
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
 			return 12;
@@ -629,8 +706,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: extract Util-method to kind of 'OlMapUtils'-file
-	 */
+ * todo: extract Util-method to kind of 'OlMapUtils'-file
+ */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;
 		itemCollection.forEach(i => {
@@ -641,5 +718,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return isInCollection;
 	}
 
+	static get Debounce_Delay() {
+		return Debounce_Delay; 
+	
+	}
 
 }
