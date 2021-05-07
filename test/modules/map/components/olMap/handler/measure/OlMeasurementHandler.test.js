@@ -20,6 +20,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
+import { layersReducer } from '../../../../../../../src/modules/map/store/layers.reducer';
 import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
 
@@ -46,11 +47,13 @@ describe('OlMeasurementHandler', () => {
 		statistic: { length: 0, area: 0 },
 		reset: null
 	};
+
+	let store;
 	const setup = (state = initialState) => {
 		const measurementState = {
 			measurement: state,
 		};
-		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
+		store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers:layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -306,15 +309,13 @@ describe('OlMeasurementHandler', () => {
 
 		});
 
-		it('logs warn while persisting layer failed', (done) => {
+		it('adds layer with temporaryId while persisting layer failed', (done) => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('42') )
 			);			
-			const warnSpy = spyOn(console, 'warn');
 			
 			classUnderTest.activate(map);			
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -322,12 +323,8 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);			
 			
 			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', '42');
-				expect(warnSpy).toHaveBeenCalledWith('Could not store layer-data. The data will get lost after this session.');
-				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);	
-				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-					id: 'temp_measure_id', 
-					label:'map_olMap_handler_measure_layer_label' }));		
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
 				done();
 			});	
 
