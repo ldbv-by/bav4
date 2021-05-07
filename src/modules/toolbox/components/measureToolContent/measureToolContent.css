@@ -62,12 +62,20 @@
 .tool-container__text div{
    padding:  0.8em 1.5em 0.8em 1.5em;
 }
-.prime-text{
+.prime-text-value{
     left: 3em;
     font-size: 2.2em;
     position: absolute;
+    text-align: right;
+    width: 3.8em;
+   
+}
+.prime-text-unit{
+    left: 7em;
+    font-size: 2.2em;
+    position: absolute;
     text-align: left;
-    width: 7em;
+    width: 2em;
    
 }
 .sub-text{
