@@ -690,7 +690,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			//register georesource
 			this._geoResourceService.addOrReplace(vgr);				
 			//add a layer that displays the georesource in the map
-			addLayer(this._storeID, { label: label });
+			addLayer(id, { label: label });
 		}
 		catch (error) {
 			console.error(error.message);
