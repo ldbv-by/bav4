@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './toolBar.css';
 import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../../../toolbox/components/shareToolContent/ShareToolContent'; 
 import { toggleToolBar } from '../../store/toolBar.action';
 import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
@@ -97,6 +98,11 @@ export class ToolBar extends BaElement {
 			toggleTool(toolId);
 		};
 
+		const toggleShareTool = () => {
+			const toolId = ShareToolContent.tag;
+			toggleTool(toolId);
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
@@ -121,7 +127,7 @@ export class ToolBar extends BaElement {
 							${translate('menu_toolbar_draw_button')}
 						</div>  
 					</div>  				               
-					<div  class="tool-bar__button">
+					<div @click="${toggleShareTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">

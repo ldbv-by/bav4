@@ -18,6 +18,12 @@ export const provide = (lang) => {
 				toolbox_measureTool_stats_length: 'Length',
 				toolbox_measureTool_stats_area: 'Area',
 				toolbox_measureTool_start_new: 'Start New',
+				toolbox_shareTool_header: 'Share',
+				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_preview: 'Preview',
+				toolbox_shareTool_disclaimer: 'You can embed the map into your website or blog. Terms of use',
+				toolbox_shareTool_mail: 'Mail',
+				toolbox_shareTool_qr: 'QR-Code'
 			};
 
 		case 'de':
@@ -37,6 +43,12 @@ export const provide = (lang) => {
 				toolbox_measureTool_stats_length: 'Länge',
 				toolbox_measureTool_stats_area: 'Fläche',
 				toolbox_measureTool_start_new: 'Neue Messung',
+				toolbox_shareTool_header: 'Teilen',
+				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
+				toolbox_shareTool_preview: 'Vorschau',
+				toolbox_shareTool_disclaimer: 'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.',
+				toolbox_shareTool_mail: 'Mail',
+				toolbox_shareTool_qr: 'QR-Code'
 			};
 
 		default:

@@ -21,6 +21,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
+		expect(map.toolbox_shareTool_header).toBe('Teilen');
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
+		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_shareTool_mail).toBe('Mail');
+		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 	});
 
 	it('provides translation for en', () => {
@@ -41,10 +47,16 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_shareTool_header).toBe('Share');
+		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
+		expect(map.toolbox_shareTool_preview).toBe('Preview');
+		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog. Terms of use');
+		expect(map.toolbox_shareTool_mail).toBe('Mail');
+		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
