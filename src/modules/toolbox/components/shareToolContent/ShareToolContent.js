@@ -20,8 +20,8 @@ export class ShareToolContent extends BaElement {
 		this._translationService = translationService;
 		this._urlService = urlService;
 		this._shareService = shareService;
-		this._tools = this._buildTools();
 		this._shortUrl = this._generateShortUrl();
+		this._tools = this._buildTools();
 	}
 
 	_buildTools() {
@@ -31,13 +31,15 @@ export class ShareToolContent extends BaElement {
 			name:'mail', 
 			active:false, 
 			title: translate('toolbox_shareTool_mail'),
-			icon:'mail'	
+			icon:'mail',
+			href: 'mailto:?body='
 		}, {
 			id:2,
 			name: 'qr',
 			active:false, 
 			title: translate('toolbox_shareTool_qr'),
-			icon:'qr'
+			icon:'qr',
+			href: 'https://v.bayern.de?url='
 		}] 
 		;
 	}
@@ -82,19 +84,16 @@ export class ShareToolContent extends BaElement {
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
 
-			const toggle = () => {				
-			// not yet implemented
-			};
-
 			return html`
             <div id=${tool.name}
                 class="tool-container__button ${classMap(classes)}" 
-                title=${tool.title}
-                @click=${toggle}>
-                <div class="tool-container__background"></div>
-                <div class="tool-container__icon ${tool.icon}">
-                </div>  
-                <div class="tool-container__button-text">${tool.title}</div>
+                title=${tool.title}>
+				<a href=${tool.href + this._shortUrl} target="_blank"> 
+                	<div class="tool-container__background"></div>
+                		<div class="tool-container__icon ${tool.icon}">
+                	</div>  
+                	<div class="tool-container__button-text">${tool.title}</div>
+				</a>
             </div>
             `;
 		};

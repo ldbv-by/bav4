@@ -73,6 +73,23 @@ describe('ShareToolContent', () => {
 			expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
 		});
 
+		it('initializes mail and qr link', async() => {
+			const mockUrl = 'https://some.url';
+			const mockShortUrl = 'https://short/url';
+
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('a')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('a')[0].href).toEqual('mailto:?body=' + mockShortUrl);
+			expect(element.shadowRoot.querySelectorAll('a')[1].href).toEqual('https://v.bayern.de/?url=' + mockShortUrl);
+
+			expect(shareServiceSpy).toHaveBeenCalled();
+			expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
+		});
+
 		it('shows no url on Promise reject', async() => {
 			const mockUrl = 'https://some.url';
 
