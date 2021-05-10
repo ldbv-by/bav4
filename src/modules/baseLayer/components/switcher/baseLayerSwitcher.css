@@ -63,6 +63,9 @@
     margin-left:-.8em;
     top: -1.5em;
 }
+.fallback{
+    background-position: 0px 0px;
+}
 .atkis{
     background-position: 0px 0px;
 }
