@@ -1,5 +1,5 @@
 import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../../src/modules/map/store/layers.reducer';
-import { addLayer, removeLayer, modifyLayer } from '../../../../src/modules/map/store/layers.action';
+import { addLayer, removeLayer, modifyLayer, setReady } from '../../../../src/modules/map/store/layers.action';
 import { TestUtils } from '../../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
@@ -44,6 +44,7 @@ describe('layersReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().layers.active.length).toBe(0);
+		expect(store.getState().layers.ready).toBeFalse();
 	});
 
 	it('sets the \'zIndex\' property based on an array', () => {
@@ -354,6 +355,16 @@ describe('layersReducer', () => {
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].visible).toBe(true);
+	});
+
+	it('marks the state as ready', () => {
+		const store = setup();
+
+		expect(store.getState().layers.ready).toBeFalse();
+		
+		setReady();
+		
+		expect(store.getState().layers.ready).toBeTrue();
 	});
 
 });

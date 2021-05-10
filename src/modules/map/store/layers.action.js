@@ -2,7 +2,7 @@
  * Action creators to change the list of active layers and update properties of a layer.
  * @module map/action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED } from './layers.reducer';
+import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY } from './layers.reducer';
 import { $injector } from '../../../injection';
 
 
@@ -73,6 +73,17 @@ export const removeLayer = (id) => {
 	getStore().dispatch({
 		type: LAYER_REMOVED,
 		payload: id
+	});
+};
+
+/**
+ * Marks the layers state as ready. That means all needed resources are available, for example the GeoResourceService has been initialized.
+ * @function
+ */
+export const setReady = () => {
+	getStore().dispatch({
+		type: LAYER_RESOURCES_READY,
+		payload: true
 	});
 };
 

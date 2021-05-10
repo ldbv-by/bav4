@@ -69,7 +69,7 @@ describe('LayersPlugin', () => {
 	describe('_init', () => {
 
 		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
-			setup();
+			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
@@ -80,10 +80,11 @@ describe('LayersPlugin', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addLayersFromQueryParamsSpy).not.toHaveBeenCalled();
 			expect(addLayersFromConfigSpy).toHaveBeenCalledTimes(1);
+			expect(store.getState().layers.ready).toBeTrue();
 		});
 
 		it('initializes the georesource service and calls #_addLayersFromQueryParams', async () => {
-			setup();
+			const store = setup();
 			const queryParam = QueryParameters.LAYER + '=some';
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
@@ -96,6 +97,7 @@ describe('LayersPlugin', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(addLayersFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
 			expect(addLayersFromConfigSpy).not.toHaveBeenCalled();
+			expect(store.getState().layers.ready).toBeTrue();
 		});
 
 		describe('_addLayersFromConfig', () => {
