@@ -119,65 +119,97 @@ describe('BaseLayerSwitcher', () => {
 
 	describe('when element clicked ', () => {
 
-		it('removes the current base layer and adds the new layer on index 0', async () => {
+		describe('and some layer are active ', () => {
 
-			const topicsId = 'topicId';
-			const geoResoureceId0 = 'geoRsId0';
-			const geoResoureceId1 = 'geoRsId1';
-			const geoResoureceId2 = 'geoRsId2';
-			const baseLayer0 = createDefaultLayer(geoResoureceId0);
-			const otherLayer = createDefaultLayer(geoResoureceId1);
-			const state = {
-				topics: {
-					current: topicsId
-				},
-				layers: {
-					active: [baseLayer0, otherLayer]
-				}
-			};
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-				return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+			it('removes the current base layer and adds the new layer on index 0', async () => {
+
+				const topicsId = 'topicId';
+				const geoResoureceId0 = 'geoRsId0';
+				const geoResoureceId1 = 'geoRsId1';
+				const geoResoureceId2 = 'geoRsId2';
+				const baseLayer0 = createDefaultLayer(geoResoureceId0);
+				const otherLayer = createDefaultLayer(geoResoureceId1);
+				const state = {
+					topics: {
+						current: topicsId
+					},
+					layers: {
+						active: [baseLayer0, otherLayer]
+					}
+				};
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+				});
+				const element = await setup(state);
+				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+
+				//let's add the second baseLayer
+				buttons[1].click();
+
+				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
 			});
-			const element = await setup(state);
-			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
-			//let's add the second baseLayer
-			buttons[1].click();
+			it('does nothing when layer is already on map', async () => {
 
-			expect(store.getState().layers.active.length).toBe(2);
-			expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
+				const topicsId = 'topicId';
+				const geoResoureceId0 = 'geoRsId0';
+				const geoResoureceId1 = 'geoRsId1';
+				const baseLayer0 = { ...createDefaultLayer(geoResoureceId0), customId: 'test' };
+
+				const state = {
+					topics: {
+						current: topicsId
+					},
+					layers: {
+						active: [baseLayer0]
+					}
+				};
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId1]));
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+				});
+				const element = await setup(state);
+				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+
+				//let's try to add the first baseLayer again
+				buttons[0].click();
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
+				//if we detect the custom id, the state wasn't modified
+				expect(store.getState().layers.active[0].customId).toBe('test');
+			});
 		});
+		
+		describe('and no layer is active ', () => {
 
-		it('does nothing when layer is already on map', async () => {
+			it('adds the new layer on index 0', async () => {
 
-			const topicsId = 'topicId';
-			const geoResoureceId0 = 'geoRsId0';
-			const geoResoureceId1 = 'geoRsId1';
-			const baseLayer0 = { ...createDefaultLayer(geoResoureceId0), customId: 'test' };
-			
-			const state = {
-				topics: {
-					current: topicsId
-				},
-				layers: {
-					active: [baseLayer0]
-				}
-			};
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId1]));
-			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-				return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+				const topicsId = 'topicId';
+				const geoResoureceId0 = 'geoRsId0';
+				const state = {
+					topics: {
+						current: topicsId
+					},
+					layers: {
+						active: []
+					}
+				};
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0]));
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+				});
+				const element = await setup(state);
+				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+
+				//let's add a baseLayer
+				buttons[0].click();
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
 			});
-			const element = await setup(state);
-			const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
-
-			//let's try to add the first baseLayer again
-			buttons[0].click();
-
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
-			//if we detect the custom id, the state wasn't modified
-			expect(store.getState().layers.active[0].customId).toBe('test');
 		});
 	});
 });

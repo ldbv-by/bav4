@@ -40,12 +40,18 @@ export class BaseLayerSwitcher extends BaElement {
 
 
 			const onClick = (geoR) => {
-				if (activeLayers[0].geoResourceId !== geoR.id) {
-					//Remove existing
-					geoRs.forEach(geoR => {
-						removeLayer(geoR.id);
-					});
-					//add current
+				if (activeLayers.length > 0) {
+					if (activeLayers[0].geoResourceId !== geoR.id) {
+						//Remove existing
+						geoRs.forEach(geoR => {
+							removeLayer(geoR.id);
+						});
+						//add selected layer
+						addLayer(geoR.id, { zIndex: 0 });
+					}
+				}
+				else {
+					//add selected layer
 					addLayer(geoR.id, { zIndex: 0 });
 				}
 			};
