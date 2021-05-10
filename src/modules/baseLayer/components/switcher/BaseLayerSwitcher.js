@@ -26,9 +26,9 @@ export class BaseLayerSwitcher extends BaElement {
 	 * @override
 	 */
 	createView() {
-		const { currentTopicId, activeLayers } = this._state;
+		const { currentTopicId, activeLayers, layersStoreReady } = this._state;
 
-		if (currentTopicId) {
+		if (layersStoreReady) {
 
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
@@ -81,8 +81,8 @@ export class BaseLayerSwitcher extends BaElement {
 	 * @override
 	 */
 	extractState(state) {
-		const { topics: { current: currentTopicId }, layers: { active: activeLayers } } = state;
-		return { currentTopicId, activeLayers };
+		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = state;
+		return { currentTopicId, activeLayers, layersStoreReady };
 	}
 
 	static get tag() {

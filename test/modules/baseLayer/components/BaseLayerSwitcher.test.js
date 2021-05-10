@@ -37,7 +37,7 @@ describe('BaseLayerSwitcher', () => {
 
 	describe('when initialized ', () => {
 
-		it('renders nothing when topics not yet loaded', async () => {
+		it('renders nothing when layers state not yet set ready', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -52,6 +52,7 @@ describe('BaseLayerSwitcher', () => {
 					current: topicsId
 				},
 				layers: {
+					ready: true,
 					active: [activeLayer]
 				}
 			};
@@ -87,6 +88,7 @@ describe('BaseLayerSwitcher', () => {
 			const activeLayer = createDefaultLayer(activeGeoResourceId);
 			const state = {
 				layers: {
+					ready: true,
 					active: [activeLayer]
 				}
 			};
@@ -99,10 +101,7 @@ describe('BaseLayerSwitcher', () => {
 						return new WMTSGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 				}
 			});
-
 			const element = await setup(state);
-
-			expect(element.shadowRoot.children.length).toBe(0);
 
 			setCurrent(topicsId);
 
@@ -134,6 +133,7 @@ describe('BaseLayerSwitcher', () => {
 						current: topicsId
 					},
 					layers: {
+						ready: true,
 						active: [baseLayer0, otherLayer]
 					}
 				};
@@ -163,6 +163,7 @@ describe('BaseLayerSwitcher', () => {
 						current: topicsId
 					},
 					layers: {
+						ready: true,
 						active: [baseLayer0]
 					}
 				};
@@ -182,7 +183,7 @@ describe('BaseLayerSwitcher', () => {
 				expect(store.getState().layers.active[0].customId).toBe('test');
 			});
 		});
-		
+
 		describe('and no layer is active ', () => {
 
 			it('adds the new layer on index 0', async () => {
@@ -194,6 +195,7 @@ describe('BaseLayerSwitcher', () => {
 						current: topicsId
 					},
 					layers: {
+						ready: true,
 						active: []
 					}
 				};
