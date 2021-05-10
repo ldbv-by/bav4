@@ -23,6 +23,8 @@
     background: var(--secondary-bg-color);
     background-image: url('assets/baselayer.webp');
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    background-size: auto 100% ;
+    background-position: center center;;   
 }
 .baselayer__button:hover{
     transform: scale(1.3);
@@ -33,8 +35,8 @@
     font-size: .6rem;
     padding: .3em;
     position: absolute;
-    background: var(--secondary-color);
-    color: var(--text-default-color);
+    background: var(--primary-bg-color-05);
+    color: var(--color);
     opacity: 1;
     z-index: 1;
     text-align: center;
@@ -48,6 +50,7 @@
 .baselayer__button[type="primary"] .baselayer__label{
     display: block;
     background: var(--primary-color);
+    color: var(--text-default-color);
 }
 .baselayer__button[type="primary"] .baselayer__label:after{
     display: block;
@@ -58,26 +61,26 @@
     position: absolute;
     border-width: 0.8em;
     border-style: solid;
-    border-color: transparent transparent var(--secondary-color) transparent;
+    border-color: transparent transparent var(--primary-bg-color-05) transparent;
     left: 50%;
     margin-left:-.8em;
-    top: -1.5em;
+    top: -1.6em;
 }
 .fallback{
-    background-position: 0px 0px;
+    background: var(--secondary-bg-color);
 }
 .atkis{
-    background-position: 0px 0px;
+    background-image: url('assets/1.webp');
 }
 .luftbild_labels{
-    background-position: 344px 0px;
+    background-image: url('assets/2.webp');
 }
 .tk{
-    background-position: 540px 0px;
+    background-image: url('assets/3.webp');
 }
 .historisch{
-    background-position: 182px 0px;
+    background-image: url('assets/4.webp');
 }
 .atkis_sw{
-    background-position: 719px 0px;
+    background-image: url('assets/5.webp');
 }
