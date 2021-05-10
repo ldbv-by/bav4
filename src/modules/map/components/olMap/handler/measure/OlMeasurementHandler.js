@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
-import { addLayer } from '../../../../store/layers.action';
+import { addLayer, removeLayer } from '../../../../store/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
@@ -92,7 +92,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
-
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
@@ -104,18 +103,52 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._overlayManager.apply(o => o.getElement().style.opacity = layer.getOpacity());
 		};
 
+		const getOldLayer = (map) => {
+			if (this._lastMeasurementId) {
+				return map.getLayers().getArray().find(l => l.get('id') === this._lastMeasurementId );
+			}
+			return null;
+		};
+
 		const createLayer = () => {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
 				style: measureStyleFunction
-			});
+			});			
+			return layer;
+		};
+		
+		const addOldFeatures = async(layer, oldLayer) => {
+			if (oldLayer) {
+				
+				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
+				if (vgr) {			
+					vgr.getData().then(data => {
+						const format = new KML({ writeStyles: true });						
+						const oldFeatures = format.readFeatures(data);		
+						oldFeatures.forEach(f =>  {
+							f.setStyle(measureStyleFunction(f));
+							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+							f.set('srid', this._mapService.getSrid(), true);
+							layer.getSource().addFeature(f);
+							this._createMeasureTooltip(f);
+							this._createAreaToolTip(f);
+						});											
+					}).then(() => removeLayer( oldLayer.get('id')));
+				}				
+			}
+		};
+		const getOrCreateLayer = () => {
+			const  oldLayer = getOldLayer(this._map);
+			const layer = createLayer();
+			addOldFeatures(layer, oldLayer);
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
 			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
 			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
-			this._listeners.push(source.on('addfeature', () => this._save()));
-			this._listeners.push(source.on('changefeature', () => saveDebounced())); 
-			this._listeners.push(source.on('removefeature', () => saveDebounced()));
+			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
+			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced())); 
+			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
 			return layer;
 		};
 
@@ -157,11 +190,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const pixel = event.pixel;
 			this._updateMeasureState(coordinate, pixel, dragging);
 		};
-
 		if (this._draw === false) {
 			this._map = olMap;
 			this._mapContainer = olMap.getTarget();
-			this._vectorLayer = createLayer();
+			this._vectorLayer = getOrCreateLayer();
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
 			this._select.setActive(false);
@@ -331,8 +363,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		draw.on('drawstart', event => {
-			const isDraggable = !this._environmentService.isTouch();
-			const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
@@ -340,13 +370,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._updateMeasureTooltips(event.target, true);
 				this._setStatistics(event.target);
 			};
-
-			event.feature.set('measurement', measureTooltip);
-			event.feature.setId('measurement' + '_' +
-				new Date().getTime());
 			listener = event.feature.on('change', onFeatureChange);
-			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));
-			this._overlayManager.add(measureTooltip);
+			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));			
+			this._createMeasureTooltip(event.feature);
 		});
 
 		draw.on('drawend', event => {
@@ -356,6 +382,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		);
 
 		return draw;
+	}
+
+	_createMeasureTooltip(feature) {
+		const isDraggable = !this._environmentService.isTouch();
+		const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
+		feature.set('measurement', measureTooltip);
+		feature.setId('measurement' + '_' + new Date().getTime());
+		this._overlayManager.add(measureTooltip);	
+		this._updateOverlay(measureTooltip, feature.getGeometry());	
+	}
+
+	_createAreaToolTip(feature) {
+		if (feature.getGeometry() instanceof Polygon) {		
+			if (feature.getGeometry().getArea())	{
+				const isDraggable = !this._environmentService.isTouch();
+				let areaOverlay = feature.get('area');
+				if (!areaOverlay) {
+					areaOverlay = this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
+					this._overlayManager.add(areaOverlay);
+				}
+				this._updateOverlay(areaOverlay, feature.getGeometry());
+				feature.set('area', areaOverlay);	
+			}		
+		}
 	}
 
 	_setStatistics(feature) {
@@ -429,17 +479,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (!this._isFinishOnFirstPoint) {
 				measureGeometry = new LineString(lineCoordinates);
 			}
-
-			if (feature.getGeometry().getArea()) {
-				const isDraggable = !this._environmentService.isTouch();
-				let areaOverlay = feature.get('area');
-				if (!areaOverlay) {
-					areaOverlay = this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
-					this._overlayManager.add(areaOverlay);
-				}
-				this._updateOverlay(areaOverlay, feature.getGeometry());
-				feature.set('area', areaOverlay);
-			}
+			
+			this._createAreaToolTip(feature);
+			
 		}
 
 		this._updateOverlay(measureTooltip, measureGeometry, '');
@@ -598,7 +640,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
 
-
 		return select;
 	}
 
@@ -685,12 +726,19 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// TODO: propagate the failing to UI-feedback-channel 
 		}
 		
-		try {//create a georesource and set the data as source
-			const vgr = new VectorGeoResource(id, label, VectorSourceType.KML).setSource(this._storedContent, 4326);
+		try {
+			let vgr = this._geoResourceService.byId(id);
+			if (!vgr) {
+				//create a georesource and set the data as source
+				vgr = new VectorGeoResource(id, label, VectorSourceType.KML);				
+			}
+			vgr.setSource(this._storedContent, 4326);
+			
 			//register georesource
-			this._geoResourceService.addOrReplace(vgr);				
+			this._geoResourceService.addOrReplace(vgr);
 			//add a layer that displays the georesource in the map
-			addLayer(id, { label: label });
+			addLayer(id, { label: label });		
+			this._lastMeasurementId = id;
 		}
 		catch (error) {
 			console.error(error.message);

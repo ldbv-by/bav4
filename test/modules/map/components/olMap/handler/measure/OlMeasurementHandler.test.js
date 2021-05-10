@@ -33,13 +33,18 @@ register(proj4);
 
 describe('OlMeasurementHandler', () => {
 	const geoResourceServiceMock = {
-		addOrReplace() {}		
+		addOrReplace() {},		
+		// eslint-disable-next-line no-unused-vars
+		byId() {
+			return null;
+		}
 	};
 	
 	const fileStorageServiceMock = {
 		async save() {
 			return { fileId:'fooBarBazId' };
-		}
+		},
+		
 	};
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
@@ -293,7 +298,7 @@ describe('OlMeasurementHandler', () => {
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.resolve({ fileId: 'fooBarId' } )
-			);			
+			);				
 			
 			classUnderTest.activate(map);			
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -315,7 +320,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = createFeature();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('42') )
-			);			
+			);	
 			
 			classUnderTest.activate(map);			
 			expect(classUnderTest._vectorLayer).toBeTruthy();
