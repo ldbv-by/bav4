@@ -125,6 +125,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					vgr.getData().then(data => {
 						const format = new KML({ writeStyles: true });						
 						const oldFeatures = format.readFeatures(data);								
+						const onFeatureChange = (event) => {
+							this._updateOverlays(event.target, false);
+							this._setStatistics(event.target);
+						};
 						oldFeatures.forEach(f =>  {
 							f.setStyle(measureStyleFunction(f));
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
@@ -133,6 +137,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._overlayManager.createDistanceOverlay(f);
 							this._overlayManager.createAreaOverlay(f);
 							this._overlayManager.createPartitionOverlays(f);
+							f.on('change', onFeatureChange);	
 						});											
 					}).then(() => removeLayer( oldLayer.get('id')));
 				}				

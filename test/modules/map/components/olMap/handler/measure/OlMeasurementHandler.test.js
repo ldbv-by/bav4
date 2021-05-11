@@ -271,10 +271,37 @@ describe('OlMeasurementHandler', () => {
 			
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
-
+			
 			setTimeout(() => {								
 				expect(spy).toHaveBeenCalledWith('lastId');	
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);		
+				done();		
+			});	
+		});
+
+		it('updates overlays of old features onChange', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
+			
+			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
+			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			classUnderTest._lastMeasurementId = 'lastId';			
+			const updateOverlaysSpy = spyOn(classUnderTest, '_updateOverlays');
+			let oldFeature;
+			
+			classUnderTest.activate(map);
+			spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature').and.callFake((f) => {
+				oldFeature = f;
+			});
+			
+			setTimeout(() => {				
+				oldFeature.getGeometry().dispatchEvent('change');						
+				expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);		
 				done();		
 			});	
 		});
