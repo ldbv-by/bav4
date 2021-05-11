@@ -123,10 +123,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (oldLayer) {
 				
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
-				if (vgr) {			
+				if (vgr) {		
 					vgr.getData().then(data => {
 						const format = new KML({ writeStyles: true });						
-						const oldFeatures = format.readFeatures(data);		
+						const oldFeatures = format.readFeatures(data);								
 						oldFeatures.forEach(f =>  {
 							f.setStyle(measureStyleFunction(f));
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());

@@ -16,6 +16,7 @@ import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
+import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
@@ -74,6 +75,14 @@ describe('OlMeasurementHandler', () => {
 					return area + ' m²';
 				}
 			});
+	};
+
+	const createLayer = () => {
+		const source = new VectorSource({ wrapX: false });
+		const layer = new VectorLayer({
+			source: source,
+		});
+		return layer;
 	};
 
 	beforeEach(() => {
@@ -245,6 +254,26 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);
 
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('looks for last measurement-layer and adds the feature', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
+			
+			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
+			classUnderTest._lastMeasurementId = 'lastId';
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			setTimeout(() => {								
+				expect(spy).toHaveBeenCalledWith('lastId');	
+				expect(addFeatureSpy).toHaveBeenCalledTimes(1);		
+				done();		
+			});	
 		});
 
 	});
@@ -709,13 +738,7 @@ describe('OlMeasurementHandler', () => {
 
 		};
 
-		const createLayer = () => {
-			const source = new VectorSource({ wrapX: false });
-			const layer = new VectorLayer({
-				source: source,
-			});
-			return layer;
-		};
+		
 		describe('debouncing takes place', () => {
 		
 			beforeEach(function () {
