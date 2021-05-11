@@ -68,8 +68,8 @@
 
 /*portrait */
 .is-portrait .main-menu {   
-   top:-75vh;
-   height: calc(75vh + 6.6em);
+   top:-65vh;
+   height: calc(65vh + 6.6em);
    left: 0;
    right: 0em;
    width: auto;
@@ -98,8 +98,8 @@
    border-color: gray transparent transparent transparent;
 }
 .is-portrait .is-open {
-   transform: translate(0, 75vh);
-   height: calc(75vh);
+   transform: translate(0, 65vh);
+   height: calc(65vh + 6.6em);
 }
 .is-portrait .main-menu__container{
    overflow-y: auto;
