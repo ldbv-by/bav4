@@ -1,5 +1,6 @@
 .ba-tool-container__item{                   
     width: 100%;
+
 }
 
 .tool-container__header{
@@ -63,20 +64,17 @@
    padding:  0.8em 1.5em 0.8em 1.5em;
 }
 .prime-text-value{
-    left: 3em;
     font-size: 2.2em;
-    position: absolute;
+    flex-grow: 1;
     text-align: right;
-    width: 3.8em;
-   
+    margin-right: .5em;
+    line-height:.9;
 }
 .prime-text-unit{
-    left: 7em;
     font-size: 2.2em;
-    position: absolute;
     text-align: left;
-    width: 2em;
-   
+    width: 2.1em;
+    line-height:.9;
 }
 .sub-text{
     text-align: center;
