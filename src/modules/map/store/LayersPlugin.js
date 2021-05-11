@@ -3,7 +3,7 @@ import { VectorGeoResource, VectorSourceType } from '../../../services/domain/ge
 import { QueryParameters } from '../../../services/domain/queryParameters';
 import { FileStorageServiceDataTypes } from '../../../services/FileStorageService';
 import { BaPlugin } from '../../../store/BaPlugin';
-import { addLayer, modifyLayer } from './layers.action';
+import { addLayer, modifyLayer, setReady } from './layers.action';
 
 /**
  * @class
@@ -141,6 +141,8 @@ export class LayersPlugin extends BaPlugin {
 
 		//no try-catch needed, service at least delivers a fallback
 		await geoResourceService.init();
+		//mark the layers state as ready
+		setReady();
 
 		//from query params
 		if (queryParams.has(QueryParameters.LAYER)) {
