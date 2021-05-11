@@ -1,4 +1,4 @@
-import { BaElement } from '../../src/modules/BaElement';
+import { BaElement, renderTagOf } from '../../src/modules/BaElement';
 import { html, nothing } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
@@ -271,14 +271,14 @@ describe('BaElement', () => {
 
 		it('checks if a template result contains content', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
-			
+
 			expect(element._isNothing(nothing)).toBeTrue();
 			expect(element._isNothing(undefined)).toBeTrue();
 			expect(element._isNothing(null)).toBeTrue();
 			expect(element._isNothing('')).toBeTrue();
 			expect(element._isNothing(html`some`)).toBeFalse();
 		});
-		
+
 		it('prepends the default css', async () => {
 			const element = await TestUtils.render(BaElementDefaultCss.tag);
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeTruthy();
@@ -288,6 +288,21 @@ describe('BaElement', () => {
 			const element = await TestUtils.render(BaElementNoDefaultCss.tag);
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeFalsy();
 		});
-		
+
 	});
 });
+
+describe('renderTagOf', () => {
+
+	it('throws an exception when class does not inherit BaElement', () => {
+		class Foo { }
+
+		expect(() => renderTagOf(Foo)).toThrowError(TypeError, 'Foo does not inherit BaElement');
+	});
+
+	it('renders the tag as html', () => {
+
+		expect(renderTagOf(BaElementImpl)).toBeTruthy();
+	});
+});
+
