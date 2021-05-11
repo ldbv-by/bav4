@@ -115,7 +115,7 @@ export class OverlayManager {
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 				const removablePartition = partitions[j];
-				this._overlayManager.remove(removablePartition);
+				this.remove(removablePartition);
 				partitions.pop();
 			}
 		}
@@ -150,21 +150,23 @@ export class OverlayManager {
 		const element = overlay.getElement();
 		const dragPanInteraction = this._map.getInteractions().getArray().find(i =>  i instanceof DragPan );
 
+		if (dragPanInteraction) {
+			const handleMouseDown = () => {
+				dragPanInteraction.setActive(false);
+				overlay.set('dragging', true);
+			};
 
-		const handleMouseDown = () => {
-			dragPanInteraction.setActive(false);
-			overlay.set('dragging', true);
-		};
+			const handleMouseEnter = () => {
+				overlay.set('dragable', true);
+			};
 
-		const handleMouseEnter = () => {
-			overlay.set('dragable', true);
-		};
-
-		const handleMouseLeave = () => {
-			overlay.set('dragable', false);
-		};
-		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
-		element.addEventListener('mouseenter', handleMouseEnter);
-		element.addEventListener('mouseleave', handleMouseLeave);
+			const handleMouseLeave = () => {
+				overlay.set('dragable', false);
+			};
+			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+			element.addEventListener('mouseenter', handleMouseEnter);
+			element.addEventListener('mouseleave', handleMouseLeave);
+		}
+	
 	}
 }
