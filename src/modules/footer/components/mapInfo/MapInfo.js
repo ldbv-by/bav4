@@ -7,7 +7,7 @@ import css from './mapInfo.css';
 /**
  * Demo-Element to show some information and do some action on the map
  * @class 
- * @author aul
+ * @author taulinger
  */
 export class MapInfo extends BaElement {
 

@@ -45,7 +45,7 @@ import css from './baElement.css';
  * 
  * @abstract
  * @class
- * @author aul
+ * @author taulinger
  */
 export class BaElement extends HTMLElement {
 

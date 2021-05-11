@@ -76,8 +76,9 @@ export class TopicsService {
 	 */
 	_newFallbackTopic() {
 		return new Topic('fallback', 'Fallback Topic', 'This is a fallback topic...', [
-			//see fallback georesource in GeoResourceService
-			'fallback'
+			//see fallback georesources in GeoResourceService
+			'atkis',
+			'atkis_sw'
 		]);
 	}
 

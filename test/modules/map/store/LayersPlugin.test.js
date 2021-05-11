@@ -121,7 +121,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].id).toBe(configuredBgId);
 			});
 
-			it('dds the configured layer from default topic', () => {
+			it('adds the configured layer from default topic', () => {
 				const store = setup();
 				const configuredBgId = 'atkis';
 				setCurrent(configuredBgId);

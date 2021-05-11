@@ -7,7 +7,7 @@ import { increaseZoom, decreaseZoom } from '../../store/position.action';
 /**
  * Buttons which change the zoom level of the map.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class ZoomButtons extends BaElement {
 

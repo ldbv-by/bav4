@@ -14,7 +14,7 @@ import infoSvg from './assets/info.svg';
  * (remove,change visibility and opacity)
  * @class
  * @author thiloSchlemmer
- * @author tAulinger 
+ * @author taulinger 
  */
 export class LayerItem extends BaElement {
 

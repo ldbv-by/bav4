@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 /**
  * Provides the body-element with a light or dark theme class
  * @class
- * @author aul
+ * @author taulinger
  */
 export class ThemeProvider extends BaElement {
 

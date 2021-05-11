@@ -68,6 +68,9 @@ describe('Topicservice', () => {
 
 			expect(topics.length).toBe(1);
 			expect(topics[0].id).toBe('fallback');
+			expect(topics[0].baseGeoRs.length).toBe(2);
+			expect(topics[0].baseGeoRs[0]).toBe('atkis');
+			expect(topics[0].baseGeoRs[1]).toBe('atkis_sw');
 			expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 		});
 	});

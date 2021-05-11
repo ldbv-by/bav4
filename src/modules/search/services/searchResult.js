@@ -9,7 +9,7 @@ export const SearchResultTypes = Object.freeze({
 /**
  * Represents a single search result.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class SearchResult {
 

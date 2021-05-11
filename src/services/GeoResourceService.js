@@ -15,11 +15,10 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
  * Service for managing {@link GeoResource}s.
  * 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class GeoResourceService {
 
-	
 	/**
 	 * 
 	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources] 
@@ -45,8 +44,8 @@ export class GeoResourceService {
 				this._georesources = [];
 				console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			}
-			//we add the fallback geoResource in any case
-			this._georesources.push(this._newFallbackGeoResource());
+			//we add the fallback geoResources in any case
+			this._georesources.push(...this._newFallbackGeoResources());
 		}
 		return this._georesources;
 	}
@@ -101,8 +100,13 @@ export class GeoResourceService {
 	/**
 	 * @private
 	 */
-	_newFallbackGeoResource() {
-		const wmtsGeoResource = new WMTSGeoResource('fallback', 'Webkarte', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}');
-		return wmtsGeoResource;
+	_newFallbackGeoResources() {
+		return [
+			new WMTSGeoResource('atkis', 'Base Layer 1', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}'),
+			new WMTSGeoResource('atkis_sw', 'Base Layer 2', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}')
+		].map(gr => {
+			gr.attribution = 'Bayerische Vermessungsverwaltung';
+			return gr;
+		});
 	}
 }
