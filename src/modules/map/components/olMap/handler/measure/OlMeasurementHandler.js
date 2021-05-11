@@ -132,8 +132,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
-							this._createMeasureTooltip(f);
-							this._createAreaToolTip(f);
+							this._createDistanceOverlay(f);
+							this._createAreaOverlay(f);
 						});											
 					}).then(() => removeLayer( oldLayer.get('id')));
 				}				
@@ -330,19 +330,19 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		let listener;
 		let zoomListener;
 
-		const finishMeasurementTooltip = (event) => {
+		const finishDistanceOverlay = (event) => {
 
 			const geometry = event.feature.getGeometry();
-			const measureTooltip = event.feature.get('measurement');
-			measureTooltip.getElement().static = true;
-			measureTooltip.setOffset([0, -7]);
+			const distanceOverlay = event.feature.get('measurement');
+			distanceOverlay.getElement().static = true;
+			distanceOverlay.setOffset([0, -7]);
 			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));
 				this._overlayManager.remove(this._activeSketch.get('area'));
 			}
 			else {
-				this._updateOverlay(measureTooltip, geometry);
+				this._updateOverlay(distanceOverlay, geometry);
 			}
 			this._activeSketch = null;
 			unByKey(listener);
@@ -356,7 +356,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._select.getFeatures().push(event.feature);
 			this._modifyActivated = true;
 			const onFeatureChange = (event) => {
-				this._updateMeasureTooltips(event.target);
+				this._updateOverlays(event.target);
 				this._updateStatistics();
 			};
 			event.feature.on('change', onFeatureChange);
@@ -367,16 +367,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
-				this._updateMeasureTooltips(event.target, true);
+				this._updateOverlays(event.target, true);
 				this._setStatistics(event.target);
 			};
 			listener = event.feature.on('change', onFeatureChange);
-			zoomListener = this._map.getView().on('change:resolution', () => this._updateMeasureTooltips(this._activeSketch, true));			
-			this._createMeasureTooltip(event.feature);
+			zoomListener = this._map.getView().on('change:resolution', () => this._updateOverlays(this._activeSketch, true));			
+			this._createDistanceOverlay(event.feature);
 		});
 
 		draw.on('drawend', event => {
-			finishMeasurementTooltip(event);
+			finishDistanceOverlay(event);
 			activateModify(event);
 		}
 		);
@@ -384,16 +384,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return draw;
 	}
 
-	_createMeasureTooltip(feature) {
+	_createDistanceOverlay(feature) {
 		const isDraggable = !this._environmentService.isTouch();
-		const measureTooltip = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
-		feature.set('measurement', measureTooltip);
+		const distanceOverlay = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
+		feature.set('measurement', distanceOverlay);
 		feature.setId('measurement' + '_' + new Date().getTime());
-		this._overlayManager.add(measureTooltip);	
-		this._updateOverlay(measureTooltip, feature.getGeometry());	
+		this._overlayManager.add(distanceOverlay);	
+		this._updateOverlay(distanceOverlay, feature.getGeometry());	
 	}
 
-	_createAreaToolTip(feature) {
+	_createAreaOverlay(feature) {
 		if (feature.getGeometry() instanceof Polygon) {		
 			if (feature.getGeometry().getArea())	{
 				const isDraggable = !this._environmentService.isTouch();
@@ -453,9 +453,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 
-	_updateMeasureTooltips(feature, isDrawing) {
+	_updateOverlays(feature, isDrawing) {
 		let measureGeometry = feature.getGeometry();
-		const measureTooltip = feature.get('measurement');
+		const distanceOverlay = feature.get('measurement');
 
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
@@ -480,13 +480,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				measureGeometry = new LineString(lineCoordinates);
 			}
 			
-			this._createAreaToolTip(feature);
+			this._createAreaOverlay(feature);
 			
 		}
 
-		this._updateOverlay(measureTooltip, measureGeometry, '');
+		this._updateOverlay(distanceOverlay, measureGeometry, '');
 
-		// add partition tooltips on the line
+		// add partition overlays on the line
 		const partitions = feature.get('partitions') || [];
 		const resolution = this._map.getView().getResolution();
 		const delta = getPartitionDelta(measureGeometry, resolution, this._projectionHints);
