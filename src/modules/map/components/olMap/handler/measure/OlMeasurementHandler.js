@@ -134,6 +134,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							layer.getSource().addFeature(f);
 							this._createDistanceOverlay(f);
 							this._createAreaOverlay(f);
+							this._createPartitionOverlays(f);
 						});											
 					}).then(() => removeLayer( oldLayer.get('id')));
 				}				
@@ -408,6 +409,38 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
+	_createPartitionOverlays(feature, simplifiedGeometry = null) {
+		if (!simplifiedGeometry) {
+			simplifiedGeometry = feature.getGeometry();
+			if (feature.getGeometry() instanceof Polygon) {
+				simplifiedGeometry = new LineString(feature.getGeometry().getCoordinates()[0]);
+			}
+		}
+		const partitions = feature.get('partitions') || [];
+		const resolution = this._map.getView().getResolution();
+		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+		let partitionIndex = 0;
+		for (let i = delta; i < 1; i += delta, partitionIndex++) {
+			let partition = partitions[partitionIndex] || false;
+			if (partition === false) {
+				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
+
+				this._overlayManager.add(partition);
+				partitions.push(partition);
+			}
+			this._updateOverlay(partition, simplifiedGeometry, i);
+		}
+
+		if (partitionIndex < partitions.length) {
+			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
+				const removablePartition = partitions[j];
+				this._overlayManager.remove(removablePartition);
+				partitions.pop();
+			}
+		}
+		feature.set('partitions', partitions);
+	}
+
 	_setStatistics(feature) {
 		const length = getGeometryLength(feature.getGeometry(), this._projectionHints);
 		const area = getArea(feature.getGeometry(), this._projectionHints);
@@ -487,29 +520,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._updateOverlay(distanceOverlay, measureGeometry, '');
 
 		// add partition overlays on the line
-		const partitions = feature.get('partitions') || [];
-		const resolution = this._map.getView().getResolution();
-		const delta = getPartitionDelta(measureGeometry, resolution, this._projectionHints);
-		let partitionIndex = 0;
-		for (let i = delta; i < 1; i += delta, partitionIndex++) {
-			let partition = partitions[partitionIndex] || false;
-			if (partition === false) {
-				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
-
-				this._overlayManager.add(partition);
-				partitions.push(partition);
-			}
-			this._updateOverlay(partition, measureGeometry, i);
-		}
-
-		if (partitionIndex < partitions.length) {
-			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
-				const removablePartition = partitions[j];
-				this._overlayManager.remove(removablePartition);
-				partitions.pop();
-			}
-		}
-		feature.set('partitions', partitions);
+		this._createPartitionOverlays(feature, measureGeometry);
 	}
 
 	_getSnapState(pixel) {
