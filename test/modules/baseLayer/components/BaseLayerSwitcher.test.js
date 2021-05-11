@@ -139,7 +139,7 @@ describe('BaseLayerSwitcher', () => {
 				};
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+					return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
@@ -149,6 +149,8 @@ describe('BaseLayerSwitcher', () => {
 
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
+				expect(store.getState().layers.active[0].label).toBe(geoResoureceId2 + 'Label');
+				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 
 			it('does nothing when layer is already on map', async () => {
@@ -201,7 +203,7 @@ describe('BaseLayerSwitcher', () => {
 				};
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+					return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
@@ -211,6 +213,8 @@ describe('BaseLayerSwitcher', () => {
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
+				expect(store.getState().layers.active[0].label).toBe(geoResoureceId0 + 'Label');
+				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 		});
 	});

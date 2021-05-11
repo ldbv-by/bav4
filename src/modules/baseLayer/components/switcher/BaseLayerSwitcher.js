@@ -40,6 +40,11 @@ export class BaseLayerSwitcher extends BaElement {
 
 
 			const onClick = (geoR) => {
+				
+				const add = () => {
+					addLayer(geoR.id, { label: geoR.label, zIndex: 0 });
+				};
+
 				if (activeLayers.length > 0) {
 					if (activeLayers[0].geoResourceId !== geoR.id) {
 						//Remove existing
@@ -47,12 +52,12 @@ export class BaseLayerSwitcher extends BaElement {
 							removeLayer(geoR.id);
 						});
 						//add selected layer
-						addLayer(geoR.id, { zIndex: 0 });
+						add();
 					}
 				}
 				else {
 					//add selected layer
-					addLayer(geoR.id, { zIndex: 0 });
+					add();
 				}
 			};
 
