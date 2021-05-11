@@ -50,7 +50,9 @@ describe('GeoResourceService', () => {
 
 			expect(georesources.length).toBe(2);
 			expect(georesources[0].id).toBe('atkis');
+			expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 			expect(georesources[1].id).toBe('atkis_sw');
+			expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 			expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 		});
 	});
