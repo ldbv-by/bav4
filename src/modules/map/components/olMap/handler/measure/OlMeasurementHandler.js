@@ -3,15 +3,13 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
-import Overlay from 'ol/Overlay';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { setStatistic } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
-import { getPartitionDelta, isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
+import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -132,9 +130,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
-							this._createDistanceOverlay(f);
-							this._createAreaOverlay(f);
-							this._createPartitionOverlays(f);
+							this._overlayManager.createDistanceOverlay(f);
+							this._overlayManager.createAreaOverlay(f);
+							this._overlayManager.createPartitionOverlays(f);
 						});											
 					}).then(() => removeLayer( oldLayer.get('id')));
 				}				
@@ -343,7 +341,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._overlayManager.remove(this._activeSketch.get('area'));
 			}
 			else {
-				this._updateOverlay(distanceOverlay, geometry);
+				this._overlayManager.update(distanceOverlay, geometry);
 			}
 			this._activeSketch = null;
 			unByKey(listener);
@@ -373,7 +371,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', () => this._updateOverlays(this._activeSketch, true));			
-			this._createDistanceOverlay(event.feature);
+			this._overlayManager.createDistanceOverlay(event.feature);
 		});
 
 		draw.on('drawend', event => {
@@ -383,63 +381,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		);
 
 		return draw;
-	}
-
-	_createDistanceOverlay(feature) {
-		const isDraggable = !this._environmentService.isTouch();
-		const distanceOverlay = this._createOverlay({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, isDraggable);
-		feature.set('measurement', distanceOverlay);
-		feature.setId('measurement' + '_' + new Date().getTime());
-		this._overlayManager.add(distanceOverlay);	
-		this._updateOverlay(distanceOverlay, feature.getGeometry());	
-	}
-
-	_createAreaOverlay(feature) {
-		if (feature.getGeometry() instanceof Polygon) {		
-			if (feature.getGeometry().getArea())	{
-				const isDraggable = !this._environmentService.isTouch();
-				let areaOverlay = feature.get('area');
-				if (!areaOverlay) {
-					areaOverlay = this._createOverlay({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, isDraggable);
-					this._overlayManager.add(areaOverlay);
-				}
-				this._updateOverlay(areaOverlay, feature.getGeometry());
-				feature.set('area', areaOverlay);	
-			}		
-		}
-	}
-
-	_createPartitionOverlays(feature, simplifiedGeometry = null) {
-		if (!simplifiedGeometry) {
-			simplifiedGeometry = feature.getGeometry();
-			if (feature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(feature.getGeometry().getCoordinates()[0]);
-			}
-		}
-		const partitions = feature.get('partitions') || [];
-		const resolution = this._map.getView().getResolution();
-		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
-		let partitionIndex = 0;
-		for (let i = delta; i < 1; i += delta, partitionIndex++) {
-			let partition = partitions[partitionIndex] || false;
-			if (partition === false) {
-				partition = this._createOverlay({ offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION);
-
-				this._overlayManager.add(partition);
-				partitions.push(partition);
-			}
-			this._updateOverlay(partition, simplifiedGeometry, i);
-		}
-
-		if (partitionIndex < partitions.length) {
-			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
-				const removablePartition = partitions[j];
-				this._overlayManager.remove(removablePartition);
-				partitions.pop();
-			}
-		}
-		feature.set('partitions', partitions);
-	}
+	}	
 
 	_setStatistics(feature) {
 		const length = getGeometryLength(feature.getGeometry(), this._projectionHints);
@@ -513,14 +455,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				measureGeometry = new LineString(lineCoordinates);
 			}
 			
-			this._createAreaOverlay(feature);
+			this._overlayManager.createAreaOverlay(feature);
 			
 		}
 
-		this._updateOverlay(distanceOverlay, measureGeometry, '');
+		this._overlayManager.update(distanceOverlay, measureGeometry, '');
 
 		// add partition overlays on the line
-		this._createPartitionOverlays(feature, measureGeometry);
+		this._overlayManager.createPartitionOverlays(feature, measureGeometry);
 	}
 
 	_getSnapState(pixel) {
@@ -676,49 +618,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		});
 		return modify;
-	}
-
-	_createOverlay(overlayOptions = {}, type, isDraggable = false) {
-		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
-		measurementOverlay.type = type;
-		measurementOverlay.isDraggable = isDraggable;
-		measurementOverlay.projectionHints = this._projectionHints;
-		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
-		if (isDraggable) {
-			this._createDragOn(overlay);
-		}
-		return overlay;
-	}
-
-	_updateOverlay(overlay, geometry, value) {
-		const element = overlay.getElement();
-		element.value = value;
-		element.geometry = geometry;
-		if (!overlay.get('manualPositioning')) {
-			overlay.setPosition(element.position);
-		}
-	}
-
-	_createDragOn(overlay) {
-		const element = overlay.getElement();
-		const dragPan = this._dragPan;
-
-
-		const handleMouseDown = () => {
-			dragPan.setActive(false);
-			overlay.set('dragging', true);
-		};
-
-		const handleMouseEnter = () => {
-			overlay.set('dragable', true);
-		};
-
-		const handleMouseLeave = () => {
-			overlay.set('dragable', false);
-		};
-		element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
-		element.addEventListener('mouseenter', handleMouseEnter);
-		element.addEventListener('mouseleave', handleMouseLeave);
 	}
 
 	async _convertToPermanentLayer() {

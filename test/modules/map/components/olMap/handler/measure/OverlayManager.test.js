@@ -2,7 +2,16 @@ import { Feature } from 'ol';
 import { OverlayManager } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OverlayManager';
 import { TestUtils } from '../../../../../../test-utils.js';
 
+import { $injector } from '../../../../../../../src/injection';
+
+
+
+const environmentServiceMock = { isTouch: () => false };
 TestUtils.setupStoreAndDi({},);
+$injector.registerSingleton('TranslationService', { translate: (key) => key })
+	.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
+	.registerSingleton('EnvironmentService', environmentServiceMock);
+	
 
 describe('OverlayManager', () => {
 	const createFeature = () => {
