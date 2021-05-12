@@ -10,7 +10,6 @@ import { addLayer, removeLayer } from '../../../../store/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
-import { MeasurementOverlay } from './MeasurementOverlay';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
@@ -20,10 +19,6 @@ import { KML } from 'ol/format';
 import { debounced } from '../../../../../../utils/timer';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
-
-if (!window.customElements.get(MeasurementOverlay.tag)) {
-	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
-}
 
 
 export const MeasureStateType = {
