@@ -127,13 +127,7 @@ Here's an overview of what project folder structure looks like:
   - `BaElement` components
   - `BaPlugin` implementations
 
-- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
-
-
-## Pending Questions
-
-- Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
-- Run each set of tests in a separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
+- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. For this purpose it's recommended to use `EventLike` in storeUtils.js.
 
 ## Links
 
