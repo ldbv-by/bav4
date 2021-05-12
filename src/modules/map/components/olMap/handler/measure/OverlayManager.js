@@ -122,8 +122,33 @@ export class OverlayManager {
 		feature.set('partitions', partitions);
 	}
 
+	saveManualOverlayPosition(feature) {
+		const draggableOverlayTypes = ['area', 'measurement'];
+		draggableOverlayTypes.forEach(t => {
+			const overlay = feature.get(t);
+			if (overlay) {
+				if (overlay.get('manualPositioning')) {
+					feature.set(t + '_position_x', overlay.getPosition()[0]);					
+					feature.set(t + '_position_y', overlay.getPosition()[1]);
+				}					
+			}
+		});			
+	}
 
-
+	restoreManualOverlayPosition(feature) {
+		const draggableOverlayTypes = ['area', 'measurement'];
+		draggableOverlayTypes.forEach(t => {
+			const overlay = feature.get(t);
+			if (overlay) {
+				const posX = feature.get(t + '_position_x');
+				const posY = feature.get(t + '_position_y');
+				if (posX !== null && posY !== null) {
+					overlay.set('manualPositioning', true);
+					overlay.setPosition([posX, posY]);
+				}					
+			}
+		});			
+	}
 
 	create(overlayOptions = {}, type, projectionHints, isDraggable = false ) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);

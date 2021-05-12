@@ -132,6 +132,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._overlayManager.createDistanceOverlay(f);
 							this._overlayManager.createAreaOverlay(f);
 							this._overlayManager.createPartitionOverlays(f);
+							this._overlayManager.restoreManualOverlayPosition(f);
 							f.on('change', onFeatureChange);	
 						});											
 					}).then(() => removeLayer( oldLayer.get('id')));
@@ -405,8 +406,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	async _save() {		
 		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
 		const format = new KML({ writeStyles: true });
+		const features = this._vectorLayer.getSource().getFeatures();		
+		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));
 		this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
-
 		
 		if (!this._storeID) {
 			try {
