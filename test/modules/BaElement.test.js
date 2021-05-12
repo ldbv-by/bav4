@@ -12,11 +12,16 @@ class BaElementImpl extends BaElement {
 		this.callOrderIndex = 0;
 	}
 
-	extractState(store) {
+	extractState(globalState) {
 		this.extractStateCalled = this.callOrderIndex++;
 		//here we extract the local state from the application store
-		const { root: { applicationStateIndex } } = store;
+		const { root: { applicationStateIndex } } = globalState;
 		return { elementStateIndex: applicationStateIndex, someWhatNull: null };
+	}
+
+	onStateChanged() {
+		this.onStateChangedCalled = this.callOrderIndex++;
+		super.onStateChanged();
 	}
 
 	initialize() {
@@ -43,8 +48,8 @@ class BaElementImpl extends BaElement {
 	}
 
 
-	createView() {
-		return html`<div class='ba-element-impl'> ${this._state.elementStateIndex}</div>`;
+	createView(state) {
+		return html`<div class='ba-element-impl'> ${state.elementStateIndex}</div>`;
 	}
 
 	static get tag() {
@@ -161,6 +166,28 @@ describe('BaElement', () => {
 		});
 	});
 
+	describe('getState()', () => {
+
+		it('returns the state of this element', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+
+			expect(element.getState()).toEqual(element._state);
+		});
+	});
+
+
+	describe('log()', () => {
+
+		it('returns the state of this element', async () => {
+			const logSpy = spyOn(console, 'log');
+			const element = await TestUtils.render(BaElementImpl.tag);
+
+			element.log('foo');
+
+			expect(logSpy).toHaveBeenCalledWith('BaElementImpl: foo');
+		});
+	});
+
 	describe('when initialized', () => {
 
 		it('renders the view', async () => {
@@ -229,6 +256,7 @@ describe('BaElement', () => {
 	describe('when state changed', () => {
 		it('calls state change callback in correct order', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
+			const onStateChangedSpy = spyOn(element, 'onStateChanged').and.callThrough();
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
 
@@ -238,10 +266,12 @@ describe('BaElement', () => {
 			});
 
 			expect(element.extractStateCalled).toBe(6);
-			expect(element.onBeforeRenderCalled).toBe(7);
-			expect(element.onRenderCalled).toBe(8);
-			expect(element.onAfterRenderCalled).toBe(9);
+			expect(element.onStateChangedCalled).toBe(7);
+			expect(element.onBeforeRenderCalled).toBe(8);
+			expect(element.onRenderCalled).toBe(9);
+			expect(element.onAfterRenderCalled).toBe(10);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
+			expect(onStateChangedSpy).toHaveBeenCalledWith(jasmine.any(Object));
 		});
 
 		it('calls registered observer', async () => {

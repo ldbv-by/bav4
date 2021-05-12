@@ -81,6 +81,15 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
+	 * Returns the current state.
+	 * @protected
+	 * @returns state of this element
+	 */
+	getState() {
+		return this._state;
+	}
+
+	/**
 	 *
 	 * @param {string} message 
 	 * @protected
@@ -148,7 +157,7 @@ export class BaElement extends HTMLElement {
 		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
 			this._observer.forEach(o => o());
-			this.onStateChanged();
+			this.onStateChanged(this._state);
 		}
 	}
 
@@ -164,9 +173,10 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
+	 * @param {object} state state of this element
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
-	createView() {
+	createView(/*eslint-disable no-unused-vars */state) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
 	}
@@ -177,9 +187,10 @@ export class BaElement extends HTMLElement {
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
-	 * @returns state of the elements {Object}
+	 * @param {object} globalState **global** state
+	 * @returns state of this elements
 	 */
-	extractState(/*eslint-disable no-unused-vars */state) {
+	extractState(/*eslint-disable no-unused-vars */globalState) {
 		return {};
 	}
 
@@ -205,7 +216,7 @@ export class BaElement extends HTMLElement {
 
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
-			const template = this.createView();
+			const template = this.createView(this._state);
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
 			}
@@ -263,8 +274,9 @@ export class BaElement extends HTMLElement {
 	 * Called after the elements state has been changed. 
 	 * Per default {@link BaElement#render} is called. 
 	 * @protected
+	 * @param {object} state state of this element
 	 */
-	onStateChanged() {
+	onStateChanged(/*eslint-disable no-unused-vars */state) {
 		this.render();
 	}
 
