@@ -1,9 +1,9 @@
 import { AttributionInfo } from '../../../../../src/modules/map/components/attributionInfo/AttributionInfo';
 import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer'; 
+import { positionReducer } from '../../../../../src/store/position/position.reducer'; 
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/modules/map/store/layers.action';
-import { changeZoom } from '../../../../../src/modules/map/store/position.action';
+import { changeZoom } from '../../../../../src/store/position/position.action';
 import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources'; 
 import { $injector } from '../../../../../src/injection';
 import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';

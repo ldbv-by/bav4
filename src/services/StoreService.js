@@ -1,5 +1,5 @@
 import { combineReducers, createStore } from 'redux';
-import { positionReducer } from '../modules/map/store/position.reducer';
+import { positionReducer } from '../store/position/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { mainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';

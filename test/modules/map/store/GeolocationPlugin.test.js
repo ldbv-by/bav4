@@ -4,7 +4,7 @@ import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
 import { geolocationReducer } from '../../../../src/modules/map/store/geolocation.reducer';
 import { $injector } from '../../../../src/injection';
-import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
 import { setBeingDragged } from '../../../../src/modules/map/store/pointer.action';
 

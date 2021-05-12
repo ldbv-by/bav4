@@ -1,7 +1,7 @@
 import { observe } from '../../../utils/storeUtils';
 import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from './geolocation.action';
-import { changeCenter, setFit } from './position.action';
+import { changeCenter, setFit } from '../../../store/position/position.action';
 import { addLayer, removeLayer } from './layers.action';
 import { BaPlugin } from '../../../store/BaPlugin';
 

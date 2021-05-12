@@ -1,7 +1,7 @@
 import { BaseLayerInfo } from '../../../../../src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
 import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/modules/map/store/layers.action';
 import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
