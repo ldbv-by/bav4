@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
 import { BaElement } from '../../../../../BaElement';
@@ -22,12 +23,13 @@ export class LocationResultsPanel extends BaElement {
 		this._providerService = providerService;
 		this._translationService = translationService;
 		this._locationSearchResults = [];
+		this._isCollapsed = false;
 	}
 
 
 	initialize() {
 		const locationProvider = this._providerService.getLocationSearchResultProvider();
-		
+
 		//requestData call has to be debounced
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
 			async (term) => {
@@ -48,14 +50,37 @@ export class LocationResultsPanel extends BaElement {
 	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
+
+		const toggleCollapse = () => {		
+			if (this._locationSearchResults.length) {
+				this._isCollapsed = !this._isCollapsed;
+				this.render();
+			}	
+		};
+
+		const iconCollapseClass = {
+			iconexpand: !this._isCollapsed,
+			isdisabled:  !this._locationSearchResults.length
+		};
+
+		const bodyCollapseClass = {
+			iscollaps: this._isCollapsed
+		};
+
 		return html`
         <style>${css}</style>
-			<div class="location-results-panel">
-				<div class="location-label">${translate('search_menu_locationResultsPanel_label')}:</div>
-					<ul class="location-items">
-						${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
-					</ul>
-				</div>
+		<div class="location-results-panel">
+			<div class="location-label">
+				<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>			
+				<a class='location-label__collapse' @click="${toggleCollapse}">
+					<i class='icon chevron ${classMap(iconCollapseClass)}'>
+					</i>
+				</a>   
+			</div>			
+			<ul class="location-items divider ${classMap(bodyCollapseClass)}">	
+				${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
+			</ul>
+			</div>
 		</div>
         `;
 	}

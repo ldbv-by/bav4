@@ -27,13 +27,21 @@ export class LocationResultItem extends BaElement {
 	}
 
 
-	createView() {
+	createView() {		
 		if (this._locationSearchResult) {
 
 			return html`
 				<style>${itemCss}</style>
 				<style>${css}</style>
-                <li>${unsafeHTML(this._locationSearchResult.labelFormated)}</li>
+                <li class='ba-list-item' >
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__icon-info">
+						</span>
+					</span>
+					<span class="ba-list-item__text ">
+					${unsafeHTML(this._locationSearchResult.labelFormated)}
+					</span>
+				</li>
             `;
 		}
 		return nothing;

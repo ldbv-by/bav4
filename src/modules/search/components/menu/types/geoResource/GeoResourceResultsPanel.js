@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
 import { BaElement } from '../../../../../BaElement';
@@ -22,6 +23,7 @@ export class GeoResouceResultsPanel extends BaElement {
 		this._providerService = providerService;
 		this._translationService = translationService;
 		this._geoRersourceSearchResults = [];
+		this._isCollapsed = false;
 	}
 
 
@@ -48,11 +50,36 @@ export class GeoResouceResultsPanel extends BaElement {
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
+
+		const toggleCollapse = () => {		
+			if (this._geoRersourceSearchResults.length) {
+				this._isCollapsed = !this._isCollapsed;
+				this.render();
+			}	
+		};
+
+		const iconCollapseClass = {
+			iconexpand: !this._isCollapsed,
+			isdisabled:  !this._geoRersourceSearchResults.length
+		};
+
+		const bodyCollapseClass = {
+			iscollaps: this._isCollapsed
+		};
+
+
+
 		return html`
         <style>${css}</style>
 			<div class="georesource-results-panel">
-				<div class="georesource-label">${translate('search_menu_geoResourceResultsPanel_label')}:</div>
-				<ul class="georesource-items">
+				<div class="georesource-label">
+					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
+					<a class='georesource-label__collapse' @click="${toggleCollapse}">
+						<i class='icon chevron ${classMap(iconCollapseClass)}'>
+						</i>
+					</a>   
+				</div>
+				<ul class="georesource-items divider ${classMap(bodyCollapseClass)}">	
 					${this._geoRersourceSearchResults.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
 				</ul>
 			</div>

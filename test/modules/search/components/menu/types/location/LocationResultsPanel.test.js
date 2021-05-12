@@ -56,8 +56,11 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
+				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 			});
 		});
 
@@ -79,8 +82,11 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
+				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
 			});
@@ -103,11 +109,88 @@ describe('LocationResultsPanel', () => {
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label').textContent).toBe('search_menu_locationResultsPanel_label:');
+				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
 			});
 		});
 	});
+
+	describe('when collaps clicked', () => {
+
+		it('with items', async () => {
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
+				.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+
+			const element = await setup(initialState);
+
+			//internally uses debounce
+			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+
+				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');      
+
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+								
+				collapseButton.click();			
+				
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+
+				collapseButton.click();			
+
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+
+				expect(getLocationSearchResultProvider).toHaveBeenCalled();
+			});
+		});
+		it('without items', async () => {
+			const element = await setup();
+
+			//internally uses debounce
+			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+
+				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+
+				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');      
+
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+								
+				collapseButton.click();			
+				
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+
+				collapseButton.click();			
+
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+
+			});
+		});
+	});
+
 });

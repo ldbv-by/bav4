@@ -89,12 +89,18 @@ export class GeoResourceResultItem extends BaElement {
 			return html`
 				<style>${itemCss}</style>
 				<style>${css}</style>
-                <li 
+                <li class="ba-list-item"
 					@click=${() => onClick(this._georesourceSearchResult)} 
 					@mouseenter=${() => onMouseEnter(this._georesourceSearchResult)} 
 					@mouseleave=${() => onMouseLeave(this._georesourceSearchResult)}>
+						<span class="ba-list-item__pre ">
+							<span class="ba-list-item__icon-info">
+							</span>
+						</span>
+						<span class="ba-list-item__text ">
 						${unsafeHTML(this._georesourceSearchResult.labelFormated)}
-				</li>
+						</span>
+				</li>				
             `;
 		}
 		return nothing;
