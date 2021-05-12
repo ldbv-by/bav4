@@ -14,9 +14,10 @@
  *  const tHandler = throttled(200, myHandler);
  *  tHandler(event)
  * </pre>
- * @param {*} delay 
- * @param {*} fn 
- * @returns a function which execution calls the wrapped function in a throttled manner
+ * @param {number} delay Delay in ms
+ * @param {Function} fn The wrapped function
+ * @returns {Function} A function that throttles the wrapped function when called 
+ }} 
  */
 export function throttled(delay, fn) {
 	let lastCall = 0;
@@ -40,9 +41,9 @@ export function throttled(delay, fn) {
  *  const dHandler = debounced(200, myHandler);
  *  dHandler(event)
  * </pre>
- * @param {*} delay 
- * @param {*} fn
- * @returns a function which execution calls the wrapped function in a debounced manner
+ * @param {number} delay Delay in ms
+ * @param {Function} fn The wrapped function
+ * @returns {Function} A function that debounces the wrapped function when called
  */
 export function debounced(delay, fn) {
 	let timerId;

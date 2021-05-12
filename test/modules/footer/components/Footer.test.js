@@ -42,6 +42,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelector('.footer.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('block');
 			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
 		});
@@ -55,6 +56,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelector('.footer.is-open')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(1);
 		});
@@ -80,6 +82,7 @@ describe('Footer', () => {
 			expect(element.shadowRoot.querySelector('.footer')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('ba-map-info')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-attribution-info')).toBeTruthy();
 		});
 
 

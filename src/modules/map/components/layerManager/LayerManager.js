@@ -59,8 +59,8 @@ export class LayerManager extends BaElement {
 	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = this._state;
-		this._buildDraggableItems(active);
+		const { active } = this._state;		
+		this._buildDraggableItems(active.filter(l => !l.constraints.hidden));
 
 		const isNeighbour = (index, otherIndex) => {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;

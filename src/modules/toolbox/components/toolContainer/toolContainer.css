@@ -5,7 +5,7 @@
     position: fixed;    
     z-index: calc(var(--z-toolbox) + 20);    
     background-color: var(--primary-bg-color);
-    max-width: 25em;
+    max-width: 27em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);   
 }
 .tool-container__tools-nav{

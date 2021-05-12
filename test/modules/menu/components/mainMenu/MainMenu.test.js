@@ -17,12 +17,12 @@ describe('MainMenuTabIndex', () => {
 
 		expect(Object.entries(MainMenuTabIndex).length).toBe(6);
 		expect(Object.isFrozen(MainMenuTabIndex)).toBeTrue();
-		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, tag: null });
-		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, tag: null });
-		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, tag: null });
-		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, tag: null });
-		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, tag: SearchResultsPanel.tag });
-		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, tag: null });
+		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, component: null });
+		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, component: null });
+		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
+		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
+		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchResultsPanel });
+		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: null });
 	});
 });
 

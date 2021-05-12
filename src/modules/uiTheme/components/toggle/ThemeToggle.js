@@ -7,7 +7,7 @@ import css from './themeToggle.css';
 /**
  * Toggles the UI between a light and a dark theme
  * @class
- * @author aul
+ * @author taulinger
  */
 export class ThemeToggle extends BaElement {
 

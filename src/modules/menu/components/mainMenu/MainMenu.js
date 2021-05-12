@@ -1,9 +1,8 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { BaElement, renderTagOf } from '../../../BaElement';
 import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 
@@ -11,12 +10,12 @@ import { SearchResultsPanel } from '../../../search/components/menu/SearchResult
  * @enum
  */
 export const MainMenuTabIndex = Object.freeze({
-	TOPICS: { id: 0, tag: null },
-	MAPS: { id: 1, tag: null },
-	MORE: { id: 2, tag: null },
-	ROUTING: { id: 3, tag: null },
-	SEARCH: { id: 4, tag: SearchResultsPanel.tag },
-	FEATUREINFO: { id: 5, tag: null }
+	TOPICS: { id: 0, component: null },
+	MAPS: { id: 1, component: null },
+	MORE: { id: 2, component: null },
+	ROUTING: { id: 3, component: null },
+	SEARCH: { id: 4, component: SearchResultsPanel },
+	FEATUREINFO: { id: 5, component: null }
 });
 
 
@@ -117,7 +116,7 @@ export class MainMenu extends BaElement {
 								</div>								
 							`)}
 						</div>
-						${unsafeHTML(`<${DevInfo.tag}/>`)}	
+						${renderTagOf(DevInfo)}	
 					</div>			
 				</div>			
 			</div>			
@@ -134,7 +133,7 @@ export class MainMenu extends BaElement {
 			case MainMenuTabIndex.MORE:
 				return this._demoMoreContent();
 			case MainMenuTabIndex.SEARCH:
-				return html`${unsafeHTML(`<${index.tag}/>`)}`;
+				return html`${renderTagOf(index.component)}`;
 			default:
 				return nothing;
 		}
@@ -144,6 +143,7 @@ export class MainMenu extends BaElement {
 
 		return html`
 		<div>
+			<ba-base-layer-switcher></ba-base-layer-switcher>
 			<ba-layer-manager></ba-layer-manager>
 		</div>
 		`;

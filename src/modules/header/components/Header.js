@@ -11,7 +11,7 @@ import { setQuery } from '../../../store/search/search.action';
 /**
  * Container element for header stuff. 
  * @class
- * @author aul
+ * @author taulinger
  * @author alsturm
  */
 export class Header extends BaElement {

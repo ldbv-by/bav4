@@ -1,4 +1,22 @@
 import { isPromise } from '../../utils/checks';
+import { getDefaultAttribution } from '../provider/attribution.provider';
+
+
+/**
+ * Attribution data of a GeoResource.
+ * It contains at least a copyright label.
+ * @typedef Attribution
+ * @property {Copyright} copyright
+ * @property {string} [description] description
+ */
+
+/**
+ * Copyright data of an attribution.
+ * @typedef Copyright
+ * @property {string} label copyright label
+ * @property {string} [url] copyright href
+ */
+
 
 /**
  * @enum
@@ -28,6 +46,8 @@ export class GeoResource {
 		this._label = label;
 		this._background = false;
 		this._opacity = 1.0;
+		this._attribution = null;
+		this._attributionProvider = getDefaultAttribution;
 	}
 
 	/**
@@ -57,6 +77,10 @@ export class GeoResource {
 		return this._opacity;
 	}
 
+	get attribution() {
+		return this._attribution;
+	}
+
 	set label(label) {
 		this._label = label;
 	}
@@ -67,6 +91,38 @@ export class GeoResource {
 
 	set opacity(opacity) {
 		this._opacity = opacity;
+	}
+
+	set attribution(attribution) {
+		this._attribution = attribution;
+	}
+
+	/**
+	 * Sets the attribution provider for this GeoResource.
+	 * @param {attributionProvider} provider 
+	 * @returns `this` for chaining
+	 */
+	setAttributionProvider(provider) {
+		this._attributionProvider = provider;
+		return this;
+	}
+
+	/**
+	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
+	 * for this GeoResouce. 
+	 * It returns `null` when no attributions are available.
+	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map) 
+	 * @returns {Array<Attribution>|null} attributions 
+	 * @throws Error when no attribution provider is found
+	 */
+	getAttribution(value = 0) {
+		if (this._attributionProvider) {
+			const attributions = this._attributionProvider(this, value);
+			return Array.isArray(attributions)
+				? attributions.length > 0 ? attributions : null
+				: attributions ? [attributions] : null;
+		}
+		throw new Error('No attribution provider found');
 	}
 
 	/**
@@ -228,7 +284,7 @@ export class VectorGeoResource extends GeoResource {
 		this._srid = null;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the source of this 'internal' GeoResource.
 	 * @param {Promise<string>|string} data 
@@ -242,7 +298,7 @@ export class VectorGeoResource extends GeoResource {
 		return this;
 	}
 
-	
+
 	/**
 	 * Sets the loader of this 'internal' GeoResource.
 	 * @param {VectorGeoResourceLoader} loader 

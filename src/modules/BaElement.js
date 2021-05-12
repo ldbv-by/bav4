@@ -1,4 +1,5 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
 import css from './baElement.css';
@@ -44,7 +45,7 @@ import css from './baElement.css';
  * 
  * @abstract
  * @class
- * @author aul
+ * @author taulinger
  */
 export class BaElement extends HTMLElement {
 
@@ -325,3 +326,17 @@ export class BaElement extends HTMLElement {
 		}
 	}
 }
+
+
+/**
+ * Calls the static #tag method of a BaElement and renders the result as HTML.
+ * Returns a lit-html Part instance.
+ * @param {*} Clazz A class that inherits BaElement
+ * @returns {Part} A lit-html Part instance
+ */
+export const renderTagOf = (baElementClazz) => {
+	if (baElementClazz.prototype instanceof BaElement) {
+		return unsafeHTML(`<${baElementClazz.tag}/>`);
+	}
+	throw new TypeError(`${baElementClazz.name} does not inherit BaElement`);
+};

@@ -1,10 +1,18 @@
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_MODIFIED = 'layer/modified';
+export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 
 
 export const initialState = {
+	/**
+	 * List of currently active layers.
+	 */
 	active: [],
+	/**
+	 * Flag that indicates if the layer store is ready. "Ready" means all required resources are available.
+	 */
+	ready: false
 };
 
 /**
@@ -34,6 +42,15 @@ export const sort = (list) => {
 	});
 	//and reindex
 	return index(sorted);
+};
+
+/**
+ * Creates a layer containing all required properties set to default values.
+ * @param {string} id The id of the layer
+ * @returns a layer with default properties
+ */
+export const createDefaultLayer = (id) => {
+	return { id: id, geoResourceId: id, ...defaultLayerProperties };
 };
 
 export const defaultLayerProperties = Object.freeze({
@@ -79,6 +96,13 @@ const removeLayer = (state, payload) => {
 	};
 };
 
+const setReady = (state, payload) => {
+	return {
+		...state,
+		ready: payload
+	};
+};
+
 const modifyLayer = (state, payload) => {
 	const { id, properties } = payload;
 
@@ -121,6 +145,9 @@ export const layersReducer = (state = initialState, action) => {
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);
+		}
+		case LAYER_RESOURCES_READY: {
+			return setReady(state, payload);
 		}
 	}
 

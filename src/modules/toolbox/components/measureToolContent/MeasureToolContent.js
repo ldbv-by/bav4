@@ -49,8 +49,17 @@ export class MeasureToolContent extends BaElement {
 			remove();
 		};
 
-		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
+		const buildPackage = (measurement) => {
+			const splitted = measurement.split(' ');
+			if (splitted.length === 2) {
+				return { value:splitted[0], unit:splitted[1] };
+			}
+			return { value:splitted[0], unit:'?' };
+		}; 
+		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);		
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
+		const formattedDistancePackage = buildPackage(formattedDistance);
+		const formattedAreaPackage = buildPackage(formattedArea);
 		return html`
         <style>${css}</style>
             	<div class="ba-tool-container__item">
@@ -64,9 +73,8 @@ export class MeasureToolContent extends BaElement {
 						<span>
 						${translate('toolbox_measureTool_stats_length')}:						
 						</span>						
-						<span class='prime-text'>
-							${formattedDistance}
-						</span>											
+						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
+						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
 							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
 							</ba-icon>
@@ -76,9 +84,8 @@ export class MeasureToolContent extends BaElement {
 						<span>
 							${translate('toolbox_measureTool_stats_area')}:		
 						</span>						
-						<span class='prime-text'>
-								${unsafeHTML(formattedArea)}
-						</span>
+						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
+						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
 							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
 							</ba-icon>
@@ -101,9 +108,6 @@ export class MeasureToolContent extends BaElement {
 						title=${translate('toolbox_drawTool_delete')}
 						@click=${onClickRemove}>
 						${translate('toolbox_drawTool_delete')}
-						</button>
-						<button>                            
-						${translate('toolbox_drawTool_share')}
 						</button>
 					</div>                
             	</div>	  

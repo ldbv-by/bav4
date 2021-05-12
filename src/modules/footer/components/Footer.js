@@ -6,7 +6,7 @@ import css from './footer.css';
 /**
  * Container element for footer stuff. 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class Footer extends BaElement {
 
@@ -60,7 +60,8 @@ export class Footer extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="preload ${getOrientationClass()}">
-				<div class="footer ${getOverlayClass()}">
+			<div class="footer ${getOverlayClass()}">
+				<ba-attribution-info></ba-attribution-info>
 					<div class="content">	
 						${this.createChildrenView()}
 					</div>

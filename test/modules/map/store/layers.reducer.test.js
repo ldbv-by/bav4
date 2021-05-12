@@ -1,10 +1,10 @@
-import { layersReducer, index, sort, defaultLayerProperties } from '../../../../src/modules/map/store/layers.reducer';
-import { addLayer, removeLayer, modifyLayer } from '../../../../src/modules/map/store/layers.action';
+import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../../src/modules/map/store/layers.reducer';
+import { addLayer, removeLayer, modifyLayer, setReady } from '../../../../src/modules/map/store/layers.action';
 import { TestUtils } from '../../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
 
-	it('returns a layer object with default settings', () => {
+	it('returns a object containing default layer properties', () => {
 
 		expect(Object.isFrozen(defaultLayerProperties)).toBeTrue();
 		expect(defaultLayerProperties.visible).toBeTrue();
@@ -13,6 +13,23 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
 		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
+	});
+});
+
+describe('createDefaultLayer', () => {
+
+	it('returns a layer object with default properties and values', () => {
+
+		const layer = createDefaultLayer('foo');
+
+		expect(layer.id).toBe('foo');
+		expect(layer.geoResourceId).toBe('foo');
+		expect(layer.visible).toBeTrue();
+		expect(layer.label).toBe('');
+		expect(layer.opacity).toBe(1);
+		expect(layer.zIndex).toBe(-1);
+		expect(layer.constraints.alwaysTop).toBeFalse();
+		expect(layer.constraints.hidden).toBeFalse();
 	});
 });
 
@@ -27,6 +44,7 @@ describe('layersReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().layers.active.length).toBe(0);
+		expect(store.getState().layers.ready).toBeFalse();
 	});
 
 	it('sets the \'zIndex\' property based on an array', () => {
@@ -337,6 +355,16 @@ describe('layersReducer', () => {
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].visible).toBe(true);
+	});
+
+	it('marks the state as ready', () => {
+		const store = setup();
+
+		expect(store.getState().layers.ready).toBeFalse();
+		
+		setReady();
+		
+		expect(store.getState().layers.ready).toBeTrue();
 	});
 
 });
