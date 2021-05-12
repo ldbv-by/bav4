@@ -10,7 +10,7 @@ import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 /**
  * Container element for header stuff. 
  * @class
- * @author aul
+ * @author taulinger
  * @author alsturm
  */
 export class Header extends BaElement {

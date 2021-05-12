@@ -105,6 +105,9 @@ export class ShowCase extends BaElement {
 			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
 			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="secondary" @click=${deactivateMeasrementTool}></ba-button>	
 			
+			<p>BaseLayer Switcher</p>
+			<div><ba-base-layer-switcher></ba-base-layer-switcher></div>
+
 			<p>Url of State</p>
 			<ba-button id='buttonActivateMeasureDistance' label='Copy Url' type="primary" @click=${onGenerateUrlButtonClick}></ba-button>	
 			<input readonly='readonly' value=${this._url}></input>	

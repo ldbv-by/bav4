@@ -8,7 +8,7 @@ import css from './devInfo.css';
  * Displays the SOFTWARE_INFO value, which should
  * contain development informations like build number, date, ...
  * @class
- * @author aul
+ * @author taulinger
  */
 export class DevInfo extends BaElement {
 

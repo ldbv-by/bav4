@@ -15,7 +15,7 @@ import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action'
 /**
  * Element which renders the ol map.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class OlMap extends BaElement {
 

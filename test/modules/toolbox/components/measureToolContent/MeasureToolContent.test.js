@@ -32,11 +32,11 @@ describe('MeasureToolContent', () => {
 			}
 
 			formatDistance(distance, decimals) {
-				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + 'm';
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + ' m';
 			}
 
 			formatArea(area, decimals) {
-				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + 'm²';
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + ' m²';
 			}
 		}
 
@@ -94,6 +94,25 @@ describe('MeasureToolContent', () => {
 			removeButton.click();
 
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('shows the measurement statistics', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			const valueSpan = element.shadowRoot.querySelector('.prime-text-value');
+			const unitSpan = element.shadowRoot.querySelector('.prime-text-unit');			
+
+			expect(valueSpan).toBeTruthy();
+			expect(unitSpan).toBeTruthy();
+			expect(valueSpan.textContent).toBe('42');
+			expect(unitSpan.textContent).toBe('m');
 		});
 	});
 });

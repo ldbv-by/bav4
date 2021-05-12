@@ -2,7 +2,7 @@ import { setFetching } from '../store/network/network.action';
 
 /**
  * @class
- * @author aul
+ * @author taulinger
  */
 export class HttpService {
 

@@ -22,7 +22,7 @@ import { searchReducer } from '../store/search/search.reducer';
 /**
  * Service which configures, initializes and holds the redux store.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class StoreService {
 
@@ -75,15 +75,15 @@ export class StoreService {
 					'EnvironmentService'
 				);
 
-			await topicsPlugin.register(this._store);
-			await layersPlugin.register(this._store);
-			await positionPlugin.register(this._store);
-			await measurementPlugin.register(this._store);
-			await geolocationPlugin.register(this._store);
-			await ContextClickPlugin.register(this._store);
-
-			//we remove all query params shown in the browsers address bar
-			setTimeout(() => {
+			setTimeout(async() => {
+				//register plugins
+				await topicsPlugin.register(this._store);
+				await layersPlugin.register(this._store);
+				await positionPlugin.register(this._store);
+				await measurementPlugin.register(this._store);
+				await geolocationPlugin.register(this._store);
+				await ContextClickPlugin.register(this._store);
+				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});
 		});

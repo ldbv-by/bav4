@@ -55,7 +55,7 @@ describe('Button', () => {
 			expect(button.classList.contains('disabled')).toBeTrue();
 		});
 
-		it('re-renders the view when property \'disabled\' is changed', async () => {
+		it('re-renders the view when property \'disabled\' changed', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
@@ -105,6 +105,30 @@ describe('Button', () => {
 			const button = element.shadowRoot.querySelector('button');
 
 			expect(button).toBeTruthy();
+			expect(button.className).toBe('button primary');
+		});
+
+		it('re-renders the view when property \'type\' changed', async () => {
+
+			const element = await TestUtils.render(Button.tag);
+			const button = element.shadowRoot.querySelector('button');
+
+			expect(button.className).toBe('button secondary');
+
+			element.type = 'primary';
+
+			expect(button.className).toBe('button primary');
+		});
+
+		it('re-renders the view when attribute \'disabled\' changed', async () => {
+
+			const element = await TestUtils.render(Button.tag, { type: 'secondary' });
+			const button = element.shadowRoot.querySelector('button');
+
+			expect(button.className).toBe('button secondary');
+
+			element.setAttribute('type', 'primary');
+
 			expect(button.className).toBe('button primary');
 		});
 	});

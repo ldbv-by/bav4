@@ -7,7 +7,7 @@ import { buffer } from 'ol/extent';
 /**
  * Utilities methods for coordinates like transformation, based on ol.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class OlCoordinateService {
 
