@@ -252,7 +252,7 @@ describe('OverlayManager', () => {
 		}, set(key, value) {
 			actualProperty.key = key;
 			actualProperty.value = value;
-		} };
+		}, setOffset() {} };
 		const classUnderTest = new OverlayManager(mapStub);
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
