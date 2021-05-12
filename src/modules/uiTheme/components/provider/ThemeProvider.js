@@ -18,7 +18,7 @@ export class ThemeProvider extends BaElement {
 
 	initialize() {
 
-		this._updateCss();
+		this._updateCss(this.getState());
 
 		//listen to theme changes on window
 		this._environmentService.getWindow().matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
@@ -26,9 +26,9 @@ export class ThemeProvider extends BaElement {
 		});
 	}
 
-	_updateCss() {
+	_updateCss(state) {
 		
-		const { theme } = this._state;
+		const { theme } = state;
 		const cssClassToAdd = theme === 'dark' ? 'dark-theme' : 'light-theme';
 		const cssClassToRemove = theme === 'light' ? 'dark-theme' : 'light-theme';
 		this._environmentService.getWindow()
@@ -41,12 +41,12 @@ export class ThemeProvider extends BaElement {
 		return true;
 	}
 
-	onStateChanged() {
-		this._updateCss();
+	onStateChanged(state) {
+		this._updateCss(state);
 	}
 
-	extractState(state) {
-		const { uiTheme: { theme } } = state;
+	extractState(globalState) {
+		const { uiTheme: { theme } } = globalState;
 		return { theme };
 	}
 

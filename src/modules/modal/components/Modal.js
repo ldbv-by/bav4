@@ -20,8 +20,8 @@ export class Modal extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
-		const { title, content, visible } = this._state;
+	createView(state) {
+		const { title, content, visible } = state;
 		const translate = (key) => this._translationService.translate(key);
 
 		if (visible) {
@@ -45,10 +45,10 @@ export class Modal extends BaElement {
 	
 	/**
  * @override
- * @param {Object} state 
+ * @param {Object} globalState 
  */
-	extractState(state) {
-		const { modal: { title, content } } = state;
+	extractState(globalState) {
+		const { modal: { title, content } } = globalState;
 		const visible = content;
 		return { title, content, visible };
 	}

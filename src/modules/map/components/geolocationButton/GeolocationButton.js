@@ -22,8 +22,8 @@ export class GeolocationButton extends BaElement {
 	/**
 	 *@override 
 	 */
-	createView() {
-		const { active, denied } = this._state;
+	createView(state) {
+		const { active, denied } = state;
 		const translate = (key) => this._translationService.translate(key);
 		const onClick = () => {
 			if (active) {
@@ -56,8 +56,8 @@ export class GeolocationButton extends BaElement {
 		`;
 	}
 
-	extractState(state) {
-		const { geolocation: { active, denied } } = state;
+	extractState(globalState) {
+		const { geolocation: { active, denied } } = globalState;
 		return { active, denied };
 	}
 

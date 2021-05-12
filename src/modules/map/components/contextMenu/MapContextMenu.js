@@ -46,9 +46,9 @@ export class MapContextMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { coordinate, id } = this._state;
+		const { coordinate, id } = state;
 
 		if (!coordinate || !id) {
 			return nothing;
@@ -82,8 +82,8 @@ export class MapContextMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	extractState(state) {
-		const { mapContextMenu: { coordinate, id } } = state;
+	extractState(globalState) {
+		const { mapContextMenu: { coordinate, id } } = globalState;
 		return { coordinate, id };
 	}
 

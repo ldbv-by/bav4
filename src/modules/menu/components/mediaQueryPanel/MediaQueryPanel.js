@@ -53,9 +53,9 @@ export class MediaQueryPanel extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { open } = this._state;
+		const { open } = state;
 
 		const getOrientationClass = () => {
 			return this._portrait ? 'is-portrait' : 'is-landscape';
@@ -83,10 +83,10 @@ export class MediaQueryPanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { sidePanel: { open } } = state;
+	extractState(globalState) {
+		const { sidePanel: { open } } = globalState;
 		return { open };
 	}
 
