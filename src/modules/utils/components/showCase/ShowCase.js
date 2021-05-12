@@ -6,7 +6,7 @@ import { changeZoomAndCenter } from '../../../../store/position/position.action'
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
-import { addLayer } from '../../../map/store/layers.action';
+import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 
 /**

@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { modifyLayer, removeLayer } from './../../store/layers.action';
+import { modifyLayer, removeLayer } from './../../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/trash.svg';

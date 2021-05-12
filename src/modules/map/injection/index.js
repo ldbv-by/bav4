@@ -1,4 +1,4 @@
-import { LayersPlugin } from '../store/LayersPlugin';
+import { LayersPlugin } from '../../../store/layers/LayersPlugin';
 import { PositionPlugin } from '../../../store/position/PositionPlugin';
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';

@@ -6,9 +6,9 @@ import { positionReducer } from '../../../../../src/store/position/position.redu
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../../src/injection';
-import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
+import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
 import { changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';

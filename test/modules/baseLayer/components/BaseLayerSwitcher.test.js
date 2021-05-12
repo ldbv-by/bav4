@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { BaseLayerSwitcher } from '../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
-import { createDefaultLayer, layersReducer } from '../../../../src/modules/map/store/layers.reducer';
+import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
 import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
 import { TestUtils } from '../../../test-utils.js';

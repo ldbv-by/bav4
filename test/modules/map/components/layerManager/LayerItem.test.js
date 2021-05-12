@@ -1,7 +1,7 @@
 import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
 import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/modules/map/store/layers.reducer';
+import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 

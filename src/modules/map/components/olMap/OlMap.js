@@ -4,7 +4,7 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
-import { removeLayer } from '../../store/layers.action';
+import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';

@@ -3,7 +3,7 @@
  * @module map/action
  */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY } from './layers.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 
 /**

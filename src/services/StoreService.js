@@ -7,7 +7,7 @@ import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.red
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
-import { layersReducer } from '../modules/map/store/layers.reducer';
+import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';

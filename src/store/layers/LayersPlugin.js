@@ -1,8 +1,8 @@
-import { $injector } from '../../../injection';
-import { VectorGeoResource, VectorSourceType } from '../../../services/domain/geoResources';
-import { QueryParameters } from '../../../services/domain/queryParameters';
-import { FileStorageServiceDataTypes } from '../../../services/FileStorageService';
-import { BaPlugin } from '../../../store/BaPlugin';
+import { $injector } from '../../injection';
+import { VectorGeoResource, VectorSourceType } from '../../services/domain/geoResources';
+import { QueryParameters } from '../../services/domain/queryParameters';
+import { FileStorageServiceDataTypes } from '../../services/FileStorageService';
+import { BaPlugin } from '../../store/BaPlugin';
 import { addLayer, modifyLayer, setReady } from './layers.action';
 
 /**
