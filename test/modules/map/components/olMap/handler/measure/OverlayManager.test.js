@@ -224,15 +224,20 @@ describe('OverlayManager', () => {
 
 	it('writes manual overlay-position to the related feature', () => {
 		const mapStub = {};
-		const overlayMock = { getPosition:() => [42, 21], get(property) {
+		const draggedOverlayMock = { getPosition:() => [42, 21], get(property) {
 			return property === 'manualPositioning';
 		} };
+		const staticOverlayMock = { getPosition:() => [], get() {
+			return false;
+		} };
+
 		const classUnderTest = new OverlayManager(mapStub);
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
-		feature.set('measurement', overlayMock);
-		feature.set('area', overlayMock);
+		feature.set('measurement', draggedOverlayMock);
+		feature.set('area', draggedOverlayMock);
+		feature.set('static', staticOverlayMock);
 		
 		classUnderTest.saveManualOverlayPosition(feature);
 		
@@ -240,6 +245,8 @@ describe('OverlayManager', () => {
 		expect(feature.get('measurement_position_y')).toBe(21);
 		expect(feature.get('area_position_x')).toBe(42);
 		expect(feature.get('area_position_y')).toBe(21);
+		expect(feature.get('static_position_x')).toBeUndefined();
+		expect(feature.get('static_position_y')).toBeUndefined();
 	});
 
 
@@ -265,6 +272,29 @@ describe('OverlayManager', () => {
 		
 		expect(actualPosition).toEqual([42, 21]);
 		expect(actualProperty).toEqual({ key:'manualPositioning', value:true });		
+	});
+
+	it('cannot restore manual overlay-position from the related feature', () => {
+		const mapStub = {};
+		let actualPosition;
+		const actualProperty = { key:'', value:null };
+		const overlayMock = { setPosition(pos) {
+			actualPosition = pos;
+		}, set(key, value) {
+			actualProperty.key = key;
+			actualProperty.value = value;
+		}, setOffset() {} };
+		const classUnderTest = new OverlayManager(mapStub);
+		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		
+		feature.set('measurement', overlayMock);
+		feature.set('measurement_position_x', 42);		
+		
+		classUnderTest.restoreManualOverlayPosition(feature);
+		
+		expect(actualPosition).toBeUndefined();
+		expect(actualProperty).toEqual( { key:'', value:null });		
 	});
 
 });

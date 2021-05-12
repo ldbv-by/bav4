@@ -142,7 +142,7 @@ export class OverlayManager {
 			if (overlay) {
 				const posX = feature.get(t + '_position_x');
 				const posY = feature.get(t + '_position_y');
-				if (posX !== null && posY !== null) {
+				if (posX !== undefined && posY !== undefined) {
 					overlay.set('manualPositioning', true);
 					overlay.setOffset([0, 0]);
 					overlay.setPosition([posX, posY]);
