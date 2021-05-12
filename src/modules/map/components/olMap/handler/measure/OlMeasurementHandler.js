@@ -636,23 +636,19 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// TODO: propagate the failing to UI-feedback-channel 
 		}
 		
-		try {
-			let vgr = this._geoResourceService.byId(id);
-			if (!vgr) {
-				//create a georesource and set the data as source
-				vgr = new VectorGeoResource(id, label, VectorSourceType.KML);				
-			}
-			vgr.setSource(this._storedContent, 4326);
+		let vgr = this._geoResourceService.byId(id);
+		if (!vgr) {
+			//create a georesource and set the data as source
+			vgr = new VectorGeoResource(id, label, VectorSourceType.KML);				
+		}
+		vgr.setSource(this._storedContent, 4326);
 			
-			//register georesource
-			this._geoResourceService.addOrReplace(vgr);
-			//add a layer that displays the georesource in the map
-			addLayer(id, { label: label });		
-			this._lastMeasurementId = id;
-		}
-		catch (error) {
-			console.error(error.message);
-		}
+		//register georesource
+		this._geoResourceService.addOrReplace(vgr);
+		//add a layer that displays the georesource in the map
+		addLayer(id, { label: label });		
+		this._lastMeasurementId = id;
+		
 	}
 
 
