@@ -58,9 +58,9 @@ export class SidePanel extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { open } = this._state;
+		const { open } = state;
 		const { portrait } = this._environmentService.getScreenOrientation();
 		const getOverlayClass = () => {
 			if (portrait) {
@@ -112,10 +112,10 @@ export class SidePanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { sidePanel: { open } } = state;
+	extractState(globalState) {
+		const { sidePanel: { open } } = globalState;
 		return { open };
 	}
 

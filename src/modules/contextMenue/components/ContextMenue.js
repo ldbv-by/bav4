@@ -56,8 +56,8 @@ export class ContextMenue extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
-		const { pointer, commands } = this._state;
+	createView(state) {
+		const { pointer, commands } = state;
 		const isOpen = pointer !== false;
 		const onClick = (command) => {
 			command.action();
@@ -88,10 +88,10 @@ export class ContextMenue extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { contextMenue: { data } } = state;
+	extractState(globalState) {
+		const { contextMenue: { data } } = globalState;
 		return data;
 	}
 

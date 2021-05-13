@@ -61,9 +61,9 @@ export class ToolBar extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { toolBar, toolContainer } = this._state;
+		const { toolBar, toolContainer } = state;
 		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
@@ -139,10 +139,10 @@ export class ToolBar extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { toolBar, toolContainer } = state;
+	extractState(globalState) {
+		const { toolBar, toolContainer } = globalState;
 		return { toolBar: toolBar, toolContainer: toolContainer };
 	}
 

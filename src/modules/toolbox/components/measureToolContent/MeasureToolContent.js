@@ -28,9 +28,9 @@ export class MeasureToolContent extends BaElement {
 		this._isFirstMeasurement = true;
 	}
 
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, statistic } = this._state;
+		const { active, statistic } = state;
 		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
 		this._tool.active = active;
 		const areaClasses = { 'is-area': statistic.area > 0 };
@@ -119,10 +119,10 @@ export class MeasureToolContent extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { measurement } = state;
+	extractState(globalState) {
+		const { measurement } = globalState;
 		return measurement;
 	}
 

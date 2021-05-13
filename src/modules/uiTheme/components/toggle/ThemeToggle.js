@@ -18,8 +18,8 @@ export class ThemeToggle extends BaElement {
 		this._translationService = TranslationService;
 	}
 
-	extractState(state) {
-		const { uiTheme: { theme } } = state;
+	extractState(globalState) {
+		const { uiTheme: { theme } } = globalState;
 		return { theme };
 	}
 
@@ -33,9 +33,9 @@ export class ThemeToggle extends BaElement {
 		}
 	}
 
-	createView() {
-		const isChecked = (this._state.theme === 'dark');
-		const title = this._translationService.translate('uiTheme_toggle_tooltip_' + this._state.theme);
+	createView(state) {
+		const isChecked = (state.theme === 'dark');
+		const title = this._translationService.translate('uiTheme_toggle_tooltip_' + state.theme);
 
 		return html`
 		<style>${css}</style>
