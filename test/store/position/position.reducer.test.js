@@ -1,6 +1,6 @@
-import { positionReducer } from '../../../../src/modules/map/store/position.reducer';
-import { changeCenter, changeZoom, changeZoomAndCenter, decreaseZoom, increaseZoom, setFit } from '../../../../src/modules/map/store/position.action';
-import { TestUtils } from '../../../test-utils.js';
+import { positionReducer } from '../../../src/store/position/position.reducer';
+import { changeCenter, changeZoom, changeZoomAndCenter, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
+import { TestUtils } from '../../test-utils.js';
 
 
 describe('positionReducer', () => {

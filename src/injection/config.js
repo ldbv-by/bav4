@@ -17,6 +17,8 @@ import { topicsModule } from '../modules/topics/injection';
 import { AdministrationService } from  '../services/AdministrationService'; 
 import { TopicsService } from '../services/TopicsService';
 import { BvvFileStorageService } from '../services/FileStorageService';
+import { LayersPlugin } from '../store/layers/LayersPlugin';
+import { PositionPlugin } from '../store/position/PositionPlugin';
 
 
 $injector
@@ -37,6 +39,8 @@ $injector
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
 	.registerModule(topicsModule)
+	.registerSingleton('LayersPlugin', new LayersPlugin())
+	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerModule(mapModule)
 	.ready();
 	

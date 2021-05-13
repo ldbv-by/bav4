@@ -1,5 +1,5 @@
 import { combineReducers, createStore } from 'redux';
-import { positionReducer } from '../modules/map/store/position.reducer';
+import { positionReducer } from '../store/position/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { mainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
@@ -7,7 +7,7 @@ import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.red
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
-import { layersReducer } from '../modules/map/store/layers.reducer';
+import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';

@@ -5,7 +5,7 @@ import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer'
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
-import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
