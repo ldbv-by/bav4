@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { ZoomButtons } from '../../../../../src/modules/map/components/zoomButtons/ZoomButtons';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 window.customElements.define(ZoomButtons.tag, ZoomButtons);

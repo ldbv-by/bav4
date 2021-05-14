@@ -1,6 +1,6 @@
-import { TestUtils } from '../test-utils.js';
-import { searchReducer } from '../../src/store/search/search.reducer';
-import { setQuery } from '../../src/store/search/search.action';
+import { TestUtils } from '../../test-utils.js';
+import { searchReducer } from '../../../src/store/search/search.reducer';
+import { setQuery } from '../../../src/store/search/search.action';
 
 
 describe('searchReducer', () => {

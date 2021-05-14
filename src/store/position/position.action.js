@@ -3,8 +3,8 @@
  * @module map/action
  */
 import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED } from './position.reducer';
-import { $injector } from '../../../injection';
-import { EventLike } from '../../../utils/storeUtils';
+import { $injector } from '../../injection';
+import { EventLike } from '../../utils/storeUtils';
 
 
 /**

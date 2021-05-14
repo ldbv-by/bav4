@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer } from './../../store/layers.action';
+import { modifyLayer } from './../../../../store/layers/layers.action';
 import css from './layerManager.css';
 
 /**
@@ -57,9 +57,9 @@ export class LayerManager extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = this._state;		
+		const { active } = state;		
 		this._buildDraggableItems(active.filter(l => !l.constraints.hidden));
 
 		const isNeighbour = (index, otherIndex) => {
@@ -151,10 +151,10 @@ export class LayerManager extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} state 
+	  * @param {Object} globalState 
 	  */
-	extractState(state) {
-		const { layers: { active } } = state;
+	extractState(globalState) {
+		const { layers: { active } } = globalState;
 
 		return { active };
 	}

@@ -2,14 +2,14 @@
 import { OlMap } from '../../../../../src/modules/map/components/olMap/OlMap';
 import { fromLonLat } from 'ol/proj';
 import { TestUtils } from '../../../../test-utils.js';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../../src/injection';
-import { layersReducer } from '../../../../../src/modules/map/store/layers.reducer';
+import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
-import { addLayer, modifyLayer, removeLayer } from '../../../../../src/modules/map/store/layers.action';
-import { changeZoomAndCenter, setFit } from '../../../../../src/modules/map/store/position.action';
+import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
+import { changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';

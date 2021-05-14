@@ -1,6 +1,6 @@
-import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../../src/modules/map/store/layers.reducer';
-import { addLayer, removeLayer, modifyLayer, setReady } from '../../../../src/modules/map/store/layers.action';
-import { TestUtils } from '../../../test-utils.js';
+import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../src/store/layers/layers.reducer';
+import { addLayer, removeLayer, modifyLayer, setReady } from '../../../src/store/layers/layers.action';
+import { TestUtils } from '../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
 

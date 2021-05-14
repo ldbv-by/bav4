@@ -4,8 +4,8 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
-import { removeLayer } from '../../store/layers.action';
-import { changeZoomAndCenter } from '../../store/position.action';
+import { removeLayer } from '../../../../store/layers/layers.action';
+import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { toOlLayer, updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
@@ -50,7 +50,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
-		const { zoom, center } = this._state;
+		const { zoom, center } = this.getState();
 
 		this._view = new View({
 			center: center,
@@ -136,10 +136,10 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = state;
+	extractState(globalState) {
+		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = globalState;
 		return { zoom, center, fitRequest, layers };
 	}
 
@@ -163,7 +163,7 @@ export class OlMap extends BaElement {
 	}
 
 	_syncView() {
-		const { zoom, center } = this._state;
+		const { zoom, center } = this.getState();
 
 		if (!this._viewSyncBlocked) {
 
@@ -176,7 +176,7 @@ export class OlMap extends BaElement {
 	}
 
 	_syncOverlayLayer() {
-		const { layers } = this._state;
+		const { layers } = this.getState();
 
 		const updatedIds = layers.map(layer => layer.geoResourceId);
 		const currentIds = this._map.getLayers()

@@ -70,7 +70,7 @@ export class Header extends BaElement {
 		return this._environmentService.isEmbedded();
 	}
 
-	createView() {
+	createView(state) {
 
 		const showModalInfo = () => {
 			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
@@ -85,7 +85,7 @@ export class Header extends BaElement {
 			return this._minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex, fetching } = this._state;
+		const { open, tabIndex, fetching, layers } = state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
@@ -99,7 +99,6 @@ export class Header extends BaElement {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
 		};
 
-		const { layers } = this._state;
 		const layerCount = layers.length;
 
 		const onFocusInput = () => {
@@ -202,10 +201,10 @@ export class Header extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = state;
+	extractState(globalState) {
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = globalState;
 		return { open, tabIndex, fetching, layers };
 	}
 
