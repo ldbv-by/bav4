@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../../src/injection';
-import { addLayer } from '../../../../../../../src/modules/map/store/layers.action';
-import { layersReducer } from '../../../../../../../src/modules/map/store/layers.reducer';
+import { addLayer } from '../../../../../../../src/store/layers/layers.action';
+import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';

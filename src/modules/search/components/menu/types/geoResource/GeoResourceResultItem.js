@@ -2,7 +2,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../../../../../../injection';
 import { BaElement } from '../../../../../BaElement';
-import { addLayer, removeLayer } from '../../../../../map/store/layers.action';
+import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { MainMenuTabIndex } from '../../../../../menu/components/mainMenu/MainMenu';
 import { close, setTabIndex } from '../../../../../menu/store/mainMenu.action';
 import itemCss from '../item.css';
