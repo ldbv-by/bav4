@@ -25,7 +25,7 @@ export const setCurrent = (id) => {
 };
 
 /**
- * Marks the topics state as ready. That means all needed resources are available, for example the GeoResourceService has been initialized.
+ * Marks the topics state as ready. That means all needed resources are available, for example the TopicsService has been initialized.
  * @function
  */
 export const setReady = () => {
