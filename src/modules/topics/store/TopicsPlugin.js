@@ -1,7 +1,7 @@
 import { $injector } from '../../../injection';
 import { QueryParameters } from '../../../services/domain/queryParameters';
 import { BaPlugin } from '../../../store/BaPlugin';
-import { setCurrent } from './topics.action';
+import { setCurrent, setReady } from './topics.action';
 
 
 /**
@@ -36,6 +36,8 @@ export class TopicsPlugin extends BaPlugin {
 
 		//no try-catch needed, service at least delivers a fallback
 		await topicsService.init();
+		//mark the topics state as ready
+		setReady();
 
 		//from query params
 		if (queryParams.has(QueryParameters.TOPIC)) {

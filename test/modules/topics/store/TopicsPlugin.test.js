@@ -50,7 +50,7 @@ describe('TopicsPlugin', () => {
 	describe('_init', () => {
 
 		it('initializes the topics service and calls #_addTopicFromConfig', async () => {
-			setup();
+			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
@@ -61,10 +61,11 @@ describe('TopicsPlugin', () => {
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addTopicFromQueryParamsSpy).not.toHaveBeenCalled();
 			expect(addTopicFromConfigSpy).toHaveBeenCalledTimes(1);
+			expect(store.getState().topics.ready).toBeTrue();
 		});
 
 		it('initializes the topics service and calls #_addTopicFromQueryParams', async () => {
-			setup();
+			const store = setup();
 			const queryParam = QueryParameters.TOPIC + '=some';
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
@@ -77,6 +78,7 @@ describe('TopicsPlugin', () => {
 			expect(topicServiceSpy).toHaveBeenCalledTimes(1);
 			expect(addTopicFromQueryParamsSpy).toHaveBeenCalledOnceWith(new URLSearchParams(queryParam));
 			expect(addTopicFromConfigSpy).not.toHaveBeenCalled();
+			expect(store.getState().topics.ready).toBeTrue();
 		});
 	});
 
