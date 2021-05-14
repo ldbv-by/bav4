@@ -1,6 +1,6 @@
-import { TestUtils } from '../../../test-utils.js';
-import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
-import { setCurrent, setReady } from '../../../../src/modules/topics/store/topics.action.js';
+import { TestUtils } from '../../test-utils.js';
+import { topicsReducer } from '../../../src/store/topics/topics.reducer';
+import { setCurrent, setReady } from '../../../src/store/topics/topics.action';
 
 
 

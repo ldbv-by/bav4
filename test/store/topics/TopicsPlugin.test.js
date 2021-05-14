@@ -1,9 +1,9 @@
-import { TopicsPlugin } from '../../../../src/modules/topics/store/TopicsPlugin';
-import { TestUtils } from '../../../test-utils.js';
-import { $injector } from '../../../../src/injection';
-import { Topic } from '../../../../src/services/domain/topic';
-import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
-import { QueryParameters } from '../../../../src/services/domain/queryParameters';
+import { TopicsPlugin } from '../../../src/store/topics/TopicsPlugin';
+import { TestUtils } from '../../test-utils.js';
+import { $injector } from '../../../src/injection';
+import { Topic } from '../../../src/services/domain/topic';
+import { topicsReducer } from '../../../src/store/topics/topics.reducer';
+import { QueryParameters } from '../../../src/services/domain/queryParameters';
 
 
 describe('TopicsPlugin', () => {

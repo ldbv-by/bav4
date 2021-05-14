@@ -3,7 +3,7 @@
  * @module topics/action
  */
 import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 
 const getStore = () => {
