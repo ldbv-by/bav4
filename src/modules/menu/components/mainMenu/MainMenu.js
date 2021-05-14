@@ -5,12 +5,13 @@ import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 import { SearchContentPanel } from '../../../search/components/menu/SearchContentPanel';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
+import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 
 /**
  * @enum
  */
 export const MainMenuTabIndex = Object.freeze({
-	TOPICS: { id: 0, component: null },
+	TOPICS: { id: 0, component: TopicsContentPanel },
 	MAPS: { id: 1, component: null },
 	MORE: { id: 2, component: null },
 	ROUTING: { id: 3, component: null },
@@ -126,13 +127,12 @@ export class MainMenu extends BaElement {
 	_getContentPanel(index) {
 		//Todo: can be removed when all content panels are real components
 		switch (index) {
-			case MainMenuTabIndex.TOPICS:
-				return this._demoTopicsContent();
 			case MainMenuTabIndex.MAPS:
 				return this._demoMapContent();
 			case MainMenuTabIndex.MORE:
 				return this._demoMoreContent();
 			case MainMenuTabIndex.SEARCH:
+			case MainMenuTabIndex.TOPICS:
 				return html`${renderTagOf(index.component)}`;
 			default:
 				return nothing;

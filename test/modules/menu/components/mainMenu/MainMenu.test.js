@@ -8,6 +8,7 @@ import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { SearchContentPanel } from '../../../../../src/modules/search/components/menu/SearchContentPanel';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
+import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -17,7 +18,7 @@ describe('MainMenuTabIndex', () => {
 
 		expect(Object.entries(MainMenuTabIndex).length).toBe(6);
 		expect(Object.isFrozen(MainMenuTabIndex)).toBeTrue();
-		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, component: null });
+		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, component: TopicsContentPanel });
 		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, component: null });
 		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
 		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
@@ -150,9 +151,14 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				// //Todo check all content panels when implemented
-				if (i === MainMenuTabIndex.SEARCH.id) {
-					expect(contentPanels[i].innerHTML.toString().includes(SearchContentPanel.tag)).toBeTrue();
+				// Todo check all content panels when implemented
+				switch (i) {
+					case  MainMenuTabIndex.SEARCH.id:
+						expect(contentPanels[i].innerHTML.toString().includes(SearchContentPanel.tag)).toBeTrue();
+						break;
+					case MainMenuTabIndex.TOPICS.id:
+						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
+						break;
 				}
 			}
 		});
