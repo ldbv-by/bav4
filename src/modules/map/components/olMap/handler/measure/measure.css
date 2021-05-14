@@ -30,7 +30,7 @@
     width:8px;
     height: 8px;
     border-radius: 4px;
-    background-color: red;
+    background-color: transparent;
     margin-left: -4px;
     border: none;
 }

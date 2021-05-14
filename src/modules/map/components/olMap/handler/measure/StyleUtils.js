@@ -1,5 +1,6 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
+import { getPartitionDelta } from './GeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 
@@ -10,6 +11,58 @@ const ZPOINT = 30;
 const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
+
+export const measureStyleFunction2 = (feature, resolution) => {
+	const projectionHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+	const dashedStroke = new Stroke({
+		color:RED_COLOR.concat([1]),
+		width:1,
+		// lineDash:[8]
+	});
+	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
+	let simplifiedGeometry = feature.getGeometry();
+	if (feature.getGeometry() instanceof Polygon) {
+		simplifiedGeometry = new LineString(feature.getGeometry().getCoordinates()[0]);
+	}
+	const delta = getPartitionDelta(simplifiedGeometry, resolution, projectionHints);
+	const styles = [
+		new Style({
+			fill: new Fill({ 
+				color:RED_COLOR.concat([0.4]) 
+			}),
+			stroke:dashedStroke,
+			zIndex:zIndex
+		})];
+	
+	const width = 15;
+	
+	const geom = feature.getGeometry();
+	const partitionLength = delta * getGeometryLength(geom);	
+	const partitionTickDistance = partitionLength / resolution;	
+	const bigTickStyle = new Style({
+		stroke: new Stroke({
+			color: RED_COLOR.concat([1]),
+			lineCap:'butt',
+			width:width,
+			lineDash:[3, partitionTickDistance - 3],
+			lineDashOffset:3
+		})
+	});
+	const smallTickStyle = new Style({
+		stroke: new Stroke({
+			color: RED_COLOR.concat([1]),
+			lineCap:'butt',
+			width:width / 3,
+			lineDash:[2, (partitionTickDistance / 5) - 2],
+			lineDashOffset:2
+		})
+	});
+	styles.push(bigTickStyle,
+		smallTickStyle
+	);
+	
+	return styles;
+};
 
 export const measureStyleFunction = (feature) => {
 	

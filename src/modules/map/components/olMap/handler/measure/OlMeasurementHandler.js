@@ -7,7 +7,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers.action';
-import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
+import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction, measureStyleFunction2 } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
@@ -107,7 +107,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: measureStyleFunction
+				style: measureStyleFunction2
 			});			
 			return layer;
 		};
@@ -125,7 +125,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._setStatistics(event.target);
 						};
 						oldFeatures.forEach(f =>  {
-							f.setStyle(measureStyleFunction(f));
+							f.setStyle(measureStyleFunction2(f));
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
@@ -332,7 +332,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: this._getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureStyleFunction)
+			style: createSketchStyleFunction(measureStyleFunction2)
 		});
 
 		let listener;
@@ -360,7 +360,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const activateModify = (event) => {
 			draw.setActive(false);
 			this._modify.setActive(true);
-			event.feature.setStyle(measureStyleFunction(event.feature));
+			event.feature.setStyle(measureStyleFunction2(event.feature));
 			this._select.getFeatures().push(event.feature);
 			this._modifyActivated = true;
 			const onFeatureChange = (event) => {
@@ -591,7 +591,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(measureStyleFunction)
+			style: createSelectStyleFunction(measureStyleFunction2)
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
