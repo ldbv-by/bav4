@@ -207,7 +207,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate();
-				this._onMeasureStateChanged((measureState) => this._helpTooltip.notify(measureState));
+				this._onMeasureStateChanged((measureState) => {
+					this._helpTooltip.notify(measureState);
+					if (measureState.snap === MeasureSnapType.VERTEX) {
+						this._mapContainer.classList.add('grab');
+					}
+					else {
+						this._mapContainer.classList.remove('grab');
+					}
+				});
 			}
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
@@ -556,17 +564,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (dragableOverlay) {
 			measureState.type = MeasureStateType.OVERLAY;
 		}
-
-		measureState.dragging = dragging;
-		this._setMeasureState(measureState);
-
-		if (measureState.snap === MeasureSnapType.VERTEX) {
-			this._mapContainer.classList.add('grab');
-		}
-		else {
-			this._mapContainer.classList.remove('grab');
-		}
-
+		
 		if (!this._dragPan.getActive()) {
 			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
@@ -575,6 +573,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				draggingOverlay.setPosition(coordinate);
 			}
 		}
+
+		measureState.dragging = dragging;
+		this._setMeasureState(measureState);		
 	}
 
 
