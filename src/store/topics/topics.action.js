@@ -2,8 +2,8 @@
  * Action creators to update the current topic
  * @module topics/action
  */
-import { TOPIC_CHANGED } from './topics.reducer';
-import { $injector } from '../../../injection';
+import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
+import { $injector } from '../../injection';
 
 
 const getStore = () => {
@@ -21,5 +21,16 @@ export const setCurrent = (id) => {
 	getStore().dispatch({
 		type: TOPIC_CHANGED,
 		payload: id
+	});
+};
+
+/**
+ * Marks the topics state as ready. That means all needed resources are available, for example the TopicsService has been initialized.
+ * @function
+ */
+export const setReady = () => {
+	getStore().dispatch({
+		type: TOPIC_RESOURCES_READY,
+		payload: true
 	});
 };
