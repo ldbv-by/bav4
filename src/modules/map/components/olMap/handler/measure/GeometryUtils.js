@@ -1,4 +1,5 @@
-import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
+import { Point, LineString, MultiLineString, Polygon, LinearRing, Circle } from 'ol/geom';
+
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 
@@ -191,4 +192,25 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	}
 	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
 	return result ? true : false;
+};
+
+export const createOffsetGeometry = (geometry, lineOffsetInMeter) => {
+
+	const segments = [];
+	geometry.forEachSegment(function(from, to) {
+		const coords = [];
+		const angle = Math.atan2(to[1] - from[1], to[0] - from[0]);
+		const newFrom = [
+			Math.sin(angle) * lineOffsetInMeter + from[0],
+			-Math.cos(angle) * lineOffsetInMeter + from[1]
+		];
+		const newTo = [
+			Math.sin(angle) * lineOffsetInMeter + to[0],
+			-Math.cos(angle) * lineOffsetInMeter + to[1]
+		];
+		coords.push(newFrom);
+		coords.push(newTo);
+		segments.push(new LineString(coords));
+	});
+	return new MultiLineString(segments);
 };
