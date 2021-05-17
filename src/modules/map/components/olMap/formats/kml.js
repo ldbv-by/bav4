@@ -28,7 +28,7 @@ const sanitizeStyle = (styles) => {
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;
 	if (isTextOnlyStyle) {
-		kmlStyleProperties.image = new Icon({ src:'noimage', sclae:0 });
+		kmlStyleProperties.image = new Icon({ src:'noimage', scale:0 });
 	}
 
 	return new Style(kmlStyleProperties);
@@ -71,7 +71,7 @@ export const create = (layer, projection) => {
 		const removeNoImagePlaceHolder = (kmlString) => kmlString.replace(/<Icon>\s*<href>noimage<\/href>\s*<\/Icon>/g, '');
 		const removeEmptyPlacemark = (kmlString) => kmlString.replace(/<Placemark\/>/g, '');
 
-		kmlString = removeEmptyPlacemark(removeNoImagePlaceHolder(kmlString));
+		kmlString = removeEmptyPlacemark(removeNoImagePlaceHolder(kmlString));		
 
 		if (layer.label) {
 			kmlString =  kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');

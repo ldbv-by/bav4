@@ -1,11 +1,12 @@
 import { create } from '../../../../../../src/modules/map/components/olMap/formats/kml';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { Point, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
-import { Style, Circle, Fill, Stroke } from 'ol/style';
+import { Style, Circle, Fill, Stroke, Text } from 'ol/style';
 
 
 describe('kml', () => {
 	const projection = 'EPSG:3857';
+	const aPointFeature =  new Feature({ geometry: new Point([0, 0]) });
 	const aPolygonFeature =  new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
 	
@@ -24,7 +25,7 @@ describe('kml', () => {
             
 	};
 
-	const addStyleFunctionTo = (feature) => {
+	const getAStyleFunction = () => {
 		const fill = new Fill({
 			color: [255, 255, 255, 0.4]
 		});
@@ -42,7 +43,30 @@ describe('kml', () => {
 			fill: fill,
 			stroke: stroke
 		});
-		feature.setStyle(() => [style]);
+		return () => [style];
+	};
+
+	const getATextStyleFunction = () => {
+		const fill = new Fill({
+			color: [255, 255, 255, 0.4]
+		});
+
+		const stroke = new Stroke({
+			color: '#3399CC',
+			width: 1.25
+		});
+		const text = new Text({
+			text: 'Foo',
+			fill: fill,
+			stroke: stroke,			
+		});
+
+		const style = new Style({
+			text: text,
+			fill: fill,
+			stroke: stroke
+		});
+		return () => [style];
 	};
 	describe('create', () => {
 		
@@ -68,7 +92,7 @@ describe('kml', () => {
 		});
 
 		it('reads and converts style-properties from feature', () => {
-			addStyleFunctionTo(aPolygonFeature);
+			aPolygonFeature.setStyle(getAStyleFunction());
 			const features = [aPolygonFeature];
 			const layer = createLayerMock(features);
             
@@ -78,6 +102,33 @@ describe('kml', () => {
 			const containsPolyStyle = actual.includes('PolyStyle')  && actual.includes('<color>66ffffff</color>');			
 			expect(containsLineStyle).toBeTrue();
 			expect(containsPolyStyle).toBeTrue();
+		});
+
+		it('reads and converts style-properties from layer', () => {
+			
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+			layer.getStyleFunction = getAStyleFunction;
+            
+			const actual = create(layer, projection);
+
+			const containsLineStyle = actual.includes('LineStyle') && actual.includes('<color>ffcc9933</color>');
+			const containsPolyStyle = actual.includes('PolyStyle')  && actual.includes('<color>66ffffff</color>');			
+			expect(containsLineStyle).toBeTrue();
+			expect(containsPolyStyle).toBeTrue();
+		});
+
+		it('reads and converts text style-properties from feature', () => {
+			aPointFeature.setStyle(getATextStyleFunction());
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+            
+			const actual = create(layer, projection);
+
+			const containsIconStyle = actual.includes('<IconStyle>');
+			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>')  ;			
+			expect(containsIconStyle).toBeTrue();
+			expect(containsDummyIcon).toBeFalse();
 		});
 
 	});
