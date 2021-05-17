@@ -1,2 +1,2 @@
 import './i18n';
-import './components/menu';
+import './components';
