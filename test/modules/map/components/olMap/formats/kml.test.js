@@ -70,13 +70,16 @@ describe('kml', () => {
 	};
 	describe('create', () => {
 		
-		it('creates a string', () => {
+		it('creates a kml with Document- and name-tag', () => {
 			const features = [aPolygonFeature];
 			const layer = createLayerMock(features);
             
 			const actual = create(layer, projection);
 
-			expect(actual).toEqual(jasmine.any(String));
+			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
+			const containsNameTag = actual.includes('<name>Foo</name>') ;
+			expect(containsDocumentTag).toBeTrue();
+			expect(containsNameTag).toBeTrue();
 		});
 
 		it('rectifies polygon to linestring before export', () => {
