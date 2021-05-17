@@ -1,5 +1,5 @@
 import { observe } from '../../../utils/storeUtils';
-import { addLayer, removeLayer } from './layers.action';
+import { addLayer, removeLayer } from '../../../store/layers/layers.action';
 import { BaPlugin } from '../../../store/BaPlugin';
 
 /**

@@ -77,9 +77,9 @@ export class MainMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { open, tabIndex } = this._state;
+		const { open, tabIndex } = state;
 
 		this._activeTabIndex = tabIndex;
 
@@ -295,10 +295,10 @@ export class MainMenu extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { mainMenu: { open, tabIndex } } = state;
+	extractState(globalState) {
+		const { mainMenu: { open, tabIndex } } = globalState;
 		return { open, tabIndex };
 	}
 

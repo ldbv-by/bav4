@@ -21,7 +21,7 @@ import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
-import { layersReducer } from '../../../../../../../src/modules/map/store/layers.reducer';
+import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
 

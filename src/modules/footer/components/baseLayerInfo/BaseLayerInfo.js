@@ -20,9 +20,9 @@ export class BaseLayerInfo extends BaElement {
 	/**
      * @override 
      */
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, zoom } = this._state;
+		const { active, zoom } = state;
 
 		const geoResource = active[0] ? this._georesourceService.byId(active[0].id) : null;
 
@@ -43,10 +43,10 @@ export class BaseLayerInfo extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} state 
+	  * @param {Object} globalState 
 	  */
-	extractState(state) {
-		const { layers: { active }, position: { zoom } } = state;
+	extractState(globalState) {
+		const { layers: { active }, position: { zoom } } = globalState;
 		return { active, zoom };
 	}
 

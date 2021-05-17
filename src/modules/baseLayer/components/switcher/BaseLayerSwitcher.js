@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
-import { addLayer, removeLayer } from '../../../map/store/layers.action';
+import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import css from './baseLayerSwitcher.css';
 
 /**
@@ -25,8 +25,8 @@ export class BaseLayerSwitcher extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
-		const { currentTopicId, activeLayers, layersStoreReady } = this._state;
+	createView(state) {
+		const { currentTopicId, activeLayers, layersStoreReady } = state;
 
 		if (layersStoreReady) {
 
@@ -85,8 +85,8 @@ export class BaseLayerSwitcher extends BaElement {
 	/**
 	 * @override
 	 */
-	extractState(state) {
-		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = state;
+	extractState(globalState) {
+		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
 		return { currentTopicId, activeLayers, layersStoreReady };
 	}
 
