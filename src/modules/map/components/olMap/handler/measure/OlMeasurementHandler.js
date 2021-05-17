@@ -15,7 +15,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
-import { KML } from 'ol/format';
+import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../../../utils/timer';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
@@ -117,9 +117,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
 				if (vgr) {		
-					vgr.getData().then(data => {
-						const format = new KML({ writeStyles: true });						
-						const oldFeatures = format.readFeatures(data);								
+					vgr.getData().then(data => {						
+						const oldFeatures = readFeatures(data);								
 						const onFeatureChange = (event) => {
 							this._updateOverlays(event.target, false);
 							this._setStatistics(event.target);
@@ -412,11 +411,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	async _save() {		
-		const options = { featureProjection: 'EPSG:3857', rightHanded: true, decimals: 8 };
-		const format = new KML({ writeStyles: true });
 		const features = this._vectorLayer.getSource().getFeatures();		
-		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));
-		this._storedContent = format.writeFeatures(this._vectorLayer.getSource().getFeatures(), options);
+		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));		
+		this._storedContent = createKML(this._vectorLayer, 'EPSG:3857');
 		
 		if (!this._storeID) {
 			try {
