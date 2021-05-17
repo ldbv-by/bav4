@@ -1,3 +1,11 @@
 .topics-content-panel{
     
 }
+
+.topic{
+    cursor: pointer;
+}
+
+.active{
+    background-color: red;
+}
