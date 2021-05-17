@@ -6,7 +6,7 @@ import { KML } from 'ol/format';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
-const rectifyPolygon = (polygonCandidate) => {
+const tryRectifyingLineString = (polygonCandidate) => {
 	if (polygonCandidate instanceof Polygon && polygonCandidate.getCoordinates()[0].length === 3) {
 		return new LineString(polygonCandidate.getCoordinates()[0]);
 	}
@@ -38,7 +38,7 @@ export const create = (layer, projection) => {
 	let kmlString;
 	const kmlFeatures = [];
 	layer.getSource().getFeatures()
-		.filter(f => f.getGeometry().getType() !== 'Circle')
+		.filter(f =>  f.getGeometry().getType() !== 'Circle')
 		.forEach(f => {
 			const clone = f.clone();
 			clone.setId(f.getId());    
@@ -46,14 +46,17 @@ export const create = (layer, projection) => {
 			clone.getGeometry().transform(projection, KML_PROJECTION_LIKE);
 
 			if (clone.getGeometry().getType() === 'Polygon') {
-				clone.setGeometry(rectifyPolygon(clone.getGeometry()));
+				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
 			}
 
 			let styles = clone.getStyleFunction() || layer.getStyleFunction();
-			styles = styles(clone);
+			if (styles) {
+				styles = styles(clone);
 			
-			const kmlStyle = sanitizeStyle(styles);
-			clone.setStyle(kmlStyle);
+				const kmlStyle = sanitizeStyle(styles);
+				clone.setStyle(kmlStyle);
+			}
+			
 			kmlFeatures.push(clone);
 		});
 
@@ -62,7 +65,7 @@ export const create = (layer, projection) => {
 			kmlFeatures.push(new Feature());
 		}
 		const format = new KML({ writeStyles: true });
-		const options = { rightHanded: true, decimals: 8 };
+		const options = { decimals: 8 };
 		kmlString = format.writeFeatures(kmlFeatures, options);
 
 		const removeNoImagePlaceHolder = (kmlString) => kmlString.replace(/<Icon>\s*<href>noimage<\/href>\s*<\/Icon>/g, '');
