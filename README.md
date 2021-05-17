@@ -50,7 +50,7 @@ Services and provider functions whose names start with 'BVV' are focusing on the
 
 ### `src/modules`
 
-Modules are single and independent (as far as possible) units of code. They have a concrete context and/or focus on one or more use cases of the application. 
+Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions: 
 
@@ -62,9 +62,9 @@ Modules meet the following conventions:
    - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
    - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
-   - `/i18n` : i18n provider and loader for this module:
+   - `/i18n` : i18n provider and loader for this module
 
-4. Modules are allowed to use actions from the global store and components from other modules.
+4. Outside their package, modules are only allowed to use global services, actions from the global store, and BaElement components from other modules for composition.
 
 
 ### `src/services`
@@ -95,8 +95,15 @@ Here's an overview of what project folder structure looks like:
 ```
 
 ## Setup
-`npm i`
 
+### Prerequisites
+
+- Node.js 12
+- npm 6
+
+### Install
+
+`npm i`
 
 ### List of npm scripts
 
