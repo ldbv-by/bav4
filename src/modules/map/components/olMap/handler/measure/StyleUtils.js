@@ -30,11 +30,10 @@ const createRulerStyles = (feature, resolution) => {
 		stroke: new Stroke({
 			color: RED_COLOR.concat([1]),
 			lineCap:'butt',
-			// width:bigWidth,
-			// lineDash:[3, partitionTickDistance - 3],
-			// lineDashOffset:3
-			width:1,
-			
+			width:bigWidth,
+			lineDash:[3, partitionTickDistance - 3],
+			lineDashOffset:3
+			// width:1,			
 		})
 	});
 	const smallTickStyle = new Style({
