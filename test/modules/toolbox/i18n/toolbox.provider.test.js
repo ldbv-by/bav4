@@ -12,7 +12,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Linie');
 		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_delete).toBe('Löschen');
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
@@ -21,6 +20,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
+		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
+		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
@@ -32,8 +33,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_symbol).toBe('Symbol');
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Line');
-		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_delete).toBe('Delete');
+		expect(map.toolbox_drawTool_polygon).toBe('Polygon');		
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
@@ -42,11 +42,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
+		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 15;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

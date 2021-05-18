@@ -126,10 +126,10 @@ export class MeasureToolContent extends BaElement {
 		}
 
 		// Remove-Button
-		const removeAllowed = mode === 'draw' ? statistic.area > 0 : statistic.length > 0;
+		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0 ) : statistic.length > 0 ;
 		if (removeAllowed) {
 			const id = 'remove';
-			const title = translate('toolbox_drawTool_delete');
+			const title = mode === 'draw' ? translate('toolbox_measureTool_delete_point') : translate('toolbox_measureTool_delete_measure');
 			const onClick =  () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}

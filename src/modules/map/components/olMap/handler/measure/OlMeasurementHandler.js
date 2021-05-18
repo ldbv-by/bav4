@@ -1,4 +1,5 @@
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { MapBrowserEvent } from 'ol';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -317,6 +318,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw.getActive()) {
 			if (this._activeSketch) {
 				this._draw.finishDrawing();
+				const event = new Event('click');
+				event.clientX = this._map.getView().getCenter()[0];
+				event.clientY = this._map.getView().getCenter()[1];
+				event.pageX = this._map.getView().getCenter()[0];
+				event.pageY = this._map.getView().getCenter()[1];
+				event.shiftKey = false;
+				const mapEvent = new MapBrowserEvent('click', this._map, event);
+				this._map.dispatchEvent(mapEvent);		
 			}
 			else {
 				this._activateModify(null);
