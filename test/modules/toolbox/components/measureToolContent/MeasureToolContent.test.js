@@ -58,6 +58,43 @@ describe('MeasureToolContent', () => {
 			expect(element._tool).toBeTruthy();
 		});
 
+		it('displays the finish-button', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					mode:'draw',
+					statistic: { length: 42, area: 21 },
+					reset: null,
+					remove: null,
+					finish:null
+				}
+			};
+			const element = await setup(state);			
+
+			expect(element._tool).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();						
+		});
+
+		it('finishes the measurement', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					mode:'draw',
+					statistic: { length: 42, area: 21 },
+					reset: null,
+					remove: null,
+					finish:null
+				}
+			};
+			const element = await setup(state);
+			const finishButton = element.shadowRoot.querySelector('#finish');
+
+			finishButton.click();
+
+			expect(store.getState().measurement.finish).toBeInstanceOf(EventLike);
+		});
+
+
 		it('resets the measurement', async () => {
 			const state = {
 				measurement: {
