@@ -16,8 +16,9 @@ export class MeasureToolContent extends BaElement {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService, UnitsService: unitsService } = $injector.inject('TranslationService', 'UnitsService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService');
 		this._translationService = translationService;
+		this._environmentService = environmentService;
 		this._unitsService = unitsService;
 		this._tool = {
 			name: 'measure',
@@ -109,7 +110,7 @@ export class MeasureToolContent extends BaElement {
 		};
 		// Start-New-Button
 		const startNewCompliantModes = ['draw', 'modify', 'select'];
-		const finishAllowed = statistic.area > 0 && mode === 'draw';
+		const finishAllowed = (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) && mode === 'draw';
 		if (startNewCompliantModes.includes(mode) ) {
 			let id = 'startnew';
 			let title = translate('toolbox_measureTool_start_new');

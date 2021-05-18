@@ -44,9 +44,10 @@ describe('MeasureToolContent', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
-				getWindow: () => windowMock
-			})
-			.registerSingleton('TranslationService', { translate: (key) => key })
+				getWindow: () => windowMock,
+				isTouch:() => false
+
+			}).registerSingleton('TranslationService', { translate: (key) => key })
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
