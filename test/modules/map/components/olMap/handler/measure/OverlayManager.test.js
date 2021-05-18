@@ -221,6 +221,32 @@ describe('OverlayManager', () => {
 		expect(feature.get('partitions').length).toBe(1);
 	});
 
+	it('removes area overlay after change from polygon to line', () => {
+		const addOverlaySpy = jasmine.createSpy();
+		const removeOverlaySpy = jasmine.createSpy();
+		const mapMock = { 
+			addOverlay: addOverlaySpy,
+			removeOverlay:removeOverlaySpy,
+			getInteractions() {
+				return { getArray:() => [] };
+			},
+			getView() {
+				return { getResolution:() => 50 };
+			} };
+
+		const classUnderTest = new OverlayManager(mapMock);
+		const geometry =  new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const feature = new Feature({ geometry: geometry });
+		
+		classUnderTest.createOrRemoveAreaOverlay(feature);
+		expect(feature.get('area')).toBeTruthy();
+
+		// change to Line
+		geometry.setCoordinates([[0, 0], [12345, 0]]);
+		classUnderTest.createOrRemoveAreaOverlay(feature);
+
+		expect(feature.get('area')).toBeFalsy();
+	});
 
 	it('writes manual overlay-position to the related feature', () => {
 		const mapStub = {};

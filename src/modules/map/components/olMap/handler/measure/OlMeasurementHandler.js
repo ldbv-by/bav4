@@ -320,8 +320,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			else {
 				this._activateModify(null);
-			}
-			
+			}			
 		}
 	}
 

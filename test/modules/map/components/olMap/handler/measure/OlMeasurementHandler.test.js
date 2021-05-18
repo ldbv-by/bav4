@@ -22,7 +22,7 @@ import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
 
 
@@ -216,6 +216,17 @@ describe('OlMeasurementHandler', () => {
 
 				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
+			});
+
+			it('register observer for finish-request', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const finishSpy = spyOn(classUnderTest, '_finish').and.callThrough();
+
+				classUnderTest.activate(map);
+				finish();
+				expect(finishSpy).toHaveBeenCalled();
 			});
 
 			it('register observer for reset-request', () => {
@@ -810,7 +821,6 @@ describe('OlMeasurementHandler', () => {
 			getGeometry: () => new Point(coordinate)
 		};
 	};
-
 	describe('when pointer move', () => {
 		let target;
 		const setupMap = () => {
@@ -996,7 +1006,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
 		});
 
-		it('adds the drawn feature to select after drawends', () => {
+		it('add the drawn feature to select after drawends', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1010,6 +1020,54 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('did NOT add the drawn feature to select after drawabort', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawabort', classUnderTest._draw, feature);
+
+			expect(classUnderTest._select).toBeDefined();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+		});
+
+		it('calls draw.finishDrawing after finish-action', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();			
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			
+			classUnderTest.activate(map);
+			const spy = spyOn(classUnderTest._draw, 'finishDrawing').and.callThrough();
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._activeSketch = feature;
+			feature.getGeometry().dispatchEvent('change');
+			
+			finish();
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('calls draw.abortDrawing after reset-action', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();			
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			
+			classUnderTest.activate(map);
+			const spy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._activeSketch = feature;
+			feature.getGeometry().dispatchEvent('change');
+			
+			reset();
+			expect(spy).toHaveBeenCalled();
 		});
 
 		describe('when switching to modify', () => {
