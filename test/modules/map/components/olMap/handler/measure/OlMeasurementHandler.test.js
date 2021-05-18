@@ -264,7 +264,7 @@ describe('OlMeasurementHandler', () => {
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
 			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
 			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
 			classUnderTest._lastMeasurementId = 'lastId';
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -307,7 +307,7 @@ describe('OlMeasurementHandler', () => {
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
 			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
 			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			classUnderTest._lastMeasurementId = 'lastId';			

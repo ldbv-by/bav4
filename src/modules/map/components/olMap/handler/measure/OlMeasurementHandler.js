@@ -130,7 +130,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
 							this._overlayManager.createDistanceOverlay(f);
-							this._overlayManager.createAreaOverlay(f);
+							this._overlayManager.createOrRemoveAreaOverlay(f);
 							this._overlayManager.createPartitionOverlays(f);
 							this._overlayManager.restoreManualOverlayPosition(f);
 							f.on('change', onFeatureChange);	
@@ -495,7 +495,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				measureGeometry = new LineString(lineCoordinates);
 			}
 			
-			this._overlayManager.createAreaOverlay(feature);
+			this._overlayManager.createOrRemoveAreaOverlay(feature);
 			
 		}
 

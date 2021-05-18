@@ -75,7 +75,7 @@ export class OverlayManager {
 	}
 
 
-	createAreaOverlay(feature) {
+	createOrRemoveAreaOverlay(feature) {
 		if (feature.getGeometry() instanceof Polygon) {		
 			let areaOverlay = feature.get('area');
 			if (feature.getGeometry().getArea())	{
@@ -94,7 +94,6 @@ export class OverlayManager {
 					feature.set('area', null);					
 				}
 			}		
-
 		}		
 	}
 
