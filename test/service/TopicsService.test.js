@@ -46,7 +46,7 @@ describe('Topicservice', () => {
 		});
 
 
-		it('just provides Topics when already initialized', async () => {
+		it('just provides the topics when already initialized', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
 
@@ -55,7 +55,7 @@ describe('Topicservice', () => {
 			expect(topic.length).toBe(1);
 		});
 
-		it('loads a fallback Topic when provider cannot fulfill', async () => {
+		it('loads fallback topics when provider cannot fulfill', async () => {
 
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Topics could not be loaded');
@@ -66,18 +66,22 @@ describe('Topicservice', () => {
 
 			const topics = await instanceUnderTest.init();
 
-			expect(topics.length).toBe(1);
-			expect(topics[0].id).toBe('fallback');
+			expect(topics.length).toBe(2);
+			expect(topics[0].id).toBe('fallback0');
 			expect(topics[0].baseGeoRs.length).toBe(2);
 			expect(topics[0].baseGeoRs[0]).toBe('atkis');
 			expect(topics[0].baseGeoRs[1]).toBe('atkis_sw');
+			expect(topics[1].id).toBe('fallback1');
+			expect(topics[1].baseGeoRs.length).toBe(2);
+			expect(topics[1].baseGeoRs[0]).toBe('atkis');
+			expect(topics[1].baseGeoRs[1]).toBe('atkis_sw');
 			expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 		});
 	});
 
 	describe('all', () => {
 
-		it('provides all Topics', () => {
+		it('provides all topics', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
 
@@ -97,7 +101,7 @@ describe('Topicservice', () => {
 
 	describe('byId', () => {
 
-		it('provides a Topic by id', () => {
+		it('provides a topic by id', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
 
@@ -127,7 +131,7 @@ describe('Topicservice', () => {
 
 	describe('default', () => {
 
-		it('provides the configured default Topic', () => {
+		it('provides the configured default topic', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0, topic1];
 			spyOn(configService, 'getValue').and.returnValue(topic1.id);
@@ -138,7 +142,7 @@ describe('Topicservice', () => {
 			expect(topic.id).toBe('topic1');
 		});
 
-		it('provides the first available Topic', () => {
+		it('provides the first available topic', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0, topic1];
 			spyOn(configService, 'getValue').and.returnValue('unkwown');

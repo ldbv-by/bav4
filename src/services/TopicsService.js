@@ -29,7 +29,7 @@ export class TopicsService {
 				return this._topics;
 			}
 			catch (e) {
-				this._topics = [this._newFallbackTopic()];
+				this._topics = this._newFallbackTopics();
 				console.warn('Topics could not be fetched from backend. Using fallback topics ...');
 			}
 		}
@@ -74,12 +74,20 @@ export class TopicsService {
 	/**
 	 * @private
 	 */
-	_newFallbackTopic() {
-		return new Topic('fallback', 'Fallback Topic', 'This is a fallback topic...', [
-			//see fallback georesources in GeoResourceService
-			'atkis',
-			'atkis_sw'
-		]);
+	_newFallbackTopics() {
+		return [
+
+			new Topic('fallback0', 'Fallback Topic', 'This is a fallback topic...', [
+				//see fallback georesources in GeoResourceService
+				'atkis',
+				'atkis_sw'
+			]),
+			new Topic('fallback1', 'Fallback Topic 2', 'This is another fallback topic...', [
+				//see fallback georesources in GeoResourceService
+				'atkis',
+				'atkis_sw'
+			])
+		];
 	}
 
 }
