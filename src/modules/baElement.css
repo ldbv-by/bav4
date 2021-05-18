@@ -10,6 +10,8 @@
     padding: 0;
     color: var(--color); 
     font-family: var(--font-family);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
 }  
 
 *,*:focus,*:hover{
