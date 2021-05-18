@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../src/services/domain/topic';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
@@ -15,7 +16,7 @@ describe('TopicsContentPanel', () => {
 	let store;
 
 	const topicsServiceMock = {
-		all() { },
+		all() { }
 	};
 
 	const setup = (state) => {
@@ -54,7 +55,7 @@ describe('TopicsContentPanel', () => {
 
 		describe('and all set', () => {
 
-			it('renders a list of topic elements', async () => {
+			it('renders a list of topic elements and the CatalogContentPanel', async () => {
 				spyOn(topicsServiceMock, 'all').and.returnValue([
 					topic0,
 					topic1
@@ -71,6 +72,7 @@ describe('TopicsContentPanel', () => {
 				expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
 				expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
 				expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+				expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
 			});
 		});
 	});

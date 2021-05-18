@@ -1,7 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
-import { BaElement } from '../../../BaElement';
+import { BaElement, renderTagOf } from '../../../BaElement';
+import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
 
 
@@ -46,8 +47,12 @@ export class TopicsContentPanel extends BaElement {
 					<div class="topic ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
 						<h1>${topic.label}</h1>
 						<p>${topic.description}</p>
+						<div>
 					</div>
 				`)}
+				<div>
+					${renderTagOf(CatalogContentPanel)}
+				</div>
 			</div>
 			`;
 		}
