@@ -5,7 +5,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic } from '../../../../store/measurement.action';
+import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
@@ -68,6 +68,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
 		this._overlayManager = new OverlayManager();
+		this._lastMeasureStateType = null;
 		this._measureState = {
 			type: null,
 			snap: null,
@@ -134,7 +135,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._overlayManager.restoreManualOverlayPosition(f);
 							f.on('change', onFeatureChange);	
 						});											
-					}).then(() => removeLayer( oldLayer.get('id')));
+					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
 				}				
 			}
 		};
@@ -203,7 +204,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
 			this._overlayManager.activate(this._map);
-
+			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate();
 				this._onMeasureStateChanged((measureState) => {
@@ -216,6 +217,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				});
 			}
+			
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
@@ -281,32 +283,54 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_register(store) {
 		return [
+			observe(store, state => state.measurement.finish, () => this._finish()),
 			observe(store, state => state.measurement.reset, () => this._startNew()),
-			observe(store, state => state.measurement.remove, () => this._removeSelectedFeatures())];
+			observe(store, state => state.measurement.remove, () => this._remove())];
 	}
 
 
 	_removeLast(event) {
+		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+			this._remove();
+		}
+	}
+
+	_remove() {
 		if (this._draw && this._draw.getActive()) {
-			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._draw.removeLastPoint();
-				if (this._pointCount === 2) {
-					this._reset();
-				}
-				if (this._lastPointerMoveEvent) {
-					this._draw.handleEvent(this._lastPointerMoveEvent);
-				}
+			
+			this._draw.removeLastPoint();
+			if (this._pointCount === 1) {
+				this._startNew();
+			}
+			if (this._lastPointerMoveEvent) {
+				this._draw.handleEvent(this._lastPointerMoveEvent);
 			}
 		}
 
 		if (this._modify && this._modify.getActive()) {
-			if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-				this._removeSelectedFeatures();
+		
+			this._removeSelectedFeatures();
+		}
+	}
+
+	_finish( ) {
+		if (this._draw.getActive()) {
+			if (this._activeSketch) {
+				console.log('Finish with new drawing');
+				this._draw.finishDrawing();
 			}
+			else {
+				console.log('Finish without new drawing');
+				this._activateModify(null);
+			}
+			
 		}
 	}
 
 	_startNew() {
+		if (this._draw.getActive()) {
+			this._draw.abortDrawing();
+		}
 		this._draw.setActive(true);
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
@@ -356,19 +380,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			unByKey(zoomListener);
 		};
 
-		const activateModify = (event) => {
-			draw.setActive(false);
-			this._modify.setActive(true);
-			event.feature.setStyle(measureStyleFunction(event.feature));
-			this._select.getFeatures().push(event.feature);
-			this._modifyActivated = true;
-			const onFeatureChange = (event) => {
-				this._updateOverlays(event.target);
-				this._updateStatistics();
-			};
-			event.feature.on('change', onFeatureChange);
-		};
-
 		draw.on('drawstart', event => {
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
@@ -382,14 +393,31 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._overlayManager.createDistanceOverlay(event.feature);
 		});
 
+		draw.on('drawabort', event => this._overlayManager.removeFrom(event.feature));
+
 		draw.on('drawend', event => {
 			finishDistanceOverlay(event);
-			activateModify(event);
+			this._activateModify(event.feature);
 		}
 		);
 
 		return draw;
 	}	
+
+	_activateModify(feature) {
+		this._draw.setActive(false);
+		this._modify.setActive(true);
+		this._modifyActivated = true;
+		if (feature) {
+			feature.setStyle(measureStyleFunction(feature));
+			this._select.getFeatures().push(feature);
+			const onFeatureChange = (event) => {
+				this._updateOverlays(event.target);
+				this._updateStatistics();
+			};
+			feature.on('change', onFeatureChange);
+		}
+	}
 
 	_setStatistics(feature) {
 		const length = getGeometryLength(feature.getGeometry(), this._projectionHints);
@@ -408,6 +436,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			setStatistic({ length: length, area: area });
 		}
 
+	}
+
+	_updateMeasurementMode(measureState) {
+		if (this._lastMeasureStateType !== measureState.type) {
+			this._lastMeasureStateType = measureState.type;
+			setMode(this._lastMeasureStateType);
+		}
 	}
 
 	async _save() {		

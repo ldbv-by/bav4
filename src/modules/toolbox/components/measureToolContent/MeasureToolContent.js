@@ -4,7 +4,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
-import { remove, reset } from '../../../map/store/measurement.action';
+import { finish, remove, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
 /**
@@ -30,25 +30,11 @@ export class MeasureToolContent extends BaElement {
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, statistic } = state;
-		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
+		const { active, statistic, mode } = state;
 		this._tool.active = active;
 		const areaClasses = { 'is-area': statistic.area > 0 };
-		const measurementClasses = { 'is-first': this._isFirstMeasurement };
-		const removeAllowed = statistic.length > 0;
-		const removeClasses = {
-			'is-remove': removeAllowed,
-			'is-not-remove': !removeAllowed
-		};
-
-		const onClickReset = () => {
-			reset();
-		};
-
-		const onClickRemove = () => {
-			remove();
-		};
-
+	
+		const buttons = this._getButtons(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
 			if (splitted.length === 2) {
@@ -66,7 +52,7 @@ export class MeasureToolContent extends BaElement {
                 	<div class="tool-container__header">  
 						<span class='tool-container__header-text'>                
 							${translate('toolbox_measureTool_header')}                   
-						</span>   						             
+						</span>   						             <span>(${mode})</span>
                 	</div>      
 					<div class="tool-container__text">				
 					<div class='tool-container__text-item'>
@@ -99,22 +85,56 @@ export class MeasureToolContent extends BaElement {
 					</div>
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
-					<button id=startnew class="tool-container__button ${classMap(measurementClasses)}" 
-					title=${translate('toolbox_measureTool_start_new')}
-						@click=${onClickReset}>								
-							${translate('toolbox_measureTool_start_new')}
-						</button>				
-					<button id=remove class="tool-container__button ${classMap(removeClasses)}"
-						title=${translate('toolbox_drawTool_delete')}
-						@click=${onClickRemove}>
-						${translate('toolbox_drawTool_delete')}
-						</button>
+					${buttons}
 					</div>                
             	</div>	  
             </div>	  
      
         `;
 
+	}
+
+	_getButtons(state) {
+		const buttons = [];
+		const translate = (key) => this._translationService.translate(key);
+		const { active, statistic, mode } = state;
+		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
+		this._tool.active = active;
+	
+		const getButton = (id, title, onClick) => {
+			return html`<button id=${id} 
+								class="tool-container__button" 
+								title=${title}
+								@click=${onClick}>${title}</button>`;
+		};
+		// Start-New-Button
+		const startNewCompliantModes = ['draw', 'modify', 'select'];
+		const finishAllowed = statistic.area > 0 && mode === 'draw';
+		if (startNewCompliantModes.includes(mode) ) {
+			let id = 'startnew';
+			let title = translate('toolbox_measureTool_start_new');
+			let onClick =  () => reset();
+			// alternate Finish-Button			
+			if (finishAllowed) {
+				id = 'finish';
+				title = translate('toolbox_drawTool_finish');
+				onClick =  () => finish();				
+			}
+			
+			buttons.push(getButton(id, title, onClick));
+		}
+
+		// Remove-Button
+		const removeAllowed = statistic.length > 0;
+		if (removeAllowed) {
+			const id = 'remove';
+			const title = translate('toolbox_drawTool_delete');
+			const onClick =  () => remove();
+			buttons.push(getButton(id, title, onClick));
+		}
+
+		
+		return buttons;
 	}
 
 	/**

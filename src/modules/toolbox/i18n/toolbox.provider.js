@@ -18,6 +18,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_stats_length: 'Length',
 				toolbox_measureTool_stats_area: 'Area',
 				toolbox_measureTool_start_new: 'Start New',
+				toolbox_drawTool_finish:'Finish'
 			};
 
 		case 'de':
@@ -37,6 +38,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_stats_length: 'Länge',
 				toolbox_measureTool_stats_area: 'Fläche',
 				toolbox_measureTool_start_new: 'Neue Messung',
+				toolbox_drawTool_finish:'Fertig'
 			};
 
 		default:
