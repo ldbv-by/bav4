@@ -125,7 +125,7 @@ export class MeasureToolContent extends BaElement {
 		}
 
 		// Remove-Button
-		const removeAllowed = statistic.length > 0;
+		const removeAllowed = mode === 'draw' ? statistic.area > 0 : statistic.length > 0;
 		if (removeAllowed) {
 			const id = 'remove';
 			const title = translate('toolbox_drawTool_delete');

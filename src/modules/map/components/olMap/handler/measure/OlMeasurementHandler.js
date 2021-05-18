@@ -316,11 +316,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_finish( ) {
 		if (this._draw.getActive()) {
 			if (this._activeSketch) {
-				console.log('Finish with new drawing');
 				this._draw.finishDrawing();
 			}
 			else {
-				console.log('Finish without new drawing');
 				this._activateModify(null);
 			}
 			
