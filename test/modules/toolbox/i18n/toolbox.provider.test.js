@@ -21,6 +21,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
+		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
 	it('provides translation for en', () => {
@@ -41,10 +42,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

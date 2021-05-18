@@ -234,7 +234,7 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
-				const removeSpy = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
+				const removeSpy = spyOn(classUnderTest, '_remove').and.callThrough();
 
 				classUnderTest.activate(map);
 				remove();
@@ -585,9 +585,9 @@ describe('OlMeasurementHandler', () => {
 
 		it('removes currently drawing two-point feature if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			classUnderTest._reset = jasmine.createSpy().and.callThrough();
+			const startNewSpy = spyOn(classUnderTest, '_startNew');
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [0, 0]]]);
+			const geometry = new Polygon([[[0, 0], [0, 0]]]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -597,7 +597,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
 			simulateKeyEvent(deleteKeyCode);
-			expect(classUnderTest._reset).toHaveBeenCalled();
+			expect(startNewSpy).toHaveBeenCalled();
 		});
 
 		it('removes drawn feature if keypressed', () => {

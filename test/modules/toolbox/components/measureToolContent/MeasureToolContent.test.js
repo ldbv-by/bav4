@@ -55,17 +55,14 @@ describe('MeasureToolContent', () => {
 
 		it('builds the tool', async () => {
 			const element = await setup();
-
 			expect(element._tool).toBeTruthy();
-			// expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('#remove').length).toBe(1);
-			expect(element.shadowRoot.querySelectorAll('#startnew').length).toBe(1);
 		});
 
 		it('resets the measurement', async () => {
 			const state = {
 				measurement: {
 					active: true,
+					mode:'draw',
 					statistic: { length: 42, area: 0 },
 					reset: null,
 					remove: null,
