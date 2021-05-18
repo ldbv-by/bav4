@@ -55,7 +55,7 @@ describe('Topicservice', () => {
 			expect(topic.length).toBe(1);
 		});
 
-		it('loads fallback topics when provider cannot fulfill', async () => {
+		it('loads two fallback topics when provider cannot fulfill', async () => {
 
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Topics could not be loaded');
