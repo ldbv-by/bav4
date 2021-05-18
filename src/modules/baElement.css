@@ -1,5 +1,4 @@
 /* default style for all BaElements */
-
 *,
 ::before,
 ::after{
@@ -11,6 +10,8 @@
     padding: 0;
     color: var(--color); 
     font-family: var(--font-family);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
 }  
 
 *,*:focus,*:hover{
@@ -19,9 +20,9 @@
 
 /* not working in Firefox */
 ::-webkit-scrollbar {
-width: .4em;
+    width: .4em;
 }
 ::-webkit-scrollbar-thumb {
     border-radius:.9em;
-background: var(--secondary-bg-color);
+    background: var(--secondary-bg-color);
 }
