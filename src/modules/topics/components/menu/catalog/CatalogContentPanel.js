@@ -22,10 +22,15 @@ export class CatalogContentPanel extends BaElement {
 
 	initialize() {
 
-		//requestData call has to be debounced
 		const requestCatalog = async (topicId) => {
-			this._catalog = await this._catalogService.byId(topicId);
-			this.render();
+			try {
+
+				this._catalog = await this._catalogService.byId(topicId);
+				this.render();
+			}
+			catch (e) {
+				console.warn(e.message);
+			}
 		};
 
 		this.observe('currentTopicId', currentTopicId => requestCatalog(currentTopicId));

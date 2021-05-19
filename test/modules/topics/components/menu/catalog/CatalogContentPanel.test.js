@@ -39,15 +39,15 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
-		fit('renders a list of topic elements', async () => {
+		it('renders a list of topic elements', async () => {
 			const topicId = 'foo';
 			const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
 				await loadExampleCatalog()
 			);
 			const element = await setup();
-			
+
 			setCurrent(topicId);
-			
+
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(spy).toHaveBeenCalledOnceWith(topicId);
@@ -55,6 +55,25 @@ describe('TopicsContentPanel', () => {
 				//the example catalog returns one node and one leaf object on the top level
 				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			});
+		});
+
+		describe('and CatalogService cannot fulfill', () => {
+
+			it('it logs a warn statement and renders nothing', async () => {
+				const topicId = 'foo';
+				spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+					Promise.reject(new Error('Something got wrong'))
+				);
+				const warnSpy = spyOn(console, 'warn');
+				const element = await setup();
+
+				setCurrent(topicId);
+
+				setTimeout(() => {
+					expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
+					expect(element.shadowRoot.children.length).toBe(0);	
+				});
 			});
 		});
 	});
