@@ -13,8 +13,6 @@ export class CatalogLeaf extends BaElement {
 		this.render();
 	}
 
-
-
 	createView() {
 
 		if (this._catalogPart) {

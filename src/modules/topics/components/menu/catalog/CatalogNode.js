@@ -13,34 +13,10 @@ export class CatalogNode extends BaElement {
 		this.render();
 	}
 
-
-
 	createView() {
 
 		if (this._catalogPart) {
-
-
-
 			const { label, children } = this._catalogPart;
-
-			// {
-			// 	label: `Suptopic1 ${topicId}`,
-			// 	children: [
-			// 		{
-			// 			geoResourceId: 'atkis'
-			// 		},
-			// 		{
-			// 			geoResourceId: 'atkis_sw'
-			// 		},
-			// 		{
-			// 			label: `Suptopic2 ${topicId}`,
-			// 			children: [{
-			// 				geoResourceId: 'atkis_sw'
-			// 			}]
-			// 		}
-			// 	]
-			// }
-
 			const childElements = children.map(child => {
 				//node
 				if (child.children) {

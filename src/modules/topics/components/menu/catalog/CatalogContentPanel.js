@@ -37,7 +37,7 @@ export class CatalogContentPanel extends BaElement {
 	}
 
 	onStateChanged() {
-		//we we do nothing here, because we will call #render() manually after search results are available
+		//we we do nothing here, because we will call #render() manually after catalog data are available
 	}
 
 
