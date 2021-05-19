@@ -118,7 +118,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	describe('when activated over olMap', () => {
-
+		const container = document.createElement('div');
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 		const setupMap = () => {
@@ -130,7 +130,7 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug(),
 					})],
-				target: 'map',
+				target: container,
 				view: new View({
 					center: initialCenter,
 					zoom: 1,
@@ -448,10 +448,10 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when draw a line', () => {
-		const initialCenter = fromLonLat([0, 0]);
-
+		const initialCenter = fromLonLat([42, 42]);
+		let target;
 		const setupMap = (zoom = 10) => {
-
+			target = document.createElement('div');
 			return new Map({
 				layers: [
 					new TileLayer({
@@ -460,7 +460,7 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug(),
 					})],
-				target: 'map',
+				target: target,
 				view: new View({
 					center: initialCenter,
 					zoom: zoom
@@ -837,7 +837,7 @@ describe('OlMeasurementHandler', () => {
 					})],
 				target: target,
 				view: new View({
-					center: [0, 0],
+					center: [42, 42],
 					zoom: 1,
 				}),
 			});
@@ -988,7 +988,7 @@ describe('OlMeasurementHandler', () => {
 		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new Polygon([[[50, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 

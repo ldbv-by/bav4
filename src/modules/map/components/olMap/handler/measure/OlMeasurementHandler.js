@@ -156,7 +156,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const clickHandler = (event) => {
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
-			const pixel = event.pixel;			
+			const pixel = event.pixel;						
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
 			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
@@ -318,14 +318,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw.getActive()) {
 			if (this._activeSketch) {
 				this._draw.finishDrawing();
-				const event = new Event('click');
-				event.clientX = this._map.getView().getCenter()[0];
-				event.clientY = this._map.getView().getCenter()[1];
-				event.pageX = this._map.getView().getCenter()[0];
-				event.pageY = this._map.getView().getCenter()[1];
-				event.shiftKey = false;
-				const mapEvent = new MapBrowserEvent('click', this._map, event);
-				this._map.dispatchEvent(mapEvent);		
+				this._simulateClickEvent();
 			}
 			else {
 				this._activateModify(null);
@@ -333,7 +326,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_startNew() {
+	_startNew() {		
 		if (this._draw.getActive()) {
 			this._draw.abortDrawing();
 		}
@@ -341,7 +334,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
-		this._helpTooltip.activate();
+		this._helpTooltip.activate();		
+		this._simulateClickEvent();
 	}
 
 	_removeSelectedFeatures() {
@@ -716,6 +710,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	static get Debounce_Delay() {
 		return Debounce_Delay; 
 	
+	}
+
+	_simulateClickEvent() {
+		const view = this._map.getView();
+		if (view) {
+			const event = new Event('click');
+			event.clientX = this._map.getView().getCenter()[0];
+			event.clientY = this._map.getView().getCenter()[1];
+			event.pageX = this._map.getView().getCenter()[0];
+			event.pageY = this._map.getView().getCenter()[1];
+			event.shiftKey = false;
+			const mapEvent = new MapBrowserEvent('click', this._map, event);
+			this._map.dispatchEvent(mapEvent);		
+		}		
 	}
 
 }
