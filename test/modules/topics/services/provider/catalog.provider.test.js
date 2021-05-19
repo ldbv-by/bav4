@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { loadBvvCatalog, loadExampleCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
+import { fallbackCatalogFor, loadBvvCatalog, loadExampleCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
 
 describe('Catalog provider', () => {
 
@@ -64,10 +64,23 @@ describe('Catalog provider', () => {
 
 	describe('Example catalog provider', () => {
 
-		it('loads a dummy catalog', async () => {
+		it('loads an example catalog', async () => {
 			const catalog = await loadExampleCatalog('foo');
 
 			expect(catalog.length).toBe(2);
+			expect(catalog[0].open).toBeTrue();
+			expect(catalog[0].children.length).toBe(3);
+			expect(catalog[0].children[2].children.length).toBe(1);
+		});
+	});
+
+	describe('Util function for a fallback catalog', () => {
+
+		it('loads a fallback catalog', async () => {
+			const catalog = fallbackCatalogFor('foo');
+
+			expect(catalog.length).toBe(2);
+			expect(catalog[0].open).toBeTrue();
 			expect(catalog[0].children.length).toBe(3);
 			expect(catalog[0].children[2].children.length).toBe(1);
 		});

@@ -1,4 +1,5 @@
-import { loadBvvCatalog } from './provider/catalog.provider';
+import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
+import { fallbackCatalogFor, loadBvvCatalog } from './provider/catalog.provider';
 
 
 /**
@@ -43,7 +44,19 @@ export class CatalogService {
 			return this._cache.get(topicId);
 		}
 		catch (e) {
+			
+			//do we have a fallback topic?
+			if (FALLBACK_TOPICS_IDS.includes(topicId)) {
+				return this._newFallbackCatalog(topicId);
+			}
 			throw new Error('Could not load catalog from provider: ' + e.message);
 		}
+	}
+
+	/**
+	 * @private
+	 */
+	_newFallbackCatalog(topicId) {
+		return fallbackCatalogFor(topicId);
 	}
 }
