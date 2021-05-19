@@ -50,7 +50,7 @@ Services and provider functions whose names start with 'BVV' are focusing on the
 
 ### `src/modules`
 
-Modules are single and independent (as far as possible) units of code. They have a concrete context and/or focus on one or more use cases of the application. 
+Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
 
 Modules meet the following conventions: 
 
@@ -62,9 +62,9 @@ Modules meet the following conventions:
    - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
    - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
-   - `/i18n` : i18n provider and loader for this module:
+   - `/i18n` : i18n provider and loader for this module
 
-4. Modules are allowed to use actions from the global store and components from other modules.
+4. Outside their package, modules are only allowed to use global services, actions from the global store, and BaElement components from other modules for composition.
 
 
 ### `src/services`
@@ -95,8 +95,15 @@ Here's an overview of what project folder structure looks like:
 ```
 
 ## Setup
-`npm i`
 
+### Prerequisites
+
+- Node.js 12
+- npm 6
+
+### Install
+
+`npm i`
 
 ### List of npm scripts
 
@@ -127,13 +134,7 @@ Here's an overview of what project folder structure looks like:
   - `BaElement` components
   - `BaPlugin` implementations
 
-- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids second dispatching in order to "reset" the state. It's recommended to use `EventLike` in storeUtils.js for this purpose.
-
-
-## Pending Questions
-
-- Externalize html-templates: https://stackoverflow.com/questions/63355270/in-lit-html-is-there-a-way-to-use-strings-instead-of-template-literal
-- Run each set of tests in a separate iframe: https://github.com/karma-runner/karma/issues/412 (solved: by using karma-iframes)
+- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. For this purpose it's recommended to use `EventLike` in storeUtils.js.
 
 ## Links
 

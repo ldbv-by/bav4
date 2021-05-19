@@ -10,7 +10,7 @@
 * 
 * @abstract
 * @class
-* @author aul
+* @author taulinger
 */
 export class BaPlugin {
 

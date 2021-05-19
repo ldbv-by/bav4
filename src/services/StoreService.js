@@ -1,5 +1,5 @@
 import { combineReducers, createStore } from 'redux';
-import { positionReducer } from '../modules/map/store/position.reducer';
+import { positionReducer } from '../store/position/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { mainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
@@ -7,14 +7,14 @@ import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.red
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
-import { layersReducer } from '../modules/map/store/layers.reducer';
+import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
 import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
-import { topicsReducer } from '../modules/topics/store/topics.reducer';
+import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
 
@@ -22,7 +22,7 @@ import { searchReducer } from '../store/search/search.reducer';
 /**
  * Service which configures, initializes and holds the redux store.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class StoreService {
 
@@ -75,15 +75,15 @@ export class StoreService {
 					'EnvironmentService'
 				);
 
-			await topicsPlugin.register(this._store);
-			await layersPlugin.register(this._store);
-			await positionPlugin.register(this._store);
-			await measurementPlugin.register(this._store);
-			await geolocationPlugin.register(this._store);
-			await ContextClickPlugin.register(this._store);
-
-			//we remove all query params shown in the browsers address bar
-			setTimeout(() => {
+			setTimeout(async() => {
+				//register plugins
+				await topicsPlugin.register(this._store);
+				await layersPlugin.register(this._store);
+				await positionPlugin.register(this._store);
+				await measurementPlugin.register(this._store);
+				await geolocationPlugin.register(this._store);
+				await ContextClickPlugin.register(this._store);
+				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});
 		});

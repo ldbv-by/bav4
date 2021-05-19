@@ -3,7 +3,7 @@ import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '../../../../src/modules
 
 import { activate, deactivate } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
-import { layersReducer } from '../../../../src/modules/map/store/layers.reducer';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 
 
 

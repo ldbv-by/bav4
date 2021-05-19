@@ -62,8 +62,8 @@ export class InfoButton extends BaElement {
         `;
 	} 
 
-	extractState(state) {
-		const { position: { zoom, center } } = state;
+	extractState(globalState) {
+		const { position: { zoom, center } } = globalState;
 		return { zoom, center };
 	}
 

@@ -1,4 +1,5 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
 import css from './baElement.css';
@@ -44,7 +45,7 @@ import css from './baElement.css';
  * 
  * @abstract
  * @class
- * @author aul
+ * @author taulinger
  */
 export class BaElement extends HTMLElement {
 
@@ -77,6 +78,15 @@ export class BaElement extends HTMLElement {
 		this._rendered = false;
 
 		this._observer = [];
+	}
+
+	/**
+	 * Returns the current state.
+	 * @protected
+	 * @returns state of this element
+	 */
+	getState() {
+		return this._state;
 	}
 
 	/**
@@ -147,7 +157,7 @@ export class BaElement extends HTMLElement {
 		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
 			this._observer.forEach(o => o());
-			this.onStateChanged();
+			this.onStateChanged(this._state);
 		}
 	}
 
@@ -163,9 +173,10 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
+	 * @param {object} state state of this element
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
-	createView() {
+	createView(/*eslint-disable no-unused-vars */state) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
 	}
@@ -176,9 +187,10 @@ export class BaElement extends HTMLElement {
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
-	 * @returns state of the elements {Object}
+	 * @param {object} globalState **global** state
+	 * @returns state of this elements
 	 */
-	extractState(/*eslint-disable no-unused-vars */state) {
+	extractState(/*eslint-disable no-unused-vars */globalState) {
 		return {};
 	}
 
@@ -204,7 +216,7 @@ export class BaElement extends HTMLElement {
 
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
-			const template = this.createView();
+			const template = this.createView(this._state);
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
 			}
@@ -262,8 +274,9 @@ export class BaElement extends HTMLElement {
 	 * Called after the elements state has been changed. 
 	 * Per default {@link BaElement#render} is called. 
 	 * @protected
+	 * @param {object} state state of this element
 	 */
-	onStateChanged() {
+	onStateChanged(/*eslint-disable no-unused-vars */state) {
 		this.render();
 	}
 
@@ -318,3 +331,17 @@ export class BaElement extends HTMLElement {
 		this._observer.push(createObserver(name, onChange));
 	}
 }
+
+
+/**
+ * Calls the static #tag method of a BaElement and renders the result as HTML.
+ * Returns a lit-html Part instance.
+ * @param {*} Clazz A class that inherits BaElement
+ * @returns {Part} A lit-html Part instance
+ */
+export const renderTagOf = (baElementClazz) => {
+	if (baElementClazz.prototype instanceof BaElement) {
+		return unsafeHTML(`<${baElementClazz.tag}/>`);
+	}
+	throw new TypeError(`${baElementClazz.name} does not inherit BaElement`);
+};

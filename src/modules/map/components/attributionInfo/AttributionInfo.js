@@ -23,9 +23,9 @@ export class AttributionInfo extends BaElement {
 	/**
      * @override 
      */
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, zoom } = this._state;
+		const { active, zoom } = state;
 
 		const attributionsRaw = new Array(); 
 
@@ -91,10 +91,10 @@ export class AttributionInfo extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} state 
+	  * @param {Object} globalState 
 	  */
-	extractState(state) {
-		const { layers: { active }, position: { zoom } } = state;
+	extractState(globalState) {
+		const { layers: { active }, position: { zoom } } = globalState;
 		return { active, zoom };
 	}
 

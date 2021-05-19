@@ -2,11 +2,11 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { closeModal } from '../../../modal/store/modal.action';
-import { changeZoomAndCenter } from '../../../map/store/position.action';
+import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
-import { addLayer } from '../../../map/store/layers.action';
+import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 
 /**
@@ -105,6 +105,9 @@ export class ShowCase extends BaElement {
 			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
 			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="secondary" @click=${deactivateMeasrementTool}></ba-button>	
 			
+			<p>BaseLayer Switcher</p>
+			<div><ba-base-layer-switcher></ba-base-layer-switcher></div>
+
 			<p>Url of State</p>
 			<ba-button id='buttonActivateMeasureDistance' label='Copy Url' type="primary" @click=${onGenerateUrlButtonClick}></ba-button>	
 			<input readonly='readonly' value=${this._url}></input>	

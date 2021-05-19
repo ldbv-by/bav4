@@ -3,13 +3,13 @@ import { BaElement } from '../../../BaElement';
 import css from './sidePanel.css';
 import { closeSidePanel } from '../../store/sidePanel.action';
 import { $injector } from '../../../../injection';
-import { addLayer } from '../../../map/store/layers.action';
+import { addLayer } from '../../../../store/layers/layers.action';
 
 
 /**
  *  
  * @class
- * @author aul
+ * @author taulinger
  */
 export class SidePanel extends BaElement {
 
@@ -58,9 +58,9 @@ export class SidePanel extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { open } = this._state;
+		const { open } = state;
 		const { portrait } = this._environmentService.getScreenOrientation();
 		const getOverlayClass = () => {
 			if (portrait) {
@@ -112,10 +112,10 @@ export class SidePanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { sidePanel: { open } } = state;
+	extractState(globalState) {
+		const { sidePanel: { open } } = globalState;
 		return { open };
 	}
 

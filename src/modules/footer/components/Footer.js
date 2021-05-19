@@ -6,7 +6,7 @@ import css from './footer.css';
 /**
  * Container element for footer stuff. 
  * @class
- * @author aul
+ * @author taulinger
  */
 export class Footer extends BaElement {
 
@@ -44,9 +44,9 @@ export class Footer extends BaElement {
 		return this._environmentService.isEmbedded();
 	}
 
-	createView() {
+	createView(state) {
 
-		const { open } = this._state;
+		const { open } = state;
 
 		const getOverlayClass = () => {
 			return (open && !this._portrait) ? 'is-open' : '';
@@ -76,10 +76,10 @@ export class Footer extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} globalState 
 	 */
-	extractState(state) {
-		const { mainMenu: { open } } = state;
+	extractState(globalState) {
+		const { mainMenu: { open } } = globalState;
 		return { open };
 	}
 

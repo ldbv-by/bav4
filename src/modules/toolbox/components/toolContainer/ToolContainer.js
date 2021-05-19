@@ -59,9 +59,9 @@ export class ToolContainer extends BaElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
 
-		const { open, contentId } = this._state;
+		const { open, contentId } = state;
 
 		let content;
 		switch (contentId) {
@@ -125,10 +125,10 @@ export class ToolContainer extends BaElement {
 
 	/**
  * @override
- * @param {Object} state 
+ * @param {Object} globalState 
  */
-	extractState(state) {
-		const { toolContainer } = state;
+	extractState(globalState) {
+		const { toolContainer } = globalState;
 		return toolContainer;
 	}
 

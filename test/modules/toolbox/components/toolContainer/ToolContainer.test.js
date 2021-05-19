@@ -14,7 +14,7 @@ window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
 describe('ToolContainer', () => {
-
+	let store;
 	const windowMock = {
 		matchMedia() { }
 	};
@@ -27,6 +27,14 @@ describe('ToolContainer', () => {
 			toolContainer: {
 				open: false,
 				contentId:false
+			},
+			measurement:{
+				active:false,
+				mode:'active',
+				statistic:{ length:0, area:0 },
+				reset:null,
+				finish:null,
+				remove:null
 			}
 		};
 		
@@ -44,7 +52,7 @@ describe('ToolContainer', () => {
 			}
 		}
 
-		TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
+		store = TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -95,6 +103,19 @@ describe('ToolContainer', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
 		});
+
+		it('deactivates measurement, when tool-content is switching from measure-tool-content', async () => {
+			const element = await setup();			
+
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+			expect(store.getState().measurement.active).toBeTrue();
+			setContainerContent('ba-tool-draw-content');			
+			
+			expect(store.getState().measurement.active).toBeFalse();
+			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+		});
+		
 
 		it('renders nothing when contentId is false', async () => {
 			const element = await setup();

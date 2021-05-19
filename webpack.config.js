@@ -27,7 +27,7 @@ module.exports = {
 				],
 			},
 			{
-				test: /\.(svg)$/,
+				test: /\.(woff2|svg|webp)$/,
 				type: 'asset/inline'
 			},
 		],

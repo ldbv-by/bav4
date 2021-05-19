@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 
 import { InfoButton } from '../../../../../src/modules/map/components/infoButton/InfoButton';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { Popup } from '../../../../../src/modules/commons/components/popup/Popup';
-import { changeCenter, changeZoom } from '../../../../../src/modules/map/store/position.action';
+import { changeCenter, changeZoom } from '../../../../../src/store/position/position.action';
 
 window.customElements.define(InfoButton.tag, InfoButton);
 window.customElements.define(Popup.tag, Popup);

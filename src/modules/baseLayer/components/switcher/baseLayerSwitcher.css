@@ -1,0 +1,88 @@
+.title {
+    font-weight: bold;
+    padding:.8em 1.5em;
+}
+.baselayer__container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding:.8em 1.5em;
+    
+}
+ .baselayer__button[type="primary"]{
+    transform: scale(1.1);
+    z-index:1;
+}
+.baselayer__button{
+    border-radius:0em;
+    transform: scale(1);
+    flex-grow: 1;   
+    width: auto;
+    height: 5em;
+    transition: transform 0.3s ease-out;    
+    background: var(--secondary-bg-color);
+    background-image: url('assets/baselayer.webp');
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    background-size: auto 100% ;
+    background-position: center center;
+    cursor: pointer;
+    user-select: none;
+}
+.baselayer__button:hover{
+    transform: scale(1.3);
+    z-index:2;
+}
+.baselayer__label{
+    display: none;
+    font-size: .6rem;
+    padding: .3em;
+    position: absolute;
+    background: var(--primary-bg-color-05);
+    color: var(--color);
+    opacity: 1;
+    z-index: 1;
+    text-align: center;
+    min-width: 100%;
+    bottom: 0em;
+    user-select:0;
+}
+.baselayer__button:hover .baselayer__label{
+    display: block;
+}
+.baselayer__button[type="primary"] .baselayer__label{
+    display: block;
+    background: var(--primary-color);
+    color: var(--text-default-color);
+}
+.baselayer__button[type="primary"] .baselayer__label:after{
+    display: block;
+    border-color: transparent transparent var(--primary-color) transparent;
+}
+.baselayer__label:after {
+    content: '';
+    position: absolute;
+    border-width: 0.8em;
+    border-style: solid;
+    border-color: transparent transparent var(--primary-bg-color-05) transparent;
+    left: 50%;
+    margin-left:-.8em;
+    top: -1.4em;
+}
+.fallback{
+    background: var(--secondary-bg-color);
+}
+.atkis{
+    background-image: url('assets/1.webp');
+}
+.luftbild_labels{
+    background-image: url('assets/2.webp');
+}
+.tk{
+    background-image: url('assets/3.webp');
+}
+.historisch{
+    background-image: url('assets/4.webp');
+}
+.atkis_sw{
+    background-image: url('assets/5.webp');
+}

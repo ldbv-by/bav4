@@ -3,7 +3,7 @@ import { $injector } from '../injection';
 /**
  *  Service for I18n.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class TranslationService {
 
