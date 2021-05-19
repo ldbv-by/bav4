@@ -23,7 +23,7 @@ describe('MeasureToolContent', () => {
 
 	const setup = async (state = defaultState, config = {}) => {
 
-		const { embed = false } = config;
+		const { embed = false, isTouch = false } = config;
 
 
 		class MockClass {
@@ -45,7 +45,7 @@ describe('MeasureToolContent', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock,
-				isTouch:() => false
+				isTouch:() => isTouch
 
 			}).registerSingleton('TranslationService', { translate: (key) => key })
 			.register('UnitsService', MockClass);
@@ -148,6 +148,79 @@ describe('MeasureToolContent', () => {
 			expect(unitSpan).toBeTruthy();
 			expect(valueSpan.textContent).toBe('42');
 			expect(unitSpan.textContent).toBe('m');
+		});
+
+		it('shows the measurement sub-text', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			const subTextElement = element.shadowRoot.querySelector('.sub-text');
+			
+
+			expect(subTextElement).toBeTruthy();			
+			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+		});
+
+		describe('with touch-device', () => {
+			const touchConfig = { embed:false,
+				isTouch:true };
+			const defaultMeasurementState = {
+				active: true,
+				mode:null,
+				statistic: { length: 42, area: 0 },
+				reset: null,
+				remove: null,				
+			};
+			
+			it('shows the measurement sub-text for mode:active', async () => {
+				const state = {
+					measurement: { ...defaultMeasurementState, mode:'active' }
+				};
+				const element = await setup(state, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
+		
+				expect(subTextElement).toBeTruthy();			
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_active');
+			});
+
+			it('shows the measurement sub-text for mode:draw', async () => {
+				const state = {
+					measurement: { ...defaultMeasurementState, mode:'draw' }
+				};
+				const element = await setup(state, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
+		
+				expect(subTextElement).toBeTruthy();			
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_draw');
+			});
+
+			it('shows the measurement sub-text for mode:modify', async () => {
+				const state = {
+					measurement: { ...defaultMeasurementState, mode:'modify' }
+				};
+				const element = await setup(state, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
+		
+				expect(subTextElement).toBeTruthy();			
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_modify');
+			});
+
+			it('shows the measurement sub-text for mode:select', async () => {
+				const state = {
+					measurement: { ...defaultMeasurementState, mode:'select' }
+				};
+				const element = await setup(state, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
+		
+				expect(subTextElement).toBeTruthy();			
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_select');
+			});
 		});
 	});
 });

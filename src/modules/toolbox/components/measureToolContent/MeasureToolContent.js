@@ -31,11 +31,12 @@ export class MeasureToolContent extends BaElement {
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, statistic, mode } = state;
+		const { active, statistic } = state;
 		this._tool.active = active;
 		const areaClasses = { 'is-area': statistic.area > 0 };
 	
 		const buttons = this._getButtons(state);
+		const subText = this._getSubText(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
 			if (splitted.length === 2) {
@@ -53,7 +54,7 @@ export class MeasureToolContent extends BaElement {
                 	<div class="tool-container__header">  
 						<span class='tool-container__header-text'>                
 							${translate('toolbox_measureTool_header')}                   
-						</span>   						             <span>(${mode})</span>
+						</span>
                 	</div>      
 					<div class="tool-container__text">				
 					<div class='tool-container__text-item'>
@@ -79,11 +80,7 @@ export class MeasureToolContent extends BaElement {
 						</ba-icon>
 					</span>			
 					</div>
-					<div class='sub-text'>												
-							<span>
-								${translate('toolbox_drawTool_info')}
-							</span>													
-					</div>
+					<div class='sub-text'>${subText}</div>
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
 					${buttons}
@@ -136,6 +133,28 @@ export class MeasureToolContent extends BaElement {
 
 		
 		return buttons;
+	}
+
+	_getSubText(state) {
+		const { mode } = state;
+		const translate = (key) => this._translationService.translate(key);
+		let subTextMessage = translate('toolbox_drawTool_info');
+		if (this._environmentService.isTouch()) {
+			switch (mode) {
+				case 'active':
+					subTextMessage =  translate('toolbox_measureTool_measure_active');	
+					break;
+				case 'draw':
+					subTextMessage =  translate('toolbox_measureTool_measure_draw');
+					break;
+				case 'modify':
+					subTextMessage =  translate('toolbox_measureTool_measure_modify');
+					break;
+				case 'select':
+					subTextMessage =  translate('toolbox_measureTool_measure_select');				
+			}			
+		}
+		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
 	}
 
 	/**
