@@ -66,7 +66,7 @@
     border-color: transparent transparent var(--primary-bg-color-05) transparent;
     left: 50%;
     margin-left:-.8em;
-    top: -1.6em;
+    top: -1.4em;
 }
 .fallback{
     background: var(--secondary-bg-color);
