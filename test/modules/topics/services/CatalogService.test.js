@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { CatalogService } from '../../../../src/modules/topics/services/CatalogService';
 import { fallbackCatalogFor, loadBvvCatalog, loadExampleCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
+import { FALLBACK_TOPICS_IDS } from '../../../../src/services/TopicsService';
 
 describe('CatalogService', () => {
 
@@ -63,7 +64,7 @@ describe('CatalogService', () => {
 			});
 
 			it('returns a fallback catalog when we have a fallback topic', async () => {
-				const fallbackTopicId = 'fallbackTopic';
+				const [fallbackTopicId] = FALLBACK_TOPICS_IDS;
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Something got wrong');
 				});
