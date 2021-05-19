@@ -75,19 +75,24 @@ export class TopicsService {
 	 * @private
 	 */
 	_newFallbackTopics() {
+		const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 		return [
 
-			new Topic('fallback0', 'Fallback Topic', 'This is a fallback topic...', [
+			new Topic(fallbackId0, 'Fallback Topic', 'This is a fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'atkis',
 				'atkis_sw'
 			]),
-			new Topic('fallback1', 'Fallback Topic 2', 'This is another fallback topic...', [
+			new Topic(fallbackId1, 'Fallback Topic 2', 'This is another fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'atkis',
 				'atkis_sw'
 			])
 		];
 	}
-
 }
+
+/**
+ * Defines valid default topic ids.
+ */
+export const FALLBACK_TOPICS_IDS = ['fallback0', 'fallback1'];
