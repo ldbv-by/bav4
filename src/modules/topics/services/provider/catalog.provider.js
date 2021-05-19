@@ -27,9 +27,15 @@ export const loadBvvCatalog = async (topicId) => {
  */
 export const loadExampleCatalog = async (topicId) => {
 
+	return fallbackCatalogFor(topicId);
+};
+
+export const fallbackCatalogFor = (topicId) => {
+	//for geoResouceIds: see GeoResourceService
 	return [
 		{
 			label: `Suptopic1 ${topicId}`,
+			open: true,
 			children: [
 				{
 					geoResourceId: 'atkis'
