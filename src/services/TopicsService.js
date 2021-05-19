@@ -5,6 +5,7 @@ import { loadBvvTopics } from './provider/topics.provider';
 /**
  * Service for managing topics.
  * @class
+ * @author taulinger
  */
 export class TopicsService {
 
