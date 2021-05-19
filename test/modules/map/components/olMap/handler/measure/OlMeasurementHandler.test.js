@@ -425,6 +425,24 @@ describe('OlMeasurementHandler', () => {
 
 		});		
 
+		it('adds no layer when empty', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+
+			classUnderTest.activate(map);			
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._vectorLayer.getSource().removeFeature(feature);
+			classUnderTest.deactivate(map);			
+			
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(0);
+				done();
+			});	
+
+		});		
+
 	});
 
 	describe('when using EnvironmentService for snapTolerance', () => {

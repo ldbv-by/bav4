@@ -344,7 +344,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._overlayManager.removeFrom(f);
 			if (this._vectorLayer.getSource().hasFeature(f)) {
 				this._vectorLayer.getSource().removeFeature(f);
-			}
+			}			
 		});
 		selectedFeatures.clear();
 	}
@@ -446,8 +446,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	async _save() {		
-		const features = this._vectorLayer.getSource().getFeatures();		
-		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));		
+		const features = this._vectorLayer.getSource().getFeatures();			
+		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));	
 		this._storedContent = createKML(this._vectorLayer, 'EPSG:3857');
 		
 		if (!this._storeID) {
@@ -659,6 +659,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 		
+		if (this._isEmpty()) {
+			console.warn('Cannot store empty layer');
+			return;	
+		}
+
 		if (!this._storeID || !this._storedContent ) {
 			await this._save();		
 		}
@@ -682,8 +687,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });		
-		this._lastMeasurementId = id;
-		
+		this._lastMeasurementId = id;		
 	}
 
 
@@ -692,6 +696,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return 12;
 		}
 		return 4;
+	}
+
+	_isEmpty() {
+		if (this._vectorLayer) {			
+			return !this._vectorLayer.getSource().getFeatures().length > 0;
+		}
 	}
 
 	/**
