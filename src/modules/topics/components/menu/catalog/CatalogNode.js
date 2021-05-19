@@ -1,5 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../../BaElement';
+import css from './CatalogNode.css';
 
 /**
  * @class
@@ -51,7 +52,11 @@ export class CatalogNode extends BaElement {
 			});
 
 			return html`
-            <div>${label}</div>
+			<style>${css}</style>
+			<div class="ba-list-item">
+			<div class="ba-list-item__text">${label}</div>
+			</div>
+
             <div>${childElements}</div>
         `;
 		}

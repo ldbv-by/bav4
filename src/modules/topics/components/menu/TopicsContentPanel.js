@@ -36,21 +36,37 @@ export class TopicsContentPanel extends BaElement {
 				return (currentTopicId === id) ? 'active' : '';
 			};
 
+			const getThemeActiveClass = () => {
+				return currentTopicId ? 'is-active' : '';
+			};
+
 			const changeTopic = (id) => {
 				setCurrent(id);
 			};
 
 			return html`
         	<style>${css}</style>
-			<div class="topics-content-panel">
+			<div class="topics-content-panel ${getThemeActiveClass()}">
+				<div class="col">
 				${topics.map(topic => html`
-					<div class="topic ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
-						<h1>${topic.label}</h1>
-						<p>${topic.description}</p>
-						<div>
+					<div class="topic ba-list-item ba-list-inline ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
+						<span class="ba-list-item__pre">
+							<span class="ba-list-item__icon">
+							</span>
+						</span>
+						<span class="ba-list-item__text ">
+							<span class="ba-list-item__primary-text">${topic.label}</span>
+							<span class="ba-list-item__secondary-text">${topic.description}</span>
+						</span>
+						<span class="ba-list-item__after">
+							<span class="arrow"></span>
+						</span>
+					<div>
+					</span>
 					</div>
 				`)}
-				<div>
+				</div>
+				<div class="col">
 					${renderTagOf(CatalogContentPanel)}
 				</div>
 			</div>

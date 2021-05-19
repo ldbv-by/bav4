@@ -12,6 +12,7 @@
 }
 .main-menu__container{
    overflow-y: auto;
+   overflow-x: hidden;
    top: 13.5em;
    bottom: 0;
    height: auto;

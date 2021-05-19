@@ -1,5 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../../BaElement';
+import css from './CatalogLeaf.css';
 
 /**
  * @class
@@ -20,7 +21,10 @@ export class CatalogLeaf extends BaElement {
 		if (this._catalogPart) {
 			const { geoResourceId } = this._catalogPart;
 			return html`
-            	<div>${geoResourceId}</div>
+			<style>${css}</style>
+            	<div class="ba-list-item">
+				<div class="ba-list-item__text">${geoResourceId}</div>
+				</div>
         	`;
 		}
 		return nothing;
