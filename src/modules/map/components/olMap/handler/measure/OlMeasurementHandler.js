@@ -722,6 +722,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	
 	}
 
+
+	/**
+	 * Workaround for touch-devices to refresh measure-state and
+	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without 
+	 * any further detected pointer-moves and -clicks
+	 */
 	_simulateClickEvent() {
 		const view = this._map.getView();
 		if (view) {
