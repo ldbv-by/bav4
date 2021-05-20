@@ -510,6 +510,24 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});
 
+		it('feature gets valid id after finish drawing', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			const id = feature.getId();
+
+			expect(id).toBeTruthy();
+			expect(id).toMatch(/measure_[0-9]{13}/g);
+		});
+
 		it('positions tooltip content on the end of not closed Polygon', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
