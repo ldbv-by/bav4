@@ -22,10 +22,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
-		expect(map.toolbox_measureTool_measure_active).toBe('Klicken, um die Messung zu beginnen');
-		expect(map.toolbox_measureTool_measure_draw).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
-		expect(map.toolbox_measureTool_measure_modify).toBe('Klicke auf die Messung, um einen Punkt hinzuzufügen.</br> Punkt verschieben: klicken und ziehen</br> Punkt löschen: auf Punkt klicken');
-		expect(map.toolbox_measureTool_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
+		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte klicken, um die Messung zu beginnen.');
+		expect(map.toolbox_measureTool_measure_draw).toBe('In die Karte klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden).');
+		expect(map.toolbox_measureTool_measure_modify).toBe('Klicke auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: klicken und ziehen;</br> Punkt löschen: auf Punkt klicken');
+		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen.');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
@@ -48,9 +48,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
-		expect(map.toolbox_measureTool_measure_active).toBe('Click to start measurement');
-		expect(map.toolbox_measureTool_measure_draw).toBe('Click to continue drawing the line (double-click to finish)');
-		expect(map.toolbox_measureTool_measure_modify).toBe('Click on measurement, to add point.</br> Click then drag to move the point</br> Single click on the point to delete.');
+		expect(map.toolbox_measureTool_measure_active).toBe('Click in the map to start measurement.');
+		expect(map.toolbox_measureTool_measure_draw).toBe('Click in the map to continue drawing the line (double-click to finish).');
+		expect(map.toolbox_measureTool_measure_modify).toBe('Click on the measurement, to add point;</br> Click then drag to move the point;</br> Single click on the point to delete.');
 		expect(map.toolbox_measureTool_measure_select).toBe('Select existing or start new measurement');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
