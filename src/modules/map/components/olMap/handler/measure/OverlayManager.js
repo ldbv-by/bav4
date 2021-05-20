@@ -1,6 +1,6 @@
 import { MeasurementOverlay } from './MeasurementOverlay';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { getPartitionDelta } from './GeometryUtils';
+import { getPartitionDelta } from '../../olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';

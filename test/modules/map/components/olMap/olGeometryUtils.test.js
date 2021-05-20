@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../src/modules/map/components/olMap/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 
 

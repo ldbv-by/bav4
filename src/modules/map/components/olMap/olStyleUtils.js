@@ -1,5 +1,5 @@
 
-import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle } from './olGeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 
