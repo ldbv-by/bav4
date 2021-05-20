@@ -161,6 +161,10 @@ describe('ShareToolContent', () => {
 			checkbox.click();
 
 			expect(element.shadowRoot.querySelector('.preview_button').classList).not.toContain('disabled-preview');
+
+			checkbox.click();
+
+			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
 		});
 	});
 });
