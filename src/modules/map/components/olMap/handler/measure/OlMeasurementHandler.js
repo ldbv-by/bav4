@@ -439,7 +439,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateMeasurementMode(measureState) {
-		if (this._lastMeasureStateType !== measureState.type) {
+		if (this._lastMeasureStateType !== measureState.type && measureState.type !== MeasureStateType.OVERLAY) {
 			this._lastMeasureStateType = measureState.type;
 			setMode(this._lastMeasureStateType);
 		}
