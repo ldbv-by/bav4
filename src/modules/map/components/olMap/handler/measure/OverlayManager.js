@@ -75,17 +75,24 @@ export class OverlayManager {
 	}
 
 
-	createAreaOverlay(feature) {
+	createOrRemoveAreaOverlay(feature) {
 		if (feature.getGeometry() instanceof Polygon) {		
+			let areaOverlay = feature.get('area');
 			if (feature.getGeometry().getArea())	{
 				const isDraggable = !this._environmentService.isTouch();
-				let areaOverlay = feature.get('area');
+				
 				if (!areaOverlay) {
 					areaOverlay = this.create({ positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
 					this.add(areaOverlay);
 				}
 				this.update(areaOverlay, feature.getGeometry());
-				feature.set('area', areaOverlay);	
+				feature.set('area', areaOverlay);					
+			}
+			else {
+				if (areaOverlay) {
+					this.remove(areaOverlay);
+					feature.set('area', null);					
+				}
 			}		
 		}		
 	}
