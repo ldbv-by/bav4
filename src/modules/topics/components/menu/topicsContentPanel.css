@@ -4,10 +4,9 @@
    transition: transform 0.3s ease-out;         
 }
 
-.is-active {
+.invisible {
    transform: translate(calc(var(--width-mainmenu) * -1), 0);
 }
-
 
 .col{
    width: var(--width-mainmenu); 
@@ -16,8 +15,6 @@
 .topic{
 
 }
-
-
 
 .ba-list-inline{
    display: flex;
@@ -124,9 +121,6 @@
 .active{
    background: var(--header-background-color);
 }
-/* .active span{   
-    color:#fff;
-} */
 
 .ba-list-item:hover{
    background: var(--header-background-color);

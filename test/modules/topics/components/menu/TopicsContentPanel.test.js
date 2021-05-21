@@ -1,11 +1,25 @@
 import { $injector } from '../../../../../src/injection';
 import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
-import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
+import { TopicsContentPanel, TopicsContentPanelIndex } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
+import { topicsContentPanelReducer } from '../../../../../src/modules/topics/store/topicsContentPanel.reducer';
 import { Topic } from '../../../../../src/services/domain/topic';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
+
+describe('TopicsContentPanelIndex', () => {
+
+	it('is an enum', () => {
+
+		expect(Object.entries(TopicsContentPanelIndex).length).toBe(3);
+		expect(Object.isFrozen(TopicsContentPanelIndex)).toBeTrue();
+		expect(TopicsContentPanelIndex.TOPICS).toBe(0);
+		expect(TopicsContentPanelIndex.CATALOG_0).toBe(1);
+		expect(TopicsContentPanelIndex.CATALOG_1).toBe(2);
+	});
+});
+
 
 describe('TopicsContentPanel', () => {
 
@@ -21,7 +35,7 @@ describe('TopicsContentPanel', () => {
 
 	const setup = (state) => {
 
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer });
+		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('TopicsService', topicsServiceMock);
@@ -55,30 +69,65 @@ describe('TopicsContentPanel', () => {
 
 		describe('and all set', () => {
 
-			it('renders a list of topic elements and the CatalogContentPanel', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([
-					topic0,
-					topic1
-				]);
+			describe('and topics should be visible', () => {
 
-				const element = await setup({
-					topics: {
-						ready: true,
-						current: topic0.id
-					}
+				it('renders a list of topic elements and the CatalogContentPanel', async () => {
+					spyOn(topicsServiceMock, 'all').and.returnValue([
+						topic0,
+						topic1
+					]);
+
+					const element = await setup({
+						topics: {
+							ready: true,
+							current: topic0.id
+						},
+						topicsContentPanel: {
+							index: TopicsContentPanelIndex.TOPICS
+						}
+					});
+
+					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
+					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
 				});
+			});
 
-				expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
-				expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
-				expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
-				expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
+			describe('and topics should NOT be visible', () => {
+
+				it('adds the \'invisible\' class', async () => {
+					spyOn(topicsServiceMock, 'all').and.returnValue([
+						topic0,
+						topic1
+					]);
+
+					const element = await setup({
+						topics: {
+							ready: true,
+							current: topic0.id
+						},
+						topicsContentPanel: {
+							index: TopicsContentPanelIndex.CATALOG_0
+						}
+					});
+
+					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
+					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
+				});
 			});
 		});
 	});
 
 	describe('when topic element clicked', () => {
-		it('changes the current topic', async () => {
+		
+		it('changes the current topic and updates the content panel index', async () => {
 			spyOn(topicsServiceMock, 'all').and.returnValue([
 				topic0,
 				topic1
@@ -88,6 +137,9 @@ describe('TopicsContentPanel', () => {
 				topics: {
 					ready: true,
 					current: topic0.id
+				},
+				topicsContentPanel: {
+					index: TopicsContentPanelIndex.CATALOG_0
 				}
 			});
 
@@ -95,6 +147,7 @@ describe('TopicsContentPanel', () => {
 			element.shadowRoot.querySelectorAll('.topic')[1].click();
 
 			expect(store.getState().topics.current).toBe(topic1.id);
+			expect(store.getState().topicsContentPanel.index).toBe(TopicsContentPanelIndex.CATALOG_0);
 		});
 	});
 });

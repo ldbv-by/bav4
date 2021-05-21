@@ -2,9 +2,19 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
 import { BaElement, renderTagOf } from '../../../BaElement';
+import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
 
+
+/**
+ * @enum
+ */
+export const TopicsContentPanelIndex = Object.freeze({
+	TOPICS: 0,
+	CATALOG_0: 1,
+	CATALOG_1: 2
+});
 
 /**
  * @class
@@ -26,7 +36,7 @@ export class TopicsContentPanel extends BaElement {
 	 */
 	createView(state) {
 
-		const { currentTopicId, topicsReady } = state;
+		const { currentTopicId, topicsReady, contentIndex } = state;
 
 		if (topicsReady) {
 
@@ -36,17 +46,18 @@ export class TopicsContentPanel extends BaElement {
 				return (currentTopicId === id) ? 'active' : '';
 			};
 
-			const getThemeActiveClass = () => {
-				return currentTopicId ? 'is-active' : '';
+			const getVisibilityClass = () => {
+				return (contentIndex === TopicsContentPanelIndex.TOPICS) ? '' : 'invisible';
 			};
 
 			const changeTopic = (id) => {
 				setCurrent(id);
+				setIndex(TopicsContentPanelIndex.CATALOG_0);
 			};
 
 			return html`
         	<style>${css}</style>
-			<div class="topics-content-panel ${getThemeActiveClass()}">
+			<div class="topics-content-panel ${getVisibilityClass()}">
 				<div class="col">
 				${topics.map(topic => html`
 					<div class="topic ba-list-item ba-list-inline ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
@@ -77,8 +88,8 @@ export class TopicsContentPanel extends BaElement {
 
 	extractState(globalState) {
 
-		const { topics: { current: currentTopicId, ready: topicsReady } } = globalState;
-		return { currentTopicId, topicsReady };
+		const { topics: { current: currentTopicId, ready: topicsReady }, topicsContentPanel: { index: contentIndex } } = globalState;
+		return { currentTopicId, topicsReady, contentIndex };
 	}
 
 	static get tag() {
