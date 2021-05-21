@@ -5,7 +5,7 @@ import contentPanelCss from './abstractContentPanel.css';
 
 /**
  * Base class for all content panels of the main menu.
- * Just prepends common CSS classes for all content panels.
+ * Just prepends common CSS classes.
  * @class
  * @author taulinger
  * @abstract
