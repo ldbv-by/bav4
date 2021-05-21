@@ -8,6 +8,13 @@ import { BaPlugin } from '../../../store/BaPlugin';
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
 
+
+/**
+ * Id of the tool used for measurement interaction.  
+ * Feature of a layer will also use this id as part their id.
+ */
+export const MEASUREMENT_TOOL_ID = 'measure';
+
 /**
  * This plugin observes the 'active' property of the measurements store.
  * On changes, it adds a layer with a specific and constant id 

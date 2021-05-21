@@ -13,7 +13,7 @@ import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { MEASUREMENT_LAYER_ID } from '../../../../store/MeasurementPlugin';
+import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
 import { create as createKML, readFeatures } from '../../formats/kml';
@@ -361,6 +361,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		let listener;
 		let zoomListener;
 
+		const finishFeature = (event) => {
+			event.feature.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
+		};
+
 		const finishDistanceOverlay = (event) => {
 
 			const geometry = event.feature.getGeometry();
@@ -396,6 +400,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawabort', event => this._overlayManager.removeFrom(event.feature));
 
 		draw.on('drawend', event => {
+			finishFeature(event);
 			finishDistanceOverlay(event);
 			this._activateModify(event.feature);
 		}
