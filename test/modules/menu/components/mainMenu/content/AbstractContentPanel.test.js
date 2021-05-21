@@ -39,7 +39,7 @@ describe('AbstractContentPanel', () => {
 
 	describe('default css', () => {
 
-		it('adds the baElement abstractContentPanel CSS files', async () => {
+		it('adds the baElement and abstractContentPanel CSS files', async () => {
 			const element = await TestUtils.render(AbstractContentPanelImpl.tag);
 
 			expect(element.shadowRoot.querySelectorAll('style')).toHaveSize(2);
