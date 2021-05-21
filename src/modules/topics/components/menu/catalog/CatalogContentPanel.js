@@ -1,8 +1,9 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../../injection';
 import { BaElement } from '../../../../BaElement';
-import { setCurrent } from '../../../../../store/topics/topics.action';
 import css from './catalogContentPanel.css';
+import { setIndex } from '../../../store/topicsContentPanel.action';
+import { TopicsContentPanelIndex } from '../TopicsContentPanel';
 
 
 /**
@@ -49,11 +50,6 @@ export class CatalogContentPanel extends BaElement {
 
 		if (this._catalog) {
 
-			const resetTopic = () => {
-				setCurrent(null);
-			};
-
-
 			const childElements = this._catalog.map(item => {
 				//node
 				if (item.children) {
@@ -67,11 +63,11 @@ export class CatalogContentPanel extends BaElement {
 			return html`
         	<style>${css}</style>
 			<div class="catalog-content-panel">
-			<div class="ba-list-item  ba-list-item__header" @click=${() => resetTopic()}>
+			<div class="ba-list-item  ba-list-item__header" @click=${() => setIndex(TopicsContentPanelIndex.TOPICS)}>
 				<span class="ba-list-item__pre">
 					<span class="arrow"></span>
 				</span>
-				<span class="ba-list-item__text ">
+				<span class="ba-list-item__text">
 					<span class="ba-list-item__primary-text">
 						Thema wechseln
 					</span>
