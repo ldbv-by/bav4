@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { measureStyleFunction, measureStyleFunction2, measureStyleFunction3, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
+import { measureStyleFunction, measureStyleFunction3, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
@@ -109,7 +109,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: measureStyleFunction3
+				style: measureStyleFunction
 			});			
 			return layer;
 		};
@@ -126,7 +126,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._setStatistics(event.target);
 						};
 						oldFeatures.forEach(f =>  {
-							f.setStyle(measureStyleFunction3(f));
+							f.setStyle(measureStyleFunction(f));
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
@@ -355,7 +355,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: this._getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureStyleFunction3)
+			style: createSketchStyleFunction(measureStyleFunction)
 		});
 
 		let listener;
@@ -628,7 +628,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(measureStyleFunction3)
+			style: createSelectStyleFunction(measureStyleFunction)
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);

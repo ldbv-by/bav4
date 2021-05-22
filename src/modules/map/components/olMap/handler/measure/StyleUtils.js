@@ -1,11 +1,9 @@
 
-import { getGeometryLength, canShowAzimuthCircle, createOffsetGeometry } from './GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, moveParallel } from './GeometryUtils';
 import { getPartitionDelta } from './GeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import { toContext } from 'ol/render';
-
-
 
 const ZPOLYGON = 10;
 const ZLINE = 20;
@@ -14,80 +12,66 @@ const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
 
-const createRulerStyles = (feature, resolution) => {
+
+const getRulerStyle = (feature, resolution) => {
 	const geom = feature.getGeometry();
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+	const partition = getPartitionDelta(geom, resolution, calculationHints);
 	const partitionLength = getPartitionDelta(geom, resolution, calculationHints) * getGeometryLength(geom);	
 	const partitionTickDistance = partitionLength / resolution;	
-
-
-	const bigWidth = 10;
-	const smallWidth = 5;
-
-	const calcLineOffsetInMeter = (widthInPixel) => widthInPixel / 2 * resolution;
 	
-	const bigTickStyle = new Style({
-		geometry: createOffsetGeometry(geom, calcLineOffsetInMeter(bigWidth) ),
-		stroke: new Stroke({
-			color: RED_COLOR.concat([1]),
-			lineCap:'butt',
-			width:bigWidth,
-			lineDash:[3, partitionTickDistance - 3],
-			lineDashOffset:3
-			// width:1,			
-		})
-	});
-	const smallTickStyle = new Style({
-		geometry: createOffsetGeometry(geom, calcLineOffsetInMeter(smallWidth) ),
-		stroke: new Stroke({
-			color: RED_COLOR.concat([1]),
-			lineCap:'butt',
-			width:smallWidth,
-			lineDash:[2, (partitionTickDistance / 5) - 2],
-			lineDashOffset:2
-		})
-	});
-
-	return [bigTickStyle, smallTickStyle];
-};
-
-const getRenderStyle = (feature, resolution) => {
-	const geom = feature.getGeometry();
-	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-	const partitionLength = getPartitionDelta(geom, resolution, calculationHints) * getGeometryLength(geom);	
-	const partitionTickDistance = partitionLength / resolution;	
-
 	const fill = new Fill();
 	const baseStroke = new Stroke({
 		color: RED_COLOR.concat([1]),
-		width: 2,
+		fill: new Fill({ 
+			color:RED_COLOR.concat([0.4]) 
+		}),
+		width: 3,
 	});
-	const bigTickStroke = new Stroke({
-		color: RED_COLOR.concat([1]),
-		width: 8,
-		lineCap:'butt',
-		lineDash:[3, partitionTickDistance - 3],
-		lineDashOffset:3
-	});
-	const smallTickStroke = new Stroke({
-		color: RED_COLOR.concat([1]),
-		width: 5,
-		lineCap:'butt',
-		lineDash:[2, (partitionTickDistance / 5) - 2],
-		lineDashOffset:2
-	});
+	const getMainTickStroke = (residual) => {
+		return new Stroke({
+			color: RED_COLOR.concat([1]),
+			width: 8,
+			lineCap:'butt',
+			lineDash:[3, partitionTickDistance - 3],
+			lineDashOffset:3 + (partitionTickDistance * residual)
+		});
+	};
+
+	const getSubTickStroke = (residual) => {
+		return new Stroke({
+			color: RED_COLOR.concat([1]),
+			width: 5,
+			lineCap:'butt',
+			lineDash:[2, (partitionTickDistance / 5) - 2],
+			lineDashOffset:2 + (partitionTickDistance * residual)
+		});
+	};
+	
+	const residuals = calculatePartitionResidualOfSegments(geom, partition);
 	return new Style({ renderer:(pixelCoordinates, state) => {
 		const context = state.context;
-		const geometry = state.geometry.clone();
-		
-		geometry.setCoordinates(pixelCoordinates);
-		const renderContext = toContext(context, { pixelRatio: 1, });		
-		renderContext.setFillStrokeStyle(fill, baseStroke);
-		renderContext.drawGeometry(geometry);
-		renderContext.setFillStrokeStyle(fill, bigTickStroke);
-		renderContext.drawGeometry(geometry);
-		renderContext.setFillStrokeStyle(fill, smallTickStroke);
-		renderContext.drawGeometry(geometry);		
+		if (pixelCoordinates.length > 1) {
+			for (let index = 0; index < residuals.length; index++) {
+				const residual = residuals[index];
+				const from = pixelCoordinates[index];
+				const to = pixelCoordinates[index + 1];
+				if (!to) {
+					break;
+				}
+				const coords = [from, to];
+				const geometry = state.geometry.clone();
+				geometry.setCoordinates(coords);
+				const renderContext = toContext(context, { pixelRatio: 1, });		
+			
+				renderContext.setFillStrokeStyle(fill, baseStroke);
+				renderContext.drawGeometry(geometry);
+				renderContext.setFillStrokeStyle(fill, getMainTickStroke(residual));
+				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -4));
+				renderContext.setFillStrokeStyle(fill, getSubTickStroke(residual));
+				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -2));	
+			}
+		}		
 	} });
 };
 
@@ -103,8 +87,6 @@ export const measureStyleFunction3 = (feature, resolution) => {
 		color:RED_COLOR.concat([1]),
 		width:3,
 	});
-	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
-
 	const styles = [
 		new Style({
 			stroke:stroke,
@@ -119,63 +101,9 @@ export const measureStyleFunction3 = (feature, resolution) => {
 			},
 			zIndex:0
 		}),
-		getRenderStyle(feature, resolution)];
-	// const rulerStyles = createRulerStyles(feature, resolution);
-	return styles;
-	// return styles.concat(rulerStyles);
-};
-
-export const measureStyleFunction2 = (feature, resolution) => {
-	const projectionHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-	const dashedStroke = new Stroke({
-		color:RED_COLOR.concat([1]),
-		width:1
-	});
-	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
-	let simplifiedGeometry = feature.getGeometry();
-	if (feature.getGeometry() instanceof Polygon) {
-		simplifiedGeometry = new LineString(feature.getGeometry().getCoordinates()[0]);
-	}
-	const delta = getPartitionDelta(simplifiedGeometry, resolution, projectionHints);
-	const styles = [
-		new Style({
-			fill: new Fill({ 
-				color:RED_COLOR.concat([0.4]) 
-			}),
-			stroke:dashedStroke,
-			zIndex:zIndex
-		})];
-	
-	const width = 15;
-	
-	const geom = feature.getGeometry();
-	const partitionLength = delta * getGeometryLength(geom);	
-	const partitionTickDistance = partitionLength / resolution;	
-	const bigTickStyle = new Style({
-		stroke: new Stroke({
-			color: RED_COLOR.concat([1]),
-			lineCap:'butt',
-			width:width,
-			lineDash:[3, partitionTickDistance - 3],
-			lineDashOffset:3
-		})
-	});
-	const smallTickStyle = new Style({
-		stroke: new Stroke({
-			color: RED_COLOR.concat([1]),
-			lineCap:'butt',
-			width:width / 3,
-			lineDash:[2, (partitionTickDistance / 5) - 2],
-			lineDashOffset:2
-		})
-	});
-	styles.push(bigTickStyle,
-		smallTickStyle
-	);
-	
+		getRulerStyle(feature, resolution)];
 	return styles;
 };
-
 export const measureStyleFunction = (feature) => {
 	
 	const stroke = new Stroke({

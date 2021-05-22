@@ -231,3 +231,28 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 	return new LineString(coords);
 
 };
+
+export const calculatePartitionResidualOfSegments = (geometry, partition) => {
+	const residuals = [];
+	let currentLength = 0;
+	let lineString;
+	if (geometry instanceof LineString) {
+		lineString = geometry;
+	}
+	else if (geometry instanceof LinearRing) {
+		lineString = new LineString(geometry.getCoordinates());
+	}
+	else if (geometry instanceof Polygon) {
+		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
+	}
+	const partitionLength = getGeometryLength(lineString) * partition;
+	let lastResidual = 0;
+	lineString.forEachSegment((from, to) => {
+		const segmentGeometry = new LineString([from, to]);
+		currentLength = currentLength + segmentGeometry.getLength();
+		residuals.push(lastResidual);
+		lastResidual = (currentLength % partitionLength) / partitionLength;
+	});
+
+	return residuals;
+};
