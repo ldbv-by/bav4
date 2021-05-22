@@ -3,6 +3,7 @@ import { getGeometryLength, canShowAzimuthCircle, createOffsetGeometry } from '.
 import { getPartitionDelta } from './GeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
+import { toContext } from 'ol/render';
 
 
 
@@ -50,6 +51,46 @@ const createRulerStyles = (feature, resolution) => {
 	return [bigTickStyle, smallTickStyle];
 };
 
+const getRenderStyle = (feature, resolution) => {
+	const geom = feature.getGeometry();
+	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+	const partitionLength = getPartitionDelta(geom, resolution, calculationHints) * getGeometryLength(geom);	
+	const partitionTickDistance = partitionLength / resolution;	
+
+	const fill = new Fill();
+	const baseStroke = new Stroke({
+		color: RED_COLOR.concat([1]),
+		width: 2,
+	});
+	const bigTickStroke = new Stroke({
+		color: RED_COLOR.concat([1]),
+		width: 8,
+		lineCap:'butt',
+		lineDash:[3, partitionTickDistance - 3],
+		lineDashOffset:3
+	});
+	const smallTickStroke = new Stroke({
+		color: RED_COLOR.concat([1]),
+		width: 5,
+		lineCap:'butt',
+		lineDash:[2, (partitionTickDistance / 5) - 2],
+		lineDashOffset:2
+	});
+	return new Style({ renderer:(pixelCoordinates, state) => {
+		const context = state.context;
+		const geometry = state.geometry.clone();
+		
+		geometry.setCoordinates(pixelCoordinates);
+		const renderContext = toContext(context, { pixelRatio: 1, });		
+		renderContext.setFillStrokeStyle(fill, baseStroke);
+		renderContext.drawGeometry(geometry);
+		renderContext.setFillStrokeStyle(fill, bigTickStroke);
+		renderContext.drawGeometry(geometry);
+		renderContext.setFillStrokeStyle(fill, smallTickStroke);
+		renderContext.drawGeometry(geometry);		
+	} });
+};
+
 /**
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
  * @param {*} feature 
@@ -66,13 +107,6 @@ export const measureStyleFunction3 = (feature, resolution) => {
 
 	const styles = [
 		new Style({
-			fill: new Fill({ 
-				color:RED_COLOR.concat([0.4]) 
-			}),
-			stroke:stroke,
-			zIndex:zIndex
-		},
-		new Style({
 			stroke:stroke,
 			geometry: feature => {
 				
@@ -84,11 +118,11 @@ export const measureStyleFunction3 = (feature, resolution) => {
 				}
 			},
 			zIndex:0
-		}))];
-	const rulerStyles = createRulerStyles(feature, resolution);
-	
-	
-	return styles.concat(rulerStyles);
+		}),
+		getRenderStyle(feature, resolution)];
+	// const rulerStyles = createRulerStyles(feature, resolution);
+	return styles;
+	// return styles.concat(rulerStyles);
 };
 
 export const measureStyleFunction2 = (feature, resolution) => {

@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { measureStyleFunction, measureStyleFunction3, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
+import { measureStyleFunction, measureStyleFunction2, measureStyleFunction3, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
 import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';

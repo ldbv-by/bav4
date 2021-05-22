@@ -214,3 +214,20 @@ export const createOffsetGeometry = (geometry, lineOffsetInMeter) => {
 	});
 	return new MultiLineString(segments);
 };
+
+export const moveParallel = (fromPoint, toPoint, distance) => {
+	const coords = [];
+	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+	const newFrom = [
+		Math.sin(angle) * distance + fromPoint[0],
+		-Math.cos(angle) * distance + fromPoint[1]
+	];
+	const newTo = [
+		Math.sin(angle) * distance + toPoint[0],
+		-Math.cos(angle) * distance + toPoint[1]
+	];
+	coords.push(newFrom);
+	coords.push(newTo);
+	return new LineString(coords);
+
+};
