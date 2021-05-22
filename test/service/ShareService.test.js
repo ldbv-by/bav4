@@ -1,10 +1,10 @@
 import { $injector } from '../../src/injection';
-import { addLayer } from '../../src/modules/map/store/layers.action';
-import { layersReducer } from '../../src/modules/map/store/layers.reducer';
-import { changeZoomAndCenter } from '../../src/modules/map/store/position.action';
-import { positionReducer } from '../../src/modules/map/store/position.reducer';
-import { setCurrent } from '../../src/modules/topics/store/topics.action';
-import { topicsReducer } from '../../src/modules/topics/store/topics.reducer';
+import { addLayer } from '../../src/store/layers/layers.action';
+import { layersReducer } from '../../src/store/layers/layers.reducer';
+import { changeZoomAndCenter } from '../../src/store/position/position.action';
+import { positionReducer } from '../../src/store/position/position.reducer';
+import { setCurrent } from '../../src/store/topics/topics.action';
+import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { QueryParameters } from '../../src/services/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';

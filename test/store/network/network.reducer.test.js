@@ -1,6 +1,6 @@
-import { networkReducer } from '../../src/store/network/network.reducer';
-import { setFetching, setOffline } from '../../src/store/network/network.action';
-import { TestUtils } from '../test-utils.js';
+import { networkReducer } from '../../../src/store/network/network.reducer';
+import { setFetching, setOffline } from '../../../src/store/network/network.action';
+import { TestUtils } from '../../test-utils.js';
 
 
 describe('networkReducer', () => {

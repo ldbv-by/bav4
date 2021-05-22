@@ -2,11 +2,11 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { closeModal } from '../../../modal/store/modal.action';
-import { changeZoomAndCenter } from '../../../map/store/position.action';
+import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
-import { addLayer } from '../../../map/store/layers.action';
+import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 
 /**

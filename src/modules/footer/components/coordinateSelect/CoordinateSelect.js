@@ -36,11 +36,11 @@ export class CoordinateSelect extends BaElement {
 	/**
      *@override 
      */
-	createView() {
+	createView(state) {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const { pointerPosition } = this._state;
+		const { pointerPosition } = state;
 		
 		const getPointerPositionChange = () => {
 			switch (this._selectedCode) {
@@ -78,9 +78,9 @@ export class CoordinateSelect extends BaElement {
 	/**
      * @override 
      */
-	extractState(state) {
+	extractState(globalState) {
 		let pointerPosition = undefined;
-		const { pointer: { move } } = state;
+		const { pointer: { move } } = globalState;
 		if (move) {
 			pointerPosition = move.payload.coordinate;
 		}

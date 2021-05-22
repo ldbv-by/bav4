@@ -1,5 +1,5 @@
 import { observe } from '../../../utils/storeUtils';
-import { addLayer, removeLayer } from './layers.action';
+import { addLayer, removeLayer } from '../../../store/layers/layers.action';
 import { BaPlugin } from '../../../store/BaPlugin';
 
 /**
@@ -7,6 +7,13 @@ import { BaPlugin } from '../../../store/BaPlugin';
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
+
+
+/**
+ * Id of the tool used for measurement interaction.  
+ * Feature of a layer will also use this id as part their id.
+ */
+export const MEASUREMENT_TOOL_ID = 'measure';
 
 /**
  * This plugin observes the 'active' property of the measurements store.

@@ -13,10 +13,12 @@ import { UrlService } from '../services/UrlService';
 import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
-import { topicsModule } from '../modules/topics/injection';
 import { AdministrationService } from  '../services/AdministrationService'; 
 import { TopicsService } from '../services/TopicsService';
 import { BvvFileStorageService } from '../services/FileStorageService';
+import { LayersPlugin } from '../store/layers/LayersPlugin';
+import { PositionPlugin } from '../store/position/PositionPlugin';
+import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 
 
 $injector
@@ -36,7 +38,9 @@ $injector
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
-	.registerModule(topicsModule)
+	.registerSingleton('TopicsPlugin', new TopicsPlugin())
+	.registerSingleton('LayersPlugin', new LayersPlugin())
+	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerModule(mapModule)
 	.ready();
 	

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MapInfo } from '../../../../../src/modules/footer/components/mapInfo/MapInfo';
-import { positionReducer } from '../../../../../src/modules/map/store/position.reducer';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 window.customElements.define(MapInfo.tag, MapInfo);
 
