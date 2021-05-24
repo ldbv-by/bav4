@@ -1,6 +1,5 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../../BaElement';
-import baElementCss from './../../../../baElement.css';
 import contentPanelCss from './abstractContentPanel.css';
 
 /**
