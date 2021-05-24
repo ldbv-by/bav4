@@ -485,7 +485,7 @@ describe('OlMeasurementHandler', () => {
 				}),
 			});
 
-		};	
+		};		
 
 		it('removes partition tooltips after zoom out', () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -539,7 +539,7 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
 		});
 
-		it('feature gets valid id after finish drawing', () => {
+		it('feature gets valid id start drawing', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new LineString([[0, 0], [1, 0]]);
@@ -548,8 +548,6 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			const id = feature.getId();
 
@@ -1056,6 +1054,21 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('does not change feature snapping states, after drawends', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
+			const feature = new Feature({ geometry: snappedGeometry });
+
+			classUnderTest.activate(map);		
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');			
+			feature.getGeometry().setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			
+			expect(classUnderTest._isFinishOnFirstPoint).toBeTrue();
 		});
 
 		it('did NOT add the drawn feature to select after drawabort', () => {

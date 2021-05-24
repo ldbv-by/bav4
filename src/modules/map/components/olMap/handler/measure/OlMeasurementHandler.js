@@ -361,10 +361,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		let listener;
 		let zoomListener;
 
-		const finishFeature = (event) => {
-			event.feature.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
-		};
-
 		const finishDistanceOverlay = (event) => {
 
 			const geometry = event.feature.getGeometry();
@@ -385,6 +381,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		draw.on('drawstart', event => {
+			event.feature.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
@@ -400,7 +397,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawabort', event => this._overlayManager.removeFrom(event.feature));
 
 		draw.on('drawend', event => {
-			finishFeature(event);
 			finishDistanceOverlay(event);
 			this._activateModify(event.feature);
 		}
@@ -478,7 +474,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_updateOverlays(feature, isDrawing) {
 		let measureGeometry = feature.getGeometry();
 		const distanceOverlay = feature.get('measurement');
-
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
 
@@ -497,7 +492,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 				this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
 			}
-
 			if (!this._isFinishOnFirstPoint) {
 				measureGeometry = new LineString(lineCoordinates);
 			}
