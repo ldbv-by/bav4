@@ -302,12 +302,12 @@ describe('isVertexOfGeometry', () => {
 
 describe('getPartitionDelta', () => {
 	
-	it('calculates a default delta', () => {
+	it('calculates a sub delta', () => {
 		const lineString = new LineString([[0, 0], [15, 0]]);		
 
 		const delta = getPartitionDelta(lineString);
 		
-		expect(delta).toBe(1);
+		expect(delta).toBe(6.666666666666667);
 	});
 
 	it('calculates a delta with standard resolution', () => {
@@ -323,6 +323,6 @@ describe('getPartitionDelta', () => {
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
 		
-		expect(delta).toBe(1);
+		expect(delta).toBe(2);
 	});
 });

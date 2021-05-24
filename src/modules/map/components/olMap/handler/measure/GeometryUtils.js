@@ -154,7 +154,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	const minLengthResolution = 20;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution && length > partition ;
+		return partitionResolution > minLengthResolution ;
 	};	
 
 	let partitionLength = minPartitionLength;
