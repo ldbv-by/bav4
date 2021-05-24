@@ -81,7 +81,7 @@ const getRulerStyle = (feature, resolution) => {
  * @param {*} resolution 
  * @returns 
  */
-export const measureStyleFunction3 = (feature, resolution) => {
+export const measureStyleFunction = (feature, resolution) => {
 
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
@@ -102,46 +102,6 @@ export const measureStyleFunction3 = (feature, resolution) => {
 			zIndex:0
 		}),
 		getRulerStyle(feature, resolution)];
-	return styles;
-};
-export const measureStyleFunction = (feature) => {
-	
-	const stroke = new Stroke({
-		color:RED_COLOR.concat([1]),
-		width:3
-	});
-
-	const dashedStroke = new Stroke({
-		color:RED_COLOR.concat([1]),
-		width:3,
-		lineDash:[8]
-	});
-	
-	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
-
-	const styles = [
-		new Style({
-			fill: new Fill({ 
-				color:RED_COLOR.concat([0.4]) 
-			}),
-			stroke:dashedStroke,
-			zIndex:zIndex
-		}),
-		new Style({
-			stroke:stroke,
-			geometry: feature => {
-				
-				if (canShowAzimuthCircle(feature.getGeometry())) {					
-					const coords = feature.getGeometry().getCoordinates();
-					const radius = getGeometryLength(feature.getGeometry());
-					const circle = new Circle(coords[0], radius);
-					return circle;
-				}
-			},
-			zIndex:0
-		}),
-	];
-
 	return styles;
 };
 
