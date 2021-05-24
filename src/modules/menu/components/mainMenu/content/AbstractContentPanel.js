@@ -25,9 +25,7 @@ export class AbstractContentPanel extends BaElement {
     */
 	defaultCss() {
 		return html`
-		<style>
-            ${baElementCss}
-		</style>
+		${super.defaultCss()}
 		<style>
 		    ${contentPanelCss}
 		</style>
