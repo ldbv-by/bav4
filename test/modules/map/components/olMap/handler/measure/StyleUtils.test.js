@@ -1,7 +1,11 @@
 import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
 
+proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+register(proj4);
 
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);

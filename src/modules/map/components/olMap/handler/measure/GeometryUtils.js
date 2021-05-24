@@ -245,14 +245,16 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	else if (geometry instanceof Polygon) {
 		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
 	}
-	const partitionLength = getGeometryLength(lineString) * partition;
-	let lastResidual = 0;
-	lineString.forEachSegment((from, to) => {
-		const segmentGeometry = new LineString([from, to]);
-		currentLength = currentLength + segmentGeometry.getLength();
-		residuals.push(lastResidual);
-		lastResidual = (currentLength % partitionLength) / partitionLength;
-	});
+	if (lineString) {
+		const partitionLength = getGeometryLength(lineString) * partition;
+		let lastResidual = 0;
+		lineString.forEachSegment((from, to) => {
+			const segmentGeometry = new LineString([from, to]);
+			currentLength = currentLength + segmentGeometry.getLength();
+			residuals.push(lastResidual);
+			lastResidual = (currentLength % partitionLength) / partitionLength;
+		});
+	}
 
 	return residuals;
 };
