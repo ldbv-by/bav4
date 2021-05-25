@@ -56,7 +56,8 @@ describe('ToolContainer', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
-				getWindow: () => windowMock
+				getWindow: () => windowMock,
+				isTouch:() => false
 			})			
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
