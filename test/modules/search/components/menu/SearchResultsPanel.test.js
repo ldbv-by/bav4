@@ -2,6 +2,7 @@ import { GeoResouceResultsPanel } from '../../../../../src/modules/search/compon
 import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '../../../../test-utils.js';
+import { AbstractContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
 
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
@@ -11,6 +12,16 @@ describe('SearchResultsPanel', () => {
 		TestUtils.setupStoreAndDi();
 		return TestUtils.render(SearchResultsPanel.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractContentPanel', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractContentPanel).toBeTrue();
+		});
+	});
 
 
 	describe('when initialized', () => {
