@@ -20,7 +20,7 @@ const getRulerStyle = (feature, resolution) => {
 	const partitionLength = getPartitionDelta(geom, resolution, calculationHints) * getGeometryLength(geom);	
 	const partitionTickDistance = partitionLength / resolution;	
 	
-	const fill = new Fill();
+	const fill = new Fill({ color:RED_COLOR.concat([0.4]) });
 	const baseStroke = new Stroke({
 		color: RED_COLOR.concat([1]),
 		fill: new Fill({ 
@@ -51,21 +51,27 @@ const getRulerStyle = (feature, resolution) => {
 	const residuals = calculatePartitionResidualOfSegments(geom, partition);
 	return new Style({ renderer:(pixelCoordinates, state) => {
 		const context = state.context;
-		if (pixelCoordinates.length > 1) {
+		const geometry = state.geometry.clone();
+		
+		const renderContext = toContext(context, { pixelRatio: 1, });		
+		geometry.setCoordinates(pixelCoordinates);
+		renderContext.setFillStrokeStyle(fill, baseStroke);
+		renderContext.drawGeometry(geometry);
+		let segmentCoordinates = pixelCoordinates;
+		if (geometry instanceof Polygon) {
+			segmentCoordinates = pixelCoordinates[0];
+		}
+		if (segmentCoordinates.length > 1) {
 			for (let index = 0; index < residuals.length; index++) {
 				const residual = residuals[index];
-				const from = pixelCoordinates[index];
-				const to = pixelCoordinates[index + 1];
+				const from = segmentCoordinates[index];
+				const to = segmentCoordinates[index + 1];
 				if (!to) {
 					break;
 				}
 				const coords = [from, to];
 				const geometry = state.geometry.clone();
 				geometry.setCoordinates(coords);
-				const renderContext = toContext(context, { pixelRatio: 1, });		
-			
-				renderContext.setFillStrokeStyle(fill, baseStroke);
-				renderContext.drawGeometry(geometry);
 				renderContext.setFillStrokeStyle(fill, getMainTickStroke(residual));
 				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -4));
 				renderContext.setFillStrokeStyle(fill, getSubTickStroke(residual));
@@ -82,7 +88,6 @@ const getRulerStyle = (feature, resolution) => {
  * @returns 
  */
 export const measureStyleFunction = (feature, resolution) => {
-
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
 		width:3,
