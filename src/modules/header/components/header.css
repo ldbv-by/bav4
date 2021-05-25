@@ -71,6 +71,7 @@
   display: flex
 }
 .header__button-container button{
+  /* font-size:.9rem; */
   margin: 0.8em 0 0 0;
   padding: .5em 0.9em;
   background: var(--header-button-bg-color);
