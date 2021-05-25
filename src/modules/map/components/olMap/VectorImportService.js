@@ -35,7 +35,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
  * @class
  * @author taulinger
  */
-export class VectorDataImportService {
+export class VectorImportService {
 
 
 	// needed soon

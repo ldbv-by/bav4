@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/services/domain/geoResources';
 import { load } from '../../../../../src/modules/map/components/olMap/utils/feature.provider';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorDataImportService } from '../../../../../src/modules/map/components/olMap/VectorImportService';
+import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorImportService } from '../../../../../src/modules/map/components/olMap/VectorImportService';
 import VectorSource from 'ol/source/Vector';
 
 
@@ -55,7 +55,7 @@ describe('VectorImportService', () => {
 	describe('service methods', () => {
 
 		beforeEach(() => {
-			instanceUnderTest = new VectorDataImportService();
+			instanceUnderTest = new VectorImportService();
 		});
 
 		describe('vectorSourceFromInternalData', () => {
