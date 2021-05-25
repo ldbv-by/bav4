@@ -3,7 +3,7 @@ import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/Ol
 import { GeolocationPlugin } from '../store/GeolocationPlugin';
 import { MeasurementPlugin } from '../store/MeasurementPlugin';
 import { ContextClickPlugin } from '../store/ContextClickPlugin';
-import { VectorImportService } from '../components/olMap/VectorImportService';
+import { VectorImportService } from '../components/olMap/services/VectorImportService';
 
 export const mapModule = ($injector) => {
 	$injector

@@ -1,7 +1,7 @@
-import { VectorSourceType } from '../../../../services/domain/geoResources';
+import { VectorSourceType } from '../../../../../services/domain/geoResources';
 import VectorSource from 'ol/source/Vector';
-import { $injector } from '../../../../injection';
-import { load as featureLoader } from './utils/feature.provider';
+import { $injector } from '../../../../../injection';
+import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON } from 'ol/format';
 
 
