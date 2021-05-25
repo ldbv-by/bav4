@@ -59,6 +59,10 @@ describe('OlMap', () => {
 			return 'geolocationLayerHandlerMockId';
 		}
 	};
+	const vectorImportService = {
+		vectorSourceFromInternalData: () => { },
+		vectorSourceFromExternalData: () => { }
+	};
 
 	let store;
 
@@ -88,7 +92,8 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
-			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
+			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
+			.registerSingleton('VectorImportService', vectorImportService);
 
 		return TestUtils.render(OlMap.tag);
 	};

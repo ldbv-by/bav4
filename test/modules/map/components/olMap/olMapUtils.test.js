@@ -1,116 +1,59 @@
 import BaseLayer from 'ol/layer/Base';
 import { $injector } from '../../../../../src/injection';
 import { Map } from 'ol';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, registerLongPressListener, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import {  registerLongPressListener, toOlLayer, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
-import { load } from '../../../../../src/modules/map/components/olMap/utils/feature.provider';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
+import VectorSource from 'ol/source/Vector';
 
 
 describe('olMapUtils', () => {
 
-	const urlService = {
-		proxifyInstant: () => { }
+	const vectorImportService = {
+		vectorSourceFromInternalData: () => { },
+		vectorSourceFromExternalData: () => { }
 	};
 	const georesourceService = {
 		byId: () => { }
 	};
-	const mapService = {
-		getSrid: () => { }
-	};
+	
 
 	beforeAll(() => {
 		$injector
-			.registerSingleton('UrlService', urlService)
-			.registerSingleton('GeoResourceService', georesourceService)
-			.registerSingleton('MapService', mapService);
-	});
-
-	it('maps vectorSourceType to olFormats', () => {
-
-		expect(mapVectorSourceTypeToFormat(VectorSourceType.KML).constructor.name).toBe('KML');
-		expect(mapVectorSourceTypeToFormat(VectorSourceType.GPX).constructor.name).toBe('GPX');
-		expect(mapVectorSourceTypeToFormat(VectorSourceType.GEOJSON).constructor.name).toBe('GeoJSON');
-		expect(() => {
-			mapVectorSourceTypeToFormat('unknown');
-		})
-			.toThrowError(/unknown currently not supported/);
+			.registerSingleton('VectorImportService', vectorImportService)
+			.registerSingleton('GeoResourceService', georesourceService);
 	});
 
 	describe('toOlLayer', () => {
 
 		describe('VectorGeoresource', () => {
 
-			it('converts an external VectorGeoresource to an olLayer', () => {
-				const url = 'https://some.url';
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
-				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
+			it('converts an external VectorGeoresource to an olLayer by calling #vectorSourceFromExternalData', () => {
+				const spy = spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(new VectorSource());
+				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl('https://some.url');
 
 				const vectorOlLayer = toOlLayer(vectorGeoresource);
 
 				expect(vectorOlLayer.get('id')).toBe('someId');
-				const vectorSource = vectorOlLayer.getSource();
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
-				expect(vectorSource.constructor.name).toBe('VectorSource');
-				expect(vectorSource.getUrl()).toBe('https://proxy.url?' + url);
-				expect(vectorSource.getFormat().constructor.name).toBe('KML');
-				expect(vectorSource.loader_).toEqual(load);
-				expect(vectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
+				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
+				expect(spy).toHaveBeenCalledWith(vectorGeoresource);
 			});
 
-			it('converts an internal VectorGeoresource to an olLayer', (done) => {
-				const srid = 3857;
-				const kmlName = '';
-				const geoResourceLabel = 'geoResourceLabel';
-				spyOn(mapService, 'getSrid').and.returnValue(srid);
-				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+			it('converts an internal VectorGeoresource to an olLayer by calling #vectorSourceFromInternalData', () => {
+				const spy = spyOn(vectorImportService, 'vectorSourceFromInternalData').and.returnValue(new VectorSource());
+				const vectorGeoresource = new VectorGeoResource('someId', 'geoResourceLabel', VectorSourceType.KML).setSource('<kml></kml>', 4326);
 
 				const vectorOlLayer = toOlLayer(vectorGeoresource);
 
 				expect(vectorOlLayer.get('id')).toBe('someId');
-				const vectorSource = vectorOlLayer.getSource();
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
-				expect(vectorSource.constructor.name).toBe('VectorSource');
-				//features are loaded from a promise
-				setTimeout(() => {
-					expect(vectorSource.getFeatures().length).toBe(1);
-					expect(vectorSource.getFeatures()[0].get('srid')).toBe(srid);
-					expect(vectorGeoresource.label).toBe(geoResourceLabel);
-					done();
-				});
-			});
-
-			it('updates the label of an internal VectorGeoresource if possible', (done) => {
-				const srid = 3857;
-				const kmlName = 'kmlName';
-				const geoResourceLabel = 'geoResourceLabel';
-				spyOn(mapService, 'getSrid').and.returnValue(srid);
-				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-
-				toOlLayer(vectorGeoresource);
-
-				setTimeout(() => {
-					expect(vectorGeoresource.label).toBe(kmlName);
-					done();
-				});
-			});
-
-			it('logs a warn statemennt when source can not be resolved', (done) => {
-				const warnSpy = spyOn(console, 'warn');
-				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 4326);
-
-				toOlLayer(vectorGeoresource);
-
-				//features are loaded from a promise
-				setTimeout(() => {
-					expect(warnSpy).toHaveBeenCalledWith('somethingGotWrong');
-					done();
-				});
+				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
+				expect(spy).toHaveBeenCalledWith(vectorGeoresource);
 			});
 		});
+
 
 		it('converts a WmsGeoresource to a olLayer', () => {
 			const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png');
@@ -203,15 +146,6 @@ describe('olMapUtils', () => {
 			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
 
 			expect(myLayer.get('id')).toBe('someId');
-		});
-	});
-
-	describe('iconUrlFunction', () => {
-		it('updates the properties of a olLayer', () => {
-			const iconUrl = 'https://some.url';
-			spyOn(urlService, 'proxifyInstant').withArgs(iconUrl).and.returnValue('https://proxy.url?url=' + iconUrl);
-
-			expect(iconUrlFunction(iconUrl)).toBe('https://proxy.url?url=' + iconUrl);
 		});
 	});
 
