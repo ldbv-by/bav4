@@ -69,7 +69,6 @@ export class OverlayManager {
 		const isDraggable = !this._environmentService.isTouch();
 		const distanceOverlay = this.create({ offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
 		feature.set('measurement', distanceOverlay);
-		feature.setId('measurement' + '_' + new Date().getTime());
 		this.add(distanceOverlay);	
 		this.update(distanceOverlay, feature.getGeometry());	
 	}
