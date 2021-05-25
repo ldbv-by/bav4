@@ -9,7 +9,6 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
-import { OverlayManager } from './OverlayManager';
 import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -20,6 +19,7 @@ import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../../../utils/timer';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
+import { MeasurementOverlayManager } from './MeasurementOverlayManager';
 
 
 export const MeasureStateType = {
@@ -68,7 +68,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._overlayManager = new OverlayManager();
+		this._overlayManager = new MeasurementOverlayManager();
 		this._lastMeasureStateType = null;
 		this._measureState = {
 			type: null,
@@ -77,7 +77,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			pointCount: this._pointCount,
 			dragging: false
 		};
-		this._helpTooltip = new HelpTooltip(this._overlayManager);
+		this._helpTooltip =  new HelpTooltip(this._overlayManager);
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
@@ -86,7 +86,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * Activates the Handler.
 	 * @override
 	 */
-	onActivate(olMap) {
+	onActivate(olMap) {		
 		const visibleChangedHandler = (event) => {
 			const layer = event.target;
 			const isVisibleStyle = layer.getVisible() ? '' : 'none';
@@ -130,10 +130,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
-							this._overlayManager.createDistanceOverlay(f);
-							this._overlayManager.createOrRemoveAreaOverlay(f);
-							this._overlayManager.createPartitionOverlays(f);
-							this._overlayManager.restoreManualOverlayPosition(f);
+							this._overlayManager.createFor(f);
 							f.on('change', onFeatureChange);	
 						});											
 					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
@@ -204,7 +201,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
-			this._overlayManager.activate(this._map);
+			this._overlayManager.activate(this._map);			
 			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
 			if (!this._environmentService.isTouch()) {
 				this._helpTooltip.activate();

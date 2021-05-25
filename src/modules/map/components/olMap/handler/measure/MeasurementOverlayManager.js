@@ -1,59 +1,30 @@
-import { MeasurementOverlay } from './MeasurementOverlay';
+import { $injector } from '../../../../../../injection';
+import { OverlayManager } from '../../OverlayManager';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { getPartitionDelta } from '../../olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
-import { $injector } from '../../../../../../injection';
-
+import { MeasurementOverlay } from './MeasurementOverlay';
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
-export class OverlayManager {
-	constructor(map) {
+export class MeasurementOverlayManager extends OverlayManager {
+
+	constructor() {
+		super();
 		const { MapService, EnvironmentService } = $injector.inject('MapService', 'EnvironmentService');
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
-		this._map = map;
-		this._overlays = [];
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 	}
+    
 
-	activate(map) {
-		this._map = map;
-		this.reset();
-	}
-
-	deactivate() {
-		this.reset();
-	}
-
-	add(overlay) {
-		this._overlays.push(overlay);
-		this._map.addOverlay(overlay);
-	}
-
-	remove(overlay) {
-		this._overlays = this._overlays.filter(o => o !== overlay);
-		this._map.removeOverlay(overlay);
-	}
-
-	apply(overlayCallback) {
-		this._overlays.forEach(o => overlayCallback(o));
-	}
-
-	getOverlays() {
-		return [...this._overlays];
-	}
-
-
-	reset() {
-		this._overlays.forEach(o => this._map.removeOverlay(o));
-		this._overlays = [];
-	}
-
-
+	/**
+	 * @override
+	 * @param {ol.feature} feature
+	 */
 	removeFrom(feature) {
 		const overlaysToDelete = [];
 		overlaysToDelete.push(feature.get('measurement'));
@@ -63,6 +34,18 @@ export class OverlayManager {
 			partitions.forEach(p => overlaysToDelete.push(p));
 		}
 		overlaysToDelete.forEach(o => this.remove(o));
+		
+	}
+
+	/**
+	 * @override
+	 * @param {ol.feature} feature 
+	 */
+	createFor(feature) {
+		this.createDistanceOverlay(feature);
+		this.createOrRemoveAreaOverlay(feature);
+		this.createPartitionOverlays(feature);
+		this.restoreManualOverlayPosition(feature);
 	}
 
 	createDistanceOverlay(feature) {
@@ -72,7 +55,6 @@ export class OverlayManager {
 		this.add(distanceOverlay);	
 		this.update(distanceOverlay, feature.getGeometry());	
 	}
-
 
 	createOrRemoveAreaOverlay(feature) {
 		if (feature.getGeometry() instanceof Polygon) {		

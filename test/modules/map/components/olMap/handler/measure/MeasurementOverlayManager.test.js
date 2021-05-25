@@ -1,5 +1,5 @@
 import { Feature } from 'ol';
-import { OverlayManager } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OverlayManager';
+import { MeasurementOverlayManager } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlayManager';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../../src/injection';
@@ -11,7 +11,7 @@ import { register } from 'ol/proj/proj4';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 
-describe('OverlayManager', () => {
+describe('MeasurementOverlayManager', () => {
 	const environmentServiceMock = { isTouch: () => false };
 	const setup = () => {
 		TestUtils.setupStoreAndDi({},);
@@ -49,71 +49,15 @@ describe('OverlayManager', () => {
 		feature.get('partitions').forEach(p => overlays.push(p));
 		return overlays;
 	};
-	it('ctor', () => {
-		const mapStub = {};
-		const classUnderTest = new OverlayManager(mapStub);
 
-		expect(classUnderTest).toBeTruthy();
-		expect(classUnderTest._overlays).toEqual([]);
-	});
-
-	it('adds a overlay to map and state', () => {
-		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = { addOverlay: addOverlaySpy };
-
-		const classUnderTest = new OverlayManager(mapMock);
-		classUnderTest.add({});
-
-		expect(addOverlaySpy).toHaveBeenCalled();
-		expect(classUnderTest.getOverlays().length).toBe(1);
-
-	});
-
-	it('removes a overlay from map and state', () => {
-		const removeOverlaySpy = jasmine.createSpy();
-		const mapMock = { removeOverlay: removeOverlaySpy };
-		const overlayStub = {};
-
-		const classUnderTest = new OverlayManager(mapMock);
-		classUnderTest._overlays = [overlayStub];
-		expect(classUnderTest.getOverlays().length).toBe(1);
-		classUnderTest.remove(overlayStub);
-
-		expect(removeOverlaySpy).toHaveBeenCalled();
-		expect(classUnderTest.getOverlays().length).toBe(0);
-
-	});
-
-	it('apply callback on overlays', () => {
-		const callbackSpy = jasmine.createSpy();
-		const mapStub = {};
-
-		const classUnderTest = new OverlayManager(mapStub);
-		classUnderTest._overlays = [{}, {}, {}];
-		expect(classUnderTest.getOverlays().length).toBe(3);
-		classUnderTest.apply(callbackSpy);
-
-		expect(callbackSpy).toHaveBeenCalledTimes(3);
-	});
-
-	it('resets state', () => {
-		const removeSpy = jasmine.createSpy();
-		const mapMock = { removeOverlay: removeSpy };
-
-		const classUnderTest = new OverlayManager(mapMock);
-		classUnderTest._overlays = [{}, {}, {}];
-		expect(classUnderTest.getOverlays().length).toBe(3);
-		classUnderTest.reset();
-
-		expect(removeSpy).toHaveBeenCalledTimes(3);
-	});
 
 	it('removes all overlays from feature', () => {
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		classUnderTest._overlays = getOverlaysFromFeature(feature);
 
 		expect(classUnderTest.getOverlays().length).toBe(4);
@@ -128,10 +72,11 @@ describe('OverlayManager', () => {
 				return { getArray:() => [] };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+
 		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
-
+		classUnderTest.activate(mapMock);
 		classUnderTest.createDistanceOverlay(feature);
 
 		const baOverlay = feature.get('measurement').getElement();
@@ -148,7 +93,8 @@ describe('OverlayManager', () => {
 				return { getResolution:() => 50 };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		const geometry = new LineString([[0, 0], [12345, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
@@ -167,7 +113,8 @@ describe('OverlayManager', () => {
 				return { getResolution:() => 1 };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		const geometry = new LineString([[0, 0], [12345, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
@@ -186,7 +133,8 @@ describe('OverlayManager', () => {
 				return { getResolution:() => 50 };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 		const feature = new Feature({ geometry: geometry });
 
@@ -208,7 +156,8 @@ describe('OverlayManager', () => {
 				return { getResolution:() => 50 };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
@@ -234,7 +183,8 @@ describe('OverlayManager', () => {
 				return { getResolution:() => 50 };
 			} };
 
-		const classUnderTest = new OverlayManager(mapMock);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapMock);
 		const geometry =  new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 		const feature = new Feature({ geometry: geometry });
 		
@@ -257,7 +207,8 @@ describe('OverlayManager', () => {
 			return false;
 		} };
 
-		const classUnderTest = new OverlayManager(mapStub);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapStub);
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
@@ -286,7 +237,8 @@ describe('OverlayManager', () => {
 			actualProperty.key = key;
 			actualProperty.value = value;
 		}, setOffset() {} };
-		const classUnderTest = new OverlayManager(mapStub);
+		const classUnderTest = new MeasurementOverlayManager();
+		classUnderTest.activate(mapStub);
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
@@ -310,7 +262,7 @@ describe('OverlayManager', () => {
 			actualProperty.key = key;
 			actualProperty.value = value;
 		}, setOffset() {} };
-		const classUnderTest = new OverlayManager(mapStub);
+		const classUnderTest = new MeasurementOverlayManager();
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
@@ -318,6 +270,7 @@ describe('OverlayManager', () => {
 		feature.set('measurement_position_x', 42);		
 		
 		classUnderTest.restoreManualOverlayPosition(feature);
+		classUnderTest.activate(mapStub);
 		
 		expect(actualPosition).toBeUndefined();
 		expect(actualProperty).toEqual( { key:'', value:null });		
