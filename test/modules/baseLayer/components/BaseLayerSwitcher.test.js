@@ -1,8 +1,8 @@
 import { $injector } from '../../../../src/injection';
 import { BaseLayerSwitcher } from '../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
 import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { topicsReducer } from '../../../../src/modules/topics/store/topics.reducer';
-import { setCurrent } from '../../../../src/modules/topics/store/topics.action';
+import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
+import { setCurrent } from '../../../../src/store/topics/topics.action';
 import { TestUtils } from '../../../test-utils.js';
 import { Topic } from '../../../../src/services/domain/topic';
 import { WMTSGeoResource } from '../../../../src/services/domain/geoResources';

@@ -12,7 +12,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Linie');
 		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_delete).toBe('Löschen');
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
@@ -21,6 +20,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
 		expect(map.toolbox_measureTool_stats_area).toBe('Fläche');
 		expect(map.toolbox_measureTool_start_new).toBe('Neue Messung');
+		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
+		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
+		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
+		expect(map.toolbox_measureTool_measure_draw).toBe('In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)');
+		expect(map.toolbox_measureTool_measure_modify).toBe('Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
+		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
+		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
 	it('provides translation for en', () => {
@@ -31,8 +37,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_symbol).toBe('Symbol');
 		expect(map.toolbox_drawTool_text).toBe('Text');
 		expect(map.toolbox_drawTool_line).toBe('Line');
-		expect(map.toolbox_drawTool_polygon).toBe('Polygon');
-		expect(map.toolbox_drawTool_delete).toBe('Delete');
+		expect(map.toolbox_drawTool_polygon).toBe('Polygon');		
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
@@ -41,10 +46,17 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
 		expect(map.toolbox_measureTool_stats_area).toBe('Area');
 		expect(map.toolbox_measureTool_start_new).toBe('Start New');
+		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
+		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
+		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
+		expect(map.toolbox_measureTool_measure_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
+		expect(map.toolbox_measureTool_measure_modify).toBe('To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
+		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
+		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

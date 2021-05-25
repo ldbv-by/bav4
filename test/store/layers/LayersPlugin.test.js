@@ -5,8 +5,8 @@ import { $injector } from '../../../src/injection';
 import { GeoResourceTypes, VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../../src/services/domain/geoResources';
 import { QueryParameters } from '../../../src/services/domain/queryParameters';
 import { Topic } from '../../../src/services/domain/topic';
-import { setCurrent } from '../../../src/modules/topics/store/topics.action';
-import { topicsReducer } from '../../../src/modules/topics/store/topics.reducer';
+import { setCurrent } from '../../../src/store/topics/topics.action';
+import { topicsReducer } from '../../../src/store/topics/topics.reducer';
 import { FileStorageServiceDataTypes } from '../../../src/services/FileStorageService';
 import { addLayer } from '../../../src/store/layers/layers.action';
 
