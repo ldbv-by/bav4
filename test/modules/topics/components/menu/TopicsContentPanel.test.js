@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { AbstractContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
 import { CatalogContentPanel } from '../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
 import { TopicsContentPanel, TopicsContentPanelIndex } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { topicsContentPanelReducer } from '../../../../../src/modules/topics/store/topicsContentPanel.reducer';
@@ -41,6 +42,16 @@ describe('TopicsContentPanel', () => {
 			.registerSingleton('TopicsService', topicsServiceMock);
 		return TestUtils.render(TopicsContentPanel.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractContentPanel', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractContentPanel).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 
@@ -126,7 +137,7 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('when topic element clicked', () => {
-		
+
 		it('changes the current topic and updates the content panel index', async () => {
 			spyOn(topicsServiceMock, 'all').and.returnValue([
 				topic0,

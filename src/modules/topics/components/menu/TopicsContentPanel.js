@@ -1,7 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
-import { BaElement, renderTagOf } from '../../../BaElement';
+import { renderTagOf } from '../../../BaElement';
+import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
@@ -21,7 +22,7 @@ export const TopicsContentPanelIndex = Object.freeze({
  * @author taulinger
  * @author alsturm
  */
-export class TopicsContentPanel extends BaElement {
+export class TopicsContentPanel extends AbstractContentPanel {
 
 	constructor() {
 		super();
