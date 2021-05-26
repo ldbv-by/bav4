@@ -35,6 +35,10 @@ describe('OlMap', () => {
 		}
 	};
 
+	const layerServiceMock = {
+		toOlLayer() {}
+	};
+
 	const mapServiceMock = {
 	};
 
@@ -58,6 +62,10 @@ describe('OlMap', () => {
 		get id() {
 			return 'geolocationLayerHandlerMockId';
 		}
+	};
+	const vectorImportServiceMock = {
+		vectorSourceFromInternalData: () => { },
+		vectorSourceFromExternalData: () => { }
 	};
 
 	let store;
@@ -88,7 +96,9 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
-			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock);
+			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
+			.registerSingleton('VectorImportService', vectorImportServiceMock)
+			.registerSingleton('LayerService', layerServiceMock);
 
 		return TestUtils.render(OlMap.tag);
 	};
@@ -366,6 +376,7 @@ describe('OlMap', () => {
 		});
 
 		it('adds an olLayer with custom settings', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 
@@ -380,6 +391,7 @@ describe('OlMap', () => {
 		});
 
 		it('adds an olLayer with custom index', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 
@@ -393,6 +405,7 @@ describe('OlMap', () => {
 		});
 
 		it('removes layer from state store when olLayer not available', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 			const warnSpy = spyOn(console, 'warn');
@@ -409,6 +422,7 @@ describe('OlMap', () => {
 		});
 
 		it('removes an olLayer', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 
@@ -418,10 +432,10 @@ describe('OlMap', () => {
 			removeLayer('id0');
 
 			expect(map.getLayers().getLength()).toBe(0);
-			// expect(map.getLayers().item(0).get('id')).not.toBe('id0');
 		});
 
 		it('modifys the visibility of an olLayer', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 
@@ -443,6 +457,7 @@ describe('OlMap', () => {
 		});
 
 		it('modifys the z-index of an olLayer', async () => {
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
 
