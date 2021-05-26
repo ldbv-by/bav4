@@ -14,3 +14,12 @@
   cursor: -webkit-grabbing;
   cursor: grabbing;
 }
+
+.ol-scale-line {
+  bottom: 22px;
+  left: 0px;
+}
+
+.ol-scale-line-inner {
+
+}

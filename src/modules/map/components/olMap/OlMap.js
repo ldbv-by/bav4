@@ -3,14 +3,13 @@ import { BaElement } from '../../../BaElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
-import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
-
 
 /**
  * Element which renders the ol map.
@@ -59,6 +58,9 @@ export class OlMap extends BaElement {
 			zoom: zoom,
 		});
 
+		const scaleLine = new ScaleLine({
+		});
+
 		this._map = new MapOl({
 			layers: [],
 			// target: 'ol-map',
@@ -66,7 +68,7 @@ export class OlMap extends BaElement {
 			controls: defaultControls({
 				// attribution: false,
 				zoom: false,
-			}),
+			}).extend([scaleLine]),
 		});
 
 		this._map.on('movestart', () => {

@@ -108,7 +108,12 @@ describe('OlMap', () => {
 			const element = await setup();
 			expect(element._view.getZoom()).toBe(10);
 			expect(element._view.getCenter()).toEqual(initialCenter);
-			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
+		});
+
+		it('adds a scaleline', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelectorAll('.ol-scale-line')).toHaveSize(1);
 		});
 	});
 
