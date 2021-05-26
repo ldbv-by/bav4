@@ -100,25 +100,16 @@ export class HttpService {
  */
 export class NetworkStateSyncHttpService extends HttpService {
 
-	constructor() {
-		super();
-		this._pendingResponse = 0;
-	}
-
 	/**
 	 * @see {@link HttpService#fetch}
 	 */
 	async fetch(resource, options = {}, controller = new AbortController()) {
 		setFetching(true);
-		this._pendingResponse++;
 		try {
 			return await super.fetch(resource, options, controller);
 		}
 		finally {
-			this._pendingResponse--;
-			if (this._pendingResponse < 1) {
-				setFetching(false);
-			}
+			setFetching(false);
 		}
 	}
 }
