@@ -1,6 +1,5 @@
-import { MeasurementOverlayStyle } from '../handler/measure/MeasurementOverlayStyle';
+import { $injector } from '../../../../../injection';
 import { measureStyleFunction } from '../olStyleUtils';
-import { OverlayStyle } from '../OverlayStyle';
 
 
 /**
@@ -10,23 +9,6 @@ export const StyleTypes = Object.freeze({
 	MEASURE: 'measure',
 	DRAW: 'draw',
 });
-
-export const detectStyleType = (olFeature) => {
-	const isStyleType = (type, candidate) => {
-		const regex = new RegExp('^' + type + '_');
-		return (regex.test(candidate));
-	};
-	let key;
-	if (olFeature) {
-		const id = olFeature.getId();
-		key = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));		
-	}
-
-	if (key) {
-		return StyleTypes[key];
-	}
-	return null;
-};
 
 /**
  * Adds or removes styles and overlays to ol.feature.
@@ -43,7 +25,7 @@ export class StyleService {
      * no styles or overlays will be added.
      */
 	addStyle(map, olFeature, styleType = null ) {
-		const usingStyleType = styleType ? styleType : detectStyleType(olFeature);
+		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		if (usingStyleType) {
 			switch (usingStyleType) {
 				case StyleTypes.MEASURE:
@@ -62,13 +44,31 @@ export class StyleService {
      * @param {ol.Feature} olFeature the feature
      */
 	removeStyle(map, olFeature) {
-		const overlayStyle = new OverlayStyle();
-		overlayStyle.remove(olFeature, map);
+		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
+		overlayService.remove(map, olFeature);
 	}
 
 	_addMeasureStyle(map, olFeature) {
-		const overlayStyle = new MeasurementOverlayStyle();
+		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
+
 		olFeature.setStyle(measureStyleFunction(olFeature));
-		overlayStyle.add(olFeature, map);		
+		overlayService.add(map, olFeature, StyleTypes.MEASURE);		
+	}
+
+	_detectStyleType(olFeature) {
+		const isStyleType = (type, candidate) => {
+			const regex = new RegExp('^' + type + '_');
+			return (regex.test(candidate));
+		};
+		let key;
+		if (olFeature) {
+			const id = olFeature.getId();
+			key = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));		
+		}
+	
+		if (key) {
+			return StyleTypes[key];
+		}
+		return null;
 	}
 }

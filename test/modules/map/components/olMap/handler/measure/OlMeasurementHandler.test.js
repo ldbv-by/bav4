@@ -1,5 +1,5 @@
 import { MeasureSnapType, MeasureStateType, OlMeasurementHandler } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -23,6 +23,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -71,7 +72,8 @@ describe('OlMeasurementHandler', () => {
 				formatArea: (area, decimals) => {
 					return area + ' m²';
 				}
-			});
+			})
+			.register('OverlayService', OverlayService);
 	};
 
 	const createLayer = () => {
@@ -260,7 +262,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
-			spyOn(classUnderTest._overlayStyle, 'add').and.callFake(() => {});
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			classUnderTest._lastMeasurementId = 'lastId';
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			
@@ -301,10 +303,10 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
-			spyOn(classUnderTest._overlayStyle, 'add').and.callFake(() => {});
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			classUnderTest._lastMeasurementId = 'lastId';			
-			const updateOverlaysSpy = spyOn(classUnderTest._overlayStyle, 'update');
+			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'update');
 			let oldFeature;
 			
 			classUnderTest.activate(map);
@@ -493,14 +495,14 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: snappedGeometry });
 
 			classUnderTest.activate(map);
-			const removeSpy = spyOn(classUnderTest._overlayStyle, '_remove').and.callThrough();
+			const updateSpy = spyOn(classUnderTest._overlayService, 'update').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
-			const areaOverlay = feature.get('area');
+			expect(feature.get('area')).toBeTruthy();
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
-
-			expect(removeSpy).toHaveBeenCalledWith(areaOverlay, jasmine.any(Feature), jasmine.any(Map));
+			expect(feature.get('area')).toBeFalsy();
+			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Map), feature, 'measure', jasmine.any(Geometry) );
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {

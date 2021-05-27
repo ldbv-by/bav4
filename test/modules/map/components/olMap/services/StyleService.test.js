@@ -1,7 +1,8 @@
 import { Feature } from 'ol';
 import { $injector } from '../../../../../../src/injection';
 import { TestUtils } from '../../../../../test-utils.js';
-import { detectStyleType, StyleService, StyleTypes } from '../../../../../../src/modules/map/components/olMap/services/StyleService';
+import { StyleService, StyleTypes } from '../../../../../../src/modules/map/components/olMap/services/StyleService';
+import { OverlayService } from '../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Polygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -33,7 +34,8 @@ describe('StyleService', () => {
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('UnitsService', unitsServiceMock) ;
+			.registerSingleton('UnitsService', unitsServiceMock)
+			.register('OverlayService', OverlayService) ;
 	});
 
 	beforeEach(() => {
@@ -43,7 +45,7 @@ describe('StyleService', () => {
 		it('detects measure as type from olFeature', () => {
 			const feature = { getId:() => 'measure_123' };
 			
-			expect(detectStyleType(feature)).toEqual(StyleTypes.MEASURE);
+			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.MEASURE);
 		});
 
 		it('detects not the type from olFeature', () => {
@@ -52,10 +54,10 @@ describe('StyleService', () => {
 			const feature3 = { getId:() => ' measure_123' };
 			const feature4 = { getId:() => '123measure_123' };
 
-			expect(detectStyleType(feature1)).toBeNull();
-			expect(detectStyleType(feature2)).toBeNull();
-			expect(detectStyleType(feature3)).toBeNull();
-			expect(detectStyleType(feature4)).toBeNull();
+			expect(instanceUnderTest._detectStyleType(feature1)).toBeNull();
+			expect(instanceUnderTest._detectStyleType(feature2)).toBeNull();
+			expect(instanceUnderTest._detectStyleType(feature3)).toBeNull();
+			expect(instanceUnderTest._detectStyleType(feature4)).toBeNull();
 		});
 	});
 
@@ -74,7 +76,6 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest = new StyleService();
 			instanceUnderTest.addStyle(mapMock, feature);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
@@ -94,7 +95,6 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest = new StyleService();
 			instanceUnderTest.addStyle(mapMock, feature, 'measure');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
@@ -114,7 +114,6 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest = new StyleService();
 			instanceUnderTest.addStyle(mapMock, feature, 'unknown');
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
@@ -137,7 +136,6 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
     
-			instanceUnderTest = new StyleService();
 			instanceUnderTest.removeStyle(mapMock, feature);
     
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);

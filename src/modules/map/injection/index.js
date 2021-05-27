@@ -6,6 +6,7 @@ import { ContextClickPlugin } from '../store/ContextClickPlugin';
 import { VectorImportService } from '../components/olMap/services/VectorImportService';
 import { LayerService } from '../components/olMap/services/LayerService';
 import { StyleService } from '../components/olMap/services/StyleService';
+import { OverlayService } from '../components/olMap/services/OverlayService';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -16,6 +17,6 @@ export const mapModule = ($injector) => {
 		.register('OlGeolocationHandler', OlGeolocationHandler)
 		.register('VectorImportService', VectorImportService)
 		.register('LayerService', LayerService)
-		.register('StyleService', StyleService);
-
+		.register('StyleService', StyleService)
+		.register('OverlayService', OverlayService);
 };
