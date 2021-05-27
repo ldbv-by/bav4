@@ -4,6 +4,7 @@ import { Image as ImageLayer, Vector as VectorLayer, Group as LayerGroup } from 
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
+import { setFetching } from '../../../../../store/network/network.action';
 
 /**
  * Converts a geoResource to an ol layer.
@@ -20,44 +21,58 @@ export class LayerService {
 			VectorImportService: vectorImportService
 		} = $injector.inject('GeoResourceService', 'VectorImportService');
 
-		const createVectorSource = (geoResource) => {
-			return geoResource.url
-				? vectorImportService.vectorSourceFromExternalData(geoResource)
-				: vectorImportService.vectorSourceFromInternalData(geoResource);
-		};
-
-
 		switch (geoResource.getType()) {
-			case GeoResourceTypes.WMS:
+
+			case GeoResourceTypes.WMS: {
+
+				const imageWmsSource = new ImageWMS({
+					url: geoResource.url,
+					crossOrigin: 'anonymous',
+					params: {
+						'LAYERS': geoResource.layers,
+						'FORMAT': geoResource.format,
+						'VERSION': '1.1.1'
+					}
+				});
+				imageWmsSource.on('imageloadstart', () => setFetching(true));
+				imageWmsSource.on(['imageloadend', 'imageloaderror'], () => setFetching(false));
+
 				return new ImageLayer({
 					id: geoResource.id,
-					source: new ImageWMS({
-						url: geoResource.url,
-						crossOrigin: 'anonymous',
-						params: {
-							'LAYERS': geoResource.layers,
-							'FORMAT': geoResource.format,
-							'VERSION': '1.1.1'
-						}
-					}),
+					source: imageWmsSource
 				});
+			}
 
-			case GeoResourceTypes.WMTS:
+			case GeoResourceTypes.WMTS: {
+
+				const xyZsource = new XYZSource({
+					url: geoResource.url
+				});
+				xyZsource.on('tileloadstart', () => setFetching(true));
+				xyZsource.on(['tileloadend', 'tileloaderror'], () => setFetching(false));
+
 				return new TileLayer({
 					id: geoResource.id,
-					source: new XYZSource({
-						url: geoResource.url,
-					})
+					source: xyZsource
 				});
+			}
 
 			case GeoResourceTypes.VECTOR: {
 
-				const vgr = new VectorLayer({
-					id: geoResource.id,
-					source: createVectorSource(geoResource)
-				});
+				let vectorSource;
+				if (geoResource.url) {
+					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
+					vectorSource.on('featuresloadstart', () => setFetching(true));
+					vectorSource.on(['featuresloadend', 'featuresloaderror'], () => setFetching(false));
+				}
+				else {
+					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
+				}
 
-				return vgr;
+				return new VectorLayer({
+					id: geoResource.id,
+					source: vectorSource
+				});
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
