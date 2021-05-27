@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeZoom, changeZoomAndCenter, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
+import { changeCenter, changeRotation, changeZoom, changeZoomAndCenter, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -15,6 +15,7 @@ describe('positionReducer', () => {
 		const store = setup();
 		expect(store.getState().position.zoom).toBe(12);
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
+		expect(store.getState().position.rotation).toBe(0);
 		expect(store.getState().position.fitRequest).toBeNull();
 	});
 
@@ -32,6 +33,14 @@ describe('positionReducer', () => {
 		changeCenter([21, 42]);
 
 		expect(store.getState().position.center).toEqual([21, 42]);
+	});
+
+	it('changes the \'rotation\' property', () => {
+		const store = setup();
+
+		changeRotation(.5);
+
+		expect(store.getState().position.rotation).toBe(.5);
 	});
 
 	it('changes \'zoom\' and  \'center\' property', () => {

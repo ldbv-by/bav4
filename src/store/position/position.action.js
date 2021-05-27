@@ -2,7 +2,7 @@
  * Action creators to change/update the properties concerning the zoom level and center of a map.
  * @module map/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -54,6 +54,18 @@ export const changeZoom = (zoom) => {
 		type: ZOOM_CHANGED,
 		payload: zoom
 
+	});
+};
+
+/**
+ * Changes the rotation value.
+ * @param {number} rotation in  radians
+ * @function
+ */
+export const changeRotation = (rotation) => {
+	getStore().dispatch({
+		type: ROTATION_CHANGED,
+		payload: rotation
 	});
 };
 
