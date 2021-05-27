@@ -4,6 +4,7 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
@@ -64,9 +65,18 @@ export class OlMap extends BaElement {
 			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
-				// attribution: false,
+				attribution: false,
 				zoom: false,
+				rotate: false
 			}),
+			interactions: defaultInteractions({
+				//for embedded mode
+				//onFocusOnly: false,
+				pinchRotate: false,
+				
+			}).extend([new PinchRotate({
+				threshold: .5
+			})])
 		});
 
 		this._map.on('movestart', () => {

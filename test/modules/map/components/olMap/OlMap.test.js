@@ -109,6 +109,10 @@ describe('OlMap', () => {
 			expect(element._view.getZoom()).toBe(10);
 			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
+			//all default controls are disabled
+			expect(element._map.getControls().getLength()).toBe(0);
+			//all interactions are present
+			expect(element._map.getInteractions().getLength()).toBe(9);
 		});
 	});
 
