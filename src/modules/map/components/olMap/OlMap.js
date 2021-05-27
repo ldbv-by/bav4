@@ -6,7 +6,7 @@ import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
-import { changeZoomAndCenter } from '../../../../store/position/position.action';
+import { changeRotation, changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
@@ -53,11 +53,12 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
-		const { zoom, center } = this.getState();
+		const { zoom, center, rotation } = this.getState();
 
 		this._view = new View({
 			center: center,
 			zoom: zoom,
+			rotation: rotation
 		});
 
 		this._map = new MapOl({
@@ -151,8 +152,8 @@ export class OlMap extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = globalState;
-		return { zoom, center, fitRequest, layers };
+		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;
+		return { zoom, center, rotation, fitRequest, layers };
 	}
 
 	/**
@@ -172,16 +173,18 @@ export class OlMap extends BaElement {
 			zoom: this._view.getZoom(),
 			center: this._view.getCenter()
 		});
+		changeRotation(this._view.getRotation());
 	}
 
 	_syncView() {
-		const { zoom, center } = this.getState();
+		const { zoom, center, rotation } = this.getState();
 
 		if (!this._viewSyncBlocked) {
 
 			this._view.animate({
 				zoom: zoom,
 				center: center,
+				rotation: rotation,
 				duration: 500
 			});
 		}
