@@ -24,9 +24,6 @@ import { measurementReducer } from '../../../../../../../src/modules/map/store/m
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
-
-
-
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 

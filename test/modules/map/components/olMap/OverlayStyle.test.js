@@ -31,14 +31,16 @@ describe('OverlayStyle', () => {
 		expect(() => classUnderTest.update(feature)).toThrowError(TypeError, 'Please implement and call abstract method #update from child or do not call super.update from child.');
 	});
 
-	it('call for removes all overlays from feature, throws error', () => {		
+	it('removes all overlays from feature', () => {		
 		const feature = new Feature();
+		feature.set('overlays', [{}, {}]);
+		const removeOverlaySpy = jasmine.createSpy();
+		const mapMock = { removeOverlay:removeOverlaySpy,  };
+		
 		const classUnderTest = new OverlayStyle();
-
-		expect(() => classUnderTest.remove(feature)).toThrowError(TypeError, 'Please implement and call abstract method #remove from child or do not call super.remove from child.');
+		classUnderTest.remove(feature, mapMock);
+		
+		expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 	});
-
-	
-
 	
 });

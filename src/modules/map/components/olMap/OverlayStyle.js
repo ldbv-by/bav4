@@ -54,12 +54,11 @@ export class OverlayStyle {
 	}
 
 	/**
-	 * @abstract
 	 * @param {ol.feature} feature 
 	 * @param {ol.map} map
 	 */
-	remove(/*eslint-disable no-unused-vars */feature, map) {
-		// The child has not implemented this method.
-		throw new TypeError('Please implement and call abstract method #remove from child or do not call super.remove from child.');
+	remove(feature, map) {
+		const featureOverlays = feature.get('overlays') || [];				
+		featureOverlays.forEach(o => map.removeOverlay(o));	
 	}
 }
