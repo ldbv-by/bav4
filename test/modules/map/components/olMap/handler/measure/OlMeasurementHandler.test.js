@@ -256,17 +256,6 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
-		it('deactivates overlayManager on deactivate', () => {
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			
-			classUnderTest.activate(map);
-			const spy = spyOn(classUnderTest._overlayManager, 'deactivate');
-			classUnderTest.deactivate(map);
-
-			expect(spy).toHaveBeenCalled();
-		});
-
 		it('looks for last measurement-layer and adds the feature', (done) => {
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
@@ -274,9 +263,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
-			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
+			spyOn(classUnderTest._overlayStyle, 'add').and.callFake(() => {});
 			classUnderTest._lastMeasurementId = 'lastId';
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			
@@ -317,12 +304,10 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326); 
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
-			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
+			spyOn(classUnderTest._overlayStyle, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			classUnderTest._lastMeasurementId = 'lastId';			
-			const updateOverlaysSpy = spyOn(classUnderTest, '_updateOverlays');
+			const updateOverlaysSpy = spyOn(classUnderTest._overlayStyle, 'update');
 			let oldFeature;
 			
 			classUnderTest.activate(map);
@@ -511,14 +496,14 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: snappedGeometry });
 
 			classUnderTest.activate(map);
-			const removeSpy = spyOn(classUnderTest._overlayManager, 'remove').and.callThrough();
+			const removeSpy = spyOn(classUnderTest._overlayStyle, '_remove').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 			const areaOverlay = feature.get('area');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 
-			expect(removeSpy).toHaveBeenCalledWith(areaOverlay);
+			expect(removeSpy).toHaveBeenCalledWith(areaOverlay, jasmine.any(Feature), jasmine.any(Map));
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {
@@ -536,7 +521,7 @@ describe('OlMeasurementHandler', () => {
 			const baOverlay = feature.get('measurement').getElement();
 
 			expect(baOverlay.static).toBeTrue();
-			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
+			expect(feature.get('measurement').getOffset()).toEqual([0, -15]);
 		});
 
 		it('feature gets valid id start drawing', () => {
@@ -1002,19 +987,31 @@ describe('OlMeasurementHandler', () => {
 		it('change measureState, when mouse enters draggable overlay', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-
+			
 			classUnderTest.activate(map);
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			const overlayMock = {
 				set: () => { },
-				get: () => true,
+				get: (value) => {
+					switch (value) {
+						case 'feature':
+							return { dispatchEvent:() => {} };
+						default:
+							return true;
+					} 
+				},
 				setOffset: () => { },
 				setPosition: () => { }
 			};
-			classUnderTest._overlayManager.getOverlays = jasmine.createSpy().and.returnValue([overlayMock]);
+			const feature = new Feature({ 
+				geometry: new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]),
+				overlays:[overlayMock] });
+			const layerMock = { getSource() { 
+				return { getFeatures:() => [feature] }; 
+			} };
+			classUnderTest._vectorLayer = layerMock;
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-
 
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: MeasureStateType.OVERLAY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 		});
@@ -1249,6 +1246,9 @@ describe('OlMeasurementHandler', () => {
 
 				const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 				const feature = new Feature({ geometry: geometry });
+				const layerMock = { getSource() { 
+					return { getFeatures:() => [feature], hasFeature:() => true, removeFeature:() => {} }; 
+				} };
 				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 				feature.getGeometry().dispatchEvent('change');
 				simulateDrawEvent('drawend', classUnderTest._draw, feature);
@@ -1258,6 +1258,9 @@ describe('OlMeasurementHandler', () => {
 				element.dispatchEvent(new Event('pointerdown'));
 
 				expect(overlay.get('dragging')).toBeTrue();
+				
+				
+				classUnderTest._vectorLayer = layerMock;
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 500);
 				expect(overlay.get('manualPositioning')).toBeTrue();
 				expect(overlay.getPosition()).toEqual([50, 500]);
@@ -1387,88 +1390,6 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
-	});
-
-	describe('when measurement-layer changes', () => {
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
-		const setupMap = () => {
-
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM(),
-					}),
-					new TileLayer({
-						source: new TileDebug(),
-					})],
-				target: 'map',
-				view: new View({
-					center: initialCenter,
-					zoom: 1,
-				}),
-			});
-
-		};
-
-		it('layer visibility, then overlay visibility changes', () => {
-			const classUnderTest = new OlMeasurementHandler();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
-			const feature = new Feature({ geometry: geometry });
-			const map = setupMap();
-
-			// create a measurement with overlays
-			const measurementLayer = classUnderTest.activate(map);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			geometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
-			// some overlays exists
-			const overlay = feature.get('measurement');
-			const overlayElement = overlay.getElement();
-			expect(overlay).toBeTruthy();
-			expect(overlayElement).toBeTruthy();
-
-			// layers visibility changed
-			measurementLayer.setVisible(false);
-
-			expect(overlayElement.style.display).toBeDefined();
-			expect(overlayElement.style.display).toBe('none');
-
-
-			measurementLayer.setVisible(true);
-			expect(overlayElement.style.display).toBe('');
-		});
-
-		it('layer opacity, then overlay opacity changes', () => {
-			const classUnderTest = new OlMeasurementHandler();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
-			const feature = new Feature({ geometry: geometry });
-			const map = setupMap();
-
-			// create a measurement with overlays
-			const measurementLayer = classUnderTest.activate(map);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			geometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
-			// some overlays exists
-			const overlay = feature.get('measurement');
-			const overlayElement = overlay.getElement();
-			expect(overlay).toBeTruthy();
-			expect(overlayElement).toBeTruthy();
-
-			// layers opacity changed
-			measurementLayer.setOpacity(0.3);
-
-			expect(overlayElement.style.opacity).toBeDefined();
-			expect(overlayElement.style.opacity).toBe('0.3');
-
-		});
 	});
 
 	describe('when using util _isInCollection', () => {

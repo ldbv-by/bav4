@@ -12,7 +12,6 @@ const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
 
 export const measureStyleFunction = (feature) => {
-	
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
 		width:3
