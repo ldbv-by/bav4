@@ -16,9 +16,9 @@ describe('i18n for map module', () => {
 
 		const map = provide('en');
 
-		expect(map.map_geolocationButton_title_activate).toBe('activate geolocation');
-		expect(map.map_geolocationButton_title_deactivate).toBe('deactivate geolocation');				
-		expect(map.map_geolocationButton_title_denied).toBe('geolocation not allowed or not possible');	
+		expect(map.map_geolocationButton_title_activate).toBe('Activate geolocation');
+		expect(map.map_geolocationButton_title_deactivate).toBe('Deactivate geolocation');				
+		expect(map.map_geolocationButton_title_denied).toBe('Geolocation not allowed or not possible');	
 	});
 
 	it('have the expected amount of translations', () => {

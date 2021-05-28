@@ -4,9 +4,9 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				map_geolocationButton_title_activate: 'activate geolocation',
-				map_geolocationButton_title_deactivate: 'deactivate geolocation',
-				map_geolocationButton_title_denied: 'geolocation not allowed or not possible',
+				map_geolocationButton_title_activate: 'Activate geolocation',
+				map_geolocationButton_title_deactivate: 'Deactivate geolocation',
+				map_geolocationButton_title_denied: 'Geolocation not allowed or not possible',
 			};
 
 		case 'de':
