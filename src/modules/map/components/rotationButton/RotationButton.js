@@ -7,7 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 /**
- * Button that indicates a rotaion of the map and reset it on press.
+ * Button that indicates a rotation of the map and resets it on press.
  * @class
  * @author taulinger
  */
