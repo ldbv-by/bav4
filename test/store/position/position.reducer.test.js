@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
+import { changeCenter, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -59,6 +59,16 @@ describe('positionReducer', () => {
 
 		expect(store.getState().position.zoom).toBe(10);
 		expect(store.getState().position.center).toEqual([21, 42]);
+	});
+
+	it('changes \'zoom\',  \'center\' and  \'rotation\' property', () => {
+		const store = setup();
+
+		changeZoomCenterAndRotation({ zoom: 10, center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(10);
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
 	});
 
 	it('increases the \'zoom\' property by plus one', () => {

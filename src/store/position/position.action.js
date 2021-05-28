@@ -2,7 +2,7 @@
  * Action creators to change/update the properties concerning the zoom level and center of a map.
  * @module map/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -26,6 +26,13 @@ import { EventLike } from '../../utils/storeUtils';
 * @property {number} zoom zoom level
 * @property {Coordinate} coordinate coordinate in map projection
 */
+/**
+* A combination of zoom and center.
+* @typedef {Object} ZoomCenterRotation
+* @property {number} zoom zoom level
+* @property {Coordinate} coordinate coordinate in map projection
+* @property {number} rotation rotation in radians
+*/
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -41,6 +48,18 @@ export const changeZoomAndCenter = (zoomCenter) => {
 	getStore().dispatch({
 		type: ZOOM_CENTER_CHANGED,
 		payload: zoomCenter
+	});
+};
+
+/**
+ * Changes zoom level, position and rotation
+ * @param {ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
+ * @function
+ */
+export const changeZoomCenterAndRotation = (zoomCenterRotation) => {
+	getStore().dispatch({
+		type: ZOOM_CENTER_ROTATION_CHANGED,
+		payload: zoomCenterRotation
 	});
 };
 

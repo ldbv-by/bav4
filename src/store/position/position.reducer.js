@@ -1,6 +1,7 @@
 export const ZOOM_CHANGED = 'position/zoom';
 export const CENTER_CHANGED = 'position/center';
 export const ZOOM_CENTER_CHANGED = 'position/zoom_center';
+export const ZOOM_CENTER_ROTATION_CHANGED = 'position/zoom_center_rotation';
 export const ROTATION_CHANGED = 'position/rotation';
 export const LIVE_ROTATION_CHANGED = 'position/live_rotation';
 export const FIT_REQUESTED = 'position/fit';
@@ -40,6 +41,16 @@ export const positionReducer = (state = initialState, action) => {
 				...state,
 				zoom: zoom,
 				center: center
+			};
+		}
+		case ZOOM_CENTER_ROTATION_CHANGED: {
+			const { zoom, center, rotation } = payload;
+
+			return {
+				...state,
+				zoom: zoom,
+				center: center,
+				rotation: rotation
 			};
 		}
 		case ROTATION_CHANGED: {
