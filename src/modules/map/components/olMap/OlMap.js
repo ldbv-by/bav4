@@ -11,7 +11,6 @@ import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
-import { round } from '../../../../utils/numberUtils';
 
 
 /**
@@ -63,7 +62,7 @@ export class OlMap extends BaElement {
 		});
 
 		this._view.on('change:rotation', (evt) => {
-			changeLiveRotation(round(evt.target.getRotation(), 4));
+			changeLiveRotation(evt.target.getRotation());
 		});
 
 		this._map = new MapOl({
@@ -175,9 +174,9 @@ export class OlMap extends BaElement {
 
 	_syncStore() {
 		changeZoomCenterAndRotation({
-			zoom: round(this._view.getZoom(), 3),
+			zoom: this._view.getZoom(),
 			center: this._view.getCenter(),
-			rotation: round(this._view.getRotation(), 4)
+			rotation: this._view.getRotation()
 		});
 	}
 
