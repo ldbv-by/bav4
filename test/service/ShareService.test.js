@@ -35,6 +35,15 @@ describe('ShareService', () => {
 		return store;
 	};
 
+	describe('class', () => {
+
+		it('defines constant values', async () => {
+
+			expect(ShareService.ROTATION_VALUE_PRECISION).toBe(4);
+			expect(ShareService.ZOOM_LEVEL_PRECISION).toBe(3);
+		});
+	});
+
 
 	describe('copy to clipboard', () => {
 		it('calls Clipboard API', async () => {
@@ -148,7 +157,7 @@ describe('ShareService', () => {
 			});
 
 			describe('and rotation != 0', () => {
-				
+
 				it('extracts the current position state', () => {
 					const zoomLevel = 5.353673;
 					const rotationValue = .5347485;
