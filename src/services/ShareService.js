@@ -141,6 +141,6 @@ export class ShareService {
 	}
 
 	static get ROTATION_VALUE_PRECISION() {
-		return 3;
+		return 4;
 	}
 }
