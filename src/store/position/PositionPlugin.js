@@ -1,7 +1,7 @@
 import { $injector } from '../../injection';
 import { QueryParameters } from '../../services/domain/queryParameters';
 import { BaPlugin } from '../BaPlugin';
-import { changeZoomAndCenter, setFit } from './position.action';
+import { changeZoomCenterAndRotation, setFit } from './position.action';
 
 /**
  * @class
@@ -38,11 +38,19 @@ export class PositionPlugin extends BaPlugin {
 			return;
 		};
 
+		const parseRotation = (rotationValue) => {
+			if (rotationValue && isFinite(rotationValue)) {
+				return parseFloat(rotationValue);
+			}
+			return;
+		};
+
 		const center = parseCenter(queryParams.get(QueryParameters.CENTER));
 		const zoom = parseZoom(queryParams.get(QueryParameters.ZOOM));
+		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION));
 
 		if (center && zoom) {
-			changeZoomAndCenter({ zoom: zoom, center: center });
+			changeZoomCenterAndRotation({ zoom: zoom, center: center, rotation: rotation || 0 });
 		}
 		//fallback
 		else {
