@@ -9,7 +9,7 @@ window.customElements.define(RotationButton.tag, RotationButton);
 describe('GeolocationButton', () => {
 	let store;
 	const defaultState = {
-		rotation: 0, liveRotation: 0
+		liveRotation: 0
 	};
 
 	const setup = async (positionState = defaultState) => {
@@ -26,26 +26,33 @@ describe('GeolocationButton', () => {
 		return await TestUtils.render(RotationButton.tag);
 	};
 
+	describe('class', () => {
+
+		it('defines constant values', async () => {
+
+			expect(RotationButton.ROTATION_THRESHOLD).toBe(.05);
+		});
+	});
+
 	describe('when initialized', () => {
-		describe('rotation = 0', () => {
+
+		describe('liveRotation < threshold value', () => {
 
 			it('renders a geolocation button', async () => {
-				const element = await setup();
-				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('button').classList.contains('hidden')).toBeTrue();
-				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
-				expect(element.shadowRoot.querySelector('button').style.transform).toBe('rotate(0rad)');
-				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(1);
+				const liveRotationValue = RotationButton.ROTATION_THRESHOLD - .01;
+				const element = await setup({ liveRotation: liveRotationValue });
+
+				expect(element.shadowRoot.children.length).toBe(0);
 			});
 		});
 
-		describe('rotation != 0', () => {
+		describe('liveRotation > threshold value', () => {
 
 			it('renders a geolocation button', async () => {
 				const liveRotationValue = .5;
 				const element = await setup({ rotation: .5, liveRotation: liveRotationValue });
 				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('button').classList.contains('hidden')).toBeFalse();
+				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBeTrue();
 				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
 				expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(1);
@@ -59,25 +66,25 @@ describe('GeolocationButton', () => {
 			let liveRotationValue = .5;
 			const element = await setup({ liveRotation: liveRotationValue });
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
-			
+
 			changeLiveRotation(liveRotationValue = 1);
-			
+
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 		});
 
-		it('hides the button when rotaion = 0', async () => {
-			const element = await setup({ liveRotation: .5 });
-			
-			changeLiveRotation(0);
-			
-			expect(element.shadowRoot.querySelector('button').classList.contains('hidden')).toBeTrue();
+		it('hides the button when rotation < threshold', async () => {
+			const element = await setup({ liveRotation: RotationButton.ROTATION_THRESHOLD - .01 });
+
+			changeLiveRotation();
+
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 
 	describe('when clicked', () => {
 
 		it('updates the rotation property', async () => {
-			const element = await setup({ rotation: .5 });
+			const element = await setup({ liveRotation: .5 });
 
 			element.shadowRoot.querySelector('button').click();
 

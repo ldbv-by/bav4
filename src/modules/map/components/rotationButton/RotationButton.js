@@ -1,9 +1,8 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './rotationButton.css';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
-import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 /**
@@ -26,26 +25,26 @@ export class RotationButton extends BaElement {
 		const { liveRotation } = state;
 		const translate = (key) => this._translationService.translate(key);
 
-		const onClick = () => {
-			changeRotation(0);
-		};
+		if (Math.abs(liveRotation) >= RotationButton.ROTATION_THRESHOLD) {
 
-		const classes = {
-			hidden: liveRotation === 0
-		};
+			const onClick = () => {
+				changeRotation(0);
+			};
 
-		const styles = {
-			transform: `rotate(${liveRotation}rad)`
-		};
+			const styles = {
+				transform: `rotate(${liveRotation}rad)`
+			};
 
-		return html`
+			return html`
 			<style>${css}</style>
-			<div class="rotation">
-				<button class="rotation-button ${classMap(classes)}" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')} >
+			<div>
+				<button class="rotation-button" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')} >
 					<i class="icon rotation-icon"></i>
 				</button>
 			</div>
-		`;
+			`;
+		}
+		return nothing;
 	}
 
 	extractState(globalState) {
@@ -55,5 +54,9 @@ export class RotationButton extends BaElement {
 
 	static get tag() {
 		return 'ba-rotation-button';
+	}
+
+	static get ROTATION_THRESHOLD() {
+		return .05;
 	}
 }
