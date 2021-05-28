@@ -6,11 +6,12 @@ import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter } from '../../../../store/position/position.action';
+import { changeLiveRotation, changeRotation, changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
+import { round } from '../../../../utils/numberUtils';
 
 
 /**
@@ -59,6 +60,10 @@ export class OlMap extends BaElement {
 			center: center,
 			zoom: zoom,
 			rotation: rotation
+		});
+
+		this._view.on('change:rotation', (evt) => {
+			changeLiveRotation(round(evt.target.getRotation(), 4));
 		});
 
 		this._map = new MapOl({
@@ -173,7 +178,7 @@ export class OlMap extends BaElement {
 			zoom: this._view.getZoom(),
 			center: this._view.getCenter()
 		});
-		changeRotation(this._view.getRotation());
+		changeRotation(round(this._view.getRotation(), 4));
 	}
 
 	_syncView() {

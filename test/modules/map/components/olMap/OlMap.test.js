@@ -15,6 +15,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import Event from 'ol/events/Event';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -38,7 +39,7 @@ describe('OlMap', () => {
 	};
 
 	const layerServiceMock = {
-		toOlLayer() {}
+		toOlLayer() { }
 	};
 
 	const mapServiceMock = {
@@ -119,6 +120,24 @@ describe('OlMap', () => {
 			expect(element._map.getInteractions().getLength()).toBe(9);
 		});
 	});
+
+	describe('view events', () => {
+
+		describe('rotation:change', () => {
+
+			it('updates the liveRotation property of the position state', async () => {
+				const rotationValue = .5;
+				const element = await setup();
+				const view = element._view;
+				const changeRotationEvent = new Event('change:rotation', { getRotation: () => rotationValue });
+
+				view.dispatchEvent(changeRotationEvent);
+
+				expect(store.getState().position.liveRotation).toBe(rotationValue);
+			});
+		});
+	});
+
 
 	describe('map move events', () => {
 		describe('movestart', () => {
@@ -266,7 +285,7 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-				
+
 				it('updates the \'contextclick\' property in pointer store', async () => {
 					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
