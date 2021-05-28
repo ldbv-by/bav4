@@ -126,10 +126,11 @@ describe('OlMap', () => {
 		describe('rotation:change', () => {
 
 			it('updates the liveRotation property of the position state', async () => {
-				const rotationValue = .5;
+				const rotationValue = .56786786;
 				const element = await setup();
 				const view = element._view;
-				const changeRotationEvent = new Event('change:rotation', { getRotation: () => rotationValue });
+				const changeRotationEvent = new Event('change:rotation');
+				changeRotationEvent.target =  { getRotation: () => rotationValue };
 
 				view.dispatchEvent(changeRotationEvent);
 
