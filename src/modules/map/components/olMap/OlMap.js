@@ -6,7 +6,7 @@ import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
-import { changeLiveRotation, changeRotation, changeZoomAndCenter } from '../../../../store/position/position.action';
+import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
@@ -174,11 +174,11 @@ export class OlMap extends BaElement {
 	}
 
 	_syncStore() {
-		changeZoomAndCenter({
-			zoom: this._view.getZoom(),
-			center: this._view.getCenter()
+		changeZoomCenterAndRotation({
+			zoom: round(this._view.getZoom(), 3),
+			center: this._view.getCenter(),
+			rotation: round(this._view.getRotation(), 4)
 		});
-		changeRotation(round(this._view.getRotation(), 4));
 	}
 
 	_syncView() {
