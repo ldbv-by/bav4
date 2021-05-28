@@ -53,7 +53,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} map
 	 * @param {ol.geometry|null} geometry
 	 */
-	update(feature, map, geometry = null) {
+	update(feature, map, geometry = null) {	
 		const distanceOverlay = feature.get('measurement');
 		const measureGeometry = geometry ? geometry : feature.getGeometry();
 		if (distanceOverlay) {
@@ -77,11 +77,15 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		feature.set('overlays', []);		
 	}
 
-	_createDistanceOverlay(map, feature) {
-		const isDraggable = !this._environmentService.isTouch();
-		const distanceOverlay = feature.get('measurement') || this._createOlOverlay(map, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
-		feature.set('measurement', distanceOverlay);		
-		this._add(distanceOverlay, feature, map);	
+	_createDistanceOverlay(map, feature) {		
+		const createNew = () => {	
+			const isDraggable = !this._environmentService.isTouch();
+			const overlay = this._createOlOverlay(map, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
+			feature.set('measurement', overlay);			
+			this._add(overlay, feature, map);		
+			return overlay;			
+		};
+		const distanceOverlay = feature.get('measurement') || createNew();		
 		this._updateOlOverlay(distanceOverlay, feature.getGeometry());	
 		return distanceOverlay;
 	}
@@ -130,7 +134,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
 				partition = this._createOlOverlay(map, { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
-
 				this._add(partition, feature, map);
 				partitions.push(partition);
 			}

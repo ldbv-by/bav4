@@ -39,6 +39,20 @@ export class StyleService {
 	}
 
 	/**
+	 * Returns a ol-StyleFunction for the specified StyleType
+	 * @param {StyleType} styleType 
+	 * @returns {Function} styleFunction the StyleFunction, used by ol to render a feature
+	 */
+	getStyleFunction(styleType) {
+		switch (styleType) {
+			case StyleTypes.MEASURE:
+				return measureStyleFunction;
+			default:
+				console.warn('Could not provide a style for unknown style-type:', styleType);
+		}
+	}
+
+	/**
      * Removes overlays (added by OverlayStyle-classes) from the map and the feature
      * @param {ol.Map} map the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
@@ -50,8 +64,7 @@ export class StyleService {
 
 	_addMeasureStyle(map, olFeature) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
-
-		olFeature.setStyle(measureStyleFunction(olFeature));
+		olFeature.setStyle(measureStyleFunction(olFeature));		
 		overlayService.add(map, olFeature, StyleTypes.MEASURE);		
 	}
 

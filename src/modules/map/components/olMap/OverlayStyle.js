@@ -17,11 +17,11 @@ export class OverlayStyle {
 	_add(overlay, feature, map) {
 		if (feature) {
 			const featureOverlays = feature.get('overlays') || [];		
-			featureOverlays.push(overlay);
+			featureOverlays.push(overlay);			
 			overlay.set('feature', feature);
 			feature.set('overlays', featureOverlays);	
-		}		
-		map.addOverlay(overlay);
+		}				
+		map.addOverlay(overlay);		
 	}
 
 	_remove(overlay, feature, map) {

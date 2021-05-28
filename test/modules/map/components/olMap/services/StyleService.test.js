@@ -124,6 +124,25 @@ describe('StyleService', () => {
 	
 		
 	});
+
+	describe('getStyleFunction', () => {
+
+		it('returns a StyleFunction for a valid StyleType', () => {
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.MEASURE)).toEqual(jasmine.any(Function));
+		});
+
+		it('fails for a invalid StyleType', () => {
+			const warnSpy = spyOn(console, 'warn');
+
+			const styleFunction = instanceUnderTest.getStyleFunction('unknown');
+		
+			expect(styleFunction).toBeUndefined();
+			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
+		});
+
+
+	});
+
 	describe('removes styles', () => {
 		it('removes a style from feature', () => {
 			const feature = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
