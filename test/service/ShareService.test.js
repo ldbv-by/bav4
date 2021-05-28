@@ -128,6 +128,7 @@ describe('ShareService', () => {
 			describe('and rotation = 0', () => {
 
 				it('extracts the position state', () => {
+					const zoomLevel = 5.353673;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
 					setup();
@@ -136,11 +137,11 @@ describe('ShareService', () => {
 					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-					changeZoomAndCenter({ zoom: 5, center: [21, 42] });
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 
 					const extract = instanceUnderTest._extractPosition();
 
-					expect(extract[QueryParameters.ZOOM]).toBe(5);
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
 					expect(extract[QueryParameters.ROTATION]).toBeUndefined();
 				});
@@ -149,6 +150,7 @@ describe('ShareService', () => {
 			describe('and rotation != 0', () => {
 				
 				it('extracts the current position state', () => {
+					const zoomLevel = 5.353673;
 					const rotationValue = .5347485;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
@@ -158,14 +160,14 @@ describe('ShareService', () => {
 					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-					changeZoomAndCenter({ zoom: 5, center: [21, 42] });
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 					changeRotation(rotationValue);
 
 					const extract = instanceUnderTest._extractPosition();
 
-					expect(extract[QueryParameters.ZOOM]).toBe(5);
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
-					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, 4));
+					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
 				});
 			});
 		});

@@ -64,10 +64,11 @@ export class ShareService {
 			.transform(center, mapService.getSrid(), mapService.getDefaultSridForView())
 			.map(n => n.toFixed(digits));
 
-		const roundedRotation = round(rotation, 4);	
+		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
+		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);
 
 		extractedState[QueryParameters.CENTER] = transformedCenter;
-		extractedState[QueryParameters.ZOOM] = zoom;
+		extractedState[QueryParameters.ZOOM] = roundedZoom;
 		if (rotation !== 0) {
 			extractedState[QueryParameters.ROTATION] = roundedRotation;
 		}
@@ -132,5 +133,14 @@ export class ShareService {
 
 		extractedState[QueryParameters.TOPIC] = current;
 		return extractedState;
+	}
+
+
+	static get ZOOM_LEVEL_PRECISION() {
+		return 3;
+	}
+
+	static get ROTATION_VALUE_PRECISION() {
+		return 3;
 	}
 }
