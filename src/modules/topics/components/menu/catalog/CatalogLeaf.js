@@ -1,13 +1,13 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../../../BaElement';
-import css from './CatalogLeaf.css';
+import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
+
 
 /**
  * @class
  * @author taulinger
  * @author alsturm
  */
-export class CatalogLeaf extends BaElement {
+export class CatalogLeaf extends AbstractContentPanel {
 
 	set data(catalogPart) {
 		this._catalogPart = catalogPart;
@@ -19,10 +19,17 @@ export class CatalogLeaf extends BaElement {
 		if (this._catalogPart) {
 			const { geoResourceId } = this._catalogPart;
 			return html`
-			<style>${css}</style>
-            	<div class="ba-list-item">
-				<div class="ba-list-item__text">${geoResourceId}</div>
-				</div>
+			<a href='#' tabindex='0' class="ba-list-item">
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__icon-info"></span>
+					</span>
+					<span class="ba-list-item__text">${geoResourceId}</span>
+					<button class="ba-icon-button ba-list-item__after verticla-center seperator">						
+						<span  class='icon-background'>
+						 </span>
+						<i class='icon icon-secondary info'></i>
+					</button>
+				</a>
         	`;
 		}
 		return nothing;

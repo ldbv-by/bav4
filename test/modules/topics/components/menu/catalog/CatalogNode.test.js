@@ -8,11 +8,16 @@ window.customElements.define(CatalogNode.tag, CatalogNode);
 describe('CatalogNode', () => {
 
 
-	const setup = () => {
 
-		TestUtils.setupStoreAndDi();
+	const setup = (level = 0) => {
 
-		return TestUtils.render(CatalogNode.tag);
+		const state = {
+			topics: { current: 'foo' }
+		};
+
+		TestUtils.setupStoreAndDi(state);
+
+		return TestUtils.render(CatalogNode.tag, { level: level });
 	};
 
 	describe('when initialized', () => {
@@ -38,7 +43,59 @@ describe('CatalogNode', () => {
 			//data contains one node and two leaves
 			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			
+			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.ba-list-item__sub-header')).toBeFalsy();
+
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			
+			
 		});
+		
+		it('renders level 2', async () => {
+			//load node data
+			const [node] = await loadExampleCatalog('foo');
+			const element = await setup({ level :1 });
+			
+			//assign data
+			element.data = node;
+			
+			//data contains one node and two leaves
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			
+			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.ba-list-item__sub-header')).toBeTruthy();
+		});
+
+		it('click collapse', async () => {
+			//load node data
+			const [node] = await loadExampleCatalog('foo');
+			const element = await setup();
+
+			//assign data
+			element.data = node;
+
+			//data contains one node and two leaves
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			
+			expect(element.shadowRoot.querySelector('.ba-list-item__header')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			
+			const collapseButton = element.shadowRoot.querySelector('.ba-list-item__header');          		
+			collapseButton.click();			
+
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+
+			collapseButton.click();			
+			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+		});
+
 	});
 });
 

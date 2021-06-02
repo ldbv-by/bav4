@@ -100,9 +100,21 @@ describe('TopicsContentPanel', () => {
 
 					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
 					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeFalse();
-					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
-					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
-					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+
+					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);					
+
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();		
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('0');      
+					expect(element.shadowRoot.querySelectorAll('.icon-topic0')).toHaveSize(1);				
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[0].innerText).toBe(topic0.label);		
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[0].innerText).toBe(topic0.description);		
+                    
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();                
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('0');
+					expect(element.shadowRoot.querySelectorAll('.icon-topic1')).toHaveSize(1);				
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].innerText).toBe(topic1.label);		
+					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[1].innerText).toBe(topic1.description);		
+
 					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
 				});
 			});
@@ -129,7 +141,9 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeTrue();
 					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].classList.contains('active')).toBeTrue();
+					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('-1');
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
+					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('-1');
 					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
 				});
 			});
@@ -156,7 +170,6 @@ describe('TopicsContentPanel', () => {
 
 			//click on the second topics element
 			element.shadowRoot.querySelectorAll('.topic')[1].click();
-
 			expect(store.getState().topics.current).toBe(topic1.id);
 			expect(store.getState().topicsContentPanel.index).toBe(TopicsContentPanelIndex.CATALOG_0);
 		});

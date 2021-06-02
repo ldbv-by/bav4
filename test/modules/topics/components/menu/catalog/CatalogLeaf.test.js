@@ -34,7 +34,9 @@ describe('CatalogLeaf', () => {
 			//assign data
 			element.data = leaf;
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe(leaf.geoResourceId);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(leaf.geoResourceId);						
+			expect(element.shadowRoot.querySelector('.ba-icon-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.info')).toBeTruthy();
 		});
 	});
 });

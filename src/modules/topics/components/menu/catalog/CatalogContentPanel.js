@@ -1,9 +1,10 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../../injection';
-import { BaElement } from '../../../../BaElement';
-import css from './catalogContentPanel.css';
+import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../../store/topicsContentPanel.action';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
+import tempSvg from '../../assets/temp.svg';
+import css from './catalogContentPanel.css';
 
 
 /**
@@ -12,14 +13,15 @@ import { TopicsContentPanelIndex } from '../TopicsContentPanel';
  * @author taulinger
  * @author alsturm
  */
-export class CatalogContentPanel extends BaElement {
+export class CatalogContentPanel extends AbstractContentPanel {
 
 	constructor() {
 		super();
-		const { CatalogService: catalogService, TranslationService: translationService }
-			= $injector.inject('CatalogService', 'TranslationService');
+		const { CatalogService: catalogService, TranslationService: translationService, TopicsService: topicsService }
+			= $injector.inject('CatalogService', 'TranslationService', 'TopicsService');
 		this._translationService = translationService;
 		this._catalogService = catalogService;
+		this._topicsService = topicsService;
 	}
 
 	initialize() {
@@ -28,6 +30,7 @@ export class CatalogContentPanel extends BaElement {
 			try {
 
 				this._catalog = await this._catalogService.byId(topicId);
+				this._topic = await this._topicsService.byId(topicId);
 				this.render();
 			}
 			catch (e) {
@@ -47,31 +50,56 @@ export class CatalogContentPanel extends BaElement {
 	 * @override
 	 */
 	createView() {
-
+		
+		const changeIndex = () => {
+			setIndex(TopicsContentPanelIndex.TOPICS);			
+			this.render;
+		};
+		
 		if (this._catalog) {
-
+			const startLevel = 0;
 			const childElements = this._catalog.map(item => {
 				//node
 				if (item.children) {
-					return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
+					return html`<ba-catalog-node .data=${item} level=${startLevel} ></ba-catalog-node>`;
 				}
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
 			});
+			
+			const { id, label } = this._topic;
 
+			const themeColor = `
+			.topic{
+				--secondary-color: var(--topic-theme-${id});			  
+			}	
+			`;
 
 			return html`
-        	<style>${css}</style>
+			<style>
+			${css}
+			${themeColor}
+			</style>
 			<div class="catalog-content-panel">
-			<div class="ba-list-item  ba-list-item__header" @click=${() => setIndex(TopicsContentPanelIndex.TOPICS)}>
-				<span class="ba-list-item__pre">
-					<span class="arrow"></span>
-				</span>
+			<a href="#" tabindex='0' class="ba-list-item" @click=${changeIndex}>
 				<span class="ba-list-item__text">
-					<span class="ba-list-item__primary-text">
 						Thema wechseln
-					</span>
+				</span>			
+				<span class="ba-list-item__after">
+				<i class='icon icon-secondary close'>
+				</i>
 				</span>
+			</a>
+			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon">
+						<ba-icon id='info' icon='${tempSvg}' color=var(--primary-bg-color) color_hover=var(--primary-bg-color) size=2.6 ></ba-icon>
+					</span>				
+				</span>
+				<span class="ba-list-item__text verticla-center">
+					<span class="ba-list-item__main-text">${label}</span>					
+				</span>
+			</span>
 			</div>
 				${childElements}
 			</div>
