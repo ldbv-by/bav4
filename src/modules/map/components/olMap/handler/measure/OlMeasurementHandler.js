@@ -123,7 +123,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
-							this._styleService.addStyle(olMap, f, StyleTypes.MEASURE);
+							this._styleService.addStyle(f, olMap, StyleTypes.MEASURE);
 							f.on('change', onFeatureChange);	
 						});											
 					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
