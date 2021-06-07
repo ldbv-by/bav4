@@ -159,7 +159,7 @@ describe('VectorImportService', () => {
 
 				olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-				expect(styleServiceSpy).toHaveBeenCalledWith(olMap, olFeature);
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 			
 			it('calls #removeStyle of the styleService on "removefeature"', () => {
@@ -171,7 +171,7 @@ describe('VectorImportService', () => {
 
 				olSource.dispatchEvent(new VectorSourceEvent('removefeature', olFeature));
 
-				expect(styleServiceSpy).toHaveBeenCalledWith(olMap, olFeature);
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 
 
@@ -184,7 +184,7 @@ describe('VectorImportService', () => {
 
 				olSource.dispatchEvent(new VectorSourceEvent('clear'));
 
-				expect(styleServiceSpy).toHaveBeenCalledWith(olMap, olFeature);
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 		});
 	});

@@ -49,13 +49,13 @@ export class VectorImportService {
 		const {	StyleService: styleService } = $injector.inject('StyleService');
 		
 		const addListenerKey = olVectorSource.on('addfeature', event => {
-			styleService.addStyle(olMap, event.feature);
+			styleService.addStyle(event.feature, olMap);
 		});
 		const removeListenerKey = olVectorSource.on('removefeature', event => {
-			styleService.removeStyle(olMap, event.feature);
+			styleService.removeStyle(event.feature, olMap);
 		});
 		const clearListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach(f => styleService.removeStyle(olMap, f));
+			olVectorSource.getFeatures().forEach(f => styleService.removeStyle(f, olMap));
 		});
 		return { addListenerKey, removeListenerKey, clearListenerKey };
 	}
