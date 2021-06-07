@@ -14,7 +14,7 @@ import { setFetching } from '../../../../../store/network/network.action';
  */
 export class LayerService {
 
-	toOlLayer(geoResource) {
+	toOlLayer(geoResource, olMap) {
 
 		const {
 			GeoResourceService: georesourceService,
@@ -61,12 +61,12 @@ export class LayerService {
 
 				let vectorSource;
 				if (geoResource.url) {
-					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
+					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource, olMap);
 					vectorSource.on('featuresloadstart', () => setFetching(true));
 					vectorSource.on(['featuresloadend', 'featuresloaderror'], () => setFetching(false));
 				}
 				else {
-					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
+					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource, olMap);
 				}
 
 				return new VectorLayer({
