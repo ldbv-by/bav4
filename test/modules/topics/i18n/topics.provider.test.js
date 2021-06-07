@@ -8,6 +8,7 @@ describe('i18n for topics module', () => {
 		const map = provide('de');
 
 		expect(map.topics_menu_title).toBe('Themen');
+		expect(map.topics_catalog_panel_change_topic).toBe('Thema wechseln');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +16,11 @@ describe('i18n for topics module', () => {
 		const map = provide('en');
 
 		expect(map.topics_menu_title).toBe('Topics');
+		expect(map.topics_catalog_panel_change_topic).toBe('Change topic');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
