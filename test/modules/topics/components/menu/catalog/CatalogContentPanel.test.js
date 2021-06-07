@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../src/injection';
 import { CatalogContentPanel } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogContentPanel';
-// import { CatalogNode } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogNode';
-// import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
+import { CatalogNode } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogNode';
+import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
 import { loadExampleCatalog } from '../../../../../../src/modules/topics/services/provider/catalog.provider';
 import { setCurrent } from '../../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
@@ -27,10 +27,12 @@ describe('TopicsContentPanel', () => {
 	const setup = (state) => {
 
 		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer  });
+		
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CatalogService', catalogServiceMock)
 			.registerSingleton('TopicsService', topicsServiceMock);
+
 		return TestUtils.render(CatalogContentPanel.tag);
 	};
 
@@ -48,35 +50,43 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
-		// it('renders a list of topic elements', async () => {
-		// 	const topicId = 'foo';
-		// 	spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));                
+		it('renders a list of topic elements', async () => {
+			const topicId = 'foo';
+			const topicLabel = 'label';
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, topicLabel, 'This is a fallback topic...', ['atkis', 'atkis_sw']));                
             
-		// 	const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-		// 		await loadExampleCatalog()
-		// 	);
-		// 	setCurrent(topicId);
-            
-		// 	const element = await setup();
+			const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+				await loadExampleCatalog()
+			);
+			const element = await setup();
+			
+			setCurrent(topicId);
 
-
-		// 	//wait for elements
-		// 	window.requestAnimationFrame(() => {
-		// 		expect(spy).toHaveBeenCalledOnceWith(topicId);
-		// 		//test correct rendering of the catalog
-		// 		expect(element.shadowRoot.querySelectorAll('.ba-list-item')).toHaveSize(1);
-		// 		expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
-		// 		expect(element.shadowRoot.querySelectorAll('.ba-list-item__text')).toHaveSize(1);
-		// 		//the example catalog returns one node and one leaf object on the top level
-		// 		expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
-		// 		expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
-		// 	});
-		// });
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				expect(spy).toHaveBeenCalledOnceWith(topicId);
+				//test correct rendering of the style -tags
+				expect(element.shadowRoot.styleSheets).toHaveSize(3);
+				//test correct rendering of topic dependent style definition
+				expect(element.shadowRoot.styleSheets.item(2).cssRules.item(1).style.getPropertyValue('--secondary-color').trim()).toBe('var(--topic-theme-foo)');
+				//test existence of importent css classes
+				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
+				expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
+				//test i18n
+				expect(element.shadowRoot.querySelector('.ba-list-item__text').textContent).toBe('topics_catalog_panel_change_topic');
+				//the example catalog returns one node and one leaf object on the top level
+				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			});
+		});
 
 		describe('and CatalogService cannot fulfill', () => {
 
 			it('logs a warn statement and renders nothing', async () => {
-
                 
 				const topicId = 'foo';
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));                

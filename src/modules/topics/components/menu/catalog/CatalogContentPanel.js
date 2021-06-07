@@ -22,6 +22,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 		this._translationService = translationService;
 		this._catalogService = catalogService;
 		this._topicsService = topicsService;
+		this._catalog = null;
 	}
 
 	initialize() {
@@ -30,7 +31,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			try {
 
 				this._catalog = await this._catalogService.byId(topicId);
-				this._topic = await this._topicsService.byId(topicId);
+				this._topic = this._topicsService.byId(topicId);
 				this.render();
 			}
 			catch (e) {
@@ -42,7 +43,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 	}
 
 	onStateChanged() {
-		//we we do nothing here, because we will call #render() manually after catalog data are available
+		//we do nothing here, because we call #render() manually after catalog data are available
 	}
 
 
@@ -66,14 +67,13 @@ export class CatalogContentPanel extends AbstractContentPanel {
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
 			});
-			
 			const { id, label } = this._topic;
-
 			const themeColor = `
 			.topic{
 				--secondary-color: var(--topic-theme-${id});			  
 			}	
 			`;
+			const translate = (key) => this._translationService.translate(key);
 
 			return html`
 			<style>
@@ -82,9 +82,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			</style>
 			<div class="catalog-content-panel">
 			<a href="#" tabindex='0' class="ba-list-item" @click=${changeIndex}>
-				<span class="ba-list-item__text">
-						Thema wechseln
-				</span>			
+				<span class="ba-list-item__text">${translate('topics_catalog_panel_change_topic')}</span>			
 				<span class="ba-list-item__after">
 				<i class='icon icon-secondary close'>
 				</i>
