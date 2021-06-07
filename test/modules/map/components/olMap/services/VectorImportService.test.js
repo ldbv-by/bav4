@@ -68,7 +68,7 @@ describe('VectorImportService', () => {
 		describe('vectorSourceFromInternalData', () => {
 
 			it('builds an olVectorSource for an internal VectorGeoresource', (done) => {
-				const map  = new Map();
+				const olMap  = new Map();
 				const srid = 3857;
 				const kmlName = '';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -77,10 +77,10 @@ describe('VectorImportService', () => {
 				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				const applyStylingSpy = spyOn(instanceUnderTest, 'applyStyling');
 
-				const olVectorSource = instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, map);
+				const olVectorSource = instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
-				expect(applyStylingSpy).toHaveBeenCalledWith(olVectorSource, map);
+				expect(applyStylingSpy).toHaveBeenCalledWith(olVectorSource, olMap);
 				//features are loaded from a promise
 				setTimeout(() => {
 					expect(olVectorSource.getFeatures().length).toBe(1);
@@ -122,20 +122,20 @@ describe('VectorImportService', () => {
 		describe('vectorSourceFromInternalData', () => {
 
 			it('builds an olVectorSource for an external VectorGeoresource', () => {
-				const map  = new Map();
+				const olMap  = new Map();
 				const url = 'https://some.url';
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
 				const applyStylingSpy = spyOn(instanceUnderTest, 'applyStyling');
 
-				const olVectorSource = instanceUnderTest.vectorSourceFromExternalData(vectorGeoresource, map);
+				const olVectorSource = instanceUnderTest.vectorSourceFromExternalData(vectorGeoresource, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getUrl()).toBe('https://proxy.url?' + url);
 				expect(olVectorSource.getFormat().constructor.name).toBe('KML');
 				expect(olVectorSource.loader_).toEqual(load);
 				expect(olVectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
-				expect(applyStylingSpy).toHaveBeenCalledWith(olVectorSource, map);
+				expect(applyStylingSpy).toHaveBeenCalledWith(olVectorSource, olMap);
 			});
 		});
 
