@@ -29,7 +29,7 @@ export class StyleService {
 		if (usingStyleType) {
 			switch (usingStyleType) {
 				case StyleTypes.MEASURE:
-					this._addMeasureStyle(olMap, olFeature);
+					this._addMeasureStyle(olFeature, olMap);
 					break;        
 				default:
 					console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -54,15 +54,15 @@ export class StyleService {
 
 	/**
      * Removes overlays (added by OverlayStyle-classes) from the map and the feature
-     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      */
-	removeStyle(olMap, olFeature) {
+	removeStyle(olFeature, olMap) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
 		overlayService.remove(olMap, olFeature);
 	}
 
-	_addMeasureStyle(olMap, olFeature) {
+	_addMeasureStyle(olFeature, olMap) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
 		olFeature.setStyle(measureStyleFunction(olFeature));		
 		overlayService.add(olMap, olFeature, StyleTypes.MEASURE);		

@@ -155,7 +155,7 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
     
-			instanceUnderTest.removeStyle(mapMock, feature);
+			instanceUnderTest.removeStyle(feature, mapMock);
     
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
