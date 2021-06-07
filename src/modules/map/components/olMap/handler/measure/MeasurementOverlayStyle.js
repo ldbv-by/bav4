@@ -40,9 +40,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	add(olFeature, olMap) {
-		this._createDistanceOverlay(olMap, olFeature);
-		this._createOrRemoveAreaOverlay(olMap, olFeature);
-		this._createOrRemovePartitionOverlays(olMap, olFeature);
+		this._createDistanceOverlay(olFeature, olMap);
+		this._createOrRemoveAreaOverlay(olFeature, olMap);
+		this._createOrRemovePartitionOverlays(olFeature, olMap);
 
 		this._restoreManualOverlayPosition(olFeature, olMap);
 	}
@@ -58,8 +58,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const measureGeometry = geometry ? geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
-			this._createOrRemoveAreaOverlay(olMap, olFeature);
-			this._createOrRemovePartitionOverlays(olMap, olFeature, measureGeometry);
+			this._createOrRemoveAreaOverlay(olFeature, olMap);
+			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}		
 	}
 	
@@ -77,7 +77,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		olFeature.set('overlays', []);		
 	}
 
-	_createDistanceOverlay(olMap, olFeature) {		
+	_createDistanceOverlay(olFeature, olMap) {		
 		const createNew = () => {	
 			const isDraggable = !this._environmentService.isTouch();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
@@ -90,7 +90,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		return distanceOverlay;
 	}
 
-	_createOrRemoveAreaOverlay(olMap, olFeature) {
+	_createOrRemoveAreaOverlay(olFeature, olMap) {
 		let areaOverlay = olFeature.get('area');
 		if (olFeature.getGeometry() instanceof Polygon) {		
 			
@@ -119,7 +119,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}		
 	}
 
-	_createOrRemovePartitionOverlays(olMap, olFeature, simplifiedGeometry = null) {
+	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
 		if (!simplifiedGeometry) {
 			simplifiedGeometry = olFeature.getGeometry();
 			if (olFeature.getGeometry() instanceof Polygon) {

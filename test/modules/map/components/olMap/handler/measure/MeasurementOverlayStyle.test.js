@@ -68,7 +68,7 @@ describe('MeasurementOverlayStyle', () => {
 
 		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		classUnderTest._createDistanceOverlay(mapMock, feature);
+		classUnderTest._createDistanceOverlay(feature, mapMock);
 
 		const baOverlay = feature.get('measurement').getElement();
 		expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
@@ -88,7 +88,7 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry = new LineString([[0, 0], [12345, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
-		classUnderTest._createOrRemovePartitionOverlays(mapMock, feature);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
@@ -107,7 +107,7 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry = new LineString([[0, 0], [12345, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
-		classUnderTest._createOrRemovePartitionOverlays(mapMock, feature);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock,);
 
 		expect(feature.get('partitions').length).toBe(12);
 	});
@@ -126,7 +126,7 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 		const feature = new Feature({ geometry: geometry });
 
-		classUnderTest._createOrRemovePartitionOverlays(mapMock, feature);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
@@ -148,11 +148,11 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		
-		classUnderTest._createOrRemovePartitionOverlays(mapMock, feature);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		expect(feature.get('partitions').length).toBe(12);
 
 		geometry.setCoordinates([[0, 0], [12345, 0]]);
-		classUnderTest._createOrRemovePartitionOverlays(mapMock, feature);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
@@ -174,12 +174,12 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry =  new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 		const feature = new Feature({ geometry: geometry });
 		
-		classUnderTest._createOrRemoveAreaOverlay(mapMock, feature);
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 		expect(feature.get('area')).toBeTruthy();
 
 		// change to Line
 		geometry.setCoordinates([[0, 0], [12345, 0]]);
-		classUnderTest._createOrRemoveAreaOverlay(mapMock, feature);
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 
 		expect(feature.get('area')).toBeFalsy();
 	});
