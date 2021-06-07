@@ -36,105 +36,105 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	/**
 	 * @override
-	 * @param {ol.feature} feature 
-	 * @param {ol.map} map
+	 * @param {ol.feature} olFeature 
+	 * @param {ol.map} olMap
 	 */
-	add(feature, map) {
-		this._createDistanceOverlay(map, feature);
-		this._createOrRemoveAreaOverlay(map, feature);
-		this._createOrRemovePartitionOverlays(map, feature);
+	add(olFeature, olMap) {
+		this._createDistanceOverlay(olFeature, olMap);
+		this._createOrRemoveAreaOverlay(olFeature, olMap);
+		this._createOrRemovePartitionOverlays(olFeature, olMap);
 
-		this._restoreManualOverlayPosition(feature, map);
+		this._restoreManualOverlayPosition(olFeature, olMap);
 	}
 
 	/**
 	 * @override
-	 * @param {ol.feature} feature 
-	 * @param {ol.map} map
+	 * @param {ol.feature} olFeature 
+	 * @param {ol.map} olMap
 	 * @param {ol.geometry|null} geometry
 	 */
-	update(feature, map, geometry = null) {	
-		const distanceOverlay = feature.get('measurement');
-		const measureGeometry = geometry ? geometry : feature.getGeometry();
+	update(olFeature, olMap, geometry = null) {	
+		const distanceOverlay = olFeature.get('measurement');
+		const measureGeometry = geometry ? geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
-			this._createOrRemoveAreaOverlay(map, feature);
-			this._createOrRemovePartitionOverlays(map, feature, measureGeometry);
+			this._createOrRemoveAreaOverlay(olFeature, olMap);
+			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}		
 	}
 	
 	/**
 	 * @override
-	 * @param {ol.feature} feature 
-	 * @param {ol.map} map
+	 * @param {ol.feature} olFeature 
+	 * @param {ol.map} olMap
 	 */
-	remove(feature, map) {
-		const featureOverlays = feature.get('overlays') || [];				
-		featureOverlays.forEach(o => map.removeOverlay(o));
-		feature.set('measurement', null);
-		feature.set('area', null);
-		feature.set('partitions', null);
-		feature.set('overlays', []);		
+	remove(olFeature, olMap) {
+		const featureOverlays = olFeature.get('overlays') || [];				
+		featureOverlays.forEach(o => olMap.removeOverlay(o));
+		olFeature.set('measurement', null);
+		olFeature.set('area', null);
+		olFeature.set('partitions', null);
+		olFeature.set('overlays', []);		
 	}
 
-	_createDistanceOverlay(map, feature) {		
+	_createDistanceOverlay(olFeature, olMap) {		
 		const createNew = () => {	
 			const isDraggable = !this._environmentService.isTouch();
-			const overlay = this._createOlOverlay(map, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
-			feature.set('measurement', overlay);			
-			this._add(overlay, feature, map);		
+			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
+			olFeature.set('measurement', overlay);			
+			this._add(overlay, olFeature, olMap);		
 			return overlay;			
 		};
-		const distanceOverlay = feature.get('measurement') || createNew();		
-		this._updateOlOverlay(distanceOverlay, feature.getGeometry());	
+		const distanceOverlay = olFeature.get('measurement') || createNew();		
+		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());	
 		return distanceOverlay;
 	}
 
-	_createOrRemoveAreaOverlay(map, feature) {
-		let areaOverlay = feature.get('area');
-		if (feature.getGeometry() instanceof Polygon) {		
+	_createOrRemoveAreaOverlay(olFeature, olMap) {
+		let areaOverlay = olFeature.get('area');
+		if (olFeature.getGeometry() instanceof Polygon) {		
 			
-			if (feature.getGeometry().getArea())	{
+			if (olFeature.getGeometry().getArea())	{
 				const isDraggable = !this._environmentService.isTouch();
 				
 				if (!areaOverlay) {
-					areaOverlay = this._createOlOverlay(map, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
-					this._add(areaOverlay, feature, map);
+					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
+					this._add(areaOverlay, olFeature, olMap);
 				}
-				this._updateOlOverlay(areaOverlay, feature.getGeometry());
-				feature.set('area', areaOverlay);					
+				this._updateOlOverlay(areaOverlay, olFeature.getGeometry());
+				olFeature.set('area', areaOverlay);					
 			}
 			else {
 				if (areaOverlay) {
-					this._remove(areaOverlay, feature, map);
-					feature.set('area', null);					
+					this._remove(areaOverlay, olFeature, olMap);
+					olFeature.set('area', null);					
 				}
 			}		
 		}
 		else {
 			if (areaOverlay) {
-				this._remove(areaOverlay, feature, map);
-				feature.set('area', null);					
+				this._remove(areaOverlay, olFeature, olMap);
+				olFeature.set('area', null);					
 			}
 		}		
 	}
 
-	_createOrRemovePartitionOverlays(map, feature, simplifiedGeometry = null) {
+	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
 		if (!simplifiedGeometry) {
-			simplifiedGeometry = feature.getGeometry();
-			if (feature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(feature.getGeometry().getCoordinates()[0]);
+			simplifiedGeometry = olFeature.getGeometry();
+			if (olFeature.getGeometry() instanceof Polygon) {
+				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates()[0]);
 			}
 		}
-		const partitions = feature.get('partitions') || [];
-		const resolution = map.getView().getResolution();
+		const partitions = olFeature.get('partitions') || [];
+		const resolution = olMap.getView().getResolution();
 		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
-				partition = this._createOlOverlay(map, { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
-				this._add(partition, feature, map);
+				partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
+				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
 			this._updateOlOverlay(partition, simplifiedGeometry, i);
@@ -143,20 +143,20 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 				const removablePartition = partitions[j];
-				this._remove(removablePartition, feature, map);
+				this._remove(removablePartition, olFeature, olMap);
 				partitions.pop();
 			}
 		}
-		feature.set('partitions', partitions);
+		olFeature.set('partitions', partitions);
 	}
 
-	_restoreManualOverlayPosition(feature) {
+	_restoreManualOverlayPosition(olFeature) {
 		const draggableOverlayTypes = ['area', 'measurement'];
 		draggableOverlayTypes.forEach(t => {
-			const overlay = feature.get(t);
+			const overlay = olFeature.get(t);
 			if (overlay) {
-				const posX = feature.get(t + '_position_x');
-				const posY = feature.get(t + '_position_y');
+				const posX = olFeature.get(t + '_position_x');
+				const posY = olFeature.get(t + '_position_y');
 				if (posX !== undefined && posY !== undefined) {
 					overlay.set('manualPositioning', true);
 					overlay.setOffset([0, 0]);
@@ -166,14 +166,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		});			
 	}
 
-	_createOlOverlay(map, overlayOptions = {}, type, projectionHints, isDraggable = false) {
+	_createOlOverlay(olMap, overlayOptions = {}, type, projectionHints, isDraggable = false) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
 		measurementOverlay.isDraggable = isDraggable;
 		measurementOverlay.projectionHints = projectionHints;
 		const overlay = new Overlay({ ...overlayOptions, element: measurementOverlay, stopEvent: isDraggable });
 		if (isDraggable) {
-			this._createDragOn(overlay, map);
+			this._createDragOn(overlay, olMap);
 		}
 		return overlay;
 	}
@@ -187,9 +187,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 	}
 
-	_createDragOn(overlay, map) {
+	_createDragOn(overlay, olMap) {
 		const element = overlay.getElement();
-		const dragPanInteraction = map.getInteractions().getArray().find(i =>  i instanceof DragPan );
+		const dragPanInteraction = olMap.getInteractions().getArray().find(i =>  i instanceof DragPan );
 
 		if (dragPanInteraction) {
 			const handleMouseDown = () => {

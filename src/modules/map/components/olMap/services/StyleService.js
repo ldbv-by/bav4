@@ -18,18 +18,18 @@ export const StyleTypes = Object.freeze({
 export class StyleService {
 	/**
      * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature. 
-     * @param {ol.Map} map the map, where overlays related to the feature-style will be added
-     * @param {ol.Feature} olFeature the feature to be styled
+     * @param {ol.Feature} olFeature the feature to be styled 
+ 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
      * @param {StyleType} styleType the styletype, if not explicit specified (styletype==null|undefined), 
      * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists, 
      * no styles or overlays will be added.
      */
-	addStyle(map, olFeature, styleType = null ) {
+	addStyle(olFeature, olMap, styleType = null ) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		if (usingStyleType) {
 			switch (usingStyleType) {
 				case StyleTypes.MEASURE:
-					this._addMeasureStyle(map, olFeature);
+					this._addMeasureStyle(olFeature, olMap);
 					break;        
 				default:
 					console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -54,18 +54,18 @@ export class StyleService {
 
 	/**
      * Removes overlays (added by OverlayStyle-classes) from the map and the feature
-     * @param {ol.Map} map the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      */
-	removeStyle(map, olFeature) {
+	removeStyle(olFeature, olMap) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.remove(map, olFeature);
+		overlayService.remove(olMap, olFeature);
 	}
 
-	_addMeasureStyle(map, olFeature) {
+	_addMeasureStyle(olFeature, olMap) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
 		olFeature.setStyle(measureStyleFunction(olFeature));		
-		overlayService.add(map, olFeature, StyleTypes.MEASURE);		
+		overlayService.add(olMap, olFeature, StyleTypes.MEASURE);		
 	}
 
 	_detectStyleType(olFeature) {

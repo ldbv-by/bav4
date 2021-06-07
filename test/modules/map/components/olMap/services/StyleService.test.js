@@ -76,7 +76,7 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest.addStyle(mapMock, feature);
+			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -95,7 +95,7 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest.addStyle(mapMock, feature, 'measure');
+			instanceUnderTest.addStyle(feature, mapMock, 'measure');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -114,7 +114,7 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
 
-			instanceUnderTest.addStyle(mapMock, feature, 'unknown');
+			instanceUnderTest.addStyle(feature, mapMock, 'unknown');
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -155,7 +155,7 @@ describe('StyleService', () => {
 				return { getArray:() => [] };
 			} };
     
-			instanceUnderTest.removeStyle(mapMock, feature);
+			instanceUnderTest.removeStyle(feature, mapMock);
     
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
