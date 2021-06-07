@@ -38,35 +38,35 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 export class VectorImportService {
 
 
-	// needed soon
-	// isMeasureFeature(olFeature) {
-	// 	const regex = /^measure/;
-	// 	return (olFeature && regex.test(olFeature.getId()));
-	// }
-
 	/**
      * Ensures that feature specific stylings and overlays are set for this source
-     * @param {VectorSource} olVectorSource
-     * @param {Map} olMap
+     * @param {ol.VectorSource} olVectorSource
+     * @param {ol.Map} olMap
      * @returns object containing the addListenerKey and clearListenerKey
      */
 	// eslint-disable-next-line no-unused-vars
-	applyStyling(vectorSource, map) {
-		//Todo: here we will apply stylings and overlays
-		//probably we will need a map instance for the overlays
-		const addListenerKey = vectorSource.on('addfeature', () => {
+	applyStyling(olVectorSource, olMap) {
+		const {	StyleService: styleService } = $injector.inject('StyleService');
+		
+		const addListenerKey = olVectorSource.on('addfeature', event => {
+			styleService.addStyle(olMap, event.feature);
 		});
-		const clearListenerKey = vectorSource.on('clear', () => {
+		const removeListenerKey = olVectorSource.on('removefeature', event => {
+			styleService.removeStyle(olMap, event.feature);
 		});
-		return { addListenerKey, clearListenerKey };
+		const clearListenerKey = olVectorSource.on('clear', () => {
+			olVectorSource.getFeatures().forEach(f => styleService.removeStyle(olMap, f));
+		});
+		return { addListenerKey, removeListenerKey, clearListenerKey };
 	}
 
 	/**
      * Builds an ol VectorSource from an internal VectorGeoResource
      * @param {VectorGeoResource} vectorGeoResource 
+	 * @param {ol.Map} map
      * @returns olVectorSource
      */
-	vectorSourceFromInternalData(geoResource) {
+	vectorSourceFromInternalData(geoResource, olMap) {
 
 		const {
 			MapService: mapService
@@ -74,7 +74,7 @@ export class VectorImportService {
 
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
-		this.applyStyling(vectorSource);
+		this.applyStyling(vectorSource, olMap);
 
 		geoResource.getData().then(data => {
 			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
@@ -101,16 +101,17 @@ export class VectorImportService {
      * 
      * Builds an ol VectorSource from an external VectorGeoResource
      * @param {VectorGeoResource} vectorGeoResource 
+	 * @param {ol.Map} map
      * @returns olVectorSource
      */
-	vectorSourceFromExternalData(geoResource) {
+	vectorSourceFromExternalData(geoResource, olMap) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),
 			loader: featureLoader,
 			format: mapVectorSourceTypeToFormat(geoResource.sourceType)
 		});
-		this.applyStyling(source);
+		this.applyStyling(source, olMap);
 		return source;
 	}
 }
