@@ -24,7 +24,7 @@ import { measurementReducer } from '../../../../../../../src/modules/map/store/m
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
-import { StyleService } from '../../../../../../../src/modules/map/components/olMap/services/StyleService';
+import { Style } from 'ol/style';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -32,6 +32,28 @@ register(proj4);
 
 
 describe('OlMeasurementHandler', () => {
+	class MockClass {
+		constructor() {
+			this.get = 'I\'m a StyleService.';
+		}
+
+		addStyle() {}
+			
+		getStyleFunction() {
+			const styleFunction = () => {
+				const styles = [
+					new Style()
+				];
+			
+				return styles;
+			};
+			
+			return styleFunction;
+		}
+
+	}
+
+
 	const geoResourceServiceMock = {
 		addOrReplace() {},		
 		// eslint-disable-next-line no-unused-vars
@@ -75,7 +97,7 @@ describe('OlMeasurementHandler', () => {
 				}
 			})
 			.register('OverlayService', OverlayService)
-			.register('StyleService', StyleService);
+			.register('StyleService', MockClass);
 	};
 
 	const createLayer = () => {
