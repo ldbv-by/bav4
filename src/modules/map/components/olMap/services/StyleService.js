@@ -54,18 +54,18 @@ export class StyleService {
 
 	/**
      * Removes overlays (added by OverlayStyle-classes) from the map and the feature
-     * @param {ol.Map} map the map, where overlays related to the feature-style exists
+     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
      */
-	removeStyle(map, olFeature) {
+	removeStyle(olMap, olFeature) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.remove(map, olFeature);
+		overlayService.remove(olMap, olFeature);
 	}
 
-	_addMeasureStyle(map, olFeature) {
+	_addMeasureStyle(olMap, olFeature) {
 		const {	OverlayService: overlayService } = $injector.inject('OverlayService');
 		olFeature.setStyle(measureStyleFunction(olFeature));		
-		overlayService.add(map, olFeature, StyleTypes.MEASURE);		
+		overlayService.add(olMap, olFeature, StyleTypes.MEASURE);		
 	}
 
 	_detectStyleType(olFeature) {
