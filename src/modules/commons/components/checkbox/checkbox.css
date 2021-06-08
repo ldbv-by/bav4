@@ -27,18 +27,19 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
   .ba-checkbox span:first-child svg {
     position: absolute;
     z-index: 1;
-    top: .5em;
-    left: 0.375em;
     fill: none;
     stroke: white;
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 1em;
-    stroke-dashoffset: 1em;
+    stroke-dasharray: 1.2em;
+    stroke-dashoffset: 1.2em;
     transition: all 0.3s ease;
     transition-delay: 0.1s;
     transform: translate3d(0, 0, 0);
+    top: 0;
+    left: 0;
+    padding: .3em;
   }
   .ba-checkbox span:first-child:before {
     content: "";
@@ -82,6 +83,9 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
   }
   .input:checked + .ba-checkbox span:first-child svg {
     stroke-dashoffset: 0;
+  }
+  .input:disabled + .ba-checkbox span:first-child svg {
+    stroke: var(--icon-default-color);
   }
   .input:checked + .ba-checkbox span:first-child:before {
     transform: scale(2.2);
