@@ -3,6 +3,19 @@ import { BaElement } from '../../../BaElement';
 import css from './checkbox.css';
 
 /**
+ * Checkbox.
+ * 
+ * Configurable Attributes:
+ * - `onToggle()`
+ * - `checked` (true|false)
+ * - `disabled` (true|false)
+ * - `title` 
+ * 
+ * Configurable Properties:
+ * - `onToggle()`
+ * - `checked` (default=false)
+ * - `title` (default='')
+ * - `disabled` (default=false)
  * 
  * @class
  * @author alsturm
