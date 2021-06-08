@@ -5,6 +5,7 @@ import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
 
 
 
@@ -28,12 +29,12 @@ describe('MeasurementOverlayStyle', () => {
 					return area + ' m²';
 				}
 			});
-		
+
 	};
 
 	beforeEach(() => {
 		setup();
-	}); 
+	});
 	const createFeature = () => {
 		const feature = new Feature();
 		feature.set('measurement', {});
@@ -57,12 +58,14 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('overlays')).toEqual([]);
 	});
 
-	it ('creates overlay content for line', () => { 
+	it('creates overlay content for line', () => {
 		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = { addOverlay: addOverlaySpy,
+		const mapMock = {
+			addOverlay: addOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
-			} };
+				return { getArray: () => [] };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
 
@@ -74,15 +77,17 @@ describe('MeasurementOverlayStyle', () => {
 		expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
 	});
 
-	it ('creates partition tooltips for line small zoom', () => { 
+	it('creates partition tooltips for line small zoom', () => {
 		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = { addOverlay: addOverlaySpy,
+		const mapMock = {
+			addOverlay: addOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
+				return { getArray: () => [] };
 			},
 			getView() {
-				return { getResolution:() => 50 };
-			} };
+				return { getResolution: () => 50 };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new LineString([[0, 0], [12345, 0]]);
@@ -93,15 +98,17 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('partitions').length).toBe(1);
 	});
 
-	it ('creates partition tooltips for line big zoom', () => { 
+	it('creates partition tooltips for line big zoom', () => {
 		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = { addOverlay: addOverlaySpy,
+		const mapMock = {
+			addOverlay: addOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
+				return { getArray: () => [] };
 			},
 			getView() {
-				return { getResolution:() => 1 };
-			} };
+				return { getResolution: () => 1 };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new LineString([[0, 0], [12345, 0]]);
@@ -114,13 +121,15 @@ describe('MeasurementOverlayStyle', () => {
 
 	it('creates partition tooltips for not closed polygon', () => {
 		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = { addOverlay: addOverlaySpy,
+		const mapMock = {
+			addOverlay: addOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
+				return { getArray: () => [] };
 			},
 			getView() {
-				return { getResolution:() => 50 };
-			} };
+				return { getResolution: () => 50 };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
@@ -134,20 +143,21 @@ describe('MeasurementOverlayStyle', () => {
 	it('removes partition tooltips after shrinking very long line', () => {
 		const addOverlaySpy = jasmine.createSpy();
 		const removeOverlaySpy = jasmine.createSpy();
-		const mapMock = { 
+		const mapMock = {
 			addOverlay: addOverlaySpy,
-			removeOverlay:removeOverlaySpy,
+			removeOverlay: removeOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
+				return { getArray: () => [] };
 			},
 			getView() {
-				return { getResolution:() => 50 };
-			} };
+				return { getResolution: () => 50 };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		
+
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		expect(feature.get('partitions').length).toBe(12);
 
@@ -160,20 +170,21 @@ describe('MeasurementOverlayStyle', () => {
 	it('removes area overlay after change from polygon to line', () => {
 		const addOverlaySpy = jasmine.createSpy();
 		const removeOverlaySpy = jasmine.createSpy();
-		const mapMock = { 
+		const mapMock = {
 			addOverlay: addOverlaySpy,
-			removeOverlay:removeOverlaySpy,
+			removeOverlay: removeOverlaySpy,
 			getInteractions() {
-				return { getArray:() => [] };
+				return { getArray: () => [] };
 			},
 			getView() {
-				return { getResolution:() => 50 };
-			} };
+				return { getResolution: () => 50 };
+			}
+		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry =  new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
 		const feature = new Feature({ geometry: geometry });
-		
+
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 		expect(feature.get('area')).toBeTruthy();
 
@@ -185,22 +196,26 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('writes manual overlay-position to the related feature', () => {
-		const draggedOverlayMock = { getPosition:() => [42, 21], get(property) {
-			return property === 'manualPositioning';
-		} };
-		const staticOverlayMock = { getPosition:() => [], get() {
-			return false;
-		} };
+		const draggedOverlayMock = {
+			getPosition: () => [42, 21], get(property) {
+				return property === 'manualPositioning';
+			}
+		};
+		const staticOverlayMock = {
+			getPosition: () => [], get() {
+				return false;
+			}
+		};
 
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		
+
 		feature.set('measurement', draggedOverlayMock);
 		feature.set('area', draggedOverlayMock);
 		feature.set('static', staticOverlayMock);
-		
+
 		saveManualOverlayPosition(feature);
-		
+
 		expect(feature.get('measurement_position_x')).toBe(42);
 		expect(feature.get('measurement_position_y')).toBe(21);
 		expect(feature.get('area_position_x')).toBe(42);
@@ -212,47 +227,93 @@ describe('MeasurementOverlayStyle', () => {
 
 	it('restore manual overlay-position from the related feature', () => {
 		let actualPosition;
-		const actualProperty = { key:'', value:null };
-		const overlayMock = { setPosition(pos) {
-			actualPosition = pos;
-		}, set(key, value) {
-			actualProperty.key = key;
-			actualProperty.value = value;
-		}, setOffset() {} };
+		const actualProperty = { key: '', value: null };
+		const overlayMock = {
+			setPosition(pos) {
+				actualPosition = pos;
+			}, set(key, value) {
+				actualProperty.key = key;
+				actualProperty.value = value;
+			}, setOffset() { }
+		};
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		
+
 		feature.set('measurement', overlayMock);
 		feature.set('measurement_position_x', 42);
 		feature.set('measurement_position_y', 21);
-		
+
 		classUnderTest._restoreManualOverlayPosition(feature);
-		
+
 		expect(actualPosition).toEqual([42, 21]);
-		expect(actualProperty).toEqual({ key:'manualPositioning', value:true });		
+		expect(actualProperty).toEqual({ key: 'manualPositioning', value: true });
 	});
 
 	it('cannot restore manual overlay-position from the related feature', () => {
 		let actualPosition;
-		const actualProperty = { key:'', value:null };
-		const overlayMock = { setPosition(pos) {
-			actualPosition = pos;
-		}, set(key, value) {
-			actualProperty.key = key;
-			actualProperty.value = value;
-		}, setOffset() {} };
+		const actualProperty = { key: '', value: null };
+		const overlayMock = {
+			setPosition(pos) {
+				actualPosition = pos;
+			}, set(key, value) {
+				actualProperty.key = key;
+				actualProperty.value = value;
+			}, setOffset() { }
+		};
 		const classUnderTest = new MeasurementOverlayStyle();
 		const geometry = new LineString([[0, 0], [123456, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		
+
 		feature.set('measurement', overlayMock);
-		feature.set('measurement_position_x', 42);		
-		
+		feature.set('measurement_position_x', 42);
+
 		classUnderTest._restoreManualOverlayPosition(feature);
-		
+
 		expect(actualPosition).toBeUndefined();
-		expect(actualProperty).toEqual( { key:'', value:null });		
+		expect(actualProperty).toEqual({ key: '', value: null });
+	});
+
+	const createOverlayMock = (type, feature) => {
+		return {
+			get: () => feature, getElement() {
+				return {
+					type: type
+				};
+			}
+		};
+	};
+
+	it('reconnect unbounded overlays to feature, instead of create new one', () => {
+		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		feature.setId('measure_1234567891012');
+
+
+		const distanceOverlayMock = createOverlayMock(MeasurementOverlayTypes.DISTANCE, feature);
+		const areaOverlayMock = createOverlayMock(MeasurementOverlayTypes.AREA, feature);
+		const partitionOverlayMock = createOverlayMock(MeasurementOverlayTypes.DISTANCE_PARTITION, feature);
+		const addOverlaySpy = jasmine.createSpy();
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getOverlays: () => [distanceOverlayMock, areaOverlayMock, partitionOverlayMock],
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+
+		const classUnderTest = new MeasurementOverlayStyle();
+
+		classUnderTest._findUnboundedOverlays(feature, mapMock);
+
+		expect(addOverlaySpy).not.toHaveBeenCalled();
+		expect(feature.get('measurement')).toBeTruthy();
+		expect(feature.get('area')).toBeTruthy();
+		expect(feature.get('partitions')).toBeTruthy();
 	});
 
 });

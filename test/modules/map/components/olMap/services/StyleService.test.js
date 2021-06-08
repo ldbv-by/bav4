@@ -27,7 +27,7 @@ describe('StyleService', () => {
 		}
 	};
 	let instanceUnderTest;
-	
+
 
 	beforeAll(() => {
 		TestUtils.setupStoreAndDi();
@@ -35,7 +35,7 @@ describe('StyleService', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
-			.register('OverlayService', OverlayService) ;
+			.register('OverlayService', OverlayService);
 	});
 
 	beforeEach(() => {
@@ -43,16 +43,16 @@ describe('StyleService', () => {
 	});
 	describe('detecting StyleTypes ', () => {
 		it('detects measure as type from olFeature', () => {
-			const feature = { getId:() => 'measure_123' };
-			
+			const feature = { getId: () => 'measure_123' };
+
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.MEASURE);
 		});
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId:() => 'mea_sure_123' };
-			const feature2 = { getId:() => '123_measure_123' };
-			const feature3 = { getId:() => ' measure_123' };
-			const feature4 = { getId:() => '123measure_123' };
+			const feature1 = { getId: () => 'mea_sure_123' };
+			const feature2 = { getId: () => '123_measure_123' };
+			const feature3 = { getId: () => ' measure_123' };
+			const feature4 = { getId: () => '123measure_123' };
 
 			expect(instanceUnderTest._detectStyleType(feature1)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(feature2)).toBeNull();
@@ -63,18 +63,27 @@ describe('StyleService', () => {
 
 	describe('add style', () => {
 		it('adds measure-style to feature with implicit style-type', () => {
-			const feature = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			feature.setId('measure_123');
 			const addOverlaySpy = jasmine.createSpy();
 			const styleSetterSpy = spyOn(feature, 'setStyle');
-			const propertySetterSpy =  spyOn(feature, 'set');
-			
-			const viewMock = { getResolution() {
-				return 50;
-			} };
-			const mapMock = { getView:() => viewMock, addOverlay:addOverlaySpy, getInteractions() {
-				return { getArray:() => [] };
-			} };
+			const propertySetterSpy = spyOn(feature, 'set');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				addOverlay: addOverlaySpy,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
 
 			instanceUnderTest.addStyle(feature, mapMock);
 
@@ -84,16 +93,26 @@ describe('StyleService', () => {
 		});
 
 		it('adds measure-style to feature with explicit style-type', () => {
-			const feature = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			const addOverlaySpy = jasmine.createSpy();
 			const styleSetterSpy = spyOn(feature, 'setStyle');
-			const propertySetterSpy =  spyOn(feature, 'set');			
-			const viewMock = { getResolution() {
-				return 50;
-			} };
-			const mapMock = { getView:() => viewMock, addOverlay:addOverlaySpy, getInteractions() {
-				return { getArray:() => [] };
-			} };
+			const propertySetterSpy = spyOn(feature, 'set');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				addOverlay: addOverlaySpy,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
 
 			instanceUnderTest.addStyle(feature, mapMock, 'measure');
 
@@ -102,17 +121,21 @@ describe('StyleService', () => {
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 		it('adding style to feature with unknown style-type fails', () => {
-			const feature = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			const addOverlaySpy = jasmine.createSpy();
 			const warnSpy = spyOn(console, 'warn');
 			const styleSetterSpy = spyOn(feature, 'setStyle');
-			const propertySetterSpy =  spyOn(feature, 'set');			
-			const viewMock = { getResolution() {
-				return 50;
-			} };
-			const mapMock = { getView:() => viewMock, addOverlay:addOverlaySpy, getInteractions() {
-				return { getArray:() => [] };
-			} };
+			const propertySetterSpy = spyOn(feature, 'set');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock, addOverlay: addOverlaySpy, getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
 
 			instanceUnderTest.addStyle(feature, mapMock, 'unknown');
 
@@ -121,8 +144,8 @@ describe('StyleService', () => {
 			expect(addOverlaySpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
 		});
-	
-		
+
+
 	});
 
 	describe('getStyleFunction', () => {
@@ -135,7 +158,7 @@ describe('StyleService', () => {
 			const warnSpy = spyOn(console, 'warn');
 
 			const styleFunction = instanceUnderTest.getStyleFunction('unknown');
-		
+
 			expect(styleFunction).toBeUndefined();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
 		});
@@ -145,18 +168,22 @@ describe('StyleService', () => {
 
 	describe('removes styles', () => {
 		it('removes a style from feature', () => {
-			const feature = new Feature({ geometry:new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			feature.set('overlays', [{}, {}]);
 			const removeOverlaySpy = jasmine.createSpy();
-			const viewMock = { getResolution() {
-				return 50;
-			} };
-			const mapMock = { getView:() => viewMock, removeOverlay:removeOverlaySpy, getInteractions() {
-				return { getArray:() => [] };
-			} };
-    
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock, removeOverlay: removeOverlaySpy, getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
 			instanceUnderTest.removeStyle(feature, mapMock);
-    
+
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 	});

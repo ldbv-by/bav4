@@ -39,15 +39,15 @@ export class VectorImportService {
 
 
 	/**
-     * Ensures that feature specific stylings and overlays are set for this source
-     * @param {ol.VectorSource} olVectorSource
-     * @param {ol.Map} olMap
-     * @returns object containing the addListenerKey and clearListenerKey
-     */
+	 * Ensures that feature specific stylings and overlays are set for this source
+	 * @param {ol.VectorSource} olVectorSource
+	 * @param {ol.Map} olMap
+	 * @returns object containing the addListenerKey and clearListenerKey
+	 */
 	// eslint-disable-next-line no-unused-vars
 	applyStyling(olVectorSource, olMap) {
-		const {	StyleService: styleService } = $injector.inject('StyleService');
-		
+		const { StyleService: styleService } = $injector.inject('StyleService');
+
 		const addListenerKey = olVectorSource.on('addfeature', event => {
 			styleService.addStyle(event.feature, olMap);
 		});
@@ -61,11 +61,11 @@ export class VectorImportService {
 	}
 
 	/**
-     * Builds an ol VectorSource from an internal VectorGeoResource
-     * @param {VectorGeoResource} vectorGeoResource 
+	 * Builds an ol VectorSource from an internal VectorGeoResource
+	 * @param {VectorGeoResource} vectorGeoResource 
 	 * @param {ol.Map} map
-     * @returns olVectorSource
-     */
+	 * @returns olVectorSource
+	 */
 	vectorSourceFromInternalData(geoResource, olMap) {
 
 		const {
@@ -98,12 +98,12 @@ export class VectorImportService {
 	}
 
 	/**
-     * 
-     * Builds an ol VectorSource from an external VectorGeoResource
-     * @param {VectorGeoResource} vectorGeoResource 
+	 * 
+	 * Builds an ol VectorSource from an external VectorGeoResource
+	 * @param {VectorGeoResource} vectorGeoResource 
 	 * @param {ol.Map} map
-     * @returns olVectorSource
-     */
+	 * @returns olVectorSource
+	 */
 	vectorSourceFromExternalData(geoResource, olMap) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({

@@ -11,26 +11,26 @@ export const getOverlays = (layer) => {
 };
 
 export class OverlayStyle {
-	constructor() {		
+	constructor() {
 	}
 
 	_add(overlay, feature, map) {
 		if (feature) {
-			const featureOverlays = feature.get('overlays') || [];		
-			featureOverlays.push(overlay);			
+			const featureOverlays = feature.get('overlays') || [];
+			featureOverlays.push(overlay);
 			overlay.set('feature', feature);
-			feature.set('overlays', featureOverlays);	
-		}				
-		map.addOverlay(overlay);		
+			feature.set('overlays', featureOverlays);
+		}
+		map.addOverlay(overlay);
 	}
 
 	_remove(overlay, feature, map) {
 		if (feature) {
-			const featureOverlays = feature.get('overlays') || [];		
-			feature.set('overlays', featureOverlays.filter(o => o !== overlay));				
+			const featureOverlays = feature.get('overlays') || [];
+			feature.set('overlays', featureOverlays.filter(o => o !== overlay));
 		}
 		map.removeOverlay(overlay);
-	}	
+	}
 
 	/**
 	 * @abstract
@@ -58,7 +58,7 @@ export class OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {
-		const featureOverlays = olFeature.get('overlays') || [];				
-		featureOverlays.forEach(o => olMap.removeOverlay(o));	
+		const featureOverlays = olFeature.get('overlays') || [];
+		featureOverlays.forEach(o => olMap.removeOverlay(o));
 	}
 }
