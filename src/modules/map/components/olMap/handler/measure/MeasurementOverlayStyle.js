@@ -159,7 +159,13 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 		const partitions = olFeature.get('partitions') || [];
 		const resolution = olMap.getView().getResolution();
-		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+		let delta;
+		if (partitions.length === 0) {
+			delta = olFeature.get('partition_delta') || getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+		}
+		else {
+			delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+		}
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
@@ -179,6 +185,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 		}
 		olFeature.set('partitions', partitions);
+		if (delta !== 1) {
+			olFeature.set('partition_delta', delta);
+		}
 	}
 
 	_restoreManualOverlayPosition(olFeature) {
