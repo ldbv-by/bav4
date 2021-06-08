@@ -4,10 +4,11 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
-import { toOlLayer, updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
+import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
@@ -24,12 +25,14 @@ export class OlMap extends BaElement {
 		super();
 		const {
 			GeoResourceService: georesourceService,
+			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
-			OlGeolocationHandler: geolocationHandler,
-		} = $injector.inject('GeoResourceService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
+			OlGeolocationHandler: geolocationHandler
+		} = $injector.inject('GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
 
 		this._geoResourceService = georesourceService;
+		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
@@ -62,9 +65,18 @@ export class OlMap extends BaElement {
 			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
-				// attribution: false,
+				attribution: false,
 				zoom: false,
+				rotate: false
 			}),
+			interactions: defaultInteractions({
+				//for embedded mode
+				//onFocusOnly: false,
+				pinchRotate: false,
+				
+			}).extend([new PinchRotate({
+				threshold: .5
+			})])
 		});
 
 		this._map.on('movestart', () => {
@@ -202,7 +214,7 @@ export class OlMap extends BaElement {
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+			const olLayer = resource ? this._layerService.toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = layers.find(layer => layer.geoResourceId === id);
