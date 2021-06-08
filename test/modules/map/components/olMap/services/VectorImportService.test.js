@@ -150,7 +150,7 @@ describe('VectorImportService', () => {
 				expect(clearListenerKey).toBeDefined();
 			});
 
-			it('calls #addStyle of the styleService on "addfeature"', () => {
+			it('calls StyleService#addStyle on "addfeature"', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olFeature = new Feature();
@@ -162,7 +162,7 @@ describe('VectorImportService', () => {
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
 			});
 			
-			it('calls #removeStyle of the styleService on "removefeature"', () => {
+			it('calls StyleService#removeStyle on "removefeature"', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olFeature = new Feature();
@@ -175,7 +175,7 @@ describe('VectorImportService', () => {
 			});
 
 
-			it('calls #removeStyle of the styleService on "clear"', () => {
+			it('calls StyleService#removeStyle on "clear"', () => {
 				const olMap = new Map();
 				const olFeature = new Feature();
 				const olSource = new VectorSource({ features:[olFeature] });
