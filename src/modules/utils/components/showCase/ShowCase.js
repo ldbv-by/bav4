@@ -136,10 +136,10 @@ export class ShowCase extends BaElement {
 			<p>Toggle-Button</p>
 			<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle id='toggle' title="Toggle" @toggle=${onToggle}><span>Toggle me!</span></ba-toggle></div>
 			<p>Checkbox</p>
-			<div><ba-checkbox id='checkbox'  title="checkbox tible" @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
-			<div><ba-checkbox id='checkbox' checked=true title="checkbox tible" @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox></div>
-			<div><ba-checkbox id='checkbox' disabled=true title="checkbox tible" @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox></div>
-			<div><ba-checkbox id='checkbox' checked=true disabled=true title="checkbox tible" @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox></div>
+			<div><ba-checkbox  title="checkbox tible" @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
+			<div><ba-checkbox  checked=true title="checkbox tible" @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox></div>
+			<div><ba-checkbox  disabled=true title="checkbox tible" @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox></div>
+			<div><ba-checkbox  checked=true disabled=true title="checkbox tible" @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox></div>
 			<hr>
 		</div>`;
 	}
