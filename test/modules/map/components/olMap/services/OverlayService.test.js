@@ -64,7 +64,7 @@ describe('OverlayService', () => {
 			mapMock.addOverlay = addOverlaySpy;
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.add(mapMock, feature, StyleTypes.MEASURE);
+			instanceUnderTest.add(feature, mapMock, StyleTypes.MEASURE);
 
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
@@ -78,7 +78,7 @@ describe('OverlayService', () => {
 			const propertySetterSpy = spyOn(feature, 'set');
 			mapMock.addOverlay = addOverlaySpy;
 
-			instanceUnderTest.add(mapMock, feature, 'unknown');
+			instanceUnderTest.add(feature, mapMock, 'unknown');
 
 			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).not.toHaveBeenCalled();

@@ -89,7 +89,7 @@ export class StyleService {
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		olFeature.setStyle(measureStyleFunction(olFeature));
-		overlayService.add(olMap, olFeature, StyleTypes.MEASURE);
+		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
 	}
 
 	_detectStyleType(olFeature) {

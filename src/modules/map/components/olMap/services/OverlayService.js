@@ -15,7 +15,7 @@ export class OverlayService {
      * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, 
      * no overlays will be added.
      */
-	add(olMap, olFeature, styleType) {	
+	add( olFeature, olMap, styleType) {	
 		const overlayStyle = this._getOverlayStyleByType(styleType);			
 		if (overlayStyle) {
 			overlayStyle.add(olFeature, olMap);

@@ -378,7 +378,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			this._activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
-			this._overlayService.add(this._map, this._activeSketch, StyleTypes.MEASURE);
+			this._overlayService.add( this._activeSketch, this._map, StyleTypes.MEASURE);
 
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
