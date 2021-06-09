@@ -59,20 +59,21 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR: {
 
+				const vectorLayer = new VectorLayer({
+					id: geoResource.id,
+				});
 				let vectorSource;
 				if (geoResource.url) {
-					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource, olMap);
+					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource, vectorLayer, olMap);
 					vectorSource.on('featuresloadstart', () => setFetching(true));
 					vectorSource.on(['featuresloadend', 'featuresloaderror'], () => setFetching(false));
 				}
 				else {
-					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource, olMap);
+					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource, vectorLayer, olMap);
 				}
+				vectorLayer.setSource(vectorSource);
 
-				return new VectorLayer({
-					id: geoResource.id,
-					source: vectorSource
-				});
+				return vectorLayer;
 			}
 
 			case GeoResourceTypes.AGGREGATE: {

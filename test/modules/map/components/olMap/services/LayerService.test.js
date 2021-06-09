@@ -46,7 +46,7 @@ describe('LayerService', () => {
 				expect(vectorOlLayer.get('id')).toBe('someId');
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
-				expect(spy).toHaveBeenCalledWith(vectorGeoresource, olMap);
+				expect(spy).toHaveBeenCalledWith(vectorGeoresource, vectorOlLayer, olMap);
 
 				//test load listener
 				vectorOlLayer.getSource().dispatchEvent('featuresloadstart');
@@ -83,7 +83,7 @@ describe('LayerService', () => {
 				expect(vectorOlLayer.get('id')).toBe('someId');
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
-				expect(spy).toHaveBeenCalledWith(vectorGeoresource, olMap);
+				expect(spy).toHaveBeenCalledWith(vectorGeoresource, vectorOlLayer, olMap);
 			});
 		});
 
