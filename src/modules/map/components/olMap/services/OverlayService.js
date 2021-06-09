@@ -24,12 +24,12 @@ export class OverlayService {
 
 	
 	/**
-	 * 
+	 * A Container-Object for optional properties related to a update of feature-overlays
 	 * @typedef {Object} UpdateProperties
-	 * @param {Number} opacity the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on the styletype belonging to the feature
-	 * @param {Boolean} top the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
-	 * @param {Boolean} visible the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
-	 * @param {ol.Geometry} geometry the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
+	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on the styletype belonging to the feature
+	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
+	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
+	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
 	 */
 	
 	/**
@@ -37,7 +37,9 @@ export class OverlayService {
      * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
      * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, no overlays will be updated.
-     * @param {UpdateProperties} properties the geometry, which is the anchor for placing the overlay.
+     * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * implementation of the OverlayService
      */
 	update(olFeature, olMap,  styleType, properties = {} ) {
 		const overlayStyle = this._getOverlayStyleByType(styleType);		

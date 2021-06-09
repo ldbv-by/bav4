@@ -41,19 +41,24 @@ export class StyleService {
 	}
 
 	/**
-	 * 
+	 * A Container-Object for optional properties related to a update of feature-style or -overlays
 	 * @typedef {Object} UpdateProperties
-	 * @param {Number} opacity the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on the styletype belonging to the feature
-	 * @param {Boolean} top the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
-	 * @param {Boolean} visible the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
+	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on 
+	 * the styletype belonging to the feature
+	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the 
+	 * topmost layer
+	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the 
+	 * specified feature, based on the styletype belonging to the feature
 	 */
 
 	/**
- 	 * 
-	 * @param {ol.Feature} olFeature 
-	 * @param {ol.Map} olMap 
-	 * @param {UpdateProperties} properties 
-	 * @param {StyleTypes} styleType 
+ 	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature. 
+	 * @param {ol.Feature} olFeature the feature to be styled
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * implementation of the StyleService
+	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update 
 	*/
 	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);		
