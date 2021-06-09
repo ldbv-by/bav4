@@ -126,7 +126,7 @@ describe('OverlayService', () => {
 			};
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.remove(mapMock, feature);
+			instanceUnderTest.remove( feature, mapMock);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});

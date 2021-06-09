@@ -51,7 +51,7 @@ export class OverlayService {
      * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
      */
-	remove(olMap, olFeature) {
+	remove(olFeature, olMap) {
 		const overlayStyle = new OverlayStyle();
 		overlayStyle.remove(olFeature, olMap);
 	}

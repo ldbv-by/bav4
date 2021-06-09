@@ -236,7 +236,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._dragPan);
 
 		this._helpTooltip.deactivate();
-		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(this._map, f));
+		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
 
 		setStatistic({ length: 0, area: 0 });
 
@@ -329,7 +329,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_removeSelectedFeatures() {
 		const selectedFeatures = this._select.getFeatures();
 		selectedFeatures.forEach(f => {
-			this._overlayService.remove(this._map, f);
+			this._overlayService.remove(f, this._map);
 			if (this._vectorLayer.getSource().hasFeature(f)) {
 				this._vectorLayer.getSource().removeFeature(f);
 			}
@@ -385,7 +385,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		});
 
-		draw.on('drawabort', event => this._overlayService.remove(this._map, event.feature));
+		draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
 
 		draw.on('drawend', event => {
 			finishDistanceOverlay(event);

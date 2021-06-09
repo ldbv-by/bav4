@@ -69,7 +69,7 @@ export class StyleService {
 	 */
 	removeStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.remove(olMap, olFeature);
+		overlayService.remove(olFeature, olMap);
 	}
 
 	/**
