@@ -10,15 +10,15 @@ export class OverlayService {
 
 	/**
      * Adds explicit named overlays (OverlayStyle by StyleType) to the specified feature. 
-     * @param {ol.Map} map the map, where overlays related to the feature-style will be added
+     * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
      * @param {ol.Feature} olFeature the feature to be styled
      * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, 
      * no overlays will be added.
      */
-	add(map, olFeature, styleType) {	
+	add(olMap, olFeature, styleType) {	
 		const overlayStyle = this._getOverlayStyleByType(styleType);			
 		if (overlayStyle) {
-			overlayStyle.add(olFeature, map);
+			overlayStyle.add(olFeature, olMap);
 		}
 	}
 
@@ -34,26 +34,26 @@ export class OverlayService {
 	
 	/**
      * Updates overlays (added by OverlayStyle-classes) on the map and the feature
-     * @param {ol.Map} map the map, where overlays related to the feature-style exists
+     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
      * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, no overlays will be updated.
      * @param {UpdateProperties} properties the geometry, which is the anchor for placing the overlay.
      */
-	update(map, olFeature, styleType, properties = {} ) {
+	update(olMap, olFeature, styleType, properties = {} ) {
 		const overlayStyle = this._getOverlayStyleByType(styleType);		
 		if (overlayStyle) {
-			overlayStyle.update(olFeature, map, properties);
+			overlayStyle.update(olFeature, olMap, properties);
 		}
 	}
 
 	/**
      * Removes overlays (added by OverlayStyle-classes) from the map and the feature
-     * @param {ol.Map} map the map, where overlays related to the feature-style exists
+     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
      * @param {ol.Feature} olFeature the feature
      */
-	remove(map, feature) {
+	remove(olMap, olFeature) {
 		const overlayStyle = new OverlayStyle();
-		overlayStyle.remove(feature, map);
+		overlayStyle.remove(olFeature, olMap);
 	}
 
 	_getOverlayStyleByType(styleType) {
