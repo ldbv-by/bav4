@@ -3,6 +3,7 @@ import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON } from 'ol/format';
+import { unByKey } from 'ol/Observable';
 
 
 
@@ -32,32 +33,81 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 
 /**
  * Service that imports vector data from internal and external geoResources.
+ * Specific stylings will be applied if required.
  * @class
  * @author taulinger
  */
 export class VectorImportService {
 
+	_updateStyle(olFeature, olLayer, olMap)  {
+		const { StyleService: styleService } = $injector.inject('StyleService');
+		styleService.updateStyle(olFeature, olMap, {
+			visible: olLayer.getVisible(),
+			top: olMap.getLayers().item(olMap.getLayers().getLength() - 1) === olLayer,
+			opacity: olLayer.getOpacity()
+		});
+	}
+
+
+	_registerStyleEventListeners(olVectorSource, olLayer, olMap) {
+
+		const { StyleService: styleService } = $injector.inject('StyleService');
+
+		
+		const addFeatureListenerKey = olVectorSource.on('addfeature', event => {
+			styleService.addStyle(event.feature, olMap);
+			// //if we are already attached to map, we update also the style
+			// if (olLayer) {
+			this._updateStyle(event.feature, olLayer, olMap);
+			// }
+		});
+		const removeFeatureListenerKey = olVectorSource.on('removefeature', event => {
+			styleService.removeStyle(event.feature, olMap);
+		});
+		const clearFeaturesListenerKey = olVectorSource.on('clear', () => {
+			olVectorSource.getFeatures().forEach(f => styleService.removeStyle(f, olMap));
+		});
+
+		/**
+		 * Changes of visibility, opacity and index always go along with removing and re-adding the olLayer to the map
+		 * therefore it's sufficient to listen just to the 'add' event of the layers collection
+		*/
+		const addLayerListenerKey = olMap.getLayers().on('add', event => {
+			if (event.element === olLayer) {
+				olVectorSource.getFeatures().forEach(f => this._updateStyle(f, olLayer, olMap));
+			}
+		});
+
+		return { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, addLayerListenerKey };
+
+	}
+
 
 	/**
-	 * Ensures that feature specific stylings and overlays are set for this source
+	 * Ensures that specific stylings (and overlays) are set for this source
 	 * @param {ol.VectorSource} olVectorSource
 	 * @param {ol.Map} olMap
 	 * @returns object containing the addListenerKey and clearListenerKey
 	 */
-	// eslint-disable-next-line no-unused-vars
-	applyStyling(olVectorSource, olMap) {
+	_applyStyles(olVectorSource, olLayer, olMap) {
+
+		/**
+		 * We check if an added features needs a specifig styling,
+		 * apply the style and register the necessary event listeners in order to keep the style (and overlays)
+		 * up-to-date with the layer.
+		 */
 		const { StyleService: styleService } = $injector.inject('StyleService');
 
-		const addListenerKey = olVectorSource.on('addfeature', event => {
-			styleService.addStyle(event.feature, olMap);
+		const key = olVectorSource.on('addfeature', event => {
+
+			if (styleService._detectStyleType(event.feature)) {
+				styleService.addStyle(event.feature, olMap);
+				this._updateStyle(event.feature, olLayer, olMap);
+				this._registerStyleEventListeners(olVectorSource, olLayer, olMap);
+				unByKey(key);
+			}
+
 		});
-		const removeListenerKey = olVectorSource.on('removefeature', event => {
-			styleService.removeStyle(event.feature, olMap);
-		});
-		const clearListenerKey = olVectorSource.on('clear', () => {
-			olVectorSource.getFeatures().forEach(f => styleService.removeStyle(f, olMap));
-		});
-		return { addListenerKey, removeListenerKey, clearListenerKey };
 	}
 
 	/**
@@ -66,7 +116,7 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromInternalData(geoResource, olMap) {
+	vectorSourceFromInternalData(geoResource, olLayer, olMap) {
 
 		const {
 			MapService: mapService
@@ -74,7 +124,7 @@ export class VectorImportService {
 
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
-		this.applyStyling(vectorSource, olMap);
+		this._applyStyles(vectorSource, olLayer, olMap);
 
 		geoResource.getData().then(data => {
 			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
@@ -104,14 +154,14 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromExternalData(geoResource, olMap) {
+	vectorSourceFromExternalData(geoResource, olLayer, olMap) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),
 			loader: featureLoader,
 			format: mapVectorSourceTypeToFormat(geoResource.sourceType)
 		});
-		this.applyStyling(source, olMap);
+		this._applyStyles(source, olLayer, olMap);
 		return source;
 	}
 }
