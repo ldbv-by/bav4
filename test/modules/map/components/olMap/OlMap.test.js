@@ -9,12 +9,13 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
-import { changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import Event from 'ol/events/Event';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -22,6 +23,8 @@ window.customElements.define(OlMap.tag, OlMap);
 describe('OlMap', () => {
 
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
+	const initialZoomLevel = 10;
+	const initialRotationValue = .5;
 
 	const geoResourceServiceStub = {
 		byId(id) {
@@ -36,7 +39,7 @@ describe('OlMap', () => {
 	};
 
 	const layerServiceMock = {
-		toOlLayer() {}
+		toOlLayer() { }
 	};
 
 	const mapServiceMock = {
@@ -73,8 +76,9 @@ describe('OlMap', () => {
 	const setup = (state) => {
 		const defaultState = {
 			position: {
-				zoom: 10,
+				zoom: initialZoomLevel,
 				center: initialCenter,
+				rotation: initialRotationValue,
 			},
 		};
 		const combinedState = {
@@ -106,8 +110,9 @@ describe('OlMap', () => {
 	describe('when initialized', () => {
 		it('configures the map and adds a div which contains the ol-map', async () => {
 			const element = await setup();
-			expect(element._view.getZoom()).toBe(10);
+			expect(element._view.getZoom()).toBe(initialZoomLevel);
 			expect(element._view.getCenter()).toEqual(initialCenter);
+			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 			//all default controls are disabled
 			expect(element._map.getControls().getLength()).toBe(0);
@@ -115,6 +120,25 @@ describe('OlMap', () => {
 			expect(element._map.getInteractions().getLength()).toBe(9);
 		});
 	});
+
+	describe('view events', () => {
+
+		describe('rotation:change', () => {
+
+			it('updates the liveRotation property of the position state', async () => {
+				const rotationValue = .56786786;
+				const element = await setup();
+				const view = element._view;
+				const changeRotationEvent = new Event('change:rotation');
+				changeRotationEvent.target =  { getRotation: () => rotationValue };
+
+				view.dispatchEvent(changeRotationEvent);
+
+				expect(store.getState().position.liveRotation).toBe(rotationValue);
+			});
+		});
+	});
+
 
 	describe('map move events', () => {
 		describe('movestart', () => {
@@ -149,16 +173,18 @@ describe('OlMap', () => {
 				expect(store.getState().map.moveEnd.payload).toBe('moveend');
 			});
 
-			it('change state from view properties', async () => {
+			it('updates the position state properties', async () => {
 				const element = await setup();
 				const view = element._view;
 				spyOn(view, 'getZoom');
 				spyOn(view, 'getCenter');
+				spyOn(view, 'getRotation');
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 				expect(view.getZoom).toHaveBeenCalledTimes(1);
 				expect(view.getCenter).toHaveBeenCalledTimes(1);
+				expect(view.getRotation).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -260,7 +286,7 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-				
+
 				it('updates the \'contextclick\' property in pointer store', async () => {
 					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
@@ -304,7 +330,6 @@ describe('OlMap', () => {
 
 	describe('olView management', () => {
 
-
 		it('updates zoom and center', async () => {
 			const element = await setup();
 			const view = element._map.getView();
@@ -315,6 +340,22 @@ describe('OlMap', () => {
 			expect(viewSpy).toHaveBeenCalledWith({
 				zoom: 5,
 				center: fromLonLat([11, 48]),
+				rotation: initialRotationValue,
+				duration: 500
+			});
+		});
+
+		it('updates rotation', async () => {
+			const element = await setup();
+			const view = element._map.getView();
+			const viewSpy = spyOn(view, 'animate');
+
+			changeRotation(1);
+
+			expect(viewSpy).toHaveBeenCalledWith({
+				zoom: initialZoomLevel,
+				center: initialCenter,
+				rotation: 1,
 				duration: 500
 			});
 		});

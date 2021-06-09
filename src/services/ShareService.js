@@ -1,4 +1,5 @@
 import { $injector } from '../injection';
+import { round } from '../utils/numberUtils';
 import { QueryParameters } from './domain/queryParameters';
 
 export class ShareService {
@@ -51,6 +52,8 @@ export class ShareService {
 		//position
 		const { position: { center } } = state;
 		const { position: { zoom } } = state;
+		//rotation
+		const { position: { rotation } } = state;
 
 		const digits = mapService
 			.getSridDefinitionsForView()
@@ -61,8 +64,14 @@ export class ShareService {
 			.transform(center, mapService.getSrid(), mapService.getDefaultSridForView())
 			.map(n => n.toFixed(digits));
 
+		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
+		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);
+
 		extractedState[QueryParameters.CENTER] = transformedCenter;
-		extractedState[QueryParameters.ZOOM] = zoom;
+		extractedState[QueryParameters.ZOOM] = roundedZoom;
+		if (rotation !== 0) {
+			extractedState[QueryParameters.ROTATION] = roundedRotation;
+		}
 		return extractedState;
 	}
 
@@ -124,5 +133,14 @@ export class ShareService {
 
 		extractedState[QueryParameters.TOPIC] = current;
 		return extractedState;
+	}
+
+
+	static get ZOOM_LEVEL_PRECISION() {
+		return 3;
+	}
+
+	static get ROTATION_VALUE_PRECISION() {
+		return 4;
 	}
 }
