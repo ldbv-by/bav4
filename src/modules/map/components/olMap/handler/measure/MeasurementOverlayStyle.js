@@ -52,15 +52,30 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @override
 	 * @param {ol.feature} olFeature 
 	 * @param {ol.map} olMap
-	 * @param {ol.geometry|null} geometry
+	 * @param {import('../../services/StyleService').UpdateProperties} properties
 	 */
-	update(olFeature, olMap, geometry = null) {
+	update(olFeature, olMap, properties = {}) {
 		const distanceOverlay = olFeature.get('measurement');
-		const measureGeometry = geometry ? geometry : olFeature.getGeometry();
+		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
 			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
 			this._createOrRemoveAreaOverlay(olFeature, olMap);
 			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
+		}
+		const overlays = olFeature.get('overlays');
+		if (overlays) {
+
+			if ('opacity' in properties) {					
+				overlays.forEach(o => o.getElement().style.opacity = properties.opacity);
+			}
+
+			if ('visible' in properties || 'top' in properties) {	
+				const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
+				const valueOrDefaultTop = 'top' in properties ? properties.top : true;
+
+				const isVisibleStyle = (valueOrDefaultVisible && valueOrDefaultTop) ? '' : 'none';
+				overlays.forEach(o => o.getElement().style.display = isVisibleStyle);
+			}						
 		}
 	}
 

@@ -10,6 +10,7 @@ import { register } from 'ol/proj/proj4';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 describe('StyleService', () => {
+
 	const mapServiceMock = { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 };
 
 	const environmentServiceMock = {
@@ -145,6 +146,72 @@ describe('StyleService', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
 		});
 
+
+	});
+
+	describe('update style', () => {
+		
+		it('updates measure-style to feature with implicit style-type', () => {
+			const measureOverlayMock = { style:{ opacity:1, display:'' } };
+			const overlayMock = { getElement() {
+				return measureOverlayMock;
+			} };
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			feature.setId('measure_123');				
+			feature.set('overlays', [overlayMock]);		
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			
+			const mapMock = {
+				getView: () => viewMock,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.updateStyle(feature, mapMock, { visible:true, opacity:0.5, top:true });
+
+			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'' } });
+			instanceUnderTest.updateStyle(feature, mapMock, { visible:false,  top:true });			
+			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'none' } });
+			instanceUnderTest.updateStyle(feature, mapMock, { top:false });			
+			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'none' } });
+
+		});
+
+		it('updates measure-style to feature with explicit style-type', () => {
+			const measureOverlayMock = { style:{ opacity:1, display:'' } };
+			const overlayMock = { getElement() {
+				return measureOverlayMock;
+			} };
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });			
+			feature.set('overlays', [overlayMock]);		
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			
+			const mapMock = {
+				getView: () => viewMock,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.updateStyle(feature, mapMock, { visible:true, opacity:0.5, top:true }, 'measure');
+
+			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'' } });
+		});
 
 	});
 
