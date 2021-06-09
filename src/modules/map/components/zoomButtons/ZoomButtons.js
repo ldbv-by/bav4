@@ -23,7 +23,7 @@ export class ZoomButtons extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-
+		
 		return html`
 			<style>${css}</style>
 			<div class="zoom-buttons">

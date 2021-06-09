@@ -1,0 +1,94 @@
+import { TestUtils } from '../../../../test-utils.js';
+import { $injector } from '../../../../../src/injection';
+import { positionReducer } from '../../../../../src/store/position/position.reducer.js';
+import { RotationButton } from '../../../../../src/modules/map/components/rotationButton/RotationButton.js';
+import { changeLiveRotation } from '../../../../../src/store/position/position.action.js';
+window.customElements.define(RotationButton.tag, RotationButton);
+
+
+describe('GeolocationButton', () => {
+	let store;
+	const defaultState = {
+		liveRotation: 0
+	};
+
+	const setup = async (positionState = defaultState) => {
+
+		const state = {
+			position: positionState
+		};
+
+		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key });
+
+
+		return await TestUtils.render(RotationButton.tag);
+	};
+
+	describe('class', () => {
+
+		it('defines constant values', async () => {
+
+			expect(RotationButton.ROTATION_THRESHOLD).toBe(.05);
+		});
+	});
+
+	describe('when initialized', () => {
+
+		describe('liveRotation < threshold value', () => {
+
+			it('renders a geolocation button', async () => {
+				const liveRotationValue = RotationButton.ROTATION_THRESHOLD - .01;
+				const element = await setup({ liveRotation: liveRotationValue });
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
+		});
+
+		describe('liveRotation > threshold value', () => {
+
+			it('renders a geolocation button', async () => {
+				const liveRotationValue = .5;
+				const element = await setup({ rotation: .5, liveRotation: liveRotationValue });
+				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBeTrue();
+				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
+				expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+				expect(element.shadowRoot.querySelectorAll('.icon')).toHaveSize(1);
+			});
+		});
+	});
+
+	describe('when rotation changes', () => {
+
+		it('rotates the button', async () => {
+			let liveRotationValue = .5;
+			const element = await setup({ liveRotation: liveRotationValue });
+			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+
+			changeLiveRotation(liveRotationValue = 1);
+
+			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
+		});
+
+		it('hides the button when rotation < threshold', async () => {
+			const element = await setup({ liveRotation: RotationButton.ROTATION_THRESHOLD - .01 });
+
+			changeLiveRotation();
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
+	});
+
+	describe('when clicked', () => {
+
+		it('updates the rotation property', async () => {
+			const element = await setup({ liveRotation: .5 });
+
+			element.shadowRoot.querySelector('button').click();
+
+			expect(store.getState().position.rotation).toBe(0);
+		});
+	});
+});

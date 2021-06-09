@@ -1,6 +1,5 @@
 import { MapButtonsContainer } from '../../../../../src/modules/map/components/mapButtonsContainer/MapButtonsContainer';
 import { TestUtils } from '../../../../test-utils.js';
-// import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(MapButtonsContainer.tag, MapButtonsContainer);
 
@@ -19,9 +18,11 @@ describe('MapButtonsContainer', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('ba-geolocation-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('ba-zoom-buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('ba-extent-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('div').children).toHaveSize(4);
+			expect(element.shadowRoot.querySelectorAll('ba-rotation-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-geolocation-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-zoom-buttons')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-extent-button')).toHaveSize(1);
 		});
 	});
 });
