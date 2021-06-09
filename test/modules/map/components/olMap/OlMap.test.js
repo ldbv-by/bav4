@@ -15,6 +15,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import VectorSource from 'ol/source/Vector';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -436,6 +437,20 @@ describe('OlMap', () => {
 			removeLayer('id0');
 
 			expect(map.getLayers().getLength()).toBe(0);
+		});
+
+		it('calls #clear on a vector source when layer is removed', async () => {
+			const element = await setup();
+			const map = element._map;
+			const olVectorSource = new VectorSource();
+			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id, source: olVectorSource }));
+
+			addLayer('id0');
+
+			removeLayer('id0');
+
+			expect(vectorSourceSpy).toHaveBeenCalled();
 		});
 
 		it('modifys the visibility of an olLayer', async () => {

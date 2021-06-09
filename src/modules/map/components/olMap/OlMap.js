@@ -11,6 +11,7 @@ import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
+import VectorSource from 'ol/source/Vector';
 
 
 /**
@@ -208,6 +209,9 @@ export class OlMap extends BaElement {
 				this._map.removeLayer(olLayer);
 				if (this._layerHandler.has(id)) {
 					this._layerHandler.get(id).deactivate(this._map);
+				}
+				if (olLayer.getSource() instanceof VectorSource) {
+					olLayer.getSource().clear();
 				}
 			}
 		});
