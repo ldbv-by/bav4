@@ -104,7 +104,7 @@ describe('OverlayService', () => {
 			mapMock.removeOverlay = removeOverlaySpy;
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.update(mapMock, feature, StyleTypes.MEASURE, measureGeometry);
+			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE, measureGeometry);
 			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
 
 		});

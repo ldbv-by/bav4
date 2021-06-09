@@ -39,7 +39,7 @@ export class OverlayService {
      * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, no overlays will be updated.
      * @param {UpdateProperties} properties the geometry, which is the anchor for placing the overlay.
      */
-	update(olMap, olFeature, styleType, properties = {} ) {
+	update(olFeature, olMap,  styleType, properties = {} ) {
 		const overlayStyle = this._getOverlayStyleByType(styleType);		
 		if (overlayStyle) {
 			overlayStyle.update(olFeature, olMap, properties);

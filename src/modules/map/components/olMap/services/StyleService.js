@@ -58,7 +58,7 @@ export class StyleService {
 	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);		
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.update(olMap, olFeature, usingStyleType, properties);
+		overlayService.update(olFeature, olMap, usingStyleType, properties);
 	}
 
 

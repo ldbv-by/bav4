@@ -529,7 +529,7 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(feature.get('area')).toBeFalsy();
-			expect(updateSpy).toHaveBeenCalledWith(jasmine.any(Map), feature, 'measure', jasmine.objectContaining({ geometry:jasmine.any(Geometry) }));
+			expect(updateSpy).toHaveBeenCalledWith(feature, jasmine.any(Map), 'measure', jasmine.objectContaining({ geometry:jasmine.any(Geometry) }));
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {

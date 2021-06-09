@@ -116,7 +116,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
 							const measureGeometry = this._createMeasureGeometry(event.target);
-							this._overlayService.update(olMap, event.target, StyleTypes.MEASURE, measureGeometry);
+							this._overlayService.update(event.target, olMap, StyleTypes.MEASURE, { geometry:measureGeometry });
 							this._setStatistics(event.target);
 						};
 						oldFeatures.forEach(f => {
@@ -368,13 +368,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target, true);
-				this._overlayService.update(this._map, event.target, StyleTypes.MEASURE,  { geometry:measureGeometry });
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE,  { geometry:measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
 				const measureGeometry = this._createMeasureGeometry(this._activeSketch, true);
-				this._overlayService.update(this._map, this._activeSketch, StyleTypes.MEASURE, { geometry:measureGeometry });
+				this._overlayService.update(this._activeSketch, this._map,  StyleTypes.MEASURE, { geometry:measureGeometry });
 			};
 
 			this._activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
@@ -404,7 +404,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._select.getFeatures().push(feature);
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target, true);
-				this._overlayService.update(this._map, event.target, StyleTypes.MEASURE, measureGeometry);
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry:measureGeometry });
 				this._updateStatistics();
 			};
 			feature.on('change', onFeatureChange);
