@@ -1,5 +1,7 @@
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
+export const MODE_CHANGED = 'measurement/mode';
+export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
 export const REMOVE_REQUESTED = 'measurement/remove';
 
@@ -14,9 +16,21 @@ export const initialState = {
  	 */
 	statistic:{ length:0, area:0 },
 	/**
+	 * @type {String}
+	 */
+	mode: null,	
+	/**
+	 * @type EventLike
+	 */	
+	finish:null,
+	/**
 	 * @type EventLike
 	 */
-	reset:null
+	reset:null,
+	/**
+	 * @type EventLike
+	 */
+	remove:null
 };
 
 export const measurementReducer = (state = initialState, action) => {
@@ -36,6 +50,22 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				statistic: payload
+
+			};
+		}
+		case MODE_CHANGED: {
+
+			return {
+				...state,
+				mode: payload
+
+			};
+		}
+		case FINISH_REQUESTED: {
+
+			return {
+				...state,
+				finish: payload
 
 			};
 		}

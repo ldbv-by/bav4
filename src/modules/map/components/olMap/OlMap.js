@@ -4,10 +4,11 @@ import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
-import { changeZoomAndCenter } from '../../../../store/position/position.action';
+import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
-import { toOlLayer, updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
+import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 
@@ -24,12 +25,14 @@ export class OlMap extends BaElement {
 		super();
 		const {
 			GeoResourceService: georesourceService,
+			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
-			OlGeolocationHandler: geolocationHandler,
-		} = $injector.inject('GeoResourceService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
+			OlGeolocationHandler: geolocationHandler
+		} = $injector.inject('GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
 
 		this._geoResourceService = georesourceService;
+		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
@@ -50,11 +53,16 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	initialize() {
-		const { zoom, center } = this.getState();
+		const { zoom, center, rotation } = this.getState();
 
 		this._view = new View({
 			center: center,
 			zoom: zoom,
+			rotation: rotation
+		});
+
+		this._view.on('change:rotation', (evt) => {
+			changeLiveRotation(evt.target.getRotation());
 		});
 
 		this._map = new MapOl({
@@ -62,9 +70,18 @@ export class OlMap extends BaElement {
 			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
-				// attribution: false,
+				attribution: false,
 				zoom: false,
+				rotate: false
 			}),
+			interactions: defaultInteractions({
+				//for embedded mode
+				//onFocusOnly: false,
+				pinchRotate: false,
+				
+			}).extend([new PinchRotate({
+				threshold: .5
+			})])
 		});
 
 		this._map.on('movestart', () => {
@@ -124,6 +141,10 @@ export class OlMap extends BaElement {
 			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
 			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
+		//sync layers
+		this.observe('layers', () => this._syncLayers());
+		//sync the view
+		this.observe(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
 	}
 
 	/**
@@ -139,16 +160,15 @@ export class OlMap extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { position: { zoom, center, fitRequest }, layers: { active: layers } } = globalState;
-		return { zoom, center, fitRequest, layers };
+		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;
+		return { zoom, center, rotation, fitRequest, layers };
 	}
 
 	/**
 	 * @override
 	 */
 	onStateChanged() {
-		this._syncOverlayLayer();
-		this._syncView();
+		//nothing to do here
 	}
 
 	_getOlLayerById(id) {
@@ -156,26 +176,28 @@ export class OlMap extends BaElement {
 	}
 
 	_syncStore() {
-		changeZoomAndCenter({
+		changeZoomCenterAndRotation({
 			zoom: this._view.getZoom(),
-			center: this._view.getCenter()
+			center: this._view.getCenter(),
+			rotation: this._view.getRotation()
 		});
 	}
 
 	_syncView() {
-		const { zoom, center } = this.getState();
+		const { zoom, center, rotation } = this.getState();
 
 		if (!this._viewSyncBlocked) {
 
 			this._view.animate({
 				zoom: zoom,
 				center: center,
+				rotation: rotation,
 				duration: 500
 			});
 		}
 	}
 
-	_syncOverlayLayer() {
+	_syncLayers() {
 		const { layers } = this.getState();
 
 		const updatedIds = layers.map(layer => layer.geoResourceId);
@@ -202,7 +224,7 @@ export class OlMap extends BaElement {
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+			const olLayer = resource ? this._layerService.toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = layers.find(layer => layer.geoResourceId === id);

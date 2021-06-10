@@ -22,7 +22,7 @@ import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 
 
 
@@ -118,7 +118,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	describe('when activated over olMap', () => {
-
+		const container = document.createElement('div');
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
 
 		const setupMap = () => {
@@ -130,7 +130,7 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug(),
 					})],
-				target: 'map',
+				target: container,
 				view: new View({
 					center: initialCenter,
 					zoom: 1,
@@ -218,6 +218,17 @@ describe('OlMeasurementHandler', () => {
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
+			it('register observer for finish-request', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const finishSpy = spyOn(classUnderTest, '_finish').and.callThrough();
+
+				classUnderTest.activate(map);
+				finish();
+				expect(finishSpy).toHaveBeenCalled();
+			});
+
 			it('register observer for reset-request', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
@@ -234,7 +245,7 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
-				const removeSpy = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
+				const removeSpy = spyOn(classUnderTest, '_remove').and.callThrough();
 
 				classUnderTest.activate(map);
 				remove();
@@ -264,7 +275,7 @@ describe('OlMeasurementHandler', () => {
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
 			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
 			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
 			classUnderTest._lastMeasurementId = 'lastId';
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -307,7 +318,7 @@ describe('OlMeasurementHandler', () => {
 			
 			spyOn(map, 'getLayers').and.returnValue({ getArray:() => [{ get:() => 'lastId' }] });
 			spyOn(classUnderTest._overlayManager, 'createDistanceOverlay').and.callFake(() => {});
-			spyOn(classUnderTest._overlayManager, 'createAreaOverlay').and.callFake(() => {});
+			spyOn(classUnderTest._overlayManager, 'createOrRemoveAreaOverlay').and.callFake(() => {});
 			spyOn(classUnderTest._overlayManager, 'createPartitionOverlays').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			classUnderTest._lastMeasurementId = 'lastId';			
@@ -414,6 +425,24 @@ describe('OlMeasurementHandler', () => {
 
 		});		
 
+		it('adds no layer when empty', (done) => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+
+			classUnderTest.activate(map);			
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._vectorLayer.getSource().removeFeature(feature);
+			classUnderTest.deactivate(map);			
+			
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(0);
+				done();
+			});	
+
+		});		
+
 	});
 
 	describe('when using EnvironmentService for snapTolerance', () => {
@@ -437,10 +466,10 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when draw a line', () => {
-		const initialCenter = fromLonLat([0, 0]);
-
+		const initialCenter = fromLonLat([42, 42]);
+		let target;
 		const setupMap = (zoom = 10) => {
-
+			target = document.createElement('div');
 			return new Map({
 				layers: [
 					new TileLayer({
@@ -449,14 +478,14 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug(),
 					})],
-				target: 'map',
+				target: target,
 				view: new View({
 					center: initialCenter,
 					zoom: zoom
 				}),
 			});
 
-		};	
+		};		
 
 		it('removes partition tooltips after zoom out', () => {
 			const classUnderTest = new OlMeasurementHandler();
@@ -508,6 +537,22 @@ describe('OlMeasurementHandler', () => {
 
 			expect(baOverlay.static).toBeTrue();
 			expect(feature.get('measurement').getOffset()).toEqual([0, -7]);
+		});
+
+		it('feature gets valid id start drawing', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new LineString([[0, 0], [1, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			const id = feature.getId();
+
+			expect(id).toBeTruthy();
+			expect(id).toMatch(/measure_[0-9]{13}/g);
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
@@ -585,9 +630,9 @@ describe('OlMeasurementHandler', () => {
 
 		it('removes currently drawing two-point feature if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
-			classUnderTest._reset = jasmine.createSpy().and.callThrough();
+			const startNewSpy = spyOn(classUnderTest, '_startNew');
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [0, 0]]]);
+			const geometry = new Polygon([[[0, 0], [0, 0]]]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -597,7 +642,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
 			simulateKeyEvent(deleteKeyCode);
-			expect(classUnderTest._reset).toHaveBeenCalled();
+			expect(startNewSpy).toHaveBeenCalled();
 		});
 
 		it('removes drawn feature if keypressed', () => {
@@ -810,7 +855,6 @@ describe('OlMeasurementHandler', () => {
 			getGeometry: () => new Point(coordinate)
 		};
 	};
-
 	describe('when pointer move', () => {
 		let target;
 		const setupMap = () => {
@@ -827,7 +871,7 @@ describe('OlMeasurementHandler', () => {
 					})],
 				target: target,
 				view: new View({
-					center: [0, 0],
+					center: [42, 42],
 					zoom: 1,
 				}),
 			});
@@ -978,7 +1022,7 @@ describe('OlMeasurementHandler', () => {
 		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new Polygon([[[50, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -996,7 +1040,7 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
 		});
 
-		it('adds the drawn feature to select after drawends', () => {
+		it('add the drawn feature to select after drawends', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1010,6 +1054,69 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('does not change feature snapping states, after drawends', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
+			const feature = new Feature({ geometry: snappedGeometry });
+
+			classUnderTest.activate(map);		
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');			
+			feature.getGeometry().setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			
+			expect(classUnderTest._isFinishOnFirstPoint).toBeTrue();
+		});
+
+		it('did NOT add the drawn feature to select after drawabort', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawabort', classUnderTest._draw, feature);
+
+			expect(classUnderTest._select).toBeDefined();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+		});
+
+		it('calls draw.finishDrawing after finish-action', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();			
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			
+			classUnderTest.activate(map);
+			const spy = spyOn(classUnderTest._draw, 'finishDrawing').and.callThrough();
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._activeSketch = feature;
+			feature.getGeometry().dispatchEvent('change');
+			
+			finish();
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('calls draw.abortDrawing after reset-action', () => {
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();			
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			
+			classUnderTest.activate(map);
+			const spy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._activeSketch = feature;
+			feature.getGeometry().dispatchEvent('change');
+			
+			reset();
+			expect(spy).toHaveBeenCalled();
 		});
 
 		describe('when switching to modify', () => {

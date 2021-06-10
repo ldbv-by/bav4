@@ -21,6 +21,7 @@ export class MapButtonsContainer extends BaElement {
 		return html`
             <style>${css}</style>
             <div class="map-buttons-container">
+				<ba-rotation-button></ba-rotation-button>
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>
 				<ba-extent-button></ba-extent-button>              

@@ -7,8 +7,8 @@
 } */
 
 .geolocation-icon {
-  mask: url("./assets/geo-alt-fill.svg");
-  -webkit-mask-image: url("./assets/geo-alt-fill.svg");
+  mask: url("./assets/vinyl.svg");
+  -webkit-mask-image: url("./assets/vinyl.svg");
 }
 
 .icon { 

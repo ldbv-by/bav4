@@ -21,28 +21,30 @@ describe('ToolContainer', () => {
 
 	const setup = async (config = {}) => {
 
-		const { embed = false } = config;
+		const { embed = false,
+			measurement = {
+				active: false,
+				mode: 'active',
+				statistic: { length: 0, area: 0 },
+				reset: null,
+				finish: null,
+				remove: null
+			},
+			toolContainer = {
+				open: false,
+				contentId: false
+			} } = config;
 
 		const state = {
-			toolContainer: {
-				open: false,
-				contentId:false
-			},
-			measurement:{
-				active:false,
-				mode:'active',
-				statistic:{ length:0, area:0 },
-				reset:null,
-				finish:null,
-				remove:null
-			}
+			toolContainer: toolContainer,
+			measurement: measurement
 		};
-		
+
 		class MockClass {
 			constructor() {
 				this.get = 'I\'m a UnitsService.';
 			}
-			
+
 			formatDistance(distance, decimals) {
 				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + 'm';
 			}
@@ -52,12 +54,13 @@ describe('ToolContainer', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement:measurementReducer });
+		store = TestUtils.setupStoreAndDi(state, { toolContainer: toolContainerReducer, measurement: measurementReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
-				getWindow: () => windowMock
-			})			
+				getWindow: () => windowMock,
+				isTouch: () => false
+			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
 			.register('UnitsService', MockClass);
@@ -79,7 +82,7 @@ describe('ToolContainer', () => {
 
 			setContainerContent('ba-tool-draw-content');
 			toggleToolContainer();
-			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 		});
 
 		it('opens the toolcontainer with draw-content', async () => {
@@ -104,24 +107,36 @@ describe('ToolContainer', () => {
 			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
 		});
 
+		it('activates measurement, only when contentTool is open', async () => {
+			const config = {
+				toolContainer: {
+					open: false,
+					contentId: 'ba-tool-measure-content'
+				}
+			};
+			await setup(config);
+
+			expect(store.getState().measurement.active).toBeFalse();
+		});
+
 		it('deactivates measurement, when tool-content is switching from measure-tool-content', async () => {
-			const element = await setup();			
+			const element = await setup();
 
 			setContainerContent('ba-tool-measure-content');
 			toggleToolContainer();
 			expect(store.getState().measurement.active).toBeTrue();
-			setContainerContent('ba-tool-draw-content');			
-			
+			setContainerContent('ba-tool-draw-content');
+
 			expect(store.getState().measurement.active).toBeFalse();
 			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
 		});
-		
+
 
 		it('renders nothing when contentId is false', async () => {
 			const element = await setup();
 
 			toggleToolContainer();
-			
+
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
@@ -131,7 +146,7 @@ describe('ToolContainer', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		
+
 	});
 
 	describe('responsive layout ', () => {
@@ -148,7 +163,7 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -164,7 +179,7 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -180,7 +195,7 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
@@ -196,7 +211,7 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();			
+			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});

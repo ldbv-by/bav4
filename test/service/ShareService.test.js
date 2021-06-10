@@ -1,13 +1,14 @@
 import { $injector } from '../../src/injection';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { changeZoomAndCenter } from '../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter } from '../../src/store/position/position.action';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { QueryParameters } from '../../src/services/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
+import { round } from '../../src/utils/numberUtils';
 
 describe('ShareService', () => {
 
@@ -34,8 +35,14 @@ describe('ShareService', () => {
 		return store;
 	};
 
+	describe('class', () => {
 
+		it('defines constant values', async () => {
 
+			expect(ShareService.ROTATION_VALUE_PRECISION).toBe(4);
+			expect(ShareService.ZOOM_LEVEL_PRECISION).toBe(3);
+		});
+	});
 
 
 	describe('copy to clipboard', () => {
@@ -126,21 +133,51 @@ describe('ShareService', () => {
 		});
 
 		describe('_extractPosition', () => {
-			it('extracts the current layers state', () => {
-				const viewSrid = 25832;
-				const mapSrid = 3857;
-				setup();
-				const instanceUnderTest = new ShareService();
-				spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
-				spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
-				spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-				spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
-				changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
-				const extract = instanceUnderTest._extractPosition();
+			describe('and rotation = 0', () => {
 
-				expect(extract[QueryParameters.ZOOM]).toBe(5);
-				expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
+				it('extracts the position state', () => {
+					const zoomLevel = 5.353673;
+					const viewSrid = 25832;
+					const mapSrid = 3857;
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
+
+					const extract = instanceUnderTest._extractPosition();
+
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
+					expect(extract[QueryParameters.ROTATION]).toBeUndefined();
+				});
+			});
+
+			describe('and rotation != 0', () => {
+
+				it('extracts the current position state', () => {
+					const zoomLevel = 5.353673;
+					const rotationValue = .5347485;
+					const viewSrid = 25832;
+					const mapSrid = 3857;
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
+					changeRotation(rotationValue);
+
+					const extract = instanceUnderTest._extractPosition();
+
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
+					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+				});
 			});
 		});
 
@@ -157,7 +194,7 @@ describe('ShareService', () => {
 		});
 
 		describe('encodeState', () => {
-			
+
 			it('encodes a state object to url', () => {
 				const instanceUnderTest = new ShareService();
 
