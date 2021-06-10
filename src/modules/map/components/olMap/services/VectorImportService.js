@@ -56,10 +56,7 @@ export class VectorImportService {
 		
 		const addFeatureListenerKey = olVectorSource.on('addfeature', event => {
 			styleService.addStyle(event.feature, olMap);
-			// //if we are already attached to map, we update also the style
-			// if (olLayer) {
 			this._updateStyle(event.feature, olLayer, olMap);
-			// }
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', event => {
 			styleService.removeStyle(event.feature, olMap);
