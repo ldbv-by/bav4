@@ -2,7 +2,7 @@ import { OverlayService } from '../../../../../../src/modules/map/components/olM
 import { $injector } from '../../../../../../src/injection';
 import { TestUtils } from '../../../../../test-utils.js';
 import { Feature } from 'ol';
-import { LineString, Polygon } from 'ol/geom';
+import { Polygon } from 'ol/geom';
 import { StyleTypes } from '../../../../../../src/modules/map/components/olMap/services/StyleService';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -99,13 +99,26 @@ describe('OverlayService', () => {
 			const addOverlaySpy = jasmine.createSpy();
 			const removeOverlaySpy = jasmine.createSpy();
 			const propertySetterSpy = spyOn(feature, 'set');
-			const measureGeometry = new LineString([[0, 0], [1, 0]]);
 			mapMock.addOverlay = addOverlaySpy;
 			mapMock.removeOverlay = removeOverlaySpy;
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE, measureGeometry);
+			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
 			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
+
+		});
+
+		it('leaves feature to be not updated due to undetectable style ', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			feature.set('measurement', {});
+			feature.set('area', {});
+
+			const propertySetterSpy = spyOn(feature, 'set');
+
+			instanceUnderTest = new OverlayService();
+			spyOn(instanceUnderTest, '_getOverlayStyleByType').and.returnValue(null);
+			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
+			expect(propertySetterSpy).not.toHaveBeenCalled();
 
 		});
 	});
@@ -126,7 +139,7 @@ describe('OverlayService', () => {
 			};
 
 			instanceUnderTest = new OverlayService();
-			instanceUnderTest.remove( feature, mapMock);
+			instanceUnderTest.remove(feature, mapMock);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
