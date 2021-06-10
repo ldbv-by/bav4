@@ -84,12 +84,12 @@ export class VectorImportService {
 
 
 	/**
-	 * Ensures that specific stylings (and overlays) are set for this source
-	 * @param {ol.VectorSource} olVectorSource
+	 * If needed, adds specific stylings (and overlays) for this vector layer 
+	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
-	 * @returns object containing the addListenerKey and clearListenerKey
+	 * @returns olVectorLayer
 	 */
-	_applyStyles(olVectorSource, olLayer, olMap) {
+	applyStyles(olVectorLayer, olMap) {
 
 		/**
 		 * We check if an added features needs a specifig styling,
@@ -97,17 +97,18 @@ export class VectorImportService {
 		 * up-to-date with the layer.
 		 */
 		const { StyleService: styleService } = $injector.inject('StyleService');
-
+		const olVectorSource = olVectorLayer.getSource();
 		const key = olVectorSource.on('addfeature', event => {
 
 			if (styleService.isStyleRequired(event.feature)) {
 				styleService.addStyle(event.feature, olMap);
-				this._updateStyle(event.feature, olLayer, olMap);
-				this._registerStyleEventListeners(olVectorSource, olLayer, olMap);
+				this._updateStyle(event.feature, olVectorLayer, olMap);
+				this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
 				unByKey(key);
 			}
 
 		});
+		return olVectorLayer;
 	}
 
 	/**
@@ -116,7 +117,7 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromInternalData(geoResource, olLayer, olMap) {
+	vectorSourceFromInternalData(geoResource) {
 
 		const {
 			MapService: mapService
@@ -124,7 +125,6 @@ export class VectorImportService {
 
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
-		this._applyStyles(vectorSource, olLayer, olMap);
 
 		geoResource.getData().then(data => {
 			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
@@ -154,14 +154,13 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromExternalData(geoResource, olLayer, olMap) {
+	vectorSourceFromExternalData(geoResource) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),
 			loader: featureLoader,
 			format: mapVectorSourceTypeToFormat(geoResource.sourceType)
 		});
-		this._applyStyles(source, olLayer, olMap);
 		return source;
 	}
 }
