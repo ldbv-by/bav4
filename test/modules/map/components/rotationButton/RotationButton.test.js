@@ -11,6 +11,11 @@ describe('GeolocationButton', () => {
 	const defaultState = {
 		liveRotation: 0
 	};
+	const mapServiceStub = {
+		getMinimalRotation() {
+			return .05; 
+		}
+	};
 
 	const setup = async (positionState = defaultState) => {
 
@@ -20,6 +25,7 @@ describe('GeolocationButton', () => {
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
+			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
@@ -30,7 +36,6 @@ describe('GeolocationButton', () => {
 
 		it('defines constant values', async () => {
 
-			expect(RotationButton.ROTATION_THRESHOLD).toBe(.05);
 			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
 		});
 	});
@@ -40,7 +45,7 @@ describe('GeolocationButton', () => {
 		describe('liveRotation < threshold value', () => {
 
 			it('renders a geolocation button', async () => {
-				const liveRotationValue = RotationButton.ROTATION_THRESHOLD - .01;
+				const liveRotationValue = mapServiceStub.getMinimalRotation() - .01;
 				const element = await setup({ liveRotation: liveRotationValue });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -82,7 +87,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation: RotationButton.ROTATION_THRESHOLD - .01 });
+			const element = await setup({ liveRotation:  mapServiceStub.getMinimalRotation() - .01 });
 
 			changeLiveRotation();
 

@@ -14,8 +14,9 @@ export class RotationButton extends BaElement {
 
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
+		const { MapService: mapService, TranslationService: translationService } = $injector.inject('MapService', 'TranslationService');
+		this._mapService = mapService;
+		this._translationService = translationService;
 		this._timeoutId = null;
 	}
 
@@ -29,7 +30,7 @@ export class RotationButton extends BaElement {
 		 * In order to avoid a flickering icon, we delay hiding the icon.
 		 */
 		this.observe('liveRotation', liveRotation => {
-			if (Math.abs(liveRotation) >= RotationButton.ROTATION_THRESHOLD) {
+			if (Math.abs(liveRotation) >= this._mapService.getMinimalRotation()) {
 				if (this._timeoutId) {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;
@@ -86,10 +87,6 @@ export class RotationButton extends BaElement {
 
 	static get tag() {
 		return 'ba-rotation-button';
-	}
-
-	static get ROTATION_THRESHOLD() {
-		return .05;
 	}
 
 	static get HIDE_BUTTON_DELAY_MS() {
