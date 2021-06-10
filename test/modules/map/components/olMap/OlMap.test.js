@@ -79,6 +79,7 @@ describe('OlMap', () => {
 				zoom: initialZoomLevel,
 				center: initialCenter,
 				rotation: initialRotationValue,
+				fitRequest: null
 			},
 		};
 		const combinedState = {
