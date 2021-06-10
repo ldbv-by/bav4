@@ -22,7 +22,7 @@ describe('VectorImportService', () => {
 		addStyle: () => { },
 		removeStyle: () => { },
 		updateStyle: () => { },
-		_detectStyleType: () => { }
+		isStyleRequired: () => { }
 	};
 	let instanceUnderTest;
 
@@ -266,7 +266,7 @@ describe('VectorImportService', () => {
 					const olFeature = new Feature();
 					const olSource = new VectorSource();
 					const olLayer = new VectorLayer();
-					spyOn(styleService, '_detectStyleType').and.returnValue(false);
+					spyOn(styleService, 'isStyleRequired').and.returnValue(false);
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 
@@ -285,7 +285,7 @@ describe('VectorImportService', () => {
 					const olFeature = new Feature();
 					const olSource = new VectorSource();
 					const olLayer = new VectorLayer();
-					spyOn(styleService, '_detectStyleType').and.returnValue(true);
+					spyOn(styleService, 'isStyleRequired').and.returnValue(true);
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');

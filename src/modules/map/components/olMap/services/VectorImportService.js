@@ -100,7 +100,7 @@ export class VectorImportService {
 
 		const key = olVectorSource.on('addfeature', event => {
 
-			if (styleService._detectStyleType(event.feature)) {
+			if (styleService.isStyleRequired(event.feature)) {
 				styleService.addStyle(event.feature, olMap);
 				this._updateStyle(event.feature, olLayer, olMap);
 				this._registerStyleEventListeners(olVectorSource, olLayer, olMap);
