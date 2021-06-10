@@ -64,16 +64,15 @@ export class LayerService {
 				});
 				let vectorSource;
 				if (geoResource.url) {
-					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource, vectorLayer, olMap);
+					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
 					vectorSource.on('featuresloadstart', () => setFetching(true));
 					vectorSource.on(['featuresloadend', 'featuresloaderror'], () => setFetching(false));
 				}
 				else {
-					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource, vectorLayer, olMap);
+					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
 				}
 				vectorLayer.setSource(vectorSource);
-
-				return vectorLayer;
+				return vectorImportService.applyStyles(vectorLayer, olMap);
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
