@@ -52,7 +52,7 @@ export class StyleService {
 	 */
 
 	/**
- 	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature. 
+	   * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature. 
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
 	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
@@ -61,7 +61,7 @@ export class StyleService {
 	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update 
 	*/
 	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
-		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);		
+		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		overlayService.update(olFeature, olMap, usingStyleType, properties);
 	}
@@ -89,6 +89,15 @@ export class StyleService {
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
+	}
+
+	/**
+	 * Tests if the specified {@link ol.Feature} needs to be styled
+	 * @param {ol.Feature} olFeature the style-candidate {@link ol.Feature}
+	 * @returns {Boolean} whether or not the specified feature requires a style
+	 */
+	isStyleRequired(olFeature) {
+		return this._detectStyleType(olFeature) !== null;
 	}
 
 	_addMeasureStyle(olFeature, olMap) {

@@ -150,21 +150,23 @@ describe('StyleService', () => {
 	});
 
 	describe('update style', () => {
-		
+
 		it('updates measure-style to feature with implicit style-type', () => {
-			const measureOverlayMock = { style:{ opacity:1, display:'' } };
-			const overlayMock = { getElement() {
-				return measureOverlayMock;
-			} };
+			const measureOverlayMock = { style: { opacity: 1, display: '' } };
+			const overlayMock = {
+				getElement() {
+					return measureOverlayMock;
+				}
+			};
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-			feature.setId('measure_123');				
-			feature.set('overlays', [overlayMock]);		
+			feature.setId('measure_123');
+			feature.set('overlays', [overlayMock]);
 			const viewMock = {
 				getResolution() {
 					return 50;
 				}
 			};
-			
+
 			const mapMock = {
 				getView: () => viewMock,
 				getOverlays() {
@@ -175,29 +177,31 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.updateStyle(feature, mapMock, { visible:true, opacity:0.5, top:true });
+			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
 
-			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'' } });
-			instanceUnderTest.updateStyle(feature, mapMock, { visible:false,  top:true });			
-			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'none' } });
-			instanceUnderTest.updateStyle(feature, mapMock, { top:false });			
-			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'none' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: '' } });
+			instanceUnderTest.updateStyle(feature, mapMock, { visible: false, top: true });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'none' } });
+			instanceUnderTest.updateStyle(feature, mapMock, { top: false });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'none' } });
 
 		});
 
 		it('updates measure-style to feature with explicit style-type', () => {
-			const measureOverlayMock = { style:{ opacity:1, display:'' } };
-			const overlayMock = { getElement() {
-				return measureOverlayMock;
-			} };
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });			
-			feature.set('overlays', [overlayMock]);		
+			const measureOverlayMock = { style: { opacity: 1, display: '' } };
+			const overlayMock = {
+				getElement() {
+					return measureOverlayMock;
+				}
+			};
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			feature.set('overlays', [overlayMock]);
 			const viewMock = {
 				getResolution() {
 					return 50;
 				}
 			};
-			
+
 			const mapMock = {
 				getView: () => viewMock,
 				getOverlays() {
@@ -208,9 +212,9 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.updateStyle(feature, mapMock, { visible:true, opacity:0.5, top:true }, 'measure');
+			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');
 
-			expect(measureOverlayMock).toEqual({ style:{ opacity:0.5, display:'' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: '' } });
 		});
 
 	});
@@ -252,6 +256,18 @@ describe('StyleService', () => {
 			instanceUnderTest.removeStyle(feature, mapMock);
 
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('tests if a style is required', () => {
+		it('tests that a style is required', () => {
+			const featureToBeStyled = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			featureToBeStyled.setId('measure_123');
+			const featureNotToBeStyled = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			featureNotToBeStyled.setId('foo_123');
+
+			expect(instanceUnderTest.isStyleRequired(featureToBeStyled)).toBeTrue();
+			expect(instanceUnderTest.isStyleRequired(featureNotToBeStyled)).toBeFalse();
 		});
 	});
 });
