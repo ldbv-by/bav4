@@ -48,6 +48,10 @@ export class Checkbox extends BaElement {
 			this._onToggle(event);
 		};
 
+
+		// const root = document.querySelector('ba-checkbox').shadowRoot;
+		// root.addEventListener('click', alert('click'));
+
 		return html`
         <style>${css}</style>
 		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} ?checked=${this._checked} />
