@@ -90,6 +90,10 @@ background:red;
     mask-image:  url('assets/qrcode-solid.svg');
     -webkit-mask-image:url('assets/qrcode-solid.svg');
 }
+.share{
+    mask-image:  url('assets/share-square-solid.svg');
+    -webkit-mask-image:url('assets/share-square-solid.svg');
+}
 
 .tool-container__button:hover .tool-container__background{
     height: 3em;

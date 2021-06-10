@@ -23,7 +23,9 @@ export const provide = (lang) => {
 				toolbox_shareTool_preview: 'Preview',
 				toolbox_shareTool_disclaimer: 'You can embed the map into your website or blog. Terms of use',
 				toolbox_shareTool_mail: 'Mail',
-				toolbox_shareTool_qr: 'QR-Code'
+				toolbox_shareTool_qr: 'QR-Code',
+				toolbox_shareTool_title: 'BayernAtlas - official map viewer of the Bavarian Government',
+				toolbox_shareTool_share: 'Share'
 			};
 
 		case 'de':
@@ -48,7 +50,9 @@ export const provide = (lang) => {
 				toolbox_shareTool_preview: 'Vorschau',
 				toolbox_shareTool_disclaimer: 'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.',
 				toolbox_shareTool_mail: 'Mail',
-				toolbox_shareTool_qr: 'QR-Code'
+				toolbox_shareTool_qr: 'QR-Code',
+				toolbox_shareTool_title: 'BayernAtlas - der Kartenviewer des Freistaates Bayern',
+				toolbox_shareTool_share: 'Teilen'
 			};
 
 		default:

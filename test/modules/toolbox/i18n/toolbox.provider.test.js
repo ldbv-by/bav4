@@ -27,6 +27,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
+		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
+		expect(map.toolbox_shareTool_share).toBe('Teilen');
 	});
 
 	it('provides translation for en', () => {
@@ -53,10 +55,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog. Terms of use');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
+		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
+		expect(map.toolbox_shareTool_share).toBe('Share');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
