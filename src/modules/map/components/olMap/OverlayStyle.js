@@ -15,20 +15,18 @@ export class OverlayStyle {
 	}
 
 	_add(overlay, feature, map) {
-		if (feature) {
-			const featureOverlays = feature.get('overlays') || [];
-			featureOverlays.push(overlay);
-			overlay.set('feature', feature);
-			feature.set('overlays', featureOverlays);
-		}
+		const featureOverlays = feature.get('overlays') || [];
+		featureOverlays.push(overlay);
+		overlay.set('feature', feature);
+		feature.set('overlays', featureOverlays);
+
 		map.addOverlay(overlay);
 	}
 
 	_remove(overlay, feature, map) {
-		if (feature) {
-			const featureOverlays = feature.get('overlays') || [];
-			feature.set('overlays', featureOverlays.filter(o => o !== overlay));
-		}
+		const featureOverlays = feature.get('overlays') || [];
+		feature.set('overlays', featureOverlays.filter(o => o !== overlay));
+
 		map.removeOverlay(overlay);
 	}
 
@@ -51,14 +49,14 @@ export class OverlayStyle {
 	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
 	
 	/**
-     * Updates overlays (added by OverlayStyle-classes) on the map and the feature
+	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
 	 * @abstract
-     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
-     * @param {ol.Feature} olFeature the feature
-     * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
+	 * @param {ol.Feature} olFeature the feature
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
 	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
 	 * implementation of the OverlayStyle
-     */
+	 */
 	update(olFeature, olMap, properties = {}) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement and call abstract method #update from child or do not call super.update from child.');
