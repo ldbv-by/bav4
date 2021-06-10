@@ -57,6 +57,21 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('overlays')).toEqual([]);
 	});
 
+	it('removes no overlays from feature with unsyncronized overlays', () => {
+		const removeSpy = jasmine.createSpy();
+		const mapMock = { removeOverlay: removeSpy };
+		const feature = createFeature();
+		feature.set('overlays', undefined);
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		classUnderTest.remove(feature, mapMock);
+		expect(removeSpy).not.toHaveBeenCalled();
+		expect(feature.get('measurement')).toBeNull();
+		expect(feature.get('area')).toBeNull();
+		expect(feature.get('partitions')).toBeNull();
+		expect(feature.get('overlays')).toEqual([]);
+	});
+
 	it('creates overlay content for line', () => {
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
@@ -222,6 +237,36 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('static_position_x')).toBeUndefined();
 		expect(feature.get('static_position_y')).toBeUndefined();
 	});
+
+	it('writes no manual overlay-position to the related feature, when not needed', () => {
+		const draggedOverlayMock = {
+			getPosition: () => [42, 21], get() {
+				return false;
+			}
+		};
+		const staticOverlayMock = {
+			getPosition: () => [], get() {
+				return false;
+			}
+		};
+
+		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		feature.set('measurement', draggedOverlayMock);
+		feature.set('area', draggedOverlayMock);
+		feature.set('static', staticOverlayMock);
+
+		saveManualOverlayPosition(feature);
+
+		expect(feature.get('measurement_position_x')).toBeUndefined();
+		expect(feature.get('measurement_position_y')).toBeUndefined();
+		expect(feature.get('area_position_x')).toBeUndefined();
+		expect(feature.get('area_position_y')).toBeUndefined();
+		expect(feature.get('static_position_x')).toBeUndefined();
+		expect(feature.get('static_position_y')).toBeUndefined();
+	});
+
 
 
 	it('restore manual overlay-position from the related feature', () => {
