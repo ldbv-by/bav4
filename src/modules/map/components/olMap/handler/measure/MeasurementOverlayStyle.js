@@ -40,7 +40,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.map} olMap
 	 */
 	add(olFeature, olMap) {
-		this._findUnboundedOverlays(olFeature, olMap);
 		this._createDistanceOverlay(olFeature, olMap);
 		this._createOrRemoveAreaOverlay(olFeature, olMap);
 		this._createOrRemovePartitionOverlays(olFeature, olMap);
@@ -58,14 +57,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
 	
 	/**
-     * Updates overlays (added by OverlayStyle-classes) on the map and the feature
+	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
 	 * @override
-     * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
-     * @param {ol.Feature} olFeature the feature
-     * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
+	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
+	 * @param {ol.Feature} olFeature the feature
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
 	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
 	 * implementation of the OverlayStyle
-     */
+	 */
 	update(olFeature, olMap, properties = {}) {
 		const distanceOverlay = olFeature.get('measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
@@ -77,17 +76,17 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const overlays = olFeature.get('overlays');
 		if (overlays) {
 
-			if ('opacity' in properties) {					
+			if ('opacity' in properties) {
 				overlays.forEach(o => o.getElement().style.opacity = properties.opacity);
 			}
 
-			if ('visible' in properties || 'top' in properties) {	
+			if ('visible' in properties || 'top' in properties) {
 				const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
 				const valueOrDefaultTop = 'top' in properties ? properties.top : true;
 
 				const isVisibleStyle = (valueOrDefaultVisible && valueOrDefaultTop) ? '' : 'none';
 				overlays.forEach(o => o.getElement().style.display = isVisibleStyle);
-			}						
+			}
 		}
 	}
 
@@ -188,7 +187,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const resolution = olMap.getView().getResolution();
 		let delta;
 		if (partitions.length === 0) {
-			delta = olFeature.get('partition_delta') || getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+			delta = parseFloat(olFeature.get('partition_delta')) || getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
 		}
 		else {
 			delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);

@@ -116,7 +116,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
 							const measureGeometry = this._createMeasureGeometry(event.target);
-							this._overlayService.update(event.target, olMap, StyleTypes.MEASURE, { geometry:measureGeometry });
+							this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
 							this._setStatistics(event.target);
 						};
 						oldFeatures.forEach(f => {
@@ -131,6 +131,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 		};
+
+		const onResolutionChange = (olLayer) => {
+			olLayer.getSource().getFeatures().forEach(f => {
+				const measureGeometry = this._createMeasureGeometry(f);
+				this._styleService.updateStyle(f, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
+			});
+		};
+
 		const getOrCreateLayer = () => {
 			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
@@ -139,6 +147,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
 			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
 			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._listeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
 
@@ -368,17 +377,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target, true);
-				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE,  { geometry:measureGeometry });
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
 				const measureGeometry = this._createMeasureGeometry(this._activeSketch, true);
-				this._overlayService.update(this._activeSketch, this._map,  StyleTypes.MEASURE, { geometry:measureGeometry });
+				this._overlayService.update(this._activeSketch, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
 			this._activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
-			this._overlayService.add( this._activeSketch, this._map, StyleTypes.MEASURE);
+			this._overlayService.add(this._activeSketch, this._map, StyleTypes.MEASURE);
 
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
@@ -403,8 +412,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (feature) {
 			this._select.getFeatures().push(feature);
 			const onFeatureChange = (event) => {
-				const measureGeometry = this._createMeasureGeometry(event.target, true);
-				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry:measureGeometry });
+				const measureGeometry = this._createMeasureGeometry(event.target);
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._updateStatistics();
 			};
 			feature.on('change', onFeatureChange);
