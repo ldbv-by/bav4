@@ -14,20 +14,20 @@ export class OverlayStyle {
 	constructor() {
 	}
 
-	_add(overlay, feature, map) {
-		const featureOverlays = feature.get('overlays') || [];
+	_add(overlay, olFeature, olMap) {
+		const featureOverlays = olFeature.get('overlays') || [];
 		featureOverlays.push(overlay);
-		overlay.set('feature', feature);
-		feature.set('overlays', featureOverlays);
+		overlay.set('feature', olFeature);
+		olFeature.set('overlays', featureOverlays);
 
-		map.addOverlay(overlay);
+		olMap.addOverlay(overlay);
 	}
 
-	_remove(overlay, feature, map) {
-		const featureOverlays = feature.get('overlays') || [];
-		feature.set('overlays', featureOverlays.filter(o => o !== overlay));
+	_remove(overlay, olFeature, olMap) {
+		const featureOverlays = olFeature.get('overlays') || [];
+		olFeature.set('overlays', featureOverlays.filter(o => o !== overlay));
 
-		map.removeOverlay(overlay);
+		olMap.removeOverlay(overlay);
 	}
 
 	/**
@@ -69,5 +69,6 @@ export class OverlayStyle {
 	remove(olFeature, olMap) {
 		const featureOverlays = olFeature.get('overlays') || [];
 		featureOverlays.forEach(o => olMap.removeOverlay(o));
+		olFeature.set('overlays', []);
 	}
 }

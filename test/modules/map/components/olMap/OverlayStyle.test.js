@@ -43,6 +43,20 @@ describe('OverlayStyle', () => {
 		expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 	});
 
+	it('remove a unreferenced overlay from feature, removes this overlay only from map', () => {
+		const feature = new Feature();
+		const removeOverlaySpy = jasmine.createSpy();
+		const mapMock = { removeOverlay: removeOverlaySpy, };
+		const overlayStub = {};
+		const classUnderTest = new OverlayStyle();
+
+		classUnderTest._remove(overlayStub, feature, mapMock);
+
+		expect(removeOverlaySpy).toHaveBeenCalledTimes(1);
+	});
+
+
+
 	describe('getOverlays()', () => {
 
 		it('returns all on features referenced overlays as list', () => {
@@ -60,7 +74,7 @@ describe('OverlayStyle', () => {
 			expect(actualOverlays.length).toBe(3);
 		});
 
-		it('returns empty list, when overlays not references in \'overlays\'-property ', () => {
+		it('returns empty list, when overlays referenced other than in \'overlays\'-property ', () => {
 			const featureMock = {
 				get: (key) => {
 					return key === 'somethingElse' ? [{}, {}, {}] : undefined;
