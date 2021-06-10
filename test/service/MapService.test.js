@@ -83,5 +83,11 @@ describe('MapService', () => {
 
 		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(9999);
 	});
+
+	it('provides minimal angle for rotation', () => {
+		const instanceUnderTest = setup();
+
+		expect(instanceUnderTest.getMinimalRotation()).toBe(.05);
+	});
 });
 
