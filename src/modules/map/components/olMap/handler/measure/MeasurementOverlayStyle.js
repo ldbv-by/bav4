@@ -104,35 +104,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		olFeature.set('overlays', []);
 	}
 
-	_findUnboundedOverlays(olFeature, olMap) {
-		const featureId = olFeature.getId();
-		const addPartition = (partitionOverlay, olFeature) => {
-			const partitionOverlays = olFeature.get('partitions') || [];
-			partitionOverlays.push(partitionOverlay);
-			olFeature.set('partitions', partitionOverlays);
-		};
-		olMap.getOverlays().forEach(o => {
-			const overlayFeature = o.get('feature');
-			if (overlayFeature) {
-				const id = overlayFeature.getId();
-				const measurementOverlay = o.getElement();
-				if (id === featureId && measurementOverlay) {
-					switch (measurementOverlay.type) {
-						case MeasurementOverlayTypes.DISTANCE:
-							olFeature.set('measurement', o);
-							break;
-						case MeasurementOverlayTypes.AREA:
-							olFeature.set('area', o);
-							break;
-						case MeasurementOverlayTypes.DISTANCE_PARTITION:
-							addPartition(o, olFeature);
-							break;
-					}
-				}
-			}
-		});
-	}
-
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
 			const isDraggable = !this._environmentService.isTouch();

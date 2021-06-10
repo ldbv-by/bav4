@@ -5,7 +5,6 @@ import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { MeasurementOverlayTypes } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementOverlay';
 
 
 
@@ -273,47 +272,4 @@ describe('MeasurementOverlayStyle', () => {
 		expect(actualPosition).toBeUndefined();
 		expect(actualProperty).toEqual({ key: '', value: null });
 	});
-
-	const createOverlayMock = (type, feature) => {
-		return {
-			get: () => feature, getElement() {
-				return {
-					type: type
-				};
-			}
-		};
-	};
-
-	it('reconnect unbounded overlays to feature, instead of create new one', () => {
-		const geometry = new LineString([[0, 0], [123456, 0]]);
-		const feature = new Feature({ geometry: geometry });
-		feature.setId('measure_1234567891012');
-
-
-		const distanceOverlayMock = createOverlayMock(MeasurementOverlayTypes.DISTANCE, feature);
-		const areaOverlayMock = createOverlayMock(MeasurementOverlayTypes.AREA, feature);
-		const partitionOverlayMock = createOverlayMock(MeasurementOverlayTypes.DISTANCE_PARTITION, feature);
-		const addOverlaySpy = jasmine.createSpy();
-		const mapMock = {
-			addOverlay: addOverlaySpy,
-			getOverlays: () => [distanceOverlayMock, areaOverlayMock, partitionOverlayMock],
-			getInteractions() {
-				return { getArray: () => [] };
-			},
-			getView() {
-				return { getResolution: () => 50 };
-			}
-		};
-
-
-		const classUnderTest = new MeasurementOverlayStyle();
-
-		classUnderTest._findUnboundedOverlays(feature, mapMock);
-
-		expect(addOverlaySpy).not.toHaveBeenCalled();
-		expect(feature.get('measurement')).toBeTruthy();
-		expect(feature.get('area')).toBeTruthy();
-		expect(feature.get('partitions')).toBeTruthy();
-	});
-
 });
