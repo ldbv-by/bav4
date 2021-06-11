@@ -58,11 +58,10 @@ export class CatalogContentPanel extends AbstractContentPanel {
 		};
 		
 		if (this._catalog) {
-			const startLevel = 0;
 			const childElements = this._catalog.map(item => {
 				//node
 				if (item.children) {
-					return html`<ba-catalog-node .data=${item} level=${startLevel} ></ba-catalog-node>`;
+					return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
 				}
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
