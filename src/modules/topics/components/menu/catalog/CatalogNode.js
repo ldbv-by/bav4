@@ -8,6 +8,14 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * @author alsturm
  */
 export class CatalogNode extends AbstractContentPanel {
+	
+	constructor() {
+		super();
+		
+		this._catalogPart = null;
+		this._isCollapsed = true;
+		this._level = 0;
+	}
 
 	set data(catalogPart) {
 		this._catalogPart = catalogPart;
@@ -16,8 +24,9 @@ export class CatalogNode extends AbstractContentPanel {
 		this.render();
 	}
 
+
 	initialize() {
-		this._level = this.getAttribute('level') ? parseInt(this.getAttribute('level')) : null;
+		this._level = this.getAttribute('level') ? parseInt(this.getAttribute('level')) : 0;
 	}
 
 	createView(state) {
