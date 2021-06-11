@@ -6,6 +6,7 @@ import { provide as layerManagerProvide } from './layerManager.provider';
 import { provide as contextMenuProvider } from './contextMenu.provider';
 import { provide as storeProvider } from './store.provider';
 import { provide as attributionInfoProvider } from './attributionInfo.provider'; 
+import { provide as rotationButtonProvider } from './rotationButton.provider'; 
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('mapProvider', olMapProvide);
@@ -16,4 +17,5 @@ translationService.register('layerManagerProvider', layerManagerProvide);
 translationService.register('contextMenuProvider', contextMenuProvider);
 translationService.register('storeProvider', storeProvider);
 translationService.register('attributionInfoProvider', attributionInfoProvider);
+translationService.register('rotationButtonProvider', rotationButtonProvider);
 

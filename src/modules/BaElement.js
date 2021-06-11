@@ -306,29 +306,40 @@ export class BaElement extends HTMLElement {
 	 * Registers an observer for a field / property of the state of this element (see: {@link BaElement#extractState}).
 	 * Observers are called right after {@link BaElement#extractState}
 	 * @protected
-	 * @param {string} name Name of the observed field
+	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
+	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediatly after registration
 	 */
-	observe(name, onChange) {
-		const createObserver = (name, onChange) => {
-			let currentState = this._state[name];
+	observe(names, onChange, immediately = false) {
+
+		const createObserver = (key, onChange) => {
+			let currentState = this._state[key];
 
 			return () => {
-				if (this._state[name] !== undefined) {
-					const nextState = this._state[name];
-					if (!equals(nextState, currentState)) {
-						currentState = nextState;
-						onChange(currentState);
-					}
-				}
-				else {
-					console.warn('\'' + name + '\' is not a field in the state of this BaElement');
+				const nextState = this._state[key];
+				if (!equals(nextState, currentState)) {
+					currentState = nextState;
+					onChange(currentState);
 				}
 			};
 
 		};
 
-		this._observer.push(createObserver(name, onChange));
+		const keys = Array.isArray(names) ? names : [names];
+
+		keys.forEach(key => {
+			if (this._state[key] !== undefined) {
+
+				this._observer.push(createObserver(key, onChange));
+
+				if (immediately) {
+					onChange(this._state[key]);
+				}
+			}
+			else {
+				console.error(`Could not register observer --> '${key}' is not a field in the state of ${this.constructor.name}`);
+			}
+		});
 	}
 }
 
