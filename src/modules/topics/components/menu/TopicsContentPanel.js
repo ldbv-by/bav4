@@ -103,6 +103,14 @@ export class TopicsContentPanel extends AbstractContentPanel {
 		return nothing;
 	}
 
+	initialize() {
+		this.observe(['topicsReady', 'contentIndex'], () => this.render());
+	}
+
+	onStateChanged() {
+		//nothing to do here, we only render after data changes, topicsStore is ready or contentIndex changed
+	}
+
 	extractState(globalState) {
 
 		const { topics: { current: currentTopicId, ready: topicsReady }, topicsContentPanel: { index: contentIndex } } = globalState;

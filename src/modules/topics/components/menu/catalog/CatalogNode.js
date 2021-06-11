@@ -29,6 +29,10 @@ export class CatalogNode extends AbstractContentPanel {
 		this._level = this.getAttribute('level') ? parseInt(this.getAttribute('level')) : 0;
 	}
 
+	onStateChanged() {
+		//nothing to to here: initial rendering does it
+	}
+
 	createView(state) {
 
 		const { currentTopicId } = state;

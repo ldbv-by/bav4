@@ -23,9 +23,18 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 		this._geoResourceService = geoResourceService;
 		this._translationService = translationService;
+		this._checked = false;
 	}
 
 
+	initialize() {
+		//after layersStore is ready we re-render
+		this.observe('layersStoreReady', () => this.render());
+	}
+
+	onStateChanged() {
+		//nothing to do here, we only render after data changes, layersStore is ready or a layer was selected or deselected
+	}
 
 	set data(catalogPart) {
 		this._catalogPart = catalogPart;
@@ -57,6 +66,8 @@ export class CatalogLeaf extends AbstractContentPanel {
 				else {
 					removeLayer(geoR.id);
 				}
+				//let's update the view
+				this.render();
 			};
 
 			return html`
