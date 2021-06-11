@@ -142,6 +142,10 @@ export class OlMap extends BaElement {
 			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
 			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
+		//sync layers
+		this.observe('layers', () => this._syncLayers());
+		//sync the view
+		this.observe(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
 	}
 
 	/**
@@ -165,8 +169,7 @@ export class OlMap extends BaElement {
 	 * @override
 	 */
 	onStateChanged() {
-		this._syncOverlayLayer();
-		this._syncView();
+		//nothing to do here
 	}
 
 	_getOlLayerById(id) {
@@ -195,7 +198,7 @@ export class OlMap extends BaElement {
 		}
 	}
 
-	_syncOverlayLayer() {
+	_syncLayers() {
 		const { layers } = this.getState();
 
 		const updatedIds = layers.map(layer => layer.geoResourceId);
