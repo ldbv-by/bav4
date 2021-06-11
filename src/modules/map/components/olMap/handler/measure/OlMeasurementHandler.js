@@ -69,6 +69,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._listeners = [];
+		this._storedContent = null;
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -227,6 +228,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
+			this._storedContent = null;
 		}
 		return this._vectorLayer;
 	}
@@ -244,16 +246,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		this._helpTooltip.deactivate();
-		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
-
-		setStatistic({ length: 0, area: 0 });
+		this._helpTooltip.deactivate();		
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
 
 		this._convertToPermanentLayer();
+		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
+
+		setStatistic({ length: 0, area: 0 });
 
 		this._draw = false;
 		this._modify = false;
@@ -448,8 +450,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
 		features.forEach(f => saveManualOverlayPosition(f));
-		this._storedContent = createKML(this._vectorLayer, 'EPSG:3857');
-
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		if (newContent) {
+			this._storedContent = newContent;
+		}	
+		
 		if (!this._storeID) {
 			try {
 				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
