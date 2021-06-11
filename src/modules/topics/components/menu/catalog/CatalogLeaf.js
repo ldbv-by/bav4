@@ -12,6 +12,15 @@ import { addLayer, removeLayer } from '../../../../../store/layers/layers.action
  */
 export class CatalogLeaf extends AbstractContentPanel {
 
+	constructor() {
+		super();
+
+		const { GeoResourceService: geoResourceService }
+			= $injector.inject('GeoResourceService');
+
+		this._geoResourceService = geoResourceService;
+	}
+
 
 
 	set data(catalogPart) {
@@ -21,33 +30,19 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 	createView(state) {
 
-		const { currentTopicId, activeLayers } = state;
+		const { currentTopicId, activeLayers, layersStoreReady } = state;
 
-		const {
-			GeoResourceService: geoResourceService
-		} = $injector.inject('GeoResourceService');
 
-		const style = document.createElement( 'style' );
-		style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId});	 }`;
-		this.shadowRoot.appendChild( style );
+		if (this._catalogPart && layersStoreReady) {
 
-		if (this._catalogPart) {
+			const style = document.createElement('style');
+			style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId});	 }`;
+			this.shadowRoot.appendChild(style);
+
 			const { geoResourceId } = this._catalogPart;
-
-			let isChecked = false;
-			if (activeLayers.length > 0) {
-				activeLayers.forEach(l => {
-					if (l.geoResourceId === geoResourceId) {						
-						isChecked = true;						
-					}
-				});
-			}
-
-			const geoR = geoResourceService.byId(geoResourceId);
-			let label = 'no geoR';
-			if (geoR) {
-				label = geoR.label;
-			}
+			const isChecked = activeLayers.map(geoResource => geoResource.id).includes(geoResourceId);
+			const geoR = this._geoResourceService.byId(geoResourceId);
+			const label = geoR ? geoR.label : geoResourceId;
 
 			const onToggle = (event) => {
 				if (geoR) {
@@ -78,8 +73,8 @@ export class CatalogLeaf extends AbstractContentPanel {
 	}
 
 	extractState(globalState) {
-		const { topics: { current: currentTopicId }, layers: { active: activeLayers } } = globalState;
-		return { currentTopicId, activeLayers };
+		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
+		return { currentTopicId, activeLayers, layersStoreReady };
 	}
 
 

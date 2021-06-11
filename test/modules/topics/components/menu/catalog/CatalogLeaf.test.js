@@ -1,43 +1,43 @@
 import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
-import {  loadExampleCatalog } from '../../../../../../src/modules/topics/services/provider/catalog.provider';
+import { loadExampleCatalog } from '../../../../../../src/modules/topics/services/provider/catalog.provider';
 import { TestUtils } from '../../../../../test-utils.js';
 import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { layersReducer } from '../../../../../../src/store/layers/layers.reducer';
-import {  defaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
+import { defaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
+import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
+import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 
 
 
 window.customElements.define(CatalogLeaf.tag, CatalogLeaf);
+window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('CatalogLeaf', () => {
 
 	const geoResourceServiceMock = {
-		async init() { },
-		all() { 
-			return [];
-		},
-		byId() {}
-	};
-
-	const topicsServiceMock = {
 		byId() { }
 	};
-	const layer = { ...defaultLayerProperties,  id:'atkis_sw', label:'atkis_sw' };
-	const setup = (topics = 'foo', layers = [layer]) => {
+
+	let store;
+
+	const layer = { ...defaultLayerProperties, id: 'atkis_sw' };
+
+	const setup = (topics = 'foo', layers = [layer], ready = true) => {
 
 		const state = {
 			topics: { current: topics },
 			layers: {
-				active: layers
+				active: layers,
+				ready: ready
+
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer });
-		
+		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer });
+
 		$injector
-			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('TopicsService', topicsServiceMock);
+			.registerSingleton('GeoResourceService', geoResourceServiceMock);
 
 		return TestUtils.render(CatalogLeaf.tag);
 	};
@@ -45,28 +45,128 @@ describe('CatalogLeaf', () => {
 	describe('when initialized', () => {
 
 		it('renders the nothing', async () => {
-			
+
 			const element = await setup();
-			
-			expect(element.shadowRoot.children.length).toBe(0);			
+
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 
 	describe('when model changes', () => {
 
-		it('renders a leaf', async () => {
-			//load leaf data
-			const leaf = (await loadExampleCatalog('foo')).pop();
-			const element = await setup();
+		describe('and layers are NOT yet loaded', () => {
 
-			//assign data
-			element.data = leaf;
+			it('renders the nothing', async () => {
+				const leaf = (await loadExampleCatalog('foo')).pop();
+				const element = await setup('foo', [layer], false);
 
-			expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);		
-			expect(element.shadowRoot.querySelectorAll('ba-checkbox')).toHaveSize(1);		
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('no geoR');						
-			expect(element.shadowRoot.querySelector('.ba-icon-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.info')).toBeTruthy();
+				//assign data
+				element.data = leaf;
+
+				expect(element.shadowRoot.children.length).toBe(0);
+			});
+
+		});
+
+		describe('and layers are loaded', () => {
+
+			it('renders a leaf', async () => {
+				const geoResourceLabel = 'someLabel';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				//load leaf data
+				const leaf = (await loadExampleCatalog('foo')).pop();
+				const element = await setup();
+
+				//assign data
+				element.data = leaf;
+
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-checkbox')).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
+				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.info')).toHaveSize(1);
+
+				//test correct rendering of topic dependent style definition
+				//we have four style -Elements included: baElement.css, contentPanel.css, catalogLeaf.css and dynamically created style element, that we check here
+				expect(element.shadowRoot.styleSheets.item(3).cssRules.item(0).style.getPropertyValue('--primary-color-theme').trim()).toBe('var(--topic-theme-foo)');
+			});
+
+			it('renders a checkbox unchecked', async () => {
+				const geoResourceLabel = 'someLabel';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				//load leaf data
+				const leaf = (await loadExampleCatalog('foo')).pop();
+				const element = await setup('foo', []);
+
+				//assign data
+				element.data = leaf;
+
+				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+				expect(checkbox.checked).toBeFalse();
+			});
+
+			it('renders a checkbox checked', async () => {
+				const geoResourceLabel = 'someLabel';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				//load leaf data
+				const leaf = (await loadExampleCatalog('foo')).pop();
+				const element = await setup();
+
+				//assign data
+				element.data = leaf;
+
+				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+				expect(checkbox.checked).toBeTrue();
+			});
+
+
+			it('sets the georesourceId as fallback label', async () => {
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
+				//load leaf data
+				const leaf = (await loadExampleCatalog('foo')).pop();
+				const element = await setup();
+
+				//assign data
+				element.data = leaf;
+
+				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(layer.id);
+			});
+
+			describe('checkbox', () => {
+
+				it('adds and removes a layer', async () => {
+					const geoResourceLabel = 'someLabel';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					//load leaf data
+					const leaf = (await loadExampleCatalog('foo')).pop();
+					const element = await setup('foo', []);
+					//assign data
+					element.data = leaf;
+					const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+
+					checkbox.click();
+
+					expect(store.getState().layers.active[0].id).toBe(layer.id);
+
+					checkbox.click();
+
+					expect(store.getState().layers.active.length).toBe(0);
+				});
+
+				it('adds and removes no layer when geoResource is not available', async () => {
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
+					//load leaf data
+					const leaf = (await loadExampleCatalog('foo')).pop();
+					const element = await setup('foo', []);
+					//assign data
+					element.data = leaf;
+					const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+
+					checkbox.click();
+
+					expect(store.getState().layers.active.length).toBe(0);
+				});
+			});
 		});
 	});
 });
