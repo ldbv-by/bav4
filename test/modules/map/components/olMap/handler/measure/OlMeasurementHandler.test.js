@@ -405,7 +405,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooId' }));
+			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooId', adminId:'barBazId' }));
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -421,7 +421,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' })
+				Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 			);
 
 			classUnderTest.activate(map);
@@ -431,7 +431,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-					id: 'fooBarId',
+					id: 'barBazId',
 					label: 'map_olMap_handler_measure_layer_label'
 				}));
 				done();
@@ -745,7 +745,7 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-					Promise.resolve({ fileId: 'fooBarId' })
+					Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 				);
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
@@ -762,7 +762,7 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-					Promise.resolve({ fileId: 'fooBarId' })
+					Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 				);
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
@@ -783,7 +783,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' })
+				Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 			);
 			const geometry = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry: geometry });
@@ -792,7 +792,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storeID).toBe('barBazId');
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
 			});
@@ -804,7 +804,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' })
+				Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 			);
 			const geometry = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry: geometry });
@@ -814,7 +814,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBe('fooBarId');
+				expect(classUnderTest._storeID).toBe('barBazId');
 				expect(classUnderTest._storedContent).toBeTruthy();
 			});
 		});
@@ -822,20 +822,20 @@ describe('OlMeasurementHandler', () => {
 		it('stores with storeId on second store ', async () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId' })
+				Promise.resolve({ fileId: 'fooBarId', adminId:'barBazId' })
 			);
 			const geometry = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest._vectorLayer = createLayer();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._storeID = 'fooBarId';
+			classUnderTest._storeID = 'barBazId';
 			classUnderTest._save();
 
 			setTimeout(() => {
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledTimes(1);
-				expect(saveSpy).toHaveBeenCalledWith('fooBarId', jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(saveSpy).toHaveBeenCalledWith('barBazId', jasmine.any(String), FileStorageServiceDataTypes.KML);
 			});
 
 		});

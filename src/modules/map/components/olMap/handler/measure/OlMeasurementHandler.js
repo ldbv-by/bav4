@@ -457,8 +457,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		
 		if (!this._storeID) {
 			try {
-				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
-				this._storeID = fileId;
+				const { adminId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				this._storeID = adminId;
 			}
 			catch (error) {
 				console.warn('Could not store content initially:', error.message);
