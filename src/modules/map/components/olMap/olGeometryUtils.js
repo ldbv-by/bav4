@@ -41,16 +41,19 @@ export const getArea = (geometry, calculationHints = {}) => {
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		let lineString;
-		if (calculationGeometry instanceof LineString) {
-			lineString = calculationGeometry;
-		}
-		else if (calculationGeometry instanceof LinearRing) {
-			lineString = new LineString(calculationGeometry.getCoordinates());
-		}
-		else if (calculationGeometry instanceof Polygon) {
-			lineString = new LineString(calculationGeometry.getLinearRing(0).getCoordinates());
-		}
+		const getLineString = (lineStringCandidate) => {
+			if (lineStringCandidate instanceof LineString) {
+				return lineStringCandidate;
+			}
+			else if (lineStringCandidate instanceof LinearRing) {
+				return new LineString(lineStringCandidate.getCoordinates());
+			}
+			else if (lineStringCandidate instanceof Polygon) {
+				return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+			}	
+		}; 
+		const lineString = getLineString(calculationGeometry);
+		
 
 		if (lineString) {
 			return lineString.getLength();
@@ -68,16 +71,18 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
-	let lineString;
-	if (geometry instanceof LineString) {
-		lineString = geometry;
-	}
-	else if (geometry instanceof LinearRing) {
-		lineString = new LineString(geometry.getCoordinates());
-	}
-	else if (geometry instanceof Polygon) {
-		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
-	}
+	const getLineString = (lineStringCandidate) => {
+		if (lineStringCandidate instanceof LineString) {
+			return lineStringCandidate;
+		}
+		else if (lineStringCandidate instanceof LinearRing) {
+			return new LineString(lineStringCandidate.getCoordinates());
+		}
+		else if (lineStringCandidate instanceof Polygon) {
+			return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+		}	
+	}; 
+	const lineString = getLineString(geometry);
 
 	if (lineString) {
 		return lineString.getCoordinateAt(fraction);

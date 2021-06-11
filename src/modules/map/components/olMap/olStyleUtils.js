@@ -78,15 +78,18 @@ export const createSelectStyleFunction = (styleFunction) => {
 			}),				
 		}),	
 		geometry: (feature) => {
-			let coordinates = false;
-			const geometry = feature.getGeometry();
-			if (geometry instanceof LineString) {
-				coordinates = feature.getGeometry().getCoordinates();	
-				return new MultiPoint(coordinates);
-			} 
-			
-			if (geometry instanceof Polygon) {
-				coordinates = feature.getGeometry().getCoordinates()[0];
+			const getCoordinates = (geometry) => {
+				if (geometry instanceof LineString) {
+					return feature.getGeometry().getCoordinates();
+				} 
+				
+				if (geometry instanceof Polygon) {
+					return feature.getGeometry().getCoordinates()[0];
+				}
+			};
+
+			const coordinates = getCoordinates(feature.getGeometry());
+			if (coordinates) {
 				return new MultiPoint(coordinates);
 			}
 	
