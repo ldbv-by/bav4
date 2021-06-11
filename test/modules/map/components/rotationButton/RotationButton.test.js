@@ -11,6 +11,11 @@ describe('GeolocationButton', () => {
 	const defaultState = {
 		liveRotation: 0
 	};
+	const mapServiceStub = {
+		getMinimalRotation() {
+			return .05; 
+		}
+	};
 
 	const setup = async (positionState = defaultState) => {
 
@@ -20,6 +25,7 @@ describe('GeolocationButton', () => {
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
+			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
@@ -30,7 +36,7 @@ describe('GeolocationButton', () => {
 
 		it('defines constant values', async () => {
 
-			expect(RotationButton.ROTATION_THRESHOLD).toBe(.05);
+			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
 		});
 	});
 
@@ -39,7 +45,7 @@ describe('GeolocationButton', () => {
 		describe('liveRotation < threshold value', () => {
 
 			it('renders a geolocation button', async () => {
-				const liveRotationValue = RotationButton.ROTATION_THRESHOLD - .01;
+				const liveRotationValue = mapServiceStub.getMinimalRotation() - .01;
 				const element = await setup({ liveRotation: liveRotationValue });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -62,6 +68,14 @@ describe('GeolocationButton', () => {
 
 	describe('when rotation changes', () => {
 
+		beforeEach(async () => {
+			jasmine.clock().install();
+		});
+	
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+
 		it('rotates the button', async () => {
 			let liveRotationValue = .5;
 			const element = await setup({ liveRotation: liveRotationValue });
@@ -73,9 +87,25 @@ describe('GeolocationButton', () => {
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation: RotationButton.ROTATION_THRESHOLD - .01 });
+			const element = await setup({ liveRotation:  mapServiceStub.getMinimalRotation() - .01 });
 
 			changeLiveRotation();
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
+		it('avoids flickering', async () => {
+			const liveRotationValue = .5;
+			const element = await setup({ liveRotation: liveRotationValue });
+			
+			expect(element.shadowRoot.children.length).not.toBe(0);
+
+			changeLiveRotation();
+			jasmine.clock().tick(200);
+			changeLiveRotation(liveRotationValue);
+			jasmine.clock().tick(200);
+			changeLiveRotation();
+			jasmine.clock().tick(RotationButton.HIDE_BUTTON_DELAY_MS + 100);
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});

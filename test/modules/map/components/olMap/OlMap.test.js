@@ -26,6 +26,12 @@ describe('OlMap', () => {
 	const initialZoomLevel = 10;
 	const initialRotationValue = .5;
 
+	const mapServiceStub = {
+		getMinimalRotation() {
+			return .05; 
+		}
+	};
+
 	const geoResourceServiceStub = {
 		byId(id) {
 			switch (id) {
@@ -40,9 +46,6 @@ describe('OlMap', () => {
 
 	const layerServiceMock = {
 		toOlLayer() { }
-	};
-
-	const mapServiceMock = {
 	};
 
 	const environmentServiceMock = {
@@ -97,8 +100,8 @@ describe('OlMap', () => {
 
 
 		$injector
+			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
-			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)

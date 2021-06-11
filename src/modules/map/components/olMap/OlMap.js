@@ -24,13 +24,15 @@ export class OlMap extends BaElement {
 	constructor() {
 		super();
 		const {
+			MapService: mapService,
 			GeoResourceService: georesourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
 			OlGeolocationHandler: geolocationHandler
-		} = $injector.inject('GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
 
+		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
@@ -80,7 +82,7 @@ export class OlMap extends BaElement {
 				pinchRotate: false,
 				
 			}).extend([new PinchRotate({
-				threshold: .5
+				threshold: this._mapService.getMinimalRotation()
 			})])
 		});
 
