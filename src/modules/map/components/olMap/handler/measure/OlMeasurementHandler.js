@@ -228,7 +228,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
-			this._storedContent = null;
 		}
 		return this._vectorLayer;
 	}
@@ -262,7 +261,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select = false;
 		this._snap = false;
 		this._dragPan = false;
-		this._map = null;
+		this._map = null;		
+		this._storeID = null;
+		this._storedContent = null;
 	}
 
 	_unreg(listeners) {
@@ -455,21 +456,20 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._storedContent = newContent;
 		}	
 		
-		if (!this._storeID) {
+		if (this._storeID) {			
 			try {
-				const { adminId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
-				this._storeID = adminId;
+				this._storeID = await this._fileStorageService.save(this._storeID.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
 			}
 			catch (error) {
-				console.warn('Could not store content initially:', error.message);
+				console.warn('Could not store content:', error.message);
 			}
 		}
 		else {
 			try {
-				await this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML);
+				this._storeID = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
 			}
 			catch (error) {
-				console.warn('Could not store content:', error.message);
+				console.warn('Could not store content initially:', error.message);
 			}
 		}
 	}
@@ -667,14 +667,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		let id = this._storeID;
-		if (!id) {
-			console.warn('Could not store layer-data. The data will get lost after this session.');
-			id = 'temp_measure_id';
+		const createTempId = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: propagate the failing to UI-feedback-channel 
-		}
+			// TODO: propagate the failing to UI-feedback-channel 		
+			console.warn('Could not store layer-data. The data will get lost after this session.');
+			return 'temp_measure_id';
+		};
 
+		const id = this._storeID ? this._storeID.fileId : createTempId();
+				
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
 			//create a georesource and set the data as source

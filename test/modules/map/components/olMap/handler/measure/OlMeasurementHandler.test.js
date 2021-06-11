@@ -431,7 +431,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-					id: 'barBazId',
+					id: 'fooBarId',
 					label: 'map_olMap_handler_measure_layer_label'
 				}));
 				done();
@@ -792,7 +792,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBe('barBazId');
+				expect(classUnderTest._storeID).toEqual({ fileId: 'fooBarId', adminId:'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
 			});
@@ -814,7 +814,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBe('barBazId');
+				expect(classUnderTest._storeID).toEqual({ fileId: 'fooBarId', adminId:'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
 			});
 		});
@@ -829,7 +829,7 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest._vectorLayer = createLayer();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._storeID = 'barBazId';
+			classUnderTest._storeID = { fileId: 'barId', adminId:'barBazId' };
 			classUnderTest._save();
 
 			setTimeout(() => {
@@ -873,7 +873,7 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest._vectorLayer = createLayer();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._storeID = 'fooBazId';
+			classUnderTest._storeID =  { fileId: 'barId', adminId:'barBazId' };
 			classUnderTest._save();
 
 			setTimeout(() => {
