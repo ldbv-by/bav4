@@ -15,10 +15,14 @@ export class CatalogLeaf extends AbstractContentPanel {
 	constructor() {
 		super();
 
-		const { GeoResourceService: geoResourceService }
-			= $injector.inject('GeoResourceService');
+		const {
+			GeoResourceService: geoResourceService,
+			TranslationService: translationService
+		}
+			= $injector.inject('GeoResourceService', 'TranslationService');
 
 		this._geoResourceService = geoResourceService;
+		this._translationService = translationService;
 	}
 
 
@@ -31,6 +35,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 	createView(state) {
 
 		const { currentTopicId, activeLayers, layersStoreReady } = state;
+		const translate = (key) => this._translationService.translate(key);
 
 
 		if (this._catalogPart && layersStoreReady) {
@@ -43,15 +48,14 @@ export class CatalogLeaf extends AbstractContentPanel {
 			const isChecked = activeLayers.map(geoResource => geoResource.id).includes(geoResourceId);
 			const geoR = this._geoResourceService.byId(geoResourceId);
 			const label = geoR ? geoR.label : geoResourceId;
+			const title = geoR ? geoR.label : translate('topics_catalog_leaf_no_georesource_title');
 
 			const onToggle = (event) => {
-				if (geoR) {
-					if (event.detail.checked) {
-						addLayer(geoR.id, { label: geoR.label });
-					}
-					else {
-						removeLayer(geoR.id);
-					}
+				if (event.detail.checked) {
+					addLayer(geoR.id, { label: geoR.label });
+				}
+				else {
+					removeLayer(geoR.id);
 				}
 			};
 
@@ -60,7 +64,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 			${css}		
 			</style>
 			<span class="ba-list-item" >		
-					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  checked=${isChecked} tabindex='0'  title="checkbox"><span>${label}</span></ba-checkbox>						
+					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  disabled=${!geoR} checked=${isChecked} tabindex='0' title=${title}><span>${label}</span></ba-checkbox>						
 					<button class="ba-icon-button ba-list-item__after verticla-center seperator">						
 						<span  class='icon-background'>
 						 </span>
