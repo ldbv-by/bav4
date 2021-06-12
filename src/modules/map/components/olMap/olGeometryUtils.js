@@ -118,10 +118,7 @@ export const getAzimuth = (geometry) => {
 		!(geometry instanceof LinearRing)) {
 		return null;
 	}
-	let coordinates = geometry.getCoordinates();
-	if (geometry instanceof Polygon) {
-		coordinates = coordinates[0];
-	}
+	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates()[0] : geometry.getCoordinates();
 
 	if (coordinates.length < 2) {
 		return null;
