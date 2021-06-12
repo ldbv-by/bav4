@@ -158,7 +158,6 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	const minDelta = 0.01; // results in max 100 allowed partitions 
 	const maxDelta = 1;
 	const minPartitionLength = 10;
-	const maxPartitionLength = 100000;
 	const findBestFittingDelta = (partitionLength) => {
 		const delta = partitionLength / length;
 		if (maxDelta < delta) {
@@ -170,8 +169,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 			}
 		}
 		const nextPartitionLength = partitionLength * stepFactor;
-		
-		return maxPartitionLength < nextPartitionLength ? delta : findBestFittingDelta(nextPartitionLength);
+		return findBestFittingDelta(nextPartitionLength);
 	};
 	
 	return findBestFittingDelta(minPartitionLength);

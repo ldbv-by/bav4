@@ -325,4 +325,12 @@ describe('getPartitionDelta', () => {
 		
 		expect(delta).toBe(1);
 	});
+
+	it('calculates a delta for longest lines', () => {
+		const lineString = new LineString([[0, 0], [50000000, 0]]);		
+		const resolution = 50;
+		const delta = getPartitionDelta(lineString, resolution);
+		
+		expect(delta).toBe(0.02);
+	});
 });
