@@ -228,6 +228,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
+			
+			this._storeID = null;
+			this._storedContent = null;
 		}
 		return this._vectorLayer;
 	}
@@ -262,8 +265,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._snap = false;
 		this._dragPan = false;
 		this._map = null;		
-		this._storeID = null;
-		this._storedContent = null;
 	}
 
 	_unreg(listeners) {
@@ -463,10 +464,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			catch (error) {
 				console.warn('Could not store content:', error.message);
 			}
+			console.log(this._storeID);
 		}
 		else {
 			try {
 				this._storeID = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				console.log(this._storeID);
 			}
 			catch (error) {
 				console.warn('Could not store content initially:', error.message);
