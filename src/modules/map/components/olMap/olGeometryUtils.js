@@ -150,28 +150,34 @@ export const getAzimuth = (geometry) => {
  */
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
-	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions 
-	const minPartitionLength = 10;
-	const maxPartitionLength = 100000;
-	let delta = 1;
+	
 	const minLengthResolution = 20;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
 		return partitionResolution > minLengthResolution && length > partition ;
 	};	
 
-	let partitionLength = minPartitionLength;
-	while (partitionLength <= maxPartitionLength) {
+	const stepFactor = 10;
+	const minDelta = 0.01; // results in max 100 allowed partitions 
+	const maxDelta = 1;
+	const minPartitionLength = 10;
+	const maxPartitionLength = 100000;
+	const findBestFittingDelta = (partitionLength) => {
+		const delta = partitionLength / length;
+		if (maxDelta < delta) {
+			return maxDelta;
+		}
 		if ( isValidForResolution(partitionLength)) {
-			delta = partitionLength / length;
 			if (minDelta < delta) {
-				break;
-			}			
-		}	
-		partitionLength = partitionLength * stepFactor;
-	}
-	return delta;
+				return delta;
+			}
+		}
+		const nextPartitionLength = partitionLength * stepFactor;
+		
+		return maxPartitionLength < nextPartitionLength ? delta : findBestFittingDelta(nextPartitionLength);
+	};
+	
+	return findBestFittingDelta(minPartitionLength);
 };
 
 /**
