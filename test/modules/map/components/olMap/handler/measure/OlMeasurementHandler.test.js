@@ -854,7 +854,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBeUndefined();
+				expect(classUnderTest._storeID).toBeNull();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(String));
 			});
