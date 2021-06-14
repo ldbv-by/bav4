@@ -66,8 +66,8 @@ export class BaElement extends HTMLElement {
 		this._storeService = StoreService;
 
 		/** 
-		 * The state of this component. Usually the state object is an extract of the application-wide store.
-		 * Local state should be managed individually in subclasses.
+		 * The state of this component.  
+		 * Usually the state object is an extract of the application-wide store and/or local data.
 		 * @see {@link BaElement#extractState}
 		 * @see {@link BaElement#onStateChanged}
 		 * @member  {Object}  
@@ -148,9 +148,10 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Triggers the state change loop which determines the new state for this component. 
-	 * Usually automatically called by the observer registered on global state changes. 
-	 * Manual calls are appropriate, if the state of this component (partially) consists of local data.
+	 * Triggers the state change loop which determines the new state for this component.  
+	 * Usually automatically called by the observer registered on global state changes.  
+	 * Manual calls are appropriate, e.g. if the state of this component is (partially) derived from local data
+	 * and local data have been changed.
 	 * @protected
 	 * @see {@link BaElement#extractState}
 	 */
@@ -186,8 +187,8 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Extract and returns the state of this component from the application-wide state.
-	 * Extraction should be done carefully, and should only contain the state which is necessary for this component.
+	 * Extract and returns the state of this component from the application-wide state and/or from local data.
+	 * Extraction should be done carefully and should only contain state which is necessary for this component.
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
