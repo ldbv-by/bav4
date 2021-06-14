@@ -80,13 +80,12 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			${themeColor}
 			</style>
 			<div class="catalog-content-panel">
-			<a href="#" tabindex='0' class="ba-list-item" @click=${changeIndex}>
+			<button class="ba-list-item" @click=${changeIndex}>
 				<span class="ba-list-item__text">${translate('topics_catalog_panel_change_topic')}</span>			
 				<span class="ba-list-item__after">
-				<i class='icon icon-secondary close'>
-				</i>
+				<span class="arrow arrow-left"></span>
 				</span>
-			</a>
+			</button>
 			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon">

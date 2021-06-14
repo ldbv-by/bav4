@@ -83,7 +83,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 					<style>
 					${themeColor(topic.id)}
 					</style>
-					<a href='#' tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
+					<button  tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
 						<span class="ba-list-item__pre">
 							<span class="ba-list-item__icon icon-${topic.id}">
 								<ba-icon id='info' icon='${tempSvg}'  color=var(--primary-bg-color) color_hover=var(--primary-bg-color)  size=2.6 ></ba-icon>
@@ -94,10 +94,10 @@ export class TopicsContentPanel extends AbstractContentPanel {
 							<span class="ba-list-item__primary-text">${topic.label}</span>
 							<span class="ba-list-item__secondary-text">${topic.description}</span>
 						</span>
-						<span class="ba-list-item__after">
+						<span class="ba-list-item__after verticla-center">
 							<span class="arrow arrow-right"></span>
 						</span>
-					<a>
+					</button>
 				`)}
 				</div>
 				<div class="col">

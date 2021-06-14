@@ -4,6 +4,10 @@
    cursor: pointer;
    text-decoration: none;
    overflow-wrap: break-word;
+   background: transparent;
+   border:0;
+   width:100%;
+   text-align: left;
 }
 .ba-list-item:focus{
    box-shadow: Inset 0 0 0 .2em var(--primary-color-light);
