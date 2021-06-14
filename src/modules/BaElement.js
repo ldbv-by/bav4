@@ -28,7 +28,7 @@ import css from './baElement.css';
  *  {@link BaElement#onDisconnect}<br>
  * 
  * </center>
- * Model (state) change loop:<br>
+ * State change loop:<br>
  * <center>
  * 
  *  {@link BaElement#extractState}<br>
@@ -102,7 +102,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * Fires an event.
 	 * @param {string} name the event name
-	 * @param {object} payload the paylod of the event
+	 * @param {object} payload the payload of the event
 	 * @protected
 	 */
 	emitEvent(name, payload) {
@@ -114,7 +114,7 @@ export class BaElement extends HTMLElement {
 	 */
 	connectedCallback() {
 		const store = this._storeService.getStore();
-		this.unsubscribe = store.subscribe(() => this._updateState());
+		this.unsubscribe = store.subscribe(() => this.updateState());
 		this._state = this.extractState(store.getState());
 
 		window.addEventListener('load', () => {
@@ -148,9 +148,13 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * @private
+	 * Triggers the state change loop which determines the new state for this component. 
+	 * Usually automatically called by the observer registered on global state changes. 
+	 * Manual calls are appropriate, if the state of this component (partially) consists of local data.
+	 * @protected
+	 * @see {@link BaElement#extractState}
 	 */
-	_updateState() {
+	updateState() {
 
 		const extractedState = this.extractState(this._storeService.getStore().getState());
 
@@ -183,7 +187,7 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 * Extract and returns the state of this element from the application-wide state.
-	 * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
+	 * Extraction should be done carefully, and should only contain the state which is necessary for this element.
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
@@ -308,7 +312,7 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
-	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediatly after registration
+	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediately after registration
 	 */
 	observe(names, onChange, immediately = false) {
 
