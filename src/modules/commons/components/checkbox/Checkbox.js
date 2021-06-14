@@ -54,7 +54,7 @@ export class Checkbox extends BaElement {
 
 		return html`
         <style>${css}</style>
-		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} ?checked=${this._checked} />
+		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} .checked=${this._checked} />
 		<label title='${this._title}' class="ba-checkbox" for="cbx" >
 		  		<span>
 			  	<svg width="100%" height="100%" viewbox="0 0 12 9">
