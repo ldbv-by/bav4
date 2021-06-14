@@ -42,16 +42,19 @@ export const getArea = (geometry, calculationHints = {}) => {
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		let lineString;
-		if (calculationGeometry instanceof LineString) {
-			lineString = calculationGeometry;
-		}
-		else if (calculationGeometry instanceof LinearRing) {
-			lineString = new LineString(calculationGeometry.getCoordinates());
-		}
-		else if (calculationGeometry instanceof Polygon) {
-			lineString = new LineString(calculationGeometry.getLinearRing(0).getCoordinates());
-		}
+		const getLineString = (lineStringCandidate) => {
+			if (lineStringCandidate instanceof LineString) {
+				return lineStringCandidate;
+			}
+			else if (lineStringCandidate instanceof LinearRing) {
+				return new LineString(lineStringCandidate.getCoordinates());
+			}
+			else if (lineStringCandidate instanceof Polygon) {
+				return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+			}	
+		}; 
+		const lineString = getLineString(calculationGeometry);
+		
 
 		if (lineString) {
 			return lineString.getLength();
@@ -69,16 +72,18 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
-	let lineString;
-	if (geometry instanceof LineString) {
-		lineString = geometry;
-	}
-	else if (geometry instanceof LinearRing) {
-		lineString = new LineString(geometry.getCoordinates());
-	}
-	else if (geometry instanceof Polygon) {
-		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
-	}
+	const getLineString = (lineStringCandidate) => {
+		if (lineStringCandidate instanceof LineString) {
+			return lineStringCandidate;
+		}
+		else if (lineStringCandidate instanceof LinearRing) {
+			return new LineString(lineStringCandidate.getCoordinates());
+		}
+		else if (lineStringCandidate instanceof Polygon) {
+			return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+		}	
+	}; 
+	const lineString = getLineString(geometry);
 
 	if (lineString) {
 		return lineString.getCoordinateAt(fraction);
@@ -114,10 +119,7 @@ export const getAzimuth = (geometry) => {
 		!(geometry instanceof LinearRing)) {
 		return null;
 	}
-	let coordinates = geometry.getCoordinates();
-	if (geometry instanceof Polygon) {
-		coordinates = coordinates[0];
-	}
+	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates()[0] : geometry.getCoordinates();
 
 	if (coordinates.length < 2) {
 		return null;
@@ -146,28 +148,32 @@ export const getAzimuth = (geometry) => {
  */
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
-	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions 
-	const minPartitionLength = 10;
-	const maxPartitionLength = 100000;
-	let delta = 1;
+	
 	const minLengthResolution = 20;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
 		return partitionResolution > minLengthResolution ;
 	};	
 
-	let partitionLength = minPartitionLength;
-	while (partitionLength <= maxPartitionLength) {
+	const stepFactor = 10;
+	const minDelta = 0.01; // results in max 100 allowed partitions 
+	const maxDelta = 1;
+	const minPartitionLength = 10;
+	const findBestFittingDelta = (partitionLength) => {
+		const delta = partitionLength / length;
+		if (maxDelta < delta) {
+			return maxDelta;
+		}
 		if ( isValidForResolution(partitionLength)) {
-			delta = partitionLength / length;
 			if (minDelta < delta) {
-				break;
-			}			
-		}	
-		partitionLength = partitionLength * stepFactor;
-	}
-	return delta;
+				return delta;
+			}
+		}
+		const nextPartitionLength = partitionLength * stepFactor;
+		return findBestFittingDelta(nextPartitionLength);
+	};
+	
+	return findBestFittingDelta(minPartitionLength);
 };
 
 /**
@@ -183,13 +189,17 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 		return false;
 	}
 	const vertexCoordinate = vertexCandidate.getCoordinates();
-	let coordinates = geometry.getCoordinates();
-	if (geometry instanceof Polygon) {
-		coordinates = geometry.getCoordinates()[0];
-	}
-	if (geometry instanceof Point) {
-		coordinates = [geometry.getCoordinates()];
-	}
+	const getCoordinates = (geometry) => {
+		if (geometry instanceof Polygon) {
+			return geometry.getCoordinates()[0];
+		}
+		if (geometry instanceof Point) {
+			return [geometry.getCoordinates()];
+		}	
+		return geometry.getCoordinates();
+	};
+	const coordinates = getCoordinates(geometry);
+	
 	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
 	return result ? true : false;
 };

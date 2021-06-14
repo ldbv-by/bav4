@@ -28,7 +28,7 @@ import css from './baElement.css';
  *  {@link BaElement#onDisconnect}<br>
  * 
  * </center>
- * Model (state) change loop:<br>
+ * State change loop:<br>
  * <center>
  * 
  *  {@link BaElement#extractState}<br>
@@ -66,8 +66,8 @@ export class BaElement extends HTMLElement {
 		this._storeService = StoreService;
 
 		/** 
-		 * The state of this Element. Usually the state object is an extract of the application-wide store.
-		 * Local state should be managed individually in subclasses.
+		 * The state of this component.  
+		 * Usually the state object is an extract of the application-wide store and/or local data.
 		 * @see {@link BaElement#extractState}
 		 * @see {@link BaElement#onStateChanged}
 		 * @member  {Object}  
@@ -83,7 +83,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * Returns the current state.
 	 * @protected
-	 * @returns state of this element
+	 * @returns state of this component
 	 */
 	getState() {
 		return this._state;
@@ -102,7 +102,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * Fires an event.
 	 * @param {string} name the event name
-	 * @param {object} payload the paylod of the event
+	 * @param {object} payload the payload of the event
 	 * @protected
 	 */
 	emitEvent(name, payload) {
@@ -114,7 +114,7 @@ export class BaElement extends HTMLElement {
 	 */
 	connectedCallback() {
 		const store = this._storeService.getStore();
-		this.unsubscribe = store.subscribe(() => this._updateState());
+		this.unsubscribe = store.subscribe(() => this.updateState());
 		this._state = this.extractState(store.getState());
 
 		window.addEventListener('load', () => {
@@ -148,9 +148,14 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * @private
+	 * Triggers the state change loop which determines the new state for this component.  
+	 * Usually automatically called by the observer registered on global state changes.  
+	 * Manual calls are appropriate, e.g. if the state of this component is (partially) derived from local data
+	 * and local data have been changed.
+	 * @protected
+	 * @see {@link BaElement#extractState}
 	 */
-	_updateState() {
+	updateState() {
 
 		const extractedState = this.extractState(this._storeService.getStore().getState());
 
@@ -173,7 +178,7 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @param {object} state state of this element
+	 * @param {object} state state of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView(/*eslint-disable no-unused-vars */state) {
@@ -182,13 +187,13 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Extract and returns the state of this element from the application-wide state.
-	 * Extraction shoud be done carefully, and should only contain the state which is needed for this element.
+	 * Extract and returns the state of this component from the application-wide state and/or from local data.
+	 * Extraction should be done carefully and should only contain state which is necessary for this component.
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
 	 * @param {object} globalState **global** state
-	 * @returns state of this elements
+	 * @returns state of this component
 	 */
 	extractState(/*eslint-disable no-unused-vars */globalState) {
 		return {};
@@ -264,17 +269,17 @@ export class BaElement extends HTMLElement {
 	 * Called when the load event of the window is fired.
 	 * Access on properties of nested web components is now possible.
 	 * <br>
-	 * Attention: Will not be called, if the element being loaded lazily!
+	 * Attention: Will not be called, if the component is loaded lazily!
 	 * In this case use: {@link BaElement#onAfterRender}
 	 * @protected
 	 */
 	onWindowLoad() { }
 
 	/**
-	 * Called after the elements state has been changed. 
+	 * Called after the components state has been changed. 
 	 * Per default {@link BaElement#render} is called. 
 	 * @protected
-	 * @param {object} state state of this element
+	 * @param {object} state state of this component
 	 */
 	onStateChanged(/*eslint-disable no-unused-vars */state) {
 		this.render();
@@ -286,7 +291,7 @@ export class BaElement extends HTMLElement {
 	onDisconnect() { }
 
 	/**
-	 * Returns the Html tag name of this element.
+	 * Returns the Html tag name of this component.
 	 * @abstract
 	 */
 	static get tag() {
@@ -303,32 +308,43 @@ export class BaElement extends HTMLElement {
 
 
 	/**
-	 * Registers an observer for a field / property of the state of this element (see: {@link BaElement#extractState}).
+	 * Registers an observer for a field / property of the state of this component (see: {@link BaElement#extractState}).
 	 * Observers are called right after {@link BaElement#extractState}
 	 * @protected
-	 * @param {string} name Name of the observed field
+	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {function(changedState)} onChange A function that will be called when the observed field has changed
+	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediately after registration
 	 */
-	observe(name, onChange) {
-		const createObserver = (name, onChange) => {
-			let currentState = this._state[name];
+	observe(names, onChange, immediately = false) {
+
+		const createObserver = (key, onChange) => {
+			let currentState = this._state[key];
 
 			return () => {
-				if (this._state[name] !== undefined) {
-					const nextState = this._state[name];
-					if (!equals(nextState, currentState)) {
-						currentState = nextState;
-						onChange(currentState);
-					}
-				}
-				else {
-					console.warn('\'' + name + '\' is not a field in the state of this BaElement');
+				const nextState = this._state[key];
+				if (!equals(nextState, currentState)) {
+					currentState = nextState;
+					onChange(currentState);
 				}
 			};
 
 		};
 
-		this._observer.push(createObserver(name, onChange));
+		const keys = Array.isArray(names) ? names : [names];
+
+		keys.forEach(key => {
+			if (this._state[key] !== undefined) {
+
+				this._observer.push(createObserver(key, onChange));
+
+				if (immediately) {
+					onChange(this._state[key]);
+				}
+			}
+			else {
+				console.error(`Could not register observer --> '${key}' is not a field in the state of ${this.constructor.name}`);
+			}
+		});
 	}
 }
 

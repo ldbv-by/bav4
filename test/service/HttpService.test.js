@@ -237,12 +237,10 @@ describe('NetworkStateSyncHttpService', () => {
 			instanceUnderTest.fetch('first');
 			instanceUnderTest.fetch('second');
 
-			expect(instanceUnderTest._pendingResponse).toBe(2);
 			expect(store.getState().network.fetching).toBeTrue();
 
 			await instanceUnderTest.fetch('third');
 
-			expect(instanceUnderTest._pendingResponse).toBe(0);
 			expect(store.getState().network.fetching).toBeFalse();
 		});
 
@@ -256,7 +254,6 @@ describe('NetworkStateSyncHttpService', () => {
 			instanceUnderTest.fetch('first').then(() => {
 				done(new Error('Promise should not be resolved'));
 			}, () => {
-				expect(instanceUnderTest._pendingResponse).toBe(0);
 				expect(store.getState().network.fetching).toBeFalse();
 				done();
 			});

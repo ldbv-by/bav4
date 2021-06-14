@@ -46,7 +46,7 @@ export class Toggle extends BaElement {
         <label title='${this._title}' class='switch ${classMap(classes)}'>
             <slot></slot>
 			<div>
-		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} ?checked=${this._checked}>
+		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} .checked=${this._checked}>
 		  		<span class='slider round'></span>
 			</div>
 	  	</label>

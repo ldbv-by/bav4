@@ -4,7 +4,7 @@ import { BaElement } from '../../../../../BaElement';
 import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from './GeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../../olGeometryUtils';
 import { Polygon } from 'ol/geom';
 
 export const MeasurementOverlayTypes = {

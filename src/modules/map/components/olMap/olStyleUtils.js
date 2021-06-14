@@ -1,12 +1,11 @@
 
-import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, moveParallel } from './GeometryUtils';
-import { getPartitionDelta } from './GeometryUtils';
+// import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, moveParallel } from './GeometryUtils';
+// import { getPartitionDelta } from './GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import { toContext } from 'ol/render';
 
-const ZPOLYGON = 10;
-const ZLINE = 20;
 const ZPOINT = 30;
 const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
@@ -137,15 +136,18 @@ export const createSelectStyleFunction = (styleFunction) => {
 			}),				
 		}),	
 		geometry: (feature) => {
-			let coordinates = false;
-			const geometry = feature.getGeometry();
-			if (geometry instanceof LineString) {
-				coordinates = feature.getGeometry().getCoordinates();	
-				return new MultiPoint(coordinates);
-			} 
-			
-			if (geometry instanceof Polygon) {
-				coordinates = feature.getGeometry().getCoordinates()[0];
+			const getCoordinates = (geometry) => {
+				if (geometry instanceof LineString) {
+					return feature.getGeometry().getCoordinates();
+				} 
+				
+				if (geometry instanceof Polygon) {
+					return feature.getGeometry().getCoordinates()[0];
+				}
+			};
+
+			const coordinates = getCoordinates(feature.getGeometry());
+			if (coordinates) {
 				return new MultiPoint(coordinates);
 			}
 	
