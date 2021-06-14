@@ -79,12 +79,12 @@ export class TopicsService {
 		const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 		return [
 
-			new Topic(fallbackId0, 'Fallback Topic', 'This is a fallback topic...', [
+			new Topic(fallbackId0, 'Topic 1', 'This is a fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'atkis',
 				'atkis_sw'
 			]),
-			new Topic(fallbackId1, 'Fallback Topic 2', 'This is another fallback topic...', [
+			new Topic(fallbackId1, 'Topic 2', 'This is another fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'atkis',
 				'atkis_sw'
