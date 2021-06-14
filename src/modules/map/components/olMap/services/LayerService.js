@@ -14,7 +14,7 @@ import { setFetching } from '../../../../../store/network/network.action';
  */
 export class LayerService {
 
-	toOlLayer(geoResource) {
+	toOlLayer(geoResource, olMap) {
 
 		const {
 			GeoResourceService: georesourceService,
@@ -59,6 +59,9 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR: {
 
+				const vectorLayer = new VectorLayer({
+					id: geoResource.id,
+				});
 				let vectorSource;
 				if (geoResource.url) {
 					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
@@ -68,11 +71,8 @@ export class LayerService {
 				else {
 					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
 				}
-
-				return new VectorLayer({
-					id: geoResource.id,
-					source: vectorSource
-				});
+				vectorLayer.setSource(vectorSource);
+				return vectorImportService.applyStyles(vectorLayer, olMap);
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
