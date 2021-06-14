@@ -245,6 +245,17 @@ describe('OlMeasurementHandler', () => {
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
+			it('initialize interactions and state objects only once on multiple activates', () => {
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const createDrawSpy = spyOn(classUnderTest, '_createDraw').and.callThrough();
+
+				classUnderTest.activate(map);
+				classUnderTest.activate(map);
+
+				expect(createDrawSpy).toHaveBeenCalledTimes(1);
+			});
+
 			it('register observer for finish-request', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
