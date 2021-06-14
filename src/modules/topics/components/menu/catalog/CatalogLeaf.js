@@ -39,7 +39,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 		if (geoResourceId && layersStoreReady) {
 
 			const style = document.createElement('style');
-			style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId});	 }`;
+			style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId}, var(--secondary-color-theme));}`;
 			this.shadowRoot.appendChild(style);
 
 			const geoR = this._geoResourceService.byId(geoResourceId);

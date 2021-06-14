@@ -6,7 +6,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
-import cssTopics from '../assets/topics.css';
+import cssBvvTopics from '../assets/bvv-topics.css';
 import tempSvg   from '../assets/temp.svg';
 
 
@@ -64,19 +64,18 @@ export class TopicsContentPanel extends AbstractContentPanel {
 
 			//add topcis css variables
 			const style = document.createElement('style');
-			style.innerHTML = cssTopics;
+			style.innerHTML = cssBvvTopics;			
 			document.head.appendChild(style);
 
 			const themeColor = (id) => {
 				return `
 					.topic-${id}{
-						--secondary-color: var(--topic-theme-${id});			  
+						--secondary-color: var(--topic-theme-${id}, var(--secondary-color-theme));			  
 					}	
 					`;
 			};
 
 			return html`
-        	<style>${cssTopics}</style>
         	<style>${css}</style>
 			<div class="topics-content-panel ${getVisibilityClass()}">
 				<div class="col">

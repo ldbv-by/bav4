@@ -52,7 +52,7 @@ export class CatalogNode extends AbstractContentPanel {
 
 		const themeColor = `
 			.ba-section{
-				--secondary-color: var(--topic-theme-${currentTopicId});			  
+				--secondary-color: var(--topic-theme-${currentTopicId}, var(--secondary-color-theme));				  
 			}	
 		`;
 

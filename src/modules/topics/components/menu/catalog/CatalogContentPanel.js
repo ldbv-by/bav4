@@ -69,7 +69,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			const { id, label } = this._topic;
 			const themeColor = `
 			.topic{
-				--secondary-color: var(--topic-theme-${id});			  
+				--secondary-color: var(--topic-theme-${id}, var(--secondary-color-theme));			  		  
 			}	
 			`;
 			const translate = (key) => this._translationService.translate(key);
