@@ -188,13 +188,17 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 		return false;
 	}
 	const vertexCoordinate = vertexCandidate.getCoordinates();
-	let coordinates = geometry.getCoordinates();
-	if (geometry instanceof Polygon) {
-		coordinates = geometry.getCoordinates()[0];
-	}
-	if (geometry instanceof Point) {
-		coordinates = [geometry.getCoordinates()];
-	}
+	const getCoordinates = (geometry) => {
+		if (geometry instanceof Polygon) {
+			return geometry.getCoordinates()[0];
+		}
+		if (geometry instanceof Point) {
+			return [geometry.getCoordinates()];
+		}	
+		return geometry.getCoordinates();
+	};
+	const coordinates = getCoordinates(geometry);
+	
 	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
 	return result ? true : false;
 };
