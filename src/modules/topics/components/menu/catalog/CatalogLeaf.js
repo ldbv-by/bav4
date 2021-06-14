@@ -23,38 +23,25 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 		this._geoResourceService = geoResourceService;
 		this._translationService = translationService;
-		this._checked = false;
-	}
-
-
-	initialize() {
-		//after layersStore is ready we re-render
-		this.observe('layersStoreReady', () => this.render());
-	}
-
-	onStateChanged() {
-		//nothing to do here, we only render after data changes, layersStore is ready or a layer was selected or deselected
 	}
 
 	set data(catalogPart) {
 		this._catalogPart = catalogPart;
-		this.render();
+		this.updateState();
 	}
+
 
 	createView(state) {
 
-		const { currentTopicId, activeLayers, layersStoreReady } = state;
+		const { currentTopicId, layersStoreReady, checked, geoResourceId } = state;
 		const translate = (key) => this._translationService.translate(key);
 
-
-		if (this._catalogPart && layersStoreReady) {
+		if (geoResourceId && layersStoreReady) {
 
 			const style = document.createElement('style');
 			style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId});	 }`;
 			this.shadowRoot.appendChild(style);
 
-			const { geoResourceId } = this._catalogPart;
-			const isChecked = activeLayers.map(geoResource => geoResource.id).includes(geoResourceId);
 			const geoR = this._geoResourceService.byId(geoResourceId);
 			const label = geoR ? geoR.label : geoResourceId;
 			const title = geoR ? geoR.label : translate('topics_catalog_leaf_no_georesource_title');
@@ -66,8 +53,6 @@ export class CatalogLeaf extends AbstractContentPanel {
 				else {
 					removeLayer(geoR.id);
 				}
-				//let's update the view
-				this.render();
 			};
 
 			return html`
@@ -75,7 +60,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 			${css}		
 			</style>
 			<span class="ba-list-item" >		
-					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  disabled=${!geoR} checked=${isChecked} tabindex='0' title=${title}><span>${label}</span></ba-checkbox>						
+					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  disabled=${!geoR} checked=${checked} tabindex='0' title=${title}><span>${label}</span></ba-checkbox>						
 					<button class="ba-icon-button ba-list-item__after verticla-center seperator">						
 						<span  class='icon-background'>
 						 </span>
@@ -88,8 +73,13 @@ export class CatalogLeaf extends AbstractContentPanel {
 	}
 
 	extractState(globalState) {
+		//our local state contains values derived form the global state and local data (_catalogPart)
 		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
-		return { currentTopicId, activeLayers, layersStoreReady };
+		
+		const geoResourceId  = this._catalogPart ? this._catalogPart.geoResourceId : null;
+		const checked = geoResourceId ? activeLayers.map(geoResource => geoResource.id).includes(geoResourceId) : false;
+		
+		return { currentTopicId, layersStoreReady, geoResourceId, checked };
 	}
 
 
