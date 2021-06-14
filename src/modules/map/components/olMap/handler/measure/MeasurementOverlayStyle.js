@@ -75,18 +75,26 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 		const overlays = olFeature.get('overlays');
 		if (overlays) {
+			const isVisible = (properties) => {
+				if ('visible' in properties || 'top' in properties) {
+					const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
+					const valueOrDefaultTop = 'top' in properties ? properties.top : true;
+	
+					return (valueOrDefaultVisible && valueOrDefaultTop) ? 'inherit' : 'none';	
+				}
+				return 'inherit';
+			};
+			
+			const isVisibleStyle = isVisible(properties); 
+			const opacity = 'opacity' in properties ? properties.opacity : 1;
 
-			if ('opacity' in properties) {
-				overlays.forEach(o => o.getElement().style.opacity = properties.opacity);
+			// setting both properties, to prevent an issue with webkit-based browsers
+			// where opacity is not applied as a single property
+			overlays.forEach(o => {
+				o.getElement().style.display = isVisibleStyle;
+				o.getElement().style.opacity = opacity;
 			}
-
-			if ('visible' in properties || 'top' in properties) {
-				const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
-				const valueOrDefaultTop = 'top' in properties ? properties.top : true;
-
-				const isVisibleStyle = (valueOrDefaultVisible && valueOrDefaultTop) ? '' : 'none';
-				overlays.forEach(o => o.getElement().style.display = isVisibleStyle);
-			}
+			);
 		}
 	}
 

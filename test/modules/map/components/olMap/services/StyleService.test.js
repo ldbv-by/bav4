@@ -179,11 +179,11 @@ describe('StyleService', () => {
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true });
 
-			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: '' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'inherit' } });
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: false, top: true });
-			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'none' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 1, display: 'none' } });
 			instanceUnderTest.updateStyle(feature, mapMock, { top: false });
-			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'none' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 1, display: 'none' } });
 
 		});
 
@@ -214,7 +214,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'measure');
 
-			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: '' } });
+			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'inherit' } });
 		});
 
 	});
