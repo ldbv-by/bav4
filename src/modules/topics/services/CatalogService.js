@@ -1,5 +1,5 @@
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
-import { fallbackCatalogFor, loadBvvCatalog } from './provider/catalog.provider';
+import { loadFallbackCatalog, loadBvvCatalog } from './provider/catalog.provider';
 
 
 /**
@@ -56,7 +56,7 @@ export class CatalogService {
 	/**
 	 * @private
 	 */
-	_newFallbackCatalog(topicId) {
-		return fallbackCatalogFor(topicId);
+	_newFallbackCatalog() {
+		return loadFallbackCatalog();
 	}
 }

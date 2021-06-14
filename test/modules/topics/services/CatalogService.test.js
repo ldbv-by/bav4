@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { CatalogService } from '../../../../src/modules/topics/services/CatalogService';
-import { fallbackCatalogFor, loadBvvCatalog, loadExampleCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
+import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
 import { FALLBACK_TOPICS_IDS } from '../../../../src/services/TopicsService';
 
 describe('CatalogService', () => {
@@ -71,7 +71,7 @@ describe('CatalogService', () => {
 
 				const catalog0 = await instanceUnderTest.byId(fallbackTopicId);
 
-				expect(catalog0).toEqual(fallbackCatalogFor(fallbackTopicId));
+				expect(catalog0).toEqual(loadFallbackCatalog());
 			});
 		});
 	});

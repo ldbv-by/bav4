@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { fallbackCatalogFor, loadBvvCatalog, loadExampleCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
+import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
 
 describe('Catalog provider', () => {
 
@@ -77,7 +77,7 @@ describe('Catalog provider', () => {
 	describe('Util function for a fallback catalog', () => {
 
 		it('loads a fallback catalog', async () => {
-			const catalog = fallbackCatalogFor('foo');
+			const catalog = loadFallbackCatalog();
 
 			expect(catalog.length).toBe(2);
 			expect(catalog[0].open).toBeTrue();
