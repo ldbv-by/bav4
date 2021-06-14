@@ -6,7 +6,8 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
-import tempSvg from '../assets/temp.svg';
+import cssTopics from '../assets/topics.css';
+import tempSvg   from '../assets/temp.svg';
 
 
 /**
@@ -61,6 +62,11 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				setIndex(TopicsContentPanelIndex.CATALOG_0);
 			};
 
+			//add topcis css variables
+			const style = document.createElement('style');
+			style.innerHTML = cssTopics;
+			document.head.appendChild(style);
+
 			const themeColor = (id) => {
 				return `
 					.topic-${id}{
@@ -70,6 +76,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			};
 
 			return html`
+        	<style>${cssTopics}</style>
         	<style>${css}</style>
 			<div class="topics-content-panel ${getVisibilityClass()}">
 				<div class="col">
