@@ -66,7 +66,7 @@ export class BaElement extends HTMLElement {
 		this._storeService = StoreService;
 
 		/** 
-		 * The state of this Element. Usually the state object is an extract of the application-wide store.
+		 * The state of this component. Usually the state object is an extract of the application-wide store.
 		 * Local state should be managed individually in subclasses.
 		 * @see {@link BaElement#extractState}
 		 * @see {@link BaElement#onStateChanged}
@@ -83,7 +83,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * Returns the current state.
 	 * @protected
-	 * @returns state of this element
+	 * @returns state of this component
 	 */
 	getState() {
 		return this._state;
@@ -177,7 +177,7 @@ export class BaElement extends HTMLElement {
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @param {object} state state of this element
+	 * @param {object} state state of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView(/*eslint-disable no-unused-vars */state) {
@@ -186,13 +186,13 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Extract and returns the state of this element from the application-wide state.
-	 * Extraction should be done carefully, and should only contain the state which is necessary for this element.
+	 * Extract and returns the state of this component from the application-wide state.
+	 * Extraction should be done carefully, and should only contain the state which is necessary for this component.
 	 * 
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
 	 * @param {object} globalState **global** state
-	 * @returns state of this elements
+	 * @returns state of this component
 	 */
 	extractState(/*eslint-disable no-unused-vars */globalState) {
 		return {};
@@ -268,17 +268,17 @@ export class BaElement extends HTMLElement {
 	 * Called when the load event of the window is fired.
 	 * Access on properties of nested web components is now possible.
 	 * <br>
-	 * Attention: Will not be called, if the element being loaded lazily!
+	 * Attention: Will not be called, if the component is loaded lazily!
 	 * In this case use: {@link BaElement#onAfterRender}
 	 * @protected
 	 */
 	onWindowLoad() { }
 
 	/**
-	 * Called after the elements state has been changed. 
+	 * Called after the components state has been changed. 
 	 * Per default {@link BaElement#render} is called. 
 	 * @protected
-	 * @param {object} state state of this element
+	 * @param {object} state state of this component
 	 */
 	onStateChanged(/*eslint-disable no-unused-vars */state) {
 		this.render();
@@ -290,7 +290,7 @@ export class BaElement extends HTMLElement {
 	onDisconnect() { }
 
 	/**
-	 * Returns the Html tag name of this element.
+	 * Returns the Html tag name of this component.
 	 * @abstract
 	 */
 	static get tag() {
@@ -307,7 +307,7 @@ export class BaElement extends HTMLElement {
 
 
 	/**
-	 * Registers an observer for a field / property of the state of this element (see: {@link BaElement#extractState}).
+	 * Registers an observer for a field / property of the state of this component (see: {@link BaElement#extractState}).
 	 * Observers are called right after {@link BaElement#extractState}
 	 * @protected
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
