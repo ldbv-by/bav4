@@ -74,7 +74,7 @@ export class ToolContainer extends BaElement {
 				return nothing;
 		}
 
-		if (this._lastContentId !== contentId) {
+		if (this._lastContentId !== contentId && open) {
 			this._deactivateByContentId(this._lastContentId);
 			this._activateByContentId(contentId);
 		}

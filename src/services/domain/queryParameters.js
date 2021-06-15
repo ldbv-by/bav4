@@ -5,6 +5,7 @@
 export const QueryParameters = Object.freeze({
 	ZOOM: 'z',
 	CENTER: 'c',
+	ROTATION: 'r',
 	LAYER: 'l',
 	LAYER_VISIBILITY: 'l_v',
 	LAYER_OPACITY: 'l_o',

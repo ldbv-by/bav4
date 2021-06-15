@@ -1,15 +1,26 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import css from './toggle.css';
-import { classMap } from 'lit-html/directives/class-map.js';
-
+import css from './checkbox.css';
 
 /**
+ * Checkbox.
+ * 
+ * Configurable Attributes:
+ * - `onToggle()`
+ * - `checked` (true|false)
+ * - `disabled` (true|false)
+ * - `title` 
+ * 
+ * Configurable Properties:
+ * - `onToggle()`
+ * - `checked` (default=false)
+ * - `title` (default='')
+ * - `disabled` (default=false)
  * 
  * @class
- * @author taulinger
+ * @author alsturm
  */
-export class Toggle extends BaElement {
+export class Checkbox extends BaElement {
 
 
 	/**
@@ -36,25 +47,25 @@ export class Toggle extends BaElement {
 
 			this._onToggle(event);
 		};
-		const classes = {
-			disabled: this._disabled,
-			active: this._checked,
-		};
 
 		return html`
         <style>${css}</style>
-        <label title='${this._title}' class='switch ${classMap(classes)}'>
-            <slot></slot>
-			<div>
-		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} .checked=${this._checked}>
-		  		<span class='slider round'></span>
-			</div>
-	  	</label>
+		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} .checked=${this._checked} />
+		<label title='${this._title}' class="ba-checkbox" for="cbx" >
+		  		<span>
+			  	<svg width="100%" height="100%" viewbox="0 0 12 9">
+					<polyline points="1 5 4 8 11 1"></polyline>
+			 	 </svg>
+				</span>
+				<span>
+				<slot></slot>
+				</span>
+		 </label>
 		`;
 	}
 
 	static get tag() {
-		return 'ba-toggle';
+		return 'ba-checkbox';
 	}
 
 	static get observedAttributes() {

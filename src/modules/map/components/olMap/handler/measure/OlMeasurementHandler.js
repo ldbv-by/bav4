@@ -8,9 +8,8 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { measureStyleFunction, modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from './StyleUtils';
-import { OverlayManager } from './OverlayManager';
-import { isVertexOfGeometry, getGeometryLength, getArea } from './GeometryUtils';
+import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
+import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
@@ -20,6 +19,9 @@ import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../../../utils/timer';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
+import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
+import { getOverlays } from '../../OverlayStyle';
+import { StyleTypes } from '../../services/StyleService';
 
 
 export const MeasureStateType = {
@@ -50,13 +52,15 @@ const Debounce_Delay = 1000;
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
 		this._geoResourceService = GeoResourceService;
 		this._fileStorageService = FileStorageService;
+		this._overlayService = OverlayService;
+		this._styleService = StyleService;
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
@@ -65,10 +69,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._listeners = [];
+		this._storedContent = null;
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._overlayManager = new OverlayManager();
 		this._lastMeasureStateType = null;
 		this._measureState = {
 			type: null,
@@ -77,7 +81,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			pointCount: this._pointCount,
 			dragging: false
 		};
-		this._helpTooltip = new HelpTooltip(this._overlayManager);
+		this._helpTooltip = new HelpTooltip();
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
@@ -87,20 +91,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
-		const visibleChangedHandler = (event) => {
-			const layer = event.target;
-			const isVisibleStyle = layer.getVisible() ? '' : 'none';
-			this._overlayManager.apply(o => o.getElement().style.display = isVisibleStyle);
-		};
-
-		const opacityChangedHandler = (event) => {
-			const layer = event.target;
-			this._overlayManager.apply(o => o.getElement().style.opacity = layer.getOpacity());
-		};
 
 		const getOldLayer = (map) => {
 			if (this._lastMeasurementId) {
-				return map.getLayers().getArray().find(l => l.get('id') === this._lastMeasurementId );
+				return map.getLayers().getArray().find(l => l.get('id') === this._lastMeasurementId);
 			}
 			return null;
 		};
@@ -109,54 +103,59 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: measureStyleFunction
-			});			
+				style: this._styleService.getStyleFunction(StyleTypes.MEASURE),
+			});
 			return layer;
 		};
-		
-		const addOldFeatures = async(layer, oldLayer) => {
+
+		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
-				
+
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
-				if (vgr) {		
-					vgr.getData().then(data => {						
-						const oldFeatures = readFeatures(data);								
+				if (vgr) {
+					vgr.getData().then(data => {
+						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
-							this._updateOverlays(event.target, false);
+							const measureGeometry = this._createMeasureGeometry(event.target);
+							this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
 							this._setStatistics(event.target);
 						};
-						oldFeatures.forEach(f =>  {
-							f.setStyle(measureStyleFunction(f));
+						oldFeatures.forEach(f => {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
-							this._overlayManager.createDistanceOverlay(f);
-							this._overlayManager.createOrRemoveAreaOverlay(f);
-							this._overlayManager.createPartitionOverlays(f);
-							this._overlayManager.restoreManualOverlayPosition(f);
-							f.on('change', onFeatureChange);	
-						});											
+							this._styleService.removeStyle(f, olMap);
+							this._styleService.addStyle(f, olMap, StyleTypes.MEASURE);
+							f.on('change', onFeatureChange);
+						});
 					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
-				}				
+				}
 			}
 		};
+
+		const onResolutionChange = (olLayer) => {
+			olLayer.getSource().getFeatures().forEach(f => {
+				const measureGeometry = this._createMeasureGeometry(f);
+				this._styleService.updateStyle(f, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
+			});
+		};
+
 		const getOrCreateLayer = () => {
-			const  oldLayer = getOldLayer(this._map);
+			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
-			this._listeners.push(layer.on('change:visible', visibleChangedHandler));
-			this._listeners.push(layer.on('change:opacity', opacityChangedHandler));
 			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
-			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced())); 
+			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
 			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._listeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
 
 		const clickHandler = (event) => {
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
-			const pixel = event.pixel;						
+			const pixel = event.pixel;
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
 			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
@@ -177,7 +176,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const pointerUpHandler = () => {
-			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
+			const draggingOverlay = getOverlays(this._vectorLayer).find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
 			}
@@ -204,10 +203,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
-			this._overlayManager.activate(this._map);
 			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
 			if (!this._environmentService.isTouch()) {
-				this._helpTooltip.activate();
+				this._helpTooltip.activate(this._map);
 				this._onMeasureStateChanged((measureState) => {
 					this._helpTooltip.notify(measureState);
 					if (measureState.snap === MeasureSnapType.VERTEX) {
@@ -218,7 +216,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				});
 			}
-			
+
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
@@ -230,6 +228,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._draw);
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
+
+			this._storeID = null;
+			this._storedContent = null;
 		}
 		return this._vectorLayer;
 	}
@@ -247,23 +248,23 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		this._helpTooltip.deactivate();
-		this._overlayManager.deactivate();
-
-		setStatistic({ length: 0, area: 0 });
+		this._helpTooltip.deactivate();		
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
 
 		this._convertToPermanentLayer();
+		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
+
+		setStatistic({ length: 0, area: 0 });
 
 		this._draw = false;
 		this._modify = false;
 		this._select = false;
 		this._snap = false;
 		this._dragPan = false;
-		this._map = null;
+		this._map = null;		
 	}
 
 	_unreg(listeners) {
@@ -298,7 +299,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_remove() {
 		if (this._draw && this._draw.getActive()) {
-			
+
 			this._draw.removeLastPoint();
 			if (this._pointCount === 1) {
 				this._startNew();
@@ -309,12 +310,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-		
+
 			this._removeSelectedFeatures();
 		}
 	}
 
-	_finish( ) {
+	_finish() {
 		if (this._draw.getActive()) {
 			if (this._activeSketch) {
 				this._draw.finishDrawing();
@@ -322,11 +323,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 			else {
 				this._activateModify(null);
-			}			
+			}
 		}
 	}
 
-	_startNew() {		
+	_startNew() {
 		if (this._draw.getActive()) {
 			this._draw.abortDrawing();
 		}
@@ -334,17 +335,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
-		this._helpTooltip.activate();		
+		this._helpTooltip.activate(this._map);
 		this._simulateClickEvent();
 	}
 
 	_removeSelectedFeatures() {
 		const selectedFeatures = this._select.getFeatures();
 		selectedFeatures.forEach(f => {
-			this._overlayManager.removeFrom(f);
+			this._overlayService.remove(f, this._map);
 			if (this._vectorLayer.getSource().hasFeature(f)) {
 				this._vectorLayer.getSource().removeFeature(f);
-			}			
+			}
 		});
 		selectedFeatures.clear();
 	}
@@ -355,25 +356,19 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: this._getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(measureStyleFunction)
+			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
 		});
 
 		let listener;
 		let zoomListener;
 
 		const finishDistanceOverlay = (event) => {
-
 			const geometry = event.feature.getGeometry();
 			const distanceOverlay = event.feature.get('measurement');
 			distanceOverlay.getElement().static = true;
-			distanceOverlay.setOffset([0, -7]);
 			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));
-				this._overlayManager.remove(this._activeSketch.get('area'));
-			}
-			else {
-				this._overlayManager.update(distanceOverlay, geometry);
 			}
 			this._activeSketch = null;
 			unByKey(listener);
@@ -381,20 +376,29 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		draw.on('drawstart', event => {
-			event.feature.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
 			this._activeSketch = event.feature;
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
-				this._updateOverlays(event.target, true);
+				const measureGeometry = this._createMeasureGeometry(event.target, true);
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
+
+			const onResolutionChange = () => {
+				const measureGeometry = this._createMeasureGeometry(this._activeSketch, true);
+				this._overlayService.update(this._activeSketch, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
+			};
+
+			this._activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
+			this._overlayService.add(this._activeSketch, this._map, StyleTypes.MEASURE);
+
 			listener = event.feature.on('change', onFeatureChange);
-			zoomListener = this._map.getView().on('change:resolution', () => this._updateOverlays(this._activeSketch, true));			
-			this._overlayManager.createDistanceOverlay(event.feature);
+			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
+
 		});
 
-		draw.on('drawabort', event => this._overlayManager.removeFrom(event.feature));
+		draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
 
 		draw.on('drawend', event => {
 			finishDistanceOverlay(event);
@@ -403,17 +407,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		);
 
 		return draw;
-	}	
+	}
 
 	_activateModify(feature) {
 		this._draw.setActive(false);
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
-			feature.setStyle(measureStyleFunction(feature));
 			this._select.getFeatures().push(feature);
 			const onFeatureChange = (event) => {
-				this._updateOverlays(event.target);
+				const measureGeometry = this._createMeasureGeometry(event.target);
+				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._updateStatistics();
 			};
 			feature.on('change', onFeatureChange);
@@ -436,7 +440,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			});
 			setStatistic({ length: length, area: area });
 		}
-
 	}
 
 	_updateMeasurementMode(measureState) {
@@ -446,34 +449,35 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	async _save() {		
-		const features = this._vectorLayer.getSource().getFeatures();			
-		features.forEach(f => this._overlayManager.saveManualOverlayPosition(f));	
-		this._storedContent = createKML(this._vectorLayer, 'EPSG:3857');
+	async _save() {
+		const features = this._vectorLayer.getSource().getFeatures();
+		features.forEach(f => saveManualOverlayPosition(f));
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		if (newContent) {
+			this._storedContent = newContent;
+		}	
 		
-		if (!this._storeID) {
+		if (this._storeID) {			
 			try {
-				const { fileId } = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);					
-				this._storeID = fileId;				
-			}
-			catch (error) {
-				console.warn('Could not store content initially:', error.message);			
-			}
-		}			
-		else {
-			try {
-				await this._fileStorageService.save(this._storeID, this._storedContent, FileStorageServiceDataTypes.KML);	
+				this._storeID = await this._fileStorageService.save(this._storeID.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
 			}
 			catch (error) {
 				console.warn('Could not store content:', error.message);
-			}	
+			}
+		}
+		else {
+			try {
+				this._storeID = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+			}
+			catch (error) {
+				console.warn('Could not store content initially:', error.message);
+			}
 		}
 	}
 
-
-	_updateOverlays(feature, isDrawing) {
+	_createMeasureGeometry(feature, isDrawing = false) {
 		let measureGeometry = feature.getGeometry();
-		const distanceOverlay = feature.get('measurement');
+
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
 
@@ -495,15 +499,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (!this._isFinishOnFirstPoint) {
 				measureGeometry = new LineString(lineCoordinates);
 			}
-			
-			this._overlayManager.createOrRemoveAreaOverlay(feature);
-			
+
 		}
-
-		this._overlayManager.update(distanceOverlay, measureGeometry, '');
-
-		// add partition overlays on the line
-		this._overlayManager.createPartitionOverlays(feature, measureGeometry);
+		return measureGeometry;
 	}
 
 	_getSnapState(pixel) {
@@ -588,25 +586,28 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 
-		if (this._modify.getActive()) {			
+		if (this._modify.getActive()) {
 			measureState.type = this._select.getFeatures().getLength() === 0 ? MeasureStateType.SELECT : MeasureStateType.MODIFY;
 		}
-		const dragableOverlay = this._overlayManager.getOverlays().find(o => o.get('dragable') === true);
+		const dragableOverlay = getOverlays(this._vectorLayer).find(o => o.get('dragable') === true);
 		if (dragableOverlay) {
 			measureState.type = MeasureStateType.OVERLAY;
 		}
-		
+
 		if (!this._dragPan.getActive()) {
-			const draggingOverlay = this._overlayManager.getOverlays().find(o => o.get('dragging') === true);
+			const draggingOverlay = getOverlays(this._vectorLayer).find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.setOffset([0, 0]);
 				draggingOverlay.set('manualPositioning', true);
 				draggingOverlay.setPosition(coordinate);
+
+				const parentFeature = draggingOverlay.get('feature');
+				parentFeature.dispatchEvent('propertychange');
 			}
 		}
 
 		measureState.dragging = dragging;
-		this._setMeasureState(measureState);		
+		this._setMeasureState(measureState);
 	}
 
 
@@ -622,7 +623,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(measureStyleFunction)
+			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
@@ -657,36 +658,37 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
-		
+
 		if (this._isEmpty()) {
 			console.warn('Cannot store empty layer');
-			return;	
+			return;
 		}
 
-		if (!this._storeID || !this._storedContent ) {
-			await this._save();		
+		if (!this._storeID || !this._storedContent) {
+			await this._save();
 		}
-		
-		let id = this._storeID;
-		if (!id) {
-			console.warn('Could not store layer-data. The data will get lost after this session.');	
-			id = 'temp_measure_id';
+
+		const createTempId = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: propagate the failing to UI-feedback-channel 
-		}
-		
+			// TODO: propagate the failing to UI-feedback-channel 		
+			console.warn('Could not store layer-data. The data will get lost after this session.');
+			return 'temp_measure_id';
+		};
+
+		const id = this._storeID ? this._storeID.fileId : createTempId();
+				
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
 			//create a georesource and set the data as source
-			vgr = new VectorGeoResource(id, label, VectorSourceType.KML);				
+			vgr = new VectorGeoResource(id, label, VectorSourceType.KML);
 		}
 		vgr.setSource(this._storedContent, 4326);
-			
+
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label });		
-		this._lastMeasurementId = id;		
+		addLayer(id, { label: label });
+		this._lastMeasurementId = id;
 	}
 
 
@@ -698,7 +700,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_isEmpty() {
-		if (this._vectorLayer) {			
+		if (this._vectorLayer) {
 			return !this._vectorLayer.getSource().getFeatures().length > 0;
 		}
 	}
@@ -717,8 +719,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	static get Debounce_Delay() {
-		return Debounce_Delay; 
-	
+		return Debounce_Delay;
+
 	}
 
 
@@ -737,8 +739,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			event.pageY = this._map.getView().getCenter()[1];
 			event.shiftKey = false;
 			const mapEvent = new MapBrowserEvent('click', this._map, event);
-			this._map.dispatchEvent(mapEvent);		
-		}		
+			this._map.dispatchEvent(mapEvent);
+		}
 	}
 
 }
