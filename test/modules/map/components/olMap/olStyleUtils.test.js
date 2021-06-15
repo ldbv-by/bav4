@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/measure/StyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 

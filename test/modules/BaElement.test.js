@@ -254,8 +254,10 @@ describe('BaElement', () => {
 	});
 
 	describe('when state changed', () => {
+
 		it('calls state change callback in correct order', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
+			const updateStateSpy = spyOn(element, 'updateState').and.callThrough();
 			const onStateChangedSpy = spyOn(element, 'onStateChanged').and.callThrough();
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
@@ -272,6 +274,21 @@ describe('BaElement', () => {
 			expect(element.onAfterRenderCalled).toBe(10);
 			expect(element.shadowRoot.innerHTML.includes('42')).toBeTrue();
 			expect(onStateChangedSpy).toHaveBeenCalledWith(jasmine.any(Object));
+			expect(updateStateSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('updateState', () => {
+
+		it('calls extractState()', async () => {
+			const element = await TestUtils.render(BaElementImpl.tag);
+			const extractStateSpy = spyOn(element, 'extractState').and.callThrough();
+
+			expect(element.shadowRoot.querySelector('.ba-element-impl')).toBeTruthy();
+
+			element.updateState();
+
+			expect(extractStateSpy).toHaveBeenCalled();
 		});
 	});
 	

@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../../../src/modules/map/components/olMap/handler/measure/GeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../src/modules/map/components/olMap/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
 
 
@@ -324,5 +324,13 @@ describe('getPartitionDelta', () => {
 		const delta = getPartitionDelta(lineString, resolution);
 		
 		expect(delta).toBe(1);
+	});
+
+	it('calculates a delta for longest lines', () => {
+		const lineString = new LineString([[0, 0], [50000000, 0]]);		
+		const resolution = 50;
+		const delta = getPartitionDelta(lineString, resolution);
+		
+		expect(delta).toBe(0.02);
 	});
 });
