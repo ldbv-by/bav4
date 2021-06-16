@@ -8,6 +8,23 @@ import { $injector } from '../injection';
  */
 
 /**
+ * Checks if a string represents an adminId.
+ * @function
+ * @name FileStorageService#isAdminId
+ * @param {String} id 
+ * @returns {boolean} fileId
+ */
+
+/**
+ * Checks if a string represents a fileId.
+ * @function
+ * @async
+ * @name FileStorageService#isFileId
+ * @param {String} id 
+ * @returns {boolean} fileId
+ */
+
+/**
  * Loads the content of a file.
  * @function
  * @async
@@ -75,6 +92,14 @@ export class BvvFileStorageService {
 
 	_getKeyByValue(object, value) {
 		return Object.keys(object).find(key => object[key] === value);
+	}
+
+	isAdminId(id) {
+		return id.startsWith('a_');
+	}
+
+	isFileId(id) {
+		return id.startsWith('f_');
 	}
 
 	async get(fileId) {

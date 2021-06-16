@@ -141,7 +141,7 @@ describe('BvvFileStorageService', () => {
 			expect(result.adminId).toBe(adminId);
 			expect(result.fileId).toBe(fileId);
 		});
-		
+
 		it('throws an error when content-type is not supported', (done) => {
 			const contentType = 'someContentType';
 			const data = 'data';
@@ -156,7 +156,7 @@ describe('BvvFileStorageService', () => {
 
 		});
 
-		it('throws an error when file cannot be saved',  (done) => {
+		it('throws an error when file cannot be saved', (done) => {
 			const data = 'data';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
@@ -175,5 +175,26 @@ describe('BvvFileStorageService', () => {
 			});
 		});
 	});
-});
 
+	describe('isFileId', () => {
+
+		it('checks if a string represents a fileId', async () => {
+			
+			const instanceUnderTest = new BvvFileStorageService();
+
+			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
+			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
+		});
+	});
+
+	describe('iAdminId', () => {
+
+		it('checks if a string represents an adminId', async () => {
+			
+			const instanceUnderTest = new BvvFileStorageService();
+
+			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
+			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
+		});
+	});
+});
