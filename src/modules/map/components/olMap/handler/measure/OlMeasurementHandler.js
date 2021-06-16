@@ -42,6 +42,8 @@ export const MeasureSnapType = {
 
 const Debounce_Delay = 1000;
 
+const Temp_Session_Id = 'temp_measure_id';
+
 /**
  * Handler for measurement-interaction with the map
  * 
@@ -92,11 +94,27 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 
+		// temporary fallback-method until implementation in fileStorageService is ready
+		if (typeof this._fileStorageService.isAdminId !== 'function') {
+			this._fileStorageService.isAdminId = (id) => {
+				return id && id.startsWith('a_');
+			};
+		}
+		// temporary fallback-method until implementation in fileStorageService is ready
+		if (typeof this._fileStorageService.isFileId !== 'function') {
+			this._fileStorageService.isFileId = (id) => {
+				return id && id.startsWith('f_');
+			};
+		}
+
+
 		const getOldLayer = (map) => {
-			if (this._lastMeasurementId) {
-				return map.getLayers().getArray().find(l => l.get('id') === this._lastMeasurementId);
-			}
-			return null;
+
+			return map.getLayers().getArray().find(l =>
+				this._fileStorageService.isAdminId(l.get('id')) ||
+				this._fileStorageService.isFileId(l.get('id')) ||
+				l.get('id') === Temp_Session_Id);
+
 		};
 
 		const createLayer = () => {
@@ -248,7 +266,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		this._helpTooltip.deactivate();		
+		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
@@ -264,7 +282,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select = false;
 		this._snap = false;
 		this._dragPan = false;
-		this._map = null;		
+		this._map = null;
 	}
 
 	_unreg(listeners) {
@@ -455,9 +473,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		if (newContent) {
 			this._storedContent = newContent;
-		}	
-		
-		if (this._storeID) {			
+		}
+
+		if (this._storeID) {
 			try {
 				this._storeID = await this._fileStorageService.save(this._storeID.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
 			}
@@ -672,11 +690,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// TODO: offline-support is needed to properly working with temporary ids
 			// TODO: propagate the failing to UI-feedback-channel 		
 			console.warn('Could not store layer-data. The data will get lost after this session.');
-			return 'temp_measure_id';
+			return Temp_Session_Id;
 		};
 
 		const id = this._storeID ? this._storeID.fileId : createTempId();
-				
+
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
 			//create a georesource and set the data as source
