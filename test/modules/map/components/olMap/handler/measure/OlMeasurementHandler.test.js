@@ -70,6 +70,12 @@ describe('OlMeasurementHandler', () => {
 		async save() {
 			return { fileId: 'fooBarBazId' };
 		},
+		isFileId(id) {
+			return id.startsWith('f_');
+		},
+		isAdminId(id) {
+			return id.startsWith('a_');
+		}
 
 	};
 	const environmentServiceMock = { isTouch: () => false };

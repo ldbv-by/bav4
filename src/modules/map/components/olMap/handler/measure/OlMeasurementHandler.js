@@ -94,26 +94,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	onActivate(olMap) {
 
-		// temporary fallback-method until implementation in fileStorageService is ready
-		if (typeof this._fileStorageService.isAdminId !== 'function') {
-			this._fileStorageService.isAdminId = (id) => {
-				return id && id.startsWith('a_');
-			};
-		}
-		// temporary fallback-method until implementation in fileStorageService is ready
-		if (typeof this._fileStorageService.isFileId !== 'function') {
-			this._fileStorageService.isFileId = (id) => {
-				return id && id.startsWith('f_');
-			};
-		}
-
 
 		const getOldLayer = (map) => {
 
-			return map.getLayers().getArray().find(l =>
+			return map.getLayers().getArray().find(l => l.get('id') && (
 				this._fileStorageService.isAdminId(l.get('id')) ||
 				this._fileStorageService.isFileId(l.get('id')) ||
-				l.get('id') === Temp_Session_Id);
+				l.get('id') === Temp_Session_Id));
 
 		};
 
