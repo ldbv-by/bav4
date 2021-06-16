@@ -1,5 +1,5 @@
 import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
-import { activate, deactivate, setStatistic, reset, remove, setLatestStoreId, setFileSaveResult } from '../../../../src/modules/map/store/measurement.action';
+import { activate, deactivate, setStatistic, reset, remove, setFileSaveResult } from '../../../../src/modules/map/store/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
 import { EventLike } from '../../../../src/utils/storeUtils';
 
