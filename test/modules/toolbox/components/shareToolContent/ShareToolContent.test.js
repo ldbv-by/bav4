@@ -240,14 +240,18 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.preview_button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
 
-			const checkbox = element.shadowRoot.querySelector('.embed_checkbox');
+			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			expect(checkbox).toBeTruthy();
 
-			checkbox.click();
+			checkbox.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: true }
+			}));
 
 			expect(element.shadowRoot.querySelector('.preview_button').classList).not.toContain('disabled-preview');
 
-			checkbox.click();
+			checkbox.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: false }
+			}));
 
 			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
 		});

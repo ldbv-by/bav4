@@ -23,7 +23,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den ');
+		expect(map.toolbox_shareTool_termsOfUse).toBe('Nutzungsbedingungen zu.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
@@ -57,7 +58,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
-		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog. Terms of use');
+		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting ');
+		expect(map.toolbox_shareTool_termsOfUse).toBe('the Terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
@@ -72,7 +74,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 28;
+		const expectedSize = 29;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

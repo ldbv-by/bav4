@@ -79,8 +79,8 @@ export class ShareToolContent extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key); 
 
-		const onChange = (event) => {
-			const checked = event.target.checked;
+		const onToggle = (event) => {
+			const checked = event.detail.checked;
 			if (!checked) {
 				this._root.querySelector('.preview_button').classList.add('disabled-preview');
 			}
@@ -156,7 +156,7 @@ export class ShareToolContent extends BaElement {
 							${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
 						</div>   
 					<div class="tool-container__input">
-						<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${copyCoordinate}></ba-icon></span>
+						<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 tabindex='0'} @click=${copyCoordinate}></ba-icon></span>
 						<input class="url-input" readonly='readonly' value=${this._shortUrl}></input>	
 					</div>            
 					<div class="tool-container__embed"> 
@@ -170,8 +170,12 @@ export class ShareToolContent extends BaElement {
 						</button>
 					</div> 
 					<div class="tool-container__checkbox">
-						<input type="checkbox" class="embed_checkbox" @change=${onChange}></input>
+						<div class="embed-checkbox"><ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span> 
 						<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
+							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span> 
+							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
+						</ba-checkbox></div>
 					</div>               
                 </div>
             </div>	  
