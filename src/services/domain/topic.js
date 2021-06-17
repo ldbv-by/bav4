@@ -1,10 +1,18 @@
+/**
+ * Defines style properties for a topic.
+ * @typedef {Object} TopicStyle
+ * @property {number} [hue] css hue value (0-360)
+ * @property {string} [icon] svg
+ */
+
+
 
 /**
 * @class
 */
 export class Topic {
 
-	constructor(id, label, description, baseGeoRs, defaultBaseGeoR = baseGeoRs[0], activatedGeoRs = [], selectedGeoRs = []) {
+	constructor(id, label, description, baseGeoRs, defaultBaseGeoR = baseGeoRs[0], activatedGeoRs = [], selectedGeoRs = [], style = { hue: null, icon: null }) {
 
 		this._id = id;
 		this._label = label;
@@ -13,6 +21,7 @@ export class Topic {
 		this._baseGeoRs = baseGeoRs;
 		this._activatedGeoRs = activatedGeoRs;
 		this._selectedGeoRs = selectedGeoRs;
+		this._style = style;
 	}
 
 	get id() {
@@ -41,5 +50,9 @@ export class Topic {
 
 	get activatedGeoRs() {
 		return [...this._activatedGeoRs];
+	}
+
+	get style() {
+		return this._style;
 	}
 }
