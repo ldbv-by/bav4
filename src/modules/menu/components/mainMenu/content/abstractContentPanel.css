@@ -115,7 +115,10 @@
    -webkit-mask-image: url('../assets/info-lg.svg');
    mask-image:  url('../assets/info-lg.svg');
    transition: all .2s ease-in-out;
+   margin-right: .2em;
+   background: var(--primary-color);
  }
+
  .ba-icon-button{
     background: transparent;
     border: none;
