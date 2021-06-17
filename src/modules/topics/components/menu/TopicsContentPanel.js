@@ -61,8 +61,13 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				//set global theme color
 				const style = document.createElement('style');
 				// TODO replace with topic.hue
-				style.innerHTML = `	*{--topic-hue: ${ id.length * 40};}`;
-				document.head.appendChild(style);	
+				style.innerHTML = `	*{--topic-hue: ${id.length * 40};}`;
+				document.head.appendChild(style);
+
+				//scroll top
+				const element = document.getElementsByTagName('ba-main-menu')[0];
+				const container = element.shadowRoot.getElementById('mainMenuContainer');
+				container.scrollTop = 0;
 			};
 
 			//render color css
@@ -80,7 +85,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 					--topic-lightness: 70%; 	
 				}
 				`;
-			document.head.appendChild(style);	
+			document.head.appendChild(style);
 			// TODO replace with topic.hue
 			const themeColor = (id) => {
 				return `

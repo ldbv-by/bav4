@@ -109,7 +109,7 @@ export class MainMenu extends BaElement {
 					<button @click="${toggle}" class="main-menu__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='main-menu__container'>					
+					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
 								<div class="tabcontent">						
