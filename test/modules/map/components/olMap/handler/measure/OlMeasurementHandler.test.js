@@ -82,15 +82,15 @@ describe('OlMeasurementHandler', () => {
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
-		reset: null
+		reset: null,
+		fileSaveResult: null
 	};
 
-	let store;
 	const setup = (state = initialState) => {
 		const measurementState = {
 			measurement: state,
 		};
-		store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer });
+		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -108,6 +108,7 @@ describe('OlMeasurementHandler', () => {
 			})
 			.register('OverlayService', OverlayService)
 			.register('StyleService', MockClass);
+		return store;
 	};
 
 	const createLayer = () => {
@@ -117,10 +118,6 @@ describe('OlMeasurementHandler', () => {
 		});
 		return layer;
 	};
-
-	beforeEach(() => {
-		setup();
-	});
 	it('has two methods', () => {
 		const handler = new OlMeasurementHandler();
 		expect(handler).toBeTruthy();
@@ -174,6 +171,7 @@ describe('OlMeasurementHandler', () => {
 
 		describe('uses Interactions', () => {
 			it('adds a Draw-Interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -185,6 +183,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('removes Interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const layerStub = {};
@@ -197,6 +196,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds a select interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -208,6 +208,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds a draw interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -219,6 +220,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds a modify interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -230,6 +232,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds a snap interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -241,6 +244,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds a dragPan interaction', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -252,6 +256,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('initialize interactions and state objects only once on multiple activates', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const createDrawSpy = spyOn(classUnderTest, '_createDraw').and.callThrough();
@@ -263,6 +268,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('register observer for finish-request', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -274,6 +280,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('register observer for reset-request', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -286,6 +293,7 @@ describe('OlMeasurementHandler', () => {
 
 
 			it('register observer for remove-request', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
@@ -301,6 +309,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('looks for measurement-layer and adds the feature', (done) => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
@@ -322,6 +331,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('updates overlays of old features onChange', (done) => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
@@ -346,6 +356,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('updates overlays of old features on \'change:Resolution\'', (done) => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
@@ -397,6 +408,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		it('writes features to kml format for persisting purpose', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -411,6 +423,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('adds a vectorGeoResource for persisting purpose', (done) => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -435,6 +448,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('adds layer with temporaryId while persisting layer failed', (done) => {
+			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -456,6 +470,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('adds no layer when empty', (done) => {
+			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -478,6 +493,7 @@ describe('OlMeasurementHandler', () => {
 	describe('when using EnvironmentService for snapTolerance', () => {
 
 		it('isTouch() resolves in higher snapTolerance', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 
@@ -486,6 +502,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('isTouch() resolves in lower snapTolerance', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 
@@ -518,6 +535,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		it('removes partition tooltips after zoom out', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap(15);
 			const geometry = new LineString([[0, 0], [1234, 0]]);
@@ -535,6 +553,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('removes area tooltip after finish drawing', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
@@ -552,6 +571,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('unregister tooltip-listener after finish drawing', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new LineString([[0, 0], [1, 0]]);
@@ -570,6 +590,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('feature gets valid id start drawing', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new LineString([[0, 0], [1, 0]]);
@@ -586,6 +607,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
@@ -603,6 +625,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('positions tooltip content on the end of a updated not closed Polygon', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -625,6 +648,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('removes last point if keypressed', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -643,6 +667,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('removes NOT last point if other keypressed', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -659,6 +684,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('removes currently drawing two-point feature if keypressed', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const startNewSpy = spyOn(classUnderTest, '_startNew');
 			const map = setupMap();
@@ -676,6 +702,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('removes drawn feature if keypressed', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest._removeSelectedFeatures = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
 			const map = setupMap();
@@ -737,6 +764,7 @@ describe('OlMeasurementHandler', () => {
 				jasmine.clock().uninstall();
 			});
 			it('stores twice after a single change of a feature', async () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -754,6 +782,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('stores only twice after multiple changes of a feature', async () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -775,6 +804,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('stores after adding a feature', async () => {
+			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -787,7 +817,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
 			});
@@ -796,6 +826,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('stores after a feature is removed', async () => {
+			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -809,12 +840,14 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
 			});
 		});
 
-		it('stores with storeId on second store ', async () => {
+		it('stores with fileSaveResult on second store ', async () => {
+			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
+			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
@@ -824,7 +857,6 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest._vectorLayer = createLayer();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._storeID = { fileId: 'barId', adminId: 'barBazId' };
 			classUnderTest._save();
 
 			setTimeout(() => {
@@ -836,6 +868,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('logs warning on failed initial store ', async () => {
+			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -849,7 +882,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(classUnderTest._storeID).toBeNull();
+				expect(store.getState().measurement.fileSaveResult).toBeNull();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(String));
 			});
@@ -857,6 +890,8 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('logs warning on second store ', async () => {
+			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
+			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('Failed'))
@@ -868,7 +903,6 @@ describe('OlMeasurementHandler', () => {
 
 			classUnderTest._vectorLayer = createLayer();
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._storeID = { fileId: 'barId', adminId: 'barBazId' };
 			classUnderTest._save();
 
 			setTimeout(() => {
@@ -931,6 +965,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		it('deactivates dblclick', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -943,6 +978,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('creates and activates helpTooltip', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -953,6 +989,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('creates and NOT activates helpTooltip', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 			const map = setupMap();
@@ -964,6 +1001,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('no move when dragging', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 			const map = setupMap();
@@ -975,6 +1013,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('change measureState, when sketch is changing', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -990,6 +1029,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('change measureState, when sketch is snapping to first point', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
@@ -1011,6 +1051,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('change measureState, when sketch is snapping to last point', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
@@ -1030,6 +1071,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('change measureState, when mouse enters draggable overlay', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1065,6 +1107,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new Polygon([[[50, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -1086,6 +1129,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('add the drawn feature to select after drawends', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1102,6 +1146,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('does not change feature snapping states, after drawends', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
@@ -1117,6 +1162,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('did NOT add the drawn feature to select after drawabort', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1133,6 +1179,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('calls draw.finishDrawing after finish-action', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -1149,6 +1196,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('calls draw.abortDrawing after reset-action', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
@@ -1169,6 +1217,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			it('pointer is not snapped on sketch', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
@@ -1186,6 +1235,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('pointer is snapped to sketch boundary', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 
@@ -1206,6 +1256,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
@@ -1225,6 +1276,7 @@ describe('OlMeasurementHandler', () => {
 
 
 			it('adds/removes style for grab on vertex', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const mapContainer = map.getTarget();
@@ -1250,6 +1302,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('adds/removes style for grabbing while modifying', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const mapContainer = map.getTarget();
@@ -1270,6 +1323,7 @@ describe('OlMeasurementHandler', () => {
 		describe('drags overlays', () => {
 
 			it('change overlay-property on pointerdown', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1288,6 +1342,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('changes position of overlay on pointermove', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1319,6 +1374,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('triggers overlay as dragable', () => {
+				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1388,6 +1444,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1410,6 +1467,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('select feature, if clickposition is in anyinteract to selected feature', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1445,6 +1503,7 @@ describe('OlMeasurementHandler', () => {
 	describe('when using util _isInCollection', () => {
 
 		it('finds a item', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const item = { id: 'foo' };
 			const items = [item, { id: 'bar' }, { id: 'baz' }];
@@ -1454,6 +1513,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('finds NOT a item', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const item = { id: '42' };
 			const items = [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }];
@@ -1464,6 +1524,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('finds NOT a item in empty collection', () => {
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const item = { id: '42' };
 			const items = [];
