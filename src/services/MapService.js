@@ -10,7 +10,7 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 
 /**
-* Service for managing map releated meta data
+* Service for managing map related meta data.
 * @class
 */
 export class MapService {
@@ -73,6 +73,14 @@ export class MapService {
 				return this._coordinateService.toLonLatExtent(this._definitions.defaultExtent);
 		}
 		throw new Error('Unsupported SRID ' + srid);
+	}
+
+	/**
+	 * Returns the minimal angle in radians when rotation of the map should be accepted and applied.
+	 * @returns threshold value for rotating the map in radians.
+	 */
+	getMinimalRotation() {
+		return .05;
 	}
 
 }

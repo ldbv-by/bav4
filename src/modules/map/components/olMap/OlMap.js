@@ -11,6 +11,7 @@ import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
+import VectorSource from 'ol/source/Vector';
 
 
 /**
@@ -24,13 +25,15 @@ export class OlMap extends BaElement {
 	constructor() {
 		super();
 		const {
+			MapService: mapService,
 			GeoResourceService: georesourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
 			OlGeolocationHandler: geolocationHandler
-		} = $injector.inject('GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
 
+		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
@@ -80,7 +83,7 @@ export class OlMap extends BaElement {
 				pinchRotate: false,
 				
 			}).extend([new PinchRotate({
-				threshold: .5
+				threshold: this._mapService.getMinimalRotation()
 			})])
 		});
 
@@ -219,12 +222,15 @@ export class OlMap extends BaElement {
 				if (this._layerHandler.has(id)) {
 					this._layerHandler.get(id).deactivate(this._map);
 				}
+				if (olLayer.getSource() instanceof VectorSource) {
+					olLayer.getSource().clear();
+				}
 			}
 		});
 
 		toBeAdded.forEach(id => {
 			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? this._layerService.toOlLayer(resource) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+			const olLayer = resource ? this._layerService.toOlLayer(resource, this._map) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
 			if (olLayer) {
 				const layer = layers.find(layer => layer.geoResourceId === id);

@@ -7,23 +7,24 @@ import { MeasureSnapType, MeasureStateType } from './OlMeasurementHandler';
 
 export class HelpTooltip {
 
-	constructor(overlayManager) {
+	constructor() {
 		this._overlay = null;
-		this._overlayManager = overlayManager;
 		const { TranslationService } = $injector.inject('TranslationService',);
 		this._translationService = TranslationService;
 	}
 
-	activate() {    
-		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
-		this._overlayManager.add(this._overlay);
+	activate(map) {
+		this._map = map;   
+		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);		
+		this._map.addOverlay(this._overlay);
 	}
 
 	deactivate() {
 		if (this._overlay) {
-			this._overlayManager.remove(this._overlay);
-		}
+			this._map.removeOverlay(this._overlay);
+		}		
 		this._overlay = null;
+		this._map = null;
 	}
 
 	notify(measureState) {

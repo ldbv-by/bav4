@@ -15,6 +15,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
 
 window.customElements.define(OlMap.tag, OlMap);
@@ -25,6 +26,12 @@ describe('OlMap', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialZoomLevel = 10;
 	const initialRotationValue = .5;
+
+	const mapServiceStub = {
+		getMinimalRotation() {
+			return .05; 
+		}
+	};
 
 	const geoResourceServiceStub = {
 		byId(id) {
@@ -40,9 +47,6 @@ describe('OlMap', () => {
 
 	const layerServiceMock = {
 		toOlLayer() { }
-	};
-
-	const mapServiceMock = {
 	};
 
 	const environmentServiceMock = {
@@ -97,8 +101,8 @@ describe('OlMap', () => {
 
 
 		$injector
+			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
-			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -422,9 +426,9 @@ describe('OlMap', () => {
 		});
 
 		it('adds an olLayer with custom settings', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 
 			addLayer('id0', { visible: false, opacity: .5 });
 
@@ -437,9 +441,9 @@ describe('OlMap', () => {
 		});
 
 		it('adds an olLayer with custom index', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 
 			addLayer('id0');
 			addLayer('id1', { zIndex: 0 });
@@ -451,9 +455,9 @@ describe('OlMap', () => {
 		});
 
 		it('removes layer from state store when olLayer not available', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const warnSpy = spyOn(console, 'warn');
 			expect(store.getState().layers.active.length).toBe(0);
 
@@ -468,9 +472,9 @@ describe('OlMap', () => {
 		});
 
 		it('removes an olLayer', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 
 			addLayer('id0');
 			expect(map.getLayers().getLength()).toBe(1);
@@ -480,10 +484,24 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(0);
 		});
 
-		it('modifys the visibility of an olLayer', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
+		it('calls #clear on a vector source when layer is removed', async () => {
 			const element = await setup();
 			const map = element._map;
+			const olVectorSource = new VectorSource();
+			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id, source: olVectorSource }));
+
+			addLayer('id0');
+
+			removeLayer('id0');
+
+			expect(vectorSourceSpy).toHaveBeenCalled();
+		});
+
+		it('modifys the visibility of an olLayer', async () => {
+			const element = await setup();
+			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 
 			addLayer('id0');
 			addLayer('id1');
@@ -503,9 +521,9 @@ describe('OlMap', () => {
 		});
 
 		it('modifys the z-index of an olLayer', async () => {
-			spyOn(layerServiceMock, 'toOlLayer').and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 			const element = await setup();
 			const map = element._map;
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id }));
 
 			addLayer('id0');
 			addLayer('id1');

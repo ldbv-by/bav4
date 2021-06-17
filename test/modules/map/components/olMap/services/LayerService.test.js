@@ -4,13 +4,15 @@ import VectorSource from 'ol/source/Vector';
 import { LayerService } from '../../../../../../src/modules/map/components/olMap/services/LayerService';
 import { TestUtils } from '../../../../../test-utils';
 import { networkReducer } from '../../../../../../src/store/network/network.reducer';
+import { Map } from 'ol';
 
 
 describe('LayerService', () => {
 
 	const vectorImportService = {
 		vectorSourceFromInternalData: () => { },
-		vectorSourceFromExternalData: () => { }
+		vectorSourceFromExternalData: () => { },
+		applyStyles: () => { },
 	};
 	const georesourceService = {
 		byId: () => { }
@@ -36,15 +38,19 @@ describe('LayerService', () => {
 		describe('VectorGeoresource', () => {
 
 			it('converts an external VectorGeoresource to an olLayer by calling #vectorSourceFromExternalData', () => {
-				const spy = spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(new VectorSource());
+				const olMap = new Map();
+				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl('https://some.url');
+				const vectorSourceFromExternalDataSpy = spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(olSource);
+				const applyStylesSpy = spyOn(vectorImportService, 'applyStyles').and.callFake(olLayer => olLayer);
 
-				const vectorOlLayer = instanceUnderTest.toOlLayer(vectorGeoresource);
+				const vectorOlLayer = instanceUnderTest.toOlLayer(vectorGeoresource, olMap);
 
 				expect(vectorOlLayer.get('id')).toBe('someId');
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
-				expect(spy).toHaveBeenCalledWith(vectorGeoresource);
+				expect(vectorSourceFromExternalDataSpy).toHaveBeenCalledWith(vectorGeoresource);
+				expect(applyStylesSpy).toHaveBeenCalledWith(vectorOlLayer, olMap);
 
 				//test load listener
 				vectorOlLayer.getSource().dispatchEvent('featuresloadstart');
@@ -57,7 +63,9 @@ describe('LayerService', () => {
 			});
 
 			it('registers load listerners for an external vector layer', () => {
-				spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(new VectorSource());
+				const olSource = new VectorSource();
+				spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(olSource);
+				spyOn(vectorImportService, 'applyStyles').and.callFake(olLayer => olLayer);
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl('https://some.url');
 
 				const vectorSource = instanceUnderTest.toOlLayer(vectorGeoresource).getSource();
@@ -72,15 +80,19 @@ describe('LayerService', () => {
 			});
 
 			it('converts an internal VectorGeoresource to an olLayer by calling #vectorSourceFromInternalData', () => {
-				const spy = spyOn(vectorImportService, 'vectorSourceFromInternalData').and.returnValue(new VectorSource());
+				const olMap = new Map();
+				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource('someId', 'geoResourceLabel', VectorSourceType.KML).setSource('<kml></kml>', 4326);
+				const vectorSourceFromInternalDataSpy = spyOn(vectorImportService, 'vectorSourceFromInternalData').and.returnValue(olSource);
+				const applyStylesSpy = spyOn(vectorImportService, 'applyStyles').and.callFake(olLayer => olLayer);
 
-				const vectorOlLayer = instanceUnderTest.toOlLayer(vectorGeoresource);
+				const vectorOlLayer = instanceUnderTest.toOlLayer(vectorGeoresource, olMap);
 
 				expect(vectorOlLayer.get('id')).toBe('someId');
 				expect(vectorOlLayer.constructor.name).toBe('VectorLayer');
 				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
-				expect(spy).toHaveBeenCalledWith(vectorGeoresource);
+				expect(vectorSourceFromInternalDataSpy).toHaveBeenCalledWith(vectorGeoresource);
+				expect(applyStylesSpy).toHaveBeenCalledWith(vectorOlLayer, olMap);
 			});
 		});
 
