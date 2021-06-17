@@ -6,7 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode } from '../../../../store/measurement.action';
+import { setStatistic, setMode, setFileSaveResult } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
 import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
@@ -247,7 +247,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
 
-			this._storeID = null;
 			this._storedContent = null;
 		}
 		return this._vectorLayer;
@@ -474,10 +473,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (newContent) {
 			this._storedContent = newContent;
 		}
-
-		if (this._storeID) {
+		const { measurement } = this._storeService.getStore().getState();
+		
+		if (measurement.fileSaveResult) {
 			try {
-				this._storeID = await this._fileStorageService.save(this._storeID.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+				const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+				setFileSaveResult(fileSaveResult);
 			}
 			catch (error) {
 				console.warn('Could not store content:', error.message);
@@ -485,7 +486,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		else {
 			try {
-				this._storeID = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				setFileSaveResult(fileSaveResult);
 			}
 			catch (error) {
 				console.warn('Could not store content initially:', error.message);
@@ -681,8 +683,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			console.warn('Cannot store empty layer');
 			return;
 		}
-
-		if (!this._storeID || !this._storedContent) {
+		
+		if (!this._getLastFileSaveResult() || !this._storedContent) {
 			await this._save();
 		}
 
@@ -692,8 +694,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			return Temp_Session_Id;
 		};
-
-		const id = this._storeID ? this._storeID.fileId : createTempId();
+		
+		const id = this._getLastFileSaveResult() ? this._getLastFileSaveResult().fileId : createTempId();
 
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
@@ -709,6 +711,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._lastMeasurementId = id;
 	}
 
+	_getLastFileSaveResult() {
+		const { measurement } = this._storeService.getStore().getState();
+		return measurement.fileSaveResult;
+	}
 
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
