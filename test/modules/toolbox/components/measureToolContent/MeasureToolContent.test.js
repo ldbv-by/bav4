@@ -24,7 +24,10 @@ describe('MeasureToolContent', () => {
 	const setup = async (state = defaultState, config = {}) => {
 
 		const { embed = false, isTouch = false } = config;
-
+		const shareServiceMock = {
+			copyToClipboard() { },
+			encodeState() {}
+		};
 
 		class MockClass {
 			constructor() {
@@ -48,6 +51,7 @@ describe('MeasureToolContent', () => {
 				isTouch:() => isTouch
 
 			}).registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ShareService', shareServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};

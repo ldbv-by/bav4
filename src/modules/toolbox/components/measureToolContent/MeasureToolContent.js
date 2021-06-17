@@ -7,6 +7,7 @@ import clipboardIcon from './assets/clipboard.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
+import { QueryParameters } from '../../../../services/domain/queryParameters';
 /**
  * @class
  * @author thiloSchlemmer
@@ -16,10 +17,11 @@ export class MeasureToolContent extends BaElement {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, ShareService:shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._unitsService = unitsService;
+		this._shareService = shareService;
 		this._tool = {
 			name: 'measure',
 			active: false,
@@ -36,6 +38,7 @@ export class MeasureToolContent extends BaElement {
 		const areaClasses = { 'is-area': statistic.area > 0 };
 	
 		const buttons = this._getButtons(state);
+		const shareContent = this._getShareContent(state);
 		const subText = this._getSubText(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
@@ -80,6 +83,7 @@ export class MeasureToolContent extends BaElement {
 						</ba-icon>
 					</span>			
 					</div>
+					${shareContent}
 					<div class='sub-text'>${subText}</div>
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
@@ -133,6 +137,46 @@ export class MeasureToolContent extends BaElement {
 
 		
 		return buttons;
+	}
+
+	_getShareContent(state) {
+		const { fileSaveResult } = state;
+		const translate = (key) => this._translationService.translate(key);
+		const isValidForSharing = (fileSaveResult) => {
+			if (!fileSaveResult) {
+				return false;
+			}
+			if (!fileSaveResult.adminId && !fileSaveResult.fileId) {
+				return false;
+			}
+			return true;
+		};  
+
+		const buildShareUrl = async (fileSaveResult) => {
+			const baseUrl = this._shareService.encodeState();
+			const urlParams = new URLSearchParams(baseUrl);
+			const extendedLayers = urlParams.get(QueryParameters.LAYER) + ',' + fileSaveResult.adminId;
+
+			urlParams.set(QueryParameters.LAYER, extendedLayers );
+			const url = decodeURIComponent(urlParams.toString());
+
+			const shortUrl = await this._urlService.shorten(url);
+			return shortUrl;
+		};
+
+		if (isValidForSharing(fileSaveResult)) {
+			const shareurl =  buildShareUrl(fileSaveResult);
+			return html`<div class='share_container>
+				<div class='share_content' style='display:flex;flex-grow:3'>
+					<ba-checkbox class='close' title='schreibgeschützt'>schreibgeschützt
+					</ba-checkbox>
+					<input class='share' type='text' id='shareurl' name='shareurl' value='${shareurl}' readonly>
+				</div>
+				<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
+							</ba-icon>
+			</div>`;
+		}
+		return html.nothing;
 	}
 
 	_getSubText(state) {

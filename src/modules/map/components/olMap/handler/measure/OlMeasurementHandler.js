@@ -130,7 +130,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._styleService.addStyle(f, olMap, StyleTypes.MEASURE);
 							f.on('change', onFeatureChange);
 						});
-					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
+					})
+						.then(() => removeLayer(oldLayer.get('id')))
+						.then(() => this._finish())
+						.then(() => {
+							const id = oldLayer.get('id');
+							if (this._fileStorageService.isAdminId(id)) {
+								setFileSaveResult({ adminId:id, fileId:null });
+							}
+							if (this._fileStorageService.isFileId(id)) {
+								setFileSaveResult({ fileId:id, adminId:null });
+							}
+						});
 				}
 			}
 		};
