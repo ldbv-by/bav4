@@ -6,7 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode } from '../../../../store/measurement.action';
+import { setStatistic, setMode, setFileSaveResult } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
 import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
@@ -41,6 +41,8 @@ export const MeasureSnapType = {
 };
 
 const Debounce_Delay = 1000;
+
+const Temp_Session_Id = 'temp_measure_id';
 
 /**
  * Handler for measurement-interaction with the map
@@ -93,10 +95,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	onActivate(olMap) {
 
 		const getOldLayer = (map) => {
-			if (this._lastMeasurementId) {
-				return map.getLayers().getArray().find(l => l.get('id') === this._lastMeasurementId);
-			}
-			return null;
+			return map.getLayers().getArray().find(l => l.get('id') && (
+				this._fileStorageService.isAdminId(l.get('id')) ||
+				this._fileStorageService.isFileId(l.get('id')) ||
+				l.get('id') === Temp_Session_Id));
 		};
 
 		const createLayer = () => {
@@ -229,7 +231,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._snap);
 			olMap.addInteraction(this._dragPan);
 
-			this._storeID = null;
 			this._storedContent = null;
 		}
 		return this._vectorLayer;
@@ -248,7 +249,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		this._helpTooltip.deactivate();		
+		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
@@ -264,7 +265,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._select = false;
 		this._snap = false;
 		this._dragPan = false;
-		this._map = null;		
+		this._map = null;
 	}
 
 	_unreg(listeners) {
@@ -455,11 +456,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		if (newContent) {
 			this._storedContent = newContent;
-		}	
+		}
+		const { measurement } = this._storeService.getStore().getState();
 		
-		if (this._storeID) {			
+		if (measurement.fileSaveResult) {
 			try {
-				this._storeID = await this._fileStorageService.save(this._storeID.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+				const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+				setFileSaveResult(fileSaveResult);
 			}
 			catch (error) {
 				console.warn('Could not store content:', error.message);
@@ -467,7 +470,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		else {
 			try {
-				this._storeID = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+				setFileSaveResult(fileSaveResult);
 			}
 			catch (error) {
 				console.warn('Could not store content initially:', error.message);
@@ -663,8 +667,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			console.warn('Cannot store empty layer');
 			return;
 		}
-
-		if (!this._storeID || !this._storedContent) {
+		
+		if (!this._getLastFileSaveResult() || !this._storedContent) {
 			await this._save();
 		}
 
@@ -672,11 +676,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// TODO: offline-support is needed to properly working with temporary ids
 			// TODO: propagate the failing to UI-feedback-channel 		
 			console.warn('Could not store layer-data. The data will get lost after this session.');
-			return 'temp_measure_id';
+			return Temp_Session_Id;
 		};
+		
+		const id = this._getLastFileSaveResult() ? this._getLastFileSaveResult().fileId : createTempId();
 
-		const id = this._storeID ? this._storeID.fileId : createTempId();
-				
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
 			//create a georesource and set the data as source
@@ -688,9 +692,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-		this._lastMeasurementId = id;
+
+		// reset the global accessible FileSaveResult for the next measurement session
+		setFileSaveResult(null);
 	}
 
+	_getLastFileSaveResult() {
+		const { measurement } = this._storeService.getStore().getState();
+		return measurement.fileSaveResult;
+	}
 
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {

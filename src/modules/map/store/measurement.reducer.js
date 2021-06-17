@@ -1,7 +1,7 @@
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
-export const LATEST_STORE_ID_CHANGED = 'measurement/latestStoreId';
+export const FILE_SAVE_RESULT_CHANGED = 'measurement/fileSaveResult';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
 export const REMOVE_REQUESTED = 'measurement/remove';
@@ -21,9 +21,9 @@ export const initialState = {
 	 */
 	mode: null,
 	/**
-	 * @type {object}
+	 * @type {import("../../../services/FileStorageService").FileSaveResult}
 	 */
-	latestStoreId: null,
+	fileSaveResult: null,
 	/**
 	 * @type EventLike
 	 */
@@ -66,11 +66,11 @@ export const measurementReducer = (state = initialState, action) => {
 
 			};
 		}
-		case LATEST_STORE_ID_CHANGED: {
+		case FILE_SAVE_RESULT_CHANGED: {
 
 			return {
 				...state,
-				latestStoreId: payload
+				fileSaveResult: payload
 
 			};
 		}
