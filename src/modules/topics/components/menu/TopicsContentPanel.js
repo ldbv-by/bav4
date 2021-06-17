@@ -6,7 +6,6 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
-// import tempSvg   from '../assets/temp.svg';
 
 
 /**
