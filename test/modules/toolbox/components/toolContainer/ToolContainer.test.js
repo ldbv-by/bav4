@@ -40,6 +40,10 @@ describe('ToolContainer', () => {
 			measurement: measurement
 		};
 
+		const shareServiceMock = {
+			copyToClipboard() { }
+		};
+
 		class MockClass {
 			constructor() {
 				this.get = 'I\'m a UnitsService.';
@@ -63,6 +67,7 @@ describe('ToolContainer', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
+			.registerSingleton('ShareService', shareServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(ToolContainer.tag);
 	};
