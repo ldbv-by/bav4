@@ -67,8 +67,6 @@ describe('TopicsContentPanel', () => {
 				expect(spy).toHaveBeenCalledOnceWith(topicId);
 				//test correct rendering of the style -tags
 				expect(element.shadowRoot.styleSheets).toHaveSize(3);
-				//test correct rendering of topic dependent style definition
-				expect(element.shadowRoot.styleSheets.item(2).cssRules.item(1).style.getPropertyValue('--secondary-color').trim()).toBe('var(--topic-theme-foo, var(--secondary-color-theme))');
 				//test existence of importent css classes
 				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);

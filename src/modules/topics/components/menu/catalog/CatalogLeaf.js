@@ -33,14 +33,10 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 	createView(state) {
 
-		const { currentTopicId, layersStoreReady, checked, geoResourceId } = state;
+		const { layersStoreReady, checked, geoResourceId } = state;
 		const translate = (key) => this._translationService.translate(key);
 
 		if (geoResourceId && layersStoreReady) {
-
-			const style = document.createElement('style');
-			style.innerHTML = `.ba-list-item { --primary-color-theme: var(--topic-theme-${currentTopicId}, var(--secondary-color-theme));}`;
-			this.shadowRoot.appendChild(style);
 
 			const geoR = this._geoResourceService.byId(geoResourceId);
 			const label = geoR ? geoR.label : geoResourceId;
@@ -74,12 +70,12 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 	extractState(globalState) {
 		//our local state contains values derived form the global state and local data (_catalogPart)
-		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
+		const { layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
 		
 		const geoResourceId  = this._catalogPart ? this._catalogPart.geoResourceId : null;
 		const checked = geoResourceId ? activeLayers.map(geoResource => geoResource.id).includes(geoResourceId) : false;
 		
-		return { currentTopicId, layersStoreReady, geoResourceId, checked };
+		return { layersStoreReady, geoResourceId, checked };
 	}
 
 

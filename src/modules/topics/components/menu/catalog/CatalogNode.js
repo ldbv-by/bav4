@@ -1,6 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { classMap } from 'lit-html/directives/class-map.js';
+import css from './catalogNode.css';
 
 /**
  * @class
@@ -33,9 +34,7 @@ export class CatalogNode extends AbstractContentPanel {
 		//nothing to to here: initial rendering does it
 	}
 
-	createView(state) {
-
-		const { currentTopicId } = state;
+	createView() {
 
 		const toggleCollapse = () => {
 			this._isCollapsed = !this._isCollapsed;
@@ -49,12 +48,6 @@ export class CatalogNode extends AbstractContentPanel {
 		const bodyCollapseClass = {
 			iscollapse: this._isCollapsed
 		};
-
-		const themeColor = `
-			.ba-section{
-				--secondary-color: var(--topic-theme-${currentTopicId}, var(--secondary-color-theme));				  
-			}	
-		`;
 
 		if (this._catalogPart) {
 			const { label, children } = this._catalogPart;
@@ -70,7 +63,7 @@ export class CatalogNode extends AbstractContentPanel {
 			if (this._level === 0) {
 				return html`
 				<style>
-				${themeColor}
+				${css}
 				</style>
 			<div class='ba-section divider'>
 				<a href='#' tabindex='0' class="ba-list-item ba-list-item__header" @click="${toggleCollapse}">
@@ -99,12 +92,6 @@ export class CatalogNode extends AbstractContentPanel {
 			}
 		}
 		return nothing;
-	}
-
-	extractState(globalState) {
-
-		const { topics: { current: currentTopicId } } = globalState;
-		return { currentTopicId };
 	}
 
 	static get tag() {

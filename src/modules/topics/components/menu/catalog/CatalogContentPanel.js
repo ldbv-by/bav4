@@ -3,7 +3,6 @@ import { $injector } from '../../../../../injection';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../../store/topicsContentPanel.action';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
-import tempSvg from '../../assets/temp.svg';
 import css from './catalogContentPanel.css';
 
 
@@ -66,18 +65,12 @@ export class CatalogContentPanel extends AbstractContentPanel {
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
 			});
-			const { id, label } = this._topic;
-			const themeColor = `
-			.topic{
-				--secondary-color: var(--topic-theme-${id}, var(--secondary-color-theme));			  		  
-			}	
-			`;
+			const { label } = this._topic;	
 			const translate = (key) => this._translationService.translate(key);
 
 			return html`
 			<style>
 			${css}
-			${themeColor}
 			</style>
 			<div class="catalog-content-panel">
 			<button class="ba-list-item" @click=${changeIndex}>
@@ -88,8 +81,10 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			</button>
 			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon">
-						<ba-icon id='info' icon='${tempSvg}' color=var(--primary-bg-color) color_hover=var(--primary-bg-color) size=2.6 ></ba-icon>
+					<span class="ba-list-item__icon">						
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16">
+					<circle cx="8" cy="8" r="8"/>
+				  </svg>
 					</span>				
 				</span>
 				<span class="ba-list-item__text verticla-center">

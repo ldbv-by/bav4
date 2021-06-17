@@ -6,8 +6,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
-import cssBvvTopics from '../assets/bvv-topics.css';
-import tempSvg   from '../assets/temp.svg';
+// import tempSvg   from '../assets/temp.svg';
 
 
 /**
@@ -60,17 +59,34 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			const changeTopic = (id) => {
 				setCurrent(id);
 				setIndex(TopicsContentPanelIndex.CATALOG_0);
+				//set global theme color
+				const style = document.createElement('style');
+				// TODO replace with topic.hue
+				style.innerHTML = `	*{--topic-hue: ${ id.length * 40};}`;
+				document.head.appendChild(style);	
 			};
 
-			//add topcis css variables
+			//render color css
 			const style = document.createElement('style');
-			style.innerHTML = cssBvvTopics;			
-			document.head.appendChild(style);
-
+			style.innerHTML = `	
+				*{								
+					--topic-theme: hsl( var(--topic-hue) var(--topic-saturation) var(--topic-lightness));
+				}
+				.light-theme {			
+					--topic-saturation: 60%;
+					--topic-lightness: 40%; 	
+				}				
+				.dark-theme {				
+					--topic-saturation: 70%;
+					--topic-lightness: 70%; 	
+				}
+				`;
+			document.head.appendChild(style);	
+			// TODO replace with topic.hue
 			const themeColor = (id) => {
 				return `
-					.topic-${id}{
-						--secondary-color: var(--topic-theme-${id}, var(--secondary-color-theme));			  
+				.topic-${id}{		
+					--topic-theme: hsl( ${id.length * 40} var(--topic-saturation) var(--topic-lightness));			
 					}	
 					`;
 			};
@@ -86,7 +102,9 @@ export class TopicsContentPanel extends AbstractContentPanel {
 					<button  tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
 						<span class="ba-list-item__pre">
 							<span class="ba-list-item__icon icon-${topic.id}">
-								<ba-icon id='info' icon='${tempSvg}'  color=var(--primary-bg-color) color_hover=var(--primary-bg-color)  size=2.6 ></ba-icon>
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16">
+  								<circle cx="8" cy="8" r="8"/>
+								</svg>
 							</span>											
 						</span>
 						</span>
