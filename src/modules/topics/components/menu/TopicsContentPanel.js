@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing, svg } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
 import { renderTagOf } from '../../../BaElement';
@@ -6,6 +6,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
+import cssGlobal from './assets/topics.css';
 
 
 /**
@@ -55,13 +56,13 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				return (contentIndex === TopicsContentPanelIndex.TOPICS) ? '' : 'invisible';
 			};
 
-			const changeTopic = (id) => {
-				setCurrent(id);
+			const changeTopic = (topic) => {
+				setCurrent(topic.id);
 				setIndex(TopicsContentPanelIndex.CATALOG_0);
 				//set global theme color
 				const style = document.createElement('style');
 				// TODO replace with topic.hue
-				style.innerHTML = `	*{--topic-hue: ${id.length * 40};}`;
+				style.innerHTML = `	*{--topic-hue:${topic.style.hue};}`;
 				document.head.appendChild(style);
 
 				//scroll top
@@ -70,27 +71,21 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				container.scrollTop = 0;
 			};
 
+			//temp mock color and icon
+			topics.map( (topic, index) => {
+				topic.style.hue = topic.style.hue = index * 5 + 170;
+				topic.style.svg = svg`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>`;
+			});
+
+
 			//render color css
 			const style = document.createElement('style');
-			style.innerHTML = `	
-				*{								
-					--topic-theme: hsl( var(--topic-hue) var(--topic-saturation) var(--topic-lightness));
-				}
-				.light-theme {			
-					--topic-saturation: 60%;
-					--topic-lightness: 40%; 	
-				}				
-				.dark-theme {				
-					--topic-saturation: 70%;
-					--topic-lightness: 70%; 	
-				}
-				`;
+			style.innerHTML = cssGlobal;
 			document.head.appendChild(style);
-			// TODO replace with topic.hue
-			const themeColor = (id) => {
+			const themeColor = (topic) => {
 				return `
-				.topic-${id}{		
-					--topic-theme: hsl( ${id.length * 40} var(--topic-saturation) var(--topic-lightness));			
+				.topic-${topic.id}{		
+					--topic-theme: hsl( ${topic.style.hue} var(--topic-saturation) var(--topic-lightness));			
 					}	
 					`;
 			};
@@ -101,14 +96,12 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				<div class="col">
 				${topics.map(topic => html`
 					<style>
-					${themeColor(topic.id)}
+					${themeColor(topic)}
 					</style>
-					<button  tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic.id)}>
+					<button  tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic)}>
 						<span class="ba-list-item__pre">
 							<span class="ba-list-item__icon icon-${topic.id}">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16">
-  								<circle cx="8" cy="8" r="8"/>
-								</svg>
+							${topic.style.svg}
 							</span>											
 						</span>
 						</span>
