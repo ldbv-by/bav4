@@ -4,6 +4,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
+import shareIcon from './assets/share.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
 
 import css from './measureToolContent.css';
@@ -17,11 +18,12 @@ export class MeasureToolContent extends BaElement {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, ShareService:shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'ShareService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, UrlService:urlService, ShareService:shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._unitsService = unitsService;
 		this._shareService = shareService;
+		this._urlService = urlService;
 		this._tool = {
 			name: 'measure',
 			active: false,
@@ -30,6 +32,7 @@ export class MeasureToolContent extends BaElement {
 		};
 		this._isFirstMeasurement = true;
 		this._shareAsReadOnly = false;
+		this._shareUrls = null;
 	}
 
 	createView(state) {
@@ -39,7 +42,7 @@ export class MeasureToolContent extends BaElement {
 		const areaClasses = { 'is-area': statistic.area > 0 };
 	
 		const buttons = this._getButtons(state);
-		const shareContent = this._getShareContent(state);
+		const shareContainer = this._getShareContainer(state);
 		const subText = this._getSubText(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
@@ -52,12 +55,8 @@ export class MeasureToolContent extends BaElement {
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
-
-		const copyValueToClipboard = (value) => {
-			this._shareService.copyToClipboard(value).then(() => {}, () => {
-				console.warn('Clipboard API not available');
-			});
-		};
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance);
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedDistance);
 
 		return html`
         <style>${css}</style>
@@ -75,7 +74,7 @@ export class MeasureToolContent extends BaElement {
 						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
 						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${copyValueToClipboard(formattedDistance)}} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyDistanceToClipboard}} >
 							</ba-icon>
 						</span>											
 					</div>
@@ -86,12 +85,12 @@ export class MeasureToolContent extends BaElement {
 						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
 						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${this._copyValueToClipboard(formattedArea)}>
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyAreaToClipboard}>
 							</ba-icon>
 						</ba-icon>
 					</span>			
 					</div>
-					${shareContent}
+					${shareContainer}
 					<div class='sub-text'>${subText}</div>
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
@@ -147,21 +146,22 @@ export class MeasureToolContent extends BaElement {
 		return buttons;
 	}
 
-	_getShareContent(state) {
+	_getShareContainer(state) {
 		const { fileSaveResult } = state;
 		const translate = (key) => this._translationService.translate(key);
 		const isValidForSharing = (fileSaveResult) => {
 			if (!fileSaveResult) {
 				return false;
 			}
-			if (!fileSaveResult.adminId && !fileSaveResult.fileId) {
+			if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
 				return false;
 			}
 			return true;
 		};  
+		
 
-		const buildShareUrl = async (fileSaveResult, readonly) => {
-			const extraParams = new Map([[QueryParameters.LAYER, readonly ? fileSaveResult.fileId : fileSaveResult.adminId]]);
+		const buildShareUrl =  async(id) => {
+			const extraParams = new Map([[QueryParameters.LAYER, id]]);
 			const url = this._shareService.encodeState(extraParams);
 			
 			const shortUrl = await this._urlService.shorten(url);
@@ -169,21 +169,43 @@ export class MeasureToolContent extends BaElement {
 		};
 
 		if (isValidForSharing(fileSaveResult)) {
-			const shareurl =  buildShareUrl(fileSaveResult, this._shareAsReadOnly);
-			const onToggle = (event) => {
-				this._shareAsReadOnly = event.detail.checked;
+			const onGenerateShareUrls = async () => {
+				const forAdminId = await buildShareUrl(fileSaveResult.adminId);
+				const forFileId = await buildShareUrl(fileSaveResult.fileId);
+				this._shareUrls = { adminId:forAdminId, fileId:forFileId };
+				this.render();
 			};
-			return html`<div class='share_container>
-				<div class='share_content' style='display:flex;flex-grow:3'>
-					<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
-					</ba-checkbox>
-					<input class='share' type='text' id='shareurl' name='shareurl' value='${shareurl}' readonly>
-				</div>
-				<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${this._copyValueToClipboard(shareurl)}>
+			const shareContent = this._getShareContent();	
+		
+			return html`<div class='share_container'>
+			<ba-icon class='close share_init' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_start')} size=1.5} @click=${onGenerateShareUrls}>
 				</ba-icon>
+				${shareContent}
 			</div>`;
 		}
 		return html.nothing;
+	}
+
+	_getShareContent() {
+		const translate = (key) => this._translationService.translate(key);
+		const onToggle = (event) => {
+			this._shareAsReadOnly = event.detail.checked;
+		};
+		if (this._shareUrls != null) {
+			const shareurl = this._shareAsReadOnly ? this._shareUrls.fileId : this._shareUrls.adminId;
+			const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(shareurl);
+
+			return html`<div class='share_content' style='display:flex;flex-grow:3'>
+							<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
+							</ba-checkbox>
+							<input class='share_url' type='text' id='shareurl' name='shareurl' value=${shareurl} readonly>
+							</div>
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyUrlToClipBoard}>
+							</ba-icon>`;
+
+		}
+		return html.nothing;
+
 	}
 
 	_getSubText(state) {

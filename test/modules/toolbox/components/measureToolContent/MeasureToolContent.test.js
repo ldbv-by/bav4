@@ -16,22 +16,28 @@ describe('MeasureToolContent', () => {
 		measurement: {
 			active: true,
 			statistic: { length: 0, area: 0 },
+			fileSaveResult:null,
 			reset: null,
 			remove: null,
 		}
 	};
-
+	const shareServiceMock = {
+		copyToClipboard() {
+			return Promise.resolve();
+		},
+		encodeState() {
+			return 'http://this.is.a.url?forTestCase';
+		}
+	};
+	const urlServiceMock = {
+		shorten() {
+			return Promise.resolve('http://foo');
+		}
+	};
 	const setup = async (state = defaultState, config = {}) => {
 
 		const { embed = false, isTouch = false } = config;
-		const shareServiceMock = {
-			copyToClipboard() {
-				return Promise.resolve();
-			},
-			encodeState() {
-				return 'http://this.is.a.url?forTestCase';
-			}
-		};
+		
 
 		class MockClass {
 			constructor() {
@@ -56,6 +62,7 @@ describe('MeasureToolContent', () => {
 
 			}).registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('UrlService', urlServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
@@ -173,6 +180,65 @@ describe('MeasureToolContent', () => {
 
 			expect(subTextElement).toBeTruthy();			
 			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+		});
+
+		it('shows the measurement share-container', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			const shareContainerElement = element.shadowRoot.querySelector('.share_container');
+			const shareButton = element.shadowRoot.querySelector('.share_init');
+			
+			expect(shareContainerElement).toBeTruthy();			
+			expect(shareButton).toBeTruthy();			
+		});
+
+		it('shows NOT the measurement share-container for invalid fileSaveResult', async () => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult:{ adminId:'a_fooBar', fileId:null },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			const shareContainerElement = element.shadowRoot.querySelector('.share_container');
+					
+			expect(shareContainerElement).toBeFalsy();				
+		});
+
+		it('creates the measurement share-urls on click',  async(done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			const element = await setup(state);
+			
+			const shareButton = element.shadowRoot.querySelector('.share_init');
+			shareButton.click();
+			
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(element._shareUrls).toEqual({ adminId: 'http://shorten.foo', fileId: 'http://shorten.foo' });
+				done();
+			});
+
 		});
 
 		describe('with touch-device', () => {
