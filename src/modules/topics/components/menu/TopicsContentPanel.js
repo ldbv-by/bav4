@@ -62,7 +62,6 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			style.id = TopicsContentPanel.Global_Topics_Common_Style_Id;
 			document.head.appendChild(style);
 		}
-
 	}
 
 	/**
