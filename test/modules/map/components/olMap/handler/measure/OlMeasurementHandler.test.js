@@ -472,13 +472,14 @@ describe('OlMeasurementHandler', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save');
+			const saveSpy = spyOn(classUnderTest, '_save');
+			spyOn(classUnderTest, '_isEmpty').and.returnValue(false);
 
 			classUnderTest.activate(map);
 			setFileSaveResult({ fileId: 'f_barId', adminId: 'a_barBazId' });
 			classUnderTest.deactivate(map);
 
-			expect(fileStorageSpy).not.toHaveBeenCalled();
+			expect(saveSpy).not.toHaveBeenCalled();
 		});
 
 
@@ -1605,6 +1606,29 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._isValidFileSaveResult(null)).toBeFalse();
 			expect(classUnderTest._isValidFileSaveResult({ adminId: 'a_42', fileId:null })).toBeFalse();
 			expect(classUnderTest._isValidFileSaveResult({ adminId: null, fileId:'f_42' })).toBeFalse();
+		});
+	});
+
+	describe('when using util _Empty', () => {
+		it('evaluates the _vectorLayer-object', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+
+			expect(classUnderTest._isEmpty()).toBeTrue();
+
+			classUnderTest._vectorLayer = { getSource() {
+				return { getFeatures() {
+					return [];
+				} };
+			} };
+			expect(classUnderTest._isEmpty()).toBeTrue();
+			classUnderTest._vectorLayer = { getSource() {
+				return { getFeatures() {
+					return [{}, {}];
+				} };
+			} };
+			expect(classUnderTest._isEmpty()).toBeFalse();
+			
 		});
 	});	
 });

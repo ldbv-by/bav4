@@ -733,6 +733,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._vectorLayer) {
 			return !this._vectorLayer.getSource().getFeatures().length > 0;
 		}
+		return true;
 	}
 
 	/**
