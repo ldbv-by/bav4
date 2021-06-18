@@ -26,6 +26,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_draw).toBe('In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)');
 		expect(map.toolbox_measureTool_measure_modify).toBe('Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
+		expect(map.toolbox_measureTool_share_readonly).toBe('Schreibgeschützt');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
@@ -52,11 +53,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
 		expect(map.toolbox_measureTool_measure_modify).toBe('To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
+		expect(map.toolbox_measureTool_share_readonly).toBe('readonly');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

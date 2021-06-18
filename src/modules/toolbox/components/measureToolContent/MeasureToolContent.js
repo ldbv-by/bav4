@@ -161,24 +161,34 @@ export class MeasureToolContent extends BaElement {
 		
 
 		const buildShareUrl =  async(id) => {
-			const extraParams = new Map([[QueryParameters.LAYER, id]]);
+			const extraParams = { [QueryParameters.LAYER]:id };
 			const url = this._shareService.encodeState(extraParams);
-			
 			const shortUrl = await this._urlService.shorten(url);
 			return shortUrl;
 		};
 
 		if (isValidForSharing(fileSaveResult)) {
-			const onGenerateShareUrls = async () => {
+			const toggleShareContentClick = async () => {
+				if (this._shareUrls) {
+					this._shareUrls = null;
+					this.render();
+				}
+				else {
+					generateShareUrls();
+				}
+			};
+			
+			const generateShareUrls = async () => {
 				const forAdminId = await buildShareUrl(fileSaveResult.adminId);
 				const forFileId = await buildShareUrl(fileSaveResult.fileId);
 				this._shareUrls = { adminId:forAdminId, fileId:forFileId };
 				this.render();
 			};
+
 			const shareContent = this._getShareContent();	
 		
 			return html`<div class='share_container'>
-			<ba-icon class='close share_init' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_start')} size=1.5} @click=${onGenerateShareUrls}>
+			<ba-icon class='close share_init' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_start')} size=1.5} @click=${toggleShareContentClick}>
 				</ba-icon>
 				${shareContent}
 			</div>`;
@@ -190,18 +200,19 @@ export class MeasureToolContent extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const onToggle = (event) => {
 			this._shareAsReadOnly = event.detail.checked;
+			this.render();
 		};
 		if (this._shareUrls != null) {
 			const shareurl = this._shareAsReadOnly ? this._shareUrls.fileId : this._shareUrls.adminId;
 			const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(shareurl);
 
-			return html`<div class='share_content' style='display:flex;flex-grow:3'>
-							<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
-							</ba-checkbox>
-							<input class='share_url' type='text' id='shareurl' name='shareurl' value=${shareurl} readonly>
-							</div>
+			return html`<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
+						</ba-checkbox>
+						<div class='share_content' style='display:flex'>
+							<input class='share_url' type='text' id='shareurl' name='shareurl' value=${shareurl} readonly>							
 							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyUrlToClipBoard}>
-							</ba-icon>`;
+							</ba-icon>
+						</div>`;
 
 		}
 		return html.nothing;
