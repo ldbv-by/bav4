@@ -679,7 +679,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return;
 		}
 		
-		if (!this._getLastFileSaveResult() || !this._storedContent) {
+		
+		if (!this._isValidFileSaveResult(this._getLastFileSaveResult())) {
 			await this._save();
 		}
 
@@ -711,6 +712,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getLastFileSaveResult() {
 		const { measurement } = this._storeService.getStore().getState();
 		return measurement.fileSaveResult;
+	}
+
+	_isValidFileSaveResult(fileSaveResult) {
+		if (fileSaveResult == null) {
+			return false;
+		}
+		
+		return fileSaveResult.adminId !== null && fileSaveResult.fileId !== null; 
 	}
 
 	_getSnapTolerancePerDevice() {

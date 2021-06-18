@@ -22,7 +22,7 @@ import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { finish, remove, reset, setFileSaveResult } from '../../../../../../../src/modules/map/store/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
 
@@ -353,6 +353,28 @@ describe('OlMeasurementHandler', () => {
 			});
 		});
 
+		it('looks for temporary measurement-layer and adds the feature', (done) => {
+			const store = setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('temp_measure_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'temp_measure_id' }] });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			setTimeout(() => {
+				expect(spy).toHaveBeenCalledWith('temp_measure_id');
+				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+				expect(store.getState().measurement.fileSaveResult).toBeNull();
+				done();
+			});
+		});
+
 
 		it('updates overlays of old features onChange', (done) => {
 			setup();
@@ -445,6 +467,20 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 			expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
 		});
+
+		it('uses already written features for persisting purpose', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save');
+
+			classUnderTest.activate(map);
+			setFileSaveResult({ fileId: 'f_barId', adminId: 'a_barBazId' });
+			classUnderTest.deactivate(map);
+
+			expect(fileStorageSpy).not.toHaveBeenCalled();
+		});
+
 
 		it('adds a vectorGeoResource for persisting purpose', (done) => {
 			setup();
@@ -1558,6 +1594,19 @@ describe('OlMeasurementHandler', () => {
 		});
 
 	});
+
+	describe('when using util _isValidFileSaveResult', () => {
+		it('evaluates fileSaveResult-objects', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+
+			expect(classUnderTest._isValidFileSaveResult({ adminId: 'a_42', fileId:'f_42' })).toBeTrue();
+			expect(classUnderTest._isValidFileSaveResult(undefined)).toBeFalse();
+			expect(classUnderTest._isValidFileSaveResult(null)).toBeFalse();
+			expect(classUnderTest._isValidFileSaveResult({ adminId: 'a_42', fileId:null })).toBeFalse();
+			expect(classUnderTest._isValidFileSaveResult({ adminId: null, fileId:'f_42' })).toBeFalse();
+		});
+	});	
 });
 
 
