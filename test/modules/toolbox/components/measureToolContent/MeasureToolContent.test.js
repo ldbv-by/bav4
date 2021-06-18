@@ -240,6 +240,31 @@ describe('MeasureToolContent', () => {
 			});
 
 		});
+		it('copies url to clipboard on click',  async(done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
+			const element = await setup(state);
+			element._shareUrls = { adminId:'foobar', fileId:'barbaz' };
+			element.render();
+			const copyToClipboardButton = element.shadowRoot.querySelector('.share_content .close');
+			copyToClipboardButton.click();
+			
+			setTimeout(() => {
+				expect(copySpy).toHaveBeenCalledWith('foobar');
+				done();
+			});
+
+		});
+
+
 
 		describe('with touch-device', () => {
 			const touchConfig = { embed:false,
