@@ -1,4 +1,4 @@
-import { html, nothing, svg } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
 import { renderTagOf } from '../../../BaElement';
@@ -6,7 +6,9 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import { setIndex } from '../../store/topicsContentPanel.action';
 import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
-import cssGlobal from './assets/topics.css';
+import commonTopicsCss from './assets/topics.css';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+
 
 
 /**
@@ -33,6 +35,36 @@ export class TopicsContentPanel extends AbstractContentPanel {
 		this._translationService = translationService;
 	}
 
+	initialize() {
+		this.observe(['topicsReady', 'contentIndex'], () => this.render());
+
+		this.observe('currentTopicId', (currentTopicId) => {
+			//we add and update the topic specific hue value
+			const topics = this._topicsService.all();
+			const topic = topics.filter(t => t.id === currentTopicId)[0];
+
+			if (!document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id)) {
+				const styleElement = document.createElement('style');
+				styleElement.id = TopicsContentPanel.Global_Topic_Hue_Style_Id;
+				document.head.appendChild(styleElement);
+			}
+			const style = document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id);
+			style.innerHTML = `*{--topic-hue: ${topic.style?.hue ?? 0};}`;
+		});
+	}
+
+	onWindowLoad() {
+		//append common styles for all topics
+		if (!document.getElementById(TopicsContentPanel.Global_Topics_Common_Style_Id)) {
+
+			const style = document.createElement('style');
+			style.innerHTML = commonTopicsCss;
+			style.id = TopicsContentPanel.Global_Topics_Common_Style_Id;
+			document.head.appendChild(style);
+		}
+
+	}
+
 	/**
 	 * @override
 	 */
@@ -57,37 +89,30 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			};
 
 			const changeTopic = (topic) => {
+				this.scrollIntoView();
 				setCurrent(topic.id);
 				setIndex(TopicsContentPanelIndex.CATALOG_0);
-				//set global theme color
-				const style = document.createElement('style');
-				// TODO replace with topic.hue
-				style.innerHTML = `	*{--topic-hue:${topic.style.hue};}`;
-				document.head.appendChild(style);
-
-				//scroll top
-				const element = document.getElementsByTagName('ba-main-menu')[0];
-				const container = element.shadowRoot.getElementById('mainMenuContainer');
-				container.scrollTop = 0;
 			};
 
-			//temp mock color and icon
-			topics.map( (topic, index) => {
-				topic.style.hue = topic.style.hue = index * 5 + 170;
-				topic.style.svg = svg`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>`;
-			});
 
-
-			//render color css
-			const style = document.createElement('style');
-			style.innerHTML = cssGlobal;
-			document.head.appendChild(style);
-			const themeColor = (topic) => {
+			const renderTopicStyle = (topic) => {
+				const hue = topic.style?.hue ?? 0;
 				return `
 				.topic-${topic.id}{		
-					--topic-theme: hsl( ${topic.style.hue} var(--topic-saturation) var(--topic-lightness));			
-					}	
+					--topic-theme: hsl(${hue} var(--topic-saturation) var(--topic-lightness));			
+				}	
+				`;
+			};
+
+			const renderTopicIcon = (topic) => {
+				if (topic.style?.icon) {
+					return html`
+					<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+					${unsafeSVG(topic.style.icon)}
+					</svg>
 					`;
+				}
+				return nothing;
 			};
 
 			return html`
@@ -96,12 +121,12 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				<div class="col">
 				${topics.map(topic => html`
 					<style>
-					${themeColor(topic)}
+					${renderTopicStyle(topic)}
 					</style>
-					<button  tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic)}>
+					<button tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic)}>
 						<span class="ba-list-item__pre">
 							<span class="ba-list-item__icon icon-${topic.id}">
-							${topic.style.svg}
+							${renderTopicIcon(topic)}
 							</span>											
 						</span>
 						</span>
@@ -124,12 +149,9 @@ export class TopicsContentPanel extends AbstractContentPanel {
 		return nothing;
 	}
 
-	initialize() {
-		this.observe(['topicsReady', 'contentIndex'], () => this.render());
-	}
 
 	onStateChanged() {
-		//nothing to do here, we only render after data changes, topicsStore is ready or contentIndex changed
+		//nothing to do here, we only render on 'topicsReady' and 'contentIndeX' changes (see #initialize)
 	}
 
 	extractState(globalState) {
@@ -140,5 +162,13 @@ export class TopicsContentPanel extends AbstractContentPanel {
 
 	static get tag() {
 		return 'ba-topics-content-panel';
+	}
+
+	static get Global_Topics_Common_Style_Id() {
+		return 'topicContentPanel_topics_commons_js6dg4asosas9df';
+	}
+
+	static get Global_Topic_Hue_Style_Id() {
+		return 'topicContentPanel_topic_hue_LDS5GF3BDjdfG6aG5';
 	}
 }
