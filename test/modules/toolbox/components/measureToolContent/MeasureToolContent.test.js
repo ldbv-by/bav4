@@ -25,8 +25,12 @@ describe('MeasureToolContent', () => {
 
 		const { embed = false, isTouch = false } = config;
 		const shareServiceMock = {
-			copyToClipboard() { },
-			encodeState() {}
+			copyToClipboard() {
+				return Promise.resolve();
+			},
+			encodeState() {
+				return 'http://this.is.a.url?forTestCase';
+			}
 		};
 
 		class MockClass {

@@ -41,7 +41,9 @@ describe('ToolContainer', () => {
 		};
 
 		const shareServiceMock = {
-			copyToClipboard() { }
+			copyToClipboard() {
+				return Promise.resolve(); 
+			}
 		};
 
 		class MockClass {

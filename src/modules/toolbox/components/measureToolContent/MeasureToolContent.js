@@ -29,6 +29,7 @@ export class MeasureToolContent extends BaElement {
 			icon: 'measure'
 		};
 		this._isFirstMeasurement = true;
+		this._shareAsReadOnly = false;
 	}
 
 	createView(state) {
@@ -51,6 +52,13 @@ export class MeasureToolContent extends BaElement {
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
+
+		const copyValueToClipboard = (value) => {
+			this._shareService.copyToClipboard(value).then(() => {}, () => {
+				console.warn('Clipboard API not available');
+			});
+		};
+
 		return html`
         <style>${css}</style>
             	<div class="ba-tool-container__item">
@@ -67,7 +75,7 @@ export class MeasureToolContent extends BaElement {
 						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
 						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${copyValueToClipboard(formattedDistance)}} >
 							</ba-icon>
 						</span>											
 					</div>
@@ -78,7 +86,7 @@ export class MeasureToolContent extends BaElement {
 						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
 						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${this._copyValueToClipboard(formattedArea)}>
 							</ba-icon>
 						</ba-icon>
 					</span>			
@@ -152,28 +160,27 @@ export class MeasureToolContent extends BaElement {
 			return true;
 		};  
 
-		const buildShareUrl = async (fileSaveResult) => {
-			const baseUrl = this._shareService.encodeState();
-			const urlParams = new URLSearchParams(baseUrl);
-			const extendedLayers = urlParams.get(QueryParameters.LAYER) + ',' + fileSaveResult.adminId;
-
-			urlParams.set(QueryParameters.LAYER, extendedLayers );
-			const url = decodeURIComponent(urlParams.toString());
-
+		const buildShareUrl = async (fileSaveResult, readonly) => {
+			const extraParams = new Map([[QueryParameters.LAYER, readonly ? fileSaveResult.fileId : fileSaveResult.adminId]]);
+			const url = this._shareService.encodeState(extraParams);
+			
 			const shortUrl = await this._urlService.shorten(url);
 			return shortUrl;
 		};
 
 		if (isValidForSharing(fileSaveResult)) {
-			const shareurl =  buildShareUrl(fileSaveResult);
+			const shareurl =  buildShareUrl(fileSaveResult, this._shareAsReadOnly);
+			const onToggle = (event) => {
+				this._shareAsReadOnly = event.detail.checked;
+			};
 			return html`<div class='share_container>
 				<div class='share_content' style='display:flex;flex-grow:3'>
-					<ba-checkbox class='close' title='schreibgeschützt'>schreibgeschützt
+					<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
 					</ba-checkbox>
 					<input class='share' type='text' id='shareurl' name='shareurl' value='${shareurl}' readonly>
 				</div>
-				<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} >
-							</ba-icon>
+				<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${this._copyValueToClipboard(shareurl)}>
+				</ba-icon>
 			</div>`;
 		}
 		return html.nothing;
@@ -199,6 +206,12 @@ export class MeasureToolContent extends BaElement {
 			}			
 		}
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+	}
+
+	async _copyValueToClipboard(value) {
+		await this._shareService.copyToClipboard(value).then(() => {}, () => {
+			console.warn('Clipboard API not available');
+		});
 	}
 
 	/**
