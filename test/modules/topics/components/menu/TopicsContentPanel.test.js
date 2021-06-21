@@ -151,6 +151,8 @@ describe('TopicsContentPanel', () => {
 
 					//we expect five style -Elements included: baElement.css, contentPanel.css, topicsContentPanle.css and one for each topic (in this case two)
 					expect(element.shadowRoot.styleSheets.length).toBe(5);
+					
+					//test existence of important css classes
 					expect(element.shadowRoot.querySelectorAll('.topics-content-panel')).toHaveSize(1);
 					expect(element.shadowRoot.querySelector('.topics-content-panel').classList.contains('invisible')).toBeFalse();
 					expect(element.shadowRoot.querySelectorAll('.topic')).toHaveSize(2);
