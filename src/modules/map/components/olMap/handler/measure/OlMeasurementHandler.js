@@ -704,9 +704,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-
-		// reset the global accessible FileSaveResult for the next measurement session
-		setFileSaveResult(null);
 	}
 
 	_getLastFileSaveResult() {
