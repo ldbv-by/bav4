@@ -4,6 +4,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import clipboardIcon from './assets/clipboard.svg';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 
 /**
@@ -68,7 +69,7 @@ export class ShareToolContent extends BaElement {
 		}
 		catch (e) {
 			this._shortUrl = '';
-			console.warn(e.message);
+			console.warn(e);
 		} 
 		this.render();
 	}
@@ -101,7 +102,13 @@ export class ShareToolContent extends BaElement {
 		const toolTemplate = (tool) => {
 			if (!tool.available) {
 				return;
-			} 
+			}
+			
+			const isDisabled = this._shortUrl === '';
+
+			const classes = {
+				disabled_tool__button: isDisabled,
+			};
 
 			const activateShare = async () => {
 				const shareData = {
@@ -117,28 +124,46 @@ export class ShareToolContent extends BaElement {
 				} 
 			}; 
 
+			const buttonContent = 
+				html`
+					<div class="tool-container__background"></div>
+					<div class="tool-container__icon ${tool.icon}"></div>  
+					<div class="tool-container__button-text">${tool.title}</div>
+				`;
+
 			return html`
             <div id=${tool.name}
-                class="tool-container__button" 
+                class="tool-container__button ${classMap(classes)}" 
                 title=${tool.title}>
 				${tool.name === 'share-api' 
 		? html`
-						<a role="button" tabindex="0" target="_blank" @click=${activateShare}> 
-							<div class="tool-container__background"></div>
-								<div class="tool-container__icon ${tool.icon}">
-							</div>  
-							<div class="tool-container__button-text">${tool.title}</div>
-						</a>
+						${isDisabled 
+		? html`
+						<a role="button" tabindex="0">
+							${buttonContent}
+						</a>` 
+		: html`
+						<a role="button" tabindex="0" target="_blank" @click=${activateShare}>
+							${buttonContent}
+						</a>`
+} 						 
+							
 					` 
 		: html `
-						<a role="button" tabindex="0" href=${tool.href + this._shortUrl} target="_blank"> 
-							<div class="tool-container__background"></div>
-								<div class="tool-container__icon ${tool.icon}">
-							</div>  
-							<div class="tool-container__button-text">${tool.title}</div>
-						</a>
-					`
+						${isDisabled 
+		? html`
+							<a role="button" tabindex="0"> 
+								${buttonContent}
+							</a>
+							` 
+		: html`
+							<a role="button" tabindex="0" href=${tool.href + this._shortUrl} target="_blank">
+								${buttonContent} 
+							</a> 
+							`
 } 
+					`
+} 				
             </div>
             `;
 		};
@@ -170,10 +195,8 @@ export class ShareToolContent extends BaElement {
 						</button>
 					</div> 
 					<div class="tool-container__checkbox">
-						<div class="embed-checkbox"><ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
-							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span> 
-						<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
-							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span> 
+						<div><ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
 							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
 						</ba-checkbox></div>
 					</div>               

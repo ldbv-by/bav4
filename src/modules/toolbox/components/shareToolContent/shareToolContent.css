@@ -95,7 +95,7 @@ background:red;
     -webkit-mask-image:url('assets/share-square-solid.svg');
 }
 
-.tool-container__button:hover .tool-container__background{
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__background{
     height: 3em;
     width: 3em;
     background-color: var(--secondary-bg-color);
@@ -105,7 +105,7 @@ background:red;
     width: 3em;
     background-color: var(--header-button-bg-color) !important;
 }
-.tool-container__button:hover .tool-container__icon{
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon{
     background: gray;
 }
 .is-active  .tool-container__icon{
@@ -120,16 +120,7 @@ background:red;
   .tool-container__button-text{
       font-size:.8rem;
       margin: 5.5em .3em .5em .3em;
-  }
-  .tool-container__button:hover.tool-container__button-text{
-  
-    color: red;
-  }
-
-  .tool-container__button:hover.tool-container__background{
-    height: 3em;
-    width: 3em;
-    background-color: var(--header-button-bg-color);
+      user-select: none;
   }
 
   .tool-container__buttons-secondary{
@@ -183,6 +174,11 @@ background:red;
 .disabled-preview {
     opacity: 0.4;
 }
+
+.disabled_tool__button{
+    opacity: 0.4;
+    pointer-events: none;
+} 
 
 .tool-container__input{
     margin: 1.5em;

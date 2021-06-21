@@ -104,6 +104,35 @@ describe('ShareToolContent', () => {
 			expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
 		});
 
+		it('disables buttons if no short url available', async() => {
+			const mockUrl = 'https://some.url';
+			const windowMock = {
+				matchMedia() { },
+				navigator: {
+					share () {}
+				} 
+			};
+			const config = { embed: false, windowMock };
+
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(Promise.reject());
+			const windowMockSpy = spyOn(windowMock.navigator, 'share');
+
+			const element = await setup(config);
+
+			expect(element.shadowRoot.querySelector('a')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-container__button').classList).toContain('disabled_tool__button');
+			expect(element.shadowRoot.querySelectorAll('a')[0].href).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('a')[1].href).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('a')[2].innerHTML).toContain('toolbox_shareTool_share');
+
+			element.shadowRoot.querySelectorAll('a')[2].click(); 
+
+			expect(windowMockSpy).not.toHaveBeenCalled();
+			expect(shareServiceSpy).toHaveBeenCalled();
+			expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
+		});
+
 		it('initializes share api button', async() => {
 			const mockUrl = 'https://some.url';
 			const mockShortUrl = 'https://short/url';
