@@ -92,6 +92,18 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 			});
 
+			it('extracts the current layers state ignoring hidden layer', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				addLayer('someLayer', { constraints: { hidden: true } });
+				addLayer('anotherLayer');
+
+				const extract = instanceUnderTest._extractLayers();
+				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+			});
+
 			it('extracts the current layers state considering non default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
