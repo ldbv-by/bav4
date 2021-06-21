@@ -115,6 +115,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
 				if (vgr) {
+
+					const id = oldLayer.get('id');
+					if (this._fileStorageService.isAdminId(id)) {
+						setFileSaveResult({ adminId: id, fileId: null });
+					}
+					if (this._fileStorageService.isFileId(id)) {
+						setFileSaveResult({ fileId: id, adminId: null });
+					}
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
@@ -132,16 +140,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						});
 					})
 						.then(() => removeLayer(oldLayer.get('id')))
-						.then(() => this._finish())
-						.then(() => {
-							const id = oldLayer.get('id');
-							if (this._fileStorageService.isAdminId(id)) {
-								setFileSaveResult({ adminId: id, fileId: null });
-							}
-							if (this._fileStorageService.isFileId(id)) {
-								setFileSaveResult({ fileId: id, adminId: null });
-							}
-						});
+						.then(() => this._finish());
 				}
 			}
 		};
@@ -469,7 +468,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._storedContent = newContent;
 		}
 		const { measurement } = this._storeService.getStore().getState();
-
 		if (measurement.fileSaveResult) {
 			try {
 				const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
