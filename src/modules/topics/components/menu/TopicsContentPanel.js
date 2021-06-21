@@ -1,10 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
-import { renderTagOf } from '../../../BaElement';
 import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../store/topicsContentPanel.action';
-import { CatalogContentPanel } from './catalog/CatalogContentPanel';
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
@@ -140,7 +138,9 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				`)}
 				</div>
 				<div class="col">
-					${renderTagOf(CatalogContentPanel)}
+					${topics.map(topic => html`
+						<ba-catalog-content-panel .data=${topic.id}></ba-catalog-content-panel>
+					`)}
 				</div>
 			</div>
 			`;

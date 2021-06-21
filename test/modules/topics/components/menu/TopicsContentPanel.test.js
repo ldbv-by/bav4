@@ -133,7 +133,7 @@ describe('TopicsContentPanel', () => {
 
 			describe('and topics should be visible', () => {
 
-				it('renders a list of topic elements and the CatalogContentPanel', async () => {
+				it('renders a list of topic elements and CatalogContentPanels', async () => {
 					spyOn(topicsServiceMock, 'all').and.returnValue([
 						topic0,
 						topic1
@@ -172,7 +172,7 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__primary-text')[1].innerText).toBe(topic1.label);
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[1].innerText).toBe(topic1.description);
 
-					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
 				});
 			});
 
@@ -201,7 +201,7 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.querySelectorAll('.topic')[0].getAttribute('tabindex')).toBe('-1');
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].classList.contains('active')).toBeFalse();
 					expect(element.shadowRoot.querySelectorAll('.topic')[1].getAttribute('tabindex')).toBe('-1');
-					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(1);
+					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
 				});
 			});
 		});
