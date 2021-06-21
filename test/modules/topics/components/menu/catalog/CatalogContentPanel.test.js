@@ -26,8 +26,8 @@ describe('TopicsContentPanel', () => {
 
 	const setup = (state) => {
 
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer  });
-		
+		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer });
+
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CatalogService', catalogServiceMock)
@@ -50,16 +50,17 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
-		it('renders a list of topic elements', async () => {
+		it('renders the catalog panel', async (done) => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, topicLabel, 'This is a fallback topic...', ['atkis', 'atkis_sw']));                
-            
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
+
 			const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
 				await loadExampleCatalog()
 			);
 			const element = await setup();
-			
+
 			setCurrent(topicId);
 
 			//wait for elements
@@ -67,56 +68,85 @@ describe('TopicsContentPanel', () => {
 				expect(spy).toHaveBeenCalledOnceWith(topicId);
 				//test correct rendering of the style -tags
 				expect(element.shadowRoot.styleSheets).toHaveSize(3);
-				//test existence of importent css classes
+
+				expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(1);
+
+				//test existence of important css classes
 				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
 				expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
+				//no style present for current topic
+				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(0);
 				//test i18n
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').textContent).toBe('topics_catalog_panel_change_topic');
 				//the example catalog returns one node and one leaf object on the top level
 				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+				done();
 			});
 		});
 
-		describe('and CatalogService cannot fulfill', () => {
+		it('renders the topics style', async (done) => {
+			const topicId = 'foo';
+			const topicLabel = 'label';
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
 
-			it('logs a warn statement and renders nothing', async () => {
-                
-				const topicId = 'foo';
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));                
-				spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-					Promise.reject(new Error('Something got wrong'))
-				);
-				const warnSpy = spyOn(console, 'warn');
-				const element = await setup();
+			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
+			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+				await loadExampleCatalog()
+			);
+			const element = await setup();
 
-				setCurrent(topicId);
+			setCurrent(topicId);
 
-				setTimeout(() => {
-					expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
-					expect(element.shadowRoot.children.length).toBe(0);
-				});
+			//wait for elements
+			window.requestAnimationFrame(() => {
+
+				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
+				done();
 			});
 		});
 	});
 
-	describe('header clicked', () => {
+	describe('and CatalogService cannot fulfill', () => {
 
-		it('changes the content panel index', async () => {
-            
+		it('logs a warn statement and renders nothing', async (done) => {
+
 			const topicId = 'foo';
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));                
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
+			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+				Promise.reject(new Error('Something got wrong'))
+			);
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup();
+
+			setCurrent(topicId);
+
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
+				expect(element.shadowRoot.children.length).toBe(0);
+				done();
+			});
+		});
+	});
+
+
+	describe('change topic button clicked', () => {
+
+		it('changes the index', async (done) => {
+
+			const topicId = 'foo';
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
 				await loadExampleCatalog()
 			);
 			const element = await setup({
 				topicsContentPanel: {
 					index: TopicsContentPanelIndex.CATALOG_0
-				} 
+				}
 			});
 
 			setCurrent(topicId);
@@ -126,6 +156,7 @@ describe('TopicsContentPanel', () => {
 				expect(element.shadowRoot.querySelector('.ba-list-item')).toBeTruthy();
 				element.shadowRoot.querySelector('.ba-list-item').click();
 				expect(store.getState().topicsContentPanel.index).toBe(TopicsContentPanelIndex.TOPICS);
+				done();
 			});
 		});
 	});

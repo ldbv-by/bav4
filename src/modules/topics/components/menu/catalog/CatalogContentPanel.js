@@ -1,4 +1,5 @@
-import { html, nothing, svg } from 'lit-html';
+import { html, nothing } from 'lit-html';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
 import { $injector } from '../../../../../injection';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../../store/topicsContentPanel.action';
@@ -65,10 +66,20 @@ export class CatalogContentPanel extends AbstractContentPanel {
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
 			});
-			const { label, style } = this._topic;	
+			const { label } = this._topic;	
 			const translate = (key) => this._translationService.translate(key);
-			//temp mock icon
-			style.svg = svg`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>`;
+
+			const renderTopicIcon = (topic) => {
+				if (topic.style.icon) {
+					
+					return html`
+					<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+						${unsafeSVG(topic.style.icon)}
+					</svg>
+					`;
+				}
+				return nothing;
+			};
 
 			return html`
 			<style>
@@ -84,7 +95,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon">						
-					${style.svg}
+					${renderTopicIcon(this._topic)}
 					</span>				
 				</span>
 				<span class="ba-list-item__text verticla-center">
