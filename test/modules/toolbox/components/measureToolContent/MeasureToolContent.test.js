@@ -2,9 +2,13 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
+window.customElements.define(Checkbox.tag, Checkbox);
+window.customElements.define(Icon.tag, Icon);
 
 describe('MeasureToolContent', () => {
 	let store;
@@ -16,7 +20,7 @@ describe('MeasureToolContent', () => {
 		measurement: {
 			active: true,
 			statistic: { length: 0, area: 0 },
-			fileSaveResult:null,
+			fileSaveResult: null,
 			reset: null,
 			remove: null,
 		}
@@ -37,7 +41,7 @@ describe('MeasureToolContent', () => {
 	const setup = async (state = defaultState, config = {}) => {
 
 		const { embed = false, isTouch = false } = config;
-		
+
 
 		class MockClass {
 			constructor() {
@@ -58,7 +62,7 @@ describe('MeasureToolContent', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock,
-				isTouch:() => isTouch
+				isTouch: () => isTouch
 
 			}).registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
@@ -78,28 +82,28 @@ describe('MeasureToolContent', () => {
 			const state = {
 				measurement: {
 					active: true,
-					mode:'draw',
+					mode: 'draw',
 					statistic: { length: 42, area: 21 },
 					reset: null,
 					remove: null,
-					finish:null
+					finish: null
 				}
 			};
-			const element = await setup(state);			
+			const element = await setup(state);
 
 			expect(element._tool).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();						
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
 		});
 
 		it('finishes the measurement', async () => {
 			const state = {
 				measurement: {
 					active: true,
-					mode:'draw',
+					mode: 'draw',
 					statistic: { length: 42, area: 21 },
 					reset: null,
 					remove: null,
-					finish:null
+					finish: null
 				}
 			};
 			const element = await setup(state);
@@ -115,7 +119,7 @@ describe('MeasureToolContent', () => {
 			const state = {
 				measurement: {
 					active: true,
-					mode:'draw',
+					mode: 'draw',
 					statistic: { length: 42, area: 0 },
 					reset: null,
 					remove: null,
@@ -157,12 +161,41 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const valueSpan = element.shadowRoot.querySelector('.prime-text-value');
-			const unitSpan = element.shadowRoot.querySelector('.prime-text-unit');			
+			const unitSpan = element.shadowRoot.querySelector('.prime-text-unit');
 
 			expect(valueSpan).toBeTruthy();
 			expect(unitSpan).toBeTruthy();
 			expect(valueSpan.textContent).toBe('42');
 			expect(unitSpan.textContent).toBe('m');
+		});
+
+		it('copies the measurement values to the clipboard', async (done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 2 },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
+
+			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
+			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
+
+			copyDistanceElement.click();
+			copyAreaElement.click();
+
+			setTimeout(() => {
+				expect(copyDistanceElement).toBeTruthy();
+				expect(copyAreaElement).toBeTruthy();
+				expect(copySpy).toHaveBeenCalledTimes(2);
+				expect(copySpy).toHaveBeenCalledWith('42 m');
+				expect(copySpy).toHaveBeenCalledWith('2 m²');
+				done();
+			});
+
 		});
 
 		it('shows the measurement sub-text', async () => {
@@ -176,9 +209,9 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const subTextElement = element.shadowRoot.querySelector('.sub-text');
-			
 
-			expect(subTextElement).toBeTruthy();			
+
+			expect(subTextElement).toBeTruthy();
 			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
 		});
 
@@ -187,7 +220,7 @@ describe('MeasureToolContent', () => {
 				measurement: {
 					active: true,
 					statistic: { length: 42, area: 0 },
-					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
 					remove: null,
 				}
@@ -195,9 +228,9 @@ describe('MeasureToolContent', () => {
 			const element = await setup(state);
 			const shareContainerElement = element.shadowRoot.querySelector('.share_container');
 			const shareButton = element.shadowRoot.querySelector('.share_init');
-			
-			expect(shareContainerElement).toBeTruthy();			
-			expect(shareButton).toBeTruthy();			
+
+			expect(shareContainerElement).toBeTruthy();
+			expect(shareButton).toBeTruthy();
 		});
 
 		it('shows NOT the measurement share-container for invalid fileSaveResult', async () => {
@@ -205,33 +238,33 @@ describe('MeasureToolContent', () => {
 				measurement: {
 					active: true,
 					statistic: { length: 42, area: 0 },
-					fileSaveResult:{ adminId:'a_fooBar', fileId:null },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: null },
 					reset: null,
 					remove: null,
 				}
 			};
 			const element = await setup(state);
 			const shareContainerElement = element.shadowRoot.querySelector('.share_container');
-					
-			expect(shareContainerElement).toBeFalsy();				
+
+			expect(shareContainerElement).toBeFalsy();
 		});
 
-		it('creates the measurement share-urls on click',  async(done) => {
+		it('creates the measurement share-urls on click', async (done) => {
 			const state = {
 				measurement: {
 					active: true,
 					statistic: { length: 42, area: 0 },
-					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
 					remove: null,
 				}
 			};
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 			const element = await setup(state);
-			
+
 			const shareButton = element.shadowRoot.querySelector('.share_init');
 			shareButton.click();
-			
+
 			setTimeout(() => {
 				expect(shareButton).toBeTruthy();
 				expect(shortenerSpy).toHaveBeenCalledTimes(2);
@@ -240,23 +273,47 @@ describe('MeasureToolContent', () => {
 			});
 
 		});
-		it('copies url to clipboard on click',  async(done) => {
+
+		it('deletes existing measurement share-urls on click', async (done) => {
 			const state = {
 				measurement: {
 					active: true,
 					statistic: { length: 42, area: 0 },
-					fileSaveResult:{ adminId:'a_fooBar', fileId:'f_fooBar' },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			element._shareUrls = { adminId: 'http://shorten.foo', fileId: 'http://shorten.foo' };
+			const shareButton = element.shadowRoot.querySelector('.share_init');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(element._shareUrls).toBeNull();
+				done();
+			});
+
+		});
+
+		it('copies url for adminId to clipboard on click', async (done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
 					remove: null,
 				}
 			};
 			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
 			const element = await setup(state);
-			element._shareUrls = { adminId:'foobar', fileId:'barbaz' };
+			element._shareUrls = { adminId: 'foobar', fileId: 'barbaz' };
 			element.render();
 			const copyToClipboardButton = element.shadowRoot.querySelector('.share_content .close');
 			copyToClipboardButton.click();
-			
+
 			setTimeout(() => {
 				expect(copySpy).toHaveBeenCalledWith('foobar');
 				done();
@@ -264,60 +321,114 @@ describe('MeasureToolContent', () => {
 
 		});
 
+		it('sets readonly-mode on click', async (done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const element = await setup(state);
+			element._shareUrls = { adminId: 'foobar', fileId: 'barbaz' };
+			element.render();
+			const readonlyCheckbox = element.shadowRoot.querySelector('.share_container ba-checkbox');
+
+			readonlyCheckbox.click();
+			setTimeout(() => {
+				expect(readonlyCheckbox.checked).toBeTrue();
+				expect(element._shareAsReadOnly).toBeTrue();
+				done();
+			});
+
+		});
+
+		it('logs a warning when copyToClipboard fails', async (done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup(state);
+			element._shareUrls = { adminId: 'foobar', fileId: 'barbaz' };
+			element.render();
+			const copyToClipboardButton = element.shadowRoot.querySelector('.share_content .close');
+			copyToClipboardButton.click();
+
+			setTimeout(() => {
+				expect(copySpy).toHaveBeenCalledWith('foobar');
+				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+				done();
+			});
+
+		});
+
+
+
 
 
 		describe('with touch-device', () => {
-			const touchConfig = { embed:false,
-				isTouch:true };
+			const touchConfig = {
+				embed: false,
+				isTouch: true
+			};
 			const defaultMeasurementState = {
 				active: true,
-				mode:null,
+				mode: null,
 				statistic: { length: 42, area: 0 },
 				reset: null,
-				remove: null,				
+				remove: null,
 			};
-			
+
 			it('shows the measurement sub-text for mode:active', async () => {
 				const state = {
-					measurement: { ...defaultMeasurementState, mode:'active' }
+					measurement: { ...defaultMeasurementState, mode: 'active' }
 				};
 				const element = await setup(state, touchConfig);
-				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
-		
-				expect(subTextElement).toBeTruthy();			
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_active');
 			});
 
 			it('shows the measurement sub-text for mode:draw', async () => {
 				const state = {
-					measurement: { ...defaultMeasurementState, mode:'draw' }
+					measurement: { ...defaultMeasurementState, mode: 'draw' }
 				};
 				const element = await setup(state, touchConfig);
-				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
-		
-				expect(subTextElement).toBeTruthy();			
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_draw');
 			});
 
 			it('shows the measurement sub-text for mode:modify', async () => {
 				const state = {
-					measurement: { ...defaultMeasurementState, mode:'modify' }
+					measurement: { ...defaultMeasurementState, mode: 'modify' }
 				};
 				const element = await setup(state, touchConfig);
-				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
-		
-				expect(subTextElement).toBeTruthy();			
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_modify');
 			});
 
 			it('shows the measurement sub-text for mode:select', async () => {
 				const state = {
-					measurement: { ...defaultMeasurementState, mode:'select' }
+					measurement: { ...defaultMeasurementState, mode: 'select' }
 				};
 				const element = await setup(state, touchConfig);
-				const subTextElement = element.shadowRoot.querySelector('.sub-text');					
-		
-				expect(subTextElement).toBeTruthy();			
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_select');
 			});
 		});

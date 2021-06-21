@@ -18,7 +18,7 @@ export class MeasureToolContent extends BaElement {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, UrlService:urlService, ShareService:shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._unitsService = unitsService;
@@ -40,23 +40,23 @@ export class MeasureToolContent extends BaElement {
 		const { active, statistic } = state;
 		this._tool.active = active;
 		const areaClasses = { 'is-area': statistic.area > 0 };
-	
+
 		const buttons = this._getButtons(state);
 		const shareContainer = this._getShareContainer(state);
 		const subText = this._getSubText(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
 			if (splitted.length === 2) {
-				return { value:splitted[0], unit:splitted[1] };
+				return { value: splitted[0], unit: splitted[1] };
 			}
-			return { value:splitted[0], unit:'?' };
-		}; 
-		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);		
+			return { value: splitted[0], unit: '?' };
+		};
+		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
 		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance);
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedDistance);
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea);
 
 		return html`
         <style>${css}</style>
@@ -109,7 +109,7 @@ export class MeasureToolContent extends BaElement {
 		const { active, statistic, mode } = state;
 		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
 		this._tool.active = active;
-	
+
 		const getButton = (id, title, onClick) => {
 			return html`<button id=${id} 
 								class="tool-container__button" 
@@ -119,30 +119,30 @@ export class MeasureToolContent extends BaElement {
 		// Start-New-Button
 		const startNewCompliantModes = ['draw', 'modify', 'select'];
 		const finishAllowed = (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) && mode === 'draw';
-		if (startNewCompliantModes.includes(mode) ) {
+		if (startNewCompliantModes.includes(mode)) {
 			let id = 'startnew';
 			let title = translate('toolbox_measureTool_start_new');
-			let onClick =  () => reset();
+			let onClick = () => reset();
 			// alternate Finish-Button			
 			if (finishAllowed) {
 				id = 'finish';
 				title = translate('toolbox_drawTool_finish');
-				onClick =  () => finish();				
+				onClick = () => finish();
 			}
-			
+
 			buttons.push(getButton(id, title, onClick));
 		}
 
 		// Remove-Button
-		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0 ) : statistic.length > 0 ;
+		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
 		if (removeAllowed) {
 			const id = 'remove';
 			const title = mode === 'draw' ? translate('toolbox_measureTool_delete_point') : translate('toolbox_measureTool_delete_measure');
-			const onClick =  () => remove();
+			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
 
-		
+
 		return buttons;
 	}
 
@@ -157,11 +157,11 @@ export class MeasureToolContent extends BaElement {
 				return false;
 			}
 			return true;
-		};  
-		
+		};
 
-		const buildShareUrl =  async(id) => {
-			const extraParams = { [QueryParameters.LAYER]:id };
+
+		const buildShareUrl = async (id) => {
+			const extraParams = { [QueryParameters.LAYER]: id };
 			const url = this._shareService.encodeState(extraParams);
 			const shortUrl = await this._urlService.shorten(url);
 			return shortUrl;
@@ -177,16 +177,16 @@ export class MeasureToolContent extends BaElement {
 					generateShareUrls();
 				}
 			};
-			
+
 			const generateShareUrls = async () => {
 				const forAdminId = await buildShareUrl(fileSaveResult.adminId);
 				const forFileId = await buildShareUrl(fileSaveResult.fileId);
-				this._shareUrls = { adminId:forAdminId, fileId:forFileId };
+				this._shareUrls = { adminId: forAdminId, fileId: forFileId };
 				this.render();
 			};
 
-			const shareContent = this._getShareContent();	
-		
+			const shareContent = this._getShareContent();
+
 			return html`<div class='share_container'>
 			<ba-icon class='close share_init' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_start')} size=1.5} @click=${toggleShareContentClick}>
 				</ba-icon>
@@ -226,23 +226,23 @@ export class MeasureToolContent extends BaElement {
 		if (this._environmentService.isTouch()) {
 			switch (mode) {
 				case 'active':
-					subTextMessage =  translate('toolbox_measureTool_measure_active');	
+					subTextMessage = translate('toolbox_measureTool_measure_active');
 					break;
 				case 'draw':
-					subTextMessage =  translate('toolbox_measureTool_measure_draw');
+					subTextMessage = translate('toolbox_measureTool_measure_draw');
 					break;
 				case 'modify':
-					subTextMessage =  translate('toolbox_measureTool_measure_modify');
+					subTextMessage = translate('toolbox_measureTool_measure_modify');
 					break;
 				case 'select':
-					subTextMessage =  translate('toolbox_measureTool_measure_select');				
-			}			
+					subTextMessage = translate('toolbox_measureTool_measure_select');
+			}
 		}
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
 	}
 
 	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => {}, () => {
+		await this._shareService.copyToClipboard(value).then(() => { }, () => {
 			console.warn('Clipboard API not available');
 		});
 	}
