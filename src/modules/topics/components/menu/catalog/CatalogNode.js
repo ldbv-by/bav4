@@ -66,12 +66,12 @@ export class CatalogNode extends AbstractContentPanel {
 				${css}
 				</style>
 			<div class='ba-section divider'>
-				<a href='#' tabindex='0' class="ba-list-item ba-list-item__header" @click="${toggleCollapse}">
+				<button  class="ba-list-item ba-list-item__header" @click="${toggleCollapse}">
 					<span class="ba-list-item__text  ba-list-item__primary-text" >${label}</span>
 					<span class="ba-list-item__after">
 						<i class='icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}'></i>
 					</span>
-				</a>		
+				</button>		
 				<div class=" collapse-content ${classMap(bodyCollapseClass)}">	
             		${childElements}
 				</div>	
