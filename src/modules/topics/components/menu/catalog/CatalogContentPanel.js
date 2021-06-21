@@ -8,7 +8,10 @@ import css from './catalogContentPanel.css';
 
 
 /**
- * Renders a catalog definition
+ * Renders a catalog definition for a specific topicId.
+ * The rendering strategy of this component avoids unnecessary calls of #render() as much as possible.
+ * Therefore #render is called one times after catalog data are loaded.
+ * 
  * @class
  * @author taulinger
  * @author alsturm
@@ -17,29 +20,46 @@ export class CatalogContentPanel extends AbstractContentPanel {
 
 	constructor() {
 		super();
+
+		this._topicId = null;
+		this._catalog = null;
+
 		const { CatalogService: catalogService, TranslationService: translationService, TopicsService: topicsService }
 			= $injector.inject('CatalogService', 'TranslationService', 'TopicsService');
 		this._translationService = translationService;
 		this._catalogService = catalogService;
 		this._topicsService = topicsService;
-		this._catalog = null;
+
+	}
+
+	set data(topicId) {
+		this._topicId = topicId;
 	}
 
 	initialize() {
 
-		const requestCatalog = async (topicId) => {
+		const updateView = async (currentTopicId) => {
 			try {
-
-				this._catalog = await this._catalogService.byId(topicId);
-				this._topic = this._topicsService.byId(topicId);
-				this.render();
+				if (this._topicId && currentTopicId === this._topicId) {
+					
+					//we cache the catalog and render just once
+					if (!this._catalog) {
+						this._catalog = await this._catalogService.byId(this._topicId);
+						//we just render once after catalog data are available
+						this.render();
+					}
+					this.style.display = 'inline';
+				}
+				else {
+					this.style.display = 'none';
+				}
 			}
 			catch (e) {
 				console.warn(e.message);
 			}
 		};
 
-		this.observe('currentTopicId', currentTopicId => requestCatalog(currentTopicId));
+		this.observe('currentTopicId', currentTopicId => updateView(currentTopicId));
 	}
 
 	onStateChanged() {
@@ -50,14 +70,23 @@ export class CatalogContentPanel extends AbstractContentPanel {
 	/**
 	 * @override
 	 */
-	createView() {
-		
-		const changeIndex = () => {
-			setIndex(TopicsContentPanelIndex.TOPICS);			
-			this.render;
-		};
-		
+	createView(state) {
+
+		const { currentTopicId } = state;
+
 		if (this._catalog) {
+			const topic = this._topicsService.byId(currentTopicId);
+			const { label } = topic;
+
+			const changeIndex = () => {
+				setIndex(TopicsContentPanelIndex.TOPICS);
+				setIndex(TopicsContentPanelIndex.TOPICS);			
+				setIndex(TopicsContentPanelIndex.TOPICS);
+				setIndex(TopicsContentPanelIndex.TOPICS);			
+				setIndex(TopicsContentPanelIndex.TOPICS);
+				this.render;
+			};
+
 			const childElements = this._catalog.map(item => {
 				//node
 				if (item.children) {
@@ -66,12 +95,14 @@ export class CatalogContentPanel extends AbstractContentPanel {
 				//leaf
 				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
 			});
-			const { label } = this._topic;	
+
 			const translate = (key) => this._translationService.translate(key);
+
+		
 
 			const renderTopicIcon = (topic) => {
 				if (topic.style.icon) {
-					
+
 					return html`
 					<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
 						${unsafeSVG(topic.style.icon)}
@@ -95,7 +126,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon">						
-					${renderTopicIcon(this._topic)}
+					${renderTopicIcon(topic)}
 					</span>				
 				</span>
 				<span class="ba-list-item__text verticla-center">
@@ -109,8 +140,6 @@ export class CatalogContentPanel extends AbstractContentPanel {
 		}
 		return nothing;
 	}
-
-
 
 	extractState(globalState) {
 

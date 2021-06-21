@@ -50,6 +50,65 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
+		it('just renders the component once', async (done) => {
+			const topicId = 'foo';
+			const topicLabel = 'label';
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
+
+			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+				await loadExampleCatalog()
+			);
+			const element = await setup();
+			const renderSpy = spyOn(element, 'render');
+			//assign data
+			element.data = topicId;
+
+			setCurrent(topicId);
+			
+			//wait for elements
+			window.requestAnimationFrame(() => {
+
+				setCurrent(topicId);
+
+				window.requestAnimationFrame(() => {
+					expect(renderSpy).toHaveBeenCalledTimes(1);
+					done();
+				});
+			});
+		});
+
+		it('shows or hides the component', async (done) => {
+			const topicId = 'foo';
+			const topicLabel = 'label';
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
+
+			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
+				await loadExampleCatalog()
+			);
+			const element = await setup();
+			//assign data
+			element.data = topicId;
+
+			setCurrent(topicId);
+
+			//wait for elements
+			window.requestAnimationFrame(() => {
+				expect(element.style.display).toBe('inline');
+
+				setCurrent('doesNotMatchTopicId');
+
+				window.requestAnimationFrame(() => {
+					expect(element.style.display).toBe('none');
+					done();
+				});
+			});
+		});
+	});
+
+	describe('and currentTopic matches', () => {
+
 		it('renders the catalog panel', async (done) => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
@@ -60,27 +119,31 @@ describe('TopicsContentPanel', () => {
 				await loadExampleCatalog()
 			);
 			const element = await setup();
+			//assign data
+			element.data = topicId;
 
 			setCurrent(topicId);
 
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(spy).toHaveBeenCalledOnceWith(topicId);
+
+
 				//test correct rendering of the style -tags
 				expect(element.shadowRoot.styleSheets).toHaveSize(3);
 
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(1);
 
-				//test existence of important css classes
+				// //test existence of important css classes
 				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
 				expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
-				//no style present for current topic
+				// //no style present for current topic
 				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(0);
-				//test i18n
+				// //test i18n
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').textContent).toBe('topics_catalog_panel_change_topic');
 				//the example catalog returns one node and one leaf object on the top level
 				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
@@ -89,7 +152,7 @@ describe('TopicsContentPanel', () => {
 			});
 		});
 
-		it('renders the topics style', async (done) => {
+		it('renders the topic style', async (done) => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
@@ -99,6 +162,8 @@ describe('TopicsContentPanel', () => {
 				await loadExampleCatalog()
 			);
 			const element = await setup();
+			//assign data
+			element.data = topicId;
 
 			setCurrent(topicId);
 
@@ -107,6 +172,24 @@ describe('TopicsContentPanel', () => {
 
 				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
 				done();
+			});
+		});
+
+		describe(' currentTopic does NOT match', () => {
+
+			it('renders nothing', async (done) => {
+				const topicId = 'foo';
+				const element = await setup();
+				//assign data
+				element.data = 'doesNotMatchTopicId';
+
+				setCurrent(topicId);
+
+				//wait for elements
+				window.requestAnimationFrame(() => {
+					expect(element.shadowRoot.children.length).toBe(0);
+					done();
+				});
 			});
 		});
 	});
@@ -122,6 +205,8 @@ describe('TopicsContentPanel', () => {
 			);
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
+			//assign data
+			element.data = topicId;
 
 			setCurrent(topicId);
 
@@ -148,6 +233,8 @@ describe('TopicsContentPanel', () => {
 					index: TopicsContentPanelIndex.CATALOG_0
 				}
 			});
+			//assign data
+			element.data = topicId;
 
 			setCurrent(topicId);
 
