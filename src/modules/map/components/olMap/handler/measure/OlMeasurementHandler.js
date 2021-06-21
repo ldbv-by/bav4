@@ -130,7 +130,18 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							this._styleService.addStyle(f, olMap, StyleTypes.MEASURE);
 							f.on('change', onFeatureChange);
 						});
-					}).then(() => removeLayer(oldLayer.get('id'))).then(() => this._finish());
+					})
+						.then(() => removeLayer(oldLayer.get('id')))
+						.then(() => this._finish())
+						.then(() => {
+							const id = oldLayer.get('id');
+							if (this._fileStorageService.isAdminId(id)) {
+								setFileSaveResult({ adminId: id, fileId: null });
+							}
+							if (this._fileStorageService.isFileId(id)) {
+								setFileSaveResult({ fileId: id, adminId: null });
+							}
+						});
 				}
 			}
 		};
@@ -668,7 +679,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return;
 		}
 
-		if (!this._getLastFileSaveResult() || !this._storedContent) {
+
+		if (!this._isValidFileSaveResult(this._getLastFileSaveResult())) {
 			await this._save();
 		}
 
@@ -702,6 +714,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return measurement.fileSaveResult;
 	}
 
+	_isValidFileSaveResult(fileSaveResult) {
+		if (fileSaveResult == null) {
+			return false;
+		}
+
+		return fileSaveResult.adminId !== null && fileSaveResult.fileId !== null;
+	}
+
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
 			return 12;
@@ -713,6 +733,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._vectorLayer) {
 			return !this._vectorLayer.getSource().getFeatures().length > 0;
 		}
+		return true;
 	}
 
 	/**
