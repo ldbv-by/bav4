@@ -49,7 +49,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				document.head.appendChild(styleElement);
 			}
 			const style = document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id);
-			style.innerHTML = `*{--topic-hue: ${topic.style?.hue ?? 0};}`;
+			style.innerHTML = `*{--topic-hue: ${topic.style.hue || 0};}`;
 		});
 	}
 
@@ -95,7 +95,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 
 
 			const renderTopicStyle = (topic) => {
-				const hue = topic.style?.hue ?? 0;
+				const hue = topic.style.hue || 0;
 				return `
 				.topic-${topic.id}{		
 					--topic-theme: hsl(${hue} var(--topic-saturation) var(--topic-lightness));			
@@ -104,7 +104,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			};
 
 			const renderTopicIcon = (topic) => {
-				if (topic.style?.icon) {
+				if (topic.style.icon) {
 					return html`
 					<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
 					${unsafeSVG(topic.style.icon)}
