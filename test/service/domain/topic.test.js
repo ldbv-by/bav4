@@ -3,7 +3,7 @@ import { Topic } from '../../../src/services/domain/topic';
 
 describe('Topic', () => {
 
-	it('provides setter for properties', () => {
+	it('provides getter for properties', () => {
 		const topic = new Topic('id', 'label', 'description', ['bg0', 'bg1'], 'bg0', ['ac0', 'ac2'], ['sel0', 'sel2'], { hue: 42, icon: 'svg' });
 
 		expect(topic.id).toBe('id');
