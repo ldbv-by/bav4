@@ -15,7 +15,7 @@ jobs:
         node-version: '12.x'
     - run: npm ci
     - run: npm run lint
-    # - run: npm run es-check
+    - run: npm run es-check
     - run: npm run test:gha
 
     - name: Coveralls
