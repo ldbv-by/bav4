@@ -17,14 +17,15 @@ export const provide = (lang) => {
 				toolbox_measureTool_stats_length: 'Length',
 				toolbox_measureTool_stats_area: 'Area',
 				toolbox_measureTool_start_new: 'Start New',
-				toolbox_measureTool_delete_point:'Delete last point',
-				toolbox_measureTool_delete_measure:'Delete measure',
-				toolbox_measureTool_measure_active:'Tap on the map to start measurement',
+				toolbox_measureTool_delete_point: 'Delete last point',
+				toolbox_measureTool_delete_measure: 'Delete measure',
+				toolbox_measureTool_measure_active: 'Tap on the map to start measurement',
 				toolbox_measureTool_measure_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
 				toolbox_measureTool_measure_modify: 'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_measureTool_measure_select: 'Select an existing measurement or start a new one',
-				toolbox_measureTool_share_readonly:'readonly',
-				toolbox_drawTool_finish:'Finish'
+				toolbox_measureTool_share_readonly: 'readonly',
+				toolbox_measureTool_share_start: 'Click to share',
+				toolbox_drawTool_finish: 'Finish'
 			};
 
 		case 'de':
@@ -49,8 +50,9 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_draw: 'In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)',
 				toolbox_measureTool_measure_modify: 'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_measureTool_measure_select: 'Eine bestehende Messung auswählen oder eine neue Messung beginnen',
-				toolbox_measureTool_share_readonly:'Schreibgeschützt',
-				toolbox_drawTool_finish:'Fertig'
+				toolbox_measureTool_share_readonly: 'Schreibgeschützt',
+				toolbox_measureTool_share_start: 'Zum Teilen klicken',
+				toolbox_drawTool_finish: 'Fertig'
 			};
 
 		default:
