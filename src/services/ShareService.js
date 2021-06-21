@@ -23,7 +23,7 @@ export class ShareService {
 	_mergeExtraParams(extractedState, extraParams) {
 		for (const [key, value] of Object.entries(extraParams)) {
 
-			//if parameter is already present and denotes an array, value(s) will be appendend
+			//when a parameter is already present and denotes an array, value(s) will be appendend
 			if (Object.keys(extractedState).includes(key)) {
 				if (Array.isArray(extractedState[key])) {
 
@@ -116,11 +116,13 @@ export class ShareService {
 		const layer = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
-		activeLayers.forEach(l => {
-			layer.push(l.id);
-			layer_visibility.push(l.visible);
-			layer_opacity.push(l.opacity);
-		});
+		activeLayers
+			.filter(l => !l.constraints.hidden)	
+			.forEach(l => {
+				layer.push(l.id);
+				layer_visibility.push(l.visible);
+				layer_opacity.push(l.opacity);
+			});
 		//remove if it contains only default values
 		if (layer_visibility.filter(lv => lv === false).length === 0) {
 			layer_visibility = null;
