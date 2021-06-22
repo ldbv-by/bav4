@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
 import css from './spinner.css';
 
@@ -8,15 +9,25 @@ import css from './spinner.css';
  */
 export class Spinner extends BaElement {
 
+	constructor() {
+		super();
+		const {  TranslationService: translationService }
+			= $injector.inject('TranslationService');
+
+		this._translationService = translationService;
+	}
+
 
 	/**
 	 * @override
 	 */
 	createView() {
 
+		const translate = (key) => this._translationService.translate(key);
+
 		return html`
 		 <style>${css}</style> 
-		 	<span>Loading...</span>		
+		 	<span>${translate('spinner_text')}</span>		
 		`;
 	}
 
