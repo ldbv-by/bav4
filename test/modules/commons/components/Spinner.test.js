@@ -18,7 +18,7 @@ describe('Spinner', () => {
 
 			const element = await TestUtils.render(Spinner.tag);
 
-			expect(element.shadowRoot.querySelector('span').innerText).toBe('spinner_text');
+			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('spinner_text');
 		});
 	});
 });

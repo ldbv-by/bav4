@@ -7,7 +7,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = provide('en');
 
-		expect(map.spinner_text).toBe('Loading...');		
+		expect(map.spinner_text).toBe('Loading');		
 	});
 
 
@@ -15,7 +15,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = provide('de');
 
-		expect(map.spinner_text).toBe('Wird geladen...');		
+		expect(map.spinner_text).toBe('Wird geladen');		
 	});
 
 	it('provides an empty map for a unknown lang', () => {

@@ -27,7 +27,7 @@ export class Spinner extends BaElement {
 
 		return html`
 		 <style>${css}</style> 
-		 	<span>${translate('spinner_text')}</span>		
+		 	<span class="loading">${translate('spinner_text')}</span>		
 		`;
 	}
 
