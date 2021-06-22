@@ -1,6 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
 import { $injector } from '../../../../../injection';
+import { renderTagOf } from '../../../../BaElement';
+import { Spinner } from '../../../../commons/components/spinner/Spinner';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../../store/topicsContentPanel.action';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
@@ -39,23 +41,30 @@ export class CatalogContentPanel extends AbstractContentPanel {
 	initialize() {
 
 		const updateView = async (currentTopicId) => {
-			try {
-				if (this._topicId && currentTopicId === this._topicId) {
-					
-					//we cache the catalog and render just once
-					if (!this._catalog) {
-						this._catalog = await this._catalogService.byId(this._topicId);
-						//we just render once after catalog data are available
-						this.render();
-					}
-					this.style.display = 'inline';
+			// try {
+			if (this._topicId && currentTopicId === this._topicId) {
+
+				//we cache the catalog
+				if (!this._catalog) {
+
+					//we render the spinner
+					this.render();
+
+					//if we use "await" the first call of #render seems to be blocked until await is resolved (!?)
+					this._catalogService.byId(this._topicId)
+						.then(catalog => {
+							this._catalog = catalog;
+							//we render the catalog
+							this.render();
+
+						}, (e) => {
+							console.warn(e.message);
+						});
 				}
-				else {
-					this.style.display = 'none';
-				}
+				this.style.display = 'inline';
 			}
-			catch (e) {
-				console.warn(e.message);
+			else {
+				this.style.display = 'none';
 			}
 		};
 
@@ -74,31 +83,39 @@ export class CatalogContentPanel extends AbstractContentPanel {
 
 		const { currentTopicId } = state;
 
-		if (this._catalog) {
+		if (this._topicId && currentTopicId === this._topicId) {
 			const topic = this._topicsService.byId(currentTopicId);
 			const { label } = topic;
 
 			const changeIndex = () => {
 				setIndex(TopicsContentPanelIndex.TOPICS);
-				setIndex(TopicsContentPanelIndex.TOPICS);			
-				setIndex(TopicsContentPanelIndex.TOPICS);
-				setIndex(TopicsContentPanelIndex.TOPICS);			
-				setIndex(TopicsContentPanelIndex.TOPICS);
-				this.render;
 			};
-
-			const childElements = this._catalog.map(item => {
-				//node
-				if (item.children) {
-					return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
-				}
-				//leaf
-				return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
-			});
 
 			const translate = (key) => this._translationService.translate(key);
 
-		
+
+			const renderChildElements = () => {
+				if (!this._catalog) {
+					return html`
+					<li class="ba-list-item">
+            			<span class="ba-list-item__text ">
+                			<span class="ba-list-item__primary-text">
+                				${renderTagOf(Spinner)}
+                			</span>
+            			</span>
+        			</li>
+					`;
+				}
+
+				return this._catalog.map(item => {
+					//node
+					if (item.children) {
+						return html`<ba-catalog-node .data=${item}></ba-catalog-node>`;
+					}
+					//leaf
+					return html`<ba-catalog-leaf .data=${item}></ba-catalog-leaf>`;
+				});
+			};
 
 			const renderTopicIcon = (topic) => {
 				if (topic.style.icon) {
@@ -134,7 +151,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 				</span>
 			</span>
 			</div>
-				${childElements}
+				${renderChildElements()}
 			</div>
 			`;
 		}

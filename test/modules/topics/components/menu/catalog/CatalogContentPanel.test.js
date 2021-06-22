@@ -9,6 +9,7 @@ import { TestUtils } from '../../../../../test-utils.js';
 import { topicsContentPanelReducer } from '../../../../../../src/modules/topics/store/topicsContentPanel.reducer';
 import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../../src/services/domain/topic';
+import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
@@ -50,14 +51,14 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
-		it('just renders the component once', async (done) => {
+		it('renders the component exactly twice', async (done) => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				await loadExampleCatalog()
+				Promise.resolve(await loadExampleCatalog())
 			);
 			const element = await setup();
 			const renderSpy = spyOn(element, 'render');
@@ -65,14 +66,18 @@ describe('TopicsContentPanel', () => {
 			element.data = topicId;
 
 			setCurrent(topicId);
-			
-			//wait for elements
+
 			window.requestAnimationFrame(() => {
 
+				expect(renderSpy).toHaveBeenCalledTimes(2);
+
+				//shoud not cause further calls of #render
+				setCurrent(topicId);
+				setCurrent(topicId);
 				setCurrent(topicId);
 
 				window.requestAnimationFrame(() => {
-					expect(renderSpy).toHaveBeenCalledTimes(1);
+					expect(renderSpy).toHaveBeenCalledTimes(2);
 					done();
 				});
 			});
@@ -85,7 +90,7 @@ describe('TopicsContentPanel', () => {
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				await loadExampleCatalog()
+				Promise.resolve(await loadExampleCatalog())
 			);
 			const element = await setup();
 			//assign data
@@ -116,13 +121,18 @@ describe('TopicsContentPanel', () => {
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				await loadExampleCatalog()
+				Promise.resolve(await loadExampleCatalog())
 			);
 			const element = await setup();
 			//assign data
 			element.data = topicId;
 
 			setCurrent(topicId);
+
+			//during loading the catalog we show a spinner
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 
 			//wait for elements
 			window.requestAnimationFrame(() => {
@@ -148,6 +158,7 @@ describe('TopicsContentPanel', () => {
 				//the example catalog returns one node and one leaf object on the top level
 				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 				done();
 			});
 		});
@@ -159,7 +170,7 @@ describe('TopicsContentPanel', () => {
 
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				await loadExampleCatalog()
+				Promise.resolve(await loadExampleCatalog())
 			);
 			const element = await setup();
 			//assign data
@@ -175,7 +186,7 @@ describe('TopicsContentPanel', () => {
 			});
 		});
 
-		describe(' currentTopic does NOT match', () => {
+		describe('currentTopic does NOT match', () => {
 
 			it('renders nothing', async (done) => {
 				const topicId = 'foo';
@@ -212,7 +223,9 @@ describe('TopicsContentPanel', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
-				expect(element.shadowRoot.children.length).toBe(0);
+				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 				done();
 			});
 		});
@@ -226,7 +239,7 @@ describe('TopicsContentPanel', () => {
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
 			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				await loadExampleCatalog()
+				Promise.resolve(await loadExampleCatalog())
 			);
 			const element = await setup({
 				topicsContentPanel: {
