@@ -4,3 +4,4 @@ import './components/checkbox';
 import './components/popup';
 import './components/icon';
 import './components/autocomplete';
+import './components/spinner';
