@@ -148,7 +148,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 					${renderTopicIcon(topic)}
 					</span>				
 				</span>
-				<span class="ba-list-item__text verticla-center">
+				<span class="ba-list-item__text vertical-center">
 					<span class="ba-list-item__main-text">${label}</span>					
 				</span>
 			</span>

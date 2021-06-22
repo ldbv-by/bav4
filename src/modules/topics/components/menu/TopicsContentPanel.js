@@ -131,7 +131,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 							<span class="ba-list-item__primary-text">${topic.label}</span>
 							<span class="ba-list-item__secondary-text">${topic.description}</span>
 						</span>
-						<span class="ba-list-item__after verticla-center">
+						<span class="ba-list-item__after vertical-center">
 							<span class="arrow arrow-right"></span>
 						</span>
 					</button>

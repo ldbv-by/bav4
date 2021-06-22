@@ -215,7 +215,7 @@
   height:0;
 }
 /* helper */
-.verticla-center{
+.vertical-center{
    margin: auto;
 }
 .divider {
@@ -224,7 +224,7 @@
 .sub-divider {
    border-bottom: 1px dotted var(--header-background-color);
 }
-.seperator {
+.separator {
    border-left: 1px dotted var(--header-background-color);
 }
 

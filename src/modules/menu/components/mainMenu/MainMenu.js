@@ -160,7 +160,7 @@ export class MainMenu extends BaElement {
 		</span>
 	</li>		
 		<li  class="ba-list-item">
-		<span class="ba-list-item__text verticla-center">
+		<span class="ba-list-item__text vertical-center">
 		<span class="ba-list-item__primary-text">
 		Lorem ipsum dolor
 		</span>              
@@ -226,7 +226,7 @@ export class MainMenu extends BaElement {
 				<span class="ba-list-item__icon">
 				</span>
 			</span>
-			<span class="ba-list-item__text verticla-center">
+			<span class="ba-list-item__text vertical-center">
 				<span class="ba-list-item__primary-text">
 				Lorem ipsum dolor
 				</span>              

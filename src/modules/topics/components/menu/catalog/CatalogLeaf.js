@@ -57,7 +57,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 			</style>
 			<span class="ba-list-item" >		
 					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  disabled=${!geoR} checked=${checked} tabindex='0' title=${title}><span>${label}</span></ba-checkbox>						
-					<button class="ba-icon-button ba-list-item__after verticla-center seperator">						
+					<button class="ba-icon-button ba-list-item__after vertical-center separator">						
 						<span  class='icon-background'>
 						 </span>
 						<i class='icon icon-secondary info'></i>
