@@ -140,6 +140,9 @@ export class ShowCase extends BaElement {
 			<div><ba-checkbox  checked=true title="checkbox title" @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox></div>
 			<div><ba-checkbox  disabled=true title="checkbox title" @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox></div>
 			<div><ba-checkbox  checked=true disabled=true title="checkbox title" @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox></div>
+			
+			<p>Loading hint</p>
+			<div><ba-spinner></ba-spinner></div>
 			<hr>
 		</div>`;
 	}
