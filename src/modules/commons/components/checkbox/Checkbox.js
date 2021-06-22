@@ -19,6 +19,7 @@ import css from './checkbox.css';
  * 
  * @class
  * @author alsturm
+ * @author taulinger
  */
 export class Checkbox extends BaElement {
 
@@ -32,6 +33,20 @@ export class Checkbox extends BaElement {
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
 		this.title = this.getAttribute('title') || '';
+
+		this.addEventListener('click', (event) => {
+			this._click();
+			event.stopPropagation();
+		});
+		
+		this.addEventListener('keydown', (event) => {
+			//handle Enter and Space events
+			if (event.key === 'Enter' || event.key === ' ') {
+				this._click();
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
 	}
 
 	/**
@@ -73,10 +88,11 @@ export class Checkbox extends BaElement {
 	}
 
 	/**
-	 * Mainly for testing purposes.<br>
+	 * 
 	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
+	 * 
 	 */
-	click() {
+	_click() {
 		this._root.querySelector('label').click();
 	}
 

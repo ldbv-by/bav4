@@ -127,39 +127,151 @@ describe('Checkbox', () => {
 			expect(label.title).toBe('someTitle');
 		});
 	});
-	describe('when clicked', () => {
 
-		it('calls the onToggle callback via property callback', async () => {
 
-			const element = await TestUtils.render(Checkbox.tag);
-			element.onToggle = jasmine.createSpy();
+	describe('event handling', () => {
 
-			element.click();
+		describe('on click', () => {
 
-			expect(element.onToggle).toHaveBeenCalled();
-			expect(element.checked).toBeTrue();
+			it('calls the onToggle callback via property callback', async () => {
+
+				const element = await TestUtils.render(Checkbox.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.click();
+
+				expect(element.onToggle).toHaveBeenCalled();
+				expect(element.checked).toBeTrue();
+			});
+
+			it('calls the onToggle callback via attribute callback', async () => {
+
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				element.onToggle = jasmine.createSpy();
+
+				element.click();
+
+				expect(window.alert).toHaveBeenCalledWith('called');
+				expect(element.checked).toBeTrue();
+			});
+
+			it('does nothing when disabled', async () => {
+				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+				element.onClick = jasmine.createSpy();
+
+				element.click();
+
+				expect(element.onClick).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
 		});
 
-		it('calls the onToggle callback via attribute callback', async () => {
+		describe('on keyboad ENTER', () => {
 
-			spyOn(window, 'alert');
-			const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
-			element.onToggle = jasmine.createSpy();
+			const event = new KeyboardEvent('keydown', {
+				key: 'Enter'
+			});
 
-			element.click();
+			it('calls the onToggle callback via property callback', async () => {
 
-			expect(window.alert).toHaveBeenCalledWith('called');
-			expect(element.checked).toBeTrue();
+				const element = await TestUtils.render(Checkbox.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(new KeyboardEvent('keydown', {
+					key: 'F12'
+				}));
+
+				expect(element.onToggle).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
+
+			it('calls the onToggle callback via property callback', async () => {
+
+				const element = await TestUtils.render(Checkbox.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(element.onToggle).toHaveBeenCalled();
+				expect(element.checked).toBeTrue();
+			});
+
+			it('calls the onToggle callback via attribute callback', async () => {
+
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(window.alert).toHaveBeenCalledWith('called');
+				expect(element.checked).toBeTrue();
+			});
+
+			it('does nothing when disabled', async () => {
+				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+				element.onClick = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(element.onClick).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
 		});
 
-		it('does nothing when disabled', async () => {
-			const element = await TestUtils.render(Checkbox.tag, { disabled: true });
-			element.onClick = jasmine.createSpy();
+		describe('on keyboad SPACE', () => {
 
-			element.click();
+			const event = new KeyboardEvent('keydown', {
+				key: ' '
+			});
 
-			expect(element.onClick).not.toHaveBeenCalled();
-			expect(element.checked).toBeFalse();
+			it('calls the onToggle callback via property callback', async () => {
+
+				const element = await TestUtils.render(Checkbox.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(new KeyboardEvent('keydown', {
+					key: 'F12'
+				}));
+
+				expect(element.onToggle).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
+
+			it('calls the onToggle callback via property callback', async () => {
+
+				const element = await TestUtils.render(Checkbox.tag);
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(element.onToggle).toHaveBeenCalled();
+				expect(element.checked).toBeTrue();
+			});
+
+			it('calls the onToggle callback via attribute callback', async () => {
+
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				element.onToggle = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(window.alert).toHaveBeenCalledWith('called');
+				expect(element.checked).toBeTrue();
+			});
+
+			it('does nothing when disabled', async () => {
+				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+				element.onClick = jasmine.createSpy();
+
+				element.dispatchEvent(event);
+
+				expect(element.onClick).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
 		});
+
 	});
 });
