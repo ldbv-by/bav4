@@ -36,13 +36,14 @@ export class ShareMeasureDialog extends BaElement {
 	}
 
 	_buildShareItem(url, label) {
+		const translate = (key) => this._translationService.translate(key);
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
 		return html`
         <div class='share_item'>
             <span class share_label>${label}</span>
             <input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
-            <ba-icon class='close' icon='${clipboardIcon}' title=${label} size=1.5} @click=${onCopyUrlToClipBoard}>
+            <ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyUrlToClipBoard}>
             </ba-icon>
         </div>
     `;
