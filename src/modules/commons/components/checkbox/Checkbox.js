@@ -32,7 +32,7 @@ export class Checkbox extends BaElement {
 		this._onToggle = () => { };
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
-		this.title = this.getAttribute('title') || '';
+		this._title = this.getAttribute('title') || '';
 
 		this.addEventListener('click', (event) => {
 			this._click();
