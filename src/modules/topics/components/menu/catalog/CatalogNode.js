@@ -31,7 +31,7 @@ export class CatalogNode extends AbstractContentPanel {
 	}
 
 	onStateChanged() {
-		//nothing to to here: initial rendering does it
+		//nothing to do here: initial rendering does it
 	}
 
 	createView() {
