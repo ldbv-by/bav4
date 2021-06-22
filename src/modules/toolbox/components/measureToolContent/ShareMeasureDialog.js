@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
+import css from './shareMeasureDialog.css';
 
 export class ShareMeasureDialog extends BaElement {
 
@@ -24,6 +25,7 @@ export class ShareMeasureDialog extends BaElement {
 			const readOnlyContent = this._buildShareItem(this._shareUrls.fileId, translate('toolbox_measureTool_share_link_edit'));
 
 			return html`
+			<style>${css}</style>
             <div class='share_content'>
                 ${editableContent}
                 ${readOnlyContent}
