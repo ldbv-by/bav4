@@ -59,6 +59,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 							this.render();
 
 						}, (e) => {
+							//Todo: As soon as we have a message channel we should inform the user here and remove the spinner
 							console.warn(e.message);
 						});
 				}
