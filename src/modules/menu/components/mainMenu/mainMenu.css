@@ -104,12 +104,12 @@
 }
 .is-portrait .main-menu__container{
    overflow-y: auto;
-   top: 6.5em;
+   top: 8.5em;
    bottom: 0;
    height: auto;
    position: absolute;
    width: 100%;
-   padding: 2em 0 3em 0;
+   padding: 0m 0 3em 0;
 }
 .is-portrait .main-menu__container *{
  font-size: 1.2rem;

@@ -1,21 +1,30 @@
 .topics-content-panel{
    width: 200%;
-   display:flex;
-   transition: transform 0.3s ease-out;         
+   display: inline-grid;
+   grid-template-columns: 50% 50%;
+   transition: transform var(--animationtime-mainmenu) ease-out;             
 }
 .col{
-   width: 50%; 
-   max-width: 50%; 
+   width: 100%; 
+   max-width: 100%; 
    visibility: hidden;
+   height:0;
+   overflow:hidden;
+}
+.topics-content-panel  > *:first-child{
+   visibility: visible;
+   height:auto;
 }
 .invisible {
    transform: translate(-50%); 
 }
 .invisible  > *:last-child{
-   visibility: visible;
+   visibility: visible;   
+   height:auto;
 }
-.topics-content-panel  > *:first-child{
-   visibility: visible;
+.invisible  > *:first-child {
+   visibility: hidden; 
+   height:0  
 }
 .topic .ba-list-item__icon{			
    padding:.2em;
@@ -24,9 +33,7 @@
 .topic{
    --secondary-color: var(--topic-theme, var(--secondary-color-theme));			  		  
 }	
-
 svg{
-
    fill:  var(--primary-bg-color);
    height: 2.6em;
    width: 2.6em;
