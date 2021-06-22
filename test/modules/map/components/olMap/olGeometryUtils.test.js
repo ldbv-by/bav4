@@ -307,7 +307,7 @@ describe('getPartitionDelta', () => {
 
 		const delta = getPartitionDelta(lineString);
 		
-		expect(delta).toBe(6.666666666666667);
+		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta with standard resolution', () => {
@@ -323,7 +323,7 @@ describe('getPartitionDelta', () => {
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
 		
-		expect(delta).toBe(2);
+		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta for longest lines', () => {
