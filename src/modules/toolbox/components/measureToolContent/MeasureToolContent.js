@@ -4,8 +4,8 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
-import shareIcon from './assets/share.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
+import { openModal } from '../../../modal/store/modal.action';
 
 import css from './measureToolContent.css';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
@@ -42,7 +42,6 @@ export class MeasureToolContent extends BaElement {
 		const areaClasses = { 'is-area': statistic.area > 0 };
 
 		const buttons = this._getButtons(state);
-		const shareContainer = this._getShareContainer(state);
 		const subText = this._getSubText(state);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
@@ -90,7 +89,6 @@ export class MeasureToolContent extends BaElement {
 						</ba-icon>
 					</span>			
 					</div>
-					${shareContainer}
 					<div class='sub-text'>${subText}</div>
 				</div>				
 				<div class="tool-container__buttons-secondary">                         						 
@@ -141,12 +139,13 @@ export class MeasureToolContent extends BaElement {
 			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
-
+		
+		buttons.push(this._getShareButton(state));
 
 		return buttons;
 	}
 
-	_getShareContainer(state) {
+	_getShareButton(state) {
 		const { fileSaveResult } = state;
 		const translate = (key) => this._translationService.translate(key);
 		const isValidForSharing = (fileSaveResult) => {
@@ -158,65 +157,34 @@ export class MeasureToolContent extends BaElement {
 			}
 			return true;
 		};
-
-
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
 			const url = this._shareService.encodeState(extraParams);
 			const shortUrl = await this._urlService.shorten(url);
 			return shortUrl;
 		};
-
-		if (isValidForSharing(fileSaveResult)) {
-			const toggleShareContentClick = async () => {
-				if (this._shareUrls) {
-					this._shareUrls = null;
-					this.render();
-				}
-				else {
-					generateShareUrls();
-				}
-			};
-
-			const generateShareUrls = async () => {
-				const forAdminId = await buildShareUrl(fileSaveResult.adminId);
-				const forFileId = await buildShareUrl(fileSaveResult.fileId);
-				this._shareUrls = { adminId: forAdminId, fileId: forFileId };
-				this.render();
-			};
-
-			const shareContent = this._getShareContent();
-
-			return html`<div class='share_container'>
-			<ba-icon class='close share_init' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_start')} size=1.5} @click=${toggleShareContentClick}>
-				</ba-icon>
-				${shareContent}
-			</div>`;
-		}
-		return html.nothing;
-	}
-
-	_getShareContent() {
-		const translate = (key) => this._translationService.translate(key);
-		const onToggle = (event) => {
-			this._shareAsReadOnly = event.detail.checked;
-			this.render();
+		const generateShareUrls = async () => {
+			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
+			const forFileId = await buildShareUrl(fileSaveResult.fileId);
+			return { adminId: forAdminId, fileId: forFileId };
+		
 		};
-		if (this._shareUrls != null) {
-			const shareurl = this._shareAsReadOnly ? this._shareUrls.fileId : this._shareUrls.adminId;
-			const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(shareurl);
-
-			return html`<ba-checkbox class='close' title=${translate('toolbox_measureTool_share_readonly')} checked=${this._shareAsReadOnly} @toggle=${onToggle}>${translate('toolbox_measureTool_share_readonly')}
-						</ba-checkbox>
-						<div class='share_content' style='display:flex'>
-							<input class='share_url' type='text' id='shareurl' name='shareurl' value=${shareurl} readonly>							
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyUrlToClipBoard}>
-							</ba-icon>
-						</div>`;
+		if (isValidForSharing(fileSaveResult)) {
+			
+			const title =  translate('toolbox_measureTool_share');
+			const onClick = () => {
+				generateShareUrls().then(shareUrls => {
+					const payload = { title: title, content: html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>` };
+					openModal(payload);
+				});				
+			};
+			return html`<button id='share' 
+			class="tool-container__button" 
+			title=${title}
+			@click=${onClick}>${title}</button>`;
 
 		}
 		return html.nothing;
-
 	}
 
 	_getSubText(state) {

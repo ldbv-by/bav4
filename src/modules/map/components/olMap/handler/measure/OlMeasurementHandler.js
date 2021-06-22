@@ -466,26 +466,30 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		if (newContent) {
 			this._storedContent = newContent;
-		}
-		const { measurement } = this._storeService.getStore().getState();
-		if (measurement.fileSaveResult) {
-			try {
-				const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
-				setFileSaveResult(fileSaveResult);
+			const { measurement } = this._storeService.getStore().getState();
+			if (measurement.fileSaveResult) {
+				try {
+					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+					setFileSaveResult(fileSaveResult);
+				}
+				catch (error) {
+					console.warn('Could not store content:', error.message);
+				}
 			}
-			catch (error) {
-				console.warn('Could not store content:', error.message);
+			else {
+				try {
+					const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+					setFileSaveResult(fileSaveResult);
+				}
+				catch (error) {
+					console.warn('Could not store content initially:', error.message);
+				}
 			}
 		}
 		else {
-			try {
-				const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
-				setFileSaveResult(fileSaveResult);
-			}
-			catch (error) {
-				console.warn('Could not store content initially:', error.message);
-			}
+			setFileSaveResult(null);
 		}
+		
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
