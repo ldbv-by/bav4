@@ -59,6 +59,18 @@ describe('Checkbox', () => {
 			expect(element.disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.input').disabled).toBeTrue();
 		});
+
+		
+		it('re-renders NOT the checkbox when attribute \'disabled\' is not changed', async () => {
+
+			const element = await TestUtils.render(Checkbox.tag);
+			const renderSpy = spyOn(element, 'render');
+			
+			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
+			element.setAttribute('disabled', 'false');
+			expect(element.disabled).toBeFalse();
+			expect(renderSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when initialized with \'checked\' attribute', () => {
@@ -94,6 +106,18 @@ describe('Checkbox', () => {
 			element.setAttribute('checked', 'true');
 			expect(element.checked).toBeTrue();
 			expect(input.checked).toBeTrue();
+		});
+
+		it('re-renders NOT the checkbox when attribute \'checked\' is not changed', async () => {
+
+			const element = await TestUtils.render(Checkbox.tag);
+			const renderSpy = spyOn(element, 'render');
+			const input = element.shadowRoot.querySelector('input');
+
+			expect(input.checked).toBeFalse();
+			element.setAttribute('checked', 'false');
+			expect(element.checked).toBeFalse();
+			expect(renderSpy).not.toHaveBeenCalled();
 		});
 	});
 
