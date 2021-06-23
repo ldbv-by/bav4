@@ -26,3 +26,19 @@
     border-radius:.9em;
     background: var(--secondary-bg-color);
 }
+
+input{
+    background: var(--primary-bg-color);
+    border: 2px solid var(--primary-color-theme);    
+    border-radius: var(--border-radius-button);
+    overflow: hidden;
+    font-size: 1.25rem;
+    padding: 0.25em .6em;
+    width: var(--width);
+    background: var(--primary-bg-color);
+    color: var(--color);
+}
+input[readonly]{
+    border: 2px solid var(--secondary-bg-color);    
+    background: var(--primary-bg-color);
+}
