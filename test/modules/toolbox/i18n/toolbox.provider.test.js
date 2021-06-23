@@ -29,6 +29,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
 		expect(map.toolbox_measureTool_share_link_readonly).toBe('Link zum Teilen Ihrer Zeichnung');
 		expect(map.toolbox_measureTool_share_link_edit).toBe('Link zum Editieren Ihrer Zeichnung');
+		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 	});
 
@@ -58,11 +59,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share).toBe('Share');
 		expect(map.toolbox_measureTool_share_link_readonly).toBe('Link to share your measurement');
 		expect(map.toolbox_measureTool_share_link_edit).toBe('Link to editable share your measurement');
+		expect(map.toolbox_measureTool_share_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 23;
+		const expectedSize = 24;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

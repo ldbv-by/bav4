@@ -19,10 +19,10 @@ export class ShareMeasureDialog extends BaElement {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		
+
 		if (this._shareUrls) {
-			const useShareApi = navigator.share ? true : false; 
-			
+			const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
+
 			const editableContent = this._buildShareItem(this._shareUrls.adminId, translate('toolbox_measureTool_share_link_readonly'), useShareApi);
 			const readOnlyContent = this._buildShareItem(this._shareUrls.fileId, translate('toolbox_measureTool_share_link_edit'), useShareApi);
 
@@ -33,36 +33,37 @@ export class ShareMeasureDialog extends BaElement {
                 ${readOnlyContent}
             </div>`;
 		}
-		
+
 		return html.nothing;
 	}
 
-	_buildShareItem(url, label, useShareApi = false) {
+	_buildShareItem(url, label, useShareApi) {
 		const translate = (key) => this._translationService.translate(key);
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
-		
+
 		const getShareApiContent = (useShareApi) => {
 			if (useShareApi) {
 				const onClickWithApi = () => {
-					navigator.share({
-						title: 'WebShare API Demo',
-						url: 'https://codepen.io/ayoisaiah/pen/YbNazJ'
+					this._environmentService.getWindow().navigator.share({
+						title: translate('toolbox_measureTool_share_link_title'),
+						url: url
 					}).catch(console.error);
 				};
-				return html`<ba-icon class='close' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_api')} size=1} @click=${onClickWithApi}>
+				return html`<ba-icon class='share_api' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_api')} size=2} @click=${onClickWithApi}>
 				</ba-icon>`;
 			}
-			return html.nothing;
-		};	
+			return html`<ba-icon class='share_copy' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=2} @click=${onCopyUrlToClipBoard}>
+            </ba-icon>`;
+		};
 
 		const shareApiContent = getShareApiContent(useShareApi);
-	
+
 		return html`
         <div class='share_item'>
-            <span class share_label>${label}</span>			
-            <input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
-            <ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyUrlToClipBoard}>
-            </ba-icon>
+			<div class='link'>
+            	<span class share_label>${label}</span>			
+            	<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
+			</div>            
 			${shareApiContent}
         </div>
     `;

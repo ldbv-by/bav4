@@ -58,7 +58,7 @@ describe('MeasureToolContent', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal:modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -274,7 +274,7 @@ describe('MeasureToolContent', () => {
 			expect(shareButton).toBeFalsy();
 		});
 
-		it('opens the modal with share-urls on click', async (done) => {
+		it('opens the modal with shortened share-urls on click', async (done) => {
 			const state = {
 				measurement: {
 					active: true,
@@ -297,8 +297,35 @@ describe('MeasureToolContent', () => {
 				done();
 			});
 
-		});	
-		
+		});
+
+		it('logs a warning, when shortener fails', async (done) => {
+			const state = {
+				measurement: {
+					active: true,
+					statistic: { length: 42, area: 0 },
+					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
+					reset: null,
+					remove: null,
+				}
+			};
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup(state);
+
+			const shareButton = element.shadowRoot.querySelector('#share');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
+				done();
+			});
+
+		});
+
 		describe('with touch-device', () => {
 			const touchConfig = {
 				embed: false,

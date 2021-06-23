@@ -23,9 +23,10 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
 				toolbox_measureTool_measure_modify: 'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_measureTool_measure_select: 'Select an existing measurement or start a new one',
-				toolbox_measureTool_share:'Share',
-				toolbox_measureTool_share_link_readonly:'Link to share your measurement',
-				toolbox_measureTool_share_link_edit:'Link to editable share your measurement',
+				toolbox_measureTool_share: 'Share',
+				toolbox_measureTool_share_link_readonly: 'Link to share your measurement',
+				toolbox_measureTool_share_link_edit: 'Link to editable share your measurement',
+				toolbox_measureTool_share_link_title: 'shared with BayernAtlas.de',
 				toolbox_drawTool_finish: 'Finish'
 			};
 
@@ -51,9 +52,10 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_draw: 'In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)',
 				toolbox_measureTool_measure_modify: 'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_measureTool_measure_select: 'Eine bestehende Messung auswählen oder eine neue Messung beginnen',
-				toolbox_measureTool_share:'Teilen',
-				toolbox_measureTool_share_link_readonly:'Link zum Teilen Ihrer Zeichnung',
-				toolbox_measureTool_share_link_edit:'Link zum Editieren Ihrer Zeichnung',
+				toolbox_measureTool_share: 'Teilen',
+				toolbox_measureTool_share_link_readonly: 'Link zum Teilen Ihrer Zeichnung',
+				toolbox_measureTool_share_link_edit: 'Link zum Editieren Ihrer Zeichnung',
+				toolbox_measureTool_share_link_title: 'geteilt über BayernAtlas.de',
 				toolbox_drawTool_finish: 'Fertig'
 			};
 

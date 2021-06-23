@@ -139,7 +139,7 @@ export class MeasureToolContent extends BaElement {
 			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
-		
+
 		buttons.push(this._getShareButton(state));
 
 		return buttons;
@@ -160,23 +160,31 @@ export class MeasureToolContent extends BaElement {
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
 			const url = this._shareService.encodeState(extraParams);
-			const shortUrl = await this._urlService.shorten(url);
-			return shortUrl;
+			try {
+				const shortUrl = await this._urlService.shorten(url);
+				return shortUrl;
+			}
+			catch (error) {
+				console.warn('Could shortener-service is not working:', error);
+				return url;
+			}
+
+
 		};
 		const generateShareUrls = async () => {
 			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
 			const forFileId = await buildShareUrl(fileSaveResult.fileId);
 			return { adminId: forAdminId, fileId: forFileId };
-		
+
 		};
 		if (isValidForSharing(fileSaveResult)) {
-			
-			const title =  translate('toolbox_measureTool_share');
+
+			const title = translate('toolbox_measureTool_share');
 			const onClick = () => {
 				generateShareUrls().then(shareUrls => {
 					const payload = { title: title, content: html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>` };
 					openModal(payload);
-				});				
+				});
 			};
 			return html`<button id='share' 
 			class="tool-container__button" 
