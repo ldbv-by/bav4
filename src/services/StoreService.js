@@ -17,6 +17,7 @@ import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
+import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 
 
 /**
@@ -49,7 +50,8 @@ export class StoreService {
 			geolocation: geolocationReducer,
 			topics: topicsReducer,
 			network: networkReducer,
-			search: searchReducer
+			search: searchReducer,
+			topicsContentPanel: topicsContentPanelReducer
 		});
 
 		this._store = createStore(rootReducer);

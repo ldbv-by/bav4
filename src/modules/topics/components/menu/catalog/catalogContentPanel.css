@@ -1,0 +1,12 @@
+.topic .ba-list-item__icon{
+    padding:.2em;
+    background:var(--secondary-color);
+}
+.topic{
+    --secondary-color: var(--topic-theme, var(--secondary-color-theme));			  		  
+}	
+svg{
+    fill: var(--primary-bg-color);
+    height: 2.6em;
+    width: 2.6em;
+ }
