@@ -20,7 +20,7 @@ export class Toggle extends BaElement {
 		this._onToggle = () => { };
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
-		this.title = this.getAttribute('title') || '';
+		this._title = this.getAttribute('title') || '';
 	}
 
 	/**
@@ -46,7 +46,7 @@ export class Toggle extends BaElement {
         <label title='${this._title}' class='switch ${classMap(classes)}'>
             <slot></slot>
 			<div>
-		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} ?checked=${this._checked}>
+		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} .checked=${this._checked}>
 		  		<span class='slider round'></span>
 			</div>
 	  	</label>

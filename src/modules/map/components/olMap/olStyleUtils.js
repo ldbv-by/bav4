@@ -1,5 +1,5 @@
 
-import { getGeometryLength, canShowAzimuthCircle } from './GeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle } from './olGeometryUtils';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 
@@ -12,7 +12,6 @@ const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
 
 export const measureStyleFunction = (feature) => {
-	
 	const stroke = new Stroke({
 		color:RED_COLOR.concat([1]),
 		width:3
@@ -79,15 +78,18 @@ export const createSelectStyleFunction = (styleFunction) => {
 			}),				
 		}),	
 		geometry: (feature) => {
-			let coordinates = false;
-			const geometry = feature.getGeometry();
-			if (geometry instanceof LineString) {
-				coordinates = feature.getGeometry().getCoordinates();	
-				return new MultiPoint(coordinates);
-			} 
-			
-			if (geometry instanceof Polygon) {
-				coordinates = feature.getGeometry().getCoordinates()[0];
+			const getCoordinates = (geometry) => {
+				if (geometry instanceof LineString) {
+					return feature.getGeometry().getCoordinates();
+				} 
+				
+				if (geometry instanceof Polygon) {
+					return feature.getGeometry().getCoordinates()[0];
+				}
+			};
+
+			const coordinates = getCoordinates(feature.getGeometry());
+			if (coordinates) {
 				return new MultiPoint(coordinates);
 			}
 	

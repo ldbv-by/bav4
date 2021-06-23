@@ -32,7 +32,8 @@ describe('Header', () => {
 				tabIndex: tabIndex
 			},
 			network: {
-				fetching: fetching
+				fetching: fetching,
+				pendingRequests: 0
 			},
 			layers: {
 				active: layers
@@ -284,7 +285,7 @@ describe('Header', () => {
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 		});
-
+		
 		describe('when input is focused or blurred ', () => {
 
 			describe('in portrait mode', () => {
@@ -358,6 +359,7 @@ describe('Header', () => {
 				});
 			});
 		});
+	
 	});
 
 	describe('when network fetching state changes', () => {

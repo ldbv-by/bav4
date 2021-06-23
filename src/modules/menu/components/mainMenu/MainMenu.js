@@ -4,13 +4,14 @@ import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
+import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 
 /**
  * @enum
  */
 export const MainMenuTabIndex = Object.freeze({
-	TOPICS: { id: 0, component: null },
+	TOPICS: { id: 0, component: TopicsContentPanel },
 	MAPS: { id: 1, component: null },
 	MORE: { id: 2, component: null },
 	ROUTING: { id: 3, component: null },
@@ -108,7 +109,7 @@ export class MainMenu extends BaElement {
 					<button @click="${toggle}" class="main-menu__close-button">
 					<span class='arrow'></span>	
 					</button>	
-					<div class='main-menu__container'>					
+					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
 								<div class="tabcontent">						
@@ -126,13 +127,12 @@ export class MainMenu extends BaElement {
 	_getContentPanel(index) {
 		//Todo: can be removed when all content panels are real components
 		switch (index) {
-			case MainMenuTabIndex.TOPICS:
-				return this._demoTopicsContent();
 			case MainMenuTabIndex.MAPS:
 				return this._demoMapContent();
 			case MainMenuTabIndex.MORE:
 				return this._demoMoreContent();
 			case MainMenuTabIndex.SEARCH:
+			case MainMenuTabIndex.TOPICS:
 				return html`${renderTagOf(index.component)}`;
 			default:
 				return nothing;
@@ -160,7 +160,7 @@ export class MainMenu extends BaElement {
 		</span>
 	</li>		
 		<li  class="ba-list-item">
-		<span class="ba-list-item__text verticla-center">
+		<span class="ba-list-item__text vertical-center">
 		<span class="ba-list-item__primary-text">
 		Lorem ipsum dolor
 		</span>              
@@ -226,7 +226,7 @@ export class MainMenu extends BaElement {
 				<span class="ba-list-item__icon">
 				</span>
 			</span>
-			<span class="ba-list-item__text verticla-center">
+			<span class="ba-list-item__text vertical-center">
 				<span class="ba-list-item__primary-text">
 				Lorem ipsum dolor
 				</span>              
