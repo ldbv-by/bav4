@@ -3,6 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { EventLike } from '../../../../../src/utils/storeUtils';
+import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 
@@ -51,6 +52,16 @@ describe('MeasureToolContent', () => {
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractToolContent', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractToolContent).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 

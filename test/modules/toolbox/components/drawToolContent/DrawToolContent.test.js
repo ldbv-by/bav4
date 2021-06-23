@@ -1,6 +1,7 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
+import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
@@ -29,6 +30,16 @@ describe('DrawToolContent', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key });			
 		return TestUtils.render(DrawToolContent.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractToolContent', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractToolContent).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 
