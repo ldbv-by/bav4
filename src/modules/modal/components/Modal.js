@@ -8,6 +8,7 @@ import { $injector } from '../../../injection';
  * Global modal window element, to show information, which the user must interact with.
  * @class
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class Modal extends BaElement {
 
@@ -27,17 +28,18 @@ export class Modal extends BaElement {
 		if (visible) {
 			return html`
         		<style>${css}</style>
-				<div class='modal modal--active'>
-					<div class='modal-content'>
-						<div class='modal-header'>
-							<h4  class='modal-title'>${title}</h4>
-						</div>
-						<div class='modal-body'>${content}</div>
-						<div class='modal-footer'>
+				<div class='modal' @click="${closeModal}">
+    			</div>
+				<div class='test  is-active'>
+					<div class='modal__content'>
+						<div class='modal__header'>${title}</div>
+						<div class='modal__body'>${content}</div>
+						<div class='modal__footer'>
 						<ba-button id='modalclose' label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
 						</div>
 					</div>
-    			</div>`;
+				</div>
+				`;
 		}	
 		return nothing;	
 	}	
