@@ -164,12 +164,12 @@ export class Header extends BaElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openTopicsTab}">
+						<button class="${getActiveClass(0)}" title=${translate('header_header_topics_title')} @click="${openTopicsTab}">
 							<span>
 								${translate('header_header_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(1)}" title=${translate('header_header_maps_title')}  @click="${openMapLayerTab}">
 							<span>
 								${translate('header_header_maps_button')}
 							</span>
@@ -177,7 +177,7 @@ export class Header extends BaElement {
 							 	${layerCount}
 							</span>
 						</button>
-						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
+						<button class="${getActiveClass(2)}" title=${translate('header_header_more_title')}  @click="${openMoreTab}">
 							<span>
 								${translate('header_header_more_button')}
 							</span>
