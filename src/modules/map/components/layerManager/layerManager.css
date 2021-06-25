@@ -25,6 +25,7 @@ li {
 }
 
 .placeholder {
+    padding: 0.2em;
    /* border: 1px solid var(--header-background-color) */
 }
 .over {
