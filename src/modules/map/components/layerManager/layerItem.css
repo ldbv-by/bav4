@@ -1,100 +1,15 @@
-.layer {
-    text-decoration-color: var(--secondary-color);
-    /* background-color: var(--secondary-bg-color);  */
-    border-left: .3em solid var(--primary-bg-color); 
-}
-.layer:hover{
-    border-left: .3em solid var(--secondary-color); ;
-}
-
-.layer-content{
-    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s ease-out;    
-}
-.layer-content:hover{
-    /* box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
-    background: #f4f4f4; */
-}
-
-.is-dragabel{
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
-    background: #f4f4f4;
-}
-
-.layer-header{
-    display: flex;   
-    justify-content: space-between;
- }
- .layer-header > *{
-    padding-top: .8em;
-    padding-bottom: .8em;
- }
- .layer-header > *:first-child{
-    padding-left: 1.5em;
- }
- .layer-header > *:last-child{
-    padding-right: 1.5em;
-    padding-left: 1.5em;
-    cursor: pointer;
- }
-
-.layer-header__pre{  
-    display: flex;
-    margin: 0 1em 0 0;
-}
-
-.layer-header__text{  
-    flex-grow: 1;
-    cursor: handl;
-}
-
-.layer-body {
-    display: flex;   
-    height:0em;
-    overflow: hidden;
-    transition: all 0.2s ease-out;
-}
-
-.layer-body__after{
-    display: flex;
-    flex-grow: 1;
-
-    margin: 0 0 0 0em;
- }
-
-.layer-body__pre{  
-    width: 3.5em;
-    display: flex;
-    margin: 0 1em 0 0;
-}
-
-.layer-body__slider{  
-    /* padding-top:1em; */
-    /* flex-grow: 1; */
-    width:70%;
-}
-
-.slider-container{
-    margin-top:.3em;
-}
-
-.expand{
-    height:5em;
-}
-
 .layer-buttons{
-    padding-left:.5em;
-    width:100%;
+    display:flex;
+    justify-content:space-around;
+    width:50%;
 }
 
 .layer-buttons ba-icon{
-    background: var(--secondary-bg-color);
-    display: inline-block;
+    /* background: var(--secondary-bg-color);    */
     border-radius: 8em;
-    width: 2em;
-    height: 2em;
-    margin-left:.3em;
-    position: relative;
+    width: 2.5em;
+    height: 2.5em;
+    padding:.2em;
 }
 .layer-buttons ba-icon:hover{
     background:var(--header-button-bg-color);
@@ -109,38 +24,49 @@
     width: 10%;
 }
 
-.opacity-slider {
-    -webkit-appearance: none;
-    width: 100%;
-    margin: 0 .5em;
-    height: .4em;
-    border-radius: .2em;  
-    background: var(--primary-color);
-    outline: none;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-  }
-  
-  .opacity-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 1.2em;
-    height:  1.2em;
-    border-radius: .6em;
-    background: var(--primary-color);
-    cursor: pointer;
-  }
-  
-  .opacity-slider::-moz-range-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 1.2em;
-    height:  1.2em;
-    border-radius: .6em;
-    background: var(--primary-color);
-    cursor: pointer;
-  }
+ input[type="range"] {
+    --track-height: .3em;
+    --track-fill: 0%;
+    --thumb-size: 1.5em;
+    --thumb-offset: -.6em;
+    --thumb-highlight-size: 0px;
+    --primary-color-light: var(--primary-color-light);
 
-  .divider {
-    border-bottom: 1px solid var(--header-background-color);
- }
+    appearance: none;         
+    display: block;
+    inline-size: 100%;        
+    margin: 1em 0;            
+    background: transparent;  
+    outline-offset: 5px;      
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    appearance: none; 
+    block-size: var(--track-height);
+    border-radius: .5em;
+    background:
+      linear-gradient(
+        to right,
+        var(--primary-color) var(--track-fill),
+        var(--secondary-bg-color) 0%
+      );
+  }
+  input[type="range"]::-webkit-slider-thumb {
+      appearance: none; 
+      cursor: ew-resize; 
+      border: 3px solid var(--primary-bg-color);
+      block-size: var(--thumb-size);
+      inline-size: var(--thumb-size);
+      margin-top: var(--thumb-offset);
+      border-radius: 50%;
+      background: var(--primary-color) fixed;
+      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-light);
+      transition: box-shadow .1s ease;
+    }
+    
+    input[type="range"]:focus{
+        --thumb-highlight-size: 10px;
+    }
+
+    .ba-section:hover{
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) , 0 0px 4px rgba(0, 0, 0, 0.5); */
+     } 

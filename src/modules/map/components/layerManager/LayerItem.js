@@ -1,7 +1,5 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
-import contentPanelCss from '../../../menu/components/mainMenu/content/abstractContentPanel.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { modifyLayer, removeLayer } from './../../../../store/layers/layers.action';
@@ -9,6 +7,8 @@ import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
+import eyeSvg from './assets/eye.svg';
+import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 
 /**
  * private Element of LayerManager to render a layer state and its possible actions
@@ -17,7 +17,7 @@ import infoSvg from './assets/info.svg';
  * @author thiloSchlemmer
  * @author taulinger 
  */
-export class LayerItem extends BaElement {
+export class LayerItem extends AbstractContentPanel {
 
 	constructor() {
 		super();
@@ -26,6 +26,33 @@ export class LayerItem extends BaElement {
 		this._layer = { id: '', label: '', visible: true, collapsed: true, opacity: 1 };
 	}
 
+
+	/**
+	* @override
+	*/
+	onAfterRender(firsttime) {
+		if (firsttime) {
+			/* grab sliders on page */
+			const sliders = this._root.querySelectorAll('input[type="range"]');
+
+			/* take a slider element, return a percentage string for use in CSS */
+			const rangeToPercent = slider => {
+				const max = slider.getAttribute('max') || 100;
+				const percent = slider.value / max * 100;
+				return `${parseInt(percent)}%`;
+			};
+
+			/* on page load, set the fill amount */
+			sliders.forEach(slider => {
+				slider.style.setProperty('--track-fill', rangeToPercent(slider));
+
+				/* when a slider changes, update the fill prop */
+				slider.addEventListener('input', e => {
+					e.target.style.setProperty('--track-fill', rangeToPercent(e.target));
+				});
+			});
+		}
+	}
 
 	/**
 	 * @override
@@ -99,46 +126,42 @@ export class LayerItem extends BaElement {
 		};
 
 		const bodyCollapseClass = {
-			expand: !this._layer.collapsed
+			iscollapse: this._layer.collapsed
 		};
 
 
 		return html`
         <style>${css}</style>
-		<style>${contentPanelCss}</style>
-        <div class='layer'>
-		<div class='layer-content'>
-			<div class='layer-header'>
-				<span class='layer-header__pre'>
-					<ba-checkbox title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}>
-						<span  class='layer-header__text'>
-						${currentLabel}
-						</span>
-					</ba-checkbox>
-				</span>														
-				<span class='layer-header__after collapse-button' title="${getCollapseTitle()}" @click="${toggleCollapse}">
-					<i class='icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}'></i>
-				</span>   
-			</div>
-			<div class='layer-body  ${classMap(bodyCollapseClass)}'>	
-				<span class='layer-body__pre'>				
-				</span>		
-				<div class=' layer-buttons divider'> 
-					<div>
-						<ba-icon id='increase' icon='${arrowUpSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 title=${translate('map_layerManager_move_up')} @click=${increaseIndex}></ba-icon>					
-						<ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 title=${translate('map_layerManager_move_down')} @click=${decreaseIndex}></ba-icon>					
-						<ba-icon id='info' icon='${infoSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 ></ba-icon>					
-						<ba-icon id='remove' icon='${removeSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>					
-					</div>		
-					<div class='layer-body__slider'>						
-						${getSlider()}			
-					</div>		
-				</div>				
+        <div class='ba-section divider'>
+            <div class='ba-list-item'>          
+                <span  class='ba-list-item__text'>
+                    <ba-checkbox title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
+                </span>                                         
+                <button class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
+                    <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
+                </button>   
             </div>
-		</div>
+            <div class='collapse-content  ${classMap(bodyCollapseClass)}'>      
+                <div  class='ba-list-item'>     
+                <span class='ba-list-item__pre'>
+                    <ba-icon  icon='${eyeSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 ></ba-icon>
+                </span>
+                <span class='ba-list-item__text'>                                                                                               
+                
+                <span >
+                ${getSlider()}  
+                </span>                                             
+                </span>     
+                <div class='layer-buttons'>                     
+                <ba-icon id='increase' icon='${arrowUpSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_move_up')} @click=${increaseIndex}></ba-icon>                    
+                <ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
+                <ba-icon id='info' icon='${infoSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 ></ba-icon>                 
+                <ba-icon id='remove' icon='${removeSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>
+                </div>
+                </div>
+            </div>
         </div>`;
 	}
-	// <ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
 
 	static get tag() {
 		return 'ba-layer-item';
