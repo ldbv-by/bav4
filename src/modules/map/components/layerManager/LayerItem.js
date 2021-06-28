@@ -7,7 +7,6 @@ import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
-import eyeSvg from './assets/eye.svg';
 import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 
 /**
@@ -142,12 +141,8 @@ export class LayerItem extends AbstractContentPanel {
                 </button>   
             </div>
             <div class='collapse-content  ${classMap(bodyCollapseClass)}'>      
-                <div  class='ba-list-item'>     
-                <span class='ba-list-item__pre'>
-                    <ba-icon  icon='${eyeSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2 ></ba-icon>
-                </span>
-                <span class='ba-list-item__text'>                                                                                               
-                
+                <div  class='ba-list-item'>                
+                <span class='ba-list-item__text'>                                                                                                               
                 <span >
                 ${getSlider()}  
                 </span>                                             

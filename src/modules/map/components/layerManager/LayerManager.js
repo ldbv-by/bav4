@@ -59,7 +59,7 @@ export class LayerManager extends BaElement {
 	 */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = state;		
+		const { active } = state;
 		this._buildDraggableItems(active.filter(l => !l.constraints.hidden));
 
 		const isNeighbour = (index, otherIndex) => {
@@ -74,7 +74,7 @@ export class LayerManager extends BaElement {
 		};
 
 		const createPlaceholderElement = (layerItem) => {
-			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'>							
+			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'>
 						</div>`;
 		};
 
@@ -82,10 +82,17 @@ export class LayerManager extends BaElement {
 			this._draggedItem = layerItem;
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
+			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => {
+				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
+				if (!isNeighbour(listIndex, layerItem.listIndex)) {
+					p.classList.add('placeholder-active');
+				}
+			});
 		};
 
 		const onDragEnd = (e) => {
 			e.preventDefault();
+			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => p.classList.remove('placeholder-active'));
 		};
 
 		const onDrop = (e, layerItem) => {
