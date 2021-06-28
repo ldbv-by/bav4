@@ -27,9 +27,9 @@
     background: var(--secondary-bg-color);
 }
 
-input{
+input[type=text]{
     background: var(--primary-bg-color);
-    border: 2px solid var(--primary-color-theme);    
+    border: 1px solid var(--color);    
     border-radius: var(--border-radius-button);
     overflow: hidden;
     font-size: 1.25rem;
@@ -38,7 +38,10 @@ input{
     background: var(--primary-bg-color);
     color: var(--color);
 }
+input[type=text]:focus{
+    border: 1px solid var(--primary-color-theme);   
+}
 input[readonly]{
-    border: 2px solid var(--secondary-bg-color);    
-    background: var(--primary-bg-color);
+    border: 1px solid var(--secondary-bg-color);    
+    background: var(--secondary-bg-color);
 }
