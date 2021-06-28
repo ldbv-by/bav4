@@ -20,6 +20,7 @@ import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../store/layers/LayersPlugin';
 import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
+import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 
 
 $injector
@@ -42,6 +43,7 @@ $injector
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
 	.registerSingleton('LayersPlugin', new LayersPlugin())
 	.registerSingleton('PositionPlugin', new PositionPlugin())
+	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
