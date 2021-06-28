@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './layerItem.css';
+import contentPanelCss from '../../../menu/components/mainMenu/content/abstractContentPanel.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { modifyLayer, removeLayer } from './../../../../store/layers/layers.action';
@@ -104,18 +105,20 @@ export class LayerItem extends BaElement {
 
 		return html`
         <style>${css}</style>
+		<style>${contentPanelCss}</style>
         <div class='layer'>
 		<div class='layer-content'>
 			<div class='layer-header'>
 				<span class='layer-header__pre'>
-					<ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
-				</span>					
-				<span  class='layer-header__text'>
-					${currentLabel}
-				</span>											
-				<a class='layer-header__after collapse-button' title="${getCollapseTitle()}" @click="${toggleCollapse}">
-					<i class='icon chevron ${classMap(iconCollapseClass)}'></i>
-				</a>   
+					<ba-checkbox title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}>
+						<span  class='layer-header__text'>
+						${currentLabel}
+						</span>
+					</ba-checkbox>
+				</span>														
+				<span class='layer-header__after collapse-button' title="${getCollapseTitle()}" @click="${toggleCollapse}">
+					<i class='icon icon-rotate-90 chevron ${classMap(iconCollapseClass)}'></i>
+				</span>   
 			</div>
 			<div class='layer-body  ${classMap(bodyCollapseClass)}'>	
 				<span class='layer-body__pre'>				
@@ -135,6 +138,7 @@ export class LayerItem extends BaElement {
 		</div>
         </div>`;
 	}
+	// <ba-toggle title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}></ba-toggle>
 
 	static get tag() {
 		return 'ba-layer-item';
