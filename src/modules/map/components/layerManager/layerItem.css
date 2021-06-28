@@ -50,7 +50,32 @@
         var(--secondary-bg-color) 0%
       );
   }
+
+  input[type="range"]::-moz-range-track {
+    appearance: none; 
+    block-size: var(--track-height);
+    border-radius: .5em;
+    background:
+      linear-gradient(
+        to right,
+        var(--primary-color) var(--track-fill),
+        var(--secondary-bg-color) 0%
+      );
+  }
   input[type="range"]::-webkit-slider-thumb {
+      appearance: none; 
+      cursor: ew-resize; 
+      border: 3px solid var(--primary-bg-color);
+      block-size: var(--thumb-size);
+      inline-size: var(--thumb-size);
+      margin-top: var(--thumb-offset);
+      border-radius: 50%;
+      background: var(--primary-color) fixed;
+      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-light);
+      transition: box-shadow .1s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb {
       appearance: none; 
       cursor: ew-resize; 
       border: 3px solid var(--primary-bg-color);
