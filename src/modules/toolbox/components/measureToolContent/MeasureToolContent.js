@@ -1,19 +1,18 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
 import { openModal } from '../../../modal/store/modal.action';
-
-import css from './measureToolContent.css';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
+import css from './measureToolContent.css';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 /**
  * @class
  * @author thiloSchlemmer
  */
-export class MeasureToolContent extends BaElement {
+export class MeasureToolContent extends AbstractToolContent {
 
 	constructor() {
 		super();

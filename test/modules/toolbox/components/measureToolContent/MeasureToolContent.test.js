@@ -6,6 +6,7 @@ import { Checkbox } from '../../../../../src/modules/commons/components/checkbox
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
+import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -71,6 +72,16 @@ describe('MeasureToolContent', () => {
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractToolContent', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractToolContent).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 
