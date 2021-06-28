@@ -1,5 +1,5 @@
 /* Modal Content */
-.modal {
+.modal__background {
   position: fixed;
   z-index: var( --z-modal);
   top: 0;
@@ -10,56 +10,42 @@
   background-color: rgba(0,0,0,0.2); /* Black w/ opacity */
   transition: all 2s ease-in-out;
 }
-
-.is-active {
-  display:block;
-} 
-
-.test{
+.modal__container{
   display:flex;
   justify-content:center;
+  align-items: center;
+  position: absolute;
+  height:100%;
+  width:100%;
+  padding:0 1em;
 }
-
-.modal__content {  
-  margin: 1em;
+.modal {  
   z-index: calc(var(--z-modal) + 10);
-  position: fixed;
   background-color: var(--primary-bg-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  animation-name: animateIn;
+  animation-duration: 250ms;
+  animation-delay: calc(var(--animation-order) * 20ms);
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
 }
-.modal__header{
+.modal__title{
   padding: .8em 1.5em;
   font-weight: bold;
   border-bottom: 1px solid var(--header-background-color);
 }
-
-.modal__body{
+.modal__content{
   padding: .8em 1.5em;
   max-height: 60vh;
   overflow-y: auto;
 }
-
-  
-  /* Modal Footer */
-  .modal__footer {
+  .modal__actions {
     padding: .8em 1.5em;
     font-weight: bold;
     border-top: 1px solid var(--header-background-color);  
     display:flex;
     justify-content: flex-end;
   }
-  
-
-  .is-active *{
-    animation-name: animateIn;
-    animation-duration: 250ms;
-    animation-delay: calc(var(--animation-order) * 20ms);
-    animation-fill-mode: both;
-    animation-timing-function: ease-in-out;
- }
- 
- 
-  
   @keyframes animateIn{
     0% {
       opacity: 0;

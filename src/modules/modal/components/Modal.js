@@ -28,14 +28,14 @@ export class Modal extends BaElement {
 		if (visible) {
 			return html`
         		<style>${css}</style>
-				<div class='modal' @click="${closeModal}">
+				<div class='modal__background' @click="${closeModal}">
     			</div>
-				<div class='test  is-active'>
-					<div class='modal__content'>
-						<div class='modal__header'>${title}</div>
-						<div class='modal__body'>${content}</div>
-						<div class='modal__footer'>
-						<ba-button id='modalclose' label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
+				<div class='modal__container  is-active'>
+					<div class='modal'>
+						<div class='modal__title'>${title}</div>
+						<div class='modal__content'>${content}</div>
+						<div class='modal__actions'>
+							<ba-button  label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
 						</div>
 					</div>
 				</div>
