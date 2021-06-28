@@ -1,6 +1,5 @@
 import { $injector } from '../../../../../../../src/injection';
-import { addLayer } from '../../../../../../../src/store/layers/layers.action';
-import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
+import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
@@ -17,12 +16,12 @@ describe('GeoResourceResultItem', () => {
 
 
 	let store;
-	const setup = (portraitOrientation = false) => {
+	const setup = (portraitOrientation = false, state = {}) => {
 
 		spyOn(windowMock, 'matchMedia')
 			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(portraitOrientation));
 
-		store = TestUtils.setupStoreAndDi({}, {
+		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			mainMenu: mainMenuReducer,
 		});
@@ -32,14 +31,12 @@ describe('GeoResourceResultItem', () => {
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
 
-	describe('methods', () => {
+	describe('static methods', () => {
 
 		it('generates an id for a temporary layer', async () => {
-			const element = await setup();
 
-			expect(element._tmpLayerId('foo')).toBe('tmp_GeoResourceResultItem_foo');
+			expect(GeoResourceResultItem._tmpLayerId('foo')).toBe('tmp_GeoResourceResultItem_foo');
 		});
-
 	});
 
 	describe('when initialized', () => {
@@ -74,7 +71,7 @@ describe('GeoResourceResultItem', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe(element._tmpLayerId(id));
+				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(id));
 			});
 		});
 
@@ -82,12 +79,14 @@ describe('GeoResourceResultItem', () => {
 
 			it('removes the preview layer', async () => {
 				const id = 'id';
+				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup();
+				const element = await setup(false, {
+					layers: {
+						active: [previewLayer]
+					}
+				});
 				element.data = data;
-				addLayer(element._tmpLayerId(id));
-
-				expect(store.getState().layers.active.length).toBe(1);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
@@ -100,21 +99,26 @@ describe('GeoResourceResultItem', () => {
 
 			const id = 'id';
 
-			const setUpOnClickTests = async (portraitOrientation) => {
-				
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup(portraitOrientation);
-				element.data = data;
-				addLayer(element._tmpLayerId(id));
+			const setupOnClickTests = async (portraitOrientation) => {
 
-				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().mainMenu.tabIndex).toBe(0);
-				expect(store.getState().mainMenu.open).toBeTrue();
+				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
+				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
+				const element = await setup(portraitOrientation, {
+					layers: {
+						active: [previewLayer]
+					},
+					mainMenu:{
+						tabIndex: MainMenuTabIndex.SEARCH.id,
+						open: true
+					}
+				});
+				element.data = data;
+
 				return element;
 			};
 
 			it('removes the preview layer and adds the real layer', async () => {
-				const element = await setUpOnClickTests();
+				const element = await setupOnClickTests();
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
@@ -124,7 +128,7 @@ describe('GeoResourceResultItem', () => {
 			});
 
 			it('opens the "maps" tab of the main menu in landscape orientation', async () => {
-				const element = await setUpOnClickTests(false);
+				const element = await setupOnClickTests(false);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
@@ -134,12 +138,11 @@ describe('GeoResourceResultItem', () => {
 			});
 
 			it('closes the main menu in portrait orientation', async () => {
-				const element = await setUpOnClickTests(true);
+				const element = await setupOnClickTests(true);
 
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(0);
 				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});

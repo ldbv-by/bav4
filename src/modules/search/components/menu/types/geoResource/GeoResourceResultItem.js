@@ -4,7 +4,7 @@ import { $injector } from '../../../../../../injection';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { MainMenuTabIndex } from '../../../../../menu/components/mainMenu/MainMenu';
-import { close, setTabIndex } from '../../../../../menu/store/mainMenu.action';
+import { close as closeMainMenu, setTabIndex } from '../../../../../menu/store/mainMenu.action';
 import itemCss from '../item.css';
 import css from './geoResourceResultItem.css';
 
@@ -51,8 +51,8 @@ export class GeoResourceResultItem extends BaElement {
 		this.render();
 	}
 
-	_tmpLayerId(id) {
-		return `tmp_${this.constructor.name}_${id}`;
+	static _tmpLayerId(id) {
+		return `tmp_${GeoResourceResultItem.name}_${id}`;
 	}
 
 	createView() {
@@ -62,21 +62,21 @@ export class GeoResourceResultItem extends BaElement {
 		 */
 		const onMouseEnter = (result) => {
 			//add a preview layer
-			addLayer(this._tmpLayerId(result.id), { label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
+			addLayer(GeoResourceResultItem._tmpLayerId(result.id), { label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
-			removeLayer(this._tmpLayerId(result.id));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
 		};
 		const onClick = (result) => {
 			//remove the preview layer
-			removeLayer(this._tmpLayerId(result.id));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
 			//add the "real" layer 
 			addLayer(result.id, { label: result.label });
 			
 			if (this._portrait) {
 				//close the main menu
-				close();
+				closeMainMenu();
 			}
 			else {
 				//switch to "maps" tab in main menu
