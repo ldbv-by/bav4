@@ -4,9 +4,6 @@
 
     --primary-color: #099dda;
     --secondary-color: #2c5a92;
-
-    --error-color: #900603;
-
     --icon-default-color: gray;
     --text-default-color: #fff;
 
@@ -24,7 +21,24 @@
 
     --width-mainmenu: 28em;
     --animationtime-mainmenu: 0.3s;
+
+
+    --primary-color: #099dda;
+    --primary-color-light: #099DDA66;
+    --primary-color-dark: #006da8;
+    --primary-color-complementary: #da4809;
+    
+    --secondary-color: #2c5a92;
+    --secondary-color-light: #6087c3;
+    --secondary-color-dark: #003164;
+    --secondary-color-complementary: #92642c;
+
+    --error-color: #ce3967;
+    --warning-color: #e84f0e;
+    --info-color: #30a1aa;
+    --sucess-color: #00a26f;
 }
+
 @media (min-width:135em){
     :root {
     font-size: 1em;
@@ -64,8 +78,6 @@
     --map-button-bg-color: var(--primary-bg-color);
     --map-button-color: var(--primary-color);
     
-    
-
     --header-button-bg-color:  var(--secondary-color);
     --header-button-color: var(--primary-bg-color);
     --header-background-color:#23374d;
@@ -100,3 +112,4 @@
   }
 
   
+

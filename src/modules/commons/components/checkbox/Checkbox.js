@@ -19,6 +19,7 @@ import css from './checkbox.css';
  * 
  * @class
  * @author alsturm
+ * @author taulinger
  */
 export class Checkbox extends BaElement {
 
@@ -31,7 +32,21 @@ export class Checkbox extends BaElement {
 		this._onToggle = () => { };
 		this._checked = this.getAttribute('checked') === 'true';
 		this._disabled = this.getAttribute('disabled') === 'true';
-		this.title = this.getAttribute('title') || '';
+		this._title = this.getAttribute('title') || '';
+
+		this.addEventListener('click', (event) => {
+			this._click();
+			event.stopPropagation();
+		});
+
+		this.addEventListener('keydown', (event) => {
+			//handle Enter and Space events
+			if (event.key === 'Enter' || event.key === ' ') {
+				this._click();
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
 	}
 
 	/**
@@ -51,7 +66,7 @@ export class Checkbox extends BaElement {
 		return html`
         <style>${css}</style>
 		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} .checked=${this._checked} />
-		<label title='${this._title}' class="ba-checkbox" for="cbx" >
+		<label title='${this._title}' class="ba-checkbox" >
 		  		<span>
 			  	<svg width="100%" height="100%" viewbox="0 0 12 9">
 					<polyline points="1 5 4 8 11 1"></polyline>
@@ -72,12 +87,8 @@ export class Checkbox extends BaElement {
 		return ['disabled', 'checked', 'title'];
 	}
 
-	/**
-	 * Mainly for testing purposes.<br>
-	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
-	 */
-	click() {
-		this._root.querySelector('label').click();
+	_click() {
+		this._root.querySelector('#cbx').click();
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
