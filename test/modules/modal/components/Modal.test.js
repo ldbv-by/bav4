@@ -60,7 +60,7 @@ describe('Modal', () => {
 
 			openModal(modalContent);
 
-			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe('foo');		
+			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('foo');		
 		});
 		
 		it('adds no title to modal', () => {
@@ -68,14 +68,14 @@ describe('Modal', () => {
 
 			openModal(modalContent);
 
-			expect(element.shadowRoot.querySelector('.modal-title').innerText).toBe('');		
+			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('');		
 		});
 		
 		it('resets modal to default after close-action', () => {
 			const modalContent = { title:'foo', content: html `<p class="bar">bar<p/>` };
 
 			openModal(modalContent);
-			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText === 'foo';
+			const hadTitle = element.shadowRoot.querySelector('.modal__title').innerText === 'foo';
 			const hadContent = element.shadowRoot.querySelector('.bar').innerText === 'bar';
 
 			closeModal();
@@ -90,7 +90,7 @@ describe('Modal', () => {
 			const modalContent = { title: 'foo', content: html `<p class="bar">bar<p/>` };
 
 			openModal(modalContent);			
-			const hadTitle = element.shadowRoot.querySelector('.modal-title').innerText === 'foo';
+			const hadTitle = element.shadowRoot.querySelector('.modal__title').innerText === 'foo';
 			const hadContent = element.shadowRoot.querySelector('.bar').innerText === 'bar';
 
 			const closeBtn = element.shadowRoot.querySelector('ba-button');
