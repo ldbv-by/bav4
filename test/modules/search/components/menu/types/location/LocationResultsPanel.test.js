@@ -120,77 +120,77 @@ describe('LocationResultsPanel', () => {
 		});
 	});
 
-	describe('when collaps clicked', () => {
+	describe('collaps button of item list', () => {
 
-		it('with items', async () => {
-			const query = 'foo';
-			const initialState = {
-				search: {
-					query: new EventLike(query)
-				}
-			};
-			const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
-				.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+		describe('when items are available', () => {
 
-			const element = await setup(initialState);
+			it('toggles the list of item', async () => {
+				const query = 'foo';
+				const initialState = {
+					search: {
+						query: new EventLike(query)
+					}
+				};
+				const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
+					.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
 
-			//internally uses debounce
-			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
+				const element = await setup(initialState);
 
-			//wait for elements
-			window.requestAnimationFrame(() => {
-				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				//internally uses debounce
+				jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
 
-				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');      
+				//wait for elements
+				window.requestAnimationFrame(() => {
+					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+					expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-								
-				collapseButton.click();			
-				
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+					const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
 
-				collapseButton.click();			
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+					collapseButton.click();
 
-				expect(getLocationSearchResultProvider).toHaveBeenCalled();
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+
+					collapseButton.click();
+
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+
+					expect(getLocationSearchResultProvider).toHaveBeenCalled();
+				});
 			});
 		});
-		it('without items', async () => {
-			const element = await setup();
 
-			//internally uses debounce
-			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
+		describe('items are NOT available', () => {
 
-			//wait for elements
-			window.requestAnimationFrame(() => {
+			it('disables the collapse button', async () => {
+				const element = await setup();
 
-				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+				//internally uses debounce
+				jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
 
-				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');      
+				//wait for elements
+				window.requestAnimationFrame(() => {
 
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-								
-				collapseButton.click();			
-				
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 
-				collapseButton.click();			
+					const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
 
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
+					collapseButton.click();
+
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				});
 			});
 		});
 	});
-
 });
