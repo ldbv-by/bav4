@@ -1,10 +1,12 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
+import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
 
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
 
 describe('ShareToolContent', () => {
+	let store;
 
 	const urlServiceMock = {
 		shorten() {} 
@@ -20,13 +22,9 @@ describe('ShareToolContent', () => {
 		const { embed = false, windowMock = { navigator: { }, open() {} } } = config;
 
 		const state = {
-			toolContainer: {
-				open: false,
-				contentId:false
-			}
 		};
 
-		TestUtils.setupStoreAndDi(state, {} );
+		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer } );
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -49,10 +47,10 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(2);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).not.toContain('toolbox_shareTool_share');
 
-			expect(element.shadowRoot.querySelector('.tool-container__input')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons-secondary')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();			
 		});
 
 		it('renders UI elements with share api button', async() => {
@@ -66,26 +64,11 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
 
-			expect(element.shadowRoot.querySelector('.tool-container__input')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();			
 			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons-secondary')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
 		});
-
-		// it('shows shortened url', async() => {
-		// 	const mockUrl = 'https://some.url';
-		// 	const mockShortUrl = 'https://short/url';
-
-		// 	const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-		// 	const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
-
-		// 	const element = await setup();
-
-		// 	expect(element.shadowRoot.querySelector('.url-input').value).toEqual(mockShortUrl);
-
-		// 	expect(shareServiceSpy).toHaveBeenCalled();
-		// 	expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
-		// });
 
 		it('opens window on mail and qr button click', async(done) => {
 			const mockUrl = 'https://some.url';
@@ -126,7 +109,51 @@ describe('ShareToolContent', () => {
 			});			
 		});
 
-		it('disables buttons if no short url available', async(done) => {
+		it('opens modal on button click', async(done) => {
+			const mockUrl = 'https://some.url';
+			const mockShortUrl = 'https://short/url';
+
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();			
+
+			element.shadowRoot.querySelector('.modal_button').click();
+			
+			setTimeout(() => {
+				expect(shareServiceSpy).toHaveBeenCalled();
+				expect(urlServiceSpy).toHaveBeenCalledWith(mockUrl);
+				expect(store.getState().modal.title).toBe('toolbox_shareTool_share');				
+				done();
+			});		
+		});
+
+		it('logs warn statement if short url could not be generated after generate link button click', async(done) => {
+			const mockUrl = 'https://some.url';
+			const mockErrorMsg = 'something got wrong';
+
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(Promise.reject(new Error(mockErrorMsg)));
+			const warnSpy = spyOn(console, 'warn');
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();			
+
+			element.shadowRoot.querySelector('.modal_button').click();
+			
+			setTimeout(() => {
+				expect(shareServiceSpy).toHaveBeenCalled();
+				expect(urlServiceSpy).toHaveBeenCalledWith(mockUrl);
+				expect(warnSpy).toHaveBeenCalledWith(mockErrorMsg);
+				expect(store.getState().modal.title).not.toBe('toolbox_shareTool_share');				
+				done();
+			});		
+		});
+
+		it('disables share buttons if no short url available', async(done) => {
 			const mockUrl = 'https://some.url';
 			const windowMock = {
 				matchMedia() { },
@@ -230,66 +257,6 @@ describe('ShareToolContent', () => {
 
 			expect(shareServiceSpy).toHaveBeenCalled();
 			expect(urlServiceSpy).toHaveBeenCalledWith(mockUrl);
-		});
-
-		// it('shows no url on Promise reject', async() => {
-		// 	const mockUrl = 'https://some.url';
-
-		// 	const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-		// 	const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(Promise.reject(new Error('something got wrong')));
-
-		// 	const element = await setup();
-
-		// 		expect(element.shadowRoot.querySelector('.url-input').value).toEqual('');
-		// 		done();
-
-		// 	expect(shareServiceSpy).toHaveBeenCalled();
-		// 	expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
-		// });
-
-		// it('copies short url to clipboard', async () => {
-		// 	const mockUrl = 'https://some.url';
-		// 	const mockShortUrl = 'https://short/url';
-
-		// 	const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-		// 	const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
-		// 	const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-
-		// 	const element = await setup();
-
-		// 	const copyIcon = element.shadowRoot.querySelector('ba-icon');
-		// 	expect(copyIcon).toBeTruthy();
-
-		// 	copyIcon.click();
-
-		// 	expect(copyToClipboardMock).toHaveBeenCalledWith(mockShortUrl);
-		// 	expect(shareServiceSpy).toHaveBeenCalled();
-		// 	expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
-		// });
-
-		it('logs a warn statement when Clipboard API is not available', async (done) => {
-			const mockUrl = 'https://some.url';
-			const mockShortUrl = 'https://short/url';
-
-			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(mockUrl);
-			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(mockUrl).and.returnValue(mockShortUrl);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			const warnSpy = spyOn(console, 'warn');
-
-			const element = await setup();
-
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
-			expect(copyIcon).toBeTruthy();
-			copyIcon.click();
-
-			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('something got wrong');
-				expect(copyToClipboardMock).toHaveBeenCalledWith(mockShortUrl);
-				done();
-			});
-
-			expect(shareServiceSpy).toHaveBeenCalled();
-			expect(urlServiceSpy).toHaveBeenCalledOnceWith(mockUrl);
 		});
 
 		it('enables preview button on checkbox click', async () => {

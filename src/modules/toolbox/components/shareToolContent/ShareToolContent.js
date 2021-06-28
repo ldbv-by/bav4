@@ -3,7 +3,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
-import clipboardIcon from './assets/clipboard.svg';
+import { openModal } from '../../../modal/store/modal.action';
 
 
 /**
@@ -79,17 +79,20 @@ export class ShareToolContent extends BaElement {
 			else {
 				this._root.querySelector('.preview_button').classList.remove('disabled-preview');
 			} 			
-		};		
+		};	
+		
 
-		const copyCoordinate = async () => {
+		const onClick = async () => {
 			try {
 				const shortUrl = await this._generateShortUrl();
-				await this._shareService.copyToClipboard(shortUrl);
+				const title = translate('toolbox_shareTool_share');
+				const payload = { title: title, content: html`<span>${shortUrl}</span>` };
+				openModal(payload);
 			}
 			catch (e) {
 				console.warn(e.message);
-			} 
-		};
+			}  
+		}; 
 				
 		const toolTemplate = (tool) => {
 			if (!tool.available) {
@@ -182,8 +185,10 @@ export class ShareToolContent extends BaElement {
 						<div class="tool-container__buttons">                                    
 							${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
 						</div>   
-					<div class="tool-container__input">
-						<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 tabindex='0'} @click=${copyCoordinate}></ba-icon></span>
+					<div class="tool-container__buttons-secondary" @click=${onClick}>                         						 
+						<button class='modal_button'>                            
+							${translate('toolbox_shareTool_button_modal')}
+						</button>
 					</div>            
 					<div class="tool-container__embed"> 
 						<span>
