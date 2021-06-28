@@ -10,7 +10,7 @@
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "css-loader": "^5.2.6",
     "dotenv-webpack": "^7.0.3",
-    "es-check": "^5.2.3",
+    "es-check": "^5.2.4",
     "eslint": "^7.29.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.23.4",
