@@ -91,8 +91,8 @@ background:red;
     -webkit-mask-image:url('assets/qrcode-solid.svg');
 }
 .share{
-    mask-image:  url('assets/share-square-solid.svg');
-    -webkit-mask-image:url('assets/share-square-solid.svg');
+    mask-image:  url('assets/share.svg');
+    -webkit-mask-image:url('assets/share.svg');
 }
 
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__background{
