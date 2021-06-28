@@ -30,7 +30,7 @@ export class Modal extends BaElement {
         		<style>${css}</style>
 				<div class='modal__background' @click="${closeModal}">
     			</div>
-				<div class='modal__container  is-active'>
+				<div class='modal__container'>
 					<div class='modal'>
 						<div class='modal__title'>${title}</div>
 						<div class='modal__content'>${content}</div>
