@@ -4,7 +4,6 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import clipboardIcon from './assets/clipboard.svg';
-import { classMap } from 'lit-html/directives/class-map.js';
 
 
 /**
@@ -22,7 +21,6 @@ export class ShareToolContent extends BaElement {
 		this._shareService = shareService;
 		this._environmentService = environmentService;
 		this._window = this._environmentService.getWindow();
-		this._shortUrl = this._generateShortUrl();
 		this._tools = this._buildTools();
 	}
 
@@ -62,16 +60,9 @@ export class ShareToolContent extends BaElement {
 	/**
 	 *@private 
 	 */
-	async _generateShortUrl () {
-		try {
-			const url = this._shareService.encodeState();
-			this._shortUrl = await this._urlService.shorten(url);
-		}
-		catch (e) {
-			this._shortUrl = '';
-			console.warn(e);
-		} 
-		this.render();
+	_generateShortUrl () {
+		const url = this._shareService.encodeState();
+		return this._urlService.shorten(url);
 	}
 
 	/**
@@ -92,7 +83,8 @@ export class ShareToolContent extends BaElement {
 
 		const copyCoordinate = async () => {
 			try {
-				await this._shareService.copyToClipboard(this._shortUrl);
+				const shortUrl = await this._generateShortUrl();
+				await this._shareService.copyToClipboard(shortUrl);
 			}
 			catch (e) {
 				console.warn(e.message);
@@ -103,24 +95,43 @@ export class ShareToolContent extends BaElement {
 			if (!tool.available) {
 				return;
 			}
-			
-			const isDisabled = this._shortUrl === '';
 
-			const classes = {
-				disabled_tool__button: isDisabled,
-			};
-
-			const activateShare = async () => {
-				const shareData = {
-					title: translate('toolbox_shareTool_title'),
-					url: this._shortUrl,
-				};
-
+			const activateShareApi = async () => {
 				try {
+					const shortUrl = await this._generateShortUrl();
+					
+					if (shortUrl === '') {
+						this._root.getElementById(tool.name).classList.add('disabled_tool__button');
+						throw new Error('URL is not available');
+					} 
+
+					const shareData = {
+						title: translate('toolbox_shareTool_title'),
+						url: shortUrl,
+					};
+
 					await this._window.navigator.share(shareData);
+
 				}
 				catch (e) {
 					console.warn('Share API not available: ' + e);
+				} 
+			};
+			
+			const shareContent = async () => {
+				try {
+					const shortUrl = await this._generateShortUrl();
+
+					if (shortUrl === '') {
+						this._root.getElementById(tool.name).classList.add('disabled_tool__button');
+						throw new Error('URL is not available');
+					} 
+
+					this._window.open(tool.href + shortUrl);
+					
+				}
+				catch (e) {
+					console.warn('Could not share content: ' + e.message);
 				} 
 			}; 
 
@@ -132,40 +143,31 @@ export class ShareToolContent extends BaElement {
 				`;
 
 			return html`
-            <div id=${tool.name}
-                class="tool-container__button ${classMap(classes)}" 
-                title=${tool.title}>
-				${tool.name === 'share-api' 
+			${tool.name === 'share-api' 
 		? html`
-						${isDisabled 
-		? html`
-						<a role="button" tabindex="0">
-							${buttonContent}
-						</a>` 
+				<div 
+					id=${tool.name}
+					class="tool-container__button" 
+					title=${tool.title}
+					role="button" 
+					tabindex="0" 
+					@click="${activateShareApi}" 
+					target="_blank"
+					> 
+					${buttonContent}
+				</div>` 
 		: html`
-						<a role="button" tabindex="0" target="_blank" @click=${activateShare}>
-							${buttonContent}
-						</a>`
-} 						 
-							
-					` 
-		: html `
-						${isDisabled 
-		? html`
-							<a role="button" tabindex="0"> 
-								${buttonContent}
-							</a>
-							` 
-		: html`
-							<a role="button" tabindex="0" href=${tool.href + this._shortUrl} target="_blank">
-								${buttonContent} 
-							</a> 
-							`
-} 
-					`
-} 				
-            </div>
-            `;
+				<div 
+					id=${tool.name}
+					class="tool-container__button" 
+					title=${tool.title}
+					role="button" tabindex="0" 
+					@click=${shareContent}
+					target="_blank"
+					> 
+					${buttonContent}
+				</div>`
+}`;					 
 		};
 
 		return html`
@@ -182,7 +184,6 @@ export class ShareToolContent extends BaElement {
 						</div>   
 					<div class="tool-container__input">
 						<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 tabindex='0'} @click=${copyCoordinate}></ba-icon></span>
-						<input class="url-input" readonly='readonly' value=${this._shortUrl}></input>	
 					</div>            
 					<div class="tool-container__embed"> 
 						<span>
