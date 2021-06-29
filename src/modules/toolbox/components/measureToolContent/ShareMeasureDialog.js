@@ -60,11 +60,11 @@ export class ShareMeasureDialog extends BaElement {
 
 		return html`
         <div class='share_item'>
+			<div class='share_label'>${label}</div>			
 			<div class='link'>
-            	<span class share_label>${label}</span>			
-            	<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
-			</div>            
-			${shareApiContent}
+				<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							           
+				${shareApiContent}
+			</div>
         </div>
     `;
 	}
