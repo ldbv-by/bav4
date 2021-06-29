@@ -101,6 +101,7 @@ describe('LocationResultItem', () => {
 
 		describe('on click', () => {
 
+			const previousCoordinate = [1, 2];
 			const coordinate = [21, 42];
 			const extent = [0, 1, 2, 3];
 			const id = 'id';
@@ -110,10 +111,10 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate, extent);
 				const element = await setup(portraitOrientation, {
 					highlight: {
-						feature: null,
-						temporaryFeature: { data: coordinate }
+						feature: { data: coordinate },
+						temporaryFeature: { data: previousCoordinate }
 					},
-					mainMenu:{
+					mainMenu: {
 						open: true
 					}
 				});
@@ -121,46 +122,54 @@ describe('LocationResultItem', () => {
 				return element;
 			};
 
-			it('removes the temporary highlight feature and set the permanent highlight feature', async () => {
-				const element = await setupOnClickTests();
 
-				const target = element.shadowRoot.querySelector('li');
-				target.click();
+			describe('result has NO extent', () => {
 
-				expect(store.getState().highlight.temporaryFeature).toBeNull();
-				expect(store.getState().highlight.feature.data).toEqual(coordinate);
-			});
+				it('removes the temporary highlight feature and set the permanent highlight feature', async () => {
+					const element = await setupOnClickTests();
+	
+					const target = element.shadowRoot.querySelector('li');
+					target.click();
+	
+					expect(store.getState().highlight.temporaryFeature).toBeNull();
+					expect(store.getState().highlight.feature.data).toEqual(coordinate);
+				});
 
-			it('removes the temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
+				it('fits the map by a coordinate', async () => {
+					const element = await setupOnClickTests();
+
+					const target = element.shadowRoot.querySelector('li');
+					target.click();
+
+					expect(store.getState().position.fitRequest.payload.extent).toEqual([...coordinate, ...coordinate]);
+					expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
+				});
 
 				
-				const element = await setupOnClickTests(false, extent);
-
-				const target = element.shadowRoot.querySelector('li');
-				target.click();
-
-				expect(store.getState().highlight.temporaryFeature).toBeNull();
-				expect(store.getState().highlight.feature).toBeNull();
 			});
 
-			it('fits the map to an extent for a coordinate', async () => {
-				const element = await setupOnClickTests();
+			describe('result has an extent', () => {
 
-				const target = element.shadowRoot.querySelector('li');
-				target.click();
+				it('removes the temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
+					const element = await setupOnClickTests(false, extent);
+	
+					const target = element.shadowRoot.querySelector('li');
+					target.click();
+	
+					expect(store.getState().highlight.temporaryFeature).toBeNull();
+					expect(store.getState().highlight.feature).toBeNull();
+				});
 
-				expect(store.getState().position.fitRequest.payload.extent).toEqual([...coordinate, ...coordinate]);
-				expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
-			});
+				it('fits the map by an extent', async () => {
+					const element = await setupOnClickTests(false, extent);
 
-			it('fits the map to an extent for an extent', async () => {
-				const element = await setupOnClickTests(false, extent);
+					const target = element.shadowRoot.querySelector('li');
+					target.click();
 
-				const target = element.shadowRoot.querySelector('li');
-				target.click();
+					expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
+					expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
+				});
 
-				expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
-				expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
 			});
 
 			it('closes the main menu in portrait orientation', async () => {

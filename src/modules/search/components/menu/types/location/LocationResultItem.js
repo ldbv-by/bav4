@@ -6,7 +6,7 @@ import itemCss from '../item.css';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../menu/store/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
-import { removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../store/highlight/highlight.action';
+import { removeHighlightFeature, removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../store/highlight/highlight.action';
 
 
 
@@ -73,6 +73,9 @@ export class LocationResultItem extends BaElement {
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
 				setHighlightFeature({ data: [...result.center] });
+			}
+			else {
+				removeHighlightFeature();
 			}
 
 			if (this._portrait) {
