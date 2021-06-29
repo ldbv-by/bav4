@@ -100,6 +100,11 @@ export class ShowCase extends BaElement {
 			<hr>
 			<h3>Specific components</h3>
 			<p>Theme-Toggle</p>
+			<p>
+			<input placeholder='test' type="text"/>
+			<input placeholder='test' type="text" readonly/>
+			
+			</p>
 			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
 			<p>Measure Distance</p>
 			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
