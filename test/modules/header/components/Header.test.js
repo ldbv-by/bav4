@@ -141,13 +141,13 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
-			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_header_topics_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
 
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_header_maps_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_tab_maps_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
 
-			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_header_more_button');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_more_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
 

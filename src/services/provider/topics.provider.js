@@ -24,7 +24,8 @@ export const loadBvvTopics = async () => {
 				definition.baseGeoRs, 
 				definition.defaultBaseGeoR, 
 				definition.activatedGeoRs, 
-				definition.selectedGeoRs);
+				definition.selectedGeoRs,
+				definition.style);
 			//at least the id, label, description and baseLayers properties should be set
 			if (topic.id && topic.label && topic.description && topic.baseGeoRs) { 
 				topics.push(topic);
