@@ -45,8 +45,9 @@ const getStore = () => {
 };
 
 /**
- * Sets th {@link HightlightFeature}.
- * @param {HightlightFeature} feature 
+ * Sets the {@link HightlightFeature}.
+ * @param {HightlightFeature} feature
+ * @function 
  */
 export const setHighlightFeature = (feature) => {
 	getStore().dispatch({
@@ -56,6 +57,7 @@ export const setHighlightFeature = (feature) => {
 };
 /**
  * Removes the {@link HightlightFeature}
+ * @function
  */
 export const removeHighlightFeature = () => {
 	getStore().dispatch({
@@ -67,6 +69,7 @@ export const removeHighlightFeature = () => {
 /**
  * Sets the secondary {@link HightlightFeature}.
  * @param {HightlightFeature} feature 
+ * @function
  */
 export const setTemporaryHighlightFeature = (feature) => {
 	getStore().dispatch({
@@ -77,6 +80,7 @@ export const setTemporaryHighlightFeature = (feature) => {
 
 /**
  * Removes the secondary {@link HightlightFeature}.
+ * @function
  */
 export const removeTemporaryHighlightFeature = () => {
 	getStore().dispatch({
@@ -86,7 +90,8 @@ export const removeTemporaryHighlightFeature = () => {
 };
 
 /**
- * Removes both the default {@link HightlightFeature} and the secondary {@link HightlightFeature} 
+ * Removes both the permanent and the secondary {@link HightlightFeature} 
+ * @function
  */
 export const clearHighlightFeatures = () => {
 	getStore().dispatch({
