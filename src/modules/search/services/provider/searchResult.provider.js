@@ -51,7 +51,7 @@ export const loadBvvLocationSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map(o => {
-			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.LOCATION, o.attrs.coordinate, o.attrs.extent);
+			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.LOCATION, o.attrs.coordinate, o.attrs.extent || null);
 		});
 		return data;
 	}
