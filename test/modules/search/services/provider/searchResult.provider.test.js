@@ -82,8 +82,7 @@ describe('SearchResult provider', () => {
 
 		const mockResponse = [
 			{ id: 'id0', attrs: { extent: [10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224], coordinate: [10.270116669125855, 48.44638557638974], label: '<b>Wasserburger</b> <b>Weg</b>, Günzburg' } },
-			{ id: 'id1', attrs: { extent: [], coordinate: [10.257489331997931, 48.436180253047496], label: '<b>Wasserburger</b> <b>Weg</b>, Bubesheim' } },
-			{ id: 'id2', attrs: { extent: [10.279701417312026, 48.409654651768506, 10.280982004478574, 48.4118413226679], coordinate: [10.2803417108953, 48.4107479872182], label: '<b>Wasserburger</b> <b>Weg</b>, Kötz - Großkötz' } }
+			{ id: 'id1', attrs: { coordinate: [10.257489331997931, 48.436180253047496], label: '<b>Wasserburger</b> <b>Weg</b>, Bubesheim' } }
 		];
 
 		it('loads SearchResults for locations', async () => {
@@ -103,7 +102,7 @@ describe('SearchResult provider', () => {
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(searchResults.length).toBe(3);
+			expect(searchResults.length).toBe(2);
 
 			const searchResult0 = searchResults[0];
 
@@ -116,7 +115,7 @@ describe('SearchResult provider', () => {
 
 			const searchResult1 = searchResults[1];
 			
-			expect(searchResult1.extent).toEqual([]);
+			expect(searchResult1.extent).toBeNull();
 		});
 
 
