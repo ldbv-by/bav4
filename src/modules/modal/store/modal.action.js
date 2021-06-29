@@ -11,13 +11,21 @@ const getStore = () => {
 };
 
 /**
+ * Data of the modal element
+ * @typedef {Object} ModalData
+ * @property {string} title The title of the modal element
+ * @property {TemplateResult|string} content The content of the modal element. Could either be a lit-html TemplateResult or a plain string
+ */
+
+/**
  * Opens the modal.
+ * @param {ModalData} ModalData 
  * @function
  */
-export const openModal = (payload) => {
+export const openModal = (data) => {
 	getStore().dispatch({
 		type: MODAL_CHANGED,
-		payload: payload
+		payload: data
 	});
 };
 
@@ -28,6 +36,6 @@ export const openModal = (payload) => {
 export const closeModal = () => {
 	getStore().dispatch({
 		type: MODAL_CHANGED,
-		payload: { title: false, content: false }
+		payload: null
 	});
 };

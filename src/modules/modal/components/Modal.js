@@ -5,10 +5,11 @@ import css from './modal.css';
 import { $injector } from '../../../injection';
 
 /**
- * Global modal window element, to show information, which the user must interact with.
+ * Modal dialog element.
  * @class
  * @author thiloSchlemmer
  * @author alsturm
+ * @author taulinger
  */
 export class Modal extends BaElement {
 
@@ -22,10 +23,11 @@ export class Modal extends BaElement {
 	 * @override
 	 */
 	createView(state) {
-		const { title, content, visible } = state;
+		const { active } = state;
 		const translate = (key) => this._translationService.translate(key);
 
-		if (visible) {
+		if (active) {
+			const { data: { title, content } } = state;
 			return html`
         		<style>${css}</style>
 				<div class='modal__background' @click="${closeModal}">
@@ -40,23 +42,23 @@ export class Modal extends BaElement {
 					</div>
 				</div>
 				`;
-		}	
-		return nothing;	
-	}	
+		}
+		return nothing;
+	}
 
-	
+
 	/**
- * @override
- * @param {Object} globalState 
- */
+	 * @override
+	 * @param {Object} globalState 
+	 */
 	extractState(globalState) {
-		const { modal: { title, content } } = globalState;
-		const visible = content;
-		return { title, content, visible };
+		const { modal: { data, active } } = globalState;
+		return { data, active };
 	}
 
 	static get tag() {
 		return 'ba-modal';
 	}
+
 
 }
