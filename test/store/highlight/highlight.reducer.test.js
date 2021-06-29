@@ -3,7 +3,7 @@ import { setHighlightFeature, removeHighlightFeature, setTemporaryHighlightFeatu
 import { TestUtils } from '../../test-utils.js';
 
 
-describe('geolocationReducer', () => {
+describe('highlightReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
