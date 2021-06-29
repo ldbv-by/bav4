@@ -86,7 +86,7 @@ export class ShareToolContent extends BaElement {
 			try {
 				const shortUrl = await this._generateShortUrl();
 				const title = translate('toolbox_shareTool_share');
-				const payload = { title: title, content: html`<span>${shortUrl}</span>` };
+				const payload = { title: title, content: html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>` };
 				openModal(payload);
 			}
 			catch (e) {

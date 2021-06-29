@@ -30,6 +30,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
 		expect(map.toolbox_shareTool_share).toBe('Teilen');
 		expect(map.toolbox_shareTool_button_modal).toBe('Link generieren');
+		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
@@ -66,6 +67,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
 		expect(map.toolbox_shareTool_share).toBe('Share');
 		expect(map.toolbox_shareTool_button_modal).toBe('Generate URL');
+		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
@@ -76,7 +78,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 30;
+		const expectedSize = 31;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
