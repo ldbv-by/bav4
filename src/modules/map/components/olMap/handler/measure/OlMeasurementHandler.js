@@ -473,7 +473,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
-					console.warn('Could not store content:', error.message);
+					console.warn('Could not store content:', error);
 				}
 			}
 			else {
@@ -482,7 +482,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
-					console.warn('Could not store content initially:', error.message);
+					console.warn('Could not store content initially:', error);
 				}
 			}
 		}
