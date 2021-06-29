@@ -195,7 +195,7 @@ describe('Header', () => {
 
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
-			expect(store.getState().modal.title).toBe('Showcase');
+			expect(store.getState().modal.data.title).toBe('Showcase');
 		});
 	});
 
