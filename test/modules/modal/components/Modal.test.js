@@ -2,7 +2,6 @@ import { Modal } from '../../../../src/modules/modal/components/Modal';
 import { closeModal, openModal } from '../../../../src/modules/modal/store/modal.action';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { $injector } from '../../../../src/injection';
-import { html } from 'lit-html';
 import { TestUtils } from '../../../test-utils';
 
 
@@ -28,44 +27,23 @@ describe('Modal', () => {
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
-
-		it('renders the content', async () => {
-			const data = { title: 'foo', content: html`<p class="bar">bar<p/>` };
-
-			const element = await setup({
-				modal: {
-					data: data,
-					active: true
-				}
-			});
-
-			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('foo');
-			expect(element.shadowRoot.querySelector('.bar').innerText).toBe('bar');
-		});
 	});
 
 	describe('when modal state changed', () => {
 
 		it('adds content to modal', async () => {
 			const element = await setup();
-			const data = { title: 'foo', content: html`<p class='bar'>bar<p/>` };
 
-			openModal(data);
+			openModal('title', 'content');
 
 			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('foo');
-			expect(element.shadowRoot.querySelector('.bar').innerText).toBe('bar');
+			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('title');
+			expect(element.shadowRoot.querySelector('.modal__content').innerText).toBe('content');
 		});
 
 		it('closes the modal', async () => {
-			const data = { title: 'foo', content: html`<p class="bar">bar<p/>` };
-			const element = await setup({
-				modal: {
-					data: data,
-					active: true
-				}
-			});
+			const element = await setup();
+			openModal('title', 'content');
 
 			closeModal();
 
@@ -75,13 +53,8 @@ describe('Modal', () => {
 		describe('when close button clicked', () => {
 
 			it('closes the modal', async () => {
-				const data = { title: 'foo', content: html`<p class="bar">bar<p/>` };
-				const element = await setup({
-					modal: {
-						data: data,
-						active: true
-					}
-				});
+				const element = await setup();
+				openModal('title', 'content');
 
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
 				closeBtn.click();
@@ -93,14 +66,8 @@ describe('Modal', () => {
 		describe('when background clicked', () => {
 
 			it('closes the modal', async () => {
-
-				const data = { title: 'foo', content: html`<p class="bar">bar<p/>` };
-				const element = await setup({
-					modal: {
-						data: data,
-						active: true
-					}
-				});
+				const element = await setup();
+				openModal('title', 'content');
 
 				const background = element.shadowRoot.querySelector('.modal__background');
 				background.click();

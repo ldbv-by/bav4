@@ -3,9 +3,10 @@ import { BaElement } from '../../BaElement';
 import { closeModal } from '../store/modal.action';
 import css from './modal.css';
 import { $injector } from '../../../injection';
+import { MODAL_CONTENT_ID } from '../store/modal.reducer';
 
 /**
- * Modal dialog element.
+ * Modal dialog container.
  * @class
  * @author thiloSchlemmer
  * @author alsturm
@@ -27,7 +28,8 @@ export class Modal extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		if (active) {
-			const { data: { title, content } } = state;
+			const { data: { title } } = state;
+			const content = document.getElementById(MODAL_CONTENT_ID);
 			return html`
         		<style>${css}</style>
 				<div class='modal__background' @click="${closeModal}">
@@ -59,6 +61,4 @@ export class Modal extends BaElement {
 	static get tag() {
 		return 'ba-modal';
 	}
-
-
 }
