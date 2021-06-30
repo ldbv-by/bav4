@@ -363,7 +363,8 @@ export const renderTagOf = (baElementClazz) => {
 };
 
 /**
- * Appends content to the document.
+ * Appends content to the document by creating a container element
+ * and inserting the (rendered) content.
  * @param {string|TemplateResult} content Could either be a plain `String`, a `TemplateString` or a lit-html `TemplateResult`
  * @param {string} id of the container of the content
  */
