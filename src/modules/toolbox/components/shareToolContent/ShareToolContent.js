@@ -60,9 +60,15 @@ export class ShareToolContent extends BaElement {
 	/**
 	 *@private 
 	 */
-	_generateShortUrl () {
+	async _generateShortUrl () {
 		const url = this._shareService.encodeState();
-		return this._urlService.shorten(url);
+		try {
+			return await this._urlService.shorten(url);
+		}
+		catch (e) {
+			console.warn('Could not shorten url: ' + e);
+			return url;
+		}
 	}
 
 	/**
@@ -83,15 +89,10 @@ export class ShareToolContent extends BaElement {
 		
 
 		const onClick = async () => {
-			try {
-				const shortUrl = await this._generateShortUrl();
-				const title = translate('toolbox_shareTool_share');
-				const payload = { title: title, content: html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>` };
-				openModal(payload);
-			}
-			catch (e) {
-				console.warn(e.message);
-			}  
+			const shortUrl = await this._generateShortUrl();
+			const title = translate('toolbox_shareTool_share');
+			const payload = { title: title, content: html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>` };
+			openModal(payload);
 		}; 
 				
 		const toolTemplate = (tool) => {
@@ -102,11 +103,6 @@ export class ShareToolContent extends BaElement {
 			const activateShareApi = async () => {
 				try {
 					const shortUrl = await this._generateShortUrl();
-					
-					if (shortUrl === '') {
-						this._root.getElementById(tool.name).classList.add('disabled_tool__button');
-						throw new Error('URL is not available');
-					} 
 
 					const shareData = {
 						title: translate('toolbox_shareTool_title'),
@@ -117,6 +113,7 @@ export class ShareToolContent extends BaElement {
 
 				}
 				catch (e) {
+					this._root.getElementById(tool.name).classList.add('disabled_tool__button');
 					console.warn('Share API not available: ' + e);
 				} 
 			};
@@ -125,16 +122,12 @@ export class ShareToolContent extends BaElement {
 				try {
 					const shortUrl = await this._generateShortUrl();
 
-					if (shortUrl === '') {
-						this._root.getElementById(tool.name).classList.add('disabled_tool__button');
-						throw new Error('URL is not available');
-					} 
-
-					this._window.open(tool.href + shortUrl);
-					
+					if (this._window.open(tool.href + shortUrl) === null)  {
+						throw new Error('Could not open window');
+					}					
 				}
 				catch (e) {
-					console.warn('Could not share content: ' + e.message);
+					console.warn('Could not share content: ' + e);
 				} 
 			}; 
 
