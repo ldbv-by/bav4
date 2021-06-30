@@ -945,7 +945,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().measurement.fileSaveResult).toBeNull();
 				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(String));
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 			});
 
 		});
@@ -967,7 +967,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._save();
 
 			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(String));
+				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
 			});
 
 		});
