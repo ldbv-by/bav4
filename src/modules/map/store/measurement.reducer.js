@@ -13,7 +13,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	   * @type {object}
+	   * @type {MeasureStatistic}
 	   */
 	statistic: { length: 0, area: 0 },
 	/**
@@ -21,7 +21,7 @@ export const initialState = {
 	 */
 	mode: null,
 	/**
-	 * @type {import("../../../services/FileStorageService").FileSaveResult}
+	 * @type {MeasureFileSaveResult}
 	 */
 	fileSaveResult: null,
 	/**

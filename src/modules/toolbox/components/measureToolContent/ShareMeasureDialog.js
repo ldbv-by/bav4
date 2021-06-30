@@ -5,6 +5,13 @@ import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
 import css from './shareMeasureDialog.css';
 
+/**
+ * A content component to show and share perma-links of 
+ * user-generated measurement-data
+ * @class
+ * @author thiloSchlemmer
+ * @author alsturm
+ */
 export class ShareMeasureDialog extends BaElement {
 
 	constructor() {
