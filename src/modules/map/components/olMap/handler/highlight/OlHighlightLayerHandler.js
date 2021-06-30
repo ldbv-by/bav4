@@ -32,12 +32,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 * @override
 		 */
 	onActivate(olMap) {
-		if (this._highlightLayer === null) {
-			const source = new VectorSource({ wrapX: false, features: [this._feature, this._temporaryFeature] });
-			this._highlightLayer = new VectorLayer({
-				source: source
-			});
-
+		if (this._highlightLayer === null) {			
+			this._highlightLayer = this._createLayer();
 		}
 		this._map = olMap;
 
@@ -46,17 +42,13 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		if (highlight.feature) {
 			const featureCoords = highlight.feature.data;
-			if (featureCoords) {
-				this._feature.setStyle(highlightStyleFunction);
-				this._feature.setGeometry(new Point(featureCoords));
-			}
+			this._feature.setStyle(highlightStyleFunction);
+			this._feature.setGeometry(new Point(featureCoords));			
 		}
 
 		if (highlight.temporaryFeature) {
-			const temporaryFeatureCoords = highlight.temporaryFeature.data;
-			if (temporaryFeatureCoords) {
-				this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
-			}
+			const temporaryFeatureCoords = highlight.temporaryFeature.data;			
+			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));			
 		}
 		this._map.renderSync();
 
@@ -70,9 +62,15 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 *  @param {Map} olMap
 		 */
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
-		this._highlightLayer = null;
 		this._map = null;
 		this._unregister();
+	}
+
+	_createLayer() {
+		const source = new VectorSource({ wrapX: false, features: [this._feature, this._temporaryFeature] });
+		return new VectorLayer({
+			source: source
+		});
 	}
 
 	_register(store) {
