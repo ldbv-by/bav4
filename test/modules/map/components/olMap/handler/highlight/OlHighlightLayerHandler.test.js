@@ -172,10 +172,8 @@ describe('OlHighlightLayerHandler', () => {
 			handler.activate(map);
 			const spyOnUnregister = spyOn(handler, '_unregister');
 
-
 			handler.deactivate(map);
 
-			expect(handler._highlightLayer).toBeNull();
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
 
