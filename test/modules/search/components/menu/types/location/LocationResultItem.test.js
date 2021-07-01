@@ -2,6 +2,7 @@ import { $injector } from '../../../../../../../src/injection';
 import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { HightlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
@@ -74,7 +75,8 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.temporaryFeature.data).toEqual(coordinate);
+				expect(store.getState().highlight.temporaryFeature.data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.temporaryFeature.type).toBe(HightlightFeatureTypes.DEFAULT);
 			});
 		});
 
@@ -132,7 +134,8 @@ describe('LocationResultItem', () => {
 					target.click();
 	
 					expect(store.getState().highlight.temporaryFeature).toBeNull();
-					expect(store.getState().highlight.feature.data).toEqual(coordinate);
+					expect(store.getState().highlight.feature.data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.feature.type).toBe(HightlightFeatureTypes.DEFAULT);
 				});
 
 				it('fits the map by a coordinate', async () => {

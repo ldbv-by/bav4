@@ -6,7 +6,7 @@ import itemCss from '../item.css';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../menu/store/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
-import { removeHighlightFeature, removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../store/highlight/highlight.action';
+import { HightlightFeatureTypes, removeHighlightFeature, removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../store/highlight/highlight.action';
 
 
 
@@ -61,7 +61,7 @@ export class LocationResultItem extends BaElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			setTemporaryHighlightFeature({ data: [...result.center] });
+			setTemporaryHighlightFeature({ type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 		};
 		const onMouseLeave = () => {
 			removeTemporaryHighlightFeature();
@@ -72,7 +72,7 @@ export class LocationResultItem extends BaElement {
 			removeTemporaryHighlightFeature();
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
-				setHighlightFeature({ data: [...result.center] });
+				setHighlightFeature({ type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 			}
 			else {
 				removeHighlightFeature();

@@ -19,7 +19,6 @@ describe('OlHighlightLayerHandler', () => {
 	const setup = (state = initialState) => {
 		const highlightState = {
 			highlight: state,
-			pointer: { beingDragged: false }
 		};
 		TestUtils.setupStoreAndDi(highlightState, { highlight: highlightReducer });
 	};
@@ -68,7 +67,7 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		it('sets highlight feature', () => {
-			const highlightFeature = { data: [1, 0] };
+			const highlightFeature = { data: { coordinate: [1, 0] } };
 			const state = { ...initialState, active: true, feature: highlightFeature };
 			const map = setupMap();
 			setup(state);
@@ -82,7 +81,7 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		it('sets temporary highlight feature', () => {
-			const temporaryFeature = { data: [1, 0] };
+			const temporaryFeature = { data: { coordinate: [1, 0] } };
 			const state = { ...initialState, active: true, temporaryFeature: temporaryFeature };
 			const map = setupMap();
 			setup(state);
@@ -108,8 +107,8 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				handler.activate(map);
 
-				setHighlightFeature({ data: [38, 57] });
-				setTemporaryHighlightFeature({ data: [57, 38] });
+				setHighlightFeature({ data: { coordinate: [38, 57] } });
+				setTemporaryHighlightFeature({ data: { coordinate: [57, 38] } });
 
 
 				expect(handler._feature).toBeDefined();
@@ -119,8 +118,8 @@ describe('OlHighlightLayerHandler', () => {
 			});
 
 			it('remove styles of highlight-features', () => {
-				const highlightFeature = { data: [1, 0] };
-				const temporaryFeature = { data: [0, 1] };
+				const highlightFeature = { data: { coordinate: [1, 0] } };
+				const temporaryFeature = { data: { coordinate: [0, 1] } };
 				const state = { ...initialState, active: true, feature: highlightFeature, temporaryFeature: temporaryFeature };
 				const map = setupMap();
 				setup(state);

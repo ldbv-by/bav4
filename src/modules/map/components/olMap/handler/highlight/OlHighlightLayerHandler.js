@@ -39,13 +39,13 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		const { highlight } = this._storeService.getStore().getState();
 
 		if (highlight.feature) {
-			const featureCoords = highlight.feature.data;
+			const featureCoords = highlight.feature.data.coordinate;
 			this._feature.setStyle(highlightFeatureStyleFunction);
 			this._feature.setGeometry(new Point(featureCoords));
 		}
 
 		if (highlight.temporaryFeature) {
-			const temporaryFeatureCoords = highlight.temporaryFeature.data;
+			const temporaryFeatureCoords = highlight.temporaryFeature.data.coordinate;
 			this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
 		}
@@ -90,7 +90,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 			if (isValidHighlight(changedState)) {
 
 				if (changedState.feature) {
-					const coord = changedState.feature.data;
+					const coord = changedState.feature.data.coordinate;
 					this._feature.setStyle(highlightFeatureStyleFunction);
 					this._feature.setGeometry(new Point(coord));
 				}
@@ -98,7 +98,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 					this._feature.setStyle(nullStyleFunction);
 				}
 				if (changedState.temporaryFeature) {
-					const coord = changedState.temporaryFeature.data;
+					const coord = changedState.temporaryFeature.data.coordinate;
 					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 					this._temporaryFeature.setGeometry(new Point(coord));
 				}
