@@ -3,7 +3,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../store/highlight/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightCircleStyleFunction, highlightTemporaryCircleStyleFunction } from './StyleUtils';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
@@ -40,13 +40,13 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		if (highlight.feature) {
 			const featureCoords = highlight.feature.data;
-			this._feature.setStyle(highlightCircleStyleFunction);
+			this._feature.setStyle(highlightFeatureStyleFunction);
 			this._feature.setGeometry(new Point(featureCoords));
 		}
 
 		if (highlight.temporaryFeature) {
 			const temporaryFeatureCoords = highlight.temporaryFeature.data;
-			this._temporaryFeature.setStyle(highlightTemporaryCircleStyleFunction);
+			this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
 		}
 		this._map.renderSync();
@@ -91,7 +91,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 				if (changedState.feature) {
 					const coord = changedState.feature.data;
-					this._feature.setStyle(highlightCircleStyleFunction);
+					this._feature.setStyle(highlightFeatureStyleFunction);
 					this._feature.setGeometry(new Point(coord));
 				}
 				else {
@@ -99,7 +99,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				}
 				if (changedState.temporaryFeature) {
 					const coord = changedState.temporaryFeature.data;
-					this._temporaryFeature.setStyle(highlightTemporaryCircleStyleFunction);
+					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 					this._temporaryFeature.setGeometry(new Point(coord));
 				}
 				else {
