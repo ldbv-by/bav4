@@ -74,23 +74,30 @@ export class LayerManager extends BaElement {
 		};
 
 		const createPlaceholderElement = (layerItem) => {
-			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'>
-						</div>`;
+			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'></div>`;
+		};
+ 
+		const createIndexNumberForPlaceholder = (listIndex, layerItem) => {
+			const isHigherThenDrag = (layerItem.listIndex >= listIndex) ? 1 : 0;
+			return listIndex / 2 + isHigherThenDrag;
 		};
 
 		const onDragStart = (e, layerItem) => {
+			e.target.classList.add('isdragged');
 			this._draggedItem = layerItem;
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
 			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => {
 				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
+				p.innerHTML = createIndexNumberForPlaceholder(listIndex, layerItem);
 				if (!isNeighbour(listIndex, layerItem.listIndex)) {
 					p.classList.add('placeholder-active');
 				}
 			});
 		};
-
+		
 		const onDragEnd = (e) => {
+			e.target.classList.remove('isdragged');
 			e.preventDefault();
 			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => p.classList.remove('placeholder-active'));
 		};
