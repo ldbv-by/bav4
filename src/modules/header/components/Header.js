@@ -1,10 +1,11 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../BaElement';
+import { BaElement, renderTagOf } from '../../BaElement';
 import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
+import { ShowCase } from '../../utils/components/showCase/ShowCase';
 import { setQuery } from '../../../store/search/search.action';
 
 
@@ -73,8 +74,7 @@ export class Header extends BaElement {
 	createView(state) {
 
 		const showModalInfo = () => {
-			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
-			openModal(payload);
+			openModal('Showcase', html`${renderTagOf(ShowCase)}`);
 		};
 
 		const getOrientationClass = () => {
@@ -175,22 +175,22 @@ export class Header extends BaElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title="opens menu 0" @click="${openTopicsTab}">
+						<button class="${getActiveClass(0)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
 							<span>
-								${translate('header_header_topics_button')}
+								${translate('header_tab_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(1)}" title="opens menu 1"  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(1)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 							<span>
-								${translate('header_header_maps_button')}
+								${translate('header_tab_maps_button')}
 							</span>
 							 <span class="badges">
 							 	${layerCount}
 							</span>
 						</button>
-						<button class="${getActiveClass(2)}" title="opens menu 2"  @click="${openMoreTab}">
+						<button class="${getActiveClass(2)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
-								${translate('header_header_more_button')}
+								${translate('header_tab_more_button')}
 							</span>
 						</button>
 					</div>

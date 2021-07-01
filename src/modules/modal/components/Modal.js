@@ -3,11 +3,14 @@ import { BaElement } from '../../BaElement';
 import { closeModal } from '../store/modal.action';
 import css from './modal.css';
 import { $injector } from '../../../injection';
+import { MODAL_CONTENT_ID } from '../store/modal.reducer';
 
 /**
- * Global modal window element, to show information, which the user must interact with.
+ * Modal dialog container.
  * @class
  * @author thiloSchlemmer
+ * @author alsturm
+ * @author taulinger
  */
 export class Modal extends BaElement {
 
@@ -21,40 +24,41 @@ export class Modal extends BaElement {
 	 * @override
 	 */
 	createView(state) {
-		const { title, content, visible } = state;
+		const { active } = state;
 		const translate = (key) => this._translationService.translate(key);
 
-		if (visible) {
+		if (active) {
+			const { data: { title } } = state;
+			const content = document.getElementById(MODAL_CONTENT_ID);
 			return html`
         		<style>${css}</style>
-				<div class='modal modal--active'>
-					<div class='modal-content'>
-						<div class='modal-header'>
-							<h4  class='modal-title'>${title}</h4>
-						</div>
-						<div class='modal-body'>${content}</div>
-						<div class='modal-footer'>
-						<ba-button id='modalclose' label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
+				<div class='modal__background' @click="${closeModal}">
+    			</div>
+				<div class='modal__container'>
+					<div class='modal'>
+						<div class='modal__title'>${title}</div>
+						<div class='modal__content'>${content}</div>
+						<div class='modal__actions'>
+							<ba-button  label='${translate('modal_close_button')}' @click='${closeModal}'></ba-button>
 						</div>
 					</div>
-    			</div>`;
-		}	
-		return nothing;	
-	}	
+				</div>
+				`;
+		}
+		return nothing;
+	}
 
-	
+
 	/**
- * @override
- * @param {Object} globalState 
- */
+	 * @override
+	 * @param {Object} globalState 
+	 */
 	extractState(globalState) {
-		const { modal: { title, content } } = globalState;
-		const visible = content;
-		return { title, content, visible };
+		const { modal: { data, active } } = globalState;
+		return { data, active };
 	}
 
 	static get tag() {
 		return 'ba-modal';
 	}
-
 }
