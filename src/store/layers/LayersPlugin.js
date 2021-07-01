@@ -22,12 +22,27 @@ export class LayersPlugin extends BaPlugin {
 		};
 	}
 
+	async _getFileId(id) {
+		const { FileStorageService: fileStorageService }
+			= $injector.inject('FileStorageService');
+
+		if (fileStorageService.isAdminId(id)) {
+			return fileStorageService.getFileId(id);
+		}
+		else if (fileStorageService.isFileId(id)) {
+			return id;
+		}
+		throw new Error(`${id} is not a valid fileId or adminId`);
+	}
+
 	_newVectorGeoResourceLoader(id) {
 		const { FileStorageService: fileStorageService }
-			= $injector.inject('GeoResourceService', 'FileStorageService');
+			= $injector.inject('FileStorageService');
 
 		return async () => {
-			const { data, type, srid } = await fileStorageService.get(id);
+
+			const fileId = await this._getFileId(id);
+			const { data, type, srid } = await fileStorageService.get(fileId);
 			if (type === FileStorageServiceDataTypes.KML) {
 				return {
 					sourceType: VectorSourceType.KML,

@@ -1,67 +1,11 @@
-.ba-tool-container__item{                   
-    width: 100%;
-
-}
-
-.tool-container__header{
-    font-weight: bold;
-    font-size: 1em;
-    position: absolute;
-    top: 1em;
-    left: 1.5em;
-    opacity: .8;
-}
-
-.tool-container__header-icon{
-    display: inline-block;
-    height:2.3em;
-    width:2.3em;
-    background: var(--secondary-bg-color);
-    border-radius: 2em;
-}
-.measure{
-    mask-image: url(data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMjQiIGhlaWdodD0iMTAyNCIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCI+Cjx0aXRsZT48L3RpdGxlPgo8ZyBpZD0iaWNvbW9vbi1pZ25vcmUiPgo8L2c+CjxwYXRoIGQ9Ik04OTggMTY2bC04OTggNDIwIDEyNiAyNzAgODk4LTQxOHpNMTQyIDgxMGwtOTYtMjA2IDY4LTMyIDI2IDU0IDI2LTEyLTI2LTU0IDcyLTM0IDI0IDUwIDI2LTEyLTI0LTUwIDYyLTI4IDY0IDEzNiAzNC0xNi02NC0xMzYgNTAtMjQgMjQgNTAgMjYtMTItMjQtNTAgNzQtMzQgMjIgNDggMjYtMTItMjItNDggNjgtMzIgNjQgMTM2IDMyLTE2LTY0LTEzNiA4NC0zOCAyMiA0NiAyNi0xMi0yMi00NiA3Ni0zNiAyMiA0MiAyNC0xMi0yMC00MiA1OC0yOCA5NiAyMDZ6Ij48L3BhdGg+Cjwvc3ZnPg==);
-    -webkit-mask-image: url(data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMjQiIGhlaWdodD0iMTAyNCIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCI+Cjx0aXRsZT48L3RpdGxlPgo8ZyBpZD0iaWNvbW9vbi1pZ25vcmUiPgo8L2c+CjxwYXRoIGQ9Ik04OTggMTY2bC04OTggNDIwIDEyNiAyNzAgODk4LTQxOHpNMTQyIDgxMGwtOTYtMjA2IDY4LTMyIDI2IDU0IDI2LTEyLTI2LTU0IDcyLTM0IDI0IDUwIDI2LTEyLTI0LTUwIDYyLTI4IDY0IDEzNiAzNC0xNi02NC0xMzYgNTAtMjQgMjQgNTAgMjYtMTItMjQtNTAgNzQtMzQgMjIgNDggMjYtMTItMjItNDggNjgtMzIgNjQgMTM2IDMyLTE2LTY0LTEzNiA4NC0zOCAyMiA0NiAyNi0xMi0yMi00NiA3Ni0zNiAyMiA0MiAyNC0xMi0yMC00MiA1OC0yOCA5NiAyMDZ6Ij48L3BhdGg+Cjwvc3ZnPg==);
-    mask-size: cover;
-    -webkit-mask-size: cover;
-    height: 2em;
-    width: 2em;
-    margin:.1em;
-    background: gray;
-    display: inline-block;
-}
-
-.start-new{
-    mask-image:  url('assets/plus.svg');
-    -webkit-mask-image:url('assets/plus.svg');
-}
-
-
-.is-first {
-    opacity: 0.4;
-}
-
-.is-not-remove {
-    opacity: 0.4;
-}
-
-
-.tool-container__text {
-   margin:3.5em 0 0em 0;
-}
-
 
 .tool-container__text-item{
     display: flex;
-    justify-content:space-between;
     align-items: flex-end;
+    margin: 0 0 1em 0;
 }
 .copy{
     width:3em;
-}
-
-.tool-container__text div{
-   padding:  0.8em 1.5em 0.8em 1.5em;
 }
 .prime-text-value{
     font-size: 2.2em;
@@ -76,83 +20,10 @@
     width: 2.1em;
     line-height:.9;
 }
-.sub-text{
-    text-align: center;
-    font-size:.8em;
-    opacity:.8;
-}
-
-
-.is-active .tool-container__background {
-    height: 3em;
-    width: 3em;
-    background-color: var(--header-button-bg-color) !important;
-}
-.tool-container__button:hover .tool-container__icon{
-    background: gray;
-}
-.is-active  .tool-container__icon{
-    background: #fff !important;
-}
-.is-active  .tool-container__icon{
-    background: #fff !important;
-}
-
-  .tool-container__button-text{
-      font-size:.8rem;
-      margin: 5.5em .3em .5em .3em;
-  }
-
   .area {
       opacity: 0;
   }
-
   .is-area {
       opacity: 1;
       transition: all .4s ease-in-out; 
   }
-
-  .tool-container__button:hover.tool-container__background{
-    height: 3em;
-    width: 3em;
-    background-color: var(--header-button-bg-color);
-  }
-
-.tool-container__buttons-secondary{
-    display: flex;
-    justify-content:space-between;
-    text-align: center;
-   
-}
-.tool-container__buttons-secondary button{
-    cursor: pointer;
-    padding: .8em;
-   background: transparent;
-   border: none;
-   font-weight: bold;
-   border-right: 1px dotted var(--header-background-color);
-   transition: all .2s ease-in-out;  
-   color: var(--primary-color);
-   width:100%;
-
- }
-  .tool-container__buttons-secondary button:hover{
-    background: var(--header-button-bg-color);
-    color:#fff;
-  
-  }
-  .tool-container__buttons-secondary button:last-child{
-   border: none;
-  }
-  .tool-container__info{
-    font-size: .8rem;
-    color: gray;
-}
-.divider {
-    border-bottom: 1px solid var(--header-background-color);
- }
-
- .tool-container__buttons-secondary button.is-active{
-     background: var(--header-button-bg-color);
-     color: #fff;
- }

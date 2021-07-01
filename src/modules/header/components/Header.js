@@ -74,8 +74,7 @@ export class Header extends BaElement {
 	createView(state) {
 
 		const showModalInfo = () => {
-			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
-			openModal(payload);
+			openModal('Showcase', html`<ba-ba-showcase>`);
 		};
 
 		const getOrientationClass = () => {

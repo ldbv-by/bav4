@@ -24,7 +24,10 @@ describe('LayersPlugin', () => {
 		byId() { }
 	};
 	const fileStorageServiceMock = {
-		get() { }
+		get() { },
+		getFileId() {},
+		isFileId() {},
+		isAdminId() {}
 	};
 
 	const windowMock = {
@@ -341,12 +344,14 @@ describe('LayersPlugin', () => {
 
 			it('returns a loader for KML VectorGeoResources', async () => {
 				const id = 'id';
+				const fileId = 'f_id';
 				const data = 'data';
 				const type = FileStorageServiceDataTypes.KML;
 				const srid = 1234;
 				setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(fileStorageServiceMock, 'get').withArgs(id).and.returnValue(
+				spyOn(instanceUnderTest, '_getFileId').withArgs(id).and.returnValue(fileId);
+				spyOn(fileStorageServiceMock, 'get').withArgs(fileId).and.returnValue(
 					Promise.resolve({ data: data, type: type, srid: srid })
 				);
 
@@ -363,12 +368,14 @@ describe('LayersPlugin', () => {
 
 			it('throws an error when source type is not supported', (done) => {
 				const id = 'id';
+				const fileId = 'f_id';
 				const data = 'data';
 				const type = 'unsupported';
 				const srid = 1234;
 				setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOn(fileStorageServiceMock, 'get').withArgs(id).and.returnValue(
+				spyOn(instanceUnderTest, '_getFileId').withArgs(id).and.returnValue(fileId);
+				spyOn(fileStorageServiceMock, 'get').withArgs(fileId).and.returnValue(
 					Promise.resolve({ data: data, type: type, srid: srid })
 				);
 
@@ -401,6 +408,52 @@ describe('LayersPlugin', () => {
 				proxifiedVgr.label = 'updatedLabel';
 
 				expect(store.getState().layers.active[0].label).toBe('updatedLabel');
+			});
+		});
+
+		describe('_getFileId', () => {
+
+			it('returns the fileId for an adminId', async () => {
+				const adminId = 'a_id';
+				const fileId = 'f_id';
+				setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(adminId).and.returnValue(true);
+				spyOn(fileStorageServiceMock, 'getFileId').withArgs(adminId).and.returnValue(
+					Promise.resolve(fileId)
+				);
+
+				const result = await instanceUnderTest._getFileId(adminId);
+
+				expect(result).toBe(fileId);
+			});
+
+			it('returns the fileId', async () => {
+				const fileId = 'f_id';
+				setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(fileId).and.returnValue(false);
+				spyOn(fileStorageServiceMock, 'isFileId').withArgs(fileId).and.returnValue(true);
+
+				const result = await instanceUnderTest._getFileId(fileId);
+
+				expect(result).toBe(fileId);
+			});
+
+			it('throws an error when a fileId could not be determined',  (done) => {
+				const id = 'foo';
+				setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(id).and.returnValue(false);
+				spyOn(fileStorageServiceMock, 'isFileId').withArgs(id).and.returnValue(false);
+
+
+				instanceUnderTest._getFileId(id).then(() => {
+					done(new Error('Promise should not be resolved'));
+				}, (reason) => {
+					expect(reason.message).toBe(`${id} is not a valid fileId or adminId`);
+					done();
+				});
 			});
 		});
 	});

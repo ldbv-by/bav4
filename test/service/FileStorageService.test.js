@@ -70,7 +70,7 @@ describe('BvvFileStorageService', () => {
 			});
 		});
 
-		it('throws an error when file cannot be loaded', (done) => {
+		it('throws an error when endpoint returns status-code != 200', (done) => {
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
@@ -141,7 +141,7 @@ describe('BvvFileStorageService', () => {
 			expect(result.adminId).toBe(adminId);
 			expect(result.fileId).toBe(fileId);
 		});
-		
+
 		it('throws an error when content-type is not supported', (done) => {
 			const contentType = 'someContentType';
 			const data = 'data';
@@ -156,7 +156,7 @@ describe('BvvFileStorageService', () => {
 
 		});
 
-		it('throws an error when file cannot be saved',  (done) => {
+		it('throws an error when file cannot be saved', (done) => {
 			const data = 'data';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
@@ -175,5 +175,92 @@ describe('BvvFileStorageService', () => {
 			});
 		});
 	});
-});
 
+	describe('isFileId', () => {
+
+		it('checks if a string represents a fileId', async () => {
+
+			const instanceUnderTest = new BvvFileStorageService();
+
+			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
+			expect(instanceUnderTest.isFileId('f_foo')).toBeTrue();
+		});
+	});
+
+	describe('iAdminId', () => {
+
+		it('checks if a string represents an adminId', async () => {
+
+			const instanceUnderTest = new BvvFileStorageService();
+
+			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
+			expect(instanceUnderTest.isAdminId('a_foo')).toBeTrue();
+		});
+	});
+
+	describe('getFileId', () => {
+
+		it('loads a fileId file by an adminId', async () => {
+			const adminId = 'a_Id';
+			const fileId = 'f_Id';
+			const backendUrl = 'https://backend.url/';
+			const expectedUrl = backendUrl + 'files/' + adminId;
+			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						{
+							fileId: fileId
+						}
+					),
+					{ status: 200 }
+				)
+			));
+			const instanceUnderTest = new BvvFileStorageService();
+
+			const result = await instanceUnderTest.getFileId(adminId);
+
+			expect(result).toBe(fileId);
+		});
+
+		it('throws an error when result contains no fileId', async (done) => {
+			const adminId = 'a_Id';
+			const backendUrl = 'https://backend.url/';
+			const expectedUrl = backendUrl + 'files/' + adminId;
+			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify({}),
+					{ status: 200 }
+				)
+			));
+			const instanceUnderTest = new BvvFileStorageService();
+
+			instanceUnderTest.getFileId(adminId).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason.message).toBe('FileId could not be retrieved: ' + expectedUrl);
+				done();
+			});
+		});
+
+		it('throws an error when endpoints return status-code != 200', (done) => {
+			const adminId = 'a_Id';
+			const backendUrl = 'https://backend.url/';
+			const expectedUrl = backendUrl + 'files/' + adminId;
+			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
+				new Response(null, { status: 404 })
+			));
+			const instanceUnderTest = new BvvFileStorageService();
+
+
+			instanceUnderTest.getFileId(adminId).then(() => {
+				done(new Error('Promise should not be resolved'));
+			}, (reason) => {
+				expect(reason.message).toBe('FileId could not be retrieved: ' + expectedUrl);
+				done();
+			});
+		});
+	});
+});
