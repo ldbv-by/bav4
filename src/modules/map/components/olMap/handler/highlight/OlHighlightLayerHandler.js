@@ -3,7 +3,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../store/highlight/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightStyleFunction, highlightFeatureStyleFunction } from './StyleUtils';
+import { highlightCircleStyleFunction, highlightTemporaryCircleStyleFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
@@ -32,24 +32,22 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 * @override
 		 */
 	onActivate(olMap) {
-		if (this._highlightLayer === null) {			
-			this._highlightLayer = this._createLayer();
-		}
+		this._highlightLayer = this._createLayer();
 		this._map = olMap;
 
-		
+
 		const { highlight } = this._storeService.getStore().getState();
 
 		if (highlight.feature) {
 			const featureCoords = highlight.feature.data;
-			this._feature.setStyle(highlightFeatureStyleFunction);
-			this._feature.setGeometry(new Point(featureCoords));			
+			this._feature.setStyle(highlightCircleStyleFunction);
+			this._feature.setGeometry(new Point(featureCoords));
 		}
 
 		if (highlight.temporaryFeature) {
-			const temporaryFeatureCoords = highlight.temporaryFeature.data;			
-			this._temporaryFeature.setStyle(highlightStyleFunction);
-			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));			
+			const temporaryFeatureCoords = highlight.temporaryFeature.data;
+			this._temporaryFeature.setStyle(highlightTemporaryCircleStyleFunction);
+			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
 		}
 		this._map.renderSync();
 
@@ -64,6 +62,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 */
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		this._map = null;
+		this._highlightLayer = null;
 		this._unregister();
 	}
 
@@ -92,7 +91,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 				if (changedState.feature) {
 					const coord = changedState.feature.data;
-					this._feature.setStyle(highlightStyleFunction);
+					this._feature.setStyle(highlightCircleStyleFunction);
 					this._feature.setGeometry(new Point(coord));
 				}
 				else {
@@ -100,7 +99,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				}
 				if (changedState.temporaryFeature) {
 					const coord = changedState.temporaryFeature.data;
-					this._temporaryFeature.setStyle(highlightStyleFunction);
+					this._temporaryFeature.setStyle(highlightTemporaryCircleStyleFunction);
 					this._temporaryFeature.setGeometry(new Point(coord));
 				}
 				else {
@@ -112,9 +111,6 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				this._feature.setStyle(nullStyleFunction);
 				this._temporaryFeature.setStyle(nullStyleFunction);
 			}
-
-
-
 		};
 
 		return observe(store, extract, onChange);

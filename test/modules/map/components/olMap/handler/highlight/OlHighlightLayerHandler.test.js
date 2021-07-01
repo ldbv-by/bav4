@@ -68,8 +68,8 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		it('sets highlight feature', () => {
-			const highlightFeature = { data:[1, 0] };
-			const state = { ...initialState, active:true, feature:highlightFeature };
+			const highlightFeature = { data: [1, 0] };
+			const state = { ...initialState, active: true, feature: highlightFeature };
 			const map = setupMap();
 			setup(state);
 
@@ -82,8 +82,8 @@ describe('OlHighlightLayerHandler', () => {
 		});
 
 		it('sets temporary highlight feature', () => {
-			const temporaryFeature = { data:[1, 0] };
-			const state = { ...initialState, active:true, temporaryFeature:temporaryFeature };
+			const temporaryFeature = { data: [1, 0] };
+			const state = { ...initialState, active: true, temporaryFeature: temporaryFeature };
 			const map = setupMap();
 			setup(state);
 
@@ -94,20 +94,6 @@ describe('OlHighlightLayerHandler', () => {
 			expect(handler._temporaryFeature.getGeometry().getCoordinates()).toEqual([1, 0]);
 
 		});
-
-		it('instantiates highlightLayer once', () => {
-			const map = setupMap();
-			setup();
-
-			const handler = new OlHighlightLayerHandler();
-			const spy = spyOn(handler, '_createLayer').and.callThrough();
-			handler.activate(map);
-			handler.deactivate(map);
-			handler.activate(map);
-
-			expect(spy).toHaveBeenCalledTimes(1);
-		});
-
 
 		describe('when highlight-state changed', () => {
 			const getStyles = (feature) => {
@@ -122,8 +108,8 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				handler.activate(map);
 
-				setHighlightFeature({ data:[38, 57] });			
-				setTemporaryHighlightFeature({ data:[57, 38] });
+				setHighlightFeature({ data: [38, 57] });
+				setTemporaryHighlightFeature({ data: [57, 38] });
 
 
 				expect(handler._feature).toBeDefined();
@@ -133,9 +119,9 @@ describe('OlHighlightLayerHandler', () => {
 			});
 
 			it('remove styles of highlight-features', () => {
-				const highlightFeature = { data:[1, 0] };
-				const temporaryFeature = { data:[0, 1] };
-				const state = { ...initialState, active:true, feature:highlightFeature, temporaryFeature:temporaryFeature };
+				const highlightFeature = { data: [1, 0] };
+				const temporaryFeature = { data: [0, 1] };
+				const state = { ...initialState, active: true, feature: highlightFeature, temporaryFeature: temporaryFeature };
 				const map = setupMap();
 				setup(state);
 
