@@ -1,4 +1,4 @@
-import { BaElement, renderTagOf } from '../../src/modules/BaElement';
+import { append, BaElement, renderTagOf } from '../../src/modules/BaElement';
 import { html, nothing } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
@@ -291,9 +291,9 @@ describe('BaElement', () => {
 			expect(extractStateSpy).toHaveBeenCalled();
 		});
 	});
-	
+
 	describe('observe', () => {
-		
+
 		it('registers observers', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
@@ -325,7 +325,7 @@ describe('BaElement', () => {
 			const someUnknownFieldCallback = jasmine.createSpy();
 			const someWhatNullFieldCallback = jasmine.createSpy();
 			const errorSpy = spyOn(console, 'error');
-			
+
 			//change state before registration
 			store.dispatch({
 				type: INDEX_CHANGED,
@@ -340,7 +340,7 @@ describe('BaElement', () => {
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the state of BaElementImpl');
 		});
-		
+
 	});
 	describe('default css', () => {
 
@@ -378,6 +378,42 @@ describe('renderTagOf', () => {
 	it('renders the tag as html', () => {
 
 		expect(renderTagOf(BaElementImpl)).toBeTruthy();
+	});
+});
+
+
+describe('append', () => {
+
+	it('throws an exception when id is undefined', () => {
+
+		expect(() => append('foo')).toThrowError(Error, 'Argument \'id\' must not be null or undefined');
+	});
+
+	it('appends content as a plain string to the body', () => {
+		const id = 'myId';
+		const value = 'foo';
+
+		append(value, id);
+		
+		expect(document.getElementById(id).innerText).toBe(value);
+	});
+
+	it('appends content as a template string to the body', () => {
+		const id = 'myId';
+		const value = 'foo';
+
+		append(`${value}`, id);
+		
+		expect(document.getElementById(id).innerText).toBe(value);
+	});
+
+	it('appends content as a lit-html TemplateResult to the body', () => {
+		const id = 'myId';
+		const value = 'foo';
+
+		append(html`${value}`, id);
+		
+		expect(document.getElementById(id).innerText).toBe(value);
 	});
 });
 

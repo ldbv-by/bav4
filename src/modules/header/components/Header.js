@@ -1,10 +1,11 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../BaElement';
+import { BaElement, renderTagOf } from '../../BaElement';
 import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
+import { ShowCase } from '../../utils/components/showCase/ShowCase';
 
 
 /**
@@ -74,8 +75,7 @@ export class Header extends BaElement {
 	createView(state) {
 
 		const showModalInfo = () => {
-			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
-			openModal(payload);
+			openModal('Showcase', html`${renderTagOf(ShowCase)}`);
 		};
 
 		const getOrientationClass = () => {
