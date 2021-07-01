@@ -15,6 +15,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
  * @class
  * @author thiloSchlemmer
  * @author taulinger 
+ * @author alsturm
  */
 export class LayerItem extends AbstractContentPanel {
 
