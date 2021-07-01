@@ -98,4 +98,9 @@
 }
 .collapse-content > *:first-child{
   border-right:0;
+  margin-right:.5em;
+}
+.collapse-content > *:last-child{
+  padding-right:1em;
+  border-right:0;
 }
