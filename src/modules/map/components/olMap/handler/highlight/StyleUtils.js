@@ -1,6 +1,7 @@
 
 import { Style, Stroke, Fill, Circle as CircleStyle, Icon } from 'ol/style';
 import locationIcon from './assets/location.svg';
+import tempLocationIcon from './assets/temporaryLocation.svg';
 
 
 export const nullStyleFunction = () => [new Style({})];
@@ -49,7 +50,7 @@ export const highlightTemporaryFeatureStyleFunction = () => [new Style({
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
-		src: locationIcon
+		src: tempLocationIcon
 	})
 })];
 
