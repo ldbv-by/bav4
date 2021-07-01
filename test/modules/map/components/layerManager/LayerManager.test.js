@@ -193,6 +193,58 @@ describe('LayerManager', () => {
 
 		});
 
+		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[0];
+
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('1');
+			expect(placeholders[2].innerText).toBe('2');
+			expect(placeholders[3].innerText).toBe('3');
+		});
+
+		it('on dragstart should update placeholder-content for dragging 2th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[1];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('2');
+			expect(placeholders[2].innerText).toBe('2');
+			expect(placeholders[3].innerText).toBe('3');
+		});
+
+		it('on dragstart should update placeholder-content for dragging 3th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[2];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('2');
+			expect(placeholders[2].innerText).toBe('3');
+			expect(placeholders[3].innerText).toBe('3');
+		});
+
 		it('on dragEnter of neighbouring placeholder no style changed', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
