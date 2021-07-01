@@ -54,7 +54,7 @@ export class ShareMeasureDialog extends BaElement {
 					this._environmentService.getWindow().navigator.share({
 						title: translate('toolbox_measureTool_share_link_title'),
 						url: url
-					}).catch(console.error);
+					}).catch((ex) => console.error('Share-API failed:', ex));
 				};
 				return html`<ba-icon class='share_api' icon='${shareIcon}' title=${translate('toolbox_measureTool_share_api')} size=2} @click=${onClickWithApi}>
 				</ba-icon>`;

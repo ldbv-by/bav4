@@ -106,6 +106,22 @@ describe('ShareMeasureDialog', () => {
 		});
 	});
 
+	it('logs a warning when shareApi fails', async (done) => {
+		const element = await setup({}, { share: () => Promise.resolve(true) });
+		const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
+		const errorSpy = spyOn(console, 'error');
+		element.shareurls = { adminId: 'foo', fileid: 'foo' };
+		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
+
+		shareButton.click();
+
+		setTimeout(() => {
+			expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
+			expect(shareSpy).toHaveBeenCalledWith({ title: 'toolbox_measureTool_share_link_title', url: 'foo' });
+			done();
+		});
+	});
+
 
 	it('logs a warning when copyToClipboard fails', async (done) => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
