@@ -6,35 +6,38 @@ import { CLEAR_FEATURES, FEATURE_CHANGED, SECONDARY_FEATURE_CHANGED } from './hi
 import { $injector } from '../../injection';
 
 
-
 /**
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HightlightFeature
+ * @property {HightlightFeatureTypes} type  The type of this feature.
  * @property {HightlightCoordinate|HightlightGeometry} data The data which can be a coordinate or a geometry
  * @property {string} [label] Optional text 
+ * 
  */
-
 
 /**
  * Coordinate data for a {@link HightlightFeature}
  * @typedef {Object} HightlightCoordinate
- * @property {Coordinate} data 
- * @property {string} [icon] the type of the geometry 
+ * @property {Coordinate} coordinate 
  */
 
 /**
  * Geometry data for a {@link HightlightFeature}
  * @typedef {Object} HightlightGeometry
- * @property {Coordinate|string} data Coordinate or a geometry as string (e.g. geoJson, WKT) 
- * @property {HightlightFeatureGeometryTypes} [geometryType] the type of the geometry 
+ * @property {object|string} geometry Geometry (e.g. geoJson, WKT) 
+ * @property {HightlightFeatureGeometryTypes} geometryType the type of the geometry 
  */
+
+export const HightlightFeatureTypes = Object.freeze({
+	DEFAULT: 0
+});
 
 /**
  * Type of a {@link HightlightGeometry}
  * @enum
  */
 export const HightlightGeometryTypes = Object.freeze({
-	WKT: 'wkt'
+	WKT: 0
 });
 
 

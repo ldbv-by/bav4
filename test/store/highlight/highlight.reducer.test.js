@@ -1,5 +1,5 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { setHighlightFeature, removeHighlightFeature, setTemporaryHighlightFeature, removeTemporaryHighlightFeature, clearHighlightFeatures } from '../../../src/store/highlight/highlight.action';
+import { setHighlightFeature, removeHighlightFeature, setTemporaryHighlightFeature, removeTemporaryHighlightFeature, clearHighlightFeatures, HightlightFeatureTypes } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -20,7 +20,7 @@ describe('highlightReducer', () => {
 
 	it('changes the \'feature\' property', () => {
 		const store = setup();
-		const highlightFeature = { data: [21, 42] };
+		const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
 
 		setHighlightFeature(highlightFeature);
 
@@ -37,7 +37,7 @@ describe('highlightReducer', () => {
 
 	it('changes the \'secondary feature\' property', () => {
 		const store = setup();
-		const highlightFeature = { data: [21, 42] };
+		const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
 
 		setTemporaryHighlightFeature(highlightFeature);
 
@@ -54,8 +54,8 @@ describe('highlightReducer', () => {
 
 	it('resets the both feature properties', () => {
 		const store = setup();
-		const highlightFeature = { data: [21, 42] };
-		const secondaryHighlightFeature = { data: [1, 2] };
+		const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+		const secondaryHighlightFeature = { type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [1, 2] } };
 
 		setHighlightFeature(highlightFeature);
 		setTemporaryHighlightFeature(secondaryHighlightFeature);
