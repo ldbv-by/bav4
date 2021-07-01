@@ -140,20 +140,20 @@ export class LayerItem extends AbstractContentPanel {
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
                 </button>   
             </div>
-            <div class='collapse-content  ${classMap(bodyCollapseClass)}'>      
-                <div  class='ba-list-item'>                
-                <span class='ba-list-item__text'>                                                                                                               
-                <span >
-                ${getSlider()}  
-                </span>                                             
-                </span>     
-                <div class='layer-buttons'>                     
-                <ba-icon id='increase' icon='${arrowUpSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_move_up')} @click=${increaseIndex}></ba-icon>                    
-                <ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
-                <ba-icon id='info' icon='${infoSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 ></ba-icon>                 
-                <ba-icon id='remove' icon='${removeSvg}' color=var(--icon-default-color) color_hover=var(--text-default-color) size=2.2 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>
-                </div>
-                </div>
+            <div class='collapse-content ba-list-item  ${classMap(bodyCollapseClass)}'>                                                                                                                                                                
+					${getSlider()}   
+					<div>                                                                                              
+						<ba-icon id='increase' icon='${arrowUpSvg}' color=var(--primary-color) color_hover=var(--text-default-color) size=2.6 title=${translate('map_layerManager_move_up')} @click=${increaseIndex}></ba-icon>                    				
+					</div>                                                                                              
+					<div>                                                                                              
+						<ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--primary-color) color_hover=var(--text-default-color) size=2.6 title=${translate('map_layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
+					</div>                                                                                              
+					<div>                                                                                              
+						<ba-icon id='info' icon='${infoSvg}' color=var(--primary-color) color_hover=var(--text-default-color) size=2.6 ></ba-icon>                 
+					</div>                                                                                              
+					<div>                                                                                              
+						<ba-icon id='remove' icon='${removeSvg}' color=var(--primary-color) color_hover=var(--text-default-color) size=2.6 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>               
+					</div>                                                                                              
             </div>
         </div>`;
 	}
