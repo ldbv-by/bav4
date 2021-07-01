@@ -304,7 +304,7 @@ describe('MeasureToolContent', () => {
 			setTimeout(() => {
 				expect(shareButton).toBeTruthy();
 				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().modal.title).toBe('toolbox_measureTool_share');
+				expect(store.getState().modal.data.title).toBe('toolbox_measureTool_share');
 				done();
 			});
 

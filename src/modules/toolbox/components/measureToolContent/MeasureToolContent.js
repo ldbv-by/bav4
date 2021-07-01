@@ -179,8 +179,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			const title = translate('toolbox_measureTool_share');
 			const onClick = () => {
 				generateShareUrls().then(shareUrls => {
-					const payload = { title: title, content: html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>` };
-					openModal(payload);
+					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>` );
 				});
 			};
 			return html`<ba-button id='share' 
