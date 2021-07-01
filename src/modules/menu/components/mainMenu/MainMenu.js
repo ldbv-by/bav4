@@ -240,55 +240,6 @@ export class MainMenu extends BaElement {
 	`;
 	}
 
-	_demoTopicsContent() {
-		return html`
-		<ul class="ba-list">		
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li>          
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li>          
-		<li class="ba-list-item">
-		<span class="ba-list-item__pre">
-			<span class="ba-list-item__image">
-			</span>
-		</span>
-		<span class="ba-list-item__text divider">
-			<span class="ba-list-item__primary-text">
-			Lorem ipsum 
-			</span>
-			<span class="ba-list-item__secondary-text">
-				Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-			</span>
-		</span>
-	</li> 		
-	</ul>
-	`;
-	}
-
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
 	}

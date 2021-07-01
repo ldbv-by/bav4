@@ -20,17 +20,41 @@ export class ShareService {
 		throw new Error('Clipboard API is not available');
 	}
 
+	_mergeExtraParams(extractedState, extraParams) {
+		for (const [key, value] of Object.entries(extraParams)) {
+
+			//when a parameter is already present and denotes an array, value(s) will be appendend
+			if (Object.keys(extractedState).includes(key)) {
+				if (Array.isArray(extractedState[key])) {
+
+					const values = Array.isArray(value) ? [...value] : [value];
+					extractedState[key] = [...extractedState[key], ...values];
+				}
+			}
+			//we add non-existing extra params
+			else {
+				extractedState[key] = value;
+			}
+		}
+		return extractedState;
+	}
+
 	/**
-	 * Encodes the current apps state to an url.
-	 * @public
-	 * @returns {string} url of the app 
+	 * Encodes the current state to an url.
+	 * @param {object} extraParams Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array. 
+	 * In this case, existing values will be concatenated with the additional values.
+	 * @returns {string} url
 	 */
-	encodeState() {
-		const extractedState = {
-			...this._extractPosition(),
-			...this._extractLayers(),
-			...this._extractTopic()
-		};
+	encodeState(extraParams = {}) {
+		const extractedState = this._mergeExtraParams(
+			{
+				...this._extractPosition(),
+				...this._extractLayers(),
+				...this._extractTopic()
+			},
+			extraParams
+		);
+
 		const searchParams = new URLSearchParams(extractedState);
 		return window.location.href + '?' + decodeURIComponent(searchParams.toString());
 	}
@@ -92,11 +116,13 @@ export class ShareService {
 		const layer = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
-		activeLayers.forEach(l => {
-			layer.push(l.id);
-			layer_visibility.push(l.visible);
-			layer_opacity.push(l.opacity);
-		});
+		activeLayers
+			.filter(l => !l.constraints.hidden)	
+			.forEach(l => {
+				layer.push(l.id);
+				layer_visibility.push(l.visible);
+				layer_opacity.push(l.opacity);
+			});
 		//remove if it contains only default values
 		if (layer_visibility.filter(lv => lv === false).length === 0) {
 			layer_visibility = null;

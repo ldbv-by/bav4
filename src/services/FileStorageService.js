@@ -8,6 +8,32 @@ import { $injector } from '../injection';
  */
 
 /**
+ * Checks if a string represents an adminId.
+ * @function
+ * @name FileStorageService#isAdminId
+ * @param {String} id 
+ * @returns {boolean} fileId
+ */
+
+/**
+ * Checks if a string represents a fileId.
+ * @function
+ * @async
+ * @name FileStorageService#isFileId
+ * @param {String} id 
+ * @returns {boolean} fileId
+ */
+
+/**
+ * Returns the corresponding fileId for an adminId.
+ * @function
+ * @async
+ * @name FileStorageService#getFileId
+ * @param {String} adminId 
+ * @returns {Promise<string>} fileId
+ */
+
+/**
  * Loads the content of a file.
  * @function
  * @async
@@ -75,6 +101,27 @@ export class BvvFileStorageService {
 
 	_getKeyByValue(object, value) {
 		return Object.keys(object).find(key => object[key] === value);
+	}
+
+	isAdminId(id) {
+		return id.startsWith('a_');
+	}
+
+	isFileId(id) {
+		return id.startsWith('f_');
+	}
+
+	async getFileId(adminId) {
+		const url = `${this._getFileStorageUrl()}/${adminId}`;
+		
+		const result = await this._httpService.get(url);
+		if (result.ok) {
+			const { fileId } = await result.json();
+			if (fileId) {
+				return fileId;
+			}
+		}
+		throw new Error('FileId could not be retrieved: ' + url);
 	}
 
 	async get(fileId) {

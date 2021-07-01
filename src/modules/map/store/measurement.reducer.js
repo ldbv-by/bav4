@@ -1,6 +1,7 @@
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
+export const FILE_SAVE_RESULT_CHANGED = 'measurement/fileSaveResult';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
 export const REMOVE_REQUESTED = 'measurement/remove';
@@ -12,25 +13,29 @@ export const initialState = {
 	 */
 	active: false,
 	/**
- 	 * @type {object}
- 	 */
-	statistic:{ length:0, area:0 },
+	   * @type {MeasureStatistic}
+	   */
+	statistic: { length: 0, area: 0 },
 	/**
 	 * @type {String}
 	 */
-	mode: null,	
+	mode: null,
 	/**
-	 * @type EventLike
-	 */	
-	finish:null,
+	 * @type {MeasureFileSaveResult}
+	 */
+	fileSaveResult: null,
 	/**
 	 * @type EventLike
 	 */
-	reset:null,
+	finish: null,
 	/**
 	 * @type EventLike
 	 */
-	remove:null
+	reset: null,
+	/**
+	 * @type EventLike
+	 */
+	remove: null
 };
 
 export const measurementReducer = (state = initialState, action) => {
@@ -58,6 +63,14 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				mode: payload
+
+			};
+		}
+		case FILE_SAVE_RESULT_CHANGED: {
+
+			return {
+				...state,
+				fileSaveResult: payload
 
 			};
 		}

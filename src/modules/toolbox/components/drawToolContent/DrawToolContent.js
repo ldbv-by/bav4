@@ -1,9 +1,8 @@
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 
 
@@ -12,7 +11,7 @@ import css from './drawToolContent.css';
  * @author thiloSchlemmer
  * @author alsturm
  */
-export class DrawToolContent extends BaElement {
+export class DrawToolContent extends AbstractToolContent {
 	constructor() {
 		super();
 
