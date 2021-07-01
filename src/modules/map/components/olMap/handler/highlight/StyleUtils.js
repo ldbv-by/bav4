@@ -8,7 +8,6 @@ export const nullStyleFunction = () => [new Style({})];
 
 export const highlightFeatureStyleFunction = () => [new Style({
 	image: new Icon({
-		color: 'rgba(44, 90, 146, 0.9)',
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
@@ -19,7 +18,6 @@ export const highlightFeatureStyleFunction = () => [new Style({
 
 export const highlightTemporaryFeatureStyleFunction = () => [new Style({
 	image: new Icon({
-		color: 'rgba(9, 157, 218, 0.9)',
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
