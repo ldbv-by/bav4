@@ -13,10 +13,15 @@ window.customElements.define(LayerManager.tag, LayerManager);
 
 describe('LayerManager', () => {
 	let store;
+
+	const environmentServiceMock = {
+		isTouch: () => false
+	};
 	const setup = async (state) => {
 
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return TestUtils.render(LayerManager.tag);
 	};
 
@@ -180,6 +185,19 @@ describe('LayerManager', () => {
 				// also effectAllowed      
 			};
 		};
+
+		it('on dragstart should abort on touch-devices', () => {
+			const layerElement = element.shadowRoot.querySelector('.layer');
+			spyOn(environmentServiceMock, 'isTouch').and.callFake(() => true);
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			expect(element._draggedItem).toBeFalse();
+
+		});
+
 
 		it('on dragstart should update internal draggedItem', () => {
 			const layerElement = element.shadowRoot.querySelector('.layer');

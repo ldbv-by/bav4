@@ -17,8 +17,9 @@ export class LayerManager extends BaElement {
 
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
+		this._environmentService = EnvironmentService;
 		this._draggableItems = [];
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 	}
@@ -82,6 +83,10 @@ export class LayerManager extends BaElement {
 		};
 
 		const onDragStart = (e, layerItem) => {
+			if (this._environmentService.isTouch()) {
+				return;
+			}
+
 			this._draggedItem = layerItem;
 
 			e.target.classList.add('isdragged');
