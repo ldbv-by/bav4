@@ -117,8 +117,10 @@ export class MainMenu extends BaElement {
 								</div>								
 							`)}
 						</div>
+					</div>		
+					<div>
 						${renderTagOf(DevInfo)}	
-					</div>			
+					</div>	
 				</div>			
 			</div>			
 		`;

@@ -190,7 +190,7 @@ describe('MainMenu', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.main-menu__container').querySelector(DevInfo.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu').querySelector(DevInfo.tag)).toBeTruthy();
 		});
 	});
 
