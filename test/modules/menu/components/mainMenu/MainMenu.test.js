@@ -9,6 +9,8 @@ import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.acti
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
+import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
+import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -30,6 +32,8 @@ describe('MainMenuTabIndex', () => {
 
 describe('MainMenu', () => {
 
+	let store;
+
 	const windowMock = {
 		matchMedia() { }
 	};
@@ -44,7 +48,10 @@ describe('MainMenu', () => {
 				tabIndex: tabIndex
 			}
 		};
-		TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			mainMenu: mainMenuReducer,
+			highlight: highlightReducer
+		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -153,7 +160,7 @@ describe('MainMenu', () => {
 			for (let i = 0; i < contentPanels.length; i++) {
 				// Todo check all content panels when implemented
 				switch (i) {
-					case  MainMenuTabIndex.SEARCH.id:
+					case MainMenuTabIndex.SEARCH.id:
 						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 						break;
 					case MainMenuTabIndex.TOPICS.id:
@@ -175,7 +182,7 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
-			
+
 			const activeTabIndex = 2;
 			const element = await setup({}, true, activeTabIndex);
 
@@ -215,7 +222,7 @@ describe('MainMenu', () => {
 
 			setTabIndex(MainMenuTabIndex.MAPS);
 			check(MainMenuTabIndex.MAPS, contentPanels);
-			
+
 			setTabIndex(MainMenuTabIndex.MORE);
 			check(MainMenuTabIndex.MORE, contentPanels);
 
@@ -230,6 +237,23 @@ describe('MainMenu', () => {
 
 			setTabIndex(MainMenuTabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
+		});
+
+		it('clears highlight features', async () => {
+			await setup();
+			const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+
+			setHighlightFeature(highlightFeature);
+			
+			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+
+			setTabIndex(MainMenuTabIndex.SEARCH);
+
+			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+			
+			setTabIndex(MainMenuTabIndex.MAPS);
+
+			expect(store.getState().highlight.feature).toBeNull();
 		});
 	});
 

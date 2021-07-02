@@ -6,6 +6,7 @@ import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
+import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 
 /**
  * @enum
@@ -73,6 +74,12 @@ export class MainMenu extends BaElement {
 		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
 		//initial set of local state
 		handleMinWidthChange(mediaQueryMinWidth);
+
+		this.observe('tabIndex', tabIndex => {
+			if (tabIndex !== MainMenuTabIndex.SEARCH.id) {
+				clearHighlightFeatures();
+			}
+		});
 	}
 
 	/**
