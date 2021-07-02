@@ -9,7 +9,7 @@
     position: fixed;
     z-index: var(--z-footer);
     bottom: 0;
-    width:100%;       
+    /* width:100%;        */
     transition: transform 0.3s ease-out;     
 }
 .content{
