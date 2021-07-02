@@ -36,6 +36,8 @@
    display: flex;
    padding-left:1.5em;
    position: relative;
+   background: transparent;
+   border: 0;
 }
 .ba-list-item__image{
    height: 4em;
