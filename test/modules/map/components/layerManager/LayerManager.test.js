@@ -1,22 +1,27 @@
 import { LayerManager } from '../../../../../src/modules/map/components/layerManager/LayerManager';
-import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 
-window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(LayerManager.tag, LayerManager);
 
 
 describe('LayerManager', () => {
 	let store;
+
+	const environmentServiceMock = {
+		isTouch: () => false
+	};
 	const setup = async (state) => {
 
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return TestUtils.render(LayerManager.tag);
 	};
 
@@ -62,9 +67,9 @@ describe('LayerManager', () => {
 			};
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
-			const toggleElement = layerItem.shadowRoot.querySelector('ba-toggle');
+			const checkboxElement = layerItem.shadowRoot.querySelector('ba-checkbox');
 
-			expect(toggleElement.checked).toBeFalse();
+			expect(checkboxElement.checked).toBeFalse();
 		});
 
 		it('displays one out of two layers - one is hidden', async () => {
@@ -75,7 +80,7 @@ describe('LayerManager', () => {
 
 			const hiddenLayer = {
 				...defaultLayerProperties,
-				id: 'id1', label: 'label1', visible: false, zIndex: 0, constraints:{ hidden:true, alwaysOnTop:false }
+				id: 'id1', label: 'label1', visible: false, zIndex: 0, constraints: { hidden: true, alwaysOnTop: false }
 			};
 			const state = {
 				layers: {
@@ -181,6 +186,19 @@ describe('LayerManager', () => {
 			};
 		};
 
+		it('on dragstart should abort on touch-devices', () => {
+			const layerElement = element.shadowRoot.querySelector('.layer');
+			spyOn(environmentServiceMock, 'isTouch').and.callFake(() => true);
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			expect(element._draggedItem).toBeFalse();
+
+		});
+
+
 		it('on dragstart should update internal draggedItem', () => {
 			const layerElement = element.shadowRoot.querySelector('.layer');
 
@@ -191,6 +209,58 @@ describe('LayerManager', () => {
 
 			expect(element._draggedItem).not.toBeFalse();
 
+		});
+
+		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[0];
+
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('1');
+			expect(placeholders[2].innerText).toBe('2');
+			expect(placeholders[3].innerText).toBe('3');
+		});
+
+		it('on dragstart should update placeholder-content for dragging 2th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[1];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('2');
+			expect(placeholders[2].innerText).toBe('2');
+			expect(placeholders[3].innerText).toBe('3');
+		});
+
+		it('on dragstart should update placeholder-content for dragging 3th layer', () => {
+			const layers = element.shadowRoot.querySelectorAll('.layer');
+			const layerElement = layers[2];
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, layerElement);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			layerElement.dispatchEvent(dragstartEvt);
+
+			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
+
+			expect(placeholders.length).toBe(4);
+			expect(placeholders[0].innerText).toBe('1');
+			expect(placeholders[1].innerText).toBe('2');
+			expect(placeholders[2].innerText).toBe('3');
+			expect(placeholders[3].innerText).toBe('3');
 		});
 
 		it('on dragEnter of neighbouring placeholder no style changed', () => {
@@ -327,9 +397,9 @@ describe('LayerManager', () => {
 		});
 	});
 
-	describe('when layers are modified', () => { 		
+	describe('when layers are modified', () => {
 
-		it('renders changed layer.label', async() => {
+		it('renders changed layer.label', async () => {
 			const layer = {
 				...defaultLayerProperties,
 				id: 'id0', label: 'Foo'
@@ -340,11 +410,11 @@ describe('LayerManager', () => {
 					background: 'bg0'
 				}
 			};
-			const modifyableLayerProperties = { label:'Bar' };
+			const modifyableLayerProperties = { label: 'Bar' };
 
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
-			const layerLabel = layerItem.shadowRoot.querySelector('.layer-header__text');
+			const layerLabel = layerItem.shadowRoot.querySelector('.ba-list-item__text');
 			expect(layerLabel.innerText).toBe('Foo');
 
 			modifyLayer('id0', modifyableLayerProperties);
@@ -352,7 +422,7 @@ describe('LayerManager', () => {
 			expect(layerLabel.innerText).toBe(modifyableLayerProperties.label);
 		});
 
-		it('renders changed layer.opacity', async() => {
+		it('renders changed layer.opacity', async () => {
 			const layer = {
 				...defaultLayerProperties, id: 'id0',
 			};
@@ -362,13 +432,13 @@ describe('LayerManager', () => {
 					background: 'bg0'
 				}
 			};
-			const modifyableLayerProperties = {  opacity:.55 };
+			const modifyableLayerProperties = { opacity: .55 };
 
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
-			
+
 			const slider = layerItem.shadowRoot.querySelector('.opacity-slider');
-			
+
 			expect(slider.value).toBe('100');
 
 			modifyLayer('id0', modifyableLayerProperties);
@@ -376,27 +446,27 @@ describe('LayerManager', () => {
 			expect(slider.value).toBe('55');
 		});
 
-		it('renders changed layer.visible', async() => {
+		it('renders changed layer.visible', async () => {
 			const layer = {
 				...defaultLayerProperties, id: 'id0', visible: false
 			};
 			const state = {
-				layers: {					
+				layers: {
 					active: [layer],
 					background: 'bg0'
 				}
 			};
-			const modifyableLayerProperties = {  visible:true };
+			const modifyableLayerProperties = { visible: true };
 
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
-			const toggle = layerItem.shadowRoot.querySelector('ba-toggle');		
-			expect(toggle.checked).toBe(false);
-			
+			const checkbox = layerItem.shadowRoot.querySelector('ba-checkbox');
+			expect(checkbox.checked).toBe(false);
+
 			modifyLayer('id0', modifyableLayerProperties);
 			expect(store.getState().layers.active[0].visible).toBe(true);
-			expect(toggle.checked).toBe(true);
-		});		
+			expect(checkbox.checked).toBe(true);
+		});
 	});
 
 

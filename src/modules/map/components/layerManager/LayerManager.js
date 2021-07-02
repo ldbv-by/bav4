@@ -11,13 +11,15 @@ import css from './layerManager.css';
  * @class
  * @author thiloSchlemmer
  * @author tAulinger 
+ * @author alsturm
  */
 export class LayerManager extends BaElement {
 
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
+		this._environmentService = EnvironmentService;
 		this._draggableItems = [];
 		this._draggedItem = false; /* instead of using e.dataTransfer.get/setData() using internal State to get access for dragged object  */
 	}
@@ -59,7 +61,7 @@ export class LayerManager extends BaElement {
 	 */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active } = state;		
+		const { active } = state;
 		this._buildDraggableItems(active.filter(l => !l.constraints.hidden));
 
 		const isNeighbour = (index, otherIndex) => {
@@ -67,25 +69,42 @@ export class LayerManager extends BaElement {
 		};
 
 		const createLayerElement = (layerItem) => {
-
 			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable>
 					</ba-layer-item>`;
-
 		};
 
 		const createPlaceholderElement = (layerItem) => {
-			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'>							
-						</div>`;
+			return html`<div id=${'placeholder_' + layerItem.listIndex} class='placeholder'></div>`;
+		};
+
+		const createIndexNumberForPlaceholder = (listIndex, layerItem) => {
+			const isHigherThenDrag = (layerItem.listIndex >= listIndex) ? 1 : 0;
+			return listIndex / 2 + isHigherThenDrag;
 		};
 
 		const onDragStart = (e, layerItem) => {
+			if (this._environmentService.isTouch()) {
+				return;
+			}
+
 			this._draggedItem = layerItem;
+
+			e.target.classList.add('isdragged');
 			e.dataTransfer.dropEffect = 'move';
 			e.dataTransfer.effectAllowed = 'move';
+			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => {
+				const listIndex = Number.parseFloat(p.id.replace('placeholder_', ''));
+				p.innerHTML = createIndexNumberForPlaceholder(listIndex, layerItem);
+				if (!isNeighbour(listIndex, layerItem.listIndex)) {
+					p.classList.add('placeholder-active');
+				}
+			});
 		};
 
 		const onDragEnd = (e) => {
+			e.target.classList.remove('isdragged');
 			e.preventDefault();
+			this.shadowRoot.querySelectorAll('.placeholder').forEach(p => p.classList.remove('placeholder-active'));
 		};
 
 		const onDrop = (e, layerItem) => {
