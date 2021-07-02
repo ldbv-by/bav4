@@ -46,7 +46,6 @@ describe('tests for ProcessEnvConfigService', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
 			process.env = {
-				'SEARCH_SERVICE_API_KEY': 'SEARCH_SERVICE_API_KEY_value',
 				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
@@ -56,9 +55,8 @@ describe('tests for ProcessEnvConfigService', () => {
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(7);
+			expect(configService._properties.size).toBe(6);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
-			expect(configService.getValue('SEARCH_SERVICE_API_KEY')).toBe('SEARCH_SERVICE_API_KEY_value');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
@@ -99,11 +97,11 @@ describe('tests for ProcessEnvConfigService', () => {
 
 		it('checks if a key exists', () => {
 			// eslint-disable-next-line no-undef
-			process.env = { 'SEARCH_SERVICE_API_KEY': 'myValue' };
+			process.env = { 'DEFAULT_LANG': 'myValue' };
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService.hasKey('SEARCH_SERVICE_API_KEY')).toBeTrue();
+			expect(configService.hasKey('DEFAULT_LANG')).toBeTrue();
 			expect(configService.hasKey('unknown')).toBeFalse();
 		});
 	});
