@@ -63,7 +63,8 @@ export class ToolBar extends BaElement {
 	 */
 	createView(state) {
 
-		const { toolBar, toolContainer } = state;
+		const { toolBar, toolContainer, fetching } = state;
+
 		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
@@ -97,37 +98,45 @@ export class ToolBar extends BaElement {
 			toggleTool(toolId);
 		};
 
+		const getAnimatedBorderClass = () => {
+			return fetching ? 'animated-action-button__border__running' : '';
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>		
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">  
-				<button  @click="${toggleToolBar}"  class="action-button">
+			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
+				<button class="action-button" @click="${toggleToolBar}">
+					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
+					</div>
 					<div class="action-button__icon">
+						<div class="ba">
+						</div>
 					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<div  @click="${toggleMeasureTool}" class="tool-bar__button">
+					<button  @click="${toggleMeasureTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_measure_button')}
 						</div>  
-					</div>  	
-					<div  @click="${toggleDrawTool}" class="tool-bar__button">
+					</button>  	
+					<button  @click="${toggleDrawTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_draw_button')}
 						</div>  
-					</div>  				               
-					<div  class="tool-bar__button">
+					</button>  				               
+					<button  class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_share_button')}
 						</div>  
-					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
+					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
 		`;
@@ -142,8 +151,8 @@ export class ToolBar extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { toolBar, toolContainer } = globalState;
-		return { toolBar: toolBar, toolContainer: toolContainer };
+		const { toolBar, toolContainer, network: { fetching } } = globalState;
+		return { toolBar: toolBar, toolContainer: toolContainer, fetching };
 	}
 
 	static get tag() {

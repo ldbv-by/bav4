@@ -27,8 +27,8 @@ export class ZoomButtons extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="zoom-buttons">
-				<a class="button" title="${translate('map_zoomButtons_in')}" @click="${increaseZoom}"><span class="icon zoom-in"></a>
-				<a class="button" title="${translate('map_zoomButtons_out')}"  @click="${decreaseZoom}"><span class="icon zoom-out"></a>
+				<button class="button" title="${translate('map_zoomButtons_in')}" @click="${increaseZoom}"><span class="icon zoom-in"></button>
+				<button class="button" title="${translate('map_zoomButtons_out')}"  @click="${decreaseZoom}"><span class="icon zoom-out"></button>
 			</div>
 		`;
 	}
