@@ -9,6 +9,7 @@ import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { ShowCase } from '../../../../src/modules/utils/components/showCase/ShowCase';
 
 window.customElements.define(Header.tag, Header);
 
@@ -195,7 +196,9 @@ describe('Header', () => {
 
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
-			expect(store.getState().modal.title).toBe('Showcase');
+			expect(store.getState().modal.data.title).toBe('Showcase');
+			expect(document.querySelectorAll(ShowCase.tag)).toHaveSize(1);
+
 		});
 	});
 

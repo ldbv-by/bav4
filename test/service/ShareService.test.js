@@ -92,6 +92,18 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 			});
 
+			it('extracts the current layers state ignoring hidden layer', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				addLayer('someLayer', { constraints: { hidden: true } });
+				addLayer('anotherLayer');
+
+				const extract = instanceUnderTest._extractLayers();
+				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+			});
+
 			it('extracts the current layers state considering non default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
@@ -193,14 +205,48 @@ describe('ShareService', () => {
 			});
 		});
 
+		describe('_mergeExtraParams', () => {
+
+			it('merges an array when key already present', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+
+				const { l: l1 } = instanceUnderTest._mergeExtraParams({ l: ['a', 'b'] }, { l: 'c' });
+
+				expect(l1).toEqual(['a', 'b', 'c']);
+
+				const { l: l2 } = instanceUnderTest._mergeExtraParams({ l: ['a', 'b'] }, { l: ['b', 'c'] });
+
+				expect(l2).toEqual(['a', 'b', 'b', 'c']);
+			});
+
+			it('adds value(s) when key not present', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+
+				const result = instanceUnderTest._mergeExtraParams({ foo: 'bar' }, { l: .5 });
+
+				expect(result).toEqual({ foo: 'bar', l: .5 });
+			});
+
+			it('does nothing when key not present', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+
+				const result = instanceUnderTest._mergeExtraParams({ foo: 'bar' }, { foo: 'other' });
+
+				expect(result).toEqual({ foo: 'bar' });
+			});
+		});
+
 		describe('encodeState', () => {
 
 			it('encodes a state object to url', () => {
 				const instanceUnderTest = new ShareService();
-
 				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+				const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
 				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
@@ -210,6 +256,27 @@ describe('ShareService', () => {
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+				expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+			});
+
+			it('encodes a state object to url merging extra parameter', () => {
+				const instanceUnderTest = new ShareService();
+				const extraParam = { foo: 'bar' };
+				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+				const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
+
+				const encoded = instanceUnderTest.encodeState(extraParam);
+				const queryParams = new URLSearchParams(new URL(encoded).search);
+
+				expect(encoded.includes(window.location.href)).toBeTrue();
+				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+				expect(queryParams.get('foo')).toBe('bar');
+				expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 			});
 		});
 	});

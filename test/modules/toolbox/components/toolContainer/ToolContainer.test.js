@@ -40,6 +40,16 @@ describe('ToolContainer', () => {
 			measurement: measurement
 		};
 
+		const shareServiceMock = {
+			copyToClipboard() {
+				return Promise.resolve(); 
+			}
+		};
+		const urlServiceMock = {
+			shorten() {
+				return Promise.resolve('http://shorten.foo');
+			}
+		};
 		class MockClass {
 			constructor() {
 				this.get = 'I\'m a UnitsService.';
@@ -63,6 +73,8 @@ describe('ToolContainer', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
+			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('UrlService', urlServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(ToolContainer.tag);
 	};
