@@ -3,7 +3,8 @@ import { $injector } from '../../../../src/injection';
 import { SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
-describe('SearchResultProviderService', () => {
+
+describe('SearchResultService', () => {
 
 	const environmentService = {
 		isStandalone: () => { }
