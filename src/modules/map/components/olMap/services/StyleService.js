@@ -28,15 +28,13 @@ export class StyleService {
 	 */
 	addStyle(olFeature, olMap, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
-		if (usingStyleType) {
-			switch (usingStyleType) {
-				case StyleTypes.MEASURE:
-					this._addMeasureStyle(olFeature, olMap);
-					break;
-				default:
-					console.warn('Could not provide a style for unknown style-type:', usingStyleType);
-					break;
-			}
+		switch (usingStyleType) {
+			case StyleTypes.MEASURE:
+				this._addMeasureStyle(olFeature, olMap);
+				break;
+			default:
+				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
+				break;
 		}
 	}
 
@@ -102,6 +100,21 @@ export class StyleService {
 
 	_addMeasureStyle(olFeature, olMap) {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
+
+		/**
+		 * Provide a single entrypoint for features without a stored partition_delta,
+		 * to create a best fitting partition-delta after zooming of the map ends.
+		 * 
+		 * This must be done before the style is applied for the first time.
+		 * 
+		 * This fallback is needed, if stored data is loaded in the background, without 
+		 * rendering and the initial resolution does not fit to the final zoomed extent 
+		 * of the feature.
+		 */
+		if (olFeature.get('partition_delta') == null) {
+			olMap.getView().once('change:resolution', () => olMap.once('moveend', (e) => overlayService.update(olFeature, e.map, StyleTypes.MEASURE)));
+		}
+
 		olFeature.setStyle(measureStyleFunction(olFeature));
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
 	}
