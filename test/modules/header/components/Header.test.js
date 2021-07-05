@@ -207,7 +207,7 @@ describe('Header', () => {
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
 			expect(store.getState().modal.data.title).toBe('Showcase');
-			expect(document.querySelectorAll(ShowCase.tag)).toHaveSize(1);
+			expect(document.querySelectorAll('ba-showcase')).toHaveSize(1);
 
 		});
 	});
