@@ -11,7 +11,6 @@ import { setFetching } from '../../../../src/store/network/network.action';
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
-import { ShowCase } from '../../../../src/modules/utils/components/showCase/ShowCase';
 
 window.customElements.define(Header.tag, Header);
 
