@@ -4,6 +4,7 @@ import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '.
  * Service that offers search result provider for different types.
  * @class
  * @author taulinger
+ * @deprecated
  */
 export class SearchResultProviderService {
 	
