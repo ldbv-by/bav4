@@ -56,8 +56,7 @@ describe('MainMenu', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
-			})
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			});
 
 		return TestUtils.render(MainMenu.tag);
 	};
