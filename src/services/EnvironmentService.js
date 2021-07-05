@@ -1,3 +1,4 @@
+import { $injector } from '../injection';
 
 /**
  * @class
@@ -10,6 +11,8 @@ export class EnvironmentService {
 	 */
 	constructor(_window = window) {
 		this._window = _window;
+		const { ConfigService } = $injector.inject('ConfigService');
+		this._configService = ConfigService;
 	}
 
 	/**
@@ -81,7 +84,18 @@ export class EnvironmentService {
 		};
 	}
 
+	/**
+	 * 
+	 * @returns `true` if we are in embedded mode
+	 */
 	isEmbedded() {
 		return this.getUrlParams().get('embed') === 'true';
+	}
+
+	/**
+	 *  @returns `false` if a backend is intented to be used
+	 */
+	isStandalone() {
+		return !this._configService.getValue('BACKEND_URL', false);
 	}
 }
