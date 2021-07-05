@@ -11,8 +11,8 @@ window.customElements.define(LocationResultsPanel.tag, LocationResultsPanel);
 describe('LocationResultsPanel', () => {
 
 
-	const searchResultProviderServiceMock = {
-		getLocationSearchResultProvider() { },
+	const searchResultServiceMock = {
+		locationsByTerm() { },
 	};
 
 	const setup = (state) => {
@@ -20,7 +20,7 @@ describe('LocationResultsPanel', () => {
 		TestUtils.setupStoreAndDi(state, { search: searchReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', searchResultProviderServiceMock);
+			.registerSingleton('SearchResultService', searchResultServiceMock);
 		return TestUtils.render(LocationResultsPanel.tag);
 	};
 
@@ -71,8 +71,8 @@ describe('LocationResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
-				.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
+				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
 
 			const element = await setup(initialState);
 
@@ -97,8 +97,8 @@ describe('LocationResultsPanel', () => {
 
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
-				.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
+				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
 
 			const element = await setup();
 			setQuery(query);
@@ -131,8 +131,8 @@ describe('LocationResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const getLocationSearchResultProvider = spyOn(searchResultProviderServiceMock, 'getLocationSearchResultProvider')
-					.and.returnValue(async () => [new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+				const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
+					.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
 
 				const element = await setup(initialState);
 

@@ -11,8 +11,8 @@ window.customElements.define(GeoResouceResultsPanel.tag, GeoResouceResultsPanel)
 describe('GeoResouceResultsPanel', () => {
 
 
-	const searchResultProviderServiceMock = {
-		getGeoresourceSearchResultProvider() { },
+	const searchResultServiceMock = {
+		geoResourcesByTerm() { },
 	};
 
 	const setup = (state) => {
@@ -20,7 +20,7 @@ describe('GeoResouceResultsPanel', () => {
 		TestUtils.setupStoreAndDi(state, { search: searchReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', searchResultProviderServiceMock);
+			.registerSingleton('SearchResultService', searchResultServiceMock);
 		return TestUtils.render(GeoResouceResultsPanel.tag);
 	};
 
@@ -72,8 +72,8 @@ describe('GeoResouceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const getGeoResourceSearchResultProviderSpy = spyOn(searchResultProviderServiceMock, 'getGeoresourceSearchResultProvider')
-				.and.returnValue(async () => [new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
+				.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
 
 			const element = await setup(initialState);
 
@@ -90,7 +90,7 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-				expect(getGeoResourceSearchResultProviderSpy).toHaveBeenCalled();
+				expect(searchResultService).toHaveBeenCalled();
 			});
 		});
 	});
@@ -99,8 +99,8 @@ describe('GeoResouceResultsPanel', () => {
 
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const getGeoResourceSearchResultProviderSpy = spyOn(searchResultProviderServiceMock, 'getGeoresourceSearchResultProvider')
-				.and.returnValue(async () => [new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
+				.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
 
 			const element = await setup();
 			setQuery(query);
@@ -118,7 +118,7 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-				expect(getGeoResourceSearchResultProviderSpy).toHaveBeenCalled();
+				expect(searchResultService).toHaveBeenCalled();
 			});
 		});
 	});
@@ -134,8 +134,8 @@ describe('GeoResouceResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const getGeoResourceSearchResultProviderSpy = spyOn(searchResultProviderServiceMock, 'getGeoresourceSearchResultProvider')
-					.and.returnValue(async () => [new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+				const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
+					.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
 
 				const element = await setup(initialState);
 
@@ -163,7 +163,7 @@ describe('GeoResouceResultsPanel', () => {
 					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					expect(getGeoResourceSearchResultProviderSpy).toHaveBeenCalled();
+					expect(searchResultService).toHaveBeenCalled();
 				});
 			});
 		});

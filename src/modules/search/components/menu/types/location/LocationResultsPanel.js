@@ -17,10 +17,10 @@ export class LocationResultsPanel extends BaElement {
 
 	constructor() {
 		super();
-		const { SearchResultProviderService: providerService, TranslationService: translationService }
-			= $injector.inject('SearchResultProviderService', 'TranslationService');
+		const { SearchResultService: searchResultService, TranslationService: translationService }
+            = $injector.inject('SearchResultService', 'TranslationService');
 
-		this._providerService = providerService;
+		this._searchResultService = searchResultService;
 		this._translationService = translationService;
 		this._locationSearchResults = [];
 		this._isCollapsed = false;
@@ -28,12 +28,12 @@ export class LocationResultsPanel extends BaElement {
 
 
 	initialize() {
-		const locationProvider = this._providerService.getLocationSearchResultProvider();
+		const searchResultProvider = (term) => this._searchResultService.locationsByTerm(term);
 
 		//requestData call has to be debounced
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
 			async (term) => {
-				this._locationSearchResults = await requestData(term, locationProvider, LocationResultsPanel.Min_Query_Length);
+				this._locationSearchResults = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
 				this.render();
 			});
 

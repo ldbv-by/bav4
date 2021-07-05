@@ -17,10 +17,10 @@ export class GeoResouceResultsPanel extends BaElement {
 
 	constructor() {
 		super();
-		const { SearchResultProviderService: providerService, TranslationService: translationService }
-            = $injector.inject('SearchResultProviderService', 'TranslationService');
+		const { SearchResultService: searchResultService, TranslationService: translationService }
+            = $injector.inject('SearchResultService', 'TranslationService');
 
-		this._providerService = providerService;
+		this._searchResultService = searchResultService;
 		this._translationService = translationService;
 		this._geoRersourceSearchResults = [];
 		this._isCollapsed = false;
@@ -28,12 +28,12 @@ export class GeoResouceResultsPanel extends BaElement {
 
 
 	initialize() {
-		const geoResourceProvider = this._providerService.getGeoresourceSearchResultProvider();
+		const searchResultProvider = (term) => this._searchResultService.geoResourcesByTerm(term);
 
 		//requestData call has to be debounced
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
 			async (term) => {
-				this._geoRersourceSearchResults = await requestData(term, geoResourceProvider, GeoResouceResultsPanel.Min_Query_Length);
+				this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
 				this.render();
 			});
 
