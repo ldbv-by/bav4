@@ -1,0 +1,30 @@
+.notification-panel {
+    max-height: 100%;
+    position: fixed;
+    bottom: 0.625em;
+    left: 1em;
+    right: 1em;
+    
+    }
+
+.notification-panel .notification-item {
+    font-size: inherit;
+    color: red;
+    background-color: blue;
+    padding: 0.2em;
+    margin: 0 0 0.2em;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 1px;
+    transition: opacity 1s ease-in;
+}
+
+.notification-panel .notification-item, .notification-item-hide{
+    opacity:0;
+}
+
+.notification-panel .notification-item, .notification-item-hide{
+    margin: 0;
+}
