@@ -24,7 +24,6 @@ describe('notificationReducer', () => {
 		};
 
 		emitNotification(notification);
-		console.log(store.getState().notifications.notification);
 		expect(store.getState().notifications.notification.payload).toBe(notification);
 	});
 });
