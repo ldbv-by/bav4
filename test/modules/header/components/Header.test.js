@@ -9,7 +9,8 @@ import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { ShowCase } from '../../../../src/modules/utils/components/showCase/ShowCase';
+import { searchReducer } from '../../../../src/store/search/search.reducer';
+import { EventLike } from '../../../../src/utils/storeUtils';
 
 window.customElements.define(Header.tag, Header);
 
@@ -36,13 +37,21 @@ describe('Header', () => {
 			},
 			layers: {
 				active: layers
+			},
+			search: {
+				query: new EventLike(null)
 			}
 		};
-		store = TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer, modal: modalReducer, network: networkReducer, layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			mainMenu: mainMenuReducer,
+			modal: modalReducer,
+			network: networkReducer,
+			layers: layersReducer,
+			search: searchReducer
+		});
 		$injector
 			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
-			.registerSingleton('SearchResultProviderService', { getLocationSearchResultProvider: () => { } })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
@@ -197,7 +206,7 @@ describe('Header', () => {
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
 			expect(store.getState().modal.data.title).toBe('Showcase');
-			expect(document.querySelectorAll(ShowCase.tag)).toHaveSize(1);
+			expect(document.querySelectorAll('ba-showcase')).toHaveSize(1);
 
 		});
 	});
@@ -246,57 +255,116 @@ describe('Header', () => {
 
 	});
 
-	describe('when search input is focused or blurred ', () => {
+	describe('input for search queries', () => {
+		
+		describe('when input changes', () => {
 
-		beforeEach(function () {
-			jasmine.clock().install();
+			it('updates the store', async () => {
+				spyOn(windowMock, 'matchMedia')
+					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+				const element = await setup();
+				
+				const inputElement = element.shadowRoot.querySelector('#input');
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(store.getState().search.query.payload).toBe('foo');
+			});
+
+			it('opens the main menu', async () => {
+				spyOn(windowMock, 'matchMedia')
+					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+				const element = await setup({}, false) ;
+				
+				expect(store.getState().mainMenu.open).toBeFalse();
+
+				const inputElement = element.shadowRoot.querySelector('#input');
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(store.getState().mainMenu.open).toBeTrue();
+			});
 		});
+		
+		describe('when input is focused or blurred ', () => {
 
-		afterEach(function () {
-			jasmine.clock().uninstall();
+			describe('in portrait mode', () => {
+				it('opens the main menu when input has content', async () => {
+					spyOn(windowMock, 'matchMedia')
+						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+	
+					const element = await setup({}, false) ;
+					const input = 	element.shadowRoot.querySelector('#input');
+					
+					input.focus();
+	
+					expect(store.getState().mainMenu.open).toBeFalse();
+	
+					input.blur();
+					input.value = 'foo';
+					input.focus();
+	
+					expect(store.getState().mainMenu.open).toBeTrue();
+				});
+			});
+
+
+			it('sets the correct tab index for the search-content-panel', async () => {
+				spyOn(windowMock, 'matchMedia')
+					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+
+				const element = await setup();
+				element.shadowRoot.querySelector('#input').focus();
+
+				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
+			});
+			
+			describe('in portrait mode and min-width < 80em', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+	
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
+				it('hide mobile header and show again', async () => {
+					const matchMediaSpy = spyOn(windowMock, 'matchMedia')
+						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
+						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
+	
+					const element = await setup();
+	
+					const container = element.shadowRoot.querySelector('#headerMobile');
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('1');
+					element.shadowRoot.querySelector('#input').focus();
+					expect(window.getComputedStyle(container).display).toBe('none');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					element.shadowRoot.querySelector('#input').blur();
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					jasmine.clock().tick(800);
+					/**
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
+					expect(container.style.opacity).toBe('1');
+	
+					expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+				});
+			});
 		});
-
-		it('sets the correct tab index for the search-content-panel', async () => {
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
-			element.shadowRoot.querySelector('.header__search-container input').focus();
-
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
-		});
-
-		it('hide mobile header and show again', async () => {
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
-
-			const container = element.shadowRoot.querySelector('#headerMobile');
-			expect(window.getComputedStyle(container).display).toBe('block');
-			expect(window.getComputedStyle(container).opacity).toBe('1');
-			element.shadowRoot.querySelector('.header__search-container input').focus();
-			expect(window.getComputedStyle(container).display).toBe('none');
-			expect(window.getComputedStyle(container).opacity).toBe('0');
-			element.shadowRoot.querySelector('.header__search-container input').blur();
-			expect(window.getComputedStyle(container).display).toBe('block');
-			expect(window.getComputedStyle(container).opacity).toBe('0');
-			jasmine.clock().tick(800);
-			/**
-			 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-			 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-			 * --> So we have to test for 'style' here
-			 */
-			expect(container.style.opacity).toBe('1');
-
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
-		});
+	
 	});
 
-	describe('network fetching state', () => {
+	describe('when network fetching state changes', () => {
 
 		beforeEach(function () {
 			spyOn(windowMock, 'matchMedia')

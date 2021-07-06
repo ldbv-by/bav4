@@ -18,10 +18,14 @@ describe('TopicService', () => {
 	const configService = {
 		getValue: () => { }
 	};
+	const environmentService = {
+		isStandalone: () => { }
+	};
 
 	beforeAll(() => {
 		$injector
-			.registerSingleton('ConfigService', configService);
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('EnvironmentService', environmentService);
 	});
 
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0']);
@@ -65,28 +69,46 @@ describe('TopicService', () => {
 			expect(topic.length).toBe(1);
 		});
 
-		it('loads two fallback topics when provider cannot fulfill', async () => {
+		describe('provider cannot fulfill', () => {
 
-			const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
-			const instanceUnderTest = setup(async () => {
-				throw new Error('Topics could not be loaded');
+			it('loads two fallback topics when we are in standalone mode', async () => {
+
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
+				const instanceUnderTest = setup(async () => {
+					throw new Error('Topics could not be loaded');
+				});
+				const warnSpy = spyOn(console, 'warn');
+
+
+				const topics = await instanceUnderTest.init();
+
+				expect(topics.length).toBe(2);
+				expect(topics[0].id).toBe(fallbackId0);
+				expect(topics[0].baseGeoRs.length).toBe(2);
+				expect(topics[0].baseGeoRs[0]).toBe('atkis');
+				expect(topics[0].baseGeoRs[1]).toBe('atkis_sw');
+				expect(topics[1].id).toBe(fallbackId1);
+				expect(topics[1].baseGeoRs.length).toBe(2);
+				expect(topics[1].baseGeoRs[0]).toBe('atkis');
+				expect(topics[1].baseGeoRs[1]).toBe('atkis_sw');
+				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
-			const warnSpy = spyOn(console, 'warn');
 
-			expect(instanceUnderTest._topics).toBeNull();
+			it('logs an error when we are NOT in standalone mode', async () => {
 
-			const topics = await instanceUnderTest.init();
+				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				const instanceUnderTest = setup(async () => {
+					throw new Error('Topics could not be loaded');
+				});
+				const errorSpy = spyOn(console, 'error');
 
-			expect(topics.length).toBe(2);
-			expect(topics[0].id).toBe(fallbackId0);
-			expect(topics[0].baseGeoRs.length).toBe(2);
-			expect(topics[0].baseGeoRs[0]).toBe('atkis');
-			expect(topics[0].baseGeoRs[1]).toBe('atkis_sw');
-			expect(topics[1].id).toBe(fallbackId1);
-			expect(topics[1].baseGeoRs.length).toBe(2);
-			expect(topics[1].baseGeoRs[0]).toBe('atkis');
-			expect(topics[1].baseGeoRs[1]).toBe('atkis_sw');
-			expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
+
+				const topics = await instanceUnderTest.init();
+
+				expect(topics).toEqual([]);
+				expect(errorSpy).toHaveBeenCalledWith('Topics could not be fetched from backend.', jasmine.anything());
+			});
 		});
 	});
 

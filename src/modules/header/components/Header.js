@@ -5,6 +5,7 @@ import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
+import { setQuery } from '../../../store/search/search.action';
 
 
 /**
@@ -21,15 +22,13 @@ export class Header extends BaElement {
 		const {
 			CoordinateService: coordinateService,
 			EnvironmentService: environmentService,
-			SearchResultProviderService: providerService,
 			TranslationService: translationService
 		}
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService', 'TranslationService');
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'TranslationService');
 
 		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
 		this._portrait = false;
 		this._classMobileHeader = '';
 	}
@@ -108,6 +107,18 @@ export class Header extends BaElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+			//in portrait mode we open the main menu to display existing results
+			if (this._portrait) {
+				const value  = this.shadowRoot.querySelector('#input').value;
+				if (value.length > 0) {
+					openMainMenu();
+				}
+			}
+		};
+
+		const onInput = (evt) => {
+			openMainMenu();
+			setQuery(evt.target.value);
 		};
 
 		const showModalHeader = () => {
@@ -157,7 +168,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input id='input' @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>

@@ -3,9 +3,10 @@ import { BaElement, renderTagOf } from '../../../BaElement';
 import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
-import { SearchContentPanel } from '../../../search/components/menu/SearchContentPanel';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
+import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
+import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
 
 /**
  * @enum
@@ -15,7 +16,7 @@ export const MainMenuTabIndex = Object.freeze({
 	MAPS: { id: 1, component: null },
 	MORE: { id: 2, component: null },
 	ROUTING: { id: 3, component: null },
-	SEARCH: { id: 4, component: SearchContentPanel },
+	SEARCH: { id: 4, component: SearchResultsPanel },
 	FEATUREINFO: { id: 5, component: null }
 });
 
@@ -73,6 +74,12 @@ export class MainMenu extends BaElement {
 		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
 		//initial set of local state
 		handleMinWidthChange(mediaQueryMinWidth);
+
+		this.observe('tabIndex', tabIndex => {
+			if (tabIndex !== MainMenuTabIndex.SEARCH.id) {
+				clearHighlightFeatures();
+			}
+		});
 	}
 
 	/**
@@ -117,8 +124,10 @@ export class MainMenu extends BaElement {
 								</div>								
 							`)}
 						</div>
+					</div>		
+					<div>
 						${renderTagOf(DevInfo)}	
-					</div>			
+					</div>	
 				</div>			
 			</div>			
 		`;

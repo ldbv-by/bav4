@@ -27,6 +27,8 @@ describe('MeasurementPlugin', () => {
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].id).toBe(MEASUREMENT_LAYER_ID);
+		expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
+		expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
 		
 		deactivate();
 		

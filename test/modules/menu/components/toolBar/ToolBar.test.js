@@ -37,8 +37,7 @@ describe('ToolBarElement', () => {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ToolBar.tag);
 	};
 

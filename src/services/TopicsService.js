@@ -11,8 +11,9 @@ export class TopicsService {
 
 	constructor(provider = loadBvvTopics) {
 		this._provider = provider;
-		const { ConfigService: configService } = $injector.inject('ConfigService');
+		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
 		this._configService = configService;
+		this._environmentService = environmentService;
 		this._topics = null;
 	}
 
@@ -27,11 +28,16 @@ export class TopicsService {
 		if (!this._topics) {
 			try {
 				this._topics = await this._provider();
-				return this._topics;
 			}
 			catch (e) {
-				this._topics = this._newFallbackTopics();
-				console.warn('Topics could not be fetched from backend. Using fallback topics ...');
+				this._topics = [];
+				if (this._environmentService.isStandalone()) {
+					this._topics.push(...this._newFallbackTopics());
+					console.warn('Topics could not be fetched from backend. Using fallback topics ...');
+				}
+				else {
+					console.error('Topics could not be fetched from backend.', e);
+				}
 			}
 		}
 		return this._topics;
