@@ -1,12 +1,13 @@
 
 /**
- * An async function that that provides an array of
+ * An async function that provides an array of
  * {@link GeoResource}s.
  *
  * @async
  * @typedef {function():(Array<geoResource>)} georesourceProvider
  */
 
+import { $injector } from '../injection';
 import { WMTSGeoResource } from './domain/geoResources';
 import { loadBvvGeoResources } from './provider/geoResource.provider';
 
@@ -26,6 +27,8 @@ export class GeoResourceService {
 	constructor(provider = loadBvvGeoResources) {
 		this._provider = provider;
 		this._georesources = null;
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
 	/**
@@ -42,10 +45,14 @@ export class GeoResourceService {
 			}
 			catch (e) {
 				this._georesources = [];
-				console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
+				if (this._environmentService.isStandalone()) {
+					console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
+					this._georesources.push(...this._newFallbackGeoResources());
+				}
+				else {
+					console.error('GeoResources could not be fetched from backend.', e);
+				}
 			}
-			//we add the fallback geoResources in any case
-			this._georesources.push(...this._newFallbackGeoResources());
 		}
 		return this._georesources;
 	}

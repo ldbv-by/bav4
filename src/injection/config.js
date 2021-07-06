@@ -10,7 +10,6 @@ import { UnitsService } from '../services/UnitsService';
 import { GeoResourceService } from '../services/GeoResourceService';
 import { AltitudeService } from '../services/AltitudeService'; 
 import { UrlService } from '../services/UrlService';
-import { SearchResultProviderService } from '../modules/search/services/SearchResultProviderService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
 import { AdministrationService } from  '../services/AdministrationService'; 
@@ -20,6 +19,8 @@ import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../store/layers/LayersPlugin';
 import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
+import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
+import { SearchResultService } from '../modules/search/services/SearchResultService';
 
 
 $injector
@@ -33,7 +34,7 @@ $injector
 	.registerSingleton('GeoResourceService', new GeoResourceService())
 	.registerSingleton('TopicsService', new TopicsService())
 	.registerSingleton('AltitudeService', new AltitudeService())
-	.registerSingleton('SearchResultProviderService', new SearchResultProviderService())
+	.registerSingleton('SearchResultService', new SearchResultService())
 	.registerSingleton('ShareService', new ShareService())
 	.register('UnitsService', UnitsService)
 	.register('FileStorageService', BvvFileStorageService)
@@ -42,6 +43,7 @@ $injector
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
 	.registerSingleton('LayersPlugin', new LayersPlugin())
 	.registerSingleton('PositionPlugin', new PositionPlugin())
+	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

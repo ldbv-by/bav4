@@ -10,6 +10,7 @@ import { addLayer } from '../../../../store/layers/layers.action';
  *  
  * @class
  * @author taulinger
+ * @deprecated
  */
 export class SidePanel extends BaElement {
 

@@ -72,7 +72,6 @@ describe('ToolContainer', () => {
 				isTouch: () => false
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock)
 			.register('UnitsService', MockClass);

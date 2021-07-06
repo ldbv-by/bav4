@@ -71,11 +71,11 @@ export class UrlService {
 
 	/**
 	 * Shortens an url.  
-	 * Possible exceptions of the configured shortUrlProvider will be passed. 
+	 * Possible errors of the configured shortUrlProvider will be passed. 
 	 * @param {string} url 
 	 * @public
 	 * @returns {Promise<string>|Promise.reject} shortened url
-	 * @throws Exception of the shortUrlProvider 
+	 * @throws Error of the underlying provider 
 	 */
 	async shorten(url) {
 		if (!isString(url)) {
