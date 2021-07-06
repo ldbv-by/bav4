@@ -4,13 +4,11 @@
     -ms-transition: none !important;
     -o-transition: none !important;
   }
-
 .footer {
     position: fixed;
     z-index: var(--z-footer);
     bottom: .7em;
     left:1em;
-    /* width:100%;        */
     transition: transform 0.3s ease-out;     
 }
 .content{
@@ -22,10 +20,8 @@
 .is-open {
     transform: translate(28em, 0);
  }
-
  .is-portrait .content{
      display: none;
-
 }
 ba-attribution-info{
     bottom:0;
