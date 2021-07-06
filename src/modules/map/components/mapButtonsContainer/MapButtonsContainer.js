@@ -24,7 +24,8 @@ export class MapButtonsContainer extends BaElement {
 				<ba-rotation-button></ba-rotation-button>
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>
-				<ba-extent-button></ba-extent-button>              
+				<ba-extent-button></ba-extent-button>
+				<ba-info-button></ba-info-button>              
             </div>			            
         `;
 	} 
