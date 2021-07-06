@@ -1,7 +1,9 @@
 export const NOTIFICATION_ADDED = 'notification/added';
 
 /**
- * @enum
+ * Enum for notification levels.
+ * @readonly
+ * @enum {string}
  */
 export const LevelTypes = Object.freeze({
 	INFO: Symbol.for('info'),
@@ -13,8 +15,10 @@ export const LevelTypes = Object.freeze({
 /**
 * @typedef {Object} Notification
 * @property {string} message the notification message
-* @property {enum} level the notification level
-* @property {Boolean} permanent whether thethe notification level
+* @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+* @property {Boolean} permanent whether the notification invalidates after 
+* a specific amount of time or stays relevant until the user decide to dismiss
+* the message
  */
 
 

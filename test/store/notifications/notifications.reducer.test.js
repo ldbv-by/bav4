@@ -23,7 +23,7 @@ describe('notificationReducer', () => {
 			permanent: false
 		};
 
-		emitNotification(notification);
-		expect(store.getState().notifications.notification.payload).toBe(notification);
+		emitNotification('foo', LevelTypes.INFO, false);
+		expect(store.getState().notifications.notification.payload).toEqual(notification);
 	});
 });

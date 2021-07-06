@@ -7,20 +7,18 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-/**
-* @typedef {Object} Notification
-* @property {string} message the notification message
-* @property {enum} level the notification level
-* @property {Boolean} permanent whether thethe notification level
- */
 
 /**
- * sets the current notification
- * @param {Notification} notification
+ * emits a new notification to the system
+ * @param {string} message the notification message
+ * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+ * @param {Boolean} permanent whether the notification invalidates after 
+* a specific amount of time or stays relevant until the user decide to dismiss
+* the message
  */
-export const emitNotification = (notification) => {
+export const emitNotification = (message, level, isPermanent) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
-		payload: new EventLike(notification)
+		payload: new EventLike({ message:message, level:level, permanent:isPermanent })
 	});
 };
