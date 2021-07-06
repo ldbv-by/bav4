@@ -1,0 +1,52 @@
+.georesource-label{
+  display: flex;
+}
+.georesource-label__text{
+   font-weight: bold;
+   padding: .8em 1.5em;
+      flex-grow: 1;
+}
+.georesource-items{
+  max-height: 100em;
+  overflow:hidden;
+  transition: all .4s ease-in-out;
+}
+.georesource-label__collapse{
+  padding: .8em 1.5em;
+  cursor: pointer;
+}
+.icon {
+   background: var(--primary-color);
+   mask-size: cover;
+   -webkit-mask-size: cover;
+   display: inline-block;
+   height: 16px;
+   width: 10px;
+   -moz-transform:rotate(90deg);
+   -webkit-transform:rotate(90deg);
+   transform:rotate(90deg);
+}
+.chevron {
+  position: relative;
+  mask: url('../../assets/chevron-right.svg');
+  -webkit-mask-image: url('../../assets/chevron-right.svg');
+  mask-image:  url('../../assets/chevron-right.svg');
+}
+.isdisabled{
+  background: var(--secondary-bg-color);
+}
+.georesource-label__collapse:hover .icon{
+filter: brightness(.8);
+}
+.iconexpand {
+  -moz-transform:rotate(270deg);
+  -webkit-transform:rotate(270deg);
+  transform:rotate(270deg);
+  transition: all .4s ease-in-out;
+}
+.iscollaps{
+  max-height: 0;    
+}
+.divider {
+  border-bottom: 1px solid var(--header-background-color);
+}

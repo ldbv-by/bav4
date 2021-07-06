@@ -30,15 +30,16 @@ export class OlMap extends BaElement {
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
-			OlGeolocationHandler: geolocationHandler
-		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler');
+			OlGeolocationHandler: geolocationHandler,
+			OlHighlightLayerHandler: olHighlightLayerHandler
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler]]);
 		this._eventHandler = new Map([]);
 	}
 
@@ -81,7 +82,7 @@ export class OlMap extends BaElement {
 				//for embedded mode
 				//onFocusOnly: false,
 				pinchRotate: false,
-				
+
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()
 			})])

@@ -29,6 +29,9 @@ describe('StoreService', () => {
 		const contextClickPluginMock = {
 			register() { }
 		};
+		const highlightPluginMock = {
+			register() { }
+		};
 		const windowMock = {
 			history: {
 				replaceState() { }
@@ -46,6 +49,7 @@ describe('StoreService', () => {
 				.registerSingleton('TopicsPlugin', topicsPluginMock)
 				.registerSingleton('PositionPlugin', positionPluginMock)
 				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
+				.registerSingleton('HighlightPlugin', highlightPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 
 				.ready();
@@ -59,7 +63,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(18);
+			expect(reducerKeys.length).toBe(19);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -78,6 +82,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('network')).toBeTrue();
 			expect(reducerKeys.includes('search')).toBeTrue();
 			expect(reducerKeys.includes('topicsContentPanel')).toBeTrue();
+			expect(reducerKeys.includes('highlight')).toBeTrue();
 		});
 
 		it('registers all plugins', (done) => {
@@ -88,6 +93,7 @@ describe('StoreService', () => {
 			const topicsPluginSpy = spyOn(topicsPluginMock, 'register');
 			const positionPluginSpy = spyOn(positionPluginMock, 'register');
 			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
+			const highlightPluginSpy = spyOn(highlightPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -103,6 +109,7 @@ describe('StoreService', () => {
 					expect(topicsPluginSpy).toHaveBeenCalledWith(store);
 					expect(positionPluginSpy).toHaveBeenCalledWith(store);
 					expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
+					expect(highlightPluginSpy).toHaveBeenCalledWith(store);
 					done();
 				});
 			});

@@ -55,6 +55,8 @@ describe('StyleService', () => {
 			const feature3 = { getId: () => ' measure_123' };
 			const feature4 = { getId: () => '123measure_123' };
 
+			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
+			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(feature1)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(feature2)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(feature3)).toBeNull();
@@ -73,7 +75,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				once() { }
 			};
 			const mapMock = {
 				getView: () => viewMock,
@@ -101,7 +104,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				once() { }
 			};
 
 			const mapMock = {
@@ -130,7 +134,8 @@ describe('StyleService', () => {
 			const viewMock = {
 				getResolution() {
 					return 50;
-				}
+				},
+				once() { }
 			};
 			const mapMock = {
 				getView: () => viewMock, addOverlay: addOverlaySpy, getInteractions() {
@@ -146,6 +151,71 @@ describe('StyleService', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
 		});
 
+
+		it('registers initial styling events for measure-feature without partition-delta property', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const addOverlaySpy = jasmine.createSpy();
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const propertySetterSpy = spyOn(feature, 'set');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+			const onceSpy = spyOn(viewMock, 'once');
+
+			const mapMock = {
+				getView: () => viewMock,
+				addOverlay: addOverlaySpy,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock, 'measure');
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(onceSpy).toHaveBeenCalled();
+			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('registers NOT initial styling events for measure-feature without partition-delta property', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			feature.set('partition_delta', 'something');
+			const addOverlaySpy = jasmine.createSpy();
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const propertySetterSpy = spyOn(feature, 'set');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+			const onceSpy = spyOn(viewMock, 'once');
+
+			const mapMock = {
+				getView: () => viewMock,
+				addOverlay: addOverlaySpy,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock, 'measure');
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
+			expect(onceSpy).not.toHaveBeenCalled();
+			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+		});
 
 	});
 

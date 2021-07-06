@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
 import { AutocompleteSearch } from '../../../../src/modules/commons/components/autocomplete/AutocompleteSearch';
+import { SearchResult } from '../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../test-utils.js';
-import { SearchResult } from '../../../../src/modules/search/services/searchResult';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
 

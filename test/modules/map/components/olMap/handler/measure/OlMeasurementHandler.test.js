@@ -886,7 +886,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
-		it('stores after a feature is removed', async () => {
+		it('stores after a feature is removed', async (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -903,6 +903,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
+				done();
 			});
 		});
 

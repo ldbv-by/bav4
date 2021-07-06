@@ -18,6 +18,7 @@ import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
 import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
+import { highlightReducer } from '../store/highlight/highlight.reducer';
 
 
 /**
@@ -51,7 +52,8 @@ export class StoreService {
 			topics: topicsReducer,
 			network: networkReducer,
 			search: searchReducer,
-			topicsContentPanel: topicsContentPanelReducer
+			topicsContentPanel: topicsContentPanelReducer,
+			highlight: highlightReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -65,6 +67,7 @@ export class StoreService {
 				MeasurementPlugin: measurementPlugin,
 				PositionPlugin: positionPlugin,
 				ContextClickPlugin: ContextClickPlugin,
+				HighlightPlugin: HighlightPlugin,
 				EnvironmentService: environmentService
 			}
 				= $injector.inject(
@@ -74,6 +77,7 @@ export class StoreService {
 					'MeasurementPlugin',
 					'PositionPlugin',
 					'ContextClickPlugin',
+					'HighlightPlugin',
 					'EnvironmentService'
 				);
 
@@ -85,6 +89,7 @@ export class StoreService {
 				await measurementPlugin.register(this._store);
 				await geolocationPlugin.register(this._store);
 				await ContextClickPlugin.register(this._store);
+				await HighlightPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});

@@ -1,5 +1,6 @@
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
+import { OlHighlightLayerHandler } from '../components/olMap/handler/highlight/OlHighlightLayerHandler';
 import { GeolocationPlugin } from '../store/GeolocationPlugin';
 import { MeasurementPlugin } from '../store/MeasurementPlugin';
 import { ContextClickPlugin } from '../store/ContextClickPlugin';
@@ -15,6 +16,7 @@ export const mapModule = ($injector) => {
 		.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler)
+		.register('OlHighlightLayerHandler', OlHighlightLayerHandler)
 		.register('VectorImportService', VectorImportService)
 		.register('LayerService', LayerService)
 		.register('StyleService', StyleService)

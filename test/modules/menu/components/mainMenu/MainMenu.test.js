@@ -6,9 +6,11 @@ import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
-import { SearchContentPanel } from '../../../../../src/modules/search/components/menu/SearchContentPanel';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
+import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
+import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
+import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -22,13 +24,15 @@ describe('MainMenuTabIndex', () => {
 		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, component: null });
 		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
 		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
-		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchContentPanel });
+		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchResultsPanel });
 		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: null });
 	});
 });
 
 
 describe('MainMenu', () => {
+
+	let store;
 
 	const windowMock = {
 		matchMedia() { }
@@ -44,13 +48,15 @@ describe('MainMenu', () => {
 				tabIndex: tabIndex
 			}
 		};
-		TestUtils.setupStoreAndDi(state, { mainMenu: mainMenuReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			mainMenu: mainMenuReducer,
+			highlight: highlightReducer
+		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
-			})
-			.registerSingleton('SearchResultProviderService', { getGeoresourceSearchResultProvider: () => { } });
+			});
 
 		return TestUtils.render(MainMenu.tag);
 	};
@@ -153,8 +159,8 @@ describe('MainMenu', () => {
 			for (let i = 0; i < contentPanels.length; i++) {
 				// Todo check all content panels when implemented
 				switch (i) {
-					case  MainMenuTabIndex.SEARCH.id:
-						expect(contentPanels[i].innerHTML.toString().includes(SearchContentPanel.tag)).toBeTrue();
+					case MainMenuTabIndex.SEARCH.id:
+						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 						break;
 					case MainMenuTabIndex.TOPICS.id:
 						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
@@ -175,7 +181,7 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
-			
+
 			const activeTabIndex = 2;
 			const element = await setup({}, true, activeTabIndex);
 
@@ -190,7 +196,7 @@ describe('MainMenu', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.main-menu__container').querySelector(DevInfo.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu').querySelector(DevInfo.tag)).toBeTruthy();
 		});
 	});
 
@@ -215,7 +221,7 @@ describe('MainMenu', () => {
 
 			setTabIndex(MainMenuTabIndex.MAPS);
 			check(MainMenuTabIndex.MAPS, contentPanels);
-			
+
 			setTabIndex(MainMenuTabIndex.MORE);
 			check(MainMenuTabIndex.MORE, contentPanels);
 
@@ -230,6 +236,23 @@ describe('MainMenu', () => {
 
 			setTabIndex(MainMenuTabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
+		});
+
+		it('clears highlight features', async () => {
+			await setup();
+			const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+
+			setHighlightFeature(highlightFeature);
+			
+			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+
+			setTabIndex(MainMenuTabIndex.SEARCH);
+
+			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+			
+			setTabIndex(MainMenuTabIndex.MAPS);
+
+			expect(store.getState().highlight.feature).toBeNull();
 		});
 	});
 
