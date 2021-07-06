@@ -18,7 +18,7 @@ const getStore = () => {
  * sets the current notification
  * @param {Notification} notification
  */
-export const setNotification = (notification) => {
+export const emitNotification = (notification) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
 		payload: new EventLike(notification)

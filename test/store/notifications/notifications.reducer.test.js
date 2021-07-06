@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils';
 import { LevelTypes, notificationReducer } from '../../../src/store/notifications/notifications.reducer';
-import { setNotification } from '../../../src/store/notifications/notifications.action';
+import { emitNotification } from '../../../src/store/notifications/notifications.action';
 
 
 describe('notificationReducer', () => {
@@ -23,7 +23,8 @@ describe('notificationReducer', () => {
 			permanent: false
 		};
 
-		setNotification(notification);
+		emitNotification(notification);
+		console.log(store.getState().notifications.notification);
 		expect(store.getState().notifications.notification.payload).toBe(notification);
 	});
 });
