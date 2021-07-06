@@ -8,13 +8,14 @@
 .footer {
     position: fixed;
     z-index: var(--z-footer);
-    bottom: 0;
+    bottom: .7em;
+    left:1em;
     /* width:100%;        */
     transition: transform 0.3s ease-out;     
 }
 .content{
     margin-left:25em;
-    font-size: .9rem;
+    font-size: .8rem;
     padding: 0;    
     background-color: var(--primary-bg-color-05);
 }
