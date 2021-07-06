@@ -36,7 +36,6 @@ describe('ToolBarElement', () => {
 			}
 		};
 
-
 		store = TestUtils.setupStoreAndDi(state, { toolBar: toolBarReducer, toolContainer: toolContainerReducer, network: networkReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -116,8 +115,6 @@ describe('ToolBarElement', () => {
 		});
 
 		describe('network fetching state', () => {
-
-
 			it('runs or pauses the border animation class', async () => {
 				const element = await setup();
 				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
@@ -127,7 +124,6 @@ describe('ToolBarElement', () => {
 				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 			});
 		});
-
 	});
 
 	describe('responsive layout ', () => {

@@ -12,14 +12,10 @@
     transition: transform 0.3s ease-out;
         box-shadow:0 -1px 4px rgba(0, 0, 0, 0.5);
 }
-
-
-
 .tool-bar__tools-nav{
     position: absolute;
     top: 0rem;
     background: lightgray;
-    /* border-radius: 0 0 .5em .5em; */
     right: 1rem;
     opacity: .9;
 }
@@ -28,7 +24,6 @@
     width: 1rem !important;
     background: transparent;
     border: none;
-    /* border-radius: 2em; */
     margin: .5rem !important;
 }
 .tool-bar__button{
@@ -57,10 +52,6 @@
 .tool-bar > *:last-child{         
     border-right: none;
  }
-
-
-
-
 .tool-bar__button:hover{
     opacity:1;
     background: var(--header-background-color);
@@ -90,7 +81,6 @@
 }
 
 .tool-bar__button-text{
-    /* color: var(--header-button-color);;  */
     font-size: .8rem; 
     text-align: center;
 }
@@ -144,10 +134,6 @@
 .is-portrait .tool-bar{    
     font-size:1rem;
 }
-/* .is-portrait .action-button{    
-    bottom: .5em;
-} */
-
 .action-button{
     font-size:.8em;
     position: fixed;
@@ -201,7 +187,3 @@
   .animated-action-button__border__running{
     animation-play-state: running;
   }
-
-
-  /* //////////////////////// */
-
