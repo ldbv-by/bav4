@@ -6,6 +6,7 @@ import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
+import { toggle } from '../../menu/store/mainMenu.action';
 
 
 /**
@@ -192,7 +193,10 @@ export class Header extends BaElement {
 								${translate('header_tab_more_button')}
 							</span>
 						</button>
-					</div>
+						</div>
+						<button class="close-menu" title=${translate('header_tab_more_title')}  @click="${toggle}"">
+							<span class='arrow'></span>	
+						</button>
 				</div>				
             </div>
 		`;
