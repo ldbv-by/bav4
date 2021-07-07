@@ -1,7 +1,7 @@
 import { $injector } from '../../injection';
 import { BaPlugin } from '../BaPlugin';
-import { setIsMinWidth, setIsPortrait } from './media.action';
-import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from './media.reducer';
+import { setIsDarkSchema, setIsMinWidth, setIsPortrait } from './media.action';
+import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from './media.reducer';
 
 
 /**
@@ -34,6 +34,15 @@ export class MediaPlugin extends BaPlugin {
 			setIsMinWidth(e.matches);
 		};
 		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
+		//initial update
+		handleMinWidthChange(mediaQueryMinWidth);
+
+		// MediaQuery for 'min-width'
+		const mediaQueryColorSchema = _window.matchMedia(PREFERS_COLOR_SCHEMA_QUERY);
+		const handleColorSchemaChange = (e) => {
+			setIsDarkSchema(e.matches);
+		};
+		mediaQueryColorSchema.addEventListener('change', handleColorSchemaChange);
 		//initial update
 		handleMinWidthChange(mediaQueryMinWidth);
 	}
