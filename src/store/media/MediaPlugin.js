@@ -1,6 +1,6 @@
 import { $injector } from '../../injection';
 import { BaPlugin } from '../BaPlugin';
-import { setIsMinWidth, setIsPortrait, setPortrait } from './media.action';
+import { setIsMinWidth, setIsPortrait } from './media.action';
 import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from './media.reducer';
 
 
