@@ -15,8 +15,7 @@ describe('GeoResourceResultItem', () => {
 
 		const initialState = {
 			media: {
-				portrait: false,
-				minWidth: true
+				portrait: false
 			},
 			...state
 		};
@@ -26,7 +25,7 @@ describe('GeoResourceResultItem', () => {
 			mainMenu: mainMenuReducer,
 			media: createNoInitialStateMediaReducer()
 		});
-		
+
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
 
@@ -80,7 +79,7 @@ describe('GeoResourceResultItem', () => {
 				const id = 'id';
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup(false, {
+				const element = await setup({
 					layers: {
 						active: [previewLayer]
 					}
@@ -102,17 +101,17 @@ describe('GeoResourceResultItem', () => {
 
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup( {
+				const element = await setup({
 					layers: {
 						active: [previewLayer]
 					},
-					mainMenu:{
+					mainMenu: {
 						tabIndex: MainMenuTabIndex.SEARCH.id,
 						open: true
 					},
 					media: {
 						portrait: portraitOrientation,
-					},
+					}
 				});
 				element.data = data;
 
