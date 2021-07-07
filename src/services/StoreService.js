@@ -6,7 +6,6 @@ import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
-import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
@@ -45,7 +44,6 @@ export class StoreService {
 			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
-			uiTheme: uiThemeReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,

@@ -67,7 +67,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(20);
+			expect(reducerKeys.length).toBe(19);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -77,7 +77,6 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('toolContainer')).toBeTrue();
 			expect(reducerKeys.includes('contextMenue')).toBeTrue();
 			expect(reducerKeys.includes('modal')).toBeTrue();
-			expect(reducerKeys.includes('uiTheme')).toBeTrue();
 			expect(reducerKeys.includes('layers')).toBeTrue();
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
 			expect(reducerKeys.includes('measurement')).toBeTrue();
