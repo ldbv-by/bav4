@@ -1,11 +1,14 @@
 import { TestUtils } from '../../test-utils.js';
 import { MediaPlugin } from '../../../src/store/media/MediaPlugin';
-import { createMediaReducerWithInitialState, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer.js';
+import { createMediaReducer, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer.js';
 import { $injector } from '../../../src/injection/index.js';
 
 
 describe('MediaPlugin', () => {
 
+	const reducerWindowMock = {
+		matchMedia() { }
+	};
 	const environmentServiceWindowMock = {
 		matchMedia() { }
 	};
@@ -21,15 +24,13 @@ describe('MediaPlugin', () => {
 	};
 
 	it('registers media query change listeners', async () => {
-		const initialState = {
-			portrait: false,
-			minWidth: false
-
-		};
+		spyOn(reducerWindowMock, 'matchMedia')
+			.withArgs(ORIENTATION_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(false))
+			.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(false));
 		spyOn(environmentServiceWindowMock, 'matchMedia')
 			.withArgs(ORIENTATION_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(true))
 			.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(true));
-		const store = setup(createMediaReducerWithInitialState(initialState));
+		const store = setup(createMediaReducer(reducerWindowMock));
 		const instanceUnderTest = new MediaPlugin();
 
 		await instanceUnderTest.register(store);
