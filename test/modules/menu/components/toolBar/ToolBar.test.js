@@ -3,10 +3,12 @@
 import { ToolBar } from '../../../../../src/modules/menu/components/toolBar/ToolBar';
 import { toolBarReducer } from '../../../../../src/modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
+import { networkReducer } from '../../../../../src/store/network/network.reducer';
 import { toggleToolBar } from '../../../../../src/modules/menu/store/toolBar.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { setFetching } from '../../../../../src/store/network/network.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -17,7 +19,7 @@ describe('ToolBarElement', () => {
 	let store;
 	const setup = async (state = {}, config = {}) => {
 
-		const { embed = false } = config;
+		const { embed = false, fetching = false } = config;
 
 		const initialState = {
 			toolBar: {
@@ -27,6 +29,10 @@ describe('ToolBarElement', () => {
 				open: false,
 				contentId: false
 			},
+			network: {
+				fetching: fetching,
+				pendingRequests: 0
+			},
 			media: {
 				portrait: false,
 				minWidth: true
@@ -35,12 +41,12 @@ describe('ToolBarElement', () => {
 		};
 
 
-		store = TestUtils.setupStoreAndDi(initialState,
-			{
-				toolBar: toolBarReducer,
-				toolContainer: toolContainerReducer,
-				media: createNoInitialStateMediaReducer()
-			});
+		store = TestUtils.setupStoreAndDi(initialState, {
+			toolBar: toolBarReducer,
+			toolContainer: toolContainerReducer,
+			network: networkReducer,
+			media: createNoInitialStateMediaReducer()
+		});
 
 		$injector
 			.registerSingleton('EnvironmentService', {
@@ -110,6 +116,17 @@ describe('ToolBarElement', () => {
 			drawToolButton.click();
 			expect(store.getState().toolContainer.open).toBeFalse();
 
+		});
+
+		describe('network fetching state', () => {
+			it('runs or pauses the border animation class', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+				setFetching(true);
+				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
+				setFetching(false);
+				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			});
 		});
 	});
 
