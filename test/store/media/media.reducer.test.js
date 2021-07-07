@@ -1,5 +1,5 @@
 import { TestUtils } from '../../test-utils.js';
-import { createMediaReducer, createMediaReducerWithInitialState, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer';
+import { createMediaReducer, createNoInitialStateMediaReducer, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer';
 import { setIsMinWidth, setIsPortrait } from '../../../src/store/media/media.action.js';
 
 
@@ -21,31 +21,17 @@ describe('mediaReducer', () => {
 		expect(MIN_WIDTH_MEDIA_QUERY).toBe('(min-width: 80em)');
 	});
 
-	describe('createMediaReducerWithInitialState', () => {
+	describe('createNoInitialStateMediaReducer', () => {
 
 		describe('returns a reducer function', () => {
 
-			it('initiales the store without argument', () => {
-				const store = setup(createMediaReducerWithInitialState());
+			it('initiales the store by null', () => {
+				const store = setup(createNoInitialStateMediaReducer());
 
-				expect(store.getState().media.portrait).toBeFalse();
-				expect(store.getState().media.minWidth).toBeTrue();
-			});
-
-			it('initiales the store by argument', () => {
-				const initialState = {
-					portrait: true,
-					minWidth: false
-				};
-
-				const store = setup(createMediaReducerWithInitialState(initialState));
-
-				expect(store.getState().media.portrait).toBeTrue();
-				expect(store.getState().media.minWidth).toBeFalse();
+				expect(store.getState().media).toBeNull();
 			});
 		});
 	});
-
 
 	describe('createMediaReducer', () => {
 

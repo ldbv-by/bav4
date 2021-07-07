@@ -27,18 +27,13 @@ const mediaReducer = (state, action) => {
 	return state;
 };
 
-const defaultInitialState = {
-	portrait : false,
-	minWidth: true
-};
-
 /**
  *  Provides a media reducer which initial state is beeing obtained from the argument.
  * @param {object} initialState 
  * @returns media reducer
  */
-export const createMediaReducerWithInitialState = (initialState = defaultInitialState) => {
-	return (state = initialState, action) => mediaReducer(state, action);
+export const createNoInitialStateMediaReducer = () => {
+	return (state = null, action) => mediaReducer(state, action);
 };
 
 
