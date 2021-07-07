@@ -10,6 +10,9 @@ export class NotificationItem extends BaElement {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+		this._content = null;
+		this._autocloseTime = 0;
+		this._autocloseTimeout = null;
 	}
 
 
@@ -24,10 +27,33 @@ export class NotificationItem extends BaElement {
 			notification_warn: this._content.level === LevelTypes.WARN,
 			notification_error: this._content.level === LevelTypes.ERROR,
 		};
+
+		if (this._autocloseTime > 0) {
+			this._autocloseTimeout = setTimeout(() => {
+				this._hide();
+			}, this._autocloseTime);
+		}
+
 		return html`<div class='notification_item ${classMap(levelClass)}'>
                         <div class='notification_content'>${this._content.message}
 		        		<a class='notification_close' href='#'>${translate('notification_item_close')}</a>
 		            </div>`;
+	}
+
+	_hide() {
+		const root = this.shadowRoot.querySelector('.notification_item');
+		if (root !== null) {
+			// If the notification-item is not yet closed
+			root.classList.add('notification_item_hide');
+		}
+		root.addEventListener('transitionend', () => {
+			if (root !== null) {
+				// If the notification-item is not yet closed
+				root.parentNode.removeChild(root);
+
+				clearTimeout(this._autocloseTimeout);
+			}
+		});
 	}
 
 	static get tag() {
@@ -35,7 +61,9 @@ export class NotificationItem extends BaElement {
 	}
 
 	set content(value) {
-		this._content = value;
+		this._content = value.notification;
+		this._autocloseTime = value.autocloseTime;
 		this.render();
 	}
+
 }

@@ -35,7 +35,7 @@ export class NotificationPanel extends AbstractContentPanel {
 	_showNotification(e) {
 		const parent = this.shadowRoot.querySelector('.notification-panel');
 		const item = document.createElement(NotificationItem.tag);
-		item.content = e.payload;
+		item.content = { notification: e.payload, autocloseTime: 5000 };
 		parent.appendChild(item);
 	}
 
