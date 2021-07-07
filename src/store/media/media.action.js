@@ -46,3 +46,15 @@ export const setIsDarkSchema = (isDarkSchema) => {
 		payload: isDarkSchema
 	});
 };
+
+/**
+ * Toggles the theme (light <-> dark)
+ * @function 
+ */
+export const toggleSchema = () => {
+	const { media: { darkSchema } } = getStore().getState();
+	getStore().dispatch({
+		type: COLOR_SCHEMA_WIDTH_CHANGED,
+		payload: !darkSchema
+	});
+};
