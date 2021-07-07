@@ -63,7 +63,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(19);
+			expect(reducerKeys.length).toBe(20);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -83,6 +83,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('search')).toBeTrue();
 			expect(reducerKeys.includes('topicsContentPanel')).toBeTrue();
 			expect(reducerKeys.includes('highlight')).toBeTrue();
+			expect(reducerKeys.includes('notifications')).toBeTrue();
 		});
 
 		it('registers all plugins', (done) => {
