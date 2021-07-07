@@ -1,8 +1,10 @@
 export const ORIENTATION_CHANGED = 'media/orientation';
 export const MIN_WIDTH_CHANGED = 'media/min-width';
+export const COLOR_SCHEMA_WIDTH_CHANGED = 'media/color-schema';
 
 export const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
 export const MIN_WIDTH_MEDIA_QUERY = '(min-width: 80em)';
+export const PREFERS_COLOR_SCHEMA_QUERY = '(prefers-color-scheme: dark)';
 
 
 const mediaReducer = (state, action) => {
@@ -20,6 +22,13 @@ const mediaReducer = (state, action) => {
 			return {
 				...state,
 				minWidth: payload
+			};
+		}
+		case COLOR_SCHEMA_WIDTH_CHANGED: {
+
+			return {
+				...state,
+				darkSchema: payload
 			};
 		}
 	}
@@ -52,7 +61,11 @@ export const createMediaReducer = (_window = window) => {
 		/**
 		 * @property {boolean}
 		 */
-		minWidth: _window.matchMedia(MIN_WIDTH_MEDIA_QUERY).matches
+		minWidth: _window.matchMedia(MIN_WIDTH_MEDIA_QUERY).matches,
+		/**
+		 * @property {boolean}
+		 */
+		darkSchema: _window.matchMedia(PREFERS_COLOR_SCHEMA_QUERY).matches
 	};
 
 	return (state = initialState, action) => mediaReducer(state, action);
