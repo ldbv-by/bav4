@@ -25,7 +25,14 @@ describe('mediaReducer', () => {
 
 		describe('returns a reducer function', () => {
 
-			it('initiales the store (1)', () => {
+			it('initiales the store without argument', () => {
+				const store = setup(createMediaReducerWithInitialState());
+
+				expect(store.getState().media.portrait).toBeFalse();
+				expect(store.getState().media.minWidth).toBeTrue();
+			});
+
+			it('initiales the store by argument', () => {
 				const initialState = {
 					portrait: true,
 					minWidth: false
@@ -36,18 +43,6 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.portrait).toBeTrue();
 				expect(store.getState().media.minWidth).toBeFalse();
 			});
-
-			it('initiales the store (2)', () => {
-				const initialState = {
-					portrait: false,
-					minWidth: true
-				};
-
-				const store = setup(createMediaReducerWithInitialState(initialState));
-
-				expect(store.getState().media.portrait).toBeFalse();
-				expect(store.getState().media.minWidth).toBeTrue();
-			});
 		});
 	});
 
@@ -56,7 +51,7 @@ describe('mediaReducer', () => {
 
 		describe('returns a reducer function', () => {
 
-			it('initiales the store (1)', () => {
+			it('initiales the store by media queries (1)', () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs(ORIENTATION_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(true))
 					.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(false));
@@ -67,7 +62,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.minWidth).toBeFalse();
 			});
 
-			it('initiales the store (2)', () => {
+			it('initiales the store by media queries (2)', () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs(ORIENTATION_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(false))
 					.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(true));
