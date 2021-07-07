@@ -1,33 +1,32 @@
-import { $injector } from '../../../../../../../src/injection';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
+import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
 describe('GeoResourceResultItem', () => {
 
-	const windowMock = {
-		matchMedia() { }
-	};
-
-
 	let store;
-	const setup = (portraitOrientation = false, state = {}) => {
+	const setup = (state = {}) => {
 
-		spyOn(windowMock, 'matchMedia')
-			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(portraitOrientation));
+		const initialState = {
+			media: {
+				portrait: false,
+				minWidth: true
+			},
+			...state
+		};
 
-		store = TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
 			mainMenu: mainMenuReducer,
+			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('EnvironmentService', {
-			getWindow: () => windowMock
-		});
+		
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
 
@@ -103,14 +102,17 @@ describe('GeoResourceResultItem', () => {
 
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
-				const element = await setup(portraitOrientation, {
+				const element = await setup( {
 					layers: {
 						active: [previewLayer]
 					},
 					mainMenu:{
 						tabIndex: MainMenuTabIndex.SEARCH.id,
 						open: true
-					}
+					},
+					media: {
+						portrait: portraitOrientation,
+					},
 				});
 				element.data = data;
 
