@@ -18,7 +18,7 @@ describe('Footer', () => {
 	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 
-		const stateOfStore = {
+		const initialState = {
 			mainMenu: {
 				open: true
 			},
@@ -28,7 +28,7 @@ describe('Footer', () => {
 			...state,
 		};
 
-		TestUtils.setupStoreAndDi(stateOfStore, { mainMenu: mainMenuReducer, media: createNoInitialStateMediaReducer() });
+		TestUtils.setupStoreAndDi(initialState, { mainMenu: mainMenuReducer, media: createNoInitialStateMediaReducer() });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
 			getWindow: () => windowMock
