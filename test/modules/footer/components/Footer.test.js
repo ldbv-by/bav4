@@ -11,10 +11,6 @@ window.customElements.define(Footer.tag, Footer);
 
 describe('Footer', () => {
 
-	const windowMock = {
-		matchMedia() { }
-	};
-
 	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 
@@ -30,8 +26,7 @@ describe('Footer', () => {
 
 		TestUtils.setupStoreAndDi(initialState, { mainMenu: mainMenuReducer, media: createNoInitialStateMediaReducer() });
 		$injector.registerSingleton('EnvironmentService', {
-			isEmbedded: () => embed,
-			getWindow: () => windowMock
+			isEmbedded: () => embed
 		});
 
 		return TestUtils.render(Footer.tag);

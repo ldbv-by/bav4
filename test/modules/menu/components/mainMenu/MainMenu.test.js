@@ -35,11 +35,7 @@ describe('MainMenu', () => {
 
 	let store;
 
-	const windowMock = {
-		matchMedia() { }
-	};
-
-	const setup = (state, config = {}) => {
+	const setup = (state = {}, config = {}) => {
 
 		const { embed = false } = config;
 
@@ -62,8 +58,7 @@ describe('MainMenu', () => {
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed,
-				getWindow: () => windowMock
+				isEmbedded: () => embed
 			});
 
 		return TestUtils.render(MainMenu.tag);
