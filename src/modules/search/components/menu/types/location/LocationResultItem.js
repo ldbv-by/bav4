@@ -1,6 +1,5 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { $injector } from '../../../../../../injection';
 import { BaElement } from '../../../../../BaElement';
 import itemCss from '../item.css';
 import css from './locationResultItem.css';
@@ -24,27 +23,6 @@ import { HightlightFeatureTypes, removeHighlightFeature, removeTemporaryHighligh
  */
 export class LocationResultItem extends BaElement {
 
-	constructor() {
-		super();
-
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = EnvironmentService;
-		this._portrait = false;
-	}
-
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-	}
-
 	static get _maxZoomLevel() {
 		return 19;
 	}
@@ -54,14 +32,27 @@ export class LocationResultItem extends BaElement {
 		this.render();
 	}
 
+	onStateChanged() {
+		//nothing to do here, we only render when locationSearchResult changes
+	}
 
-	createView() {
+	/**
+	  * @override
+	  * @param {Object} globalState 
+	  */
+	extractState(globalState) {
+		const { media: { portrait } } = globalState;
+		return { portrait };
+	}
+
+	createView(state) {
+		const { portrait } = state;
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			setTemporaryHighlightFeature({ type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+			setTemporaryHighlightFeature({ type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 		};
 		const onMouseLeave = () => {
 			removeTemporaryHighlightFeature();
@@ -72,13 +63,13 @@ export class LocationResultItem extends BaElement {
 			removeTemporaryHighlightFeature();
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
-				setHighlightFeature({ type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+				setHighlightFeature({ type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 			}
 			else {
 				removeHighlightFeature();
 			}
 
-			if (this._portrait) {
+			if (portrait) {
 				//close the main menu
 				closeMainMenu();
 			}
