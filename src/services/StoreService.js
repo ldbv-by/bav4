@@ -19,6 +19,7 @@ import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
 import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
+import { notificationReducer } from '../store/notifications/notifications.reducer';
 
 
 /**
@@ -53,7 +54,8 @@ export class StoreService {
 			network: networkReducer,
 			search: searchReducer,
 			topicsContentPanel: topicsContentPanelReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			notifications: notificationReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -81,7 +83,7 @@ export class StoreService {
 					'EnvironmentService'
 				);
 
-			setTimeout(async() => {
+			setTimeout(async () => {
 				//register plugins
 				await topicsPlugin.register(this._store);
 				await layersPlugin.register(this._store);
