@@ -1,5 +1,5 @@
 import { TestUtils } from '../../test-utils.js';
-import { createMediaReducer, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer';
+import { createMediaReducer, createMediaReducerWithInitialState, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY } from '../../../src/store/media/media.reducer';
 import { setIsMinWidth, setIsPortrait } from '../../../src/store/media/media.action.js';
 
 
@@ -9,9 +9,9 @@ describe('mediaReducer', () => {
 		matchMedia() { }
 	};
 
-	const setup = (highlightReducer) => {
+	const setup = (mediaReducer) => {
 		return TestUtils.setupStoreAndDi({}, {
-			media: highlightReducer
+			media: mediaReducer
 		});
 	};
 
@@ -20,6 +20,37 @@ describe('mediaReducer', () => {
 		expect(ORIENTATION_MEDIA_QUERY).toBe('(orientation: portrait)');
 		expect(MIN_WIDTH_MEDIA_QUERY).toBe('(min-width: 80em)');
 	});
+
+	describe('createMediaReducerWithInitialState', () => {
+
+		describe('returns a reducer function', () => {
+
+			it('initiales the store (1)', () => {
+				const initialState = {
+					portrait: true,
+					minWidth: false
+				};
+
+				const store = setup(createMediaReducerWithInitialState(initialState));
+
+				expect(store.getState().media.portrait).toBeTrue();
+				expect(store.getState().media.minWidth).toBeFalse();
+			});
+
+			it('initiales the store (2)', () => {
+				const initialState = {
+					portrait: false,
+					minWidth: true
+				};
+
+				const store = setup(createMediaReducerWithInitialState(initialState));
+
+				expect(store.getState().media.portrait).toBeFalse();
+				expect(store.getState().media.minWidth).toBeTrue();
+			});
+		});
+	});
+
 
 	describe('createMediaReducer', () => {
 
@@ -31,6 +62,7 @@ describe('mediaReducer', () => {
 					.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(false));
 
 				const store = setup(createMediaReducer(windowMock));
+				
 				expect(store.getState().media.portrait).toBeTrue();
 				expect(store.getState().media.minWidth).toBeFalse();
 			});
@@ -41,6 +73,7 @@ describe('mediaReducer', () => {
 					.withArgs(MIN_WIDTH_MEDIA_QUERY).and.returnValue(TestUtils.newMediaQueryList(true));
 
 				const store = setup(createMediaReducer(windowMock));
+				
 				expect(store.getState().media.portrait).toBeFalse();
 				expect(store.getState().media.minWidth).toBeTrue();
 			});
@@ -48,6 +81,7 @@ describe('mediaReducer', () => {
 			it('uses the real window as default argument', () => {
 
 				const store = setup(createMediaReducer());
+				
 				expect(store.getState().media.portrait).toMatch(/true|false/);
 				expect(store.getState().media.minWidth).toMatch(/true|false/);
 			});

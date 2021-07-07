@@ -5,6 +5,43 @@ export const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
 export const MIN_WIDTH_MEDIA_QUERY = '(min-width: 80em)';
 
 
+const mediaReducer = (state, action) => {
+	const { type, payload } = action;
+	switch (type) {
+		case ORIENTATION_CHANGED: {
+
+			return {
+				...state,
+				portrait: payload
+			};
+		}
+		case MIN_WIDTH_CHANGED: {
+
+			return {
+				...state,
+				minWidth: payload
+			};
+		}
+	}
+
+	return state;
+};
+
+/**
+ *  Provides a media reducer which initial state is beeing obtained from the argument.
+ * @param {object} initialState 
+ * @returns media reducer
+ */
+export const createMediaReducerWithInitialState = initialState => {
+	return (state = initialState, action) => mediaReducer(state, action);
+};
+
+
+/**
+ * Provides a media reducer which initial state is beeing obtained from the window object.
+ * @param {Window} _window 
+ * @returns media reducer
+ */
 export const createMediaReducer = (_window = window) => {
 
 	const initialState = {
@@ -18,26 +55,5 @@ export const createMediaReducer = (_window = window) => {
 		minWidth: _window.matchMedia(MIN_WIDTH_MEDIA_QUERY).matches
 	};
 
-	return (state = initialState, action) => {
-
-		const { type, payload } = action;
-		switch (type) {
-			case ORIENTATION_CHANGED: {
-
-				return {
-					...state,
-					portrait: payload
-				};
-			}
-			case MIN_WIDTH_CHANGED: {
-
-				return {
-					...state,
-					minWidth: payload
-				};
-			}
-		}
-
-		return state;
-	};
+	return (state = initialState, action) => mediaReducer(state, action);
 };
