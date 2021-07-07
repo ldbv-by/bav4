@@ -8,6 +8,8 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
+import { emitNotification } from '../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 
 /**
  * Displays a showcase of common and reusable components or 
@@ -91,6 +93,18 @@ export class ShowCase extends BaElement {
 			this.render();
 		};
 
+		const onClickEmitInfo = () => {
+			emitNotification('This is just a Info.', LevelTypes.INFO);
+		};
+
+		const onClickEmitWarn = () => {
+			emitNotification('This is a Warning! Prepare yourself!', LevelTypes.WARN);
+		};
+
+		const onClickEmitError = () => {
+			emitNotification('This is a Error! Oh no...something went wrong.', LevelTypes.ERROR);
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -149,6 +163,12 @@ export class ShowCase extends BaElement {
 			<p>Loading hint</p>
 			<div><ba-spinner></ba-spinner></div>
 			<hr>
+			<p>Notifications</p>
+			<div class='buttons'>
+						<ba-button id='notification0' label='Info Notification' type="primary" @click=${onClickEmitInfo}></ba-button>
+						<ba-button id='notification1' label='Warn Notification' type="primary" @click=${onClickEmitWarn}></ba-button>
+						<ba-button id='notification2' label='Error Notification' type="primary" @click=${onClickEmitError} ></ba-button>
+			</div>
 		</div>`;
 	}
 
