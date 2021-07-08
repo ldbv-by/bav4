@@ -30,5 +30,58 @@ describe('NotificationItem', () => {
 
 			expect(contentElement.innerText).toContain('FooBar');
 		});
+
+		it('starts hiding with autoclose after 1 sec.', async(done) => {
+			const autocloseTime = 1000;
+			const laterThenAutoCloseTime = autocloseTime + 100;            
+			const notification = { ...notificationTemplate, message:'FooBar', autocloseTime:autocloseTime };
+
+			const element = await setup(notification);
+			const hideSpy = spyOn(element, '_hide').and.callThrough();
+
+			setTimeout(() => {
+				expect(hideSpy).toHaveBeenCalled();
+				done();
+			}, laterThenAutoCloseTime);
+			
+		});
+
+		it('starts hiding with click on Close-Button', async() => {
+			const autocloseTime = 1000;
+			const notification = { ...notificationTemplate, message:'FooBar', autocloseTime:autocloseTime };
+
+			const element = await setup(notification);
+			const hideSpy = spyOn(element, '_hide').and.callThrough();
+			const closeElement = element.shadowRoot.querySelector('.notification_close');
+			closeElement.click();
+
+			expect(hideSpy).toHaveBeenCalled();			
+		});
+
+		it('closes the notification item with call of onClose', async(done) => {
+			const autocloseTime = 1000;
+			const laterThenAutoCloseTime = autocloseTime + 100;            
+			const notification = { ...notificationTemplate, message:'FooBar', autocloseTime:autocloseTime };
+            
+
+			const element = await setup(notification);
+			element.onClose = jasmine.createSpy();
+			const hideSpy = spyOn(element, '_hide').and.callThrough();			
+			const notificationElement = element.shadowRoot.querySelector('.notification_item');
+			
+
+
+			setTimeout(() => {
+				notificationElement.dispatchEvent(new Event('transitionend'));
+				expect(hideSpy).toHaveBeenCalled();
+
+				setTimeout(() => {
+					expect(element.onClose).toHaveBeenCalledWith(notification);
+					done();    
+				});
+				
+			}, laterThenAutoCloseTime);
+			
+		});
 	});
 });
