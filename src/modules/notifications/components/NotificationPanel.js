@@ -29,8 +29,9 @@ export class NotificationPanel extends AbstractContentPanel {
 
 		const { notification } = state;
 		const hasNotification = (candidate) => this._notifications.find(old => old.id === candidate.id); 
+		
 		if (notification && !hasNotification(notification)) {
-			this._notifications.push({ ...notification.payload, id:notification.id });
+			this._add(notification);
 		}
 		
 		return html`
@@ -60,6 +61,11 @@ export class NotificationPanel extends AbstractContentPanel {
 
 	static get tag() {
 		return 'ba-notification-panel';
+	}
+
+	_add(notification) {
+		// adding in LIFO-manner 
+		this._notifications = [{ ...notification.payload, id:notification.id }].concat(this._notifications);
 	}
 
 	_remove(notification) {

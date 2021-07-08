@@ -94,15 +94,15 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickEmitInfo = () => {
-			emitNotification('This is just a Info.', LevelTypes.INFO);
+			emitNotification('This is just a Info (' + new Date() + ')', LevelTypes.INFO);
 		};
 
 		const onClickEmitWarn = () => {
-			emitNotification('This is a Warning! Prepare yourself!', LevelTypes.WARN);
+			emitNotification('This is a Warning! Prepare yourself! (' + new Date() + ')', LevelTypes.WARN);
 		};
 
 		const onClickEmitError = () => {
-			emitNotification('This is a Error! Oh no...something went wrong.', LevelTypes.ERROR, true);
+			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR, true);
 		};
 
 		return html`<div>
