@@ -28,8 +28,8 @@ export class NotificationPanel extends AbstractContentPanel {
 	createView(state) {
 
 		const { notification } = state;
-		
-		if (notification && !this._notifications.find(n => n.id === notification.id)) {
+		const hasNotification = (candidate) => this._notifications.find(old => old.id === candidate.id); 
+		if (notification && !hasNotification(notification)) {
 			this._notifications.push({ ...notification.payload, id:notification.id });
 		}
 		
