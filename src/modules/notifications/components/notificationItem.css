@@ -16,15 +16,15 @@
     margin: 0;
 }
 
-.notification_item .notification_info{
+.notification_info{
     color:var(--secondary-color)
 }
 
-.notification_item .notification_warn{
+.notification_warn{
     color:orange
 }
 
-.notification_item .notification_error{
+.notification_error{
     color: red
 }
 
