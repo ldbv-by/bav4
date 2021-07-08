@@ -11,7 +11,7 @@ export class NotificationItem extends BaElement {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._content = null;
+		this._content = { message:null, level:null };
 		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
 		this._autocloseTimeout = null;
 		this._onClose = () => {};
@@ -36,10 +36,11 @@ export class NotificationItem extends BaElement {
 			}, this._autocloseTime);
 		}
 		const onClick = () => this._hide();
+		const message = this._content.message ? this._content.message : html.nothing;
 		return html`
 		<style>${css}</style>
 		<div class='notification_item ${classMap(levelClass)}'>
-        	<div class='notification_content'>${this._content.message}
+        	<div class='notification_content'>${message}
 			<a class='notification_close' href='#' @click=${onClick}>${translate('notifications_item_close')}</a>
 		</div>`;
 	}
