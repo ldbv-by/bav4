@@ -5,7 +5,7 @@ import css from './notificationPanel.css';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
 
-
+const notification_autoclose_time = 10000;
 /**
  * Container for notifications.
  * @class
@@ -28,7 +28,7 @@ export class NotificationPanel extends AbstractContentPanel {
 
 		const { notification } = state;
 		
-		if (notification) {
+		if (notification && !this._notifications.find(n => n.id === notification.id)) {
 			this._notifications.push({ ...notification.payload, id:notification.id });
 		}
 		
@@ -39,8 +39,7 @@ export class NotificationPanel extends AbstractContentPanel {
 		this._notifications, 
 		(notification) => notification.id, 
 		(notification, index) => {			
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? 0 : 10000 };			
-				
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? 0 : notification_autoclose_time };						
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this._remove(event)}></ba-notification-item>`;
 		}) 
 		: html.nothing}  
@@ -64,5 +63,6 @@ export class NotificationPanel extends AbstractContentPanel {
 
 	_remove(notification) {
 		this._notifications = this._notifications.filter(n => n.id !== notification.id);
+		this.render();
 	}
 }
