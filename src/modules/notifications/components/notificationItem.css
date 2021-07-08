@@ -1,0 +1,33 @@
+.notification_item {
+    color: var(--primary-color);;
+    background-color: var(--primary-bg-color);
+    padding: 2em;
+    margin: 0 0 1em;
+    display: flex;
+    align-items: center;
+    position: relative;    
+    transition: opacity 300ms ease-in;
+    border-radius: 0.2em;
+    border-color: orchid;
+    box-shadow: 2px;
+}
+
+.notification_item:last-child{
+    margin: 0;
+}
+
+.notification_item .notification_info{
+    color:var(--secondary-color)
+}
+
+.notification_item .notification_warn{
+    color:orange
+}
+
+.notification_item .notification_error{
+    color: red
+}
+
+.notification_item_hide{
+    opacity: 0;
+}

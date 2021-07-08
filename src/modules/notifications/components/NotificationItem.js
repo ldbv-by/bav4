@@ -3,6 +3,7 @@ import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
 import { LevelTypes } from '../../../store/notifications/notifications.reducer';
+import css from './notificationItem.css';
 
 
 export class NotificationItem extends BaElement {
@@ -34,10 +35,12 @@ export class NotificationItem extends BaElement {
 			}, this._autocloseTime);
 		}
 
-		return html`<div class='notification_item ${classMap(levelClass)}'>
-                        <div class='notification_content'>${this._content.message}
-		        		<a class='notification_close' href='#'>${translate('notification_item_close')}</a>
-		            </div>`;
+		return html`
+		<style>${css}</style>
+		<div class='notification_item ${classMap(levelClass)}'>
+        	<div class='notification_content'>${this._content.message}
+			<a class='notification_close' href='#'>${translate('notification_item_close')}</a>
+		</div>`;
 	}
 
 	_hide() {
