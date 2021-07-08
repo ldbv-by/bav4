@@ -61,15 +61,12 @@ describe('NotificationItem', () => {
 		it('closes the notification item with call of onClose', async(done) => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;            
-			const notification = { ...notificationTemplate, message:'FooBar', autocloseTime:autocloseTime };
-            
+			const notification = { ...notificationTemplate, message:'FooBar', autocloseTime:autocloseTime };            
 
 			const element = await setup(notification);
 			element.onClose = jasmine.createSpy();
 			const hideSpy = spyOn(element, '_hide').and.callThrough();			
 			const notificationElement = element.shadowRoot.querySelector('.notification_item');
-			
-
 
 			setTimeout(() => {
 				notificationElement.dispatchEvent(new Event('transitionend'));
@@ -80,8 +77,7 @@ describe('NotificationItem', () => {
 					done();    
 				});
 				
-			}, laterThenAutoCloseTime);
-			
+			}, laterThenAutoCloseTime);			
 		});
 	});
 });

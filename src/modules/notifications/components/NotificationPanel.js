@@ -17,9 +17,10 @@ export class NotificationPanel extends AbstractContentPanel {
 
 	constructor() {
 		super();
-		const { TranslationService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._notifications = [];
+		this._notification_autoclose_time = notification_autoclose_time;
 	}
 
 	/**
@@ -41,7 +42,7 @@ export class NotificationPanel extends AbstractContentPanel {
 		this._notifications, 
 		(notification) => notification.id, 
 		(notification, index) => {			
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : notification_autoclose_time };						
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : this._notification_autoclose_time };						
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this._remove(event)}></ba-notification-item>`;
 		}) 
 		: html.nothing}  
