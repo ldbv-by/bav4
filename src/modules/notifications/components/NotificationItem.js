@@ -34,12 +34,12 @@ export class NotificationItem extends BaElement {
 				this._hide();
 			}, this._autocloseTime);
 		}
-
+		const onClick = () => this._hide();
 		return html`
 		<style>${css}</style>
 		<div class='notification_item ${classMap(levelClass)}'>
         	<div class='notification_content'>${this._content.message}
-			<a class='notification_close' href='#'>${translate('notification_item_close')}</a>
+			<a class='notification_close' href='#' @click=${onClick}>${translate('notifications_item_close')}</a>
 		</div>`;
 	}
 
