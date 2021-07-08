@@ -40,7 +40,8 @@ describe('Header', () => {
 			},
 			media: {
 				portrait: false,
-				minWidth: true
+				minWidth: true,
+				observeResponsiveParameter: true
 			},
 			...state
 		};
@@ -289,7 +290,30 @@ describe('Header', () => {
 
 		describe('when input is focused or blurred ', () => {
 
+			it('disables/enables the \'observeResponsiveParameter\' property', async () => {
+				const state = {
+					mainMenu: {
+						open: false
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					},
+				};
+				const element = await setup(state);
+				const input = element.shadowRoot.querySelector('#input');
+
+				input.focus();
+
+				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
+				
+				input.blur();
+				
+				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+			});
+
 			describe('in portrait mode', () => {
+
 				it('opens the main menu when input has content', async () => {
 					const state = {
 						mainMenu: {

@@ -6,6 +6,7 @@ import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 
 
 /**
@@ -72,7 +73,8 @@ export class Header extends BaElement {
 
 		const layerCount = layers.length;
 
-		const onFocusInput = () => {
+		const onInputFocus = () => {
+			disableResponsiveParameterObservation();
 			setTabIndex(MainMenuTabIndex.SEARCH);
 			if (portrait || !minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
@@ -93,7 +95,8 @@ export class Header extends BaElement {
 			setQuery(evt.target.value);
 		};
 
-		const showModalHeader = () => {
+		const onInputBlur = () => {
+			enableResponsiveParameterObservation();
 			if (portrait || !minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
@@ -140,7 +143,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input id='input' @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
+						<input id='input' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
