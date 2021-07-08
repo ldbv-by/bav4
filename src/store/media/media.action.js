@@ -4,7 +4,7 @@
  */
 
 import { $injector } from '../../injection';
-import { COLOR_SCHEMA_WIDTH_CHANGED, MIN_WIDTH_CHANGED, ORIENTATION_CHANGED } from './media.reducer';
+import { COLOR_SCHEMA_CHANGED, MIN_WIDTH_CHANGED, ORIENTATION_CHANGED } from './media.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -42,7 +42,7 @@ export const setIsMinWidth = (isMinWidth) => {
  */
 export const setIsDarkSchema = (isDarkSchema) => {
 	getStore().dispatch({
-		type: COLOR_SCHEMA_WIDTH_CHANGED,
+		type: COLOR_SCHEMA_CHANGED,
 		payload: isDarkSchema
 	});
 };
@@ -54,7 +54,7 @@ export const setIsDarkSchema = (isDarkSchema) => {
 export const toggleSchema = () => {
 	const { media: { darkSchema } } = getStore().getState();
 	getStore().dispatch({
-		type: COLOR_SCHEMA_WIDTH_CHANGED,
+		type: COLOR_SCHEMA_CHANGED,
 		payload: !darkSchema
 	});
 };

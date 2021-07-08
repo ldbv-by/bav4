@@ -1,6 +1,6 @@
 export const ORIENTATION_CHANGED = 'media/orientation';
 export const MIN_WIDTH_CHANGED = 'media/min-width';
-export const COLOR_SCHEMA_WIDTH_CHANGED = 'media/color-schema';
+export const COLOR_SCHEMA_CHANGED = 'media/color-schema';
 
 export const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
 export const MIN_WIDTH_MEDIA_QUERY = '(min-width: 80em)';
@@ -24,7 +24,7 @@ const mediaReducer = (state, action) => {
 				minWidth: payload
 			};
 		}
-		case COLOR_SCHEMA_WIDTH_CHANGED: {
+		case COLOR_SCHEMA_CHANGED: {
 
 			return {
 				...state,
