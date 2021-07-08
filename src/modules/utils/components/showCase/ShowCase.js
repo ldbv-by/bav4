@@ -102,7 +102,7 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickEmitError = () => {
-			emitNotification('This is a Error! Oh no...something went wrong.', LevelTypes.ERROR);
+			emitNotification('This is a Error! Oh no...something went wrong.', LevelTypes.ERROR, true);
 		};
 
 		return html`<div>
