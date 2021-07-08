@@ -5,14 +5,14 @@ import { $injector } from '../../../injection';
 import { LevelTypes } from '../../../store/notifications/notifications.reducer';
 import css from './notificationItem.css';
 
-
+export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 export class NotificationItem extends BaElement {
 	constructor() {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._content = null;
-		this._autocloseTime = 0;
+		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
 		this._autocloseTimeout = null;
 		this._onClose = () => {};
 	}

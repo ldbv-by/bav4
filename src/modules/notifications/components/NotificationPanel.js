@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
+import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
 import css from './notificationPanel.css';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
@@ -39,7 +40,7 @@ export class NotificationPanel extends AbstractContentPanel {
 		this._notifications, 
 		(notification) => notification.id, 
 		(notification, index) => {			
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? 0 : notification_autoclose_time };						
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : notification_autoclose_time };						
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this._remove(event)}></ba-notification-item>`;
 		}) 
 		: html.nothing}  
