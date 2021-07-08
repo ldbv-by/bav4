@@ -9,7 +9,7 @@ const getStore = () => {
 
 
 /**
- * emits a new notification to the system
+ * Emits a new notification to the system
  * @param {string} message the notification message
  * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
  * @param {Boolean} [isPermanent=false] whether the notification invalidates after 
