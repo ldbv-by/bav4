@@ -14,6 +14,7 @@ export class NotificationItem extends BaElement {
 		this._content = null;
 		this._autocloseTime = 0;
 		this._autocloseTimeout = null;
+		this._onClose = () => {};
 	}
 
 
@@ -52,7 +53,7 @@ export class NotificationItem extends BaElement {
 		root.addEventListener('transitionend', () => {
 			if (root !== null) {
 				// If the notification-item is not yet closed
-				root.parentNode.removeChild(root);
+				this.onClose(this._content);
 
 				clearTimeout(this._autocloseTimeout);
 			}
@@ -64,9 +65,17 @@ export class NotificationItem extends BaElement {
 	}
 
 	set content(value) {
-		this._content = value.notification;
+		this._content = value;		
 		this._autocloseTime = value.autocloseTime;
 		this.render();
+	}
+
+	set onClose(callback) {
+		this._onClose = callback;
+	}
+
+	get onClose() {
+		return this._onClose;
 	}
 
 }

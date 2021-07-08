@@ -1,9 +1,9 @@
 import { html } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
 import css from './notificationPanel.css';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
-import { observe } from '../../../utils/storeUtils';
-import { NotificationItem } from './NotificationItem';
+
 
 
 /**
@@ -18,34 +18,51 @@ export class NotificationPanel extends AbstractContentPanel {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
-		this._registeredObservers = this._register(this._storeService.getStore());
+		this._notifications = [];
 	}
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(state) {
+
+		const { notification } = state;
+		
+		if (notification) {
+			this._notifications.push({ ...notification.payload, id:notification.id });
+		}
+		
 		return html`
         <style>${css}</style>
 		<div class="notification-panel">
+		${this._notifications.length > 0 ? repeat(
+		this._notifications, 
+		(notification) => notification.id, 
+		(notification, index) => {			
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? 0 : 10000 };			
+				
+			return html`<ba-notification-item .content=${item} .onClose=${(event) => this._remove(event)}></ba-notification-item>`;
+		}) 
+		: html.nothing}  
 		</div>
         `;
 	}
 
-	_showNotification(e) {
-		const parent = this.shadowRoot.querySelector('.notification-panel');
-		const item = document.createElement(NotificationItem.tag);
-		item.content = { notification: e.payload, autocloseTime: 10000 };
-		parent.appendChild(item);
-	}
-
-	_register(store) {
-		return [
-			observe(store, state => state.notifications.notification, (e) => this._showNotification(e))
-		];
+	/**
+	  * @override
+	  * @param {Object} globalState 
+	  */
+	extractState(globalState) {
+		const { notifications: { notification } } = globalState;
+	
+		return { notification };
 	}
 
 	static get tag() {
 		return 'ba-notification-panel';
+	}
+
+	_remove(notification) {
+		this._notifications = this._notifications.filter(n => n.id !== notification.id);
 	}
 }
