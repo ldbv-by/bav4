@@ -878,9 +878,9 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
-				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				done();
 			});
 
@@ -902,8 +902,8 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 
 			setTimeout(() => {
-				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
+				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				done();
 			});
 		});
