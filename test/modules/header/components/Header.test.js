@@ -260,7 +260,7 @@ describe('Header', () => {
 		describe('when input changes', () => {
 
 			it('updates the store', async () => {
-				
+
 				const element = await setup();
 
 				const inputElement = element.shadowRoot.querySelector('#input');
@@ -306,13 +306,21 @@ describe('Header', () => {
 				input.focus();
 
 				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
-				
+
 				input.blur();
-				
+
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
 			describe('in portrait mode', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
 
 				it('opens the main menu when input has content', async () => {
 					const state = {
@@ -336,6 +344,70 @@ describe('Header', () => {
 					input.focus();
 
 					expect(store.getState().mainMenu.open).toBeTrue();
+				});
+
+				it('hides/shows the mobile header', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: true,
+							minWidth: true
+						},
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+
+					input.focus();
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+
+					input.blur();
+
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+				});
+			});
+
+
+			describe('min-width < 80em', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
+				it('hides/shows the mobile header', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: false,
+							minWidth: false
+						},
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+
+					input.focus();
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+
+					input.blur();
+
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
 			});
 
@@ -368,7 +440,7 @@ describe('Header', () => {
 
 				it('hide mobile header and show again', async () => {
 					const state = {
-						
+
 						media: {
 							portrait: true,
 							minWidth: false
