@@ -11,16 +11,16 @@ export class NotificationItem extends BaElement {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._content = { message:null, level:null };
+		this._content = { message: null, level: null };
 		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
 		this._autocloseTimeout = null;
-		this._onClose = () => {};
+		this._onClose = () => { };
 	}
 
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
@@ -47,17 +47,14 @@ export class NotificationItem extends BaElement {
 
 	_hide() {
 		const root = this.shadowRoot.querySelector('.notification_item');
-		if (root !== null) {
-			// If the notification-item is not yet closed
-			root.classList.add('notification_item_hide');
-		}
-		root.addEventListener('transitionend', () => {
-			if (root !== null) {
-				// If the notification-item is not yet closed
-				this.onClose(this._content);
 
-				clearTimeout(this._autocloseTimeout);
-			}
+		// If the notification-item is not yet closed
+		root.classList.add('notification_item_hide');
+
+		root.addEventListener('transitionend', () => {
+			// If the notification-item is not yet closed
+			this.onClose(this._content);
+			clearTimeout(this._autocloseTimeout);
 		});
 	}
 
@@ -66,7 +63,7 @@ export class NotificationItem extends BaElement {
 	}
 
 	set content(value) {
-		this._content = value;		
+		this._content = value;
 		this._autocloseTime = value.autocloseTime;
 		this.render();
 	}

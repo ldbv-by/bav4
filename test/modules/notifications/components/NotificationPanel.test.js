@@ -9,22 +9,22 @@ window.customElements.define(NotificationPanel.tag, NotificationPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
 describe('NotificationPanel', () => {
-	const setup = async (state = { notifications:{ notification:null } }) => {
+	const setup = async (state = { notifications: { notification: null } }) => {
 		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
-		$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
-		const  element = await TestUtils.render(NotificationPanel.tag);
-		
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		const element = await TestUtils.render(NotificationPanel.tag);
+
 		return element;
 	};
 
-	it('displays the empty panel', async() => {
+	it('displays the empty panel', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
 		expect(element._notifications.length).toBe(0);
 	});
 
-	it('adds a NotificationItem, when a notification is emitted', async() => {
+	it('adds a NotificationItem, when a notification is emitted', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
@@ -43,7 +43,7 @@ describe('NotificationPanel', () => {
 	});
 
 
-	it('adds another NotificationItem, when a notification is emitted', async() => {
+	it('adds another NotificationItem, when a notification is emitted', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
@@ -53,12 +53,12 @@ describe('NotificationPanel', () => {
 		emitNotification('fooBar', LevelTypes.INFO);
 
 		expect(element._notifications.length).toBe(2);
-		
+
 		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 		expect(notificationElements.length).toBe(2);
 	});
 
-	it('adds a NotificationItem only once, when panel is rerendered', async() => {
+	it('adds a NotificationItem only once, when panel is rerendered', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
@@ -77,7 +77,24 @@ describe('NotificationPanel', () => {
 		expect(notificationElements.length).toBe(1);
 	});
 
-	it('uses the default constant, when a permanent notification is emitted', async() => {
+	it('adds a NotificationItem only once, when this notification was already closed', async () => {
+		const element = await setup();
+
+		expect(element).toBeTruthy();
+		expect(element._notifications.length).toBe(0);
+
+		emitNotification('fooBar', LevelTypes.INFO);
+
+		expect(element._notifications.length).toBe(1);
+
+		await element.render();
+		element._notifications = [];
+		await element.render();
+
+		expect(element._notifications.length).toBe(0);
+	});
+
+	it('uses the default constant, when a permanent notification is emitted', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
@@ -90,11 +107,11 @@ describe('NotificationPanel', () => {
 		expect(notificationElement._autocloseTime).toBe(NOTIFICATION_AUTOCLOSE_TIME_NEVER);
 	});
 
-	it('calls the \'remove\'-callback, when a notification-item closes', async(done) => {
+	it('calls the \'remove\'-callback, when a notification-item closes', async (done) => {
 		const autocloseTime = 1000;
 		const laterThenPanelAutoCloseTime = autocloseTime + 100;
-		const element = await setup();      
-		element._notification_autoclose_time =   autocloseTime;
+		const element = await setup();
+		element._notification_autoclose_time = autocloseTime;
 		const removeSpy = spyOn(element, '_remove').and.callThrough();
 		expect(element).toBeTruthy();
 
@@ -106,8 +123,8 @@ describe('NotificationPanel', () => {
 		setTimeout(() => {
 			notificationItemElement.dispatchEvent(new Event('transitionend'));
 			setTimeout(() => {
-				expect(removeSpy).toHaveBeenCalledWith({ message:'fooBar', id:jasmine.any(Number), level:LevelTypes.INFO, index:0, permanent:false, autocloseTime:autocloseTime });    
-			});			
+				expect(removeSpy).toHaveBeenCalledWith({ message: 'fooBar', id: jasmine.any(Number), level: LevelTypes.INFO, index: 0, permanent: false, autocloseTime: autocloseTime });
+			});
 			done();
 		}, laterThenPanelAutoCloseTime);
 	});
