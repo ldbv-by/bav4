@@ -45,22 +45,22 @@ export class Header extends BaElement {
 
 	createView(state) {
 
+		const { open, tabIndex, fetching, layers, isPortrait, hasMinWidth } = state;
+
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase>`);
 		};
 
 		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
+			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return minWidth ? 'is-desktop' : 'is-tablet';
+			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex, fetching, layers, portrait, minWidth } = state;
-
 		const getOverlayClass = () => {
-			return (open && !portrait) ? 'is-open' : '';
+			return (open && !isPortrait) ? 'is-open' : '';
 		};
 
 		const getAnimatedBorderClass = () => {
@@ -76,13 +76,13 @@ export class Header extends BaElement {
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
 			setTabIndex(MainMenuTabIndex.SEARCH);
-			if (portrait || !minWidth) {
+			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
 			//in portrait mode we open the main menu to display existing results
-			if (portrait) {
+			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
 				if (value.length > 0) {
 					openMainMenu();
@@ -97,7 +97,7 @@ export class Header extends BaElement {
 
 		const onInputBlur = () => {
 			enableResponsiveParameterObservation();
-			if (portrait || !minWidth) {
+			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
@@ -178,8 +178,8 @@ export class Header extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait, minWidth } } = globalState;
-		return { open, tabIndex, fetching, layers, portrait, minWidth };
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait: isPortrait, minWidth: hasMinWidth } } = globalState;
+		return { open, tabIndex, fetching, layers, isPortrait, hasMinWidth };
 	}
 
 	static get tag() {
