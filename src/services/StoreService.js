@@ -6,7 +6,6 @@ import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
-import { uiThemeReducer } from '../modules/uiTheme/store/uiTheme.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
@@ -19,6 +18,7 @@ import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
 import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
+import { createMediaReducer } from '../store/media/media.reducer';
 
 
 /**
@@ -44,7 +44,6 @@ export class StoreService {
 			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,
 			modal: modalReducer,
-			uiTheme: uiThemeReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
@@ -53,7 +52,8 @@ export class StoreService {
 			network: networkReducer,
 			search: searchReducer,
 			topicsContentPanel: topicsContentPanelReducer,
-			highlight: highlightReducer
+			highlight: highlightReducer,
+			media: createMediaReducer()
 		});
 
 		this._store = createStore(rootReducer);
@@ -66,8 +66,9 @@ export class StoreService {
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
 				PositionPlugin: positionPlugin,
-				ContextClickPlugin: ContextClickPlugin,
-				HighlightPlugin: HighlightPlugin,
+				ContextClickPlugin: contextClickPlugin,
+				HighlightPlugin: highlightPlugin,
+				MediaPlugin: mediaPlugin,
 				EnvironmentService: environmentService
 			}
 				= $injector.inject(
@@ -78,18 +79,20 @@ export class StoreService {
 					'PositionPlugin',
 					'ContextClickPlugin',
 					'HighlightPlugin',
+					'MediaPlugin',
 					'EnvironmentService'
 				);
 
-			setTimeout(async() => {
+			setTimeout(async () => {
 				//register plugins
+				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
 				await geolocationPlugin.register(this._store);
-				await ContextClickPlugin.register(this._store);
-				await HighlightPlugin.register(this._store);
+				await contextClickPlugin.register(this._store);
+				await highlightPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});
