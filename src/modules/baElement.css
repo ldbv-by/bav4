@@ -17,6 +17,9 @@
 *,*:focus,*:hover{
     outline:none;
 }
+*:focus{
+    box-shadow: 0 0 0 .2em var(--primary-color-light);
+}
 
 /* not working in Firefox */
 ::-webkit-scrollbar {

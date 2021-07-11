@@ -27,35 +27,6 @@ export class ToolBar extends BaElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._portrait = false;
-		this._minWidth = false;
-	}
-
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-
-
-		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
-		const handleMinWidthChange = (e) => {
-			this._minWidth = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
-		//initial set of local state
-		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
 	/**
@@ -63,15 +34,16 @@ export class ToolBar extends BaElement {
 	 */
 	createView(state) {
 
-		const { toolBar, toolContainer } = state;
+		const { toolBar, toolContainer, fetching, portrait, minWidth } = state;
+
 		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop' : 'is-tablet';
+			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const getOverlayClass = () => {
@@ -97,37 +69,45 @@ export class ToolBar extends BaElement {
 			toggleTool(toolId);
 		};
 
+		const getAnimatedBorderClass = () => {
+			return fetching ? 'animated-action-button__border__running' : '';
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>		
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">  
-				<button  @click="${toggleToolBar}"  class="action-button">
+			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
+				<button class="action-button" @click="${toggleToolBar}">
+					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
+					</div>
 					<div class="action-button__icon">
+						<div class="ba">
+						</div>
 					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<div  @click="${toggleMeasureTool}" class="tool-bar__button">
+					<button  @click="${toggleMeasureTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_measure_button')}
 						</div>  
-					</div>  	
-					<div  @click="${toggleDrawTool}" class="tool-bar__button">
+					</button>  	
+					<button  @click="${toggleDrawTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_draw_button')}
 						</div>  
-					</div>  				               
-					<div  class="tool-bar__button">
+					</button>  				               
+					<button  class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_share_button')}
 						</div>  
-					</div>  				               				               				 				           					 				               				               				 				            				               				               				 				           
+					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
 		`;
@@ -142,8 +122,8 @@ export class ToolBar extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { toolBar, toolContainer } = globalState;
-		return { toolBar: toolBar, toolContainer: toolContainer };
+		const { toolBar, toolContainer, network: { fetching }, media: { portrait, minWidth } } = globalState;
+		return { toolBar, toolContainer, fetching, portrait, minWidth };
 	}
 
 	static get tag() {

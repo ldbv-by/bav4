@@ -43,10 +43,9 @@ describe('LayerItem', () => {
 
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, { layers: layersReducer });
-			$injector.registerSingleton('TranslationService', { translate: (key) => key });
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = layer;
-			element.render();
+			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
+			const  element = await TestUtils.render(LayerItem.tag);
+			element.layer =  layer ;
 			return element;
 		};
 
@@ -94,7 +93,6 @@ describe('LayerItem', () => {
 			expect(layerBody.classList.contains('iscollapse')).toBeFalse();
 
 			element.layer = { ...element.layer, collapsed: true };
-			element.render();
 			expect(layerBody.classList.contains('iscollapse')).toBeTrue();
 			expect(collapseButton.classList.contains('iconexpand')).toBeFalse();
 		});

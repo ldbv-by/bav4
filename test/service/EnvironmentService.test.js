@@ -1,7 +1,17 @@
 /* eslint-disable no-undef */
+import { $injector } from '../../src/injection';
 import { EnvironmentService } from '../../src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
+
+	const configService = {
+		getValue: () => { }
+	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('ConfigService', configService);
+	});
 
 	describe('window object', () => {
 
@@ -18,7 +28,7 @@ describe('EnvironmentService', () => {
 		});
 
 		it('provides the global window object from default param', () => {
-			
+
 			const instanceUnderTest = new EnvironmentService();
 
 			expect(instanceUnderTest.getWindow()).toBeDefined();
@@ -179,6 +189,24 @@ describe('EnvironmentService', () => {
 
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+		});
+	});
+
+	describe('isStandalone', () => {
+
+		it('returns `false` when BACKEND_URL config param is available', () => {
+			const instanceUnderTest = new EnvironmentService();
+			spyOn(configService, 'getValue').withArgs('BACKEND_URL', false).and.returnValue('foo');
+
+			expect(instanceUnderTest.isStandalone()).toBeFalse();
+		});
+
+		it('returns `true` when BACKEND_URL config param is NOT available', () => {
+			const instanceUnderTest = new EnvironmentService();
+
+			spyOn(configService, 'getValue').withArgs('BACKEND_URL', false).and.returnValue(false);
+
+			expect(instanceUnderTest.isStandalone()).toBeTrue();
 		});
 	});
 });

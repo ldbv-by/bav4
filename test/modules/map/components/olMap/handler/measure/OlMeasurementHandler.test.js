@@ -864,7 +864,7 @@ describe('OlMeasurementHandler', () => {
 			});
 		});
 
-		it('stores after adding a feature', async () => {
+		it('stores after adding a feature', async (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -881,12 +881,13 @@ describe('OlMeasurementHandler', () => {
 				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
 			});
 
 		});
 
 
-		it('stores after a feature is removed', async () => {
+		it('stores after a feature is removed', async (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -903,10 +904,11 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				expect(classUnderTest._storedContent).toBeTruthy();
+				done();
 			});
 		});
 
-		it('stores with fileSaveResult on second store ', async () => {
+		it('stores with fileSaveResult on second store ', async (done) => {
 			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
@@ -924,11 +926,12 @@ describe('OlMeasurementHandler', () => {
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(saveSpy).toHaveBeenCalledTimes(1);
 				expect(saveSpy).toHaveBeenCalledWith('barBazId', jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
 			});
 
 		});
 
-		it('logs warning on failed initial store ', async () => {
+		it('logs warning on failed initial store ', async (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -946,11 +949,12 @@ describe('OlMeasurementHandler', () => {
 				expect(store.getState().measurement.fileSaveResult).toBeNull();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
+				done();
 			});
 
 		});
 
-		it('logs warning on second store ', async () => {
+		it('logs warning on second store ', async (done) => {
 			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
@@ -968,6 +972,7 @@ describe('OlMeasurementHandler', () => {
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
+				done();
 			});
 
 		});

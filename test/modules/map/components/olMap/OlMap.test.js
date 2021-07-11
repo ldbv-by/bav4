@@ -29,7 +29,7 @@ describe('OlMap', () => {
 
 	const mapServiceStub = {
 		getMinimalRotation() {
-			return .05; 
+			return .05;
 		}
 	};
 
@@ -70,6 +70,15 @@ describe('OlMap', () => {
 			return 'geolocationLayerHandlerMockId';
 		}
 	};
+
+	const highlightLayerHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'highlightLayerHandlerMockId';
+		}
+	};
+
 	const vectorImportServiceMock = {
 		vectorSourceFromInternalData: () => { },
 		vectorSourceFromExternalData: () => { }
@@ -106,6 +115,7 @@ describe('OlMap', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
+			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('VectorImportService', vectorImportServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
@@ -135,7 +145,7 @@ describe('OlMap', () => {
 				const element = await setup();
 				const view = element._view;
 				const changeRotationEvent = new Event('change:rotation');
-				changeRotationEvent.target =  { getRotation: () => rotationValue };
+				changeRotationEvent.target = { getRotation: () => rotationValue };
 
 				view.dispatchEvent(changeRotationEvent);
 
