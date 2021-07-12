@@ -350,9 +350,8 @@ describe('OlMeasurementHandler', () => {
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 				setTimeout(() => {
 					expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: null, fileId: 'f_lastId' });
+					done();
 				});
-
-				done();
 			});
 		});
 
