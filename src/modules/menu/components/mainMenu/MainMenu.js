@@ -91,7 +91,7 @@ export class MainMenu extends BaElement {
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
 				<div class="main-menu ${getOverlayClass()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
-						<span class='main-menu__close-button-text'>${translate('menu_main_toggle_button_title')}</span>	
+						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<span class='arrow'></span>	
 					</button>	
 					<div id='mainMenuContainer' class='main-menu__container'>					

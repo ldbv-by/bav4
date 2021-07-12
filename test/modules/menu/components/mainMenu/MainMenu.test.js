@@ -136,7 +136,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_toggle_button_title');
+			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_open_button');
 		});
 
 		it('adds a container for content and shows demo content', async () => {
