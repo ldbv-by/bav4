@@ -7,6 +7,7 @@ import { networkReducer } from '../../../../../src/store/network/network.reducer
 import { toggleToolBar } from '../../../../../src/modules/menu/store/toolBar.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
@@ -14,15 +15,13 @@ window.customElements.define(ToolBar.tag, ToolBar);
 
 describe('ToolBarElement', () => {
 
-	const windowMock = {
-		matchMedia() { }
-	};
+
 	let store;
-	const setup = async (config = {}) => {
+	const setup = async (state = {}, config = {}) => {
 
 		const { embed = false, fetching = false } = config;
 
-		const state = {
+		const initialState = {
 			toolBar: {
 				open: true
 			},
@@ -33,14 +32,25 @@ describe('ToolBarElement', () => {
 			network: {
 				fetching: fetching,
 				pendingRequests: 0
-			}
+			},
+			media: {
+				portrait: false,
+				minWidth: true
+			},
+			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { toolBar: toolBarReducer, toolContainer: toolContainerReducer, network: networkReducer });
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			toolBar: toolBarReducer,
+			toolContainer: toolContainerReducer,
+			network: networkReducer,
+			media: createNoInitialStateMediaReducer()
+		});
+
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed,
-				getWindow: () => windowMock
+				isEmbedded: () => embed
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ToolBar.tag);
@@ -48,12 +58,6 @@ describe('ToolBarElement', () => {
 
 
 	describe('when initialized', () => {
-
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
 
 		it('adds a div which holds the toolbar with three Tools', async () => {
 
@@ -77,7 +81,7 @@ describe('ToolBarElement', () => {
 		});
 
 		it('renders nothing when embedded', async () => {
-			const element = await setup({ embed: true });
+			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -129,63 +133,67 @@ describe('ToolBarElement', () => {
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape desktop', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				},
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for landscape tablet', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				},
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait desktop', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: true
+				},
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait tablet', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				},
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 });

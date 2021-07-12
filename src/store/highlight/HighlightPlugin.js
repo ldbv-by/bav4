@@ -5,17 +5,19 @@ import { addLayer, removeLayer } from '../layers/layers.action';
 
 /**
  * Id of the layer used for highlight visualization.
- * @class
- * @author taulinger
  */
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
+/**
+ * @class
+ * @author taulinger
+ */
 export class HighlightPlugin extends BaPlugin {
 
 	/**
-     * @override
-     * @param {Store} store 
-     */
+	 * @override
+	 * @param {Store} store 
+	 */
 	async register(store) {
 
 		const onChange = (active) => {

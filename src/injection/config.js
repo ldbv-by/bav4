@@ -21,6 +21,7 @@ import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
+import { MediaPlugin } from '../store/media/MediaPlugin';
 
 
 $injector
@@ -44,6 +45,7 @@ $injector
 	.registerSingleton('LayersPlugin', new LayersPlugin())
 	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
+	.registerSingleton('MediaPlugin', new MediaPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
