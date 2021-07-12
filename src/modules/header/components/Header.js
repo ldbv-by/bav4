@@ -165,10 +165,10 @@ export class Header extends BaElement {
 								${translate('header_tab_more_button')}
 							</span>
 						</button>
-						</div>
-						<button class="close-menu" title=${translate('header_tab_more_title')}  @click="${toggle}"">
-							<span class='arrow'></span>	
-						</button>
+					</div>
+					<button class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
+						<span class='arrow'></span>	
+					</button>
 				</div>				
             </div>
 		`;
