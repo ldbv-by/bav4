@@ -42,7 +42,7 @@ input[type=text]{
     color: var(--color);
 }
 input[type=text]:focus{
-    border: 1px solid var(--primary-color-theme);   
+    border: 1px solid var(--primary-color);   
 }
 input[readonly]{
     border: 1px solid var(--secondary-bg-color);    

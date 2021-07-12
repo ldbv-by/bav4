@@ -105,7 +105,7 @@
 }
 .badges{
   border-radius: 2em;
-  background: var(--secondary-color-theme);
+  background: var(--secondary-color);
   color: var(--text-default-color);
   padding: 0.2em .5em;
   font-size: .8rem;
@@ -183,9 +183,9 @@
   width: 3em;
   border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
   padding: .5em 0.9em;
-  background: var(--header-button-bg-color);
+  background: var(--primary-color);
   color: var(--header-button-color);
-  border-color: var(--header-button-bg-color);
+  border-color: var(--primary-color);
   border-width: 1px;
   border-style: solid;
   cursor: pointer;

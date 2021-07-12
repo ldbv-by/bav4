@@ -3,5 +3,5 @@
     box-shadow: Inset 0 0 0 .2em var(--primary-color-light);
   }
   .ba-list-item { 
-    --primary-color-theme: var(--topic-theme, var(--secondary-color-theme));
+    --primary-color: var(--topic-theme, var(--secondary-color));
   }

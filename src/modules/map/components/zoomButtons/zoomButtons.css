@@ -18,7 +18,7 @@
 }
 
 .icon {
-  background: var(--map-button-bg-color);
+  background: var(--primary-color);
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;
@@ -36,9 +36,6 @@
   background: red;
 } */
 
-.icon:hover, .icon:focus {
-  background: var(--map-button-bg-color);
-}
 
 .icon:hover {
   transform: scale(1.1);
@@ -49,7 +46,7 @@
 }
 
 .zoom-buttons .button {
-  background-color: var(--map-button-color);
+  background-color: var(--text-default-color);
   display: inline-block;
   height: 2.5em;
   width: 2.5em;

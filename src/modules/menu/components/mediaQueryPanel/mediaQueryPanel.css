@@ -33,7 +33,7 @@
     left: .5em;
     border-width: .5em;
     border-style: solid;
-    border-color: transparent gray transparent transparent;
+    border-color: transparent var(--text2) transparent transparent;
 }
 
 .is-open {
@@ -65,7 +65,7 @@
     left: 1em;
     border-width: .5em;
     border-style: solid;
-    border-color: transparent  transparent gray transparent;
+    border-color: transparent  transparent var(--text2) transparent;
 }
 
 

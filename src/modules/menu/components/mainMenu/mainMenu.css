@@ -44,7 +44,7 @@
    left: 0.5em;       
    border-width: .5em;
    border-style: solid;
-   border-color: transparent transparent transparent gray;
+   border-color: transparent transparent transparent var(--text2);
    opacity: .8;
 }
 .main-menu__close-button:hover .arrow{
@@ -96,7 +96,7 @@
    left: 1.5em;
    border-width: .5em;
    border-style: solid;
-   border-color: gray transparent transparent transparent;
+   border-color: var(--text2) transparent transparent transparent;
 }
 .is-portrait .is-open {
    transform: translate(0, 65vh);
@@ -218,7 +218,7 @@
 }
 .ba-list-item__secondary-text{
    font-size: .95rem;
-   color: gray;
+   color: var(--text2);
 
 }
 

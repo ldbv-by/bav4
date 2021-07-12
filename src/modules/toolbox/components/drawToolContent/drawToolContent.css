@@ -74,7 +74,7 @@ background:red;
     background: var(--color);
     -webkit-mask-size: cover;
     mask-size: cover;
-    background: gray;
+    background: var(--text2);
     height: 2em;
     width: 2em;
     transition: all .2s ease-in-out;
@@ -109,16 +109,16 @@ background:red;
 .is-active .tool-container__background{
     height: 3em;
     width: 3em;
-    background-color: var(--header-button-bg-color) !important;
+    background-color: var(--primary-color) !important;
 }
 .tool-container__button:hover .tool-container__icon{
-    background: gray;
+    background: var(--text2);
 }
 .is-active  .tool-container__icon{
-    background: #fff !important;
+    background:  var(--primary-bg-color) !important;
 }
 .is-active  .tool-container__icon{
-    background: #fff !important;
+    background: var(--primary-bg-color) !important;
 }
 
 
@@ -135,7 +135,7 @@ background:red;
   .tool-container__button:hover.tool-container__background{
     height: 3em;
     width: 3em;
-    background-color: var(--header-button-bg-color);
+    background-color: var(--primary-color);
   }
 
 .tool-container__buttons-secondary{
@@ -161,7 +161,7 @@ background:red;
   }
   .tool-container__info{
     font-size: .8rem;
-    color: gray;
+    color: var(--text2);
 }
 
 

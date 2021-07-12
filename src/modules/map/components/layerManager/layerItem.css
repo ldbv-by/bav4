@@ -76,7 +76,7 @@
       margin: 0 .3em;
   }
    ba-icon:hover{
-      background:var(--header-button-bg-color);
+      background:var(--primary-color);
 
   }
   ba-icon:focus{
