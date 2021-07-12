@@ -11,7 +11,7 @@
   width: 1.5em;
 }
 .inactive {
-  background: var(--text-default-color);
+  background: var(--text3);
 }
 .active {
   background: var(--warning-color);

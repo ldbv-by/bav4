@@ -10,7 +10,7 @@
    text-align: left;
 }
 .ba-list-item:focus{
-   box-shadow: Inset 0 0 0 .2em var(--primary-color-light);
+   box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
 }
 .ba-list-item:hover{
    background: var(--header-background-color);
@@ -141,7 +141,7 @@
      height: 2em;
      width: 2em;
      background-color: var(--primary-color);
-     box-shadow: 0 0 0 .2em var(--primary-color-light);
+     box-shadow: 0 0 0 .2em var(--primary-color-lighter);
    }
  .icon-background{
    height: 0;
@@ -229,16 +229,3 @@
 .separator {
    border-left: 1px dotted var(--header-background-color);
 }
-
-
-/* temp */
-.ba-list-item__icon-info{
-   background-repeat: no-repeat;
-   background-image:  url('../assets/geofill.svg');
-   color: red;
-   margin: auto;
-   height: 100%;
-   width: 2em;
-   background-position: .5em;
-   font-size: 1rem;
- }

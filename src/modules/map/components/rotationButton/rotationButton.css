@@ -4,7 +4,7 @@
 }
 
 .icon {
-  background: var(--text-default-color);
+  background: var(--text3);
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;

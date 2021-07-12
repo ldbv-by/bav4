@@ -29,7 +29,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
     position: absolute;
     z-index: 1;
     fill: none;
-    stroke: white;
+    stroke: var(--text3);
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;

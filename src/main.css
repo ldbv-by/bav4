@@ -1,69 +1,37 @@
-
-
-/* hsl(198, 92%, 45%) */
-/* hsl(213, 54%, 37%) */
 * {
-    /* brand foundation */
-    --brand-hue: 198;
-    --brand-saturation: 92%;
-    --brand-lightness: 45%;
+  /* brand */
+  --brand-hue: 198;
+  --brand-saturation: 92%;
+  --brand-lightness: 45%;
   
-    /* light */
-    --brand-light: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
-    --brand-light-light: hsl(var(--brand-hue) var(--brand-saturation) calc(var(--brand-lightness) / .55) );
-    --brand-secondary-light: hsl(var(--brand-hue) var(--brand-saturation) 30%);
-    
-    --text1-light:hsl(var(--brand-hue) 10% 40%);
-    --text2-light:hsl(var(--brand-hue) 10% 60%);
+  /* light */
+  --brand-light: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
+  --brand-light-lighter: hsl(var(--brand-hue) var(--brand-saturation) calc(var(--brand-lightness) / .55) );
+  --brand-secondary-light: hsl(var(--brand-hue) var(--brand-saturation) 30%);    
+  --text1-light:hsl(var(--brand-hue) 10% 40%);
+  --text2-light:hsl(var(--brand-hue) 10% 60%);
+  --text3-light:hsl(var(--brand-hue) 0% 100%);
+  --surface1-light: hsl(var(--brand-hue) 20% 99%);
+  --surface2-light: hsl(var(--brand-hue) 10% 90%);
+  --surface3-light: hsl(var(--brand-hue) 60% 95%);
 
-    --surface1-light: hsl(var(--brand-hue) 25% 90%);
-    --surface2-light: hsl(var(--brand-hue) 20% 99%);
-    --surface3-light: hsl(var(--brand-hue) 60% 95%);
-    --surface4-light: hsl(var(--brand-hue) 10% 90%);
+  /* dark */
+  --brand-dark: hsl(var(--brand-hue)  calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / .9));
+  --brand-dark-lighter: hsl( var(--brand-hue) calc(var(--brand-saturation) / 1.2) calc(var(--brand-lightness) / 1.6));
+  --brand-secondary-dark: hsl( var(--brand-hue) calc(var(--brand-saturation) /0.3) 30%);
+  --text1-dark: hsl(var(--brand-hue) 15% 95%);
+  --text2-dark: hsl(var(--brand-hue) 10% 80%);
+  --text3-dark:hsl(var(--brand-hue) 0% 100%);
+  --surface1-dark: hsl(var(--brand-hue) 10% 20%);
+  --surface2-dark: hsl(var(--brand-hue) 15% 40%);
+  --surface3-dark: hsl(var(--brand-hue) 40% 25%);
 
-
-
-    --surface-shadow-light: var(--brand-hue) 10% 20%;
-    --shadow-strength-light: .02;
-  
-  /* dim */
-  --brand-dim: hsl(
-    var(--brand-hue) 
-    calc(var(--brand-saturation) / 1.6)
-    calc(var(--brand-lightness) / .9)
-  );
-  --brand-dim-light: hsl(
-    var(--brand-hue) 
-    calc(var(--brand-saturation) / 1.2)
-    calc(var(--brand-lightness) / 1.6)
-  );
-  --brand-secondary-dim: hsl(
-    var(--brand-hue) 
-    calc(var(--brand-saturation) /0.3)
-    30%
-  );
-  --text1-dim: hsl(var(--brand-hue) 15% 95%);
-  --text2-dim: hsl(var(--brand-hue) 10% 80%);
-
-
-  
-  --surface1-dim: hsl(var(--brand-hue) 10% 20%);
-  --surface2-dim: hsl(var(--brand-hue) 10% 25%);
-  --surface3-dim: hsl(var(--brand-hue) 5%  30%);
-  --surface4-dim: hsl(var(--brand-hue) 5% 35%);
-  --surface-shadow-dim: var(--brand-hue) 30% 13%;
-  --shadow-strength-dim: .2;
-
+  /* others */
   --error-color: hsla(341, 60%, 52%, 1);
   --warning-color: hsla(18, 89%, 48%, 1);
   --info-color: hsla(184, 56%, 43%, 1);
   --sucess-color: hsla(161, 100%, 32%, 1);
-  
   }
-
-
-
-
 
 /* global variables (custom properties) */
 :root {
@@ -93,46 +61,35 @@
 }
 
 .light-theme {
+    /* brand */
     --primary-color: var(--brand-light);
-    --header-button-bg-color: var(--brand-light);
-    --primary-color-light: var(--brand-light-light);
+    --primary-color-lighter: var(--brand-light-lighter);
     --secondary-color: var(--brand-secondary-light);   
-    --primary-bg-color: var(--surface2-light);
-    --header-button-color:var(--surface2-light); 
-    --secondary-bg-color:var(--surface4-light); 
-    --hover-color: var(--surface3-light);    
-    --header-background-color: var(--surface3-light); 
-    --color:  var(--text1-light);
-    --text2:  var(--text2-light);
-    --text-default-color: var(--surface2-light);
+    /* background */
+    --primary-bg-color: var(--surface1-light);
     --primary-bg-color-05: rgba( 255,255,255, 0.9);
+    --secondary-bg-color:var(--surface2-light); 
+    --header-background-color: var(--surface3-light);    
+    /* text */
+    --text1:  var(--text1-light);
+    --text2:  var(--text2-light);
+    --text3:  var(--text3-light);
 }
 
 .dark-theme {
-    --primary-color: var(--brand-dim);
-    --primary-color-light: var(--brand-dim-light);
-    --secondary-color: var(--brand-secondary-dim);  
-    --header-button-bg-color: var(--brand-dim);
-
-    --primary-bg-color:var(--surface1-dim);
-    --header-button-color:var(--surface1-dim); 
-    --secondary-bg-color:var(--surface3-dim); 
-
-    --header-background-color: var(--surface2-dim); 
-    --hover-color: var(--surface4-dim);    
-    --text-default-color: var(--surface2-dim);
-    
-
-    --color:  var(--text1-dim);
-    --text-default-color: var(--surface2-light);
-    --text2:  var(--text2-dim);
-
-
-    
-    
-
-
-    --primary-bg-color-05: rgba( 0,0,0, 0.6);
+  /* brand */
+  --primary-color: var(--brand-dark);
+  --primary-color-lighter: var(--brand-dark-lighter);
+  --secondary-color: var(--brand-secondary-dark);  
+  /* background */
+  --primary-bg-color:var(--surface1-dark);
+  --primary-bg-color-05: rgba( 0,0,0, 0.6);
+  --secondary-bg-color:var(--surface2-dark); 
+  --header-background-color: var(--surface3-dark);      
+  /* text */
+  --text1:  var(--text1-dark);
+  --text2:  var(--text2-dark);
+  --text3:  var(--text3-dark);
 }
 
 *,
@@ -141,7 +98,7 @@
     box-sizing: border-box; 
     margin: 0;
     padding: 0;
-    color: var(--color); 
+    color: var(--text1); 
     font-family: var(--font-family);
 }  
 

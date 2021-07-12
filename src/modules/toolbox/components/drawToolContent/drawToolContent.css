@@ -25,7 +25,7 @@
     min-width: 3.7em;
     position: relative;
     background:transparent;
-    color: var(--header-button-color);
+    color: var(--text1);
     border-color: var(--secondary-bg-color);
     border-width: 1px;
     border-style: solid;
@@ -71,7 +71,7 @@ background:red;
 }
 
 .tool-container__icon{
-    background: var(--color);
+    background: var(--text1);
     -webkit-mask-size: cover;
     mask-size: cover;
     background: var(--text2);

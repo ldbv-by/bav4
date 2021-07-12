@@ -38,5 +38,5 @@
 
 .context-menu__item:hover {
   background-color: var(--primary-color);
-  color: var(--hover-color);
+  color: var(--header-background-color);
 }
