@@ -1,0 +1,15 @@
+ .share_item{
+    min-width:25em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.share_label{
+    margin-right: 0.3em;
+}
+.share_url{
+    flex-grow: 1;
+}
+.share_copy{
+    margin-left: 1em;
+} 

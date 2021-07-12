@@ -23,11 +23,14 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den ');
+		expect(map.toolbox_shareTool_termsOfUse).toBe('Nutzungsbedingungen zu.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
 		expect(map.toolbox_shareTool_share).toBe('Teilen');
+		expect(map.toolbox_shareTool_button_modal).toBe('Link generieren');
+		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
@@ -57,11 +60,14 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
-		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog. Terms of use');
+		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting ');
+		expect(map.toolbox_shareTool_termsOfUse).toBe('the Terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
 		expect(map.toolbox_shareTool_share).toBe('Share');
+		expect(map.toolbox_shareTool_button_modal).toBe('Generate URL');
+		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
@@ -72,7 +78,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 28;
+		const expectedSize = 31;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

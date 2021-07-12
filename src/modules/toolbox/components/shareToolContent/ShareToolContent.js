@@ -3,7 +3,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
-import clipboardIcon from './assets/clipboard.svg';
+import { openModal } from '../../../modal/store/modal.action';
 
 
 /**
@@ -21,7 +21,6 @@ export class ShareToolContent extends BaElement {
 		this._shareService = shareService;
 		this._environmentService = environmentService;
 		this._window = this._environmentService.getWindow();
-		this._shortUrl = this._generateShortUrl();
 		this._tools = this._buildTools();
 	}
 
@@ -62,15 +61,14 @@ export class ShareToolContent extends BaElement {
 	 *@private 
 	 */
 	async _generateShortUrl () {
+		const url = this._shareService.encodeState();
 		try {
-			const url = this._shareService.encodeState();
-			this._shortUrl = await this._urlService.shorten(url);
+			return await this._urlService.shorten(url);
 		}
 		catch (e) {
-			this._shortUrl = '';
-			console.warn(e.message);
-		} 
-		this.render();
+			console.warn('Could not shorten url: ' + e);
+			return url;
+		}
 	}
 
 	/**
@@ -79,68 +77,93 @@ export class ShareToolContent extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key); 
 
-		const onChange = (event) => {
-			const checked = event.target.checked;
+		const onToggle = (event) => {
+			const checked = event.detail.checked;
 			if (!checked) {
 				this._root.querySelector('.preview_button').classList.add('disabled-preview');
 			}
 			else {
 				this._root.querySelector('.preview_button').classList.remove('disabled-preview');
 			} 			
-		};		
+		};	
+		
 
-		const copyCoordinate = async () => {
-			try {
-				await this._shareService.copyToClipboard(this._shortUrl);
-			}
-			catch (e) {
-				console.warn(e.message);
-			} 
-		};
+		const onClick = async () => {
+			const shortUrl = await this._generateShortUrl();
+			const title = translate('toolbox_shareTool_share');
+			const payload = { title: title, content: html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>` };
+			openModal(payload);
+		}; 
 				
 		const toolTemplate = (tool) => {
 			if (!tool.available) {
 				return;
-			} 
+			}
 
-			const activateShare = async () => {
-				const shareData = {
-					title: translate('toolbox_shareTool_title'),
-					url: this._shortUrl,
-				};
-
+			const activateShareApi = async () => {
 				try {
+					const shortUrl = await this._generateShortUrl();
+
+					const shareData = {
+						title: translate('toolbox_shareTool_title'),
+						url: shortUrl,
+					};
+
 					await this._window.navigator.share(shareData);
+
 				}
 				catch (e) {
+					this._root.getElementById(tool.name).classList.add('disabled_tool__button');
 					console.warn('Share API not available: ' + e);
+				} 
+			};
+			
+			const shareContent = async () => {
+				try {
+					const shortUrl = await this._generateShortUrl();
+
+					if (this._window.open(tool.href + shortUrl) === null)  {
+						throw new Error('Could not open window');
+					}					
+				}
+				catch (e) {
+					console.warn('Could not share content: ' + e);
 				} 
 			}; 
 
+			const buttonContent = 
+				html`
+					<div class="tool-container__background"></div>
+					<div class="tool-container__icon ${tool.icon}"></div>  
+					<div class="tool-container__button-text">${tool.title}</div>
+				`;
+
 			return html`
-            <div id=${tool.name}
-                class="tool-container__button" 
-                title=${tool.title}>
-				${tool.name === 'share-api' 
+			${tool.name === 'share-api' 
 		? html`
-						<a role="button" tabindex="0" target="_blank" @click=${activateShare}> 
-							<div class="tool-container__background"></div>
-								<div class="tool-container__icon ${tool.icon}">
-							</div>  
-							<div class="tool-container__button-text">${tool.title}</div>
-						</a>
-					` 
-		: html `
-						<a role="button" tabindex="0" href=${tool.href + this._shortUrl} target="_blank"> 
-							<div class="tool-container__background"></div>
-								<div class="tool-container__icon ${tool.icon}">
-							</div>  
-							<div class="tool-container__button-text">${tool.title}</div>
-						</a>
-					`
-} 
-            </div>
-            `;
+				<div 
+					id=${tool.name}
+					class="tool-container__button" 
+					title=${tool.title}
+					role="button" 
+					tabindex="0" 
+					@click="${activateShareApi}" 
+					target="_blank"
+					> 
+					${buttonContent}
+				</div>` 
+		: html`
+				<div 
+					id=${tool.name}
+					class="tool-container__button" 
+					title=${tool.title}
+					role="button" tabindex="0" 
+					@click=${shareContent}
+					target="_blank"
+					> 
+					${buttonContent}
+				</div>`
+}`;					 
 		};
 
 		return html`
@@ -155,9 +178,10 @@ export class ShareToolContent extends BaElement {
 						<div class="tool-container__buttons">                                    
 							${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
 						</div>   
-					<div class="tool-container__input">
-						<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${copyCoordinate}></ba-icon></span>
-						<input class="url-input" readonly='readonly' value=${this._shortUrl}></input>	
+					<div class="tool-container__buttons-secondary" @click=${onClick}>                         						 
+						<button class='modal_button'>                            
+							${translate('toolbox_shareTool_button_modal')}
+						</button>
 					</div>            
 					<div class="tool-container__embed"> 
 						<span>
@@ -170,8 +194,10 @@ export class ShareToolContent extends BaElement {
 						</button>
 					</div> 
 					<div class="tool-container__checkbox">
-						<input type="checkbox" class="embed_checkbox" @change=${onChange}></input>
-						<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
+						<div><ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
+							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
+						</ba-checkbox></div>
 					</div>               
                 </div>
             </div>	  

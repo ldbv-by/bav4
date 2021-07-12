@@ -35,7 +35,11 @@ describe('Topics provider', () => {
 			id: 'Ref42',
 			label: 'LDBV',
 			description: 'A mocked description',
-			notNeeded: 'Value'
+			notNeeded: 'Value',
+			style: {
+				hue: 42,
+				icon: 'svg'
+			}
 		};
 		const topicMock2 = {
 			defaultBaseGeoR: 'mockBaseLayer2',
@@ -71,23 +75,27 @@ describe('Topics provider', () => {
 
 		const topic1 = topics[0];
 		expect(topic1.id).toBe(topicMock1.id);
-		expect(topic1.label).toBe(topicMock1.label); 
-		expect(topic1.description).toBe(topicMock1.description); 
-		expect(topic1.defaultBaseGeoR).toEqual(topicMock1.defaultBaseGeoR); 
-		expect(topic1.baseGeoRs).toEqual(topicMock1.baseGeoRs); 
-		expect(topic1.activatedGeoRs).toEqual(topicMock1.activatedGeoRs); 
+		expect(topic1.label).toBe(topicMock1.label);
+		expect(topic1.description).toBe(topicMock1.description);
+		expect(topic1.defaultBaseGeoR).toEqual(topicMock1.defaultBaseGeoR);
+		expect(topic1.baseGeoRs).toEqual(topicMock1.baseGeoRs);
+		expect(topic1.activatedGeoRs).toEqual(topicMock1.activatedGeoRs);
 		expect(topic1.selectedGeoRs).toEqual(topicMock1.selectedGeoRs);
 		expect(topic1.notNeeded).toBeUndefined();
-        
+		expect(topic1.style.hue).toBe(42);
+		expect(topic1.style.icon).toBe('svg');
+
 		const topic2 = topics[1];
 		expect(topic2.id).toBe(topicMock2.id);
-		expect(topic2.label).toBe(topicMock2.label); 
-		expect(topic2.description).toBe(topicMock2.description); 
-		expect(topic2.defaultBaseGeoR).toEqual(topicMock2.defaultBaseGeoR); 
-		expect(topic2.baseGeoRs).toEqual(topicMock2.baseGeoRs); 
-		expect(topic2.activatedGeoRs).toEqual(topicMock2.activatedGeoRs); 
+		expect(topic2.label).toBe(topicMock2.label);
+		expect(topic2.description).toBe(topicMock2.description);
+		expect(topic2.defaultBaseGeoR).toEqual(topicMock2.defaultBaseGeoR);
+		expect(topic2.baseGeoRs).toEqual(topicMock2.baseGeoRs);
+		expect(topic2.activatedGeoRs).toEqual(topicMock2.activatedGeoRs);
 		expect(topic2.selectedGeoRs).toEqual(topicMock2.selectedGeoRs);
 		expect(topic2.notNeeded).toBeUndefined();
+		expect(topic2.style.hue).toBeNull();
+		expect(topic2.style.icon).toBeNull();
 
 	});
 

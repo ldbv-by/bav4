@@ -16,6 +16,7 @@ import './modules/menu';
 import './modules/toolbox';
 import './modules/commons';
 import './modules/search';
+import './modules/topics';
 import './modules/contextMenue';
 import './modules/utils';
 import './modules/iframe';
