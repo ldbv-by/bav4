@@ -59,7 +59,8 @@ describe('MainMenu', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed
-			});
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(MainMenu.tag);
 	};
@@ -135,6 +136,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_toggle_button_title');
 		});
 
 		it('adds a container for content and shows demo content', async () => {

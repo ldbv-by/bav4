@@ -31,8 +31,9 @@ export class MainMenu extends BaElement {
 
 	constructor() {
 		super();
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._activeTabIndex = 0;
 	}
 
@@ -83,13 +84,14 @@ export class MainMenu extends BaElement {
 		//Todo: refactor me when all content panels are real components	
 			.map(v => this._getContentPanel(v));
 
+		const translate = (key) => this._translationService.translate(key);	
 
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">
 				<div class="main-menu ${getOverlayClass()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
-						<span class='main-menu__close-button-text'> Menü öffnen </span>	
+						<span class='main-menu__close-button-text'>${translate('menu_main_toggle_button_title')}</span>	
 						<span class='arrow'></span>	
 					</button>	
 					<div id='mainMenuContainer' class='main-menu__container'>					
