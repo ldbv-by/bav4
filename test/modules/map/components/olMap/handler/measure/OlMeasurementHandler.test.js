@@ -188,12 +188,14 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const layerStub = {};
+				const warnSpy = spyOn(console, 'warn');
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
 				// removes Interaction for select, draw, modify, snap, dragPan
 				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				expect(warnSpy).toHaveBeenCalled();
 			});
 
 			it('adds a select interaction', () => {
@@ -515,6 +517,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
+			const warnSpy = spyOn(console, 'warn');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('42'))
 			);
@@ -527,6 +530,7 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
+				expect(warnSpy).toHaveBeenCalled();
 				done();
 			});
 
@@ -537,6 +541,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
+			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -546,6 +551,7 @@ describe('OlMeasurementHandler', () => {
 
 			setTimeout(() => {
 				expect(store.getState().layers.active.length).toBe(0);
+				expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
 				done();
 			});
 
@@ -897,11 +903,13 @@ describe('OlMeasurementHandler', () => {
 				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 			);
 			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
+			const feature1 = new Feature({ geometry: geometry });
+			const feature2 = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._vectorLayer.getSource().removeFeature(feature);
+			classUnderTest._vectorLayer.getSource().addFeature(feature1);
+			classUnderTest._vectorLayer.getSource().addFeature(feature2);
+			classUnderTest._vectorLayer.getSource().removeFeature(feature1);
 
 			setTimeout(() => {
 				expect(classUnderTest._storedContent).toBeTruthy();
