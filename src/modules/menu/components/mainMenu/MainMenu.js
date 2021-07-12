@@ -98,7 +98,7 @@ export class MainMenu extends BaElement {
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
 								<div class="tabcontent">						
-									${item ? item : nothing}
+									${item}
 								</div>								
 							`)}
 						</div>
