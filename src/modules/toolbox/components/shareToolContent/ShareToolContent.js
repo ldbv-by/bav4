@@ -138,8 +138,7 @@ export class ShareToolContent extends BaElement {
 				`;
 
 			return html`
-			${tool.name === 'share-api'
-					? html`
+			${tool.name === 'share-api' ? html`
 				<div 
 					id=${tool.name}
 					class="tool-container__button" 
@@ -150,8 +149,7 @@ export class ShareToolContent extends BaElement {
 					target="_blank"
 					> 
 					${buttonContent}
-				</div>`
-					: html`
+				</div>` : html`
 				<div 
 					id=${tool.name}
 					class="tool-container__button" 
@@ -161,8 +159,7 @@ export class ShareToolContent extends BaElement {
 					target="_blank"
 					> 
 					${buttonContent}
-				</div>`
-				}`;
+				</div>`	}`;
 		};
 
 		return html`
