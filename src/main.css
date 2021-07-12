@@ -29,20 +29,17 @@
   /* dim */
   --brand-dim: hsl(
     var(--brand-hue) 
-    calc(var(--brand-saturation) / 1.2)
-    calc(var(--brand-lightness) / .8)
+    calc(var(--brand-saturation) / 1.6)
+    calc(var(--brand-lightness) / .9)
   );
   --brand-dim-light: hsl(
     var(--brand-hue) 
     calc(var(--brand-saturation) / 1.2)
     calc(var(--brand-lightness) / 1.6)
   );
-
-
-
   --brand-secondary-dim: hsl(
     var(--brand-hue) 
-    calc(var(--brand-saturation) /0.9)
+    calc(var(--brand-saturation) /0.3)
     30%
   );
   --text1-dim: hsl(var(--brand-hue) 15% 95%);
