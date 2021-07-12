@@ -13,7 +13,7 @@ describe('searchReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().search.query).toBeNull();
+		expect(store.getState().search.query.payload).toBeNull();
 	});
 
 	it('changes the \'query\' property', () => {

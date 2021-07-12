@@ -27,7 +27,7 @@
     cursor: pointer;
     user-select: none;
     font-family: var(--font-family);
-    font-size: .9rem;
+    font-size: .7rem;
     font-weight: bold;
     border-radius: 10%;
     width: min-content;

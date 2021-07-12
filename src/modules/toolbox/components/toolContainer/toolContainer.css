@@ -21,6 +21,11 @@
     width: 2.5em;
     height: 2.5em;
     border: 0;
+    opacity: .8;
+    font-weight: bold;
+}
+.tool-container__close-button:hover{
+    opacity: 1;
 }
 .tool-container__content{
     transition: transform 0.3s ease-out;

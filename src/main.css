@@ -49,7 +49,7 @@
     --primary-color-theme: var(--primary-color);
     --secondary-color-theme: var(--secondary-color);
     --primary-bg-color: white;
-    --primary-bg-color-05: rgba( 255,255,255, 0.7);
+    --primary-bg-color-05: rgba( 255,255,255, 0.9);
     --secondary-bg-color: #e8e8e8;
     --bg-color: var(--primary-bg-color);
     --color: #696969;

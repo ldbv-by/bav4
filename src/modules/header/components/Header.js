@@ -5,6 +5,7 @@ import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
+import { setQuery } from '../../../store/search/search.action';
 
 
 /**
@@ -21,45 +22,15 @@ export class Header extends BaElement {
 		const {
 			CoordinateService: coordinateService,
 			EnvironmentService: environmentService,
-			SearchResultProviderService: providerService,
 			TranslationService: translationService
 		}
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'SearchResultProviderService', 'TranslationService');
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'TranslationService');
 
 		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._locationSearchResultProvider = providerService.getLocationSearchResultProvider();
-		this._portrait = false;
 		this._classMobileHeader = '';
 	}
-
-	initialize() {
-		const _window = this._environmentService.getWindow();
-
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-
-		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
-		const handleMinWidthChange = (e) => {
-			this._minWidth = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
-		//initial set of local state
-		handleMinWidthChange(mediaQueryMinWidth);
-	}
-
 
 	onWindowLoad() {
 		if (!this.isRenderingSkipped()) {
@@ -74,22 +45,21 @@ export class Header extends BaElement {
 	createView(state) {
 
 		const showModalInfo = () => {
-			const payload = { title: 'Showcase', content: html`<ba-showcase></ba-showcase>` };
-			openModal(payload);
+			openModal('Showcase', html`<ba-showcase>`);
 		};
 
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop' : 'is-tablet';
+			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex, fetching, layers } = state;
+		const { open, tabIndex, fetching, layers, portrait, minWidth } = state;
 
 		const getOverlayClass = () => {
-			return (open && !this._portrait) ? 'is-open' : '';
+			return (open && !portrait) ? 'is-open' : '';
 		};
 
 		const getAnimatedBorderClass = () => {
@@ -104,15 +74,27 @@ export class Header extends BaElement {
 
 		const onFocusInput = () => {
 			setTabIndex(MainMenuTabIndex.SEARCH);
-			if (this._portrait || !this._minWidth) {
+			if (portrait || !minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+			//in portrait mode we open the main menu to display existing results
+			if (portrait) {
+				const value = this.shadowRoot.querySelector('#input').value;
+				if (value.length > 0) {
+					openMainMenu();
+				}
+			}
+		};
+
+		const onInput = (evt) => {
+			openMainMenu();
+			setQuery(evt.target.value);
 		};
 
 		const showModalHeader = () => {
-			if (this._portrait || !this._minWidth) {
+			if (portrait || !minWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
@@ -158,7 +140,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input @focus="${onFocusInput}" @blur="${showModalHeader}" class='header__search' type="search" placeholder="" />             
+						<input id='input' @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
@@ -193,8 +175,8 @@ export class Header extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers } } = globalState;
-		return { open, tabIndex, fetching, layers };
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait, minWidth } } = globalState;
+		return { open, tabIndex, fetching, layers, portrait, minWidth };
 	}
 
 	static get tag() {

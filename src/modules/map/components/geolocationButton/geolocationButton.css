@@ -1,16 +1,7 @@
-/* .geolocation {
-  position: absolute;
-  right: 10px;
-  top: 300px;
-  display: inline-block;
-  vertical-align: top;
-} */
-
 .geolocation-icon {
-  mask: url("./assets/vinyl.svg");
-  -webkit-mask-image: url("./assets/vinyl.svg");
+  mask: url("./assets/circleFill.svg");
+  -webkit-mask-image: url("./assets/circleFill.svg");
 }
-
 .icon { 
   mask-size: cover;
   -webkit-mask-size: cover;
@@ -19,7 +10,6 @@
   height: 1.5em;
   width: 1.5em;
 }
-
 .inactive {
   background: var(--map-button-color);
 }
@@ -29,7 +19,6 @@
 .denied {
   background: #696969;
 }
-
 .geolocation-button {
   background-color: var(--map-button-bg-color);
   display: inline-block;
@@ -40,11 +29,9 @@
   outline: none;
   padding-top: 0.25em;
 }
-
 .geolocation-button:hover {
   transform: scale(1.1);
 }
-
 .geolocation-button:active {
   transform: scale(1.15);
   border: none;

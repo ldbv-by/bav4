@@ -28,13 +28,18 @@ export const provide = (lang) => {
 				toolbox_shareTool_share: 'Share',
 				toolbox_shareTool_button_modal: 'Generate URL',
 				toolbox_shareTool_share_link_readonly: 'Link to share BayernAtlas',
-				toolbox_measureTool_delete_point:'Delete last point',
-				toolbox_measureTool_delete_measure:'Delete measure',
-				toolbox_measureTool_measure_active:'Tap on the map to start measurement',
+				toolbox_measureTool_delete_point: 'Delete last point',
+				toolbox_measureTool_delete_measure: 'Delete measure',
+				toolbox_measureTool_measure_active: 'Tap on the map to start measurement',
 				toolbox_measureTool_measure_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
 				toolbox_measureTool_measure_modify: 'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_measureTool_measure_select: 'Select an existing measurement or start a new one',
-				toolbox_drawTool_finish:'Finish'
+				toolbox_measureTool_share: 'Share',
+				toolbox_measureTool_share_api: 'Click to share',
+				toolbox_measureTool_share_link_readonly: 'Link to share your measurement',
+				toolbox_measureTool_share_link_edit: 'Link to editable share your measurement',
+				toolbox_measureTool_share_link_title: 'shared with BayernAtlas.de',
+				toolbox_drawTool_finish: 'Finish'
 			};
 
 		case 'de':
@@ -70,7 +75,12 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_draw: 'In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)',
 				toolbox_measureTool_measure_modify: 'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_measureTool_measure_select: 'Eine bestehende Messung auswählen oder eine neue Messung beginnen',
-				toolbox_drawTool_finish:'Fertig'
+				toolbox_measureTool_share: 'Teilen',
+				toolbox_measureTool_share_api: 'Klicken, um zu teilen',
+				toolbox_measureTool_share_link_readonly: 'Link zum Teilen Ihrer Zeichnung',
+				toolbox_measureTool_share_link_edit: 'Link zum Editieren Ihrer Zeichnung',
+				toolbox_measureTool_share_link_title: 'geteilt über BayernAtlas.de',
+				toolbox_drawTool_finish: 'Fertig'
 			};
 
 		default:

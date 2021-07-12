@@ -2,8 +2,18 @@
 import { GeoResourceService } from '../../src/services/GeoResourceService';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
+import { $injector } from '../../src/injection';
 
 describe('GeoResourceService', () => {
+
+	const environmentService = {
+		isStandalone: () => { }
+	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('EnvironmentService', environmentService);
+	});
 
 	const setup = (provider = loadExampleGeoResources) => {
 		return new GeoResourceService(provider);
@@ -18,8 +28,8 @@ describe('GeoResourceService', () => {
 
 			const georesources = await instanceUnderTest.init();
 
-			//six gepresources from provider, two from fallback
-			expect(georesources.length).toBe(8);
+			//six gepresources from provider
+			expect(georesources.length).toBe(6);
 		});
 
 		it('initializes the service with default provider', async () => {
@@ -37,23 +47,42 @@ describe('GeoResourceService', () => {
 			expect(georesources.length).toBe(1);
 		});
 
-		it('loads a fallback GeoResouce when provider cannot fulfill', async () => {
+		describe('provider cannot fulfill', () => {
 
-			const instanceUnderTest = setup(async () => {
-				throw new Error('GeoResources could not be loaded');
+			it('loads two fallback geoResources when we are in standalone mode', async () => {
+
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const instanceUnderTest = setup(async () => {
+					throw new Error('GeoResources could not be loaded');
+				});
+				const warnSpy = spyOn(console, 'warn');
+
+				expect(instanceUnderTest._georesources).toBeNull();
+
+				const georesources = await instanceUnderTest.init();
+
+				expect(georesources.length).toBe(2);
+				expect(georesources[0].id).toBe('atkis');
+				expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
+				expect(georesources[1].id).toBe('atkis_sw');
+				expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
+				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			});
-			const warnSpy = spyOn(console, 'warn');
 
-			expect(instanceUnderTest._georesources).toBeNull();
+			it('logs an error when we are NOT in standalone mode', async () => {
 
-			const georesources = await instanceUnderTest.init();
+				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				const instanceUnderTest = setup(async () => {
+					throw new Error('GeoResources could not be loaded');
+				});
+				const errorSpy = spyOn(console, 'error');
 
-			expect(georesources.length).toBe(2);
-			expect(georesources[0].id).toBe('atkis');
-			expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
-			expect(georesources[1].id).toBe('atkis_sw');
-			expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
-			expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
+
+				const topics = await instanceUnderTest.init();
+
+				expect(topics).toEqual([]);
+				expect(errorSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend.', jasmine.anything());
+			});
 		});
 	});
 

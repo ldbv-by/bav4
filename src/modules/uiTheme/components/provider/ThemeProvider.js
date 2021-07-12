@@ -1,5 +1,4 @@
 import { BaElement } from '../../../BaElement';
-import { changeTheme } from '../../store/uiTheme.action';
 import { $injector } from '../../../../injection';
 
 /**
@@ -17,20 +16,14 @@ export class ThemeProvider extends BaElement {
 	}
 
 	initialize() {
-
 		this._updateCss(this.getState());
-
-		//listen to theme changes on window
-		this._environmentService.getWindow().matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-			changeTheme(e.matches ? 'dark' : 'light');
-		});
 	}
 
 	_updateCss(state) {
-		
-		const { theme } = state;
-		const cssClassToAdd = theme === 'dark' ? 'dark-theme' : 'light-theme';
-		const cssClassToRemove = theme === 'light' ? 'dark-theme' : 'light-theme';
+
+		const { darkSchema } = state;
+		const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
+		const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
 		this._environmentService.getWindow()
 			.document.body.classList.add(cssClassToAdd);
 		this._environmentService.getWindow()
@@ -46,8 +39,8 @@ export class ThemeProvider extends BaElement {
 	}
 
 	extractState(globalState) {
-		const { uiTheme: { theme } } = globalState;
-		return { theme };
+		const { media: { darkSchema } } = globalState;
+		return { darkSchema };
 	}
 
 	static get tag() {

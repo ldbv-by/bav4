@@ -9,6 +9,7 @@ import { $injector } from '../../../../injection';
 /**
  *  Example for using and testing media queries
  * @class
+ * @deprecated
  */
 export class MediaQueryPanel extends BaElement {
 

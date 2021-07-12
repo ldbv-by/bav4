@@ -4,27 +4,24 @@
     -ms-transition: none !important;
     -o-transition: none !important;
   }
-
 .footer {
     position: fixed;
     z-index: var(--z-footer);
-    bottom: 0;
-    width:100%;       
+    bottom: .7em;
+    left:1em;
     transition: transform 0.3s ease-out;     
 }
 .content{
     margin-left:25em;
-    font-size: .9rem;
+    font-size: .8rem;
     padding: 0;    
     background-color: var(--primary-bg-color-05);
 }
 .is-open {
     transform: translate(28em, 0);
  }
-
  .is-portrait .content{
      display: none;
-
 }
 ba-attribution-info{
     bottom:0;

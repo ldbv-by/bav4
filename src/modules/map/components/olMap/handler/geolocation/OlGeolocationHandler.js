@@ -13,7 +13,7 @@ import { Point, Circle } from 'ol/geom';
 
 
 /**
- * Handler for display geolocation information on the map
+ * Handler for displaying geolocation information on the map
  * @class
  * @author thiloSchlemmer
  */

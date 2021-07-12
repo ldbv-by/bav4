@@ -13,15 +13,18 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * - `onClick()`
  * 
  * Observed Attributes:
+ * - `label`
  * - `disabled`
  * - `type`
  * 
  * Configurable Properties:
+ * - `label`
  * - `disabled` (default=false)
  * - `type` (default=secondary)
  * - `onClick()`
  * 
  * Observed Properties:
+ * - `label`
  * - `disabled`
  * - `type`
  * 
@@ -71,7 +74,7 @@ export class Button extends BaElement {
 	}
 
 	static get observedAttributes() {
-		return ['disabled', 'type'];
+		return ['disabled', 'type', 'label'];
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -81,6 +84,9 @@ export class Button extends BaElement {
 				break;
 			case 'type': 
 				this.type = newValue; 
+				break;
+			case 'label': 
+				this.label = newValue; 
 				break;
 		} 
 	}
@@ -105,6 +111,17 @@ export class Button extends BaElement {
 
 	get type() {
 		return this._type;
+	}
+
+	set label(value) {
+		if (value !== this.label) {
+			this._label = value;
+			this.render();
+		}
+	}
+
+	get label() {
+		return this._label;
 	}
 
 	set onClick(callback) {
