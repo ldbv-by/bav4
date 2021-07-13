@@ -930,8 +930,9 @@ describe('OlMeasurementHandler', () => {
 
 		});
 
-		it('logs warning on failed initial store ', async (done) => {			
-			setup();
+		it('logs warning on failed initial store ', async (done) => {
+			const state = { ...initialState, fileSaveResult: null };
+			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const fileSaveResultSpy = spyOn(classUnderTest, '_setFileSaveResult').and.callFake(() => { });
 			const map = setupMap();
