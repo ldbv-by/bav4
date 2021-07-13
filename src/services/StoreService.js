@@ -1,7 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
-import { mainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
+import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
@@ -40,7 +40,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			sidePanel: sidePanelReducer,
-			mainMenu: mainMenuReducer,
+			mainMenu: createMainMenuReducer(),
 			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
 			contextMenue: contextMenueReducer,

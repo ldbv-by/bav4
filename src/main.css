@@ -43,11 +43,11 @@
     --font-family: 'Open Sans', sans-serif;
     
     --z-footer: 100;
-    --z-mapbuttons: 300;
+    --z-mapbuttons: 200;
+    --z-toolbox: 300;
     --z-mainmenu: 400;
     --z-header: 500;
-    --z-toolbox: 600;
-    --z-modal: 700;
+    --z-modal: 600;
 
     --width-mainmenu: 28em;
     --animationtime-mainmenu: 0.3s;
