@@ -1,8 +1,8 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
-import { toggleTheme } from '../../store/uiTheme.action';
 import { $injector } from '../../../../injection';
 import css from './themeToggle.css';
+import { toggleSchema } from '../../../../store/media/media.action';
 
 /**
  * Toggles the UI between a light and a dark theme
@@ -19,8 +19,8 @@ export class ThemeToggle extends BaElement {
 	}
 
 	extractState(globalState) {
-		const { uiTheme: { theme } } = globalState;
-		return { theme };
+		const { media: { darkSchema } } = globalState;
+		return { darkSchema };
 	}
 
 
@@ -28,18 +28,20 @@ export class ThemeToggle extends BaElement {
 		if (firsttime) {
 			// register callback on toggle
 			this._root.querySelector('ba-toggle').onToggle = () => {
-				toggleTheme();
+				toggleSchema();
 			};
 		}
 	}
 
 	createView(state) {
-		const isChecked = (state.theme === 'dark');
-		const title = this._translationService.translate('uiTheme_toggle_tooltip_' + state.theme);
+
+		const { darkSchema } = state;
+		const titleSuffix = darkSchema ? 'dark' : 'light';
+		const title = this._translationService.translate(`uiTheme_toggle_tooltip_${titleSuffix}`);
 
 		return html`
 		<style>${css}</style>
-		<ba-toggle title='${title}' checked=${isChecked} ><div class='container'><i class='icon adjust'></i></div></ba-toggle>
+		<ba-toggle title='${title}' checked=${darkSchema} ><div class='container'><i class='icon adjust'></i></div></ba-toggle>
 		`;
 	}
 

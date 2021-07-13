@@ -33,7 +33,6 @@ export class MainMenu extends BaElement {
 		super();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
-		this._portrait = false;
 		this._activeTabIndex = 0;
 	}
 
@@ -51,30 +50,6 @@ export class MainMenu extends BaElement {
 
 	initialize() {
 
-		const _window = this._environmentService.getWindow();
-
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-
-		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
-		const handleMinWidthChange = (e) => {
-			this._minWidth = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
-		//initial set of local state
-		handleMinWidthChange(mediaQueryMinWidth);
-
 		this.observe('tabIndex', tabIndex => {
 			if (tabIndex !== MainMenuTabIndex.SEARCH.id) {
 				clearHighlightFeatures();
@@ -87,16 +62,16 @@ export class MainMenu extends BaElement {
 	 */
 	createView(state) {
 
-		const { open, tabIndex } = state;
+		const { open, tabIndex, portrait, minWidth } = state;
 
 		this._activeTabIndex = tabIndex;
 
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop' : 'is-tablet';
+			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 
@@ -258,8 +233,8 @@ export class MainMenu extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex } } = globalState;
-		return { open, tabIndex };
+		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth } } = globalState;
+		return { open, tabIndex, portrait, minWidth };
 	}
 
 	static get tag() {
