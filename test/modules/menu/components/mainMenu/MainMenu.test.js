@@ -12,6 +12,7 @@ import { TopicsContentPanel } from '../../../../../src/modules/topics/components
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -46,7 +47,8 @@ describe('MainMenu', () => {
 			},
 			media: {
 				portrait: false,
-				minWidth: true
+				minWidth: true,
+				observeResponsiveParameter: true
 			},
 			...state
 
@@ -125,6 +127,28 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
+		});
+
+		it('adds or removes a preload css class', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false,
+					observeResponsiveParameter: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(0);
+			
+			disableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(1);
+			
+			enableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(0);
 		});
 	});
 
