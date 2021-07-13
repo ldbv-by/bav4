@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -45,7 +45,7 @@ describe('Header', () => {
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			modal: modalReducer,
 			network: networkReducer,
 			layers: layersReducer,
