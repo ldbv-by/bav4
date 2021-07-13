@@ -81,7 +81,7 @@ export class MainMenu extends BaElement {
 		};
 
 		const getPreloadClass = () => {
-			return observeResponsiveParameter ? '' : 'preload';
+			return observeResponsiveParameter ? '' : 'prevent-transition';
 		};
 
 		const contentPanels = Object.values(MainMenuTabIndex)
@@ -92,8 +92,8 @@ export class MainMenu extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
-				<div class="main-menu ${getOverlayClass()} ${getPreloadClass()}">            
+			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getPreloadClass()}">
+				<div class="main-menu ${getOverlayClass()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<span class='arrow'></span>	

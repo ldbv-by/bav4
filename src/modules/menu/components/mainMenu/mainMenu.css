@@ -249,7 +249,7 @@
    border-bottom: 1px solid var(--header-background-color);
 }
 
-.preload * {
+.prevent-transition * {
    -webkit-transition: none !important;
    -moz-transition: none !important;
    -ms-transition: none !important;

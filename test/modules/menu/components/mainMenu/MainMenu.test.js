@@ -128,28 +128,6 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
 		});
-
-		it('adds or removes a preload css class', async () => {
-			const state = {
-				media: {
-					portrait: true,
-					minWidth: false,
-					observeResponsiveParameter: true
-				}
-			};
-
-			const element = await setup(state);
-
-			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(0);
-			
-			disableResponsiveParameterObservation();
-			
-			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(1);
-			
-			enableResponsiveParameterObservation();
-			
-			expect(element.shadowRoot.querySelectorAll('.main-menu.preload')).toHaveSize(0);
-		});
 	});
 
 
@@ -226,6 +204,20 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.main-menu').querySelector(DevInfo.tag)).toBeTruthy();
 		});
+
+		it('does not add the prevent-transition css class', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false,
+					observeResponsiveParameter: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+		});
 	});
 
 	describe('when tab-index changes', () => {
@@ -286,6 +278,31 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+		});
+	});
+
+	describe('when responsive parameter observation state changes', () => {
+
+		it('adds or removes the prevent-transition css class', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false,
+					observeResponsiveParameter: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+			
+			disableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeTrue();
+			
+			enableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
 		});
 	});
 });
