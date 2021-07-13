@@ -3,7 +3,7 @@
 import { Footer } from '../../../../src/modules/footer/components/Footer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(Footer.tag, Footer);
@@ -24,7 +24,7 @@ describe('Footer', () => {
 			...state,
 		};
 
-		TestUtils.setupStoreAndDi(initialState, { mainMenu: mainMenuReducer, media: createNoInitialStateMediaReducer() });
+		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed
 		});

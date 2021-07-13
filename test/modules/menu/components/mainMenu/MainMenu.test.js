@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { mainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
 import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -52,7 +52,7 @@ describe('MainMenu', () => {
 
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
