@@ -83,12 +83,16 @@ describe('OlMeasurementHandler', () => {
 		active: false,
 		statistic: { length: 0, area: 0 },
 		reset: null,
-		fileSaveResult: null
+		fileSaveResult: { adminId:'init', fileId:'init' }
 	};
 
 	const setup = (state = initialState) => {
 		const measurementState = {
 			measurement: state,
+			layers: {
+				active: [],
+				background: 'null'
+			}
 		};
 		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
@@ -118,6 +122,7 @@ describe('OlMeasurementHandler', () => {
 		});
 		return layer;
 	};
+	
 	it('has two methods', () => {
 		setup();
 		const handler = new OlMeasurementHandler();
@@ -358,7 +363,8 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('looks for temporary measurement-layer and adds the feature', (done) => {
-			const store = setup();
+			const state = { ...initialState, fileSaveResult:null };
+			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
@@ -458,7 +464,8 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		it('writes features to kml format for persisting purpose', () => {
-			setup();
+			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
+			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -488,7 +495,8 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('adds a vectorGeoResource for persisting purpose', (done) => {
-			setup();
+			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
+			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -513,7 +521,8 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('adds layer with temporaryId while persisting layer failed', (done) => {
-			const store = setup();
+			const state = { ...initialState, fileSaveResult: null };
+			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -873,7 +882,8 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('stores after adding a feature', async (done) => {
-			const store = setup();
+			const state  = { ... initialState, fileSaveResult:{ fileId:null, adminId:null } };
+			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
@@ -895,7 +905,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
-		xit('stores after a feature is removed', async (done) => {
+		it('stores after a feature is removed', async (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -942,7 +952,8 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('logs warning on failed initial store ', async (done) => {
-			const store = setup();
+			const state = { ...initialState, fileSaveResult: null };
+			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
