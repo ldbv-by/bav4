@@ -317,9 +317,8 @@ describe('OlMeasurementHandler', () => {
 
 
 		it('looks for measurement-layer and adds the feature for update on save', (done) => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const fileSaveResultSpy = spyOn(classUnderTest, '_setFileSaveResult').and.callFake(() => { });
+			const store = setup();
+			const classUnderTest = new OlMeasurementHandler();			
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
@@ -336,15 +335,14 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('a_lastId');
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
-				expect(fileSaveResultSpy).toHaveBeenCalledWith({ adminId: 'a_lastId', fileId: null });
+				expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: 'a_lastId', fileId: null });
 				done();
 			});
 		});
 
 		it('looks for measurement-layer and adds the feature for copy on save', (done) => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const fileSaveResultSpy = spyOn(classUnderTest, '_setFileSaveResult').and.callFake(() => { });
+			const store = setup();
+			const classUnderTest = new OlMeasurementHandler();			
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
@@ -359,9 +357,8 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('f_lastId');
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
-				expect(fileSaveResultSpy).toHaveBeenCalledWith({ adminId: null, fileId: 'f_lastId' });				
-				done();
-				
+				expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: null, fileId: 'f_lastId' });
+				done();				
 			});
 		});
 
@@ -465,7 +462,7 @@ describe('OlMeasurementHandler', () => {
 			return feature;
 		};
 
-		it('writes features to kml format for persisting purpose', () => {
+		it('writes features to kml format for persisting purpose', (done) => {
 			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
@@ -477,8 +474,11 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
-			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
-			expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+			setTimeout(() => {
+				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
+			});
 		});
 
 		it('uses already written features for persisting purpose', () => {
@@ -781,7 +781,7 @@ describe('OlMeasurementHandler', () => {
 			expect(startNewSpy).toHaveBeenCalled();
 		});
 
-		it('removes drawn feature if keypressed', () => {
+		it('removes drawn feature if keypressed', (done) => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest._removeSelectedFeatures = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
@@ -798,11 +798,14 @@ describe('OlMeasurementHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
-
 			simulateKeyEvent(deleteKeyCode);
-			expect(classUnderTest._removeSelectedFeatures).toHaveBeenCalled();
-			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
 
+
+			setTimeout(() => {
+				expect(classUnderTest._removeSelectedFeatures).toHaveBeenCalled();
+				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
+				done();
+			});
 		});
 	});
 
@@ -903,7 +906,6 @@ describe('OlMeasurementHandler', () => {
 				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 				done();
 			});
-
 		});
 
 
@@ -932,9 +934,8 @@ describe('OlMeasurementHandler', () => {
 
 		it('logs warning on failed initial store ', async (done) => {
 			const state = { ...initialState, fileSaveResult: null };
-			setup(state);
-			const classUnderTest = new OlMeasurementHandler();
-			const fileSaveResultSpy = spyOn(classUnderTest, '_setFileSaveResult').and.callFake(() => { });
+			const store = setup(state);
+			const classUnderTest = new OlMeasurementHandler();			
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('Failed'))
@@ -947,7 +948,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(fileSaveResultSpy).not.toHaveBeenCalled();
+				expect(store.getState().measurement.fileSaveResult).toBeNull();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 				done();

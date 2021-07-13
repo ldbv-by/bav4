@@ -118,10 +118,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 					const id = oldLayer.get('id');
 					if (this._fileStorageService.isAdminId(id)) {
-						this._setFileSaveResult({ adminId: id, fileId: null });
+						setFileSaveResult({ adminId: id, fileId: null });
 					}
 					if (this._fileStorageService.isFileId(id)) {
-						this._setFileSaveResult({ fileId: id, adminId: null });
+						setFileSaveResult({ fileId: id, adminId: null });
 					}
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
@@ -470,7 +470,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (measurement.fileSaveResult) {
 				try {
 					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
-					this._setFileSaveResult(fileSaveResult);
+					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content:', error);
@@ -479,7 +479,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			else {
 				try {
 					const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
-					this._setFileSaveResult(fileSaveResult);
+					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content initially:', error);
@@ -487,7 +487,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 		else {		
-			this._setFileSaveResult(null);
+			setFileSaveResult(null);
 		}
 		
 	}
@@ -711,11 +711,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getLastFileSaveResult() {
 		const { measurement } = this._storeService.getStore().getState();
 		return measurement.fileSaveResult;
-	}
-
-	_setFileSaveResult(fileSaveResult) {
-		setFileSaveResult(fileSaveResult);
-	}
+	}	
 
 	_isValidFileSaveResult(fileSaveResult) {
 		if (fileSaveResult == null) {
