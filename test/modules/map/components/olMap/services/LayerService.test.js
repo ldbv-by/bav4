@@ -51,32 +51,6 @@ describe('LayerService', () => {
 				expect(vectorOlLayer.getSource().constructor.name).toBe('VectorSource');
 				expect(vectorSourceFromExternalDataSpy).toHaveBeenCalledWith(vectorGeoresource);
 				expect(applyStylesSpy).toHaveBeenCalledWith(vectorOlLayer, olMap);
-
-				//test load listener
-				vectorOlLayer.getSource().dispatchEvent('featuresloadstart');
-				expect(store.getState().network.fetching).toBeTrue();
-				vectorOlLayer.getSource().dispatchEvent('featuresloadend');
-				expect(store.getState().network.fetching).toBeFalse();
-				vectorOlLayer.getSource().dispatchEvent('featuresloadstart');
-				vectorOlLayer.getSource().dispatchEvent('featuresloaderror');
-				expect(store.getState().network.fetching).toBeFalse();
-			});
-
-			it('registers load listerners for an external vector layer', () => {
-				const olSource = new VectorSource();
-				spyOn(vectorImportService, 'vectorSourceFromExternalData').and.returnValue(olSource);
-				spyOn(vectorImportService, 'applyStyles').and.callFake(olLayer => olLayer);
-				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl('https://some.url');
-
-				const vectorSource = instanceUnderTest.toOlLayer(vectorGeoresource).getSource();
-
-				vectorSource.dispatchEvent('featuresloadstart');
-				expect(store.getState().network.fetching).toBeTrue();
-				vectorSource.dispatchEvent('featuresloadend');
-				expect(store.getState().network.fetching).toBeFalse();
-				vectorSource.dispatchEvent('featuresloadstart');
-				vectorSource.dispatchEvent('featuresloaderror');
-				expect(store.getState().network.fetching).toBeFalse();
 			});
 
 			it('converts an internal VectorGeoresource to an olLayer by calling #vectorSourceFromInternalData', () => {
