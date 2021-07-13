@@ -4,7 +4,7 @@
     --thumb-size: 1.5em;
     --thumb-offset: -.6em;
     --thumb-highlight-size: 0px;
-    --primary-color-light: var(--primary-color-light);
+    --primary-color-light: var(--primary-color-lighter);
 
     appearance: none;         
     display: block;
@@ -45,7 +45,7 @@
       margin-top: var(--thumb-offset);
       border-radius: 50%;
       background: var(--primary-color) fixed;
-      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-light);
+      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
       transition: box-shadow .1s ease;
     }
 
@@ -58,11 +58,11 @@
       margin-top: var(--thumb-offset);
       border-radius: 50%;
       background: var(--primary-color) fixed;
-      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-light);
+      box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
       transition: box-shadow .1s ease;
     }
     input[type="range"]:focus{
-        --thumb-highlight-size: 10px;
+        --thumb-highlight-size: .3em;
     }
     .slider-container{
       width:50%;
@@ -76,11 +76,11 @@
       margin: 0 .3em;
   }
    ba-icon:hover{
-      background:var(--header-button-bg-color);
+      background:var(--primary-color);
 
   }
   ba-icon:focus{
-    box-shadow: 0 0 0 .2em var(--primary-color-light);
+    box-shadow: 0 0 0 .2em var(--primary-color-lighter);
   }
   #remove:hover{
       background: var(--error-color);

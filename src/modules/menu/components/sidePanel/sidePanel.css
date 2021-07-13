@@ -88,7 +88,7 @@
 
 .tablink {
   background-color: var(--primary-bg-color);
-  color: var(--color);
+  color: var(--text1);
   float: left;
   border: none;
   outline: none;
@@ -100,7 +100,7 @@
 
 .tablink-active {
   border-bottom: 3px solid var(--primary-color);
-  color: var(--color);
+  color: var(--text1);
 }
 
 @media (hover: none) {
@@ -111,7 +111,7 @@
 }
 
 .tablink:hover {
-  color: var(--hover-color);
+  color: var(--header-background-color);
   background-color: var(--primary-color)
 }
 
@@ -122,7 +122,7 @@
 }
 
 .tabcontent {
-  color: var(--color);
+  color: var(--text1);
   display: none;
   padding: 5px;
   text-align: center;

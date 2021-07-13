@@ -8,7 +8,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    color: var(--color); 
+    color: var(--text1); 
     font-family: var(--font-family);
     line-height: 1.2;
     letter-spacing: 0.01em;
@@ -18,7 +18,7 @@
     outline:none;
 }
 *:focus{
-    box-shadow: 0 0 0 .2em var(--primary-color-light);
+    box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
 /* not working in Firefox */
@@ -32,17 +32,17 @@
 
 input[type=text]{
     background: var(--primary-bg-color);
-    border: 1px solid var(--color);    
+    border: 1px solid var(--text1);    
     border-radius: var(--border-radius-button);
     overflow: hidden;
     font-size: 1.25rem;
     padding: 0.25em .6em;
     width: var(--width);
     background: var(--primary-bg-color);
-    color: var(--color);
+    color: var(--text1);
 }
 input[type=text]:focus{
-    border: 1px solid var(--primary-color-theme);   
+    border: 1px solid var(--primary-color);   
 }
 input[readonly]{
     border: 1px solid var(--secondary-bg-color);    

@@ -70,7 +70,7 @@
 
 .header {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--text3);
   text-align: center;
   font-size: 0.95em;
   padding: 2px;
