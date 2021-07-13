@@ -65,8 +65,6 @@ export class LayerService {
 				let vectorSource;
 				if (geoResource.url) {
 					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
-					vectorSource.on('featuresloadstart', () => setFetching(true));
-					vectorSource.on(['featuresloadend', 'featuresloaderror'], () => setFetching(false));
 				}
 				else {
 					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
