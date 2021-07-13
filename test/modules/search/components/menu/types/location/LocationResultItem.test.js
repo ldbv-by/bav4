@@ -1,4 +1,4 @@
-import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { HightlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
@@ -25,7 +25,7 @@ describe('LocationResultItem', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			highlight: highlightReducer,
 			position: positionReducer,
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer()
 		});
 

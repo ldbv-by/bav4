@@ -7,6 +7,7 @@ import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
+import { toggle } from '../../menu/store/mainMenu.action';
 
 
 /**
@@ -168,6 +169,9 @@ export class Header extends BaElement {
 							</span>
 						</button>
 					</div>
+					<button class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
+						<span class='arrow'></span>	
+					</button>
 				</div>				
             </div>
 		`;

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { mainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
 import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -52,14 +52,15 @@ describe('MainMenu', () => {
 
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed
-			});
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(MainMenu.tag);
 	};
@@ -135,6 +136,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_open_button');
 		});
 
 		it('adds a container for content and shows demo content', async () => {
