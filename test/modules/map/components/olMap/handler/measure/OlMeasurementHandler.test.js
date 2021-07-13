@@ -905,29 +905,6 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
-		it('stores after a feature is removed', async (done) => {
-			const store = setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarRemoveId', adminId: 'barBazRemoveId' })
-			);
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature1 = new Feature({ geometry: geometry });
-			const feature2 = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-			classUnderTest._vectorLayer.getSource().addFeature(feature1);
-			classUnderTest._vectorLayer.getSource().addFeature(feature2);
-			classUnderTest._vectorLayer.getSource().removeFeature(feature1);
-
-			setTimeout(() => {
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarRemoveId', adminId: 'barBazRemoveId' });
-				done();
-			});
-		});
-
 		it('stores with fileSaveResult on second store ', async (done) => {
 			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
 			setup(state);
