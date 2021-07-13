@@ -930,10 +930,10 @@ describe('OlMeasurementHandler', () => {
 
 		});
 
-		it('logs warning on failed initial store ', async (done) => {
-			const state = { ...initialState, fileSaveResult: null };
-			const store = setup(state);
+		it('logs warning on failed initial store ', async (done) => {			
+			setup();
 			const classUnderTest = new OlMeasurementHandler();
+			const fileSaveResultSpy = spyOn(classUnderTest, '_setFileSaveResult').and.callFake(() => { });
 			const map = setupMap();
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('Failed'))
@@ -946,7 +946,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(store.getState().measurement.fileSaveResult).toBeNull();
+				expect(fileSaveResultSpy).not.toHaveBeenCalled();
 				expect(classUnderTest._storedContent).toBeTruthy();
 				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 				done();
