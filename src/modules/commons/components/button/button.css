@@ -9,7 +9,7 @@
 }
 .primary {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--text3);
     opacity: .8;
 }
 .secondary {
@@ -21,16 +21,16 @@
 }
 .secondary.button:hover:enabled, .secondary.button:focus{
     background:  var(--primary-color);
-    color:  var(--text-default-color);
+    color:  var(--text3);
 }
 .primary.disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    color: var(--color);
+    color: var(--text1);
     background:var(--secondary-bg-color)
 }
 .secondary.disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    color: var(--color);
+    color: var(--text1);
 }

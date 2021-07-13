@@ -1,7 +1,7 @@
 
 .ba-list-item__text:focus{
-    box-shadow: Inset 0 0 0 .2em var(--primary-color-light);
+    box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
   }
-  .ba-list-item { 
-    --primary-color-theme: var(--topic-theme, var(--secondary-color-theme));
+  .ba-list-item ba-checkbox{ 
+    --primary-color: var(--topic-theme, var(--secondary-color));
   }
