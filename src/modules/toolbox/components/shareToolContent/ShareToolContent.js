@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { BaElement } from '../../../BaElement';
+import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import { openModal } from '../../../modal/store/modal.action';
@@ -10,7 +10,7 @@ import { openModal } from '../../../modal/store/modal.action';
  * @class
  * @author bakir_en
  */
-export class ShareToolContent extends BaElement {
+export class ShareToolContent extends AbstractToolContent {
 	constructor() {
 		super();
 
@@ -164,16 +164,14 @@ export class ShareToolContent extends BaElement {
 
 		return html`
         <style>${css}</style>
-            <div class="container">
-                <div class="ba-tool-container__item">
-					<div>
-						<span class="tool-container__header">
-							${translate('toolbox_shareTool_header')}
-						</span>
-					</div>      
-						<div class="tool-container__buttons">                                    
-							${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
-						</div>   
+            <div class="ba-tool-container">
+				<div class="ba-tool-container__title">
+						${translate('toolbox_shareTool_header')}						
+				</div>
+				<div class="ba-tool-container__content">                						     
+					<div class="tool-container__buttons">                                    
+						${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
+					</div>   
 					<div class="tool-container__buttons-secondary">                         						 
 						<button class='modal_button' @click=${onClick} >
 							${translate('toolbox_shareTool_button_modal')}
@@ -190,10 +188,12 @@ export class ShareToolContent extends BaElement {
 						</button>
 					</div> 
 					<div class="tool-container__checkbox">
-						<div><ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
-							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
-							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
-						</ba-checkbox></div>
+						<div>
+							<ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+								<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
+								<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
+							</ba-checkbox>
+						</div>
 					</div>               
                 </div>
             </div>	  

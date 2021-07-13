@@ -1,18 +1,18 @@
-.ba-tool-container__item{                   
+/* .ba-tool-container__item{                   
     width: 100%;                                                
     text-align: center;
     background-color: var(--primary-bg-color);
     padding: 2em 1em 1em 1em;                                                            
-}
+} */
 
-.tool-container__header{
+/* .tool-container__header{
     font-weight: bold;
     font-size: 1em;
     position: absolute;
     top: 8px;
     left: 1em;
     opacity: .8;
-}
+} */
 
 .tool-container__buttons{
     font-size:1.2rem;
@@ -41,16 +41,13 @@
     border-radius: var(--border-radius-button-b)  0 0 var(--border-radius-button-b);
     border-left: 1px solid var(--secondary-bg-color);
 
-  }
+}
 
-  .tool-container__buttons > div:last-child{
-    border-radius: 0 var(--border-radius-button-b)  var(--border-radius-button-b) 0;
-    border-left: none;
-    border-right: 1px solid var(--secondary-bg-color);
-  }
-
-
-
+.tool-container__buttons > div:last-child{
+   border-radius: 0 var(--border-radius-button-b)  var(--border-radius-button-b) 0;
+   border-left: none;
+   border-right: 1px solid var(--secondary-bg-color);
+}
 
 .tool-container__button{
 background:red;
@@ -117,22 +114,22 @@ background:red;
 
 
 
-  .tool-container__button-text{
-      font-size:.8rem;
-      margin: 5.5em .3em .5em .3em;
-      user-select: none;
-  }
+.tool-container__button-text{
+    font-size:.8rem;
+    margin: 5.5em .3em .5em .3em;
+    user-select: none;
+}
 
-  .tool-container__buttons-secondary{
+.tool-container__buttons-secondary{
     display: flex;
     justify-content:space-between;
     text-align: center;
-    margin-bottom: 1.5em;
-   
+    margin-bottom: 1.5em;   
 }
+
 .tool-container__buttons-secondary button{
-    cursor: pointer;
-    padding: .8em;
+   cursor: pointer;
+   padding: .8em;
    background: transparent;
    border: none;
    font-weight: bold;
