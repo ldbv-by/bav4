@@ -18,26 +18,13 @@
 }
 
 .icon {
-  background: var(--map-button-bg-color);
+  background: var(--primary-color);
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;
   display: inline-block;
   height: 2.5em;
   width: 2.5em;
-}
-
-/* https://developer.mozilla.org/en-US/docs/Web/CSS/:host-context() */
-/* :host-context(body.light-theme) .icon {
-  background: red;
-} */
-
-/* body. .icon {
-  background: red;
-} */
-
-.icon:hover, .icon:focus {
-  background: var(--map-button-bg-color);
 }
 
 .icon:hover {
@@ -49,7 +36,7 @@
 }
 
 .zoom-buttons .button {
-  background-color: var(--map-button-color);
+  background-color: var(--text3);
   display: inline-block;
   height: 2.5em;
   width: 2.5em;

@@ -14,7 +14,7 @@
 }
 
 .icon {
-  background: var(--map-button-bg-color);
+  background: var(--primary-color);
   mask-size: cover;
   -webkit-mask-size: cover;
   cursor: pointer;
@@ -25,7 +25,7 @@
 
 .icon:hover,
 .icon:focus {
-  background: var(--map-button-bg-color);
+  background: var(--primary-color);
 }
 
 .icon:hover {
@@ -37,7 +37,7 @@
 }
 
 .info-button .button {
-  background-color: var(--map-button-color);
+  background-color: var(--primary-bg-color);
   display: inline-block;
   height: 40px;
   width: 40px;

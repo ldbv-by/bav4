@@ -5,11 +5,12 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				header_tab_topics_button: 'Topics',
-				header_tab_topics_title: 'open Topics',
-				header_tab_maps_button: 'Maps',
-				header_tab_maps_title: 'open Maps',
-				header_tab_more_button: 'more',
-				header_tab_more_title: 'open more'
+				header_tab_topics_title: 'Open topics',
+				header_tab_maps_button: 'Layers configuration',
+				header_tab_maps_title: 'Open layers configuration',
+				header_tab_more_button: 'More...',
+				header_tab_more_title: 'Show more',
+				header_close_button_title: 'Close menu'
 			};
 
 		case 'de':
@@ -17,10 +18,11 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				header_tab_topics_button: 'Themen',
 				header_tab_topics_title: 'Themen öffnen',
-				header_tab_maps_button: 'Dargestellte Karten',
-				header_tab_maps_title: 'Dargestellte Karten öffnen',
-				header_tab_more_button: 'mehr',
-				header_tab_more_title: 'mehr öffnen'
+				header_tab_maps_button: 'Ebenenverwaltung',
+				header_tab_maps_title: 'Ebenenverwaltung öffnen',
+				header_tab_more_button: 'Mehr...',
+				header_tab_more_title: 'Mehr anzeigen',
+				header_close_button_title: 'Menü schließen'
 			};
 
 		default:
