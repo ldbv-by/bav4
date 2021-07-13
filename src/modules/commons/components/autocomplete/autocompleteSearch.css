@@ -7,7 +7,7 @@
 
 input {
     border: none;
-    color: var(--color);
+    color: var(--text1);
     background-color: var(--secondary-bg-color);
     padding-top: 5px;
     padding-bottom: 5px;
@@ -36,17 +36,16 @@ input:focus {
     padding: 10px;
     cursor: pointer;
     background-color: var(--secondary-bg-color);
-    /* border-bottom: 1px solid var(--color); */
 }
 
 .autocomplete-items div:hover {
     /*when hovering an item:*/
     background-color: var(--primary-color);
-    color: var(--color);
+    color: var(--text1);
 }
 
 .autocomplete-active {
     /*when navigating through the items using the arrow keys:*/
     background-color: var(--primary-color);
-    color: var(--color);
+    color: var(--text1);
 }

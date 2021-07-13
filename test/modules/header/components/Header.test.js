@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -45,7 +45,7 @@ describe('Header', () => {
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			modal: modalReducer,
 			network: networkReducer,
 			layers: layersReducer,
@@ -147,21 +147,27 @@ describe('Header', () => {
 
 		it('adds header bar', async () => {
 			const element = await setup();
-
+			
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_tab_maps_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_more_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
+		});
+		
+		it('adds a close button', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('button.close-menu').title).toBe('header_close_button_title');
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -196,9 +202,7 @@ describe('Header', () => {
 			const element = await setup(state);
 
 			expect(store.getState().mainMenu.open).toBe(false);
-			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().mainMenu.open).toBe(true);
-			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
+			element.shadowRoot.querySelector('button.close-menu').click();
 			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
@@ -347,6 +351,46 @@ describe('Header', () => {
 						
 						media: {
 							portrait: true,
+							minWidth: false
+						},
+					};
+
+					const element = await setup(state);
+
+					const container = element.shadowRoot.querySelector('#headerMobile');
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('1');
+					element.shadowRoot.querySelector('#input').focus();
+					expect(window.getComputedStyle(container).display).toBe('none');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					element.shadowRoot.querySelector('#input').blur();
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					jasmine.clock().tick(800);
+					/**
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
+					expect(container.style.opacity).toBe('1');
+				});
+			});
+
+			describe('in landscape mode and min-width < 80em', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
+				it('hide mobile header and show again', async () => {
+					const state = {
+						
+						media: {
+							portrait: false,
 							minWidth: false
 						},
 					};

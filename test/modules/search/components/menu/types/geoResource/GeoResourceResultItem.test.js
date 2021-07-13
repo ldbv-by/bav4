@@ -1,6 +1,6 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { MainMenuTabIndex } from '../../../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
@@ -22,7 +22,7 @@ describe('GeoResourceResultItem', () => {
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
-			mainMenu: mainMenuReducer,
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer()
 		});
 
