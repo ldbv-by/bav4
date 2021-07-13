@@ -14,6 +14,6 @@
     display: block;
     max-width: 30em;
     max-height: 3em;
-    border-left: 1px dotted var(--color);
+    border-left: 1px dotted var(--text1);
     padding: 0 1em;
 } 

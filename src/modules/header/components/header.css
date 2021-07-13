@@ -58,7 +58,7 @@
   width: 100%;
   left: 0;
   right: 0;
-  padding: .5em .5em .5em .7em;
+  padding: .5em .5em .5em 1.2em;
 }
 .header__modal-button{   
   flex-shrink: 1;
@@ -73,9 +73,9 @@
 .header__button-container button{
   margin: 0.8em 0 0 0;
   padding: .5em 0.9em;
-  background: var(--header-button-bg-color);
-  color: var(--text-default-color);
-  border-color: var(--header-button-bg-color);
+  background: var(--primary-color);
+  color: var(--text3);
+  border-color: var(--primary-color);
   border-width: 1px;
   border-style: solid;
   cursor: pointer;
@@ -83,8 +83,8 @@
   font-weight: bold;
   position: relative;
 }
-.header__button-container  span:first-child{
-  color: var(--text-default-color);
+.header__button-container  span{
+  color: var(--text3);
   opacity: .8;
 }
 .header__button-container button:hover span{
@@ -92,7 +92,7 @@
 }
 .header__button-container button:first-child{
   border-radius: var(--border-radius-button)  0 0 var(--border-radius-button);
-  border-right: 1px dotted var(--header-button-color) !important;
+  border-right: 1px dotted var(--primary-bg-color) !important;
   border-right:0px;
 }
 .header__button-container button:nth-last-child(2){
@@ -135,8 +135,8 @@
 
 .badges{
   border-radius: 2em;
-  background: var(--secondary-color-theme);
-  color: var(--text-default-color);
+  background: var(--secondary-color);
+  color: var(--text3);
   padding: 0.2em .5em;
   font-size: .8rem;
   position: absolute;
@@ -213,9 +213,9 @@
   width: 3em;
   border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
   padding: .5em 0.9em;
-  background: var(--header-button-bg-color);
-  color: var(--header-button-color);
-  border-color: var(--header-button-bg-color);
+  background: var(--primary-color);
+  color: var(--text2);
+  border-color: var(--primary-color);
   border-width: 1px;
   border-style: solid;
   cursor: pointer;
@@ -259,8 +259,10 @@
  .header__search{
   text-indent: 1.8em;
   background-repeat: no-repeat;
-  background-position: .5em;
+  background-position: .8em .5em;
+  background-size: 1.7em;
   background-image:  url('assets/search.svg');
+
 }
 .header__text-mobile{
   z-index: calc(var(--z-header) + 10);

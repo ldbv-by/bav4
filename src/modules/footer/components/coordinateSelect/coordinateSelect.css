@@ -2,7 +2,7 @@
     display: flex;
     margin: auto;
     user-select: none;
-    border-left: 1px dotted var(--color);
+    border-left: 1px dotted var(--text1);
     padding: 0 1em;
 }
 
@@ -21,7 +21,7 @@
 
 .select-coordinate {
     background-color:  var(--secondary-bg-color);
-    color: var(--color);
+    color: var(--text1);
     border: 1px solid transparent;
     border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
     cursor: pointer;

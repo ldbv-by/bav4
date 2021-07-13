@@ -10,7 +10,7 @@
    text-align: left;
 }
 .ba-list-item:focus{
-   box-shadow: Inset 0 0 0 .2em var(--primary-color-light);
+   box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
 }
 .ba-list-item:hover{
    background: var(--header-background-color);
@@ -70,7 +70,7 @@
 }
 .ba-list-item__secondary-text{
    font-size: .9rem;
-   opacity:.7;
+   color: var(--text2);
 }
 /* icon */
 .icon {
@@ -96,7 +96,7 @@
    background: var(--primary-color);
  }
  .icon-secondary{
-   background: var(--icon-default-color);
+   background: var(--text2);
  }
  .chevron {
    position: relative;
@@ -141,7 +141,7 @@
      height: 2em;
      width: 2em;
      background-color: var(--primary-color);
-     box-shadow: 0 0 0 .2em var(--primary-color-light);
+     box-shadow: 0 0 0 .2em var(--primary-color-lighter);
    }
  .icon-background{
    height: 0;
@@ -165,11 +165,11 @@
     margin: auto;
  }
  .arrow-right{
-    border-color: transparent transparent transparent gray;
+    border-color: transparent transparent transparent var(--text2);
     margin-right: -50%;
  }
  .arrow-left{
-    border-color: transparent gray transparent transparent ;
+    border-color: transparent var(--text2) transparent transparent ;
  }
 /* header  */
 .ba-list-item__header:hover{
@@ -229,16 +229,3 @@
 .separator {
    border-left: 1px dotted var(--header-background-color);
 }
-
-
-/* temp */
-.ba-list-item__icon-info{
-   background-repeat: no-repeat;
-   background-image:  url('../assets/geofill.svg');
-   color: red;
-   margin: auto;
-   height: 100%;
-   width: 2em;
-   background-position: .5em;
-   font-size: 1rem;
- }
