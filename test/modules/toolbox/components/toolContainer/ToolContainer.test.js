@@ -8,17 +8,19 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
+window.customElements.define(ShareToolContent.tag, ShareToolContent);
 
 describe('ToolContainer', () => {
 	let store;
 
 	const setup = async (state = {}, config = {}) => {
-		const { embed = false } = config;
+		const { embed = false, windowMock = { navigator: {}, open() { } } } = config;
 
 
 		const initialState = {
@@ -74,7 +76,8 @@ describe('ToolContainer', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
-				isTouch: () => false
+				isTouch: () => false,
+				getWindow: () => windowMock
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
@@ -91,7 +94,7 @@ describe('ToolContainer', () => {
 
 			setContainerContent('ba-tool-draw-content');
 			toggleToolContainer();
-			
+
 			expect(element.shadowRoot.querySelector('.tool-container__content')).toBeTruthy();
 		});
 
@@ -115,6 +118,17 @@ describe('ToolContainer', () => {
 			toggleToolContainer();
 			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
+		});
+
+		it('opens the toolcontainer with share-content', async () => {
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-share-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(ShareToolContent.tag)).toBeTruthy();
 		});
 
 		it('activates measurement, only when contentTool is open', async () => {
