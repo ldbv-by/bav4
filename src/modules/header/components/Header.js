@@ -6,6 +6,7 @@ import { $injector } from '../../../injection';
 import css from './header.css';
 import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { toggle } from '../../menu/store/mainMenu.action';
 
 
@@ -45,22 +46,22 @@ export class Header extends BaElement {
 
 	createView(state) {
 
+		const { open, tabIndex, fetching, layers, isPortrait, hasMinWidth } = state;
+
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase>`);
 		};
 
 		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
+			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return minWidth ? 'is-desktop' : 'is-tablet';
+			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const { open, tabIndex, fetching, layers, portrait, minWidth } = state;
-
 		const getOverlayClass = () => {
-			return (open && !portrait) ? 'is-open' : '';
+			return (open && !isPortrait) ? 'is-open' : '';
 		};
 
 		const getAnimatedBorderClass = () => {
@@ -73,15 +74,16 @@ export class Header extends BaElement {
 
 		const layerCount = layers.length;
 
-		const onFocusInput = () => {
+		const onInputFocus = () => {
+			disableResponsiveParameterObservation();
 			setTabIndex(MainMenuTabIndex.SEARCH);
-			if (portrait || !minWidth) {
+			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
 			//in portrait mode we open the main menu to display existing results
-			if (portrait) {
+			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
 				if (value.length > 0) {
 					openMainMenu();
@@ -94,8 +96,9 @@ export class Header extends BaElement {
 			setQuery(evt.target.value);
 		};
 
-		const showModalHeader = () => {
-			if (portrait || !minWidth) {
+		const onInputBlur = () => {
+			enableResponsiveParameterObservation();
+			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = '';
 				window.setTimeout(() => popup.style.opacity = 1, 300);
@@ -141,8 +144,7 @@ export class Header extends BaElement {
 				<mask class="header__background">
 				</mask>
 					<div class='header__search-container'>
-						<input id='input' @focus="${onFocusInput}" @blur="${showModalHeader}" @input="${onInput}" class='header__search' type="search" placeholder="" >  
-						</input>           
+						<input id='input' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
@@ -180,8 +182,8 @@ export class Header extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait, minWidth } } = globalState;
-		return { open, tabIndex, fetching, layers, portrait, minWidth };
+		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait: isPortrait, minWidth: hasMinWidth } } = globalState;
+		return { open, tabIndex, fetching, layers, isPortrait, hasMinWidth };
 	}
 
 	static get tag() {
