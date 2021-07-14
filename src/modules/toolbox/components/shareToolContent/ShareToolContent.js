@@ -9,6 +9,7 @@ import { openModal } from '../../../modal/store/modal.action';
 /**
  * @class
  * @author bakir_en
+ * @author thiloSchlemmer
  */
 export class ShareToolContent extends AbstractToolContent {
 	constructor() {
@@ -175,19 +176,17 @@ export class ShareToolContent extends AbstractToolContent {
 					<div class="tool-container__buttons">                         						 
 						<ba-button class='modal_button' @click=${onClick} label=${translate('toolbox_shareTool_button_modal')}></ba-button>
 					</div>            
-					<div class="tool-container__embed"> 
-						<span>
-							${translate('toolbox_shareTool_embed')}
-						</span>
+					<div class="tool-container__embed">
+						${translate('toolbox_shareTool_embed')}						
 					</div>
 					<div class="tool-container__buttons">                         						 
 						<ba-button class='preview_button disabled-preview' label=${translate('toolbox_shareTool_preview')}></ba-button>
 					</div> 
 					<div class="tool-container__checkbox">						
-							<ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
-								<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
-								<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
-							</ba-checkbox>						
+						<ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
+							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
+						</ba-checkbox>						
 					</div>               
                 </div>
             </div>	  
