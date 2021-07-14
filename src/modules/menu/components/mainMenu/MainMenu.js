@@ -63,7 +63,7 @@ export class MainMenu extends BaElement {
 	 */
 	createView(state) {
 
-		const { open, tabIndex, portrait, minWidth } = state;
+		const { open, tabIndex, portrait, minWidth, observeResponsiveParameter } = state;
 
 		this._activeTabIndex = tabIndex;
 
@@ -80,6 +80,10 @@ export class MainMenu extends BaElement {
 			return open ? 'is-open' : '';
 		};
 
+		const getPreloadClass = () => {
+			return observeResponsiveParameter ? '' : 'prevent-transition';
+		};
+
 		const contentPanels = Object.values(MainMenuTabIndex)
 		//Todo: refactor me when all content panels are real components	
 			.map(v => this._getContentPanel(v));
@@ -88,7 +92,7 @@ export class MainMenu extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getPreloadClass()}">
 				<div class="main-menu ${getOverlayClass()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
@@ -236,8 +240,8 @@ export class MainMenu extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth } } = globalState;
-		return { open, tabIndex, portrait, minWidth };
+		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
+		return { open, tabIndex, portrait, minWidth, observeResponsiveParameter };
 	}
 
 	static get tag() {
