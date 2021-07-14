@@ -48,7 +48,7 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).not.toContain('toolbox_shareTool_share');
 
 			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons-secondary')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
 		});
@@ -66,7 +66,7 @@ describe('ShareToolContent', () => {
 
 			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons-secondary')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
 		});
 

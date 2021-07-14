@@ -172,20 +172,16 @@ export class ShareToolContent extends AbstractToolContent {
 					<div class="tool-container__buttons">                                    
 						${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
 					</div>   
-					<div class="tool-container__buttons-secondary">                         						 
-						<button class='modal_button' @click=${onClick} >
-							${translate('toolbox_shareTool_button_modal')}
-						</button>
+					<div class="tool-container__buttons">                         						 
+						<ba-button class='modal_button' @click=${onClick} label=${translate('toolbox_shareTool_button_modal')}></ba-button>
 					</div>            
 					<div class="tool-container__embed"> 
 						<span>
 							${translate('toolbox_shareTool_embed')}
 						</span>
 					</div>
-					<div class="tool-container__buttons-secondary">                         						 
-						<button class='preview_button disabled-preview'>                            
-							${translate('toolbox_shareTool_preview')}
-						</button>
+					<div class="tool-container__buttons">                         						 
+						<ba-button class='preview_button disabled-preview' label=${translate('toolbox_shareTool_preview')}></ba-button>
 					</div> 
 					<div class="tool-container__checkbox">
 						<div>
