@@ -118,6 +118,7 @@ background:red;
     font-size:.8rem;
     margin: 5.5em .3em .5em .3em;
     user-select: none;
+    text-align: center;
 }
 
 .tool-container__buttons-secondary{
