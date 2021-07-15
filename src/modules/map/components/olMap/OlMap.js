@@ -30,16 +30,17 @@ export class OlMap extends BaElement {
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
+			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
-			OlHighlightLayerHandler: olHighlightLayerHandler
-		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
+			OlHighlightLayerHandler: olHighlightLayerHandler,
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler],  [olDrawHandler.id, olDrawHandler]]);
 		this._eventHandler = new Map([]);
 	}
 

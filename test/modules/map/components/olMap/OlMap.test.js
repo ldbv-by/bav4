@@ -63,6 +63,13 @@ describe('OlMap', () => {
 			return false;
 		}
 	};
+	const drawLayerHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'drawLayerHandlerMockId';
+		},
+	};
 	const geolocationLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -70,7 +77,6 @@ describe('OlMap', () => {
 			return 'geolocationLayerHandlerMockId';
 		}
 	};
-
 	const highlightLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -114,6 +120,7 @@ describe('OlMap', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
+			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('VectorImportService', vectorImportServiceMock)
@@ -570,6 +577,32 @@ describe('OlMap', () => {
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(measurementLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('draw handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('drawLayerHandlerMockId')).toEqual(drawLayerHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(drawLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(drawLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(drawLayerHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(drawLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});
