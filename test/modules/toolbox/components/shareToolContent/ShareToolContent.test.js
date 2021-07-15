@@ -49,7 +49,6 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
 
-			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
 		});

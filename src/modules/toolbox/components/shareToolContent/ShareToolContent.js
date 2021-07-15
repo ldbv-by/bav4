@@ -82,6 +82,8 @@ export class ShareToolContent extends AbstractToolContent {
 			else {
 				this._root.querySelector('.preview_button').classList.remove('disabled-preview');
 			}
+			this.render();
+
 		};
 		const toolTemplate = (tool) => {
 
@@ -90,7 +92,7 @@ export class ShareToolContent extends AbstractToolContent {
 					<div class="tool-container__background"></div>
 					<div class="tool-container__icon ${tool.icon}"></div>  
 					<div class="tool-container__button-text">${tool.title}</div>
-				`;			
+				`;
 
 			const onClickFunction = () => {
 				if (tool.name === 'share-api') {
@@ -98,20 +100,20 @@ export class ShareToolContent extends AbstractToolContent {
 						return async () => {
 							try {
 								const shortUrl = await this._generateShortUrl();
-			
+
 								const shareData = {
 									title: translate('toolbox_shareTool_title'),
 									url: shortUrl,
 								};
-			
+
 								await this._window.navigator.share(shareData);
-			
+
 							}
 							catch (e) {
 								this._root.getElementById(tool.name).classList.add('disabled_tool__button');
 								console.warn('Share API not available: ' + e);
 							}
-						};		
+						};
 					}
 					else {
 						return async () => {
@@ -126,7 +128,7 @@ export class ShareToolContent extends AbstractToolContent {
 					return async () => {
 						try {
 							const shortUrl = await this._generateShortUrl();
-		
+
 							if (this._window.open(tool.href + shortUrl) === null) {
 								throw new Error('Could not open window');
 							}
@@ -134,11 +136,11 @@ export class ShareToolContent extends AbstractToolContent {
 						catch (e) {
 							console.warn('Could not share content: ' + e);
 						}
-					};			
-					
+					};
+
 				}
 			};
-				
+
 			return html`				
 					<div 
 						id=${tool.name}
@@ -149,8 +151,8 @@ export class ShareToolContent extends AbstractToolContent {
 						target="_blank"
 						> 
 						${buttonContent}
-					</div>`;	
-			
+					</div>`;
+
 		};
 
 		return html`
@@ -159,25 +161,26 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__title">
 						${translate('toolbox_shareTool_header')}						
 				</div>
-				<div class="ba-tool-container__content">                						     
+				<div class="ba-tool-container__content divider">                						     				
 					<div class="tool-container__buttons">                                    
 						${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
 					</div>              
-					<div class="tool-container__embed">
-						${translate('toolbox_shareTool_embed')}						
-					</div>
-					<div class="tool-container__buttons">                         						 
-						<ba-button class='preview_button disabled-preview' label=${translate('toolbox_shareTool_preview')}></ba-button>
-					</div> 
+				</div>  
+				<div class="ba-tool-container__title ">
+				${translate('toolbox_shareTool_embed')}							
+				</div>
+				<div class="ba-tool-container__content">      					                  					
 					<div class="tool-container__checkbox">						
 						<ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
 							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
 							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
 						</ba-checkbox>						
-					</div>               
-                </div>
+					</div>    
+				</div>				
+				<div class='ba-tool-container__actions'>           
+					<ba-button class='preview_button disabled-preview' type=primary label=${translate('toolbox_shareTool_preview')}></ba-button>
+				</div>           
             </div>	  
-        </div>
         `;
 
 	}

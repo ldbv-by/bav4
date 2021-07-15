@@ -1,65 +1,42 @@
 .tool-container__buttons{
-    font-size:1.2rem;
+    font-size: 1.2rem;
     display: flex;
-    margin: .8em 0;
     justify-content: center;
 }
-
 .tool-container__buttons > div {
-    min-width: 3.7em;
     position: relative;
     background:transparent;
-    color: var(--header-button-color);
-    border-color: var(--secondary-bg-color);
-    border-width: 1px;
-    border-style: solid;
     cursor: pointer;
     transition: all .2s ease-in-out;
     color: rgba(255,255,255,.8);
+    padding:0 1em;
 }
-
 .tool-container__buttons > div{
-    border-right: 1px dotted var(--secondary-bg-color);
-    border-left: 0 dotted var(--secondary-bg-color);    
+    border-right: 1px dotted var(--header-background-color);
 }
-
-.tool-container__buttons > div:first-child{
-    border-radius: var(--border-radius-button-b)  0 0 var(--border-radius-button-b);
-    border-left: 1px solid var(--secondary-bg-color);
-}
-
 .tool-container__buttons > div:last-child{
-   border-radius: 0 var(--border-radius-button-b)  var(--border-radius-button-b) 0;
-   border-left: none;
-   border-right: 1px solid var(--secondary-bg-color);
+   border-right: none;
 }
-
 .tool-container__background {
-    left: 1.5em;
-    top: 1.5em;
     height: 0em;
     width: 0em;
-    margin: 0.3em;
-    background-size: 3em 2em;
-    background-color: var(--secondary-bg-color);
     border-radius: 2.5em;
     position: absolute;
     transition: all .2s ease-in-out;
+    left: 2.8em;
     transform: translate(-50%, -50%);
+    top: 1.8em;
 }
-
 .tool-container__icon{
-    background: var(--color);
+    background: var(--primary-color);
     -webkit-mask-size: cover;
     mask-size: cover;
-    background: gray;
     height: 2em;
     width: 2em;
     transition: all .2s ease-in-out;
     margin: .8em .8em;
     position: absolute;
 }
-
 .mail{
     mask-image:  url('assets/envelope-solid.svg');
     -webkit-mask-image:url('assets/envelope-solid.svg');
@@ -72,75 +49,53 @@
     mask-image:  url('assets/share.svg');
     -webkit-mask-image:url('assets/share.svg');
 }
-
-.tool-container__button{
-    background:red;
-}
-
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__background{
-    height: 3em;
-    width: 3em;
-    background-color: var(--secondary-bg-color);
+    height: 3.4em;
+    width: 3.4em;
+    background-color: var(--secondary-color);
 }
-
-.tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon{
-    background: gray;
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon{    
+    background: var(--text3);
 }
-
-.is-active .tool-container__background{
-    height: 3em;
-    width: 3em;
-    background-color: var(--header-button-bg-color) !important;
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__background{
+    height: 3.4em;
+    width: 3.4em;
+    background-color: var(--primary-color);
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.5) ,  0 0 0 .2em var(--primary-color-lighter);
 }
-
-.is-active  .tool-container__icon{
-    background: #fff !important;
+.tool-container__button:focus{
+    box-shadow:none;
 }
-.is-active  .tool-container__icon{
-    background: #fff !important;
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon{    
+    background: var(--text3);
 }
-
 .tool-container__button-text{
     font-size:.8rem;
     margin: 5.5em .3em .5em .3em;
     user-select: none;
     text-align: center;
+    min-width: 5em;
 }
-
-.tool-container__embed{
-    font-size: .8rem;
-    color: gray;
-    text-align: left;
-    margin-top: 1.5em;
+ba-checkbox:focus{
+    box-shadow:none;
 }
-
+.preview_button{
+    width:100%;
+    padding:.8em 1.5em;
+}
 .tool-container__checkbox{
-    display: flex;
-    justify-content:space-between;
-    text-align: center;
+    font-size: .9rem;
 } 
-
 .disabled-preview {
     opacity: 0.4;
 }
-
 .disabled_tool__button{
     opacity: 0.4;
     pointer-events: none;
 } 
-
 .disclaimer-text {
     text-align: justify;
-    margin-left: .8em;
 } 
-
-
-
-
-
-
-
-
-
-
-
+.divider {
+    border-bottom: 1px solid var(--header-background-color);
+ }

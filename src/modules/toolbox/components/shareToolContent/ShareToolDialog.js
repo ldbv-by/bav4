@@ -38,11 +38,11 @@ export class ShareToolDialog extends BaElement {
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
 		return html`
+		<div class='share_label'>${label}</div>			
 			<div class='link'>
-            	<span class='share_label'>${label}</span>			
             	<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
+				<ba-icon class='share_copy' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=2} @click=${onCopyUrlToClipBoard}></ba-icon>
 			</div>            
-			<ba-icon class='share_copy' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=2} @click=${onCopyUrlToClipBoard}></ba-icon>
     `;
 	}
 
