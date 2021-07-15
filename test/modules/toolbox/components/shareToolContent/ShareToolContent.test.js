@@ -2,8 +2,10 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
+window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('ShareToolContent', () => {
 	let store;
@@ -275,24 +277,18 @@ describe('ShareToolContent', () => {
 			expect(urlServiceSpy).toHaveBeenCalledWith(mockUrl);
 		});
 
-		it('enables preview button on checkbox click', async () => {
+		it('enables/disables preview button on checkbox click', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.preview_button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
 
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
-			expect(checkbox).toBeTruthy();
 
-			checkbox.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: true }
-			}));
-
+			checkbox.click();
+			
 			expect(element.shadowRoot.querySelector('.preview_button').classList).not.toContain('disabled-preview');
-
-			checkbox.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: false }
-			}));
+			
+			checkbox.click();
 
 			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
 		});

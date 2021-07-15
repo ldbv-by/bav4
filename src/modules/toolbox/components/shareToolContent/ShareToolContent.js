@@ -74,16 +74,9 @@ export class ShareToolContent extends AbstractToolContent {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-		const onToggle = (event) => {
-			const checked = event.detail.checked;
-			if (!checked) {
-				this._root.querySelector('.preview_button').classList.add('disabled-preview');
-			}
-			else {
-				this._root.querySelector('.preview_button').classList.remove('disabled-preview');
-			}
+		const onToggle = () => {
+			this._root.querySelector('.preview_button').classList.toggle('disabled-preview');
 			this.render();
-
 		};
 		const toolTemplate = (tool) => {
 
