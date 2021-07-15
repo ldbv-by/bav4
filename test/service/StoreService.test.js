@@ -14,6 +14,9 @@ describe('StoreService', () => {
 		const measurementPluginMock = {
 			register: () => { }
 		};
+		const drawPluginMock = {
+			register: () => { }
+		};
 		const geolocationPluginMock = {
 			register: () => { }
 		};
@@ -47,6 +50,7 @@ describe('StoreService', () => {
 				.registerSingleton('TopicsService', topicsServiceMock)
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
+				.registerSingleton('DrawPlugin', drawPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
 				.registerSingleton('TopicsPlugin', topicsPluginMock)
@@ -67,7 +71,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(19);
+			expect(reducerKeys.length).toBe(20);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -80,6 +84,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('layers')).toBeTrue();
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
 			expect(reducerKeys.includes('measurement')).toBeTrue();
+			expect(reducerKeys.includes('draw')).toBeTrue();
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 			expect(reducerKeys.includes('topics')).toBeTrue();
 			expect(reducerKeys.includes('network')).toBeTrue();
@@ -92,6 +97,7 @@ describe('StoreService', () => {
 		it('registers all plugins', (done) => {
 
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
+			const drawPluginSpy = spyOn(drawPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
 			const layersPluginSpy = spyOn(layersPluginMock, 'register');
 			const topicsPluginSpy = spyOn(topicsPluginMock, 'register');
@@ -109,6 +115,7 @@ describe('StoreService', () => {
 				setTimeout(() => {
 
 					expect(measurementPluginSpy).toHaveBeenCalledWith(store);
+					expect(drawPluginSpy).toHaveBeenCalledWith(store);
 					expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 					expect(layersPluginSpy).toHaveBeenCalledWith(store);
 					expect(topicsPluginSpy).toHaveBeenCalledWith(store);
