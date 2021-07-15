@@ -38,22 +38,7 @@ describe('ShareToolContent', () => {
 
 	describe('when initialized', () => {
 
-		it('renders UI elements without share api button', async () => {
-			const element = await setup();
-
-			expect(element._tools).toBeTruthy();
-			expect(element._tools.length).toBe(3);
-			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(2);
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).not.toContain('toolbox_shareTool_share');
-
-			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
-		});
-
-		it('renders UI elements with share api button', async () => {
+		it('renders UI elements', async () => {
 			const config = { embed: false, windowMock: { navigator: { share() { } } } };
 
 			const element = await setup(config);
@@ -64,7 +49,6 @@ describe('ShareToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
 
-			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__embed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
@@ -90,7 +74,7 @@ describe('ShareToolContent', () => {
 
 			expect(element.shadowRoot.querySelector('.tool-container__button')).toBeTruthy();
 
-			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
 			setTimeout(() => {
 				expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
@@ -99,7 +83,7 @@ describe('ShareToolContent', () => {
 				done();
 			});
 
-			element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
 
 			setTimeout(() => {
 				expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
@@ -129,7 +113,7 @@ describe('ShareToolContent', () => {
 
 			expect(element.shadowRoot.querySelector('.tool-container__button')).toBeTruthy();
 
-			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
 			setTimeout(() => {
 				expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
@@ -149,9 +133,7 @@ describe('ShareToolContent', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
-
-			element.shadowRoot.querySelector('.modal_button').click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 			setTimeout(() => {
 				expect(shareServiceSpy).toHaveBeenCalled();
@@ -171,8 +153,7 @@ describe('ShareToolContent', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.modal_button')).toBeTruthy();
-			element.shadowRoot.querySelector('.modal_button').click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 			setTimeout(() => {
 				expect(shareServiceSpy).toHaveBeenCalled();
@@ -244,10 +225,10 @@ describe('ShareToolContent', () => {
 
 			const element = await setup(config);
 
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[2]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[2].innerHTML).toContain('toolbox_shareTool_share');
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0]).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].innerHTML).toContain('toolbox_shareTool_share');
 
-			element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 			setTimeout(() => {
 				expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
@@ -283,7 +264,7 @@ describe('ShareToolContent', () => {
 
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
 
-			element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
+			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Share API not available: Error: ' + mockErrorMsg);

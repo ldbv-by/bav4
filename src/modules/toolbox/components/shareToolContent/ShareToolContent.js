@@ -29,24 +29,21 @@ export class ShareToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		return [{
 			id: 1,
+			name: 'share-api',
+			title: translate('toolbox_shareTool_share'),
+			icon: 'share'
+		}, {
+			id: 2,
 			name: 'mail',
-			available: true,
 			title: translate('toolbox_shareTool_mail'),
 			icon: 'mail',
 			href: 'mailto:?body='
 		}, {
-			id: 2,
+			id: 3,
 			name: 'qr',
-			available: true,
 			title: translate('toolbox_shareTool_qr'),
 			icon: 'qr',
 			href: 'https://v.bayern.de?url='
-		}, {
-			id: 3,
-			name: 'share-api',
-			available: this._isShareApiAvailable(),
-			title: translate('toolbox_shareTool_share'),
-			icon: 'share'
 		}];
 	}
 
@@ -86,81 +83,74 @@ export class ShareToolContent extends AbstractToolContent {
 				this._root.querySelector('.preview_button').classList.remove('disabled-preview');
 			}
 		};
-
-
-		const onClick = async () => {
-			const shortUrl = await this._generateShortUrl();
-			const title = translate('toolbox_shareTool_share');
-			const content = html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>`;
-			openModal(title, content);
-		};
-
 		const toolTemplate = (tool) => {
-			if (!tool.available) {
-				return;
-			}
-
-			const activateShareApi = async () => {
-				try {
-					const shortUrl = await this._generateShortUrl();
-
-					const shareData = {
-						title: translate('toolbox_shareTool_title'),
-						url: shortUrl,
-					};
-
-					await this._window.navigator.share(shareData);
-
-				}
-				catch (e) {
-					this._root.getElementById(tool.name).classList.add('disabled_tool__button');
-					console.warn('Share API not available: ' + e);
-				}
-			};
-
-			const shareContent = async () => {
-				try {
-					const shortUrl = await this._generateShortUrl();
-
-					if (this._window.open(tool.href + shortUrl) === null) {
-						throw new Error('Could not open window');
-					}
-				}
-				catch (e) {
-					console.warn('Could not share content: ' + e);
-				}
-			};
 
 			const buttonContent =
 				html`
 					<div class="tool-container__background"></div>
 					<div class="tool-container__icon ${tool.icon}"></div>  
 					<div class="tool-container__button-text">${tool.title}</div>
-				`;
+				`;			
 
-			return html`
-			${tool.name === 'share-api' ? html`
-				<div 
-					id=${tool.name}
-					class="tool-container__button" 
-					title=${tool.title}
-					role="button" 
-					tabindex="0" 
-					@click="${activateShareApi}" 
-					target="_blank"
-					> 
-					${buttonContent}
-				</div>` : html`
-				<div 
-					id=${tool.name}
-					class="tool-container__button" 
-					title=${tool.title}
-					role="button" tabindex="0" 
-					@click=${shareContent}
-					target="_blank"
-					> 
-					${buttonContent}
-				</div>`	}`;
+			const onClickFunction = () => {
+				if (tool.name === 'share-api') {
+					if (this._isShareApiAvailable()) {
+						return async () => {
+							try {
+								const shortUrl = await this._generateShortUrl();
+			
+								const shareData = {
+									title: translate('toolbox_shareTool_title'),
+									url: shortUrl,
+								};
+			
+								await this._window.navigator.share(shareData);
+			
+							}
+							catch (e) {
+								this._root.getElementById(tool.name).classList.add('disabled_tool__button');
+								console.warn('Share API not available: ' + e);
+							}
+						};		
+					}
+					else {
+						return async () => {
+							const shortUrl = await this._generateShortUrl();
+							const title = translate('toolbox_shareTool_share');
+							const content = html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>`;
+							openModal(title, content);
+						};
+					}
+				}
+				else {
+					return async () => {
+						try {
+							const shortUrl = await this._generateShortUrl();
+		
+							if (this._window.open(tool.href + shortUrl) === null) {
+								throw new Error('Could not open window');
+							}
+						}
+						catch (e) {
+							console.warn('Could not share content: ' + e);
+						}
+					};			
+					
+				}
+			};
+				
+			return html`				
+					<div 
+						id=${tool.name}
+						class="tool-container__button" 
+						title=${tool.title}
+						role="button" tabindex="0" 
+						@click=${onClickFunction()}
+						target="_blank"
+						> 
+						${buttonContent}
+					</div>`;	
+			
 		};
 
 		return html`
@@ -172,10 +162,7 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content">                						     
 					<div class="tool-container__buttons">                                    
 						${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
-					</div>   
-					<div class="tool-container__buttons">                         						 
-						<ba-button class='modal_button' @click=${onClick} label=${translate('toolbox_shareTool_button_modal')}></ba-button>
-					</div>            
+					</div>              
 					<div class="tool-container__embed">
 						${translate('toolbox_shareTool_embed')}						
 					</div>
