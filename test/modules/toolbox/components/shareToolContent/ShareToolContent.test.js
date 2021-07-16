@@ -279,18 +279,19 @@ describe('ShareToolContent', () => {
 
 		it('enables/disables preview button on checkbox click', async () => {
 			const element = await setup();
-
-			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
-
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+			const button = element.shadowRoot.querySelector('.preview_button');
+
+			expect(button.getAttribute('disabled')).toBe('true');
+			expect(checkbox.getAttribute('checked')).toBe('false');
 
 			checkbox.click();
 			
-			expect(element.shadowRoot.querySelector('.preview_button').classList).not.toContain('disabled-preview');
+			expect(button.disabled).toBeFalse();
 			
 			checkbox.click();
 
-			expect(element.shadowRoot.querySelector('.preview_button').classList).toContain('disabled-preview');
+			expect(button.disabled).toBeTrue();
 		});
 	});
 });

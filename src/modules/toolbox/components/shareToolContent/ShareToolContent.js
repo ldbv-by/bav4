@@ -73,10 +73,11 @@ export class ShareToolContent extends AbstractToolContent {
 	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-
-		const onToggle = () => {
-			this._root.querySelector('.preview_button').classList.toggle('disabled-preview');
-			this.render();
+		
+		const onToggle = (event) => {
+			//Todo: This is workaround until all commons components / ba-button is reworked
+			//then we bind a local field to the disabled property and just call render() afterwards
+			this.shadowRoot.querySelector('.preview_button').disabled = !event.detail.checked;
 		};
 		const toolTemplate = (tool) => {
 
@@ -147,7 +148,6 @@ export class ShareToolContent extends AbstractToolContent {
 					</div>`;
 
 		};
-
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -164,14 +164,14 @@ export class ShareToolContent extends AbstractToolContent {
 				</div>
 				<div class="ba-tool-container__content">      					                  					
 					<div class="tool-container__checkbox">						
-						<ba-checkbox  checked=false tabindex='0' @toggle=${onToggle}> 
+						<ba-checkbox tabindex='0' @toggle=${onToggle} checked=false> 
 							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
 							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
 						</ba-checkbox>						
 					</div>    
 				</div>				
-				<div class='ba-tool-container__actions'>           
-					<ba-button class='preview_button disabled-preview' type=primary label=${translate('toolbox_shareTool_preview')}></ba-button>
+				<div class="ba-tool-container__actions">           
+					<ba-button class="preview_button" type=primary label=${translate('toolbox_shareTool_preview')} disabled=true></ba-button>
 				</div>           
             </div>	  
         `;
