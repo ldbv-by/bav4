@@ -18,7 +18,7 @@ describe('ShareToolDialog', () => {
 	const setup = (state = {}, config = {}) => {
 
 		const { embed = false, isTouch = false } = config;
-		TestUtils.setupStoreAndDi(state, {});
+		TestUtils.setupStoreAndDi(state);
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
