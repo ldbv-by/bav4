@@ -60,7 +60,8 @@ export class ShareToolContent extends AbstractToolContent {
 	async _generateShortUrl() {
 		const url = this._shareService.encodeState();
 		try {
-			return await this._urlService.shorten(url);
+			const shortenUrl = await this._urlService.shorten(url);
+			return shortenUrl;
 		}
 		catch (e) {
 			console.warn('Could not shorten url: ' + e);
@@ -73,7 +74,7 @@ export class ShareToolContent extends AbstractToolContent {
 	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		
+
 		const onToggle = (event) => {
 			//Todo: This is workaround until all commons components / ba-button is reworked
 			//then we bind a local field to the disabled property and just call render() afterwards
