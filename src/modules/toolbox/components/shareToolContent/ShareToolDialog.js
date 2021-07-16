@@ -4,6 +4,11 @@ import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import css from './shareToolDialog.css';
 
+/**
+ * @class
+ * @author bakir_en
+ * @author alsturm
+ */
 export class ShareToolDialog extends BaElement {
 
 	constructor () {
