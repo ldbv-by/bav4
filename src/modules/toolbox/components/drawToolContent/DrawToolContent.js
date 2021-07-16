@@ -3,6 +3,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import { setType } from '../../../map/store/draw.action';
 import css from './drawToolContent.css';
 
 
@@ -22,41 +23,41 @@ export class DrawToolContent extends AbstractToolContent {
 	}
 
 	_buildTools() {
-		const translate = (key) => this._translationService.translate(key);  
-		return [{ 
-			id:1,
-			name:'symbol', 
-			active:false, 
+		const translate = (key) => this._translationService.translate(key);
+		return [{
+			id: 1,
+			name: 'symbol',
+			active: false,
 			title: translate('toolbox_drawTool_symbol'),
-			icon:'symbol',
-			activate:() => {},
-			deactivate:() => {}	
+			icon: 'symbol',
+			activate: () =>
+				setType('symbol'),
+			deactivate: () => { },
 		}, {
-			id:2,
+			id: 2,
 			name: 'text',
-			active:false, 
+			active: false,
 			title: translate('toolbox_drawTool_text'),
-			icon:'text',
-			activate:() => {},
-			deactivate:() => {}	
+			icon: 'text',
+			activate: () => setType('text'),
+			deactivate: () => { },
 		}, {
-			id:3,			
-			name:'line', 
-			active:false, 
+			id: 3,
+			name: 'line',
+			active: false,
 			title: translate('toolbox_drawTool_line'),
-			icon:'line',
-			activate:() => {},
-			deactivate:() => {}	
+			icon: 'line',
+			activate: () => setType('line'),
+			deactivate: () => { },
 		}, {
-			id:4,
-			name:'polygon', 
-			active:false, 
+			id: 4,
+			name: 'polygon',
+			active: false,
 			title: translate('toolbox_drawTool_polygon'),
-			icon:'polygon',
-			activate:() => {},
-			deactivate:() => {}        		
-		}] 
-		;
+			icon: 'polygon',
+			activate: () => setType('polygon'),
+			deactivate: () => { },
+		}];
 	}
 
 	_setActiveTool(tool) {
@@ -65,7 +66,7 @@ export class DrawToolContent extends AbstractToolContent {
 				this._activeTool.active = false;
 				this._activeTool.deactivate();
 				this._showActive();
-			}			
+			}
 		}
 		this._activeTool = tool;
 		this._showActive();
@@ -77,22 +78,22 @@ export class DrawToolContent extends AbstractToolContent {
 		if (this._activeTool.active) {
 			element.classList.add('is-active');
 		}
-		else {			
+		else {
 			element.classList.remove('is-active');
 		}
 	}
 
 	createView() {
-		const translate = (key) => this._translationService.translate(key);        
-		
+		const translate = (key) => this._translationService.translate(key);
+
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
-			const toggle = () => {				
+			const toggle = () => {
 				if (tool.active) {
 					tool.deactivate();
 				}
 				else {
-					tool.activate();					
+					tool.activate();
 				}
 				tool.active = !tool.active;
 				this._setActiveTool(tool);
