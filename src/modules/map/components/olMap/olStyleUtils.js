@@ -67,8 +67,7 @@ export const modifyStyleFunction = () => {
 				color: WHITE_COLOR,
 			}),
 		}),
-	})]
-		;
+	})];
 };
 
 export const createSelectStyleFunction = (styleFunction) => {
