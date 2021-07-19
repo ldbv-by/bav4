@@ -24,8 +24,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den ');
-		expect(map.toolbox_shareTool_termsOfUse).toBe('Nutzungsbedingungen zu.');
+		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
@@ -67,8 +66,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Share');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Preview');
-		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting ');
-		expect(map.toolbox_shareTool_termsOfUse).toBe('the Terms of use.');
+		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting the terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
@@ -90,7 +88,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 37;
+		const expectedSize = 36;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
