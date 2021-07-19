@@ -86,6 +86,10 @@ ba-checkbox:focus{
 .tool-container__checkbox{
     font-size: .9rem;
 } 
+.disabled_tool__button{
+    opacity: 0.4;
+    pointer-events: none;
+} 
 .disclaimer-text {
     text-align: justify;
 } 

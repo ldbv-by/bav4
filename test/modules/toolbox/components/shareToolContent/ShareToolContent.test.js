@@ -11,7 +11,8 @@ describe('ShareToolContent', () => {
 	let store;
 
 	const urlServiceMock = {
-		shorten() { }
+		shorten() { },
+		qrCode() { }
 	};
 
 	const shareServiceMock = {
@@ -21,7 +22,8 @@ describe('ShareToolContent', () => {
 
 	const setup = async (config = {}) => {
 
-		const { embed = false, windowMock = { navigator: {}, open() { } } } = config;
+		const { windowMock = { navigator: {}, open() { } } } = config;
+		const { standalone = false } = config;
 
 		const state = {
 		};
@@ -29,8 +31,8 @@ describe('ShareToolContent', () => {
 		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed,
-				getWindow: () => windowMock
+				getWindow: () => windowMock,
+				isStandalone: () => standalone
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('UrlService', urlServiceMock)
@@ -50,7 +52,7 @@ describe('ShareToolContent', () => {
 				const element = await setup();
 
 				const url = await element._generateShortUrl();
-				
+
 				expect(url).toBe(mockShortUrl);
 			});
 
@@ -68,171 +70,230 @@ describe('ShareToolContent', () => {
 			});
 		});
 	});
+	describe('share buttons', () => {
+
+		describe('shareApi available', () => {
+
+			it('renders UI elements', async () => {
+				const windowMock = {
+
+					navigator: {
+						share() { }
+					}
+				};
+				const config = { windowMock };
+
+				const element = await setup(config);
+
+				expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.tool-container__button-text').innerText).toBe('toolbox_shareTool_share');
+				expect(element.shadowRoot.querySelector('.tool-container__icon').classList).toContain('share');
+			});
+
+			describe('on share button click', () => {
+
+				it('initializes share api button', async (done) => {
+					const mockShortUrl = 'https://short/url';
+					const mockShareData = {
+						title: 'toolbox_shareTool_title',
+						url: mockShortUrl
+					};
+					const windowMock = {
+						open() { },
+						navigator: {
+							share() { }
+						}
+					};
+					const windowShareSpy = spyOn(windowMock.navigator, 'share');
+					const config = { windowMock };
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+
+					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
+
+					setTimeout(() => {
+						expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
+						done();
+					});
+				});
+
+				it('logs a warn statement on share api reject', async (done) => {
+					const mockShortUrl = 'https://short/url';
+					const mockErrorMsg = 'something got wrong';
+					const windowMock = {
+						navigator: {
+							share() { }
+						}
+					};
+					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new Error(mockErrorMsg)));
+					const warnSpy = spyOn(console, 'warn');
+					const config = { windowMock };
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					const shareButton = element.shadowRoot.querySelectorAll('.tool-container__button')[0];
+
+					shareButton.click();
+
+					setTimeout(() => {
+						expect(warnSpy).toHaveBeenCalledWith('ShareAPI not available: Error: ' + mockErrorMsg);
+						expect(shareButton.classList).toContain('disabled_tool__button');
+						done();
+					});
+				});
+			});
+		});
+
+		describe('shareApi NOT available', () => {
+
+			describe('shortUrl service available', () => {
+
+				it('renders UI elements', async () => {
+					const windowMock = {
+
+						navigator: {
+						}
+					};
+					const config = { windowMock };
+					const element = await setup(config);
+
+					expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[0].innerText).toBe('toolbox_shareTool_share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[1].innerText).toBe('toolbox_shareTool_mail');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[2].innerText).toBe('toolbox_shareTool_qr');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[0].classList).toContain('share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('mail');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[2].classList).toContain('qr');
+				});
+
+			});
+
+			describe('shortUrl service NOT available', () => {
+
+				it('renders UI elements', async () => {
+					const windowMock = {
+
+						navigator: {
+						}
+					};
+					const standalone = true;
+					const config = { windowMock, standalone };
+
+					const element = await setup(config);
+
+					expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(2);
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[0].innerText).toBe('toolbox_shareTool_share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__button-text')[1].innerText).toBe('toolbox_shareTool_mail');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[0].classList).toContain('share');
+					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('mail');
+				});
+			});
+
+			describe('on share button click', () => {
+
+				it('opens the modal', async (done) => {
+					const windowMock = {
+						navigator: {
+						}
+					};
+					const config = { windowMock };
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue('https://short/url');
+
+					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
+
+					setTimeout(() => {
+						expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
+						done();
+					});
+				});
+			});
+
+			describe('on mail and qr button click', () => {
+
+				it('opens a window', async (done) => {
+					const mockShortUrl = 'https://short.foo/url';
+					const mailUrl = 'mailto:?body=' + mockShortUrl;
+					const qrUrl = 'https://qrCode.foo?url=' + mockShortUrl;
+					const windowMock = {
+						navigator: {},
+						open() { }
+					};
+					const config = { windowMock };
+					const windowOpenSpy = spyOn(windowMock, 'open');
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+					spyOn(urlServiceMock, 'qrCode').withArgs(mockShortUrl).and.returnValue(qrUrl);
+
+					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
+
+					setTimeout(() => {
+						expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
+						done();
+					});
+
+					element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
+
+					setTimeout(() => {
+						expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
+						done();
+					});
+				});
+
+				it('throws error if window could not be opened', async (done) => {
+					const mockShortUrl = 'https://short.foo/url';
+					const mailUrl = 'mailto:?body=' + mockShortUrl;
+					const windowMock = {
+						navigator: {},
+						open() { }
+					};
+					const config = { windowMock };
+					const windowOpenSpy = spyOn(windowMock, 'open').and.returnValue(null);
+					const warnSpy = spyOn(console, 'warn');
+					const element = await setup(config);
+					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
+
+					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
+
+					setTimeout(() => {
+						expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
+						expect(warnSpy).toHaveBeenCalledWith('Could not share content: Error: Could not open window');
+						done();
+					});
+				});
+			});
+		});
+	});
 
 
-	describe('when initialized', () => {
+
+	describe('iframe container', () => {
 
 		it('renders UI elements', async () => {
-			const config = { embed: false, windowMock: { navigator: { share() { } } } };
 
-			const element = await setup(config);
-
-			expect(element._tools).toBeTruthy();
-			expect(element._tools.length).toBe(3);
-			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(3);
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
-
-			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.tool-container__checkbox')).toBeTruthy();
-		});
-	});
-
-	describe('on mail and qr button click', () => {
-
-		it('opens a window', async (done) => {
-			const mockShortUrl = 'https://short/url';
-			const mailUrl = 'mailto:?body=' + mockShortUrl;
-			const qrUrl = 'https://v.bayern.de?url=' + mockShortUrl;
-			const windowMock = {
-				navigator: {},
-				open() { }
-			};
-			const config = { embed: false, windowMock };
-			const windowOpenSpy = spyOn(windowMock, 'open');
-			const element = await setup(config);
-			spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-
-			expect(element.shadowRoot.querySelector('.tool-container__button')).toBeTruthy();
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
-
-			setTimeout(() => {
-				expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
-				done();
-			});
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
-
-			setTimeout(() => {
-				expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
-				done();
-			});
-		});
-
-		it('throws error if window could not be opened', async (done) => {
-			const mockShortUrl = 'https://short/url';
-			const mailUrl = 'mailto:?body=' + mockShortUrl;
-			const windowMock = {
-				navigator: {},
-				open() { }
-			};
-			const config = { embed: false, windowMock };
-			const windowOpenSpy = spyOn(windowMock, 'open').and.returnValue(null);
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup(config);
-			spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-			
-			expect(element.shadowRoot.querySelector('.tool-container__button')).toBeTruthy();
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
-
-			setTimeout(() => {
-				expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
-				expect(warnSpy).toHaveBeenCalledWith('Could not share content: Error: Could not open window');
-				done();
-			});
-		});
-	});
-
-	describe('on share button click', () => {
-
-		it('opens the modal', async (done) => {
-			const mockShortUrl = 'https://short/url';
-			const element = await setup();
-			spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
-
-			setTimeout(() => {
-				expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
-				done();
-			});
-		});
-
-
-		it('initializes share api button', async (done) => {
-			const mockShortUrl = 'https://short/url';
-			const mockShareData = {
-				title: 'toolbox_shareTool_title',
-				url: mockShortUrl
-			};
-			const windowMock = {
-				open() { },
-				navigator: {
-					share() { }
-				}
-			};
-			const windowShareSpy = spyOn(windowMock.navigator, 'share');
-			const config = { embed: false, windowMock };
-			const element = await setup(config);
-			spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0]).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].innerHTML).toContain('toolbox_shareTool_share');
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
-
-			setTimeout(() => {
-				expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
-				done();
-			});
-		});
-
-		it('logs a warn statement on share api reject', async (done) => {
-			const mockShortUrl = 'https://short/url';
-			const mockErrorMsg = 'something got wrong';
-			const mockShareData = {
-				title: 'toolbox_shareTool_title',
-				url: mockShortUrl
-			};
-			const windowMock = {
-				navigator: {
-					share() { }
-				}
-			};
-			const windowShareSpy = spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new Error(mockErrorMsg)));
-			const warnSpy = spyOn(console, 'warn');
-			const config = { embed: false, windowMock };
-			const element = await setup(config);
-			spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
-
-			expect(element.shadowRoot.querySelector('.tool-container__buttons').innerHTML).toContain('toolbox_shareTool_share');
-
-			element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
-
-			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Share API not available: Error: ' + mockErrorMsg);
-				expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
-				done();
-			});
-		});
-
-		it('enables/disables preview button on checkbox click', async () => {
 			const element = await setup();
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
 
 			expect(button.getAttribute('disabled')).toBe('true');
 			expect(checkbox.getAttribute('checked')).toBe('false');
+			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer');
+		});
 
-			checkbox.click();
+		describe('on checkbox click', () => {
 
-			expect(button.disabled).toBeFalse();
+			it('enables/disables the preview button', async () => {
+				const element = await setup();
+				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+				const button = element.shadowRoot.querySelector('.preview_button');
 
-			checkbox.click();
+				checkbox.click();
 
-			expect(button.disabled).toBeTrue();
+				expect(button.disabled).toBeFalse();
+
+				checkbox.click();
+
+				expect(button.disabled).toBeTrue();
+			});
 		});
 	});
 });

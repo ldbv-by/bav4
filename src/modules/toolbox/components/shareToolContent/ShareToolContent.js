@@ -4,14 +4,17 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import { openModal } from '../../../modal/store/modal.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
 
 /**
  * @class
  * @author bakir_en
  * @author thiloSchlemmer
+ * @author taulinger
  */
 export class ShareToolContent extends AbstractToolContent {
+	
 	constructor() {
 		super();
 
@@ -22,29 +25,43 @@ export class ShareToolContent extends AbstractToolContent {
 		this._shareService = shareService;
 		this._environmentService = environmentService;
 		this._window = this._environmentService.getWindow();
-		this._tools = this._buildTools();
 	}
 
-	_buildTools() {
+	_getToolsDefinitions() {
+
 		const translate = (key) => this._translationService.translate(key);
-		return [{
+		const shareApi = {
 			id: 1,
 			name: 'share-api',
 			title: translate('toolbox_shareTool_share'),
 			icon: 'share'
-		}, {
+		};
+
+		const mail = {
 			id: 2,
 			name: 'mail',
 			title: translate('toolbox_shareTool_mail'),
 			icon: 'mail',
-			href: 'mailto:?body='
-		}, {
+			href: url => `mailto:?body=${url}`
+		};
+
+		const qrCode = {
 			id: 3,
 			name: 'qr',
 			title: translate('toolbox_shareTool_qr'),
 			icon: 'qr',
-			href: 'https://v.bayern.de?url='
-		}];
+			href: url => this._urlService.qrCode(url)
+		};
+
+		if (this._isShareApiAvailable()) {
+			return [shareApi];
+		}
+		else {
+			if (this._environmentService.isStandalone()) {
+				return [shareApi, mail];
+			}
+			return [shareApi, mail, qrCode];
+		}
 	}
 
 	/**
@@ -80,7 +97,8 @@ export class ShareToolContent extends AbstractToolContent {
 			//then we bind a local field to the disabled property and just call render() afterwards
 			this.shadowRoot.querySelector('.preview_button').disabled = !event.detail.checked;
 		};
-		const toolTemplate = (tool) => {
+
+		const getToolTemplate = (tool) => {
 
 			const buttonContent =
 				html`
@@ -89,7 +107,7 @@ export class ShareToolContent extends AbstractToolContent {
 					<div class="tool-container__button-text">${tool.title}</div>
 				`;
 
-			const onClickFunction = () => {
+			const getOnClickFunction = () => {
 				if (tool.name === 'share-api') {
 					if (this._isShareApiAvailable()) {
 						return async () => {
@@ -102,16 +120,16 @@ export class ShareToolContent extends AbstractToolContent {
 								};
 
 								await this._window.navigator.share(shareData);
-
 							}
 							catch (e) {
 								this._root.getElementById(tool.name).classList.add('disabled_tool__button');
-								console.warn('Share API not available: ' + e);
+								console.warn('ShareAPI not available: ' + e);
 							}
 						};
 					}
 					else {
 						return async () => {
+							this.shadowRoot.getElementById(tool.name).classList.add('disabled_tool__button');
 							const shortUrl = await this._generateShortUrl();
 							const title = translate('toolbox_shareTool_share');
 							const content = html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>`;
@@ -124,7 +142,7 @@ export class ShareToolContent extends AbstractToolContent {
 						try {
 							const shortUrl = await this._generateShortUrl();
 
-							if (this._window.open(tool.href + shortUrl) === null) {
+							if (this._window.open(tool.href(shortUrl)) === null) {
 								throw new Error('Could not open window');
 							}
 						}
@@ -142,7 +160,7 @@ export class ShareToolContent extends AbstractToolContent {
 						class="tool-container__button" 
 						title=${tool.title}
 						role="button" tabindex="0" 
-						@click=${onClickFunction()}
+						@click=${getOnClickFunction()}
 						target="_blank"
 						> 
 						${buttonContent}
@@ -157,7 +175,7 @@ export class ShareToolContent extends AbstractToolContent {
 				</div>
 				<div class="ba-tool-container__content divider">                						     				
 					<div class="tool-container__buttons">                                    
-						${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
+						${repeat(this._getToolsDefinitions(), (tool) => tool.id, (tool) => getToolTemplate(tool))}
 					</div>              
 				</div>  
 				<div class="ba-tool-container__title ">
@@ -166,8 +184,7 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content">      					                  					
 					<div class="tool-container__checkbox">						
 						<ba-checkbox tabindex='0' @toggle=${onToggle} checked=false> 
-							<span class="disclaimer-text">${translate('toolbox_shareTool_disclaimer')}</span>
-							<a href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target="_blank" tabindex='0'>${translate('toolbox_shareTool_termsOfUse')}</a>
+							<span class="disclaimer-text">${unsafeHTML(`${translate('toolbox_shareTool_disclaimer')}`)}</span>
 						</ba-checkbox>						
 					</div>    
 				</div>				
