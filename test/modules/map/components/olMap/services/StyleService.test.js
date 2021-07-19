@@ -125,6 +125,29 @@ describe('StyleService', () => {
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
+
+		it('adds draw-style to feature with explicit style-type', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock, 'draw');
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
 		it('adding style to feature with unknown style-type fails', () => {
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			const addOverlaySpy = jasmine.createSpy();
@@ -293,6 +316,7 @@ describe('StyleService', () => {
 
 		it('returns a StyleFunction for a valid StyleType', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MEASURE)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
 		});
 
 		it('fails for a invalid StyleType', () => {

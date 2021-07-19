@@ -11,6 +11,9 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
+import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { finish, reset, remove } from '../../../../../../../src/modules/map/store/draw.action';
+
 
 
 
@@ -64,10 +67,10 @@ describe('OlDrawHandler', () => {
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
-		mode:null,
-		type:null,
+		mode: null,
+		type: null,
 		reset: null,
-		fileSaveResult: { adminId:'init', fileId:'init' }
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
 	const setup = (state = initialState) => {
@@ -98,7 +101,7 @@ describe('OlDrawHandler', () => {
 			.register('StyleService', MockClass);
 		return store;
 	};
-	
+
 	it('has two methods', () => {
 		setup();
 		const handler = new OlDrawHandler();
@@ -135,10 +138,155 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const layer = classUnderTest.activate(map);
-			
+
 			expect(layer).toBeTruthy();
 		});
+
+		describe('uses Interactions', () => {
+			it('adds Interactions', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				// adds Interaction for select, draw (4x), modify,snap, dragPan				
+				expect(map.addInteraction).toHaveBeenCalledTimes(8);
+			});
+
+			it('removes Interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const layerStub = {};
+				map.removeInteraction = jasmine.createSpy();
+				classUnderTest.activate(map);
+				classUnderTest.deactivate(map, layerStub);
+
+				// removes Interaction for select, draw, modify, snap, dragPan
+				expect(map.removeInteraction).toHaveBeenCalledTimes(8);
+			});
+
+			it('adds a select interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._select).toBeInstanceOf(Select);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._select);
+			});
+
+			it('adds a draw interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				expect(Object.keys(classUnderTest._drawTypes).length).toBe(4);
+				// eslint-disable-next-line no-unused-vars
+				for (const [key, draw] of Object.entries(classUnderTest._drawTypes)) {
+					expect(draw).toBeInstanceOf(Draw);
+					expect(map.addInteraction).toHaveBeenCalledWith(draw);
+				}
+			});
+
+			it('adds a modify interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._modify).toBeInstanceOf(Modify);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._modify);
+			});
+
+			it('adds a snap interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._snap).toBeInstanceOf(Snap);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._snap);
+			});
+
+			it('adds a dragPan interaction', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._dragPan).toBeInstanceOf(DragPan);
+				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
+			});
+
+			it('initialize interactions and state objects only once on multiple activates', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const createDrawSpy = spyOn(classUnderTest, '_createDrawTypes').and.callThrough();
+
+				classUnderTest.activate(map);
+				classUnderTest.activate(map);
+
+				expect(createDrawSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('register observer for finish-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const finishSpy = spyOn(classUnderTest, '_finish').and.callThrough();
+
+				classUnderTest.activate(map);
+				finish();
+				expect(finishSpy).toHaveBeenCalled();
+			});
+
+			it('register observer for reset-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+				classUnderTest.activate(map);
+				reset();
+				expect(startNewSpy).toHaveBeenCalled();
+			});
+
+
+			it('register observer for remove-request', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const removeSpy = spyOn(classUnderTest, '_remove').and.callThrough();
+
+				classUnderTest.activate(map);
+				remove();
+				expect(removeSpy).toHaveBeenCalled();
+			});
+
+
+		});
+
 	});
+
+
 });
 
 

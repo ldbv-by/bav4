@@ -89,8 +89,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	// eslint-disable-next-line no-unused-vars
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
-		//olLayer currently undefined, will be fixed later		
-		olMap.removeInteraction(this._draw);
+		//olLayer currently undefined, will be fixed later				
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
@@ -122,6 +121,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			'Line': new Draw({
 				source: source,
 				type: 'LineString',
+				minPoints: 2,
+				snapTolerance: this._getSnapTolerancePerDevice(),
+				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+			}),
+			'Polygon': new Draw({
+				source: source,
+				type: 'Polygon',
 				minPoints: 2,
 				snapTolerance: this._getSnapTolerancePerDevice(),
 				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
@@ -191,18 +197,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_activateModify(feature) {
-		const getActiveDraw = () => {
-			// eslint-disable-next-line no-unused-vars
-			for (const [key, draw] of Object.entries(this._drawTypes)) {
-				if (draw.getActive()) {
-					return draw;
-				}
-			}
-
-			return null;
-
-		};
-		const currentDraw = getActiveDraw();
+		const currentDraw = this._getActiveDraw();
 
 		if (currentDraw) {
 			currentDraw.setActive(false);
@@ -216,16 +211,6 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
-		const getActiveDraw = () => {
-			// eslint-disable-next-line no-unused-vars
-			for (const [key, draw] of Object.entries(this._drawTypes)) {
-				if (draw.getActive()) {
-					return draw;
-				}
-			}
-			return null;
-		};
-
 		const setActiveDraw = (type) => {
 			if (type in this._drawTypes) {
 				const draw = this._drawTypes[type];
@@ -233,7 +218,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 		};
 
-		const currentDraw = getActiveDraw();
+		const currentDraw = this._getActiveDraw();
 
 		if (currentDraw) {
 			currentDraw.abortDrawing();
@@ -243,14 +228,14 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_remove() {
-		if (this._draw && this._draw.getActive()) {
-
-			this._draw.removeLastPoint();
+		const activeDraw = this._getActiveDraw();
+		if (activeDraw) {
+			activeDraw.removeLastPoint();
 			if (this._pointCount === 1) {
 				this._startNew();
 			}
 			if (this._lastPointerMoveEvent) {
-				this._draw.handleEvent(this._lastPointerMoveEvent);
+				activeDraw.handleEvent(this._lastPointerMoveEvent);
 			}
 		}
 
@@ -261,9 +246,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_finish() {
-		if (this._draw.getActive()) {
+		const activeDraw = this._getActiveDraw();
+		if (activeDraw && activeDraw.getActive()) {
 			if (this._activeSketch) {
-				this._draw.finishDrawing();
+				activeDraw.finishDrawing();
 				this._simulateClickEvent();
 			}
 			else {
@@ -273,13 +259,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_startNew() {
-		if (this._draw.getActive()) {
-			this._draw.abortDrawing();
+		const activeDraw = this._getActiveDraw();
+		if (activeDraw && activeDraw.getActive()) {
+			activeDraw.abortDrawing();
 		}
-		this._draw.setActive(true);
+		activeDraw.setActive(true);
 		this._select.getFeatures().clear();
 		this._modify.setActive(false);
-		this._simulateClickEvent();
 	}
 
 
@@ -289,6 +275,18 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._startNew()),
 			observe(store, state => state.draw.remove, () => this._remove())];
+	}
+
+	_getActiveDraw() {
+		if (this._drawTypes) {
+			// eslint-disable-next-line no-unused-vars
+			for (const [key, draw] of Object.entries(this._drawTypes)) {
+				if (draw.getActive()) {
+					return draw;
+				}
+			}
+		}
+		return null;
 	}
 
 	_getSnapTolerancePerDevice() {
