@@ -77,7 +77,8 @@ describe('ToolContainer', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				isTouch: () => false,
-				getWindow: () => windowMock
+				getWindow: () => windowMock,
+				isStandalone: () => false
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
