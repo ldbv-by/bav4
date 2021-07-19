@@ -31,7 +31,7 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
 			activate: () =>
-				setType('symbol'),
+				setType('Symbol'),
 			deactivate: () => { },
 		}, {
 			id: 2,
@@ -39,7 +39,7 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
-			activate: () => setType('text'),
+			activate: () => setType('Text'),
 			deactivate: () => { },
 		}, {
 			id: 3,
@@ -47,7 +47,7 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
-			activate: () => setType('line'),
+			activate: () => setType('Line'),
 			deactivate: () => { },
 		}, {
 			id: 4,
@@ -55,7 +55,7 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => setType('polygon'),
+			activate: () => setType('Polygon'),
 			deactivate: () => { },
 		}];
 	}

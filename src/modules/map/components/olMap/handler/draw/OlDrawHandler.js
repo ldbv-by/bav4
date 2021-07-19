@@ -55,7 +55,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (!this._vectorLayer) {
 			this._map = olMap;
 			this._vectorLayer = createLayer();
-
+			this._mapContainer = olMap.getTarget();
 			const source = this._vectorLayer.getSource();
 			this._drawTypes = this._createDrawTypes(source);
 			this._select = this._createSelect();
@@ -74,6 +74,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			// eslint-disable-next-line no-unused-vars
 			for (const [key, draw] of Object.entries(this._drawTypes)) {
+				//draw.on('change:active', (e) => console.log('change:active changes for ' + key + ' to: ', e));
 				olMap.addInteraction(draw);
 			}
 		}
@@ -121,7 +122,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			'Line': new Draw({
 				source: source,
 				type: 'LineString',
-				minPoints: 2,
 				snapTolerance: this._getSnapTolerancePerDevice(),
 				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
 			}),
@@ -147,6 +147,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			//draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
 			draw.on('drawend', event => this._activateModify(event.feature));
+			draw.setActive(false);
 		}
 		return drawTypes;
 	}
@@ -164,7 +165,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
@@ -216,6 +217,9 @@ export class OlDrawHandler extends OlLayerHandler {
 				const draw = this._drawTypes[type];
 				draw.setActive(true);
 			}
+			else {
+				console.warn('Unknown DrawType, deactivate only current draw');
+			}
 		};
 
 		const currentDraw = this._getActiveDraw();
@@ -240,7 +244,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-
 			this._removeSelectedFeatures();
 		}
 	}
@@ -250,7 +253,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (activeDraw && activeDraw.getActive()) {
 			if (this._activeSketch) {
 				activeDraw.finishDrawing();
-				this._simulateClickEvent();
 			}
 			else {
 				this._activateModify(null);
@@ -260,12 +262,14 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_startNew() {
 		const activeDraw = this._getActiveDraw();
-		if (activeDraw && activeDraw.getActive()) {
-			activeDraw.abortDrawing();
+		if (activeDraw) {
+			if (activeDraw.getActive()) {
+				activeDraw.abortDrawing();
+			}
+			activeDraw.setActive(true);
+			this._select.getFeatures().clear();
+			this._modify.setActive(false);
 		}
-		activeDraw.setActive(true);
-		this._select.getFeatures().clear();
-		this._modify.setActive(false);
 	}
 
 
