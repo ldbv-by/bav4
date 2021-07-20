@@ -10,6 +10,7 @@ import { DrawToolContent } from '../../../../../src/modules/toolbox/components/d
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
@@ -70,6 +71,7 @@ describe('ToolContainer', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			toolContainer: toolContainerReducer,
 			measurement: measurementReducer,
+			draw:drawReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 
@@ -154,6 +156,18 @@ describe('ToolContainer', () => {
 
 			expect(store.getState().measurement.active).toBeFalse();
 			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+		});
+
+		it('deactivates draw, when tool-content is switching from draw-tool-content', async () => {
+			const element = await setup();
+
+			setContainerContent('ba-tool-draw-content');		
+			toggleToolContainer();
+			expect(store.getState().draw.active).toBeTrue();
+			setContainerContent('ba-tool-measure-content');
+
+			expect(store.getState().draw.active).toBeFalse();
+			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
 		});
 
 
