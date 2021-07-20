@@ -1,11 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
+const BASE_URL = process.env.URL || 'http://localhost:8080';
 
 test.describe('page', () => {
 
 	test.beforeEach(async ({ page }) => {
 		// Go to the starting url before each test.
-		await page.goto('http://localhost:8080');
+		await page.goto(`${BASE_URL}`);
 
 	});
 
