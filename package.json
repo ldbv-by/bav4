@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
+    "@playwright/test": "^1.12.3",
     "css-loader": "^5.2.7",
     "dotenv-webpack": "^7.0.3",
     "es-check": "^5.2.4",
@@ -32,14 +33,15 @@
     "karma-script-launcher": "^1.0.0",
     "karma-spec-reporter": "^0.0.32",
     "karma-webpack": "^5.0.0",
+    "playwright": "^1.12.3",
+    "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.1.0",
     "to-string-loader": "^1.1.6",
     "webpack": "^5.44.0",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2",
-    "portfinder-sync": "0.0.2"
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",
@@ -53,7 +55,7 @@
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:webkit": "karma start --single-run --browsers Epiphany",
     "test:gha": "karma start karma.conf.gha.js --single-run --browsers GhaHeadlessChrome",
-    "es-check": "es-check --module es9 \"./src/**/*.js\"",
+    "e2e": "npx playwright test --browser=all",
     "analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
 }

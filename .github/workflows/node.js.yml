@@ -17,6 +17,9 @@ jobs:
     - run: npm run lint
     - run: npm run es-check
     - run: npm run test:gha
+    - run: npm run start &
+    - run: npx playwright install-deps
+    - run: npm run e2e
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
