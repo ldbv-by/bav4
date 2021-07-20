@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../shareToolContent/ShareToolContent'; 
 import { closeToolContainer } from '../../store/toolContainer.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import css from './toolContainer.css';
@@ -42,6 +43,9 @@ export class ToolContainer extends BaElement {
 				break;
 			case MeasureToolContent.tag:
 				content = html`<ba-tool-measure-content></ba-tool-measure-content>`;
+				break;
+			case ShareToolContent.tag:
+				content = html`<ba-tool-share-content></ba-tool-share-content>`;
 				break;
 			default:
 				return nothing;
