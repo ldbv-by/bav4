@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './toolBar.css';
 import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../../../toolbox/components/shareToolContent/ShareToolContent';
 import { toggleToolBar } from '../../store/toolBar.action';
 import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
@@ -69,6 +70,11 @@ export class ToolBar extends BaElement {
 			toggleTool(toolId);
 		};
 
+		const toggleShareTool = () => {
+			const toolId = ShareToolContent.tag;
+			toggleTool(toolId);
+		};
+
 		const getAnimatedBorderClass = () => {
 			return fetching ? 'animated-action-button__border__running' : '';
 		};
@@ -99,9 +105,9 @@ export class ToolBar extends BaElement {
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_draw_button')}
-						</div>  
+						</div>  					
 					</button>  				               
-					<button  class="tool-bar__button">
+					<button  @click="${toggleShareTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
@@ -118,9 +124,9 @@ export class ToolBar extends BaElement {
 	}
 
 	/**
-	 * @override
-	 * @param {Object} globalState 
-	 */
+		 * @override
+		 * @param {Object} globalState 
+		 */
 	extractState(globalState) {
 		const { toolBar, toolContainer, network: { fetching }, media: { portrait, minWidth } } = globalState;
 		return { toolBar, toolContainer, fetching, portrait, minWidth };

@@ -2,16 +2,16 @@
   "name": "bav4-nomigration",
   "dependencies": {
     "lit-html": "^1.4.1",
-    "ol": "^6.6.0",
+    "ol": "^6.6.1",
     "proj4": "^2.7.4",
     "redux": "^4.1.0"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "css-loader": "^5.2.7",
+    "css-loader": "^6.1.0",
     "dotenv-webpack": "^7.0.3",
     "es-check": "^5.2.4",
-    "eslint": "^7.30.0",
+    "eslint": "^7.31.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-node": "^11.1.0",
@@ -35,7 +35,7 @@
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.1.0",
     "to-string-loader": "^1.1.6",
-    "webpack": "^5.44.0",
+    "webpack": "^5.45.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2",

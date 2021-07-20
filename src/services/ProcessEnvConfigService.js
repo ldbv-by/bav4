@@ -60,7 +60,7 @@ export class ProcessEnvConfigService {
 		if (defaultValue !== undefined) {
 			return defaultValue;
 		}
-		throw 'No value found for \'' + key + '\'';
+		throw new Error(`No value found for '${key}'`);
 	}
 
 	/**
