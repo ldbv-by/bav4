@@ -104,6 +104,7 @@ describe('ToolBarElement', () => {
 			const element = await setup();
 			const measureToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.measure');
 			const drawToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.pencil');
+			const shareToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
 
 			expect(store.getState().toolContainer.open).toBeFalse();
 			expect(store.getState().toolContainer.contentId).toBeFalse();
@@ -114,6 +115,11 @@ describe('ToolBarElement', () => {
 			expect(store.getState().toolContainer.open).toBeTrue();
 			expect(store.getState().toolContainer.contentId).toBe('ba-tool-draw-content');
 			drawToolButton.click();
+			expect(store.getState().toolContainer.open).toBeFalse();
+			shareToolButton.click();
+			expect(store.getState().toolContainer.open).toBeTrue();
+			expect(store.getState().toolContainer.contentId).toBe('ba-tool-share-content');
+			shareToolButton.click();
 			expect(store.getState().toolContainer.open).toBeFalse();
 
 		});
