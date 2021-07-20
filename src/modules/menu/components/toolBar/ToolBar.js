@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import css from './toolBar.css';
 import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../../../toolbox/components/shareToolContent/ShareToolContent';
 import { toggleToolBar } from '../../store/toolBar.action';
 import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
@@ -27,35 +28,6 @@ export class ToolBar extends BaElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._portrait = false;
-		this._minWidth = false;
-	}
-
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-
-
-		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
-		const handleMinWidthChange = (e) => {
-			this._minWidth = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
-		//initial set of local state
-		handleMinWidthChange(mediaQueryMinWidth);
 	}
 
 	/**
@@ -63,16 +35,16 @@ export class ToolBar extends BaElement {
 	 */
 	createView(state) {
 
-		const { toolBar, toolContainer, fetching } = state;
+		const { toolBar, toolContainer, fetching, portrait, minWidth } = state;
 
 		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop' : 'is-tablet';
+			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const getOverlayClass = () => {
@@ -95,6 +67,11 @@ export class ToolBar extends BaElement {
 
 		const toggleMeasureTool = () => {
 			const toolId = MeasureToolContent.tag;
+			toggleTool(toolId);
+		};
+
+		const toggleShareTool = () => {
+			const toolId = ShareToolContent.tag;
 			toggleTool(toolId);
 		};
 
@@ -128,9 +105,9 @@ export class ToolBar extends BaElement {
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('menu_toolbar_draw_button')}
-						</div>  
+						</div>  					
 					</button>  				               
-					<button  class="tool-bar__button">
+					<button  @click="${toggleShareTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
@@ -147,12 +124,12 @@ export class ToolBar extends BaElement {
 	}
 
 	/**
-	 * @override
-	 * @param {Object} globalState 
-	 */
+		 * @override
+		 * @param {Object} globalState 
+		 */
 	extractState(globalState) {
-		const { toolBar, toolContainer, network: { fetching } } = globalState;
-		return { toolBar: toolBar, toolContainer: toolContainer, fetching };
+		const { toolBar, toolContainer, network: { fetching }, media: { portrait, minWidth } } = globalState;
+		return { toolBar, toolContainer, fetching, portrait, minWidth };
 	}
 
 	static get tag() {

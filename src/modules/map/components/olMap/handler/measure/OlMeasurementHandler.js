@@ -463,7 +463,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
 		features.forEach(f => saveManualOverlayPosition(f));
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');		
 		if (newContent) {
 			this._storedContent = newContent;
 			const { measurement } = this._storeService.getStore().getState();
@@ -486,7 +486,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 		}
-		else {
+		else {		
 			setFileSaveResult(null);
 		}
 		
@@ -711,7 +711,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getLastFileSaveResult() {
 		const { measurement } = this._storeService.getStore().getState();
 		return measurement.fileSaveResult;
-	}
+	}	
 
 	_isValidFileSaveResult(fileSaveResult) {
 		if (fileSaveResult == null) {

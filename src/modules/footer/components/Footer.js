@@ -15,24 +15,8 @@ export class Footer extends BaElement {
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
-		this._portrait = false;
 	}
 
-
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change',  handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-	}
 
 	onWindowLoad() {
 		if (!this.isRenderingSkipped()) {
@@ -45,15 +29,15 @@ export class Footer extends BaElement {
 	}
 
 	createView(state) {
-
-		const { open } = state;
+		
+		const { open, portrait } = state;
 
 		const getOverlayClass = () => {
-			return (open && !this._portrait) ? 'is-open' : '';
+			return (open && !portrait) ? 'is-open' : '';
 		};
 		
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 
@@ -79,8 +63,8 @@ export class Footer extends BaElement {
 	 * @param {Object} globalState 
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open } } = globalState;
-		return { open };
+		const { mainMenu: { open }, media: { portrait } } = globalState;
+		return { open, portrait };
 	}
 
 

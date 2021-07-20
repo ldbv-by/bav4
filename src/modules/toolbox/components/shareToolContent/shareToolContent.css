@@ -1,0 +1,94 @@
+.tool-container__buttons{
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+.tool-container__buttons > div {
+    position: relative;
+    background:transparent;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    color: rgba(255,255,255,.8);
+    padding:0 1em;
+}
+.tool-container__buttons > div{
+    border-right: 1px dotted var(--header-background-color);
+}
+.tool-container__buttons > div:last-child{
+   border-right: none;
+}
+.tool-container__background {
+    height: 0em;
+    width: 0em;
+    border-radius: 2.5em;
+    position: absolute;
+    transition: all .2s ease-in-out;
+    left: 2.8em;
+    transform: translate(-50%, -50%);
+    top: 1.8em;
+}
+.tool-container__icon{
+    background: var(--primary-color);
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    height: 2em;
+    width: 2em;
+    transition: all .2s ease-in-out;
+    margin: .8em .8em;
+    position: absolute;
+}
+.mail{
+    mask-image:  url('assets/envelope-solid.svg');
+    -webkit-mask-image:url('assets/envelope-solid.svg');
+}
+.qr{
+    mask-image:  url('assets/qrcode-solid.svg');
+    -webkit-mask-image:url('assets/qrcode-solid.svg');
+}
+.share{
+    mask-image:  url('assets/share.svg');
+    -webkit-mask-image:url('assets/share.svg');
+}
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__background{
+    height: 3.4em;
+    width: 3.4em;
+    background-color: var(--secondary-color);
+}
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon{    
+    background: var(--text3);
+}
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__background{
+    height: 3.4em;
+    width: 3.4em;
+    background-color: var(--primary-color);
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.5) ,  0 0 0 .2em var(--primary-color-lighter);
+}
+.tool-container__button:focus{
+    box-shadow:none;
+}
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon{    
+    background: var(--text3);
+}
+.tool-container__button-text{
+    font-size:.8rem;
+    margin: 5.5em .3em .5em .3em;
+    user-select: none;
+    text-align: center;
+    min-width: 5em;
+}
+ba-checkbox:focus{
+    box-shadow:none;
+}
+.preview_button{
+    width:100%;
+    padding:.8em 1.5em;
+}
+.tool-container__checkbox{
+    font-size: .9rem;
+} 
+.disclaimer-text {
+    text-align: justify;
+} 
+.divider {
+    border-bottom: 1px solid var(--header-background-color);
+ }

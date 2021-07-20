@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../../../src/injection';
-import { mainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { HightlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
+import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
@@ -13,23 +13,20 @@ describe('LocationResultItem', () => {
 
 	let store;
 
-	const windowMock = {
-		matchMedia() { }
-	};
+	const setup = (state = {}) => {
 
-	const setup = (portraitOrientation = false, state = {}) => {
+		const initialState = {
+			media: {
+				portrait: false,
+			},
+			...state
+		};
 
-		spyOn(windowMock, 'matchMedia')
-			.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(portraitOrientation));
-
-		store = TestUtils.setupStoreAndDi(state, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			highlight: highlightReducer,
 			position: positionReducer,
-			mainMenu: mainMenuReducer
-		});
-
-		$injector.registerSingleton('EnvironmentService', {
-			getWindow: () => windowMock
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer()
 		});
 
 		return TestUtils.render(LocationResultItem.tag);
@@ -46,8 +43,8 @@ describe('LocationResultItem', () => {
 	describe('when initialized', () => {
 
 		it('renders nothing when no data available', async () => {
-
 			const element = await setup();
+			
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
@@ -86,7 +83,7 @@ describe('LocationResultItem', () => {
 				const coordinate = [21, 42];
 				const id = 'id';
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
-				const element = await setup(false, {
+				const element = await setup({
 					highlight: {
 						temporaryFeature: { data: coordinate }
 					}
@@ -111,13 +108,16 @@ describe('LocationResultItem', () => {
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
 
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate, extent);
-				const element = await setup(portraitOrientation, {
+				const element = await setup({
 					highlight: {
 						feature: { data: coordinate },
 						temporaryFeature: { data: previousCoordinate }
 					},
 					mainMenu: {
 						open: true
+					},
+					media: {
+						portrait: portraitOrientation,
 					}
 				});
 				element.data = data;
@@ -129,10 +129,10 @@ describe('LocationResultItem', () => {
 
 				it('removes the temporary highlight feature and set the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
-	
+
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
-	
+
 					expect(store.getState().highlight.temporaryFeature).toBeNull();
 					expect(store.getState().highlight.feature.data.coordinate).toEqual(coordinate);
 					expect(store.getState().highlight.feature.type).toBe(HightlightFeatureTypes.DEFAULT);
@@ -148,17 +148,17 @@ describe('LocationResultItem', () => {
 					expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
 				});
 
-				
+
 			});
 
 			describe('result has an extent', () => {
 
 				it('removes the temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
 					const element = await setupOnClickTests(false, extent);
-	
+
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
-	
+
 					expect(store.getState().highlight.temporaryFeature).toBeNull();
 					expect(store.getState().highlight.feature).toBeNull();
 				});

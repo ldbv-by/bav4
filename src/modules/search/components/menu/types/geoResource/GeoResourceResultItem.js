@@ -1,6 +1,5 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { $injector } from '../../../../../../injection';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { MainMenuTabIndex } from '../../../../../menu/components/mainMenu/MainMenu';
@@ -23,28 +22,6 @@ import css from './geoResourceResultItem.css';
  * @author taulinger
  */
 export class GeoResourceResultItem extends BaElement {
-	
-	constructor() {
-		super();
-
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		this._environmentService = EnvironmentService;
-		this._portrait = false;
-	}
-
-
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-		};
-		mediaQuery.addEventListener('change',  handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-	}
 
 	set data(geoResourceSearchResult) {
 		this._georesourceSearchResult = geoResourceSearchResult;
@@ -55,7 +32,21 @@ export class GeoResourceResultItem extends BaElement {
 		return `tmp_${GeoResourceResultItem.name}_${id}`;
 	}
 
-	createView() {
+	onStateChanged() {
+		//nothing to do here, we only render when geoResourceSearchResult changes
+	}
+
+	/**
+	  * @override
+	  * @param {Object} globalState 
+	  */
+	extractState(globalState) {
+		const { media: { portrait } } = globalState;
+		return { portrait };
+	}
+
+	createView(state) {
+		const { portrait } = state;
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
@@ -73,8 +64,8 @@ export class GeoResourceResultItem extends BaElement {
 			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
 			//add the "real" layer 
 			addLayer(result.id, { label: result.label });
-			
-			if (this._portrait) {
+
+			if (portrait) {
 				//close the main menu
 				closeMainMenu();
 			}

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
 import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { mainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
 import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
@@ -11,6 +11,8 @@ import { SearchResultsPanel } from '../../../../../src/modules/search/components
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
 import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -34,29 +36,33 @@ describe('MainMenu', () => {
 
 	let store;
 
-	const windowMock = {
-		matchMedia() { }
-	};
-
-	const setup = (config = {}, open = true, tabIndex = 0) => {
+	const setup = (state = {}, config = {}) => {
 
 		const { embed = false } = config;
 
-		const state = {
+		const initialState = {
 			mainMenu: {
-				open: open,
-				tabIndex: tabIndex
-			}
+				open: true,
+				tabIndex: 0
+			},
+			media: {
+				portrait: false,
+				minWidth: true,
+				observeResponsiveParameter: true
+			},
+			...state
+
 		};
-		store = TestUtils.setupStoreAndDi(state, {
-			mainMenu: mainMenuReducer,
-			highlight: highlightReducer
+		store = TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			highlight: highlightReducer,
+			media: createNoInitialStateMediaReducer()
 		});
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed,
-				getWindow: () => windowMock
-			});
+				isEmbedded: () => embed
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(MainMenu.tag);
 	};
@@ -64,94 +70,91 @@ describe('MainMenu', () => {
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape and width >= 80em', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait and width < 80em', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu')).toBeTruthy();
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 
 
 	describe('when initialized', () => {
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('adds a div which holds the main menu and a close button', async () => {
 
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_open_button');
 		});
 
 		it('adds a container for content and shows demo content', async () => {
-
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.main-menu__container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__container').children.length > 0).toBeTrue();
 		});
 
 		it('renders nothing when embedded', async () => {
+			const element = await setup({}, { embed: true });
 
-			const element = await setup({ embed: true });
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-
 		it('renders the content panels', async () => {
-
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
@@ -170,7 +173,6 @@ describe('MainMenu', () => {
 		});
 
 		it('display the content panel for default index = 0', async () => {
-
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
@@ -181,9 +183,14 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
-
 			const activeTabIndex = 2;
-			const element = await setup({}, true, activeTabIndex);
+			const state = {
+				mainMenu: {
+					open: true,
+					tabIndex: activeTabIndex
+				},
+			};
+			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
@@ -193,10 +200,23 @@ describe('MainMenu', () => {
 		});
 
 		it('contains a dev info', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.main-menu').querySelector(DevInfo.tag)).toBeTruthy();
+		});
+
+		it('does not add the prevent-transition css class', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false,
+					observeResponsiveParameter: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
 		});
 	});
 
@@ -208,14 +228,7 @@ describe('MainMenu', () => {
 			}
 		};
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('displays the corresponding content panel', async () => {
-
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
@@ -243,13 +256,13 @@ describe('MainMenu', () => {
 			const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
 
 			setHighlightFeature(highlightFeature);
-			
+
 			expect(store.getState().highlight.feature).toEqual(highlightFeature);
 
 			setTabIndex(MainMenuTabIndex.SEARCH);
 
 			expect(store.getState().highlight.feature).toEqual(highlightFeature);
-			
+
 			setTabIndex(MainMenuTabIndex.MAPS);
 
 			expect(store.getState().highlight.feature).toBeNull();
@@ -258,20 +271,38 @@ describe('MainMenu', () => {
 
 	describe('when close button clicked', () => {
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('closes the main menu', async () => {
-
 			const element = await setup();
 
 			toggle();
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+		});
+	});
+
+	describe('when responsive parameter observation state changes', () => {
+
+		it('adds or removes the prevent-transition css class', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false,
+					observeResponsiveParameter: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+			
+			disableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeTrue();
+			
+			enableResponsiveParameterObservation();
+			
+			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
 		});
 	});
 });

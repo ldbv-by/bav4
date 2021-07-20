@@ -3,6 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../shareToolContent/ShareToolContent'; 
 import { closeToolContainer } from '../../store/toolContainer.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import css from './toolContainer.css';
@@ -10,6 +11,7 @@ import css from './toolContainer.css';
 /**
  * @class
  * @author thiloSchlemmer
+ * @author taulinger
  */
 export class ToolContainer extends BaElement {
 
@@ -22,45 +24,17 @@ export class ToolContainer extends BaElement {
 			= $injector.inject('EnvironmentService');
 
 		this._environmentService = environmentService;
-		this._portrait = false;
-		this._minWidth = false;
 		this._lastContentId = false;
 	}
 
 
-	initialize() {
-
-		const _window = this._environmentService.getWindow();
-		//MediaQuery for 'orientation'
-		const mediaQuery = _window.matchMedia('(orientation: portrait)');
-		const handleOrientationChange = (e) => {
-			this._portrait = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQuery.addEventListener('change', handleOrientationChange);
-		//initial set of local state
-		handleOrientationChange(mediaQuery);
-
-
-		//MediaQuery for 'min-width'
-		const mediaQueryMinWidth = _window.matchMedia('(min-width: 80em)');
-		const handleMinWidthChange = (e) => {
-			this._minWidth = e.matches;
-			//trigger a re-render
-			this.render();
-		};
-		mediaQueryMinWidth.addEventListener('change', handleMinWidthChange);
-		//initial set of local state
-		handleMinWidthChange(mediaQueryMinWidth);
-	}
 
 	/**
 	 * @override
 	 */
 	createView(state) {
 
-		const { open, contentId } = state;
+		const { open, contentId, portrait, minWidth } = state;
 
 		let content;
 		switch (contentId) {
@@ -69,6 +43,9 @@ export class ToolContainer extends BaElement {
 				break;
 			case MeasureToolContent.tag:
 				content = html`<ba-tool-measure-content></ba-tool-measure-content>`;
+				break;
+			case ShareToolContent.tag:
+				content = html`<ba-tool-share-content></ba-tool-share-content>`;
 				break;
 			default:
 				return nothing;
@@ -87,11 +64,11 @@ export class ToolContainer extends BaElement {
 		}
 
 		const getOrientationClass = () => {
-			return this._portrait ? 'is-portrait' : 'is-landscape';
+			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return this._minWidth ? 'is-desktop' : 'is-tablet';
+			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
 		const getOverlayClass = () => {
@@ -124,8 +101,8 @@ export class ToolContainer extends BaElement {
  * @param {Object} globalState 
  */
 	extractState(globalState) {
-		const { toolContainer } = globalState;
-		return toolContainer;
+		const { toolContainer: { open, contentId }, media: { portrait, minWidth } } = globalState;
+		return { open, contentId, portrait, minWidth };
 	}
 
 	static get tag() {
@@ -148,7 +125,4 @@ export class ToolContainer extends BaElement {
 		}
 		this._lastContentId = false;
 	}
-
-
-
 }

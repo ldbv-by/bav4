@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { mainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
 import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
@@ -11,6 +11,7 @@ import { setFetching } from '../../../../src/store/network/network.action';
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(Header.tag, Header);
 
@@ -19,39 +20,42 @@ let store;
 
 describe('Header', () => {
 
-	const windowMock = {
-		matchMedia() { }
-	};
-
-	const setup = (config = {}, open = true, tabIndex = 0, fetching = false, layers = ['test']) => {
+	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 
-		const state = {
+		const initialState = {
 			mainMenu: {
-				open: open,
-				tabIndex: tabIndex
+				open: true,
+				tabIndex: 0
 			},
 			network: {
-				fetching: fetching,
+				fetching: false,
 				pendingRequests: 0
 			},
 			layers: {
-				active: layers
+				active: ['test']
 			},
 			search: {
 				query: new EventLike(null)
-			}
+			},
+			media: {
+				portrait: false,
+				minWidth: true,
+				observeResponsiveParameter: true
+			},
+			...state
 		};
-		store = TestUtils.setupStoreAndDi(state, {
-			mainMenu: mainMenuReducer,
+		store = TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
 			modal: modalReducer,
 			network: networkReducer,
 			layers: layersReducer,
-			search: searchReducer
+			search: searchReducer,
+			media: createNoInitialStateMediaReducer()
 		});
 		$injector
 			.register('CoordinateService', OlCoordinateService)
-			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
+			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
@@ -61,12 +65,14 @@ describe('Header', () => {
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape and width >= 80em', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
@@ -74,16 +80,17 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: true
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
@@ -91,16 +98,17 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
@@ -108,16 +116,17 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
 
-			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-
-			const element = await setup();
+			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
@@ -125,50 +134,58 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
-			expect(matchMediaSpy).toHaveBeenCalledTimes(2);
 		});
 
 	});
 
 	describe('when initialized', () => {
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('removes a preload css class', async () => {
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
 		});
 
 		it('adds header bar', async () => {
 			const element = await setup();
+			
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_tab_maps_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
-
+			
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_more_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
+		
+		it('adds a close button', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('button.close-menu').title).toBe('header_close_button_title');
+		});
 
 		it('renders nothing when embedded', async () => {
-			const element = await setup({ embed: true });
+			const element = await setup({}, { embed: true });
+
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 
 		it('with 3 active Layers', async () => {
-			const element = await setup({}, true, 0, false, ['test', 'test', 'test']);
+			const state = {
+				layers: {
+					active: ['test', 'test', 'test']
+				},
+			};
+			const element = await setup(state);
+
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('3');
 		});
 
@@ -176,32 +193,25 @@ describe('Header', () => {
 
 	describe('when menu button clicked', () => {
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('updates the store', async () => {
-			const element = await setup({ mobile: false }, false);
+			const state = {
+				mainMenu: {
+					open: false
+				},
+			};
+
+			const element = await setup(state);
+
 			expect(store.getState().mainMenu.open).toBe(false);
-			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
-			expect(store.getState().mainMenu.open).toBe(true);
-			element.shadowRoot.querySelector('.header__button-container button:first-child').click();
+			element.shadowRoot.querySelector('button.close-menu').click();
 			expect(store.getState().mainMenu.open).toBe(true);
 		});
 	});
 
-	describe('when Modalbutton is clicked', () => {
-
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
+	describe('when modal button is clicked', () => {
 
 		it('shows a modal window with the showcase', async () => {
-			const element = await setup({ mobile: false });
+			const element = await setup();
 
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
@@ -212,12 +222,6 @@ describe('Header', () => {
 	});
 
 	describe('when menu button is clicked', () => {
-
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
 
 		it('click button Theme', async () => {
 			const element = await setup();
@@ -244,7 +248,7 @@ describe('Header', () => {
 		});
 
 		it('updates the store', async () => {
-			const element = await setup({ mobile: false }, false);
+			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
 			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
@@ -256,15 +260,13 @@ describe('Header', () => {
 	});
 
 	describe('input for search queries', () => {
-		
+
 		describe('when input changes', () => {
 
 			it('updates the store', async () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
+
 				const element = await setup();
-				
+
 				const inputElement = element.shadowRoot.querySelector('#input');
 				inputElement.value = 'foo';
 				inputElement.dispatchEvent(new Event('input'));
@@ -273,11 +275,13 @@ describe('Header', () => {
 			});
 
 			it('opens the main menu', async () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-				const element = await setup({}, false) ;
-				
+				const state = {
+					mainMenu: {
+						open: false
+					},
+				};
+				const element = await setup(state);
+
 				expect(store.getState().mainMenu.open).toBeFalse();
 
 				const inputElement = element.shadowRoot.querySelector('#input');
@@ -287,59 +291,168 @@ describe('Header', () => {
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 		});
-		
+
 		describe('when input is focused or blurred ', () => {
 
+			it('disables/enables the \'observeResponsiveParameter\' property', async () => {
+				const state = {
+					mainMenu: {
+						open: false
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					},
+				};
+				const element = await setup(state);
+				const input = element.shadowRoot.querySelector('#input');
+
+				input.focus();
+
+				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
+
+				input.blur();
+
+				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
+			});
+
 			describe('in portrait mode', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
 				it('opens the main menu when input has content', async () => {
-					spyOn(windowMock, 'matchMedia')
-						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-	
-					const element = await setup({}, false) ;
-					const input = 	element.shadowRoot.querySelector('#input');
-					
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: true,
+							minWidth: true
+						},
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+
 					input.focus();
-	
+
 					expect(store.getState().mainMenu.open).toBeFalse();
-	
+
 					input.blur();
 					input.value = 'foo';
 					input.focus();
-	
+
 					expect(store.getState().mainMenu.open).toBeTrue();
+				});
+
+				it('hides/shows the mobile header', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: true,
+							minWidth: true
+						},
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+
+					input.focus();
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+
+					input.blur();
+
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+				});
+			});
+
+
+			describe('min-width < 80em', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
+				it('hides/shows the mobile header', async () => {
+					const state = {
+						mainMenu: {
+							open: false
+						},
+						media: {
+							portrait: false,
+							minWidth: false
+						},
+					};
+					const element = await setup(state);
+					const input = element.shadowRoot.querySelector('#input');
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+
+					input.focus();
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+
+					input.blur();
+
+					jasmine.clock().tick(300 + 100);
+
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 				});
 			});
 
 
 			it('sets the correct tab index for the search-content-panel', async () => {
-				spyOn(windowMock, 'matchMedia')
-					.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-					.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-
-				const element = await setup();
+				const state = {
+					mainMenu: {
+						open: false
+					},
+					media: {
+						portrait: true,
+						minWidth: true
+					},
+				};
+				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
 				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
 			});
-			
+
 			describe('in portrait mode and min-width < 80em', () => {
 
 				beforeEach(function () {
 					jasmine.clock().install();
 				});
-	
+
 				afterEach(function () {
 					jasmine.clock().uninstall();
 				});
 
 				it('hide mobile header and show again', async () => {
-					const matchMediaSpy = spyOn(windowMock, 'matchMedia')
-						.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
-						.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(false));
-	
-					const element = await setup();
-	
+					const state = {
+
+						media: {
+							portrait: true,
+							minWidth: false
+						},
+					};
+
+					const element = await setup(state);
+
 					const container = element.shadowRoot.querySelector('#headerMobile');
 					expect(window.getComputedStyle(container).display).toBe('block');
 					expect(window.getComputedStyle(container).opacity).toBe('1');
@@ -356,24 +469,56 @@ describe('Header', () => {
 					 * --> So we have to test for 'style' here
 					 */
 					expect(container.style.opacity).toBe('1');
-	
-					expect(matchMediaSpy).toHaveBeenCalledTimes(2);
+				});
+			});
+
+			describe('in landscape mode and min-width < 80em', () => {
+
+				beforeEach(function () {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
+				it('hide mobile header and show again', async () => {
+					const state = {
+						
+						media: {
+							portrait: false,
+							minWidth: false
+						},
+					};
+
+					const element = await setup(state);
+
+					const container = element.shadowRoot.querySelector('#headerMobile');
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('1');
+					element.shadowRoot.querySelector('#input').focus();
+					expect(window.getComputedStyle(container).display).toBe('none');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					element.shadowRoot.querySelector('#input').blur();
+					expect(window.getComputedStyle(container).display).toBe('block');
+					expect(window.getComputedStyle(container).opacity).toBe('0');
+					jasmine.clock().tick(800);
+					/**
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
+					expect(container.style.opacity).toBe('1');
 				});
 			});
 		});
-	
+
 	});
 
 	describe('when network fetching state changes', () => {
 
-		beforeEach(function () {
-			spyOn(windowMock, 'matchMedia')
-				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
-				.withArgs('(min-width: 80em)').and.returnValue(TestUtils.newMediaQueryList(true));
-		});
-
 		it('runs or pauses the border animation class', async () => {
-			const element = await setup({ mobile: false }, false);
+			const element = await setup();
 			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 			setFetching(true);
 			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();

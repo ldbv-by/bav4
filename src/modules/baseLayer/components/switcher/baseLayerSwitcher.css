@@ -39,7 +39,7 @@
     padding: .3em;
     position: absolute;
     background: var(--primary-bg-color-05);
-    color: var(--color);
+    color: var(--text1);
     opacity: 1;
     z-index: 1;
     text-align: center;
@@ -53,7 +53,7 @@
 .baselayer__button[type="primary"] .baselayer__label{
     display: block;
     background: var(--primary-color);
-    color: var(--text-default-color);
+    color: var(--text3);
 }
 .baselayer__button[type="primary"] .baselayer__label:after{
     display: block;

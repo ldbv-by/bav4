@@ -29,26 +29,46 @@
    width: 1.5em;
    height: 4.5em;
    border: 0;
-   left: 28em;
+   left: 40em;
    top: 9.5em;
    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+
+
+   width: 9.5em;
+   height: 2.5em;
+   left: 29em;
+   top: 7.5em;
+   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+   text-align: left;
+   border-radius: 2em;
+   padding: 0 1em;
+
+   transition-property: left;
+   transition-duration: 0.3s;
+   transition-delay: 0.3s;
+
 }
 .is-open .main-menu__close-button {           
-   left: 28em;
+   left: -15em;
+   transition-delay: 0s;
+   transition-duration: 0s;
 }
 .arrow {
    position: absolute;
    width: 0;
    height: 0;
-   top: 1.8em;
-   left: 0.5em;       
+   top: 0.8em;
+   left: 8em;     
    border-width: .5em;
    border-style: solid;
-   border-color: transparent transparent transparent gray;
+   border-color: transparent transparent transparent var(--text2);
    opacity: .8;
 }
 .main-menu__close-button:hover .arrow{
    opacity: 1;
+}
+.main-menu__close-button-text{
+   display:block;
 }
 .is-open .arrow {    
    left: 0;       
@@ -64,7 +84,7 @@
    top: 8.5em;
 }
 .is-tablet .main-menu__close-button {              
-   top: 8.5em;
+   top: 5em;
    }
 
 /*portrait */
@@ -88,6 +108,9 @@
    margin-left: -2em;
    height: 2.5em;
    }
+.is-portrait .main-menu__close-button-text{
+   display:none;
+}
 .is-portrait .arrow {
    position: absolute;
    width: 0;
@@ -96,7 +119,7 @@
    left: 1.5em;
    border-width: .5em;
    border-style: solid;
-   border-color: gray transparent transparent transparent;
+   border-color: var(--text2) transparent transparent transparent;
 }
 .is-portrait .is-open {
    transform: translate(0, 65vh);
@@ -218,10 +241,17 @@
 }
 .ba-list-item__secondary-text{
    font-size: .95rem;
-   color: gray;
+   color: var(--text2);
 
 }
 
 .divider {
    border-bottom: 1px solid var(--header-background-color);
 }
+
+.prevent-transition * {
+   -webkit-transition: none !important;
+   -moz-transition: none !important;
+   -ms-transition: none !important;
+   -o-transition: none !important;
+ }
