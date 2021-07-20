@@ -462,11 +462,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach(f => saveManualOverlayPosition(f));
+		features.forEach(f => saveManualOverlayPosition(f));	
+		
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');		
+		const { measurement } = this._storeService.getStore().getState();
 		if (newContent) {
 			this._storedContent = newContent;
-			const { measurement } = this._storeService.getStore().getState();
+			
 			if (measurement.fileSaveResult) {
 				try {
 					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
@@ -487,7 +489,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			}
 		}
 		else {		
-			setFileSaveResult(null);
+			if (measurement.fileSaveResult) {
+				//throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
+				setFileSaveResult(null);
+			}
 		}
 		
 	}
