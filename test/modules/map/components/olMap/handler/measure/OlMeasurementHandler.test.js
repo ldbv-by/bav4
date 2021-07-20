@@ -836,7 +836,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		describe('debouncing takes place', () => {
-
+			const afterDebounceDelay = OlMeasurementHandler.Debounce_Delay + 100;
 			beforeEach(function () {
 				jasmine.clock().install();
 			});
@@ -858,7 +858,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				feature.getGeometry().dispatchEvent('change');			// -> first call of debounced _save, caused by vectorsource:changefeature-event
-				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
+				jasmine.clock().tick(afterDebounceDelay);
 
 
 				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
@@ -880,7 +880,7 @@ describe('OlMeasurementHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
 				classUnderTest._vectorLayer.getSource().removeFeature(feature);			// -> first call of debounced _save, caused by vectorsource:removefeature-event
-				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay + 100);
+				jasmine.clock().tick(afterDebounceDelay);
 
 				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 				expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -904,7 +904,7 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
-				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
+				jasmine.clock().tick(afterDebounceDelay);
 
 				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 				expect(saveSpy).toHaveBeenCalledTimes(2);
