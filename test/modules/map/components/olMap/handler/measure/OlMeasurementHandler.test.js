@@ -67,8 +67,11 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	const fileStorageServiceMock = {
-		async save() {
-			return { fileId: 'saveFooBarBazId' };
+		async save(adminId, content, format) {			
+			if (adminId) {
+				return Promise.resolve({ fileId: 'f_' + adminId + '_' + format });
+			}
+			return Promise.resolve({ fileId: 'f_' + format + '_' + content });
 		},
 		isFileId(id) {
 			return id.startsWith('f_');
@@ -458,7 +461,6 @@ describe('OlMeasurementHandler', () => {
 
 		const createFeature = () => {
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-			//feature.set('foo', 'bar');
 			return feature;
 		};
 
@@ -467,7 +469,7 @@ describe('OlMeasurementHandler', () => {
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const feature = createFeature();
+			const feature = createFeature();			
 			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooId', adminId: 'barBazId' }));
 
 			classUnderTest.activate(map);
@@ -501,7 +503,7 @@ describe('OlMeasurementHandler', () => {
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const feature = createFeature();
+			const feature = createFeature();			
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
@@ -527,7 +529,7 @@ describe('OlMeasurementHandler', () => {
 			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const feature = createFeature();
+			const feature = createFeature();			
 			const warnSpy = spyOn(console, 'warn');
 			spyOn(fileStorageServiceMock, 'save').and.returnValue(
 				Promise.reject(new Error('42'))
@@ -550,14 +552,11 @@ describe('OlMeasurementHandler', () => {
 		it('adds no layer when empty', (done) => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			const feature = createFeature();
+			const map = setupMap();			
 			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 			classUnderTest.deactivate(map);
 
 			setTimeout(() => {
@@ -620,7 +619,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap(15);
 			const geometry = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry: geometry });
-
+			
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
@@ -638,7 +637,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
-
+			
 			classUnderTest.activate(map);
 			const updateSpy = spyOn(classUnderTest._overlayService, 'update').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -656,7 +655,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const geometry = new LineString([[0, 0], [1, 0]]);
 			const feature = new Feature({ geometry: geometry });
-
+			
 			classUnderTest.activate(map);
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -692,7 +691,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
-
+			
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
@@ -710,7 +709,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
-
+			
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
@@ -784,7 +783,6 @@ describe('OlMeasurementHandler', () => {
 		it('removes drawn feature if keypressed', (done) => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			classUnderTest._removeSelectedFeatures = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
 			const map = setupMap();
 			const deleteKeyCode = 46;
 
@@ -792,9 +790,10 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
+			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {});
+			
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);			
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
@@ -802,8 +801,7 @@ describe('OlMeasurementHandler', () => {
 
 
 			setTimeout(() => {
-				expect(classUnderTest._removeSelectedFeatures).toHaveBeenCalled();
-				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
+				expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
 				done();
 			});
 		});
@@ -853,15 +851,40 @@ describe('OlMeasurementHandler', () => {
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 				);
+				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
-				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
+				feature.getGeometry().dispatchEvent('change');			// -> first call of debounced _save, caused by vectorsource:changefeature-event
 				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
 
+
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 				expect(saveSpy).toHaveBeenCalledTimes(2);
+			});
+
+			it('stores twice after a feature removed', async () => {
+				const store = setup();
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
+					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
+				);
+				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
+				const geometry = new LineString([[0, 0], [1, 0]]);				
+				const feature = new Feature({ geometry: geometry });
+				feature.set('debug', 'stores twice after a feature removed');
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				classUnderTest._vectorLayer.getSource().removeFeature(feature);			// -> first call of debounced _save, caused by vectorsource:removefeature-event
+				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay + 100);
+
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(saveSpy).toHaveBeenCalledTimes(1);
+				expect(store.getState().measurement.fileSaveResult).toBeNull();
 			});
 
 			it('stores only twice after multiple changes of a feature', async () => {
@@ -871,6 +894,7 @@ describe('OlMeasurementHandler', () => {
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 				);
+				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -882,6 +906,7 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
 
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
 				expect(saveSpy).toHaveBeenCalledTimes(2);
 			});
 		});
@@ -895,7 +920,7 @@ describe('OlMeasurementHandler', () => {
 				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 			);
 			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
+			const feature = new Feature({ geometry: geometry });			
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);

@@ -490,7 +490,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		else {		
 			if (measurement.fileSaveResult) {
-				//throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
+				//DEBUG:throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
 				setFileSaveResult(null);
 			}
 		}
