@@ -136,7 +136,6 @@ describe('ShareToolContent', () => {
 
 					setTimeout(() => {
 						expect(warnSpy).toHaveBeenCalledWith('ShareAPI not available: Error: ' + mockErrorMsg);
-						expect(shareButton.classList).toContain('disabled_tool__button');
 						done();
 					});
 				});

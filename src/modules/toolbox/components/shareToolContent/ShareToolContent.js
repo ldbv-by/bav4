@@ -122,14 +122,12 @@ export class ShareToolContent extends AbstractToolContent {
 								await this._window.navigator.share(shareData);
 							}
 							catch (e) {
-								this._root.getElementById(tool.name).classList.add('disabled_tool__button');
 								console.warn('ShareAPI not available: ' + e);
 							}
 						};
 					}
 					else {
 						return async () => {
-							this.shadowRoot.getElementById(tool.name).classList.add('disabled_tool__button');
 							const shortUrl = await this._generateShortUrl();
 							const title = translate('toolbox_shareTool_share');
 							const content = html`<ba-sharetool-dialog .shareUrl=${shortUrl}></ba-sharetool-dialog>`;
