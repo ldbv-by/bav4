@@ -1,12 +1,13 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
 describe('DrawToolContent', () => {
-
+	let store;
 	const windowMock = {
 		matchMedia() { }
 	};
@@ -21,7 +22,7 @@ describe('DrawToolContent', () => {
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, {} );
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer } );
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -52,7 +53,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
 
-		it('activates a tool', async() => {
+		it('activates the Line draw tool', async() => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
@@ -62,6 +63,46 @@ describe('DrawToolContent', () => {
 
 			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.type).toBe('Line');
+		});
+
+		it('activates the Symbol draw tool', async() => {
+
+			const element = await setup();
+			const spy = spyOn(element, '_setActiveTool').and.callThrough();
+			const toolButton = element.shadowRoot.querySelector('#symbol');
+
+			toolButton.click();
+
+			expect(spy).toHaveBeenCalled();
+			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.type).toBe('Symbol');
+		});
+
+		it('activates the Text draw tool', async() => {
+
+			const element = await setup();
+			const spy = spyOn(element, '_setActiveTool').and.callThrough();
+			const toolButton = element.shadowRoot.querySelector('#text');
+
+			toolButton.click();
+
+			expect(spy).toHaveBeenCalled();
+			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.type).toBe('Text');
+		});
+
+		it('activates the Polygon draw tool', async() => {
+
+			const element = await setup();
+			const spy = spyOn(element, '_setActiveTool').and.callThrough();
+			const toolButton = element.shadowRoot.querySelector('#polygon');
+
+			toolButton.click();
+
+			expect(spy).toHaveBeenCalled();
+			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.type).toBe('Polygon');
 		});
 
 		it('deactivates last tool, when activate another', async() => {
@@ -70,7 +111,6 @@ describe('DrawToolContent', () => {
 				name:'polygon', 
 				active:true, 
 				activate:jasmine.createSpy(),
-				deactivate:jasmine.createSpy()
 			};
 			element._activeTool = lastTool;
 			const lastButton = element.shadowRoot.querySelector('#polygon');
@@ -80,7 +120,6 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(lastTool.active).toBeFalse();
-			expect(lastTool.deactivate).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(lastButton.classList.contains('is-active')).toBeFalse();
 		});

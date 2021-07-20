@@ -30,41 +30,35 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
-			activate: () =>
-				setType('Symbol'),
-			deactivate: () => { },
+			activate: () => setType('Symbol'),
 		}, {
 			id: 2,
 			name: 'text',
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
-			activate: () => setType('Text'),
-			deactivate: () => { },
+			activate: () => setType('Text')
 		}, {
 			id: 3,
 			name: 'line',
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
-			activate: () => setType('Line'),
-			deactivate: () => { },
+			activate: () => setType('Line')
 		}, {
 			id: 4,
 			name: 'polygon',
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => setType('Polygon'),
-			deactivate: () => { },
+			activate: () => setType('Polygon')			
 		}];
 	}
 
 	_setActiveTool(tool) {
 		if (this._activeTool) {
 			if (this._activeTool !== tool) {
-				this._activeTool.active = false;
-				this._activeTool.deactivate();
+				this._activeTool.active = false;				
 				this._showActive();
 			}
 		}
@@ -88,14 +82,11 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
-			const toggle = () => {
+			const toggle = () => {				
+				tool.active = !tool.active;
 				if (tool.active) {
-					tool.deactivate();
-				}
-				else {
 					tool.activate();
 				}
-				tool.active = !tool.active;
 				this._setActiveTool(tool);
 			};
 
