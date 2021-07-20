@@ -6,7 +6,6 @@ import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
-import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 
@@ -154,17 +153,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 	_createSelect() {
-		const layerFilter = (itemLayer) => {
-			itemLayer === this._vectorLayer;
-		};
-		const featureFilter = (itemFeature, itemLayer) => {
-			if (layerFilter(itemLayer)) {
-				return itemFeature;
-			}
-		};
+		// TODO: implement layerFilter
+		// TODO: implement featureFilter		
 		const options = {
-			layers: layerFilter,
-			filter: featureFilter,
 			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
 		};
 		const select = new Select(options);
@@ -174,13 +165,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
+		// TODO: implement deleteContition
 		const options = {
 			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && singleClick(event));
-				return isDeletable;
-			}
+			style: modifyStyleFunction,			
 		};
 
 		const modify = new Modify(options);
@@ -232,20 +220,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_remove() {
-		const activeDraw = this._getActiveDraw();
-		if (activeDraw) {
-			activeDraw.removeLastPoint();
-			if (this._pointCount === 1) {
-				this._startNew();
-			}
-			if (this._lastPointerMoveEvent) {
-				activeDraw.handleEvent(this._lastPointerMoveEvent);
-			}
-		}
-
-		if (this._modify && this._modify.getActive()) {
-			this._removeSelectedFeatures();
-		}
+		// TODO: Implement logic for removing feature or part of feature
 	}
 
 	_finish() {
@@ -263,10 +238,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_startNew() {
 		const activeDraw = this._getActiveDraw();
 		if (activeDraw) {
-			if (activeDraw.getActive()) {
-				activeDraw.abortDrawing();
-			}
-			activeDraw.setActive(true);
+			activeDraw.abortDrawing();
 			this._select.getFeatures().clear();
 			this._modify.setActive(false);
 		}
@@ -281,15 +253,14 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.remove, () => this._remove())];
 	}
 
-	_getActiveDraw() {
-		if (this._drawTypes) {
-			// eslint-disable-next-line no-unused-vars
-			for (const [key, draw] of Object.entries(this._drawTypes)) {
-				if (draw.getActive()) {
-					return draw;
-				}
+	_getActiveDraw() {		
+		// eslint-disable-next-line no-unused-vars
+		for (const [key, draw] of Object.entries(this._drawTypes)) {
+			if (draw.getActive()) {
+				return draw;
 			}
 		}
+		
 		return null;
 	}
 

@@ -408,30 +408,6 @@ describe('OlDrawHandler', () => {
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(classUnderTest._modify.getActive()).toBeTrue();
 			});
-
-			it('removes last point after remove-request for a line', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-				const removeSpy = spyOn(classUnderTest, '_remove').and.callThrough();
-				const geometry = new LineString([[0, 0], [1, 0]]);
-				const feature = new Feature({ geometry: geometry });
-
-				classUnderTest.activate(map);
-
-
-				const draw = classUnderTest._drawTypes['Line'];
-				const removeLastPointSpy = spyOn(draw, 'removeLastPoint').and.callThrough();
-				setType('Line');
-				expect(classUnderTest._drawTypes['Line'].getActive()).toBeTrue();
-
-				simulateDrawEvent('drawstart', classUnderTest._drawTypes['Line'], feature);
-				remove();
-
-				expect(removeSpy).toHaveBeenCalled();
-				expect(removeLastPointSpy).toHaveBeenCalled();
-			});
 		});
 
 	});
@@ -528,8 +504,12 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			classUnderTest._modify.setActive(true);
-			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
 
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
+			expect(mapContainer.classList.contains('grabbing')).toBeFalse();
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+			expect(mapContainer.classList.contains('grabbing')).toBeTrue();
+			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERDOWN)));
 			expect(mapContainer.classList.contains('grabbing')).toBeTrue();
 			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
 			expect(mapContainer.classList.contains('grabbing')).toBeFalse();
