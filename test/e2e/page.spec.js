@@ -22,7 +22,8 @@ test.describe('page', () => {
 		});
 
 		test('should have a viewport meta tag', async ({ page }) => {
-			expect(await page.getAttribute('head > meta[name=\'viewport\']', 'content')).toBe('width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+			const content = await page.getAttribute('head > meta[name=\'viewport\']', 'content');
+			expect(content.replace(/\s+/g, '')).toBe('width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0');
 		});
 
 		test('should have a charset meta tag', async ({ page }) => {
