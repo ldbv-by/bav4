@@ -102,11 +102,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
+			const translate = (key) => this._translationService.translate(key);
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: this._styleService.getStyleFunction(StyleTypes.MEASURE),
+				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
 			});
+			layer.label = translate('map_olMap_handler_measure_layer_label');
 			return layer;
 		};
 
@@ -462,13 +464,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach(f => saveManualOverlayPosition(f));	
-		
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');		
+		features.forEach(f => saveManualOverlayPosition(f));
+
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		const { measurement } = this._storeService.getStore().getState();
 		if (newContent) {
 			this._storedContent = newContent;
-			
+
 			if (measurement.fileSaveResult) {
 				try {
 					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
@@ -488,13 +490,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 		}
-		else {		
+		else {
 			if (measurement.fileSaveResult) {
 				//DEBUG:throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
 				setFileSaveResult(null);
 			}
 		}
-		
+
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
@@ -716,7 +718,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getLastFileSaveResult() {
 		const { measurement } = this._storeService.getStore().getState();
 		return measurement.fileSaveResult;
-	}	
+	}
 
 	_isValidFileSaveResult(fileSaveResult) {
 		if (fileSaveResult == null) {
