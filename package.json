@@ -55,7 +55,7 @@
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:webkit": "karma start --single-run --browsers Epiphany",
     "test:gha": "karma start karma.conf.gha.js --single-run --browsers GhaHeadlessChrome",
-    "e2e": "npx playwright test --browser=all",
+    "e2e": "env URL=$npm_config_url npx playwright test --browser=all",
     "es-check": "es-check --module es9 \"./src/**/*.js\"",
     "analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
