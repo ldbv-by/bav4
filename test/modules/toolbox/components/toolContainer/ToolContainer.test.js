@@ -71,7 +71,7 @@ describe('ToolContainer', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			toolContainer: toolContainerReducer,
 			measurement: measurementReducer,
-			draw:drawReducer,
+			draw: drawReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 
@@ -161,7 +161,7 @@ describe('ToolContainer', () => {
 		it('deactivates draw, when tool-content is switching from draw-tool-content', async () => {
 			const element = await setup();
 
-			setContainerContent('ba-tool-draw-content');		
+			setContainerContent('ba-tool-draw-content');
 			toggleToolContainer();
 			expect(store.getState().draw.active).toBeTrue();
 			setContainerContent('ba-tool-measure-content');

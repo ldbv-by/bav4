@@ -11,7 +11,7 @@ import { observe } from '../../../../../../utils/storeUtils';
 
 /**
  * Handler for draw-interaction with the map
- * 
+ *
  * @class
  * @author thiloSchlemmer
  */
@@ -89,7 +89,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	// eslint-disable-next-line no-unused-vars
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
-		//olLayer currently undefined, will be fixed later				
+		//olLayer currently undefined, will be fixed later
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
@@ -154,7 +154,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_createSelect() {
 		// TODO: implement layerFilter
-		// TODO: implement featureFilter		
+		// TODO: implement featureFilter
 		const options = {
 			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
 		};
@@ -168,7 +168,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		// TODO: implement deleteContition
 		const options = {
 			features: this._select.getFeatures(),
-			style: modifyStyleFunction,			
+			style: modifyStyleFunction,
 		};
 
 		const modify = new Modify(options);
@@ -253,14 +253,14 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.remove, () => this._remove())];
 	}
 
-	_getActiveDraw() {		
+	_getActiveDraw() {
 		// eslint-disable-next-line no-unused-vars
 		for (const [key, draw] of Object.entries(this._drawTypes)) {
 			if (draw.getActive()) {
 				return draw;
 			}
 		}
-		
+
 		return null;
 	}
 

@@ -163,7 +163,7 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw (4x), modify,snap, dragPan				
+				// adds Interaction for select, draw (4x), modify,snap, dragPan
 				expect(map.addInteraction).toHaveBeenCalledTimes(8);
 			});
 
