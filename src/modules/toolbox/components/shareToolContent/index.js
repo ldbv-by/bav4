@@ -1,5 +1,5 @@
 import { ShareToolContent } from './ShareToolContent';
-import { ShareToolDialog } from './ShareToolDialog'; 
+import { ShareToolDialog } from './ShareToolDialog';
 
 if (!window.customElements.get(ShareToolContent.tag)) {
 	window.customElements.define(ShareToolContent.tag, ShareToolContent);

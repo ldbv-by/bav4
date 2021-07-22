@@ -5,8 +5,8 @@ import { $injector } from '../../../../injection';
 
 /**
  * Button that opens an info popup
- * @class 
- *@author bakir_en  
+ * @class
+ *@author bakir_en
  */
 
 export class InfoButton extends BaElement {
@@ -14,11 +14,11 @@ export class InfoButton extends BaElement {
 	constructor() {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;  
-	} 
+		this._translationService = TranslationService;
+	}
 
 	/**
-     *@override 
+     *@override
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
@@ -28,19 +28,19 @@ export class InfoButton extends BaElement {
 			{ name: translate('map_infoButton_contact'), url: 'https://www.ldbv.bayern.de/service/kontakt.html' },
 			{ name: translate('map_infoButton_about'), url: 'https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' }
 		];
-		
-		const togglePopup = () => {			
+
+		const togglePopup = () => {
 			// open/close popup on info button click
-			const popup = this.shadowRoot.getElementById('info-popup'); 
+			const popup = this.shadowRoot.getElementById('info-popup');
 			popup.isOpen() ? popup.closePopup() : popup.openPopup();
 		};
-		
+
 		window.onresize = () => {
 			const popup = this.shadowRoot.getElementById('info-popup');
 			if (popup.isOpen()) {
 				this.shadowRoot.getElementById('info-popup').closePopup();
-			}			
-		}; 
+			}
+		};
 
 		return html`
             <style>${css}</style>
@@ -60,7 +60,7 @@ export class InfoButton extends BaElement {
             </ba-popup>
             
         `;
-	} 
+	}
 
 	extractState(globalState) {
 		const { position: { zoom, center } } = globalState;
@@ -73,5 +73,5 @@ export class InfoButton extends BaElement {
 
 	static get tag() {
 		return 'ba-info-button';
-	} 
-} 
+	}
+}

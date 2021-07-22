@@ -12,7 +12,7 @@ export const mapContextMenuReducer = (state = initialState, action) => {
 			return {
 				...state,
 				coordinate: payload.coordinate,
-				id: payload.id,
+				id: payload.id
 			};
 		}
 	}

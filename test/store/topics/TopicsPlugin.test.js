@@ -85,8 +85,8 @@ describe('TopicsPlugin', () => {
 
 	describe('_addTopicFromConfig', () => {
 
-		it('initializes the topics service and update the store', async() => {
-			
+		it('initializes the topics service and update the store', async () => {
+
 			const store = setup();
 			const topicId = 'someId';
 			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
@@ -102,7 +102,7 @@ describe('TopicsPlugin', () => {
 	describe('_addTopicFromQueryParams', () => {
 
 		it('updates current topic', () => {
-			
+
 			const store = setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
@@ -117,7 +117,7 @@ describe('TopicsPlugin', () => {
 		});
 
 		it('updates current topic by calling #_addTopicFromConfig as fallback', () => {
-			
+
 			setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;

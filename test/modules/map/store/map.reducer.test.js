@@ -28,23 +28,23 @@ describe('mapReducer', () => {
 
 	it('changes the \'moveend\' property', () => {
 		const store = setup();
-		
+
 		setMoveEnd();
 
 		expect(store.getState().map.moveEnd.payload).toEqual('moveend');
 	});
 
-	
+
 
 	it('changes the \'beingMoved\' property', () => {
 		const store = setup();
 
 		setBeingMoved(true);
-		
+
 		expect(store.getState().map.beingMoved).toBeTrue();
-		
+
 		setBeingMoved(false);
-		
+
 		expect(store.getState().map.beingMoved).toBeFalse();
 	});
 });

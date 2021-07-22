@@ -148,23 +148,23 @@ describe('Header', () => {
 
 		it('adds header bar', async () => {
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-			
+
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
-			
+
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[0].innerText).toBe('header_tab_maps_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('1');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].classList.contains('is-active')).toBeFalse();
-			
+
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_more_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 		});
-		
+
 		it('adds a close button', async () => {
 			const element = await setup();
 
@@ -182,7 +182,7 @@ describe('Header', () => {
 			const state = {
 				layers: {
 					active: ['test', 'test', 'test']
-				},
+				}
 			};
 			const element = await setup(state);
 
@@ -197,7 +197,7 @@ describe('Header', () => {
 			const state = {
 				mainMenu: {
 					open: false
-				},
+				}
 			};
 
 			const element = await setup(state);
@@ -278,7 +278,7 @@ describe('Header', () => {
 				const state = {
 					mainMenu: {
 						open: false
-					},
+					}
 				};
 				const element = await setup(state);
 
@@ -302,7 +302,7 @@ describe('Header', () => {
 					media: {
 						portrait: true,
 						minWidth: true
-					},
+					}
 				};
 				const element = await setup(state);
 				const input = element.shadowRoot.querySelector('#input');
@@ -334,7 +334,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: true
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -358,7 +358,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: true
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -396,7 +396,7 @@ describe('Header', () => {
 						media: {
 							portrait: false,
 							minWidth: false
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -424,7 +424,7 @@ describe('Header', () => {
 					media: {
 						portrait: true,
 						minWidth: true
-					},
+					}
 				};
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
@@ -448,7 +448,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: false
-						},
+						}
 					};
 
 					const element = await setup(state);
@@ -484,11 +484,11 @@ describe('Header', () => {
 
 				it('hide mobile header and show again', async () => {
 					const state = {
-						
+
 						media: {
 							portrait: false,
 							minWidth: false
-						},
+						}
 					};
 
 					const element = await setup(state);

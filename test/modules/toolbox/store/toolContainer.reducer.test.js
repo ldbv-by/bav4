@@ -29,7 +29,7 @@ describe('toolContainerReducer', () => {
 		});
 
 		it('sets false', () => {
-			const store = setup({ toolContainer: { open: true, contentId:'foo' } });
+			const store = setup({ toolContainer: { open: true, contentId: 'foo' } });
 
 			expect(store.getState().toolContainer.open).toBeTrue();
 

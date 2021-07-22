@@ -13,8 +13,8 @@ import { $injector } from '../../injection';
 
 /**
  * @function
- * @param {number} srid 
- * @param {object} options 
+ * @param {number} srid
+ * @param {object} options
  * @returns {stringifyCoordProvider}
  */
 export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
@@ -23,8 +23,8 @@ export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
 
 /**
  * @function
- * @param {number} srid 
- * @param {object} options 
+ * @param {number} srid
+ * @param {object} options
  * @returns {stringifyCoordProvider}
  */
 export const bvvStringifyFunction = (srid, options = {}) => {

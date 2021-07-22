@@ -10,7 +10,7 @@ export class ShareService {
 
 	/**
 	 * @public
-	 * @param {string} textToCopy 
+	 * @param {string} textToCopy
 	 * @returns {Promise<undefined> | Promise.reject}
 	 */
 	async copyToClipboard(textToCopy) {
@@ -41,7 +41,7 @@ export class ShareService {
 
 	/**
 	 * Encodes the current state to an url.
-	 * @param {object} extraParams Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array. 
+	 * @param {object} extraParams Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
 	 * @returns {string} url
 	 */
@@ -67,7 +67,7 @@ export class ShareService {
 		const {
 			StoreService: storeService,
 			CoordinateService: coordinateService,
-			MapService: mapService,
+			MapService: mapService
 		} = $injector.inject('StoreService', 'CoordinateService', 'MapService');
 
 		const state = storeService.getStore().getState();
@@ -105,7 +105,7 @@ export class ShareService {
 	*/
 	_extractLayers() {
 		const {
-			StoreService: storeService,
+			StoreService: storeService
 		} = $injector.inject('StoreService');
 
 		const state = storeService.getStore().getState();
@@ -117,7 +117,7 @@ export class ShareService {
 		let layer_visibility = [];
 		let layer_opacity = [];
 		activeLayers
-			.filter(l => !l.constraints.hidden)	
+			.filter(l => !l.constraints.hidden)
 			.forEach(l => {
 				layer.push(l.id);
 				layer_visibility.push(l.visible);
@@ -148,7 +148,7 @@ export class ShareService {
 	 */
 	_extractTopic() {
 		const {
-			StoreService: storeService,
+			StoreService: storeService
 		} = $injector.inject('StoreService');
 
 		const state = storeService.getStore().getState();

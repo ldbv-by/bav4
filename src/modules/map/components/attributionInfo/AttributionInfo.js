@@ -1,4 +1,4 @@
-import { html } from 'lit-html'; 
+import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -7,7 +7,7 @@ import css from './attributionInfo.css';
 /**
  * a class for displaying the attribution of the basemap
  * @class
- * @author bakir_en 
+ * @author bakir_en
  */
 export class AttributionInfo extends BaElement {
 
@@ -17,43 +17,43 @@ export class AttributionInfo extends BaElement {
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
 		this._isOpen = false;
-	} 
+	}
 
 
 	/**
-     * @override 
+     * @override
      */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = state;
 
-		const attributionsRaw = new Array(); 
+		const attributionsRaw = new Array();
 
-		for (const layer of active)  {
+		for (const layer of active) {
 			if (!layer.visible) {
 				continue;
-			} 
-			
+			}
+
 			const geoResource = this._georesourceService.byId(layer.id);
 
 			if (!geoResource) {
 				continue;
-			} 
+			}
 
 			attributionsRaw.push(geoResource.getAttribution(zoom));
 		}
-		
-		const toggleOpen = () => {		
+
+		const toggleOpen = () => {
 			this._isOpen = !this._isOpen;
 			this.render();
 		};
 
 		const classes = {
-			isopen:this._isOpen,
+			isopen: this._isOpen
 		};
 
-		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case  
-		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);		
+		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case
+		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);
 
 		const attributionCopyright = [] ;
 
@@ -62,15 +62,15 @@ export class AttributionInfo extends BaElement {
 			if (Array.isArray(attributions[0])) {
 				attribution.forEach((element) => {
 					const separator = index === attributions.length - 1 ? '' : ',';
-					attributionCopyright.push(element.copyright.url  != null ?						
+					attributionCopyright.push(element.copyright.url != null ?
 						html`<a class='attribution attribution-link' target='new' href=${element.copyright.url} >  ${element.copyright.label}${separator}</a>` :
 						html`<span class='attribution' > ${element.copyright.label}${separator}</span>`);
-				}); 
-			}	
+				});
+			}
 		});
 
 		const getCollapseClass = () => {
-			return (attributionCopyright.length > 1 || this._isOpen ) ? 'is-collapse' : '';
+			return (attributionCopyright.length > 1 || this._isOpen) ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {
@@ -87,11 +87,11 @@ export class AttributionInfo extends BaElement {
 				</div>
 			</div>
 			`;
-	} 
+	}
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { layers: { active }, position: { zoom } } = globalState;
@@ -100,5 +100,5 @@ export class AttributionInfo extends BaElement {
 
 	static get tag() {
 		return 'ba-attribution-info';
-	} 
-} 
+	}
+}

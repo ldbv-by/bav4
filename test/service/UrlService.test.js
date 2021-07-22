@@ -36,7 +36,7 @@ describe('UrlService', () => {
 		it('checks if cors is enabled (it is)', async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
-				timeout: 1500,
+				timeout: 1500
 			};
 			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: true
@@ -155,10 +155,10 @@ describe('UrlService', () => {
 
 	describe('qrCode URL', () => {
 
-		it('returns qrCode URL by using a provider',  () => {
+		it('returns qrCode URL by using a provider', () => {
 			const url = 'https://some.url';
 
-			const result =  instanceUnderTest.qrCode(url);
+			const result = instanceUnderTest.qrCode(url);
 
 			expect(result).toBe('https://qrcode/' + url);
 		});

@@ -81,7 +81,7 @@ export class OlMap extends BaElement {
 			interactions: defaultInteractions({
 				//for embedded mode
 				//onFocusOnly: false,
-				pinchRotate: false,
+				pinchRotate: false
 
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()
@@ -161,7 +161,7 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;

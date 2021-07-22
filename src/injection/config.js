@@ -8,11 +8,11 @@ import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
 import { GeoResourceService } from '../services/GeoResourceService';
-import { AltitudeService } from '../services/AltitudeService'; 
+import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
-import { AdministrationService } from  '../services/AdministrationService'; 
+import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
@@ -49,7 +49,7 @@ $injector
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
-	
+
 
 
 export const init = true;

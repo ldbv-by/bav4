@@ -21,7 +21,7 @@ describe('Footer', () => {
 			media: {
 				portrait: false
 			},
-			...state,
+			...state
 		};
 
 		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
@@ -69,7 +69,7 @@ describe('Footer', () => {
 
 		it('removes a preload css class', async () => {
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.querySelectorAll('.preload')).toHaveSize(0);
 		});
 

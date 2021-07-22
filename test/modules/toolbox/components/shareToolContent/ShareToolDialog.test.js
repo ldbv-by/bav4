@@ -8,12 +8,12 @@ describe('ShareToolDialog', () => {
 	let element;
 
 	const windowMock = {
-		matchMedia() { },
+		matchMedia() { }
 	};
 	const shareServiceMock = {
 		copyToClipboard() {
 			return Promise.resolve();
-		},
+		}
 	};
 	const setup = (state = {}, config = {}) => {
 
@@ -32,7 +32,7 @@ describe('ShareToolDialog', () => {
 
 	beforeEach(async () => {
 		element = await setup();
-		element.shareUrl = 'https://mock.url';		
+		element.shareUrl = 'https://mock.url';
 	});
 
 	it('renders the component', () => {
@@ -73,4 +73,4 @@ describe('ShareToolDialog', () => {
 		});
 
 	});
-}); 
+});

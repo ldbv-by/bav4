@@ -14,7 +14,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html';
  * @author taulinger
  */
 export class ShareToolContent extends AbstractToolContent {
-	
+
 	constructor() {
 		super();
 
@@ -65,14 +65,14 @@ export class ShareToolContent extends AbstractToolContent {
 	}
 
 	/**
-	 *@private 
+	 *@private
 	 */
 	_isShareApiAvailable() {
 		return this._window.navigator.share ? true : false;
 	}
 
 	/**
-	 *@private 
+	 *@private
 	 */
 	async _generateShortUrl() {
 		const url = this._shareService.encodeState();
@@ -116,7 +116,7 @@ export class ShareToolContent extends AbstractToolContent {
 
 								const shareData = {
 									title: translate('toolbox_shareTool_title'),
-									url: shortUrl,
+									url: shortUrl
 								};
 
 								await this._window.navigator.share(shareData);

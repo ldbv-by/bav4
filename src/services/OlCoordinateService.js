@@ -12,7 +12,7 @@ import { buffer } from 'ol/extent';
 export class OlCoordinateService {
 
 	/**
-	 * 
+	 *
 	 * @param {proj4Provider} [proj4Provider=loadBvvDefinitions]
 	 * @param {stringifyCoordProvider} [stringifyFunction=bvvStringifyFunction]
 	 */
@@ -23,8 +23,8 @@ export class OlCoordinateService {
 
 
 	/**
-	 * 
-	 * @private 
+	 *
+	 * @private
 	 */
 	static _toEpsgCodeString(srid) {
 		return 'EPSG:' + srid;
@@ -44,7 +44,7 @@ export class OlCoordinateService {
 	/**
 	 * Transforms a coordinate from longitude/latitude to 3857 coordinate
 	 * @public
-	 * @param {Coordinate} coordinate4326 
+	 * @param {Coordinate} coordinate4326
 	 * @returns {Coordinate} coordinate3857
 	 */
 	fromLonLat(coordinate4326) {
@@ -55,7 +55,7 @@ export class OlCoordinateService {
 	 * Transforms an extent from 3857 to longitude/latitude
 	 * @public
 	 * @param {Extent} extent3857
-	 * @returns {Extent} a new extent in 4326  
+	 * @returns {Extent} a new extent in 4326
 	 */
 	toLonLatExtent(extent3857) {
 		return transformExtent(extent3857, 'EPSG:3857', 'EPSG:4326');
@@ -64,8 +64,8 @@ export class OlCoordinateService {
 	/**
 	 * Transforms an extent from longitude/latitude to 3857
 	 * @public
-	 * @param {Extent} extent4326 
-	 * @returns {Extent} a new extent in 3857 
+	 * @param {Extent} extent4326
+	 * @returns {Extent} a new extent in 3857
 	 */
 	fromLonLatExtent(extent4326) {
 		return transformExtent(extent4326, 'EPSG:4326', 'EPSG:3857');
@@ -121,8 +121,8 @@ export class OlCoordinateService {
 	 * Returns an extent increased by the provided value.
 	 * Use only for coordinates in a geodetic SRS.
 	 * @public
-	 * @param {Extent} extend 
-	 * @param {number} value 
+	 * @param {Extent} extend
+	 * @param {number} value
 	 * @returns {Extent} new extent with the applied buffer
 	 */
 	buffer(extend, value) {

@@ -193,7 +193,7 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
 			});
-            
+
 			it('sets position by calling #_setPositionFromConfig as fallback', () => {
 				setup();
 				const instanceUnderTest = new PositionPlugin();

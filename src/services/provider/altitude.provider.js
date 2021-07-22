@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 
 
 /**
- * A function that takes a coordinate and returns a promise with a number. 
+ * A function that takes a coordinate and returns a promise with a number.
  *
  * @typedef {function(coordinate) : (Promise<number>)} altitudeProvider
  */
@@ -30,7 +30,7 @@ export const loadBvvAltitude = async (coordinate3857) => {
 		const altitude = payload.altitude;
 		if (Number.isFinite(altitude)) {
 			return altitude;
-		} 
+		}
 	}
 	throw new Error('Altitude could not be retrieved');
 };

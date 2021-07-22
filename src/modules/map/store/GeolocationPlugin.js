@@ -66,7 +66,7 @@ export class GeolocationPlugin extends BaPlugin {
 
 	_handlePositionAndUpdateStore(position) {
 		const {
-			StoreService: storeService,
+			StoreService: storeService
 		}
 			= $injector.inject('StoreService');
 
@@ -110,10 +110,10 @@ export class GeolocationPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {Store} store 
+	 * @param {Store} store
 	 */
 	async register(store) {
-		
+
 		const onGeolocationActivityChange = (active) => {
 
 			if (active) {

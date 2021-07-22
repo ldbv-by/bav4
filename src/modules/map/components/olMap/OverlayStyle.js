@@ -32,7 +32,7 @@ export class OverlayStyle {
 
 	/**
 	 * @abstract
-	 * @param {ol.feature} olFeature 
+	 * @param {ol.feature} olFeature
 	 * @param {ol.map} olMap
 	 */
 	add(/*eslint-disable no-unused-vars */olFeature, olMap) {
@@ -47,14 +47,14 @@ export class OverlayStyle {
 	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
 	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
 	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
-	
+
 	/**
 	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
 	 * @abstract
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 * @param {ol.Feature} olFeature the feature
-	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
-	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
@@ -63,7 +63,7 @@ export class OverlayStyle {
 	}
 
 	/**
-	 * @param {ol.feature} olFeature 
+	 * @param {ol.feature} olFeature
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {

@@ -5,12 +5,12 @@ describe('AltitudeService', () => {
 
 	const setup = (provider = loadBvvAltitude) => {
 		return new AltitudeService(provider);
-	}; 
+	};
 
 	describe('init', () => {
 
 		it('initializes the service with custom provider', async () => {
-			const customProvider = async () => { }; 
+			const customProvider = async () => { };
 			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._altitudeProvider).toBeDefined();
 			expect(instanceUnderTest._altitudeProvider).toEqual(customProvider);
@@ -23,26 +23,26 @@ describe('AltitudeService', () => {
 
 		it('provides the altitude', async () => {
 			const mockAltitude = 42;
-			const instanceUnderTest = setup( async () => {
+			const instanceUnderTest = setup(async () => {
 				return mockAltitude;
 			});
 
-			const mockCoordinate = [0, 0]; 
+			const mockCoordinate = [0, 0];
 
 			instanceUnderTest.getAltitude(mockCoordinate).then((returnValue) => {
 				expect(returnValue).toEqual(mockAltitude);
 			});
-		}); 
+		});
 	});
 
-	describe('Error handling', () => { 
+	describe('Error handling', () => {
 
 		it('rejects when backend is not available', (done) => {
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Altitude Provider error');
 			});
 
-			const mockCoordinate = [0, 0]; 
+			const mockCoordinate = [0, 0];
 
 			instanceUnderTest.getAltitude(mockCoordinate).then(() => {
 				done(new Error('Promise should not be resolved'));

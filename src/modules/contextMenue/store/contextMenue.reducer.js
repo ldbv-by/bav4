@@ -10,7 +10,7 @@ export const contextMenueReducer = (state = initialState, action) => {
 		case CONTEXT_MENUE_CLICK: {
 			return {
 				...state,
-				data: payload,
+				data: payload
 			};
 		}
 	}

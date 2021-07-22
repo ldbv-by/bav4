@@ -116,7 +116,7 @@ describe('EnvironmentService', () => {
 			let mockWindow = {
 				navigator: {
 					userAgent: 'noop'
-				},
+				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isTouch()).toBeFalse();
@@ -124,7 +124,7 @@ describe('EnvironmentService', () => {
 			mockWindow = {
 				navigator: {
 					userAgent: 'Android'
-				},
+				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isTouch()).toBeTrue();
@@ -138,7 +138,7 @@ describe('EnvironmentService', () => {
 					orientation: {
 						type: 'portrait-primary'
 					}
-				},
+				}
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 			const { portrait, landscape } = instanceUnderTest.getScreenOrientation();
@@ -151,7 +151,7 @@ describe('EnvironmentService', () => {
 				screen: {
 					width: 200,
 					height: 100
-				},
+				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
 			let orientation = instanceUnderTest.getScreenOrientation();
@@ -162,7 +162,7 @@ describe('EnvironmentService', () => {
 				screen: {
 					width: 100,
 					height: 200
-				},
+				}
 			};
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			orientation = instanceUnderTest.getScreenOrientation();

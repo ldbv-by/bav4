@@ -1,5 +1,5 @@
 import { $injector } from './testsConfig';
-const mockService =  { get: 'I\'m a mock. ' };
+const mockService = { get: 'I\'m a mock. ' };
 const debugService = { get: 'I\'m a debug service... ' };
 const serverService = { get: 'I\'m a server service. ' };
 

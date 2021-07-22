@@ -11,13 +11,13 @@ import css from './geoResourceResultItem.css';
 
 /**
  * Renders an search result item for a geoResource.
- * 
+ *
  * Configurable Properties:
  * - `data`
- * 
+ *
  * Observed Properties:
  * - `data`
- * 
+ *
  * @class
  * @author taulinger
  */
@@ -38,7 +38,7 @@ export class GeoResourceResultItem extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { media: { portrait } } = globalState;
@@ -62,7 +62,7 @@ export class GeoResourceResultItem extends BaElement {
 		const onClick = (result) => {
 			//remove the preview layer
 			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
-			//add the "real" layer 
+			//add the "real" layer
 			addLayer(result.id, { label: result.label });
 
 			if (portrait) {

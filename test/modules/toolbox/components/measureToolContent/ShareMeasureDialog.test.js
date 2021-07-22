@@ -19,7 +19,7 @@ describe('ShareMeasureDialog', () => {
 	const shareServiceMock = {
 		copyToClipboard() {
 			return Promise.resolve();
-		},
+		}
 	};
 	const setup = (state = {}, config = {}) => {
 

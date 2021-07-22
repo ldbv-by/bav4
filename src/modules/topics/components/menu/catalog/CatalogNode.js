@@ -9,10 +9,10 @@ import css from './catalogNode.css';
  * @author alsturm
  */
 export class CatalogNode extends AbstractContentPanel {
-	
+
 	constructor() {
 		super();
-		
+
 		this._catalogPart = null;
 		this._isCollapsed = true;
 		this._level = 0;
@@ -42,7 +42,7 @@ export class CatalogNode extends AbstractContentPanel {
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !this._isCollapsed,
+			iconexpand: !this._isCollapsed
 		};
 
 		const bodyCollapseClass = {

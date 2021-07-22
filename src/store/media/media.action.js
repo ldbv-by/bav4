@@ -12,9 +12,9 @@ const getStore = () => {
 };
 
 /**
- * 
- * @param {boolean} isPortait 
- * @function 
+ *
+ * @param {boolean} isPortait
+ * @function
  */
 export const setIsPortrait = (isPortait) => {
 	const { media: { observeResponsiveParameter } } = getStore().getState();
@@ -27,9 +27,9 @@ export const setIsPortrait = (isPortait) => {
 };
 
 /**
- * 
- * @param {boolean} isMinWidth 
- * @function 
+ *
+ * @param {boolean} isMinWidth
+ * @function
  */
 export const setIsMinWidth = (isMinWidth) => {
 	const { media: { observeResponsiveParameter } } = getStore().getState();
@@ -42,9 +42,9 @@ export const setIsMinWidth = (isMinWidth) => {
 };
 
 /**
- * 
- * @param {boolean} isMinWidth 
- * @function 
+ *
+ * @param {boolean} isMinWidth
+ * @function
  */
 export const setIsDarkSchema = (isDarkSchema) => {
 	getStore().dispatch({
@@ -55,7 +55,7 @@ export const setIsDarkSchema = (isDarkSchema) => {
 
 /**
  * Toggles the theme (light <-> dark)
- * @function 
+ * @function
  */
 export const toggleSchema = () => {
 	const { media: { darkSchema } } = getStore().getState();
@@ -67,7 +67,7 @@ export const toggleSchema = () => {
 
 
 /**
- * @function 
+ * @function
  */
 export const enableResponsiveParameterObservation = () => {
 
@@ -78,7 +78,7 @@ export const enableResponsiveParameterObservation = () => {
 };
 
 /**
- * @function 
+ * @function
  */
 export const disableResponsiveParameterObservation = () => {
 

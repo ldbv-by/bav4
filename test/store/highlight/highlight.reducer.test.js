@@ -55,7 +55,7 @@ describe('highlightReducer', () => {
 	it('resets the both feature properties', () => {
 		const store = setup();
 		const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
-		const secondaryHighlightFeature = { type : HightlightFeatureTypes.DEFAULT, data: { coordinate: [1, 2] } };
+		const secondaryHighlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [1, 2] } };
 
 		setHighlightFeature(highlightFeature);
 		setTemporaryHighlightFeature(secondaryHighlightFeature);

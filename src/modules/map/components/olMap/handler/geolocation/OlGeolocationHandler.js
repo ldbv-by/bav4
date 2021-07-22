@@ -96,7 +96,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				this._map.renderSync();
 				if (!stateSnapshot.pointer.beingDragged) {
 					this._blinkPosition(this._positionFeature);
-				}					
+				}
 			}
 			else {
 				this._positionFeature.setStyle(nullStyleFunction);
