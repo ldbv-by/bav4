@@ -183,8 +183,8 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
-			
-			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');			
+
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
 		});
 
 		describe('uses Interactions', () => {
