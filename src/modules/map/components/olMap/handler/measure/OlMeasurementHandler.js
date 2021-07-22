@@ -102,11 +102,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
+			const translate = (key) => this._translationService.translate(key);
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
 			});
+			layer.label = translate('map_olMap_handler_measure_layer_label');
 			return layer;
 		};
 

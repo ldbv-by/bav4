@@ -178,6 +178,15 @@ describe('OlMeasurementHandler', () => {
 
 		};
 
+		it('adds a label to the session vectorlayer', () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+		});
+
 		describe('uses Interactions', () => {
 			it('adds a Draw-Interaction', () => {
 				setup();
@@ -317,7 +326,6 @@ describe('OlMeasurementHandler', () => {
 
 
 		});
-
 
 		it('looks for measurement-layer and adds the feature for update on save', (done) => {
 			const store = setup();
@@ -790,7 +798,7 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {});
+			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
