@@ -13,10 +13,10 @@ describe('kml', () => {
 
 	const createLayerMock = (features) => {
 		return {
-			label:'Foo',
+			label: 'Foo',
 			getSource() {
 				return {
-					getFeatures:() => features
+					getFeatures: () => features
 				};
 			},
 			getStyleFunction() {

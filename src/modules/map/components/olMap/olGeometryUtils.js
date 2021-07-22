@@ -163,7 +163,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 		if (maxDelta < delta) {
 			return maxDelta;
 		}
-		if ( isValidForResolution(partitionLength)) {
+		if (isValidForResolution(partitionLength)) {
 			if (minDelta < delta) {
 				return delta;
 			}

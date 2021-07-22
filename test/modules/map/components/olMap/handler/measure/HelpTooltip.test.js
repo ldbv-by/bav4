@@ -8,11 +8,11 @@ import { TestUtils } from '../../../../../../test-utils.js';
 TestUtils.setupStoreAndDi({},);
 $injector.registerSingleton('UnitsService', {
 	// eslint-disable-next-line no-unused-vars
-	formatDistance:(distance, decimals) => {
+	formatDistance: (distance, decimals) => {
 		return distance + ' m';
 	},
 	// eslint-disable-next-line no-unused-vars
-	formatArea:(area, decimals) => {
+	formatArea: (area, decimals) => {
 		return area + ' m²';
 	} });
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
@@ -41,7 +41,7 @@ describe('HelpTooltip', () => {
 	describe('on activate', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
-			const mapMock = { addOverlay:addSpy,  };
+			const mapMock = { addOverlay: addSpy,  };
 
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.activate(mapMock);
@@ -52,7 +52,7 @@ describe('HelpTooltip', () => {
 	describe('on deactivate', () => {
 		it('removes the overlay', () => {
 			const removeSpy = jasmine.createSpy();
-			const mapMock = { addOverlay:() => {}, removeOverlay:removeSpy };
+			const mapMock = { addOverlay: () => {}, removeOverlay: removeSpy };
 			const classUnderTest = new HelpTooltip();
 
 			classUnderTest.activate(mapMock);
@@ -62,19 +62,19 @@ describe('HelpTooltip', () => {
 		});
 	});
 	describe('when notified', () => {
-		const mapStub = { addOverlay:() => {} };
+		const mapStub = { addOverlay: () => {} };
 		const measureStateTemplate = {
-			type:null,
-			snap:null,
-			coordinate:[0, 0],
-			pointCount:42,
-			dragging:false
+			type: null,
+			snap: null,
+			coordinate: [0, 0],
+			pointCount: 42,
+			dragging: false
 		};
 
 		it('with measurestate \'active\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
-			const measureState = { ...measureStateTemplate, type:MeasureStateType.ACTIVE };
+			const measureState = { ...measureStateTemplate, type: MeasureStateType.ACTIVE };
 
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify(measureState);
@@ -86,10 +86,10 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW, pointCount:1 });
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW });
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW, snap:MeasureSnapType.FIRSTPOINT });
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW, snap:MeasureSnapType.LASTPOINT });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, pointCount: 1 });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, snap: MeasureSnapType.FIRSTPOINT });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, snap: MeasureSnapType.LASTPOINT });
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line<br/>map_olMap_handler_delete_last_point');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_snap_first_point<br/>map_olMap_handler_delete_last_point');
@@ -101,9 +101,9 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.MODIFY });
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.MODIFY, snap:MeasureSnapType.VERTEX });
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.MODIFY, snap:MeasureSnapType.EDGE });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY, snap: MeasureSnapType.VERTEX });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY, snap: MeasureSnapType.EDGE });
 
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_key_for_delete');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_or_drag');
@@ -115,7 +115,7 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.OVERLAY });
+			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.OVERLAY });
 
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_drag_overlay');
 		});
@@ -124,7 +124,7 @@ describe('HelpTooltip', () => {
 			const classUnderTest = new HelpTooltip();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, dragging:true });
+			classUnderTest.notify({ ...measureStateTemplate, dragging: true });
 
 			expect(classUnderTest._overlay.getPosition()).toBeUndefined();
 		});

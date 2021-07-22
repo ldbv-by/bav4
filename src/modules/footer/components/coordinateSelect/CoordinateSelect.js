@@ -49,7 +49,7 @@ export class CoordinateSelect extends BaElement {
 						this._coordinateService.transform(pointerPosition, this._mapService.getSrid(), this._items[0].code),  this._items[0].code);
 				case String(this._items[1].code): //4326
 					return this._coordinateService.stringify(
-						this._coordinateService.toLonLat(pointerPosition), this._items[1].code, { digits:5 });
+						this._coordinateService.toLonLat(pointerPosition), this._items[1].code, { digits: 5 });
 				default:
 					return nothing;
 			}

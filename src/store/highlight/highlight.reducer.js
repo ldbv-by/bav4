@@ -46,7 +46,7 @@ export const highlightReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				feature:  null,
+				feature: null,
 				temporaryFeature: null,
 				active: false
 			};

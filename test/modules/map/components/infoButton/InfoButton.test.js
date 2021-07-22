@@ -40,7 +40,7 @@ describe('InfoButton', () => {
 			expect(element.shadowRoot.querySelector('.info-popup-link').getAttribute('href')).toBeDefined();
 			expect(element.shadowRoot.querySelectorAll('.info-popup-link').length).toBe(3);
 			expect(element.shadowRoot.querySelectorAll('.info-popup-link')[0].getAttribute('href')).toEqual('http://www.ldbv.bayern.de/hilfe.html');
-		} );
+		});
 	});
 
 	describe('when clicked', () => {

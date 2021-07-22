@@ -24,9 +24,9 @@ describe('OlGeolocationHandler', () => {
 	const setup = (state = initialState) => {
 		const geolocationState = {
 			geolocation: state,
-			pointer: { beingDragged:false }
+			pointer: { beingDragged: false }
 		};
-		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer, pointer:pointerReducer });
+		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer, pointer: pointerReducer });
 	};
 
 	const setupMap = () => {

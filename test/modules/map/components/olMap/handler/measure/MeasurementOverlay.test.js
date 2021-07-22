@@ -23,7 +23,7 @@ describe('MeasurementOverlay', () => {
 		register(proj4);
 	});
 
-	const setup = async ( properties = {}) => {
+	const setup = async (properties = {}) => {
 		const element = await TestUtils.render(MeasurementOverlay.tag);
 
 		// transform test-geometries from assumed default geodetic projection to default map-projection
@@ -47,7 +47,7 @@ describe('MeasurementOverlay', () => {
 		});
 
 		it('renders the help view', async () => {
-			const properties = { type:MeasurementOverlayTypes.HELP, value:'foo' };
+			const properties = { type: MeasurementOverlayTypes.HELP, value: 'foo' };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -61,7 +61,7 @@ describe('MeasurementOverlay', () => {
 
 		it('renders the distance view', async () => {
 			const geodeticGeometry = new LineString([[0, 0], [1, 0]]);
-			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:geodeticGeometry, projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' } };
+			const properties = { type: MeasurementOverlayTypes.DISTANCE, geometry: geodeticGeometry, projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -74,9 +74,9 @@ describe('MeasurementOverlay', () => {
 
 		it('renders the area view', async () => {
 			const geodeticGeometry = new Polygon([[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]);
-			const properties = { type:MeasurementOverlayTypes.AREA,
-				geometry:geodeticGeometry,
-				projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' } };
+			const properties = { type: MeasurementOverlayTypes.AREA,
+				geometry: geodeticGeometry,
+				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -90,10 +90,10 @@ describe('MeasurementOverlay', () => {
 		it('renders the distance-partition view', async () => {
 			const geodeticGeometry = new LineString([[0, 0], [100, 0]]);
 			const properties = {
-				type:MeasurementOverlayTypes.DISTANCE_PARTITION,
-				geometry:geodeticGeometry,
-				value:0.1,
-				projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' }
+				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
+				geometry: geodeticGeometry,
+				value: 0.1,
+				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
 			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -107,7 +107,7 @@ describe('MeasurementOverlay', () => {
 
 		it('renders the static distance view', async () => {
 			const geodeticGeometry = new LineString([[0, 0], [1, 0]]);
-			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:geodeticGeometry, static:true, projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' } };
+			const properties = { type: MeasurementOverlayTypes.DISTANCE, geometry: geodeticGeometry, static: true, projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -120,7 +120,7 @@ describe('MeasurementOverlay', () => {
 
 		it('renders formatted distance', async () => {
 			const geodeticGeometry = new LineString([[0, 0], [1, 0]]);
-			const properties = { type:MeasurementOverlayTypes.DISTANCE, geometry:geodeticGeometry, projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' } };
+			const properties = { type: MeasurementOverlayTypes.DISTANCE, geometry: geodeticGeometry, projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -129,7 +129,7 @@ describe('MeasurementOverlay', () => {
 
 		it('renders formatted area', async () => {
 			const geodeticGeometry = new Polygon([[[0, 0], [120, 0], [120, 120], [0, 120], [0, 0]]]);
-			const properties = { type:MeasurementOverlayTypes.AREA, geometry:geodeticGeometry, projectionHints:{ fromProjection:'EPSG:3857', toProjection:'EPSG:25832' } };
+			const properties = { type: MeasurementOverlayTypes.AREA, geometry: geodeticGeometry, projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 

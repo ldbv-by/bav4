@@ -13,14 +13,14 @@ const BLACK_COLOR = [0, 0, 0];
 
 export const measureStyleFunction = (feature) => {
 	const stroke = new Stroke({
-		color:RED_COLOR.concat([1]),
-		width:3
+		color: RED_COLOR.concat([1]),
+		width: 3
 	});
 
 	const dashedStroke = new Stroke({
-		color:RED_COLOR.concat([1]),
-		width:3,
-		lineDash:[8]
+		color: RED_COLOR.concat([1]),
+		width: 3,
+		lineDash: [8]
 	});
 
 	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
@@ -28,13 +28,13 @@ export const measureStyleFunction = (feature) => {
 	const styles = [
 		new Style({
 			fill: new Fill({
-				color:RED_COLOR.concat([0.4])
+				color: RED_COLOR.concat([0.4])
 			}),
-			stroke:dashedStroke,
-			zIndex:zIndex
+			stroke: dashedStroke,
+			zIndex: zIndex
 		}),
 		new Style({
-			stroke:stroke,
+			stroke: stroke,
 			geometry: feature => {
 
 				if (canShowAzimuthCircle(feature.getGeometry())) {
@@ -44,7 +44,7 @@ export const measureStyleFunction = (feature) => {
 					return circle;
 				}
 			},
-			zIndex:0
+			zIndex: 0
 		}),
 	];
 
@@ -56,8 +56,8 @@ export const modifyStyleFunction = () => {
 		image: new CircleStyle({
 			radius: 8,
 			stroke: new Stroke({
-				color:RED_COLOR,
-				width:1 }),
+				color: RED_COLOR,
+				width: 1 }),
 			fill: new Fill({
 				color: WHITE_COLOR,
 			}),
@@ -71,8 +71,8 @@ export const createSelectStyleFunction = (styleFunction) => {
 		image: new CircleStyle({
 			radius: 7,
 			stroke: new Stroke({
-				color:BLACK_COLOR,
-				width:1 }),
+				color: BLACK_COLOR,
+				width: 1 }),
 			fill: new Fill({
 				color: WHITE_COLOR,
 			}),
@@ -96,7 +96,7 @@ export const createSelectStyleFunction = (styleFunction) => {
 			return feature.getGeometry();
 
 		},
-		zIndex:ZPOINT - 1
+		zIndex: ZPOINT - 1
 	});
 
 
@@ -112,11 +112,11 @@ export const createSelectStyleFunction = (styleFunction) => {
 export const createSketchStyleFunction = (styleFunction) => {
 
 	const sketchPolygon = new Style({ fill: new Fill({
-		color:WHITE_COLOR.concat([0.4])
+		color: WHITE_COLOR.concat([0.4])
 	}),
 	stroke: new Stroke({
-		color:WHITE_COLOR,
-		width:0
+		color: WHITE_COLOR,
+		width: 0
 	})
 	});
 
@@ -127,16 +127,16 @@ export const createSketchStyleFunction = (styleFunction) => {
 		}
 		else if (feature.getGeometry().getType() === 'Point') {
 			const fill = new Fill({
-				color:RED_COLOR.concat([0.4])
+				color: RED_COLOR.concat([0.4])
 			});
 
 			const stroke = new Stroke({
 				color: RED_COLOR.concat([1]),
-				width:3
+				width: 3
 			});
 			const sketchCircle = new Style({
-				image:new CircleStyle({ radius:4, fill:fill, stroke:stroke }),
-				zIndex:ZPOINT
+				image: new CircleStyle({ radius: 4, fill: fill, stroke: stroke }),
+				zIndex: ZPOINT
 			});
 			styles = [sketchCircle];
 		}
