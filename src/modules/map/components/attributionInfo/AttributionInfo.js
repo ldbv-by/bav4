@@ -49,7 +49,7 @@ export class AttributionInfo extends BaElement {
 		};
 
 		const classes = {
-			isopen:this._isOpen,
+			isopen: this._isOpen,
 		};
 
 		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case
@@ -70,7 +70,7 @@ export class AttributionInfo extends BaElement {
 		});
 
 		const getCollapseClass = () => {
-			return (attributionCopyright.length > 1 || this._isOpen ) ? 'is-collapse' : '';
+			return (attributionCopyright.length > 1 || this._isOpen) ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {

@@ -43,7 +43,7 @@ export class GeolocationButton extends BaElement {
 		}
 
 		const classes = {
-			inactive:!active,
+			inactive: !active,
 			active: active,
 			denied: denied,
 		};

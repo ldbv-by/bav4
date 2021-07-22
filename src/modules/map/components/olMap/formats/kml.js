@@ -15,11 +15,11 @@ const tryRectifyingLineString = (polygonCandidate) => {
 
 const sanitizeStyle = (styles) => {
 	const kmlStyleProperties = {
-		fill:styles[0].getFill(),
-		stroke:styles[0].getStroke(),
-		text:styles[0].getText(),
-		image:styles[0].getImage(),
-		zIndex:styles[0].getZIndex()
+		fill: styles[0].getFill(),
+		stroke: styles[0].getStroke(),
+		text: styles[0].getText(),
+		image: styles[0].getImage(),
+		zIndex: styles[0].getZIndex()
 	};
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
@@ -28,7 +28,7 @@ const sanitizeStyle = (styles) => {
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;
 	if (isTextOnlyStyle) {
-		kmlStyleProperties.image = new Icon({ src:'noimage', scale:0 });
+		kmlStyleProperties.image = new Icon({ src: 'noimage', scale: 0 });
 	}
 
 	return new Style(kmlStyleProperties);

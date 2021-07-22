@@ -60,7 +60,7 @@ export class LocationResultsPanel extends BaElement {
 
 		const iconCollapseClass = {
 			iconexpand: !this._isCollapsed,
-			isdisabled:  !this._locationSearchResults.length
+			isdisabled: !this._locationSearchResults.length
 		};
 
 		const bodyCollapseClass = {

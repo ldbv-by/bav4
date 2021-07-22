@@ -85,7 +85,7 @@ describe('TopicsPlugin', () => {
 
 	describe('_addTopicFromConfig', () => {
 
-		it('initializes the topics service and update the store', async() => {
+		it('initializes the topics service and update the store', async () => {
 
 			const store = setup();
 			const topicId = 'someId';

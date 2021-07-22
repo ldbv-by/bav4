@@ -36,7 +36,7 @@ const Provider_Metric = {
 	* @param {number} decimals the number of digits after the decimal point
     * @returns {String} the formatted value
     */
-	area(area, decimals ) {
+	area(area, decimals) {
 		let formatted;
 		if (area >= Squaredkilometer_In_Squaredmeters) {
 			if (decimals) {

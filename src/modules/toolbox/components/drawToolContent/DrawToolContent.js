@@ -24,37 +24,37 @@ export class DrawToolContent extends AbstractToolContent {
 	_buildTools() {
 		const translate = (key) => this._translationService.translate(key);
 		return [{
-			id:1,
-			name:'symbol',
-			active:false,
+			id: 1,
+			name: 'symbol',
+			active: false,
 			title: translate('toolbox_drawTool_symbol'),
-			icon:'symbol',
-			activate:() => {},
-			deactivate:() => {}
+			icon: 'symbol',
+			activate: () => {},
+			deactivate: () => {}
 		}, {
-			id:2,
+			id: 2,
 			name: 'text',
-			active:false,
+			active: false,
 			title: translate('toolbox_drawTool_text'),
-			icon:'text',
-			activate:() => {},
-			deactivate:() => {}
+			icon: 'text',
+			activate: () => {},
+			deactivate: () => {}
 		}, {
-			id:3,
-			name:'line',
-			active:false,
+			id: 3,
+			name: 'line',
+			active: false,
 			title: translate('toolbox_drawTool_line'),
-			icon:'line',
-			activate:() => {},
-			deactivate:() => {}
+			icon: 'line',
+			activate: () => {},
+			deactivate: () => {}
 		}, {
-			id:4,
-			name:'polygon',
-			active:false,
+			id: 4,
+			name: 'polygon',
+			active: false,
 			title: translate('toolbox_drawTool_polygon'),
-			icon:'polygon',
-			activate:() => {},
-			deactivate:() => {}
+			icon: 'polygon',
+			activate: () => {},
+			deactivate: () => {}
 		}]
 		;
 	}
