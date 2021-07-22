@@ -4,8 +4,8 @@
 */
 
 /**
- * Throttling is a straightforward reduction of the trigger rate. 
- * It will cause the event listener to ignore some portion of the events 
+ * Throttling is a straightforward reduction of the trigger rate.
+ * It will cause the event listener to ignore some portion of the events
  * while still firing the listeners at a constant (but reduced) rate.
  * <br>
  * Usage:
@@ -16,8 +16,8 @@
  * </pre>
  * @param {number} delay Delay in ms
  * @param {Function} fn The wrapped function
- * @returns {Function} A function that throttles the wrapped function when called 
- }} 
+ * @returns {Function} A function that throttles the wrapped function when called
+ }}
  */
 export function throttled(delay, fn) {
 	let lastCall = 0;
@@ -32,7 +32,7 @@ export function throttled(delay, fn) {
 }
 
 /**
- * Debouncing is a technique of keeping the trigger rate at exactly 0 until a period of calm, 
+ * Debouncing is a technique of keeping the trigger rate at exactly 0 until a period of calm,
  * and then triggering the listener exactly once.
  * <br>
  * Usage:

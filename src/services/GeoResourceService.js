@@ -14,15 +14,15 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
 
 /**
  * Service for managing {@link GeoResource}s.
- * 
+ *
  * @class
  * @author taulinger
  */
 export class GeoResourceService {
 
 	/**
-	 * 
-	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources] 
+	 *
+	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
 	 */
 	constructor(provider = loadBvvGeoResources) {
 		this._provider = provider;
@@ -33,7 +33,7 @@ export class GeoResourceService {
 
 	/**
 	 * Initializes this service, which means all available GeoResources are loaded and can be served in the future from the internal cache.
-	 * If initialsation fails, a fallback is delivered. 
+	 * If initialsation fails, a fallback is delivered.
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<GeoResource>>}
@@ -90,7 +90,7 @@ export class GeoResourceService {
 	 * Adds a {@link GeoResource} to the internal cache.
 	 * An existing GeoResource will be replaced by the new one.
 	 * The replacement is done based on the id of the GeoResoure.
-	 * @param {GeoResource} georesource 
+	 * @param {GeoResource} georesource
 	 */
 	addOrReplace(georesource) {
 

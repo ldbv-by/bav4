@@ -11,13 +11,13 @@ import { HightlightFeatureTypes, removeHighlightFeature, removeTemporaryHighligh
 
 /**
  * Renders an search result item for a location.
- * 
+ *
  * Configurable Properties:
  * - `data`
- * 
+ *
  * Observed Properties:
  * - `data`
- * 
+ *
  * @class
  * @author taulinger
  */
@@ -38,7 +38,7 @@ export class LocationResultItem extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { media: { portrait } } = globalState;

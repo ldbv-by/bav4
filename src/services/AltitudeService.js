@@ -7,16 +7,16 @@ import { isCoordinate } from '../utils/checks';
 export class AltitudeService {
 
 	/**
-	 * 
-	 * @param {altitudeProvider} [altitudeProvider=loadBvvAltitude] 
+	 *
+	 * @param {altitudeProvider} [altitudeProvider=loadBvvAltitude]
 	 */
 	constructor(altitudeProvider = loadBvvAltitude) {
 		this._altitudeProvider = altitudeProvider;
-	} 
+	}
 
 	/**
-     * 
-     * @param {Coordinate} coordinate3857 
+     *
+     * @param {Coordinate} coordinate3857
 	 * @returns {Number} altitude
      */
 	async getAltitude(coordinate3857) {
@@ -29,6 +29,6 @@ export class AltitudeService {
 		}
 		catch (e) {
 			throw new Error('Could not load altitude from provider: ' + e.message);
-		} 
+		}
 	}
-} 
+}

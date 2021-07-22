@@ -18,7 +18,7 @@ const getStore = () => {
  */
 
 /**
- * 
+ *
  * @typedef {Object} Command
  * @property {String} [label] The Label of this command.
  * @property {String} [shortcut] The Keyboard-Shortcut (optional) of this Command.

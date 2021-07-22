@@ -126,7 +126,7 @@ describe('Button', () => {
 			element.provider = () => Promise.reject('Something got wrong');
 			const input = element.shadowRoot.querySelector('input');
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			input.value = 'some';
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js
@@ -145,7 +145,7 @@ describe('Button', () => {
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			const input = element.shadowRoot.querySelector('input');
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			input.value = 'some';
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js

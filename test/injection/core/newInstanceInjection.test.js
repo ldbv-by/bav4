@@ -5,10 +5,10 @@ import { $injector } from './testsConfig';
  * singletons with instance dependencies.
  */
 const instanceHttp  = function() {
-	this.get = 'I\'m a http service.'; 
+	this.get = 'I\'m a http service.';
 };
 const instanceRouter = function() {
-	this.get = 'I\'m a router.'; 
+	this.get = 'I\'m a router.';
 };
 
 $injector.register({

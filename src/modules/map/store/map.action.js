@@ -44,7 +44,7 @@ export const setMoveEnd = () => {
 /**
  * Sets information wether map is being moved
  * @function
- * @param {boolean} moved 
+ * @param {boolean} moved
  */
 export const setBeingMoved = (moved) => {
 	getStore().dispatch({

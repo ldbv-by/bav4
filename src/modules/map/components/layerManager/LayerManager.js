@@ -10,7 +10,7 @@ import css from './layerManager.css';
  * (reorder,remove, change visibility and opacity)
  * @class
  * @author thiloSchlemmer
- * @author tAulinger 
+ * @author taulinger
  * @author alsturm
  */
 export class LayerManager extends BaElement {
@@ -170,7 +170,7 @@ export class LayerManager extends BaElement {
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { layers: { active } } = globalState;

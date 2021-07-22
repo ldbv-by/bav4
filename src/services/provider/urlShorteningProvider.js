@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes an url and returns a promise with a short url. 
+ * A function that takes an url and returns a promise with a short url.
  *
  * @typedef {function(string) : (Promise<string>)} shortUrlProvider
  */
@@ -14,7 +14,7 @@ import { $injector } from '../../injection';
 /**
  * Uses the BVV service to return a short url.
  * @function
- * @param {string} url 
+ * @param {string} url
  * @returns {Promise<string>}
  */
 export const shortenBvvUrls = async (url) => {

@@ -52,8 +52,8 @@ export class GeoResource {
 
 	/**
 	 * protected
-	 * @param {*} value 
-	 * @param {*} name 
+	 * @param {*} value
+	 * @param {*} name
 	 */
 	checkDefined(value, name) {
 		if (!value) {
@@ -99,7 +99,7 @@ export class GeoResource {
 
 	/**
 	 * Sets the attribution provider for this GeoResource.
-	 * @param {attributionProvider} provider 
+	 * @param {attributionProvider} provider
 	 * @returns `this` for chaining
 	 */
 	setAttributionProvider(provider) {
@@ -109,10 +109,10 @@ export class GeoResource {
 
 	/**
 	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
-	 * for this GeoResouce. 
+	 * for this GeoResouce.
 	 * It returns `null` when no attributions are available.
-	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map) 
-	 * @returns {Array<Attribution>|null} attributions 
+	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
+	 * @returns {Array<Attribution>|null} attributions
 	 * @throws Error when no attribution provider is found
 	 */
 	getAttribution(value = 0) {
@@ -252,8 +252,8 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * Gets the data of this 'internal' GeoResource.
-	 * If the GeoResource has a loader, it will be used to load the data and determine the source type. 
-	 * If the data object is a Promise, it will be resolved 
+	 * If the GeoResource has a loader, it will be used to load the data and determine the source type.
+	 * If the data object is a Promise, it will be resolved
 	 * and the resolved data will be cached internally.
 	 * @returns {Promise<string>} data
 	 */
@@ -276,7 +276,7 @@ export class VectorGeoResource extends GeoResource {
 	/**
 	 * Sets the Url for this 'external' GeoResource.
 	 * @param {string} url
-	 * @returns `this` for chaining 
+	 * @returns `this` for chaining
 	 */
 	setUrl(url) {
 		this._url = url;
@@ -287,9 +287,9 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * Sets the source of this 'internal' GeoResource.
-	 * @param {Promise<string>|string} data 
-	 * @param {number} srid 
-	 * @returns `this` for chaining 
+	 * @param {Promise<string>|string} data
+	 * @param {number} srid
+	 * @returns `this` for chaining
 	 */
 	setSource(data, srid) {
 		this._url = null;
@@ -301,8 +301,8 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * Sets the loader of this 'internal' GeoResource.
-	 * @param {VectorGeoResourceLoader} loader 
-	 * @returns `this` for chaining 
+	 * @param {VectorGeoResourceLoader} loader
+	 * @returns `this` for chaining
 	 */
 	setLoader(loader) {
 		this._sourceType = null;

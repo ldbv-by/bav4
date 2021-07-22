@@ -295,13 +295,13 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
-			
+
 			disableResponsiveParameterObservation();
-			
+
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeTrue();
-			
+
 			enableResponsiveParameterObservation();
-			
+
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
 		});
 	});

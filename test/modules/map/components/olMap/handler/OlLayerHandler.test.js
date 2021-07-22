@@ -6,13 +6,13 @@ describe('LayerHandler', () => {
 
 	}
 	class OlLayerHandlerImpl extends OlLayerHandler {
-		
+
 		constructor() {
 			super('some');
 		}
 	}
 	class OlLayerHandlerImpl2 extends OlLayerHandler {
-		
+
 		constructor() {
 			super('some');
 		}

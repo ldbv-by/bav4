@@ -42,13 +42,13 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-			
+
 			it('throws excepetion when abstract #getType is called without overriding', () => {
 				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
 			});
 
 			it('sets the attribution provider', () => {
-				
+
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
 				grs.setAttributionProvider(provider);

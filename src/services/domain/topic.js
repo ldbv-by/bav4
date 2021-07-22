@@ -13,7 +13,7 @@
 export class Topic {
 
 	/**
-	 * 
+	 *
 	 * @param {string} id id of this Topic
 	 * @param {string} label label of this Topic
 	 * @param {string} description description of this Topic

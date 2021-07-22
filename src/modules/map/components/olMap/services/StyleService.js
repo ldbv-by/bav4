@@ -19,11 +19,11 @@ export const StyleTypes = Object.freeze({
  */
 export class StyleService {
 	/**
-	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature. 
-	 * @param {ol.Feature} olFeature the feature to be styled 
+	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
+	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
-	 * @param {StyleType} styleType the styletype, if not explicit specified (styletype==null|undefined), 
-	 * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists, 
+	 * @param {StyleType} styleType the styletype, if not explicit specified (styletype==null|undefined),
+	 * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists,
 	 * no styles or overlays will be added.
 	 */
 	addStyle(olFeature, olMap, styleType = null) {
@@ -44,22 +44,22 @@ export class StyleService {
 	/**
 	 * A Container-Object for optional properties related to a update of feature-style or -overlays
 	 * @typedef {Object} UpdateProperties
-	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on 
+	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on
 	 * the styletype belonging to the feature
-	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the 
+	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the
 	 * topmost layer
-	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the 
+	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the
 	 * specified feature, based on the styletype belonging to the feature
 	 */
 
 	/**
-	   * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature. 
+	   * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
-	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
-	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the StyleService
-	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update 
+	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update
 	*/
 	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
@@ -80,7 +80,7 @@ export class StyleService {
 
 	/**
 	 * Returns a ol-StyleFunction for the specified StyleType
-	 * @param {StyleType} styleType 
+	 * @param {StyleType} styleType
 	 * @returns {Function} styleFunction the StyleFunction, used by ol to render a feature
 	 */
 	getStyleFunction(styleType) {
@@ -109,11 +109,11 @@ export class StyleService {
 		/**
 		 * Provide a single entrypoint for features without a stored partition_delta,
 		 * to create a best fitting partition-delta after zooming of the map ends.
-		 * 
+		 *
 		 * This must be done before the style is applied for the first time.
-		 * 
-		 * This fallback is needed, if stored data is loaded in the background, without 
-		 * rendering and the initial resolution does not fit to the final zoomed extent 
+		 *
+		 * This fallback is needed, if stored data is loaded in the background, without
+		 * rendering and the initial resolution does not fit to the final zoomed extent
 		 * of the feature.
 		 */
 		if (olFeature.get('partition_delta') == null) {

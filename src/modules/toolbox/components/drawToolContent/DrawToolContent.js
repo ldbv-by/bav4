@@ -51,14 +51,14 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => setType('Polygon')			
+			activate: () => setType('Polygon')
 		}];
 	}
 
 	_setActiveTool(tool) {
 		if (this._activeTool) {
 			if (this._activeTool !== tool) {
-				this._activeTool.active = false;				
+				this._activeTool.active = false;
 				this._showActive();
 			}
 		}
@@ -82,7 +82,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
-			const toggle = () => {				
+			const toggle = () => {
 				tool.active = !tool.active;
 				if (tool.active) {
 					tool.activate();

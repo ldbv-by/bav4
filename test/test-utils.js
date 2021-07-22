@@ -96,7 +96,7 @@ export class TestUtils {
 	/**
 	 * Returns a MediaQueryList object
 	 * @param {boolean} shouldMatch true if this MediaQueryList should match
-	 * @returns {MediaQueryList} 
+	 * @returns {MediaQueryList}
 	 */
 	static newMediaQueryList(shouldMatch) {
 		return {

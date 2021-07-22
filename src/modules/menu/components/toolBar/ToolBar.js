@@ -10,8 +10,8 @@ import { $injector } from '../../../../injection';
 
 
 /**
- * Container for Tools 
- *  
+ * Container for Tools
+ *
  * @class
  * @author alsturm
  */
@@ -125,7 +125,7 @@ export class ToolBar extends BaElement {
 
 	/**
 		 * @override
-		 * @param {Object} globalState 
+		 * @param {Object} globalState
 		 */
 	extractState(globalState) {
 		const { toolBar, toolContainer, network: { fetching }, media: { portrait, minWidth } } = globalState;

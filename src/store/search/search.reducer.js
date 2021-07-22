@@ -3,7 +3,7 @@ import { EventLike } from '../../utils/storeUtils';
 export const QUERY_CHANGED = 'search/query';
 
 export const initialState = {
-	
+
 	/**
      * @type {EventLike<string>}
      */

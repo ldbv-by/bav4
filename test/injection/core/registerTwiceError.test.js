@@ -11,7 +11,7 @@ describe('Registration', () => {
 			$injector.register('MockService', mockService);
 			$injector.register('MockService', mockService);
 		};
-		
+
 		expect(registerDouble).toThrowError('Instance already registered for MockService');
 	});
 

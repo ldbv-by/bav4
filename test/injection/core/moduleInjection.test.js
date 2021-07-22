@@ -2,7 +2,7 @@ import { Injector } from '../../../src/injection/core/injector';
 import { myModule } from './moduleConfig';
 
 describe('Module Injection', () => {
-	
+
 	const $injector = new Injector();
 	$injector.registerModule(myModule);
 

@@ -27,12 +27,12 @@ export const measureStyleFunction = (feature) => {
 		lineDash: [8]
 	});
 
-	const zIndex = (feature.getGeometry() instanceof LineString) ? ZLINE : ZPOLYGON;
+	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
 
 	const styles = [
 		new Style({
 			fill: new Fill({
-				color: RED_COLOR.concat([0.4])
+				color:RED_COLOR.concat([0.4])
 			}),
 			stroke: dashedStroke,
 			zIndex: zIndex
@@ -116,14 +116,13 @@ export const createSelectStyleFunction = (styleFunction) => {
 
 export const createSketchStyleFunction = (styleFunction) => {
 
-	const sketchPolygon = new Style({
-		fill: new Fill({
-			color: WHITE_COLOR.concat([0.4])
-		}),
-		stroke: new Stroke({
-			color: WHITE_COLOR,
-			width: 0
-		})
+	const sketchPolygon = new Style({ fill: new Fill({
+		color:WHITE_COLOR.concat([0.4])
+	}),
+	stroke: new Stroke({
+		color:WHITE_COLOR,
+		width:0
+	})
 	});
 
 	return (feature, resolution) => {
