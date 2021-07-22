@@ -1,4 +1,4 @@
-import { provide  } from '../../../../src/modules/commons/i18n/spinner.provider';
+import { provide } from '../../../../src/modules/commons/i18n/spinner.provider';
 
 
 describe('i18n for coordinate select', () => {

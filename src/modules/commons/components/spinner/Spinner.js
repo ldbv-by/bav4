@@ -11,7 +11,7 @@ export class Spinner extends BaElement {
 
 	constructor() {
 		super();
-		const {  TranslationService: translationService }
+		const { TranslationService: translationService }
 			= $injector.inject('TranslationService');
 
 		this._translationService = translationService;

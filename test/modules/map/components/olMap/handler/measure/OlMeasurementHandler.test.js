@@ -851,7 +851,7 @@ describe('OlMeasurementHandler', () => {
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 				);
-				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -872,7 +872,7 @@ describe('OlMeasurementHandler', () => {
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 				);
-				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 				feature.set('debug', 'stores twice after a feature removed');
@@ -894,7 +894,7 @@ describe('OlMeasurementHandler', () => {
 				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
 					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 				);
-				const privateSaveSpy =  spyOn(classUnderTest, '_save').and.callThrough();
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -912,7 +912,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('stores after adding a feature', async (done) => {
-			const state  = { ...initialState, fileSaveResult: null };
+			const state = { ...initialState, fileSaveResult: null };
 			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();

@@ -56,7 +56,7 @@ describe('AttributionInfo', () => {
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
 		});
 
-		it('renders no content when no layers are set', async  () => {
+		it('renders no content when no layers are set', async () => {
 			const stateEmpty = {
 				layers: {
 					active: []
@@ -69,8 +69,8 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
-		it('renders no content when geo resource could not be fetched', async  () => {
-			const layer = { ...defaultLayerProperties,  id: 'id0', label: 'label0' };
+		it('renders no content when geo resource could not be fetched', async () => {
+			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -85,7 +85,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
-		it('renders no content when no attribution provided', async  () => {
+		it('renders no content when no attribution provided', async () => {
 			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
@@ -110,7 +110,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
-		it('renders no content when no visible layers are available', async  () => {
+		it('renders no content when no visible layers are available', async () => {
 			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: false };
 			const state = {
 				layers: {
@@ -133,7 +133,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
-		it('updates AttributionInfo component on layer action', async ()  => {
+		it('updates AttributionInfo component on layer action', async () => {
 			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
 			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {
@@ -187,7 +187,7 @@ describe('AttributionInfo', () => {
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
 		});
 
-		it('does not show duplicate attribution', async ()  => {
+		it('does not show duplicate attribution', async () => {
 			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
 			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {

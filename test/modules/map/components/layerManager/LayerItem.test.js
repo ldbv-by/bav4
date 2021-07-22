@@ -44,8 +44,8 @@ describe('LayerItem', () => {
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, { layers: layersReducer });
 			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
-			const  element = await TestUtils.render(LayerItem.tag);
-			element.layer =  layer ;
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = layer ;
 			return element;
 		};
 

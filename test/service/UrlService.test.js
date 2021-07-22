@@ -155,10 +155,10 @@ describe('UrlService', () => {
 
 	describe('qrCode URL', () => {
 
-		it('returns qrCode URL by using a provider',  () => {
+		it('returns qrCode URL by using a provider', () => {
 			const url = 'https://some.url';
 
-			const result =  instanceUnderTest.qrCode(url);
+			const result = instanceUnderTest.qrCode(url);
 
 			expect(result).toBe('https://qrcode/' + url);
 		});

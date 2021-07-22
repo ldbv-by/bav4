@@ -1,5 +1,5 @@
 import { modalReducer, MODAL_CONTENT_ID } from '../../../../src/modules/modal/store/modal.reducer';
-import { openModal,  } from '../../../../src/modules/modal/store/modal.action';
+import { openModal, } from '../../../../src/modules/modal/store/modal.action';
 import { TestUtils } from '../../../test-utils.js';
 
 
