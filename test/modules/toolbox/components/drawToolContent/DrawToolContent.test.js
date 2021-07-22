@@ -110,7 +110,7 @@ describe('DrawToolContent', () => {
 			const lastTool = {
 				name: 'polygon',
 				active: true,
-				activate: jasmine.createSpy(),
+				activate: jasmine.createSpy()
 			};
 			element._activeTool = lastTool;
 			const lastButton = element.shadowRoot.querySelector('#polygon');

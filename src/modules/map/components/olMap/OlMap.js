@@ -32,7 +32,7 @@ export class OlMap extends BaElement {
 			OlMeasurementHandler: measurementHandler,
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
-			OlHighlightLayerHandler: olHighlightLayerHandler,
+			OlHighlightLayerHandler: olHighlightLayerHandler
 		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
 
 		this._mapService = mapService;

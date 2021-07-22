@@ -68,7 +68,7 @@ describe('OlMap', () => {
 		deactivate() { },
 		get id() {
 			return 'drawLayerHandlerMockId';
-		},
+		}
 	};
 	const geolocationLayerHandlerMock = {
 		activate() { },

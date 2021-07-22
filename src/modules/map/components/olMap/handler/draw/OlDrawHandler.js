@@ -47,7 +47,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const createLayer = () => {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
-				source: source,
+				source: source
 			});
 			return layer;
 		};
@@ -168,7 +168,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		// TODO: implement deleteContition
 		const options = {
 			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
+			style: modifyStyleFunction
 		};
 
 		const modify = new Modify(options);

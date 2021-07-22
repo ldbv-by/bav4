@@ -12,7 +12,7 @@ describe('DrawPlugin', () => {
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer,
-			layers: layersReducer,
+			layers: layersReducer
 		});
 		return store;
 	};

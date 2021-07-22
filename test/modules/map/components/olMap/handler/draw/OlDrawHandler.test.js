@@ -131,16 +131,16 @@ describe('OlDrawHandler', () => {
 			return new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: container,
 				view: new View({
 					center: initialCenter,
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 		};
@@ -420,16 +420,16 @@ describe('OlDrawHandler', () => {
 			return new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: initialCenter,
 					zoom: zoom
-				}),
+				})
 			});
 
 		};
@@ -479,16 +479,16 @@ describe('OlDrawHandler', () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: [42, 42],
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 			map.renderSync();

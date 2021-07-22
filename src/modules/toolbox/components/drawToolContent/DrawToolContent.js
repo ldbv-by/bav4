@@ -30,7 +30,7 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
-			activate: () => setType('Symbol'),
+			activate: () => setType('Symbol')
 		}, {
 			id: 2,
 			name: 'text',
