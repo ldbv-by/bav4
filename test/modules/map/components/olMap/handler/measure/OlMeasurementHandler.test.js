@@ -86,7 +86,7 @@ describe('OlMeasurementHandler', () => {
 		active: false,
 		statistic: { length: 0, area: 0 },
 		reset: null,
-		fileSaveResult: { adminId:'init', fileId:'init' }
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
 	const setup = (state = initialState) => {
@@ -366,7 +366,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('looks for temporary measurement-layer and adds the feature to session-layer', (done) => {
-			const state = { ...initialState, fileSaveResult:null };
+			const state = { ...initialState, fileSaveResult: null };
 			setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
@@ -912,7 +912,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('stores after adding a feature', async (done) => {
-			const state  = { ... initialState, fileSaveResult:null };
+			const state  = { ...initialState, fileSaveResult: null };
 			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();

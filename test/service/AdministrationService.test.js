@@ -23,7 +23,7 @@ describe('AdministrationService', () => {
 
 		it('provides the administration values', async () => {
 			const administrationMock = { gemeinde: 'LDBV', gemarkung: 'Ref42' };
-			const instanceUnderTest = setup( async () => {
+			const instanceUnderTest = setup(async () => {
 				return administrationMock;
 			});
 

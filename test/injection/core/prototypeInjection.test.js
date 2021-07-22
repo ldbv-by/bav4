@@ -1,7 +1,7 @@
 import { $injector, http, router } from './testsConfig';
 
 //test proto
-const protoTest = function() {
+const protoTest = function () {
 	const { HttpService, RouterService } = $injector.inject('HttpService', 'RouterService');
 	this.http = HttpService;
 	this.router = RouterService;

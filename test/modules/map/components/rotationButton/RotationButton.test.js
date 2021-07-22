@@ -87,7 +87,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation:  mapServiceStub.getMinimalRotation() - .01 });
+			const element = await setup({ liveRotation: mapServiceStub.getMinimalRotation() - .01 });
 
 			changeLiveRotation();
 

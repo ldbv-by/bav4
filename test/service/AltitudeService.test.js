@@ -23,7 +23,7 @@ describe('AltitudeService', () => {
 
 		it('provides the altitude', async () => {
 			const mockAltitude = 42;
-			const instanceUnderTest = setup( async () => {
+			const instanceUnderTest = setup(async () => {
 				return mockAltitude;
 			});
 
