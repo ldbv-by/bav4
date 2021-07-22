@@ -920,7 +920,7 @@ describe('OlMeasurementHandler', () => {
 		});
 
 		it('stores after adding a feature', async (done) => {
-			const state  = { ...initialState, fileSaveResult: null };
+			const state = { ...initialState, fileSaveResult: null };
 			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();

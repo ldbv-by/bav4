@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
-import {  registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
 

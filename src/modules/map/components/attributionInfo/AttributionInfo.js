@@ -29,7 +29,7 @@ export class AttributionInfo extends BaElement {
 
 		const attributionsRaw = new Array();
 
-		for (const layer of active)  {
+		for (const layer of active) {
 			if (!layer.visible) {
 				continue;
 			}
@@ -62,7 +62,7 @@ export class AttributionInfo extends BaElement {
 			if (Array.isArray(attributions[0])) {
 				attribution.forEach((element) => {
 					const separator = index === attributions.length - 1 ? '' : ',';
-					attributionCopyright.push(element.copyright.url  != null ?
+					attributionCopyright.push(element.copyright.url != null ?
 						html`<a class='attribution attribution-link' target='new' href=${element.copyright.url} >  ${element.copyright.label}${separator}</a>` :
 						html`<span class='attribution' > ${element.copyright.label}${separator}</span>`);
 				});
