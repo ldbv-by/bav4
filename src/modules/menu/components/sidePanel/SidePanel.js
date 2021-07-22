@@ -80,7 +80,7 @@ export class SidePanel extends BaElement {
 			{ name: 'Share', description: '...share' },
 			{ name: 'Draw', description: '...draw and measure on the map' },
 			{ name: 'Routing', description: '...get a route' },
-			{ name: 'Tools', description: '...and do other fancy stuff!' },
+			{ name: 'Tools', description: '...and do other fancy stuff!' }
 		];
 
 		const onItemClicked = (index) => {

@@ -58,7 +58,7 @@ describe('kml', () => {
 		const text = new Text({
 			text: 'Foo',
 			fill: fill,
-			stroke: stroke,
+			stroke: stroke
 		});
 
 		const style = new Style({

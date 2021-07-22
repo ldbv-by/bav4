@@ -52,7 +52,7 @@ export class Popup extends BaElement {
 		}
 
 		const classes = {
-			show: this._type === 'show',
+			show: this._type === 'show'
 		};
 
 		return html`

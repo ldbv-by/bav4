@@ -15,7 +15,7 @@ describe('ContextClickPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			pointer: pointerReducer,
 			map: mapReducer,
-			mapContextMenu: mapContextMenuReducer,
+			mapContextMenu: mapContextMenuReducer
 		});
 
 		return store;

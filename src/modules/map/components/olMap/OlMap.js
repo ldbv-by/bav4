@@ -81,7 +81,7 @@ export class OlMap extends BaElement {
 			interactions: defaultInteractions({
 				//for embedded mode
 				//onFocusOnly: false,
-				pinchRotate: false,
+				pinchRotate: false
 
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()

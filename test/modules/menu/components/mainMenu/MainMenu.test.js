@@ -188,7 +188,7 @@ describe('MainMenu', () => {
 				mainMenu: {
 					open: true,
 					tabIndex: activeTabIndex
-				},
+				}
 			};
 			const element = await setup(state);
 

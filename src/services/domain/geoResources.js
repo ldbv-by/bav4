@@ -195,7 +195,7 @@ export class WMTSGeoResource extends GeoResource {
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
 	GPX: Symbol.for('gpx'),
-	GEOJSON: Symbol.for('geojson'),
+	GEOJSON: Symbol.for('geojson')
 });
 
 

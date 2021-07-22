@@ -67,7 +67,7 @@ export class ShareService {
 		const {
 			StoreService: storeService,
 			CoordinateService: coordinateService,
-			MapService: mapService,
+			MapService: mapService
 		} = $injector.inject('StoreService', 'CoordinateService', 'MapService');
 
 		const state = storeService.getStore().getState();
@@ -105,7 +105,7 @@ export class ShareService {
 	*/
 	_extractLayers() {
 		const {
-			StoreService: storeService,
+			StoreService: storeService
 		} = $injector.inject('StoreService');
 
 		const state = storeService.getStore().getState();
@@ -148,7 +148,7 @@ export class ShareService {
 	 */
 	_extractTopic() {
 		const {
-			StoreService: storeService,
+			StoreService: storeService
 		} = $injector.inject('StoreService');
 
 		const state = storeService.getStore().getState();

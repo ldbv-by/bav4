@@ -42,6 +42,7 @@ module.exports = {
 			'named': 'never',
 			'asyncArrow': 'always'
 		}],
-		'no-multi-spaces': ['error']
+		'no-multi-spaces': ['error'],
+		'comma-dangle': ['error']
 	}
 };

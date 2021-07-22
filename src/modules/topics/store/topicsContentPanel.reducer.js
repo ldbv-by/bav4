@@ -4,7 +4,7 @@ export const initialState = {
 	/**
 	 * Current index of active / displayed content
 	 */
-	index: 0,
+	index: 0
 };
 
 export const topicsContentPanelReducer = (state = initialState, action) => {
