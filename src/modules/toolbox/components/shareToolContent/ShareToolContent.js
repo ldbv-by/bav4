@@ -116,7 +116,7 @@ export class ShareToolContent extends AbstractToolContent {
 
 								const shareData = {
 									title: translate('toolbox_shareTool_title'),
-									url: shortUrl,
+									url: shortUrl
 								};
 
 								await this._window.navigator.share(shareData);

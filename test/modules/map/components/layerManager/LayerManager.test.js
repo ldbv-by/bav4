@@ -181,7 +181,7 @@ describe('LayerManager', () => {
 				dropEffect: 'none',
 				files: [],
 				items: [],
-				types: [],
+				types: []
 				// also effectAllowed
 			};
 		};
@@ -424,7 +424,7 @@ describe('LayerManager', () => {
 
 		it('renders changed layer.opacity', async () => {
 			const layer = {
-				...defaultLayerProperties, id: 'id0',
+				...defaultLayerProperties, id: 'id0'
 			};
 			const state = {
 				layers: {

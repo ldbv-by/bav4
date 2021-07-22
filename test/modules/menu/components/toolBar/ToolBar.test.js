@@ -143,7 +143,7 @@ describe('ToolBarElement', () => {
 				media: {
 					portrait: false,
 					minWidth: true
-				},
+				}
 			};
 
 			const element = await setup(state);
@@ -159,7 +159,7 @@ describe('ToolBarElement', () => {
 				media: {
 					portrait: false,
 					minWidth: false
-				},
+				}
 			};
 
 			const element = await setup(state);
@@ -175,7 +175,7 @@ describe('ToolBarElement', () => {
 				media: {
 					portrait: true,
 					minWidth: true
-				},
+				}
 			};
 
 			const element = await setup(state);
@@ -191,7 +191,7 @@ describe('ToolBarElement', () => {
 				media: {
 					portrait: true,
 					minWidth: false
-				},
+				}
 			};
 
 			const element = await setup(state);

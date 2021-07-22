@@ -9,7 +9,7 @@ export class HelpTooltip {
 
 	constructor() {
 		this._overlay = null;
-		const { TranslationService } = $injector.inject('TranslationService',);
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 
@@ -82,7 +82,7 @@ export class HelpTooltip {
 		return this._overlay !== null;
 	}
 
-	_createOverlay(overlayOptions = {}, type,) {
+	_createOverlay(overlayOptions = {}, type) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
 		return new Overlay({ ...overlayOptions, element: measurementOverlay });

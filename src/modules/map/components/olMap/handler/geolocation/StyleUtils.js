@@ -13,13 +13,13 @@ export const geolocationStyleFunction = () => [new Style({
 	image: new CircleStyle({
 		radius: 6,
 		fill: new Fill({
-			color: [255, 0, 0, 0.9],
+			color: [255, 0, 0, 0.9]
 		}),
 		stroke: new Stroke({
 			color: [255, 255, 255, 1],
-			width: 2,
-		}),
-	}),
+			width: 2
+		})
+	})
 })];
 
 export const nullStyleFunction = () => [new Style({})];
@@ -52,9 +52,9 @@ export const createAnimateFunction = (map, feature, endCallback) => {
 				radius: radius,
 				stroke: new Stroke({
 					color: 'rgba(255, 0, 0, ' + opacity + ')',
-					width: 0.25 + opacity,
-				}),
-			}),
+					width: 0.25 + opacity
+				})
+			})
 		});
 
 		vectorContext.setStyle(style);

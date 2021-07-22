@@ -49,7 +49,7 @@ export const measureStyleFunction = (feature) => {
 				}
 			},
 			zIndex: 0
-		}),
+		})
 	];
 
 	return styles;
@@ -63,10 +63,11 @@ export const modifyStyleFunction = () => {
 				color: RED_COLOR,
 				width: 1 }),
 			fill: new Fill({
-				color: WHITE_COLOR,
-			}),
-		}),
-	})];
+				color: WHITE_COLOR
+			})
+		})
+	})]
+	;
 };
 
 export const createSelectStyleFunction = (styleFunction) => {
@@ -77,8 +78,8 @@ export const createSelectStyleFunction = (styleFunction) => {
 				color: BLACK_COLOR,
 				width: 1 }),
 			fill: new Fill({
-				color: WHITE_COLOR,
-			}),
+				color: WHITE_COLOR
+			})
 		}),
 		geometry: (feature) => {
 			const getCoordinates = (geometry) => {

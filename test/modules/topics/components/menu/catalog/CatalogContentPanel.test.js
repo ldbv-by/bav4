@@ -16,7 +16,7 @@ window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 describe('TopicsContentPanel', () => {
 
 	const catalogServiceMock = {
-		async byId() { },
+		async byId() { }
 	};
 
 	const topicsServiceMock = {

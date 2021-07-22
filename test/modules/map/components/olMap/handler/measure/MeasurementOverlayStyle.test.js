@@ -14,7 +14,7 @@ register(proj4);
 describe('MeasurementOverlayStyle', () => {
 	const environmentServiceMock = { isTouch: () => false };
 	const setup = () => {
-		TestUtils.setupStoreAndDi({},);
+		TestUtils.setupStoreAndDi({});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -128,7 +128,7 @@ describe('MeasurementOverlayStyle', () => {
 		const geometry = new LineString([[0, 0], [12345, 0]]);
 		const feature = new Feature({ geometry: geometry });
 
-		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock,);
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(12);
 	});

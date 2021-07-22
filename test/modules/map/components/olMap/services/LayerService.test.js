@@ -12,7 +12,7 @@ describe('LayerService', () => {
 	const vectorImportService = {
 		vectorSourceFromInternalData: () => { },
 		vectorSourceFromExternalData: () => { },
-		applyStyles: () => { },
+		applyStyles: () => { }
 	};
 	const georesourceService = {
 		byId: () => { }

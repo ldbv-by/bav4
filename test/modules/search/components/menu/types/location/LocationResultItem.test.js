@@ -17,7 +17,7 @@ describe('LocationResultItem', () => {
 
 		const initialState = {
 			media: {
-				portrait: false,
+				portrait: false
 			},
 			...state
 		};
@@ -117,7 +117,7 @@ describe('LocationResultItem', () => {
 						open: true
 					},
 					media: {
-						portrait: portraitOrientation,
+						portrait: portraitOrientation
 					}
 				});
 				element.data = data;

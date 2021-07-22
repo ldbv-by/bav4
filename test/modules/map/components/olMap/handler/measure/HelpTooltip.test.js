@@ -5,7 +5,7 @@ import { MeasureSnapType, MeasureStateType } from '../../../../../../../src/modu
 import { TestUtils } from '../../../../../../test-utils.js';
 
 
-TestUtils.setupStoreAndDi({},);
+TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('UnitsService', {
 	// eslint-disable-next-line no-unused-vars
 	formatDistance: (distance, decimals) => {
@@ -41,7 +41,7 @@ describe('HelpTooltip', () => {
 	describe('on activate', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
-			const mapMock = { addOverlay: addSpy, };
+			const mapMock = { addOverlay: addSpy };
 
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.activate(mapMock);

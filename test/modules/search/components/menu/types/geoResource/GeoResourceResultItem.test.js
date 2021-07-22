@@ -110,7 +110,7 @@ describe('GeoResourceResultItem', () => {
 						open: true
 					},
 					media: {
-						portrait: portraitOrientation,
+						portrait: portraitOrientation
 					}
 				});
 				element.data = data;

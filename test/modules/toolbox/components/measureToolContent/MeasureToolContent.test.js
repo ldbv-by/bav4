@@ -24,7 +24,7 @@ describe('MeasureToolContent', () => {
 			statistic: { length: 0, area: 0 },
 			fileSaveResult: null,
 			reset: null,
-			remove: null,
+			remove: null
 		}
 	};
 	const shareServiceMock = {
@@ -135,7 +135,7 @@ describe('MeasureToolContent', () => {
 					mode: 'draw',
 					statistic: { length: 42, area: 0 },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -171,7 +171,7 @@ describe('MeasureToolContent', () => {
 					statistic: { length: 42, area: 3 },
 					mode: 'draw',
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -188,7 +188,7 @@ describe('MeasureToolContent', () => {
 					active: true,
 					statistic: { length: 42, area: 0 },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -207,7 +207,7 @@ describe('MeasureToolContent', () => {
 					active: true,
 					statistic: { length: 42, area: 2 },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -236,7 +236,7 @@ describe('MeasureToolContent', () => {
 					active: true,
 					statistic: { length: 42, area: 2 },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
@@ -262,7 +262,7 @@ describe('MeasureToolContent', () => {
 					active: true,
 					statistic: { length: 42, area: 0 },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -280,7 +280,7 @@ describe('MeasureToolContent', () => {
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -296,7 +296,7 @@ describe('MeasureToolContent', () => {
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: null },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const element = await setup(state);
@@ -312,7 +312,7 @@ describe('MeasureToolContent', () => {
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
@@ -337,7 +337,7 @@ describe('MeasureToolContent', () => {
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
-					remove: null,
+					remove: null
 				}
 			};
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
@@ -367,7 +367,7 @@ describe('MeasureToolContent', () => {
 				mode: null,
 				statistic: { length: 42, area: 0 },
 				reset: null,
-				remove: null,
+				remove: null
 			};
 
 			it('shows the measurement sub-text for mode:active', async () => {

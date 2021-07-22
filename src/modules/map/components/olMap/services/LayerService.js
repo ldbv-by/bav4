@@ -60,7 +60,7 @@ export class LayerService {
 			case GeoResourceTypes.VECTOR: {
 
 				const vectorLayer = new VectorLayer({
-					id: geoResource.id,
+					id: geoResource.id
 				});
 				let vectorSource;
 				if (geoResource.url) {
