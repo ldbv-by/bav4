@@ -178,17 +178,13 @@ describe('OlMeasurementHandler', () => {
 
 		};
 
-		it('adds a label to the session vectorlayer', (done) => {
+		it('adds a label to the session vectorlayer', () => {
 			setup();
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
-
-			setTimeout(() => {
-				expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
-				done();
-			});
-
+			
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');			
 		});
 
 		describe('uses Interactions', () => {
