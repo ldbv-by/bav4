@@ -11,7 +11,7 @@ import css from './shareToolDialog.css';
  */
 export class ShareToolDialog extends BaElement {
 
-	constructor () {
+	constructor() {
 		super();
 		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 		this._translationService = translationService;

@@ -36,6 +36,11 @@ module.exports = {
 		'space-in-parens': ['error'],
 		'eol-last': ['error'],
 		'key-spacing': ['error'],
-		'rest-spread-spacing': ['error']
+		'rest-spread-spacing': ['error'],
+		'space-before-function-paren': ['error', {
+			'anonymous': 'always',
+			'named': 'never',
+			'asyncArrow': 'always'
+		}]
 	}
 };

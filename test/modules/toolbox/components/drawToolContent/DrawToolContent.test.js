@@ -43,7 +43,7 @@ describe('DrawToolContent', () => {
 
 	describe('when initialized', () => {
 
-		it('builds list of tools', async() => {
+		it('builds list of tools', async () => {
 			const element = await setup();
 
 			expect(element._tools).toBeTruthy();
@@ -52,7 +52,7 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
 
-		it('activates a tool', async() => {
+		it('activates a tool', async () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
@@ -64,7 +64,7 @@ describe('DrawToolContent', () => {
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 		});
 
-		it('deactivates last tool, when activate another', async() => {
+		it('deactivates last tool, when activate another', async () => {
 			const element = await setup();
 			const lastTool = {
 				name: 'polygon',
@@ -85,7 +85,7 @@ describe('DrawToolContent', () => {
 			expect(lastButton.classList.contains('is-active')).toBeFalse();
 		});
 
-		it('toggles a tool', async() => {
+		it('toggles a tool', async () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
