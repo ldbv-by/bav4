@@ -31,7 +31,7 @@ export const openModal = (title, content, options = {}) => {
 		type: MODAL_CHANGED,
 		payload: {
 			title: title,
-			options : options
+			options: options
 		}
 	});
 };

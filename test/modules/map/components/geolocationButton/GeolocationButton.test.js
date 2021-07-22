@@ -14,7 +14,7 @@ describe('GeolocationButton', () => {
 	const setup = async (geolocationState = defaultState) => {
 
 		const state = {
-			geolocation:geolocationState
+			geolocation: geolocationState
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { geolocation: geolocationReducer });
@@ -36,7 +36,7 @@ describe('GeolocationButton', () => {
 
 
 		it('shows geolocation button in active state', async() => {
-			const element = await setup({ ...defaultState, active:true });
+			const element = await setup({ ...defaultState, active: true });
 
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_deactivate');
@@ -45,7 +45,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('shows geolocation button in denied state', async() => {
-			const element = await setup({ ...defaultState, denied:true });
+			const element = await setup({ ...defaultState, denied: true });
 
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_denied');
@@ -65,7 +65,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('deactivates geolocation', async() => {
-			const element = await setup({ ...defaultState, active:true });
+			const element = await setup({ ...defaultState, active: true });
 
 			expect(store.getState().geolocation.active).toBe(true);
 			element.shadowRoot.querySelector('button').click();

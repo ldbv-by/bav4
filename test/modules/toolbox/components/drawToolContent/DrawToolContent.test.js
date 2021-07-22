@@ -17,11 +17,11 @@ describe('DrawToolContent', () => {
 		const state = {
 			toolContainer: {
 				open: false,
-				contentId:false
+				contentId: false
 			}
 		};
 
-		TestUtils.setupStoreAndDi(state, {} );
+		TestUtils.setupStoreAndDi(state, {});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -67,10 +67,10 @@ describe('DrawToolContent', () => {
 		it('deactivates last tool, when activate another', async() => {
 			const element = await setup();
 			const lastTool = {
-				name:'polygon',
-				active:true,
-				activate:jasmine.createSpy(),
-				deactivate:jasmine.createSpy()
+				name: 'polygon',
+				active: true,
+				activate: jasmine.createSpy(),
+				deactivate: jasmine.createSpy()
 			};
 			element._activeTool = lastTool;
 			const lastButton = element.shadowRoot.querySelector('#polygon');

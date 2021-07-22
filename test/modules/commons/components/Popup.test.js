@@ -68,7 +68,7 @@ describe('Popup', () => {
 	describe('when initialized with \'right\' and \'top\' attribute', () => {
 
 		it('renders the popup with \'right\' and \'top\' initial', async () => {
-			const element = await TestUtils.render(Popup.tag, { right:'60', top:'210' }, '<span>some</span>');
+			const element = await TestUtils.render(Popup.tag, { right: '60', top: '210' }, '<span>some</span>');
 
 			expect(element.shadowRoot.querySelector('.popup').style.right).toEqual('');
 			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('');

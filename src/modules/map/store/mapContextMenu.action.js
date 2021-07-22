@@ -31,7 +31,7 @@ const getStore = () => {
 export const open = (coordinate, id) => {
 	getStore().dispatch({
 		type: MAP_CONTEXT_MENU_CLICKED,
-		payload: { coordinate: coordinate, id : id }
+		payload: { coordinate: coordinate, id: id }
 	});
 };
 
@@ -42,6 +42,6 @@ export const open = (coordinate, id) => {
 export const close = () => {
 	getStore().dispatch({
 		type: MAP_CONTEXT_MENU_CLICKED,
-		payload:  { coordinate: null }
+		payload: { coordinate: null }
 	});
 };

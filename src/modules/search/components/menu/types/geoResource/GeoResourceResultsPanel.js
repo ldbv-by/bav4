@@ -60,7 +60,7 @@ export class GeoResouceResultsPanel extends BaElement {
 
 		const iconCollapseClass = {
 			iconexpand: !this._isCollapsed,
-			isdisabled:  !this._geoRersourceSearchResults.length
+			isdisabled: !this._geoRersourceSearchResults.length
 		};
 
 		const bodyCollapseClass = {
