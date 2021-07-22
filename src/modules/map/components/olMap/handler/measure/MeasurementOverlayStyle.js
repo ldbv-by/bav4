@@ -36,7 +36,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	/**
 	 * @override
-	 * @param {ol.feature} olFeature 
+	 * @param {ol.feature} olFeature
 	 * @param {ol.map} olMap
 	 */
 	add(olFeature, olMap) {
@@ -55,14 +55,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the topmost layer
 	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the specified feature, based on the styletype belonging to the feature
 	 * @param {ol.Geometry} [geometry] the geometry, may or may not given, to update the geometry-based style of the specified feature, based on the styletype belonging to the feature
-	
+
 	/**
 	 * Updates overlays (added by OverlayStyle-classes) on the map and the feature
 	 * @override
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 * @param {ol.Feature} olFeature the feature
-	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
-	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the OverlayStyle
 	 */
 	update(olFeature, olMap, properties = {}) {
@@ -79,13 +79,13 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				if ('visible' in properties || 'top' in properties) {
 					const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
 					const valueOrDefaultTop = 'top' in properties ? properties.top : true;
-	
-					return (valueOrDefaultVisible && valueOrDefaultTop) ? 'inherit' : 'none';	
+
+					return (valueOrDefaultVisible && valueOrDefaultTop) ? 'inherit' : 'none';
 				}
 				return 'inherit';
 			};
-			
-			const isVisibleStyle = isVisible(properties); 
+
+			const isVisibleStyle = isVisible(properties);
 			const opacity = 'opacity' in properties ? properties.opacity : 1;
 
 			// setting both properties, to prevent an issue with webkit-based browsers
@@ -100,7 +100,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	/**
 	 * @override
-	 * @param {ol.feature} olFeature 
+	 * @param {ol.feature} olFeature
 	 * @param {ol.map} olMap
 	 */
 	remove(olFeature, olMap) {

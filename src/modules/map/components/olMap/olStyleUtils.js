@@ -22,13 +22,13 @@ export const measureStyleFunction = (feature) => {
 		width:3,
 		lineDash:[8]
 	});
-	
+
 	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
 
 	const styles = [
 		new Style({
-			fill: new Fill({ 
-				color:RED_COLOR.concat([0.4]) 
+			fill: new Fill({
+				color:RED_COLOR.concat([0.4])
 			}),
 			stroke:dashedStroke,
 			zIndex:zIndex
@@ -36,8 +36,8 @@ export const measureStyleFunction = (feature) => {
 		new Style({
 			stroke:stroke,
 			geometry: feature => {
-				
-				if (canShowAzimuthCircle(feature.getGeometry())) {					
+
+				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const coords = feature.getGeometry().getCoordinates();
 					const radius = getGeometryLength(feature.getGeometry());
 					const circle = new Circle(coords[0], radius);
@@ -60,7 +60,7 @@ export const modifyStyleFunction = () => {
 				width:1 }),
 			fill: new Fill({
 				color: WHITE_COLOR,
-			}),				
+			}),
 		}),
 	})]
 	;
@@ -75,14 +75,14 @@ export const createSelectStyleFunction = (styleFunction) => {
 				width:1 }),
 			fill: new Fill({
 				color: WHITE_COLOR,
-			}),				
-		}),	
+			}),
+		}),
 		geometry: (feature) => {
 			const getCoordinates = (geometry) => {
 				if (geometry instanceof LineString) {
 					return feature.getGeometry().getCoordinates();
-				} 
-				
+				}
+
 				if (geometry instanceof Polygon) {
 					return feature.getGeometry().getCoordinates()[0];
 				}
@@ -92,32 +92,32 @@ export const createSelectStyleFunction = (styleFunction) => {
 			if (coordinates) {
 				return new MultiPoint(coordinates);
 			}
-	
+
 			return feature.getGeometry();
-	
+
 		},
 		zIndex:ZPOINT - 1
 	});
-	
+
 
 	return (feature, resolution) => {
-	
+
 		const styles = styleFunction(feature, resolution);
-	
-		
+
+
 		return styles.concat([appendableVertexStyle]);
 	};
 };
 
 export const createSketchStyleFunction = (styleFunction) => {
-	
+
 	const sketchPolygon = new Style({ fill: new Fill({
 		color:WHITE_COLOR.concat([0.4])
 	}),
 	stroke: new Stroke({
 		color:WHITE_COLOR,
 		width:0
-	}) 
+	})
 	});
 
 	return (feature, resolution) => {

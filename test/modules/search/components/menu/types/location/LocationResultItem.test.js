@@ -44,7 +44,7 @@ describe('LocationResultItem', () => {
 
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 

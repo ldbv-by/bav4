@@ -5,7 +5,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
 /**
- * A function that registers proj4 definitions. 
+ * A function that registers proj4 definitions.
  *
  * @typedef {function(coordinate) : (Promise<number>)} proj4Provider
  */

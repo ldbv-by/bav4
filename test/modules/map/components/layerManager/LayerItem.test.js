@@ -35,7 +35,7 @@ describe('LayerItem', () => {
 			files: [],
 			items: [],
 			types: [],
-			// also effectAllowed      
+			// also effectAllowed
 		};
 	};
 

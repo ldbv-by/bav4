@@ -8,7 +8,7 @@ import { setFetching } from '../../../../../store/network/network.action';
 
 /**
  * Converts a geoResource to an ol layer.
- * Caching will be implemented in the future. 
+ * Caching will be implemented in the future.
  * @class
  * @author taulinger
  */

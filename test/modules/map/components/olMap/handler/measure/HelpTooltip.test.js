@@ -6,7 +6,7 @@ import { TestUtils } from '../../../../../../test-utils.js';
 
 
 TestUtils.setupStoreAndDi({},);
-$injector.registerSingleton('UnitsService', { 
+$injector.registerSingleton('UnitsService', {
 	// eslint-disable-next-line no-unused-vars
 	formatDistance:(distance, decimals) => {
 		return distance + ' m';
@@ -33,7 +33,7 @@ describe('HelpTooltip', () => {
 		classUnderTest._hide = jasmine.createSpy();
 
 		classUnderTest.notify({});
-        
+
 		expect(classUnderTest._updateOverlay).not.toHaveBeenCalled();
 		expect(classUnderTest._hide).not.toHaveBeenCalled();
 	});
@@ -42,8 +42,8 @@ describe('HelpTooltip', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
 			const mapMock = { addOverlay:addSpy,  };
-		
-			const classUnderTest = new HelpTooltip();			
+
+			const classUnderTest = new HelpTooltip();
 			classUnderTest.activate(mapMock);
 
 			expect(addSpy).toHaveBeenCalledWith(jasmine.any(Overlay));
@@ -54,7 +54,7 @@ describe('HelpTooltip', () => {
 			const removeSpy = jasmine.createSpy();
 			const mapMock = { addOverlay:() => {}, removeOverlay:removeSpy };
 			const classUnderTest = new HelpTooltip();
-			
+
 			classUnderTest.activate(mapMock);
 			classUnderTest.deactivate();
 
@@ -66,7 +66,7 @@ describe('HelpTooltip', () => {
 		const measureStateTemplate = {
 			type:null,
 			snap:null,
-			coordinate:[0, 0], 
+			coordinate:[0, 0],
 			pointCount:42,
 			dragging:false
 		};
@@ -75,7 +75,7 @@ describe('HelpTooltip', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
 			const measureState = { ...measureStateTemplate, type:MeasureStateType.ACTIVE };
-			
+
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify(measureState);
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_start');
@@ -84,7 +84,7 @@ describe('HelpTooltip', () => {
 		it('with measurestate \'draw\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
-			
+
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW, pointCount:1 });
 			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.DRAW });
@@ -93,13 +93,13 @@ describe('HelpTooltip', () => {
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line<br/>map_olMap_handler_delete_last_point');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_snap_first_point<br/>map_olMap_handler_delete_last_point');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');            
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
 		});
 
 		it('with measurestate \'modify\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
-			
+
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.MODIFY });
 			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.MODIFY, snap:MeasureSnapType.VERTEX });
@@ -113,20 +113,20 @@ describe('HelpTooltip', () => {
 		it('with measurestate \'overlay\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
-			
+
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify({ ...measureStateTemplate, type:MeasureStateType.OVERLAY });
-			
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_drag_overlay');			
+
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_drag_overlay');
 		});
 
 		it('with measurestate \'dragging\' hide overlay', () => {
 			const classUnderTest = new HelpTooltip();
-			
+
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify({ ...measureStateTemplate, dragging:true });
-			
-			expect(classUnderTest._overlay.getPosition()).toBeUndefined();			
+
+			expect(classUnderTest._overlay.getPosition()).toBeUndefined();
 		});
 	});
 });

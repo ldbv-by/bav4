@@ -7,9 +7,9 @@ import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '.
  * @deprecated
  */
 export class SearchResultProviderService {
-	
+
 	/**
-	 * 
+	 *
 	 * @param {LocationResultProvider} [locationResultProvider=loadBvvLocationSearchResults]
 	 * @param {GeoresourceResultProvider} [georesourceResultProvider=loadBvvGeoResourceSearchResults]
 	 */

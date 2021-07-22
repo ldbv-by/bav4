@@ -3,13 +3,13 @@ import { $injector } from '../../../../../injection';
 
 /**
  * Provides features from sources loaded over http
- * @param {Extent} extent 
- * @param {Resolution} resolution 
- * @param {ProjectionLike} targetProj 
+ * @param {Extent} extent
+ * @param {Resolution} resolution
+ * @param {ProjectionLike} targetProj
  */
 export const load = async function (extent, resolution, targetProj) {
 	//no arrow function here, cause "this" is bound to the source
-	
+
 	const vectorSource = this;
 	const { HttpService: httpService } = $injector.inject('HttpService');
 

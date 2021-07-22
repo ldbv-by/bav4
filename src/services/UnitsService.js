@@ -8,7 +8,7 @@ const Provider_Metric = {
     * Appends the metric unit of distance to the specified number
     * @param {number} distance the distance value
 	* @param {number} decimals the number of digits after the decimal point
-    * @returns {String} the formatted value 
+    * @returns {String} the formatted value
     */
 	distance(distance, decimals) {
 		let formatted;
@@ -18,7 +18,7 @@ const Provider_Metric = {
 			}
 			else {
 				formatted = (Math.round((distance / Kilometer_In_Meters) * 100) / 100) + ' ' + 'km';
-			}			
+			}
 		}
 		else {
 			if (decimals) {
@@ -34,7 +34,7 @@ const Provider_Metric = {
     * Appends the metric unit of area to the specified number
     * @param {number} area the area value
 	* @param {number} decimals the number of digits after the decimal point
-    * @returns {String} the formatted value 
+    * @returns {String} the formatted value
     */
 	area(area, decimals ) {
 		let formatted;
@@ -44,7 +44,7 @@ const Provider_Metric = {
 			}
 			else {
 				formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100) + ' ' + 'km&sup2;';
-			}			
+			}
 		}
 		else if (area >= Hektar_In_Squaredmeters) {
 			if (decimals) {
@@ -83,11 +83,11 @@ export class UnitsService {
     * The current unit of distance is set per config.
     * @param {number} distance the distance value
 	* @param {number} decimals  Optional, the number of digits after the decimal point. Default is 2
-    * @returns {String} the formatted value 
+    * @returns {String} the formatted value
     */
 	formatDistance(distance, decimals = 2) {
 		switch (this._systemOfUnits) {
-			case 'metric':                
+			case 'metric':
 			default:
 				return Provider_Metric.distance(distance, decimals);
 		}
@@ -95,16 +95,16 @@ export class UnitsService {
 
 	/**
     * Appends the appropriate areal unit to the specified number
-    * @param {number} area 
+    * @param {number} area
 	* @param {number} decimals Optional, the number of digits after the decimal point. Default is 2
-    * @returns {String} the formatted value 
+    * @returns {String} the formatted value
     */
 	formatArea(area, decimals = 2) {
 		switch (this._systemOfUnits) {
-			case 'metric':                
+			case 'metric':
 			default:
 				return Provider_Metric.area(area, decimals);
 		}
 	}
-	
+
 }

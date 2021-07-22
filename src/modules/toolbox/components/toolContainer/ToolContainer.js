@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '../shareToolContent/ShareToolContent'; 
+import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import css from './toolContainer.css';
@@ -98,7 +98,7 @@ export class ToolContainer extends BaElement {
 
 	/**
  * @override
- * @param {Object} globalState 
+ * @param {Object} globalState
  */
 	extractState(globalState) {
 		const { toolContainer: { open, contentId }, media: { portrait, minWidth } } = globalState;

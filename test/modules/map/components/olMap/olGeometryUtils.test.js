@@ -301,36 +301,36 @@ describe('isVertexOfGeometry', () => {
 });
 
 describe('getPartitionDelta', () => {
-	
+
 	it('calculates a default delta', () => {
-		const lineString = new LineString([[0, 0], [15, 0]]);		
+		const lineString = new LineString([[0, 0], [15, 0]]);
 
 		const delta = getPartitionDelta(lineString);
-		
+
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta with standard resolution', () => {
-		const lineString = new LineString([[0, 0], [200, 0]]);		
+		const lineString = new LineString([[0, 0], [200, 0]]);
 
 		const delta = getPartitionDelta(lineString);
-		
+
 		expect(delta).toBe(0.5);
 	});
 
 	it('calculates a delta with defined resolution', () => {
-		const lineString = new LineString([[0, 0], [5000, 0]]);		
+		const lineString = new LineString([[0, 0], [5000, 0]]);
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
-		
+
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta for longest lines', () => {
-		const lineString = new LineString([[0, 0], [50000000, 0]]);		
+		const lineString = new LineString([[0, 0], [50000000, 0]]);
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
-		
+
 		expect(delta).toBe(0.02);
 	});
 });

@@ -28,7 +28,7 @@ describe('MapEventHandler', () => {
 			it('throws excepetion when abstract #register is called without overriding', () => {
 				expect(() => new OlMapEventHandlerImpl().register()).toThrowError(TypeError, 'Please implement abstract method #register or do not call super.activate from child.');
 			});
-			
+
 			it('return the id of this handler', () => {
 				expect(new OlMapEventHandlerImpl().id).toBe('some');
 			});

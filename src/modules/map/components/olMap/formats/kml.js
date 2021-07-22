@@ -41,7 +41,7 @@ export const create = (layer, projection) => {
 		.filter(f =>  f.getGeometry().getType() !== 'Circle')
 		.forEach(f => {
 			const clone = f.clone();
-			clone.setId(f.getId());    
+			clone.setId(f.getId());
 			clone.getGeometry().setProperties(f.getGeometry().getProperties());
 			clone.getGeometry().transform(projection, KML_PROJECTION_LIKE);
 
@@ -52,11 +52,11 @@ export const create = (layer, projection) => {
 			let styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
 				styles = styles(clone);
-			
+
 				const kmlStyle = sanitizeStyle(styles);
 				clone.setStyle(kmlStyle);
 			}
-			
+
 			kmlFeatures.push(clone);
 		});
 
@@ -71,7 +71,7 @@ export const create = (layer, projection) => {
 		const removeNoImagePlaceHolder = (kmlString) => kmlString.replace(/<Icon>\s*<href>noimage<\/href>\s*<\/Icon>/g, '');
 		const removeEmptyPlacemark = (kmlString) => kmlString.replace(/<Placemark\/>/g, '');
 
-		kmlString = removeEmptyPlacemark(removeNoImagePlaceHolder(kmlString));		
+		kmlString = removeEmptyPlacemark(removeNoImagePlaceHolder(kmlString));
 
 		if (layer.label) {
 			kmlString =  kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
@@ -83,6 +83,6 @@ export const create = (layer, projection) => {
 };
 
 export const readFeatures = (kmlString) => {
-	const format = new KML({ writeStyles: true });						
-	return format.readFeatures(kmlString);		
+	const format = new KML({ writeStyles: true });
+	return format.readFeatures(kmlString);
 };

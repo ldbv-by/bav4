@@ -53,7 +53,7 @@ describe('Injector', () => {
 		});
 
 		it('resets the ready flag', () => {
-			
+
 			$injector.ready();
 			const returnValue = $injector.reset();
 
@@ -67,7 +67,7 @@ describe('Injector', () => {
 
 			const spy = jasmine.createSpy();
 			$injector.onReady(spy);
-			
+
 			$injector.ready();
 
 			expect($injector._ready).toBeTrue();
@@ -77,7 +77,7 @@ describe('Injector', () => {
 		it('warns when already set ready', () => {
 
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			$injector.ready();
 			$injector.ready();
 

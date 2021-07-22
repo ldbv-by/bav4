@@ -161,7 +161,7 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;

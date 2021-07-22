@@ -119,7 +119,7 @@ describe('CatalogLeaf', () => {
 			});
 
 			describe('geoResource not available', () => {
-				
+
 				it('sets the georesourceId as fallback label', async () => {
 					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
 					//load leaf data

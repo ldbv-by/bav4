@@ -11,7 +11,7 @@ import { toggle } from '../../menu/store/mainMenu.action';
 
 
 /**
- * Container element for header stuff. 
+ * Container element for header stuff.
  * @class
  * @author taulinger
  * @author alsturm
@@ -179,7 +179,7 @@ export class Header extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait: isPortrait, minWidth: hasMinWidth } } = globalState;

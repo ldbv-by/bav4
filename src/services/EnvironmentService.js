@@ -6,8 +6,8 @@ import { $injector } from '../injection';
 export class EnvironmentService {
 
 	/**
-	 * 
-	 * @param {_window} [_window=window] 
+	 *
+	 * @param {_window} [_window=window]
 	 */
 	constructor(_window = window) {
 		this._window = _window;
@@ -61,7 +61,7 @@ export class EnvironmentService {
 	 * Should not be used anymore.
 	 * Use a media query like
 	 * ```
-	 * window.matchMedia('(orientation: portrait)') 
+	 * window.matchMedia('(orientation: portrait)')
 	 * ```
 	 * </pre></code>
 	 * instead.
@@ -85,7 +85,7 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @returns `true` if we are in embedded mode
 	 */
 	isEmbedded() {

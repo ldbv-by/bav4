@@ -7,7 +7,7 @@ import { contextMenueClose } from '../store/contextMenue.action';
 import css from './contextMenue.css';
 
 /**
- * 
+ *
  * @class
  * @author thiloSchlemmer
  */
@@ -16,9 +16,9 @@ export class ContextMenue extends BaElement {
 	/**
 	 * Calculates the placement of the menu inside the window.
 	 * If the needed space of the menu is in conflict with the
-	 * existing space on the bottom or on the right side of the 
+	 * existing space on the bottom or on the right side of the
 	 * baseCoordinate, then the placement will be adjusted accordingly.
-	 * @private   
+	 * @private
 	 */
 	_calculateMenuPlacement(baseCoordinate) {
 		const offset = 5;
@@ -70,9 +70,9 @@ export class ContextMenue extends BaElement {
 		}
 
 		const classes = {
-			context_menu_active:isOpen			
+			context_menu_active:isOpen
 		};
-		
+
 		return html`
         <style>${css}</style>
 		<nav id=context-menu class='context-menu ${classMap(classes)}' style=${styleMap(menuStyle)} >
@@ -88,7 +88,7 @@ export class ContextMenue extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { contextMenue: { data } } = globalState;
