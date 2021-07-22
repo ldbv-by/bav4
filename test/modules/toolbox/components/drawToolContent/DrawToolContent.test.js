@@ -26,8 +26,8 @@ describe('DrawToolContent', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock
-			})			
-			.registerSingleton('TranslationService', { translate: (key) => key });			
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(DrawToolContent.tag);
 	};
 
@@ -66,9 +66,9 @@ describe('DrawToolContent', () => {
 
 		it('deactivates last tool, when activate another', async() => {
 			const element = await setup();
-			const lastTool = {    
-				name:'polygon', 
-				active:true, 
+			const lastTool = {
+				name:'polygon',
+				active:true,
 				activate:jasmine.createSpy(),
 				deactivate:jasmine.createSpy()
 			};
@@ -93,7 +93,7 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			
+
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 
 			toolButton.click();

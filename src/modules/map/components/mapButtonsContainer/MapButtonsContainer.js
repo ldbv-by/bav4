@@ -4,18 +4,18 @@ import css from './mapButtonsContainer.css';
 
 /**
  * Container for Map-Buttons
- * @class 
- *@author alsturm 
+ * @class
+ *@author alsturm
  */
 
 export class MapButtonsContainer extends BaElement {
 
 	constructor() {
 		super();
-	} 
+	}
 
 	/**
-     *@override 
+     *@override
      */
 	createView() {
 		return html`
@@ -27,9 +27,9 @@ export class MapButtonsContainer extends BaElement {
 				<ba-extent-button></ba-extent-button>              
             </div>			            
         `;
-	} 
+	}
 
 	static get tag() {
 		return 'ba-map-button-container';
-	} 
-} 
+	}
+}

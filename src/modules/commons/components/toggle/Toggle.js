@@ -5,7 +5,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 
 /**
- * 
+ *
  * @class
  * @author taulinger
  */

@@ -14,7 +14,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
  * (remove,change visibility and opacity)
  * @class
  * @author thiloSchlemmer
- * @author taulinger 
+ * @author taulinger
  * @author alsturm
  */
 export class LayerItem extends AbstractContentPanel {
@@ -75,7 +75,7 @@ export class LayerItem extends AbstractContentPanel {
 			modifyLayer(this._layer.id, { visible: event.detail.checked });
 		};
 		const toggleCollapse = () => {
-			//change of local state -> explicit call of #render() 
+			//change of local state -> explicit call of #render()
 			this._layer.collapsed = !this._layer.collapsed;
 			this.render();
 		};

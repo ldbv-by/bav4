@@ -1,7 +1,7 @@
 import { SearchResult, SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
 
 describe('searchResult', () => {
-	
+
 	describe('SearchResultTypes', () => {
 
 		it('provides an enum of all available types', () => {

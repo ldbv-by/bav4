@@ -40,7 +40,7 @@ describe('ThemeProvider', () => {
 						}
 					}
 				},
-				
+
 			};
 
 			await setup({ window: mockWindow });

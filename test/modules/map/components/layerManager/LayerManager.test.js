@@ -182,7 +182,7 @@ describe('LayerManager', () => {
 				files: [],
 				items: [],
 				types: [],
-				// also effectAllowed      
+				// also effectAllowed
 			};
 		};
 
@@ -355,10 +355,10 @@ describe('LayerManager', () => {
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
 
-			/* 
+			/*
 			*  0     0    1     1    2     2     3
 			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
-			*        |_______________^ 
+			*        |_______________^
 			*/
 
 			neighbourPlaceholder.classList.add('over');
@@ -380,7 +380,7 @@ describe('LayerManager', () => {
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
 
-			/* 
+			/*
 			*  0     0    1     1    2     2     3
 			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
 			*              ^_______________|

@@ -44,7 +44,7 @@ describe('StringifyCoord provider', () => {
 		});
 
 		it('stringifies a 25832 zone T coordinate', () => {
-			
+
 			spyOn(coordinateService, 'transform').and.returnValue([10.39210, 47.79677]);
 			const coord25832 = [604250, 5294651];
 			const formatedString = bvvStringifyFunction(25832)(coord25832);
@@ -62,7 +62,7 @@ describe('StringifyCoord provider', () => {
 		});
 
 		it('stringifies a 25833 zone T coordinate', () => {
-			
+
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 47.87963]);
 			const coord25832 = [327250, 5305507];
 			const formatedString = bvvStringifyFunction(25833)(coord25832);
@@ -71,7 +71,7 @@ describe('StringifyCoord provider', () => {
 		});
 
 		it('stringifies a 25833 coordinate with a latitude value > 54°', () => {
-			
+
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 54.87963]);
 			const coord25832 = [327250, 5305507];
 			const formatedString = bvvStringifyFunction(25833)(coord25832);
@@ -80,7 +80,7 @@ describe('StringifyCoord provider', () => {
 		});
 
 		it('stringifies a 25833 coordinate with a latitude value < 42°', () => {
-			
+
 			spyOn(coordinateService, 'transform').and.returnValue([12.68948, 41.87963]);
 			const coord25832 = [327250, 5305507];
 			const formatedString = bvvStringifyFunction(25833)(coord25832);

@@ -13,7 +13,7 @@ describe('GeolocationButton', () => {
 	};
 	const mapServiceStub = {
 		getMinimalRotation() {
-			return .05; 
+			return .05;
 		}
 	};
 
@@ -71,7 +71,7 @@ describe('GeolocationButton', () => {
 		beforeEach(async () => {
 			jasmine.clock().install();
 		});
-	
+
 		afterEach(function () {
 			jasmine.clock().uninstall();
 		});
@@ -97,7 +97,7 @@ describe('GeolocationButton', () => {
 		it('avoids flickering', async () => {
 			const liveRotationValue = .5;
 			const element = await setup({ liveRotation: liveRotationValue });
-			
+
 			expect(element.shadowRoot.children.length).not.toBe(0);
 
 			changeLiveRotation();

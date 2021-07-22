@@ -70,14 +70,14 @@ export class MapContextMenuContent extends BaElement {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		
+
 
 		if (this._coordinate) {
 			const sridDefinitions = this._mapService.getSridDefinitionsForView(this._coordinate);
 			const stringifiedCoords = sridDefinitions.map(definition => {
 				const { label, code } = definition;
 				const transformedCoordinate = this._coordinateService.transform(this._coordinate, this._mapService.getSrid(), code);
-				
+
 				const copyCoordinate = () => {
 					this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {}, () => {
 						console.warn('Clipboard API not available');
@@ -89,7 +89,7 @@ export class MapContextMenuContent extends BaElement {
 				<span class='icon'><ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${copyCoordinate}></ba-icon></span>`;
 			});
 
-			
+
 			return html`
 			<style>${css}</style>
 

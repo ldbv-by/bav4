@@ -22,16 +22,16 @@ describe('MeasurementPlugin', () => {
 		const store = setup();
 		const instanceUnderTest = new MeasurementPlugin();
 		await instanceUnderTest.register(store);
-		
+
 		activate();
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].id).toBe(MEASUREMENT_LAYER_ID);
 		expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
 		expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
-		
+
 		deactivate();
-		
+
 		expect(store.getState().layers.active.length).toBe(0);
 	});
 });

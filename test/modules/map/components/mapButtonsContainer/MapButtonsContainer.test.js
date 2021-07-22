@@ -6,7 +6,7 @@ window.customElements.define(MapButtonsContainer.tag, MapButtonsContainer);
 
 
 describe('MapButtonsContainer', () => {
-	
+
 
 	const setup = () => {
 		TestUtils.setupStoreAndDi();

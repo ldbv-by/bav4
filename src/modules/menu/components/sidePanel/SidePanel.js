@@ -7,7 +7,7 @@ import { addLayer } from '../../../../store/layers/layers.action';
 
 
 /**
- *  
+ *
  * @class
  * @author taulinger
  * @deprecated
@@ -113,7 +113,7 @@ export class SidePanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { sidePanel: { open } } = globalState;

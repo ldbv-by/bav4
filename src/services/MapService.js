@@ -17,7 +17,7 @@ export class MapService {
 
 
 	/**
-	 * 
+	 *
 	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
 	 */
 	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
@@ -28,7 +28,7 @@ export class MapService {
 
 	/**
 	 * Internal srid of the map
-	 * @returns {number} srid 
+	 * @returns {number} srid
 	 */
 	getSrid() {
 		return this._definitions.srid;
@@ -36,7 +36,7 @@ export class MapService {
 
 	/**
 	 * Default SRID suitable for the UI.
-	 * @returns {number} srid 
+	 * @returns {number} srid
 	 */
 	getDefaultSridForView() {
 		return this._definitions.defaultSridForView;
@@ -54,7 +54,7 @@ export class MapService {
 
 	/**
 	 * Default SRID for geodatic tasks.
-	 * @returns {number} srid 
+	 * @returns {number} srid
 	 */
 	getDefaultGeodeticSrid() {
 		return this._definitions.defaultGeodeticSrid;
@@ -62,8 +62,8 @@ export class MapService {
 
 	/**
 	 * Return the default extent of the map.
-	 * @param {number}  srid 
-	 * @returns {Extent} extent 
+	 * @param {number}  srid
+	 * @returns {Extent} extent
 	 */
 	getDefaultMapExtent(srid = 3857) {
 		switch (srid) {

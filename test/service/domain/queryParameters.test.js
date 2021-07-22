@@ -4,7 +4,7 @@ describe('QueryParameters', () => {
 
 	it('provides an enum of all valid query parameters', () => {
 		expect(Object.keys(QueryParameters).length).toBe(7);
-		
+
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
 		expect(QueryParameters.ROTATION).toBe('r');

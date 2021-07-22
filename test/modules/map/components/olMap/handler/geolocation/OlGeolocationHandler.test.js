@@ -181,7 +181,7 @@ describe('OlGeolocationHandler', () => {
 			});
 		});
 		describe('when geolocation-request is denied', () => {
-			
+
 			it('sets accuracy- and position-feature to default', () => {
 				const map = setupMap();
 				const state = { ...initialState, denied: true };

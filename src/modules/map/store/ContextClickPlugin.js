@@ -14,7 +14,7 @@ export class ContextClickPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {Store} store 
+	 * @param {Store} store
 	 */
 	async register(store) {
 
@@ -31,7 +31,7 @@ export class ContextClickPlugin extends BaPlugin {
 			 * On every contextmenu event we create a new content element and add it to the DOM.
 			 * We do not pollute the DOM because the map-context-menu extracts it immediately from there (by id)
 			 * and inserts it in its Shadow DOM.
-			 * 
+			 *
 			 * Here we could also load different kind of content panels dependent from current state.
 			 */
 			const mapContextMenuContent = document.createElement(MapContextMenuContent.tag);

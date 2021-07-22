@@ -36,7 +36,7 @@ describe('CatalogService', () => {
 
 			//first call shoud be served from the provider
 			const catalog0 = await instanceUnderTest.byId(topicId);
-			//a second call shoukd be served from cache 
+			//a second call shoukd be served from cache
 			const catalog1 = await instanceUnderTest.byId(topicId);
 
 			expect(catalog0).toEqual(await loadExampleCatalog());

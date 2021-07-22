@@ -7,8 +7,8 @@ import { activate, deactivate } from '../../store/geolocation.action';
 
 /**
  * Button that activates-deactivates geolocation
- * @class 
- * @author thiloSchlemmer 
+ * @class
+ * @author thiloSchlemmer
  */
 
 export class GeolocationButton extends BaElement {
@@ -20,7 +20,7 @@ export class GeolocationButton extends BaElement {
 	}
 
 	/**
-	 *@override 
+	 *@override
 	 */
 	createView(state) {
 		const { active, denied } = state;
@@ -31,7 +31,7 @@ export class GeolocationButton extends BaElement {
 			}
 			else {
 				activate();
-			}			
+			}
 		};
 
 		let title = translate('map_geolocationButton_title_activate');
@@ -65,4 +65,4 @@ export class GeolocationButton extends BaElement {
 	static get tag() {
 		return 'ba-geolocation-button';
 	}
-} 
+}

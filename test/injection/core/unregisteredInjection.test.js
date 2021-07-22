@@ -8,8 +8,8 @@ $injector.registerSingleton({
 
 
 class RegistrationTest {
-	constructor(serviceName) {				
-		this.service = $injector.inject(serviceName);		
+	constructor(serviceName) {
+		this.service = $injector.inject(serviceName);
 	}
 }
 

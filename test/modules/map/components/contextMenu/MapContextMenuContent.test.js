@@ -19,11 +19,11 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { }
 	};
 	const altitudeServiceMock = {
-		getAltitude() {	} 
-	}; 
+		getAltitude() {	}
+	};
 	const administrationServiceMock = {
-		getAdministration() { } 
-	}; 
+		getAdministration() { }
+	};
 
 	const setup = () => {
 
@@ -69,7 +69,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
 			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_altitude_label');
-	
+
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
@@ -139,7 +139,7 @@ describe('OlMapContextMenuContent', () => {
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000]; 
+			element.coordinate = [1000, 2000];
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
@@ -154,7 +154,7 @@ describe('OlMapContextMenuContent', () => {
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000]; 
+			element.coordinate = [1000, 2000];
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Administration Error');

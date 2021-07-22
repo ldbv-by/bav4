@@ -71,10 +71,10 @@ export class CatalogLeaf extends AbstractContentPanel {
 	extractState(globalState) {
 		//our local state contains values derived form the global state and local data (_catalogPart)
 		const { layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
-		
+
 		const geoResourceId  = this._catalogPart ? this._catalogPart.geoResourceId : null;
 		const checked = geoResourceId ? activeLayers.map(geoResource => geoResource.id).includes(geoResourceId) : false;
-		
+
 		return { layersStoreReady, geoResourceId, checked };
 	}
 

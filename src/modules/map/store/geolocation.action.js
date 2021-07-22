@@ -35,7 +35,7 @@ export const deactivate = () => {
 };
 
 /**
- * 
+ *
  * @function
  * @param {boolean} denied
  */
@@ -47,7 +47,7 @@ export const setDenied = (denied) => {
 };
 
 /**
- * 
+ *
  * @function
  * @param {boolean} tracking
  */
@@ -59,7 +59,7 @@ export const setTracking = (tracking) => {
 };
 
 /**
- * 
+ *
  * @function
  * @param {number} accuracy
  */
@@ -71,7 +71,7 @@ export const setAccuracy = (accuracy) => {
 };
 
 /**
- * 
+ *
  * @function
  * @param {Coordinate} position in 3857
  */

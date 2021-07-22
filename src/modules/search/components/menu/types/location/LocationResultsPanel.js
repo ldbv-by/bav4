@@ -51,11 +51,11 @@ export class LocationResultsPanel extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-		const toggleCollapse = () => {		
+		const toggleCollapse = () => {
 			if (this._locationSearchResults.length) {
 				this._isCollapsed = !this._isCollapsed;
 				this.render();
-			}	
+			}
 		};
 
 		const iconCollapseClass = {
@@ -87,7 +87,7 @@ export class LocationResultsPanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} state 
+	 * @param {Object} state
 	 */
 	extractState(state) {
 		const { search: { query: { payload: term } } } = state;

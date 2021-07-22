@@ -110,10 +110,10 @@ export class GeolocationPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {Store} store 
+	 * @param {Store} store
 	 */
 	async register(store) {
-		
+
 		const onGeolocationActivityChange = (active) => {
 
 			if (active) {
