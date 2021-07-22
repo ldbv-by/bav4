@@ -182,7 +182,7 @@ describe('Header', () => {
 			const state = {
 				layers: {
 					active: ['test', 'test', 'test']
-				},
+				}
 			};
 			const element = await setup(state);
 
@@ -197,7 +197,7 @@ describe('Header', () => {
 			const state = {
 				mainMenu: {
 					open: false
-				},
+				}
 			};
 
 			const element = await setup(state);
@@ -278,7 +278,7 @@ describe('Header', () => {
 				const state = {
 					mainMenu: {
 						open: false
-					},
+					}
 				};
 				const element = await setup(state);
 
@@ -302,7 +302,7 @@ describe('Header', () => {
 					media: {
 						portrait: true,
 						minWidth: true
-					},
+					}
 				};
 				const element = await setup(state);
 				const input = element.shadowRoot.querySelector('#input');
@@ -334,7 +334,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: true
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -358,7 +358,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: true
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -396,7 +396,7 @@ describe('Header', () => {
 						media: {
 							portrait: false,
 							minWidth: false
-						},
+						}
 					};
 					const element = await setup(state);
 					const input = element.shadowRoot.querySelector('#input');
@@ -424,7 +424,7 @@ describe('Header', () => {
 					media: {
 						portrait: true,
 						minWidth: true
-					},
+					}
 				};
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
@@ -448,7 +448,7 @@ describe('Header', () => {
 						media: {
 							portrait: true,
 							minWidth: false
-						},
+						}
 					};
 
 					const element = await setup(state);
@@ -488,7 +488,7 @@ describe('Header', () => {
 						media: {
 							portrait: false,
 							minWidth: false
-						},
+						}
 					};
 
 					const element = await setup(state);

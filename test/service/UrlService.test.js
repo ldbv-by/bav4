@@ -36,7 +36,7 @@ describe('UrlService', () => {
 		it('checks if cors is enabled (it is)', async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
-				timeout: 1500,
+				timeout: 1500
 			};
 			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: true

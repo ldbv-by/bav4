@@ -18,7 +18,7 @@ export const initialState = {
 	/**
 	 * @type {boolean}
 	 */
-	beingMoved: false,
+	beingMoved: false
 };
 
 

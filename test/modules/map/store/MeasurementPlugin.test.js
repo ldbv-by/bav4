@@ -12,7 +12,7 @@ describe('MeasurementPlugin', () => {
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer,
-			layers: layersReducer,
+			layers: layersReducer
 		});
 		return store;
 	};

@@ -105,7 +105,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: this._styleService.getStyleFunction(StyleTypes.MEASURE),
+				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
 			});
 			return layer;
 		};
@@ -533,7 +533,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			hitTolerance: 10,
 			layerFilter: itemLayer => {
 				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-			},
+			}
 		};
 		let vertexFeature = null;
 		let featuresFromInteractionLayerCount = 0;
@@ -570,7 +570,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			hitTolerance: 10,
 			layerFilter: itemLayer => {
 				return itemLayer === interactionLayer;
-			},
+			}
 		};
 
 		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {

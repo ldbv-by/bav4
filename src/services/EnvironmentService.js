@@ -74,13 +74,13 @@ export class EnvironmentService {
 			const widthHeightRatio = this._window.screen.width / this._window.screen.height;
 			return {
 				portrait: widthHeightRatio < 1,
-				landscape: widthHeightRatio >= 1,
+				landscape: widthHeightRatio >= 1
 
 			};
 		}
 		return {
 			portrait: orientation.startsWith('portrait'),
-			landscape: orientation.startsWith('landscape'),
+			landscape: orientation.startsWith('landscape')
 		};
 	}
 

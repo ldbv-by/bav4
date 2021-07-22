@@ -15,7 +15,7 @@ describe('SearchResultService', () => {
 			.registerSingleton('EnvironmentService', environmentService);
 	});
 
-	const setup = (locationSearchResultProvider = () => { }, geoResourceSearchResultProvider = () => { },) => {
+	const setup = (locationSearchResultProvider = () => { }, geoResourceSearchResultProvider = () => { }) => {
 		return new SearchResultService(locationSearchResultProvider, geoResourceSearchResultProvider);
 	};
 

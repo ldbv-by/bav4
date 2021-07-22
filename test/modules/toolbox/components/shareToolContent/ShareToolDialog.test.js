@@ -8,12 +8,12 @@ describe('ShareToolDialog', () => {
 	let element;
 
 	const windowMock = {
-		matchMedia() { },
+		matchMedia() { }
 	};
 	const shareServiceMock = {
 		copyToClipboard() {
 			return Promise.resolve();
-		},
+		}
 	};
 	const setup = (state = {}, config = {}) => {
 

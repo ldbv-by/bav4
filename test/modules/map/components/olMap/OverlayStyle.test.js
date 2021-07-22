@@ -4,7 +4,7 @@ import { TestUtils } from '../../../../test-utils.js';
 
 describe('OverlayStyle', () => {
 	const setup = () => {
-		TestUtils.setupStoreAndDi({},);
+		TestUtils.setupStoreAndDi({});
 
 	};
 
@@ -35,7 +35,7 @@ describe('OverlayStyle', () => {
 		const feature = new Feature();
 		feature.set('overlays', [{}, {}]);
 		const removeOverlaySpy = jasmine.createSpy();
-		const mapMock = { removeOverlay: removeOverlaySpy, };
+		const mapMock = { removeOverlay: removeOverlaySpy };
 
 		const classUnderTest = new OverlayStyle();
 		classUnderTest.remove(feature, mapMock);
@@ -46,7 +46,7 @@ describe('OverlayStyle', () => {
 	it('remove a unreferenced overlay from feature, removes this overlay only from map', () => {
 		const feature = new Feature();
 		const removeOverlaySpy = jasmine.createSpy();
-		const mapMock = { removeOverlay: removeOverlaySpy, };
+		const mapMock = { removeOverlay: removeOverlaySpy };
 		const overlayStub = {};
 		const classUnderTest = new OverlayStyle();
 

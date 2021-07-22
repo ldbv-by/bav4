@@ -153,7 +153,7 @@ export class BvvFileStorageService {
 				const data = await result.json();
 				return {
 					adminId: data.adminId,
-					fileId: data.fileId,
+					fileId: data.fileId
 				};
 			}
 

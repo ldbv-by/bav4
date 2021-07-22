@@ -12,7 +12,7 @@ describe('GeoResouceResultsPanel', () => {
 
 
 	const searchResultServiceMock = {
-		geoResourcesByTerm() { },
+		geoResourcesByTerm() { }
 	};
 
 	const setup = (state) => {
