@@ -33,7 +33,7 @@ describe('feature.provider', () => {
 		spyOn(httpService, 'get').withArgs(kmlUrl, { timeout: 2000 }).and.returnValue(Promise.resolve(
 			new Response(kml)
 		));
-		//we have to bind the mocked vector source        
+		//we have to bind the mocked vector source
 		const boundLoader = load.bind(vectorSourceMock);
 
 
@@ -57,7 +57,7 @@ describe('feature.provider', () => {
 			new Response(null, { status: 404 })
 		));
 		const warnSpy = spyOn(console, 'warn');
-		//we have to bind the mocked vector source        
+		//we have to bind the mocked vector source
 		const boundLoader = load.bind(vectorSourceMock);
 
 

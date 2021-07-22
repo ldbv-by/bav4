@@ -17,7 +17,7 @@ export class DevInfo extends BaElement {
 		const { ConfigService } = $injector.inject('ConfigService');
 		this._configService = ConfigService;
 	}
-	
+
 	isRenderingSkipped() {
 		return !this._configService.getValue('SOFTWARE_INFO', false);
 	}

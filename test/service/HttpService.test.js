@@ -233,7 +233,7 @@ describe('NetworkStateSyncHttpService', () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 			spyOn(window, 'fetch').and.callFake(async () => {});
-			
+
 			instanceUnderTest.fetch('first');
 			instanceUnderTest.fetch('second');
 
@@ -250,7 +250,7 @@ describe('NetworkStateSyncHttpService', () => {
 			spyOn(window, 'fetch').and.callFake(async () => {
 				throw new Error('oops');
 			});
-			
+
 			instanceUnderTest.fetch('first').then(() => {
 				done(new Error('Promise should not be resolved'));
 			}, () => {

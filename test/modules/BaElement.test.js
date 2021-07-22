@@ -394,7 +394,7 @@ describe('append', () => {
 		const value = 'foo';
 
 		append(value, id);
-		
+
 		expect(document.getElementById(id).innerText).toBe(value);
 	});
 
@@ -403,7 +403,7 @@ describe('append', () => {
 		const value = 'foo';
 
 		append(`${value}`, id);
-		
+
 		expect(document.getElementById(id).innerText).toBe(value);
 	});
 
@@ -412,7 +412,7 @@ describe('append', () => {
 		const value = 'foo';
 
 		append(html`${value}`, id);
-		
+
 		expect(document.getElementById(id).innerText).toBe(value);
 	});
 });

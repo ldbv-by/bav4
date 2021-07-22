@@ -10,7 +10,7 @@ import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '.
 export class SearchResultService {
 
 	/**
-	 * 
+	 *
 	 * @param {LocationResultProvider} [locationResultProvider=loadBvvLocationSearchResults]
 	 * @param {GeoresourceResultProvider} [georesourceResultProvider=loadBvvGeoResourceSearchResults]
 	 */
@@ -25,9 +25,9 @@ export class SearchResultService {
 
 
 	/**
-	 * Provides search results for geoResouces. 
-	 * Possible errors of the configured provider will be passed. 
-	 * @param {string} term 
+	 * Provides search results for geoResouces.
+	 * Possible errors of the configured provider will be passed.
+	 * @param {string} term
 	 * @returns {Promise<Array.<SearchResult>>}
 	 * @throws Error of the underlying provider
 	 */
@@ -39,8 +39,8 @@ export class SearchResultService {
 	}
 
 	/**
-	 * Provides search results for locations. 
-	 * Possible errors of the configured provider will be passed. 
+	 * Provides search results for locations.
+	 * Possible errors of the configured provider will be passed.
 	 * @param {string} term query term
 	 * @returns {Promise<Array.<SearchResult>>}
 	 * @throws Error of the underlying provider

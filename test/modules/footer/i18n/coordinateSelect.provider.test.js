@@ -7,7 +7,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = coordinateSelectProvide('en');
 
-		expect(map.footer_coordinate_select).toBe('Choose coordinate system');		
+		expect(map.footer_coordinate_select).toBe('Choose coordinate system');
 	});
 
 
@@ -15,7 +15,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = coordinateSelectProvide('de');
 
-		expect(map.footer_coordinate_select).toBe('Koordinatensystem auswählen');		
+		expect(map.footer_coordinate_select).toBe('Koordinatensystem auswählen');
 	});
 
 	it('provides an empty map for a unknown lang', () => {

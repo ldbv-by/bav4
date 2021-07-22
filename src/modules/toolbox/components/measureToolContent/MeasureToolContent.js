@@ -118,7 +118,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			let id = 'startnew';
 			let title = translate('toolbox_measureTool_start_new');
 			let onClick = () => reset();
-			// alternate Finish-Button			
+			// alternate Finish-Button
 			if (finishAllowed) {
 				id = 'finish';
 				title = translate('toolbox_drawTool_finish');
@@ -221,7 +221,7 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { measurement } = globalState;

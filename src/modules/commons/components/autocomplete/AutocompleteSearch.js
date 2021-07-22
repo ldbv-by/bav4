@@ -7,15 +7,15 @@ import css from './autocompleteSearch.css';
 
 /**
  * Configurable Attributes:
- * 
+ *
  * Observed Attributes:
- * 
+ *
  * Configurable Properties:
  * - `provider` (SearchResult provider function)
  * - `onSelect() (callback function)`
- * 
+ *
  * Observed Properties:
- * 
+ *
  * @class
  * @author taulinger
  */
@@ -54,7 +54,7 @@ export class AutocompleteSearch extends BaElement {
 		input.value = value;
 	}
 
-	/** 
+	/**
 	 * @override
 	 */
 	onAfterRender(firsttime) {

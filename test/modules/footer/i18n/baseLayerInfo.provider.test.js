@@ -6,9 +6,9 @@ describe('i18n for baseLayer info', () => {
 	it('provides translation for en', () => {
 
 		const map = provide('en');
-		
+
 		expect(map.map_baseLayerInfo_label).toBe('Basemap');
-		expect(map.map_baseLayerInfo_fallback).toBe('No information available');		
+		expect(map.map_baseLayerInfo_fallback).toBe('No information available');
 	});
 
 
@@ -16,8 +16,8 @@ describe('i18n for baseLayer info', () => {
 
 		const map = provide('de');
 
-		expect(map.map_baseLayerInfo_label).toBe('Basiskarte');	
-		expect(map.map_baseLayerInfo_fallback).toBe('Keine Informationen verfügbar');			
+		expect(map.map_baseLayerInfo_label).toBe('Basiskarte');
+		expect(map.map_baseLayerInfo_fallback).toBe('Keine Informationen verfügbar');
 	});
 
 	it('have the expected amount of translations', () => {
@@ -28,7 +28,7 @@ describe('i18n for baseLayer info', () => {
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);										
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {

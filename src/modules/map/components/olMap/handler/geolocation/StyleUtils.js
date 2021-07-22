@@ -27,7 +27,7 @@ export const nullStyleFunction = () => [new Style({})];
 /**
  * inspired by https://openlayers.org/en/latest/examples/feature-animation.html
  * creates a AnimationFunction for the postrender-event of a {ol.Layer}
- * 
+ *
  * @param {ol.Map} map the map where the animation is injected
  * @param {ol.Feature} feature the feature (Point-Feature) which is used as center to draw the animation
  * @param {function} endCallback the callback, when the animation ends

@@ -6,7 +6,7 @@ import { simulateMouseEvent } from './mapTestUtils';
 
 
 describe('olMapUtils', () => {
-	
+
 	describe('updateOlLayer', () => {
 		it('updates the properties of a olLayer', () => {
 

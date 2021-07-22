@@ -6,7 +6,7 @@ import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
 /**
- * A function that returns a promise with an array of geoResources. 
+ * A function that returns a promise with an array of geoResources.
  *
  * @typedef {function(coordinate) : (Promise<Array<GeoResource>>)} geoResourceProvider
  */

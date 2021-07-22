@@ -51,7 +51,7 @@ export class TopicsPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {store} store 
+	 * @param {store} store
 	 */
 	async register() {
 		return await this._init();

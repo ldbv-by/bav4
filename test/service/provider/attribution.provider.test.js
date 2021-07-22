@@ -28,14 +28,14 @@ describe('Attribution provider', () => {
 	describe('Bvv GeoResource provider', () => {
 
 		const geoResourceServiceMock = {
-			byId: () => { } 
-		}; 
+			byId: () => { }
+		};
 
 		beforeAll(() => {
 			$injector
 				.registerSingleton('GeoResourceService', geoResourceServiceMock);
 		});
-		
+
 		it('provides an attribution for a GeoResource', () => {
 
 			const fooAttribution = getMinimalAttribution('foo');
