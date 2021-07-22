@@ -40,7 +40,7 @@ export class OlMap extends BaElement {
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler],  [olDrawHandler.id, olDrawHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
 		this._eventHandler = new Map([]);
 	}
 
