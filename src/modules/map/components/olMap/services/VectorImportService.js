@@ -39,7 +39,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
  */
 export class VectorImportService {
 
-	_updateStyle(olFeature, olLayer, olMap)  {
+	_updateStyle(olFeature, olLayer, olMap) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.updateStyle(olFeature, olMap, {
 			visible: olLayer.getVisible(),

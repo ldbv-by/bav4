@@ -6,8 +6,8 @@ import { Style, Circle, Fill, Stroke, Text } from 'ol/style';
 
 describe('kml', () => {
 	const projection = 'EPSG:3857';
-	const aPointFeature =  new Feature({ geometry: new Point([0, 0]) });
-	const aPolygonFeature =  new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+	const aPointFeature = new Feature({ geometry: new Point([0, 0]) });
+	const aPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
 
 
@@ -102,7 +102,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsLineStyle = actual.includes('LineStyle') && actual.includes('<color>ffcc9933</color>');
-			const containsPolyStyle = actual.includes('PolyStyle')  && actual.includes('<color>66ffffff</color>');
+			const containsPolyStyle = actual.includes('PolyStyle') && actual.includes('<color>66ffffff</color>');
 			expect(containsLineStyle).toBeTrue();
 			expect(containsPolyStyle).toBeTrue();
 		});
@@ -116,7 +116,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsLineStyle = actual.includes('LineStyle') && actual.includes('<color>ffcc9933</color>');
-			const containsPolyStyle = actual.includes('PolyStyle')  && actual.includes('<color>66ffffff</color>');
+			const containsPolyStyle = actual.includes('PolyStyle') && actual.includes('<color>66ffffff</color>');
 			expect(containsLineStyle).toBeTrue();
 			expect(containsPolyStyle).toBeTrue();
 		});
@@ -129,7 +129,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsIconStyle = actual.includes('<IconStyle>');
-			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>')  ;
+			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>') ;
 			expect(containsIconStyle).toBeTrue();
 			expect(containsDummyIcon).toBeFalse();
 		});

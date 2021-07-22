@@ -244,7 +244,7 @@ describe('NetworkStateSyncHttpService', () => {
 			expect(store.getState().network.fetching).toBeFalse();
 		});
 
-		it('regards pending responses when not resolved',  (done) => {
+		it('regards pending responses when not resolved', (done) => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 			spyOn(window, 'fetch').and.callFake(async () => {

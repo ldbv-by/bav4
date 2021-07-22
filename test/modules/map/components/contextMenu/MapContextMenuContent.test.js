@@ -133,7 +133,7 @@ describe('OlMapContextMenuContent', () => {
 			});
 		});
 
-		it('logs a warn statement when Altitude Service is not available', async  (done) => {
+		it('logs a warn statement when Altitude Service is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('Altitude Error')));
 			const warnSpy = spyOn(console, 'warn');
@@ -148,7 +148,7 @@ describe('OlMapContextMenuContent', () => {
 			});
 		});
 
-		it('logs a warn statement when Administration Service is not available', async  (done) => {
+		it('logs a warn statement when Administration Service is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(new Error('Administration Error')));
 			const warnSpy = spyOn(console, 'warn');

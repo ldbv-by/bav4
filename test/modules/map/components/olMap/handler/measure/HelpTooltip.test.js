@@ -41,7 +41,7 @@ describe('HelpTooltip', () => {
 	describe('on activate', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
-			const mapMock = { addOverlay: addSpy,  };
+			const mapMock = { addOverlay: addSpy, };
 
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.activate(mapMock);

@@ -41,6 +41,7 @@ module.exports = {
 			'anonymous': 'always',
 			'named': 'never',
 			'asyncArrow': 'always'
-		}]
+		}],
+		'no-multi-spaces': ['error']
 	}
 };

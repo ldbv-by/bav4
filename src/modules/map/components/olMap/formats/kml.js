@@ -38,7 +38,7 @@ export const create = (layer, projection) => {
 	let kmlString;
 	const kmlFeatures = [];
 	layer.getSource().getFeatures()
-		.filter(f =>  f.getGeometry().getType() !== 'Circle')
+		.filter(f => f.getGeometry().getType() !== 'Circle')
 		.forEach(f => {
 			const clone = f.clone();
 			clone.setId(f.getId());
@@ -74,7 +74,7 @@ export const create = (layer, projection) => {
 		kmlString = removeEmptyPlacemark(removeNoImagePlaceHolder(kmlString));
 
 		if (layer.label) {
-			kmlString =  kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
+			kmlString = kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
 		}
 
 	}

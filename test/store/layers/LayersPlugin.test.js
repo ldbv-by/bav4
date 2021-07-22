@@ -440,7 +440,7 @@ describe('LayersPlugin', () => {
 				expect(result).toBe(fileId);
 			});
 
-			it('throws an error when a fileId could not be determined',  (done) => {
+			it('throws an error when a fileId could not be determined', (done) => {
 				const id = 'foo';
 				setup();
 				const instanceUnderTest = new LayersPlugin();
