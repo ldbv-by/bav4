@@ -13,7 +13,7 @@ export class PositionPlugin extends BaPlugin {
 
 		const {
 			CoordinateService: coordinateService,
-			MapService: mapService,
+			MapService: mapService
 		} = $injector.inject('CoordinateService', 'MapService');
 
 		const detectSrid = (center) => {
@@ -60,7 +60,7 @@ export class PositionPlugin extends BaPlugin {
 
 	_setPositionFromConfig() {
 		const {
-			MapService: mapService,
+			MapService: mapService
 		} = $injector.inject('MapService');
 
 		setTimeout(() => {

@@ -19,7 +19,7 @@ describe('GeolocationPlugin', () => {
 
 	const mapServiceMock = {
 		getDefaultGeodeticSrid() { },
-		getSrid() { },
+		getSrid() { }
 	};
 
 	const setup = (state) => {

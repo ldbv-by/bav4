@@ -47,7 +47,7 @@ export class HttpService {
 	async get(resource, options = {}) {
 		const fetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
-			...options,
+			...options
 		};
 		return this.fetch(resource, fetchOptions);
 	}
@@ -70,7 +70,7 @@ export class HttpService {
 			headers: {
 				'Content-Type': contentType
 			},
-			...options,
+			...options
 		};
 		return this.fetch(resource, fetchOptions);
 	}
@@ -87,7 +87,7 @@ export class HttpService {
 		const fetchOptions = {
 			mode: HttpService.DEFAULT_REQUEST_MODE,
 			method: 'HEAD',
-			...options,
+			...options
 		};
 		return this.fetch(resource, fetchOptions);
 	}

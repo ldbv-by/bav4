@@ -42,7 +42,7 @@ export class CatalogNode extends AbstractContentPanel {
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !this._isCollapsed,
+			iconexpand: !this._isCollapsed
 		};
 
 		const bodyCollapseClass = {

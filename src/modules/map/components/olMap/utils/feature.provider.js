@@ -15,7 +15,7 @@ export const load = async function (extent, resolution, targetProj) {
 
 	const url = vectorSource.getUrl();
 	const result = await httpService.get(url, {
-		timeout: 2000,
+		timeout: 2000
 	});
 	if (result.ok) {
 		const raw = await result.text();

@@ -93,7 +93,7 @@ describe('OlMap', () => {
 				center: initialCenter,
 				rotation: initialRotationValue,
 				fitRequest: null
-			},
+			}
 		};
 		const combinedState = {
 			...defaultState,

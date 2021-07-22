@@ -34,7 +34,7 @@ describe('LayerItem', () => {
 			dropEffect: 'none',
 			files: [],
 			items: [],
-			types: [],
+			types: []
 			// also effectAllowed
 		};
 	};

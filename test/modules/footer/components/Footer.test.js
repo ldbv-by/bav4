@@ -21,7 +21,7 @@ describe('Footer', () => {
 			media: {
 				portrait: false
 			},
-			...state,
+			...state
 		};
 
 		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });

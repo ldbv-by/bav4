@@ -49,7 +49,7 @@ export class AttributionInfo extends BaElement {
 		};
 
 		const classes = {
-			isopen: this._isOpen,
+			isopen: this._isOpen
 		};
 
 		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case
