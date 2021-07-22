@@ -85,7 +85,7 @@ export class HelpTooltip {
 	_createOverlay(overlayOptions = {}, type,) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
-		return  new Overlay({ ...overlayOptions, element: measurementOverlay });
+		return new Overlay({ ...overlayOptions, element: measurementOverlay });
 	}
 
 	_updateOverlay(coordinate, message) {
