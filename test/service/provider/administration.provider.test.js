@@ -18,7 +18,7 @@ describe('Administration provider', () => {
 				.registerSingleton('HttpService', httpService);
 		});
 
-		const coordinateMock = [21, 42];    
+		const coordinateMock = [21, 42];
 
 
 		it('loads Administration', async () => {

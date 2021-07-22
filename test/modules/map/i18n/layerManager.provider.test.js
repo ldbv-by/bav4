@@ -7,7 +7,7 @@ describe('i18n for layer-manager', () => {
 
 		const map = provide('de');
 
-		expect(map.map_layerManager_title).toBe('Ebenen');		
+		expect(map.map_layerManager_title).toBe('Ebenen');
 		expect(map.map_layerManager_change_visibility).toBe('Sichtbarkeit umschalten');
 		expect(map.map_layerManager_opacity).toBe('Opazität');
 		expect(map.map_layerManager_collapse).toBe('Eigenschaften einklappen');
@@ -21,7 +21,7 @@ describe('i18n for layer-manager', () => {
 
 		const map = provide('en');
 
-		expect(map.map_layerManager_title).toBe('Layers');		
+		expect(map.map_layerManager_title).toBe('Layers');
 		expect(map.map_layerManager_change_visibility).toBe('toggle visibility');
 		expect(map.map_layerManager_opacity).toBe('Opacity');
 		expect(map.map_layerManager_collapse).toBe('collapse properties');
@@ -39,7 +39,7 @@ describe('i18n for layer-manager', () => {
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);									
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {

@@ -45,8 +45,8 @@ const Debounce_Delay = 1000;
 const Temp_Session_Id = 'temp_measure_id';
 
 /**
- * Handler for measurement-interaction with the map
- * 
+ * Handler for measurement-interaction with the map.
+ *
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -102,11 +102,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
+			const translate = (key) => this._translationService.translate(key);
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source,
-				style: this._styleService.getStyleFunction(StyleTypes.MEASURE),
+				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
 			});
+			layer.label = translate('map_olMap_handler_measure_layer_label');
 			return layer;
 		};
 
@@ -252,7 +254,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
-		//olLayer currently undefined, will be fixed later		
+		//olLayer currently undefined, will be fixed later
 		olMap.removeInteraction(this._draw);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
@@ -462,13 +464,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach(f => saveManualOverlayPosition(f));	
-		
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');		
+		features.forEach(f => saveManualOverlayPosition(f));
+
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		const { measurement } = this._storeService.getStore().getState();
 		if (newContent) {
 			this._storedContent = newContent;
-			
+
 			if (measurement.fileSaveResult) {
 				try {
 					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
@@ -488,13 +490,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 			}
 		}
-		else {		
+		else {
 			if (measurement.fileSaveResult) {
 				//DEBUG:throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
 				setFileSaveResult(null);
 			}
 		}
-		
+
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
@@ -533,7 +535,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			hitTolerance: 10,
 			layerFilter: itemLayer => {
 				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-			},
+			}
 		};
 		let vertexFeature = null;
 		let featuresFromInteractionLayerCount = 0;
@@ -570,7 +572,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			hitTolerance: 10,
 			layerFilter: itemLayer => {
 				return itemLayer === interactionLayer;
-			},
+			}
 		};
 
 		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
@@ -693,7 +695,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const createTempId = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: propagate the failing to UI-feedback-channel 		
+			// TODO: propagate the failing to UI-feedback-channel
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			return Temp_Session_Id;
 		};
@@ -716,7 +718,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_getLastFileSaveResult() {
 		const { measurement } = this._storeService.getStore().getState();
 		return measurement.fileSaveResult;
-	}	
+	}
 
 	_isValidFileSaveResult(fileSaveResult) {
 		if (fileSaveResult == null) {
@@ -761,7 +763,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	/**
 	 * Workaround for touch-devices to refresh measure-state and
-	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without 
+	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without
 	 * any further detected pointer-moves and -clicks
 	 */
 	_simulateClickEvent() {

@@ -18,13 +18,13 @@ import { $injector } from '../../injection';
  * @typedef {Object} SridDefinition
  * @property {string} label label
  * @property {number} code srid
- * @property {number} digits decimal places for rounding 
+ * @property {number} digits decimal places for rounding
  */
 
 /**
  * Provider for map releated meta data
  * @function
- * @returns {MapDefinitions} meta data 
+ * @returns {MapDefinitions} meta data
  */
 export const getBvvMapDefinitions = () => {
 	return {

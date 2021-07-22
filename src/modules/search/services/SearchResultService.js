@@ -10,7 +10,7 @@ import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '.
 export class SearchResultService {
 
 	/**
-	 * 
+	 *
 	 * @param {LocationResultProvider} [locationResultProvider=loadBvvLocationSearchResults]
 	 * @param {GeoresourceResultProvider} [georesourceResultProvider=loadBvvGeoResourceSearchResults]
 	 */
@@ -25,9 +25,9 @@ export class SearchResultService {
 
 
 	/**
-	 * Provides search results for geoResouces. 
-	 * Possible errors of the configured provider will be passed. 
-	 * @param {string} term 
+	 * Provides search results for geoResouces.
+	 * Possible errors of the configured provider will be passed.
+	 * @param {string} term
 	 * @returns {Promise<Array.<SearchResult>>}
 	 * @throws Error of the underlying provider
 	 */
@@ -39,8 +39,8 @@ export class SearchResultService {
 	}
 
 	/**
-	 * Provides search results for locations. 
-	 * Possible errors of the configured provider will be passed. 
+	 * Provides search results for locations.
+	 * Possible errors of the configured provider will be passed.
 	 * @param {string} term query term
 	 * @returns {Promise<Array.<SearchResult>>}
 	 * @throws Error of the underlying provider
@@ -62,7 +62,7 @@ export class SearchResultService {
 	_newFallbackLocationSearchResults() {
 		return [
 			new SearchResult(undefined, 'Landeshauptstadt München', 'Landeshauptstadt <b>München</b>', SearchResultTypes.LOCATION, [1284841.153957037, 6132811.135477452], [1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]),
-			new SearchResult(undefined, 'Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', SearchResultTypes.LOCATION, [1290240.0895689954, 6130449.47786758]),
+			new SearchResult(undefined, 'Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', SearchResultTypes.LOCATION, [1290240.0895689954, 6130449.47786758])
 		];
 	}
 }

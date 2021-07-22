@@ -114,7 +114,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
 
 			const searchResult1 = searchResults[1];
-			
+
 			expect(searchResult1.extent).toBeNull();
 		});
 

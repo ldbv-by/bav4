@@ -25,7 +25,7 @@ describe('TranslationService', () => {
 		instanceUnderTest.register('testProvider', () => {
 			return {
 				'key0': 'value0',
-				'key1': 'value1',
+				'key1': 'value1'
 			};
 		});
 
@@ -41,7 +41,7 @@ describe('TranslationService', () => {
 			return lang === 'de'
 				?
 				{
-					'key0': 'value0_de',
+					'key0': 'value0_de'
 				}
 				:
 				{
@@ -61,13 +61,13 @@ describe('TranslationService', () => {
 
 		instanceUnderTest.register('testProvider', () => {
 			return {
-				'key0': 'value0',
+				'key0': 'value0'
 			};
 		});
 
 		expect(() => instanceUnderTest.register('testProvider', () => {
 			return {
-				'key0': 'value0',
+				'key0': 'value0'
 			};
 		}))
 			.toThrowError(/Provider testProvider already registered/);
@@ -79,14 +79,14 @@ describe('TranslationService', () => {
 		instanceUnderTest.register('testProvider0', () => {
 			return {
 				'key0': 'value0',
-				'key1': 'value1',
+				'key1': 'value1'
 			};
 		});
 
 		expect(() => {
 			instanceUnderTest.register('testProvider1', () => {
 				return {
-					'key0': 'value0',
+					'key0': 'value0'
 				};
 			});
 		})

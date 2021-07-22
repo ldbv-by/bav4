@@ -84,7 +84,7 @@ export class MediaQueryPanel extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { sidePanel: { open } } = globalState;

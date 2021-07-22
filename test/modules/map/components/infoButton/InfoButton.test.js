@@ -33,14 +33,14 @@ describe('InfoButton', () => {
 	describe('when initialized', () => {
 		it('adds a div which shows an info button', async () => {
 			expect(element.shadowRoot.querySelector('.info-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.button').title).toBe('map_infoButton_title');						
+			expect(element.shadowRoot.querySelector('.button').title).toBe('map_infoButton_title');
 		});
 
 		it('provides popup content', async () => {
 			expect(element.shadowRoot.querySelector('.info-popup-link').getAttribute('href')).toBeDefined();
 			expect(element.shadowRoot.querySelectorAll('.info-popup-link').length).toBe(3);
 			expect(element.shadowRoot.querySelectorAll('.info-popup-link')[0].getAttribute('href')).toEqual('http://www.ldbv.bayern.de/hilfe.html');
-		} );
+		});
 	});
 
 	describe('when clicked', () => {
@@ -92,7 +92,7 @@ describe('InfoButton', () => {
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('show');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeTrue();
 
-			expect(store.getState().position.zoom).toBe(5); 
+			expect(store.getState().position.zoom).toBe(5);
 
 			changeZoom(4);
 
@@ -112,7 +112,7 @@ describe('InfoButton', () => {
 			expect(element.shadowRoot.getElementById('info-popup').getAttribute('type')).toBe('show');
 			expect(element.shadowRoot.getElementById('info-popup').isOpen()).toBeTrue();
 
-			expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]); 
+			expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
 
 			changeCenter([1290570.5705933168, 6129218.880274274]);
 

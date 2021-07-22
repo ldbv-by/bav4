@@ -9,10 +9,10 @@ import { StyleTypes } from './StyleService';
 export class OverlayService {
 
 	/**
-	 * Adds explicit named overlays (OverlayStyle by StyleType) to the specified feature. 
+	 * Adds explicit named overlays (OverlayStyle by StyleType) to the specified feature.
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Feature} olFeature the feature to be styled
-	 * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, 
+	 * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists,
 	 * no overlays will be added.
 	 */
 	add(olFeature, olMap, styleType) {
@@ -37,8 +37,8 @@ export class OverlayService {
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style exists
 	 * @param {ol.Feature} olFeature the feature
 	 * @param {StyleType} styleType the styletype, if no matching to known styleTypes exists, no overlays will be updated.
-	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates; 
-	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current 
+	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the OverlayService
 	 */
 	update(olFeature, olMap, styleType, properties = {}) {

@@ -40,7 +40,7 @@ export class BaseLayerSwitcher extends BaElement {
 
 
 			const onClick = (geoR) => {
-				
+
 				const add = () => {
 					addLayer(geoR.id, { label: geoR.label, zIndex: 0 });
 				};

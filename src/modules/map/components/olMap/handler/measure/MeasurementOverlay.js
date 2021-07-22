@@ -16,21 +16,21 @@ export const MeasurementOverlayTypes = {
 };
 /**
  * Internal overlay content for measurements on map-components
- * 
+ *
  * Configurable Attributes:
- * 
+ *
  * Observed Attributes:
- * 
+ *
  * Configurable Properties:
  * - `type`
- * - `value` 
+ * - `value`
  * - `static`
  * - `geometry`
  * - `projectionHints`
- *  
- * 
+ *
+ *
  * Observed Properties:
- * - `value` 
+ * - `value`
  * - `static`
  * - `geometry`
  * - `position`

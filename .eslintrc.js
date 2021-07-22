@@ -1,5 +1,5 @@
 module.exports = {
-	root:true,
+	root: true,
 	env: {
 		browser: true,
 		node: true,
@@ -17,6 +17,7 @@ module.exports = {
 	rules: {
 		'semi': ['error', 'always'],
 		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+		'no-trailing-spaces': ['error'],
 		'quotes': ['error', 'single'],
 		'object-curly-spacing': ['error', 'always'],
 		'brace-style': ['error', 'stroustrup'],
@@ -30,8 +31,19 @@ module.exports = {
 		'no-console': ['error', { allow: ['warn', 'error'] }],
 		'import/no-default-export': ['error'],
 		'eqeqeq': ['error', 'smart'],
-		'keyword-spacing':  ['error'],
-		'no-var':  ['error'],
-		'prefer-const':  ['error']
+		'keyword-spacing': ['error'],
+		'no-var': ['error'],
+		'prefer-const': ['error'],
+		'space-in-parens': ['error'],
+		'eol-last': ['error'],
+		'key-spacing': ['error'],
+		'rest-spread-spacing': ['error'],
+		'space-before-function-paren': ['error', {
+			'anonymous': 'always',
+			'named': 'never',
+			'asyncArrow': 'always'
+		}],
+		'no-multi-spaces': ['error'],
+		'comma-dangle': ['error']
 	}
 };

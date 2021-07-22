@@ -18,7 +18,7 @@ describe('OlHighlightLayerHandler', () => {
 
 	const setup = (state = initialState) => {
 		const highlightState = {
-			highlight: state,
+			highlight: state
 		};
 		TestUtils.setupStoreAndDi(highlightState, { highlight: highlightReducer });
 	};
@@ -28,16 +28,16 @@ describe('OlHighlightLayerHandler', () => {
 		return new Map({
 			layers: [
 				new TileLayer({
-					source: new OSM(),
+					source: new OSM()
 				}),
 				new TileLayer({
-					source: new TileDebug(),
+					source: new TileDebug()
 				})],
 			target: container,
 			view: new View({
 				center: initialCenter,
-				zoom: 1,
-			}),
+				zoom: 1
+			})
 		});
 
 	};

@@ -10,7 +10,7 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 
 /**
- * Displays a showcase of common and reusable components or 
+ * Displays a showcase of common and reusable components or
  * functional behaviors, which are not finally in place
  * @class
  * @author thiloSchlemmer

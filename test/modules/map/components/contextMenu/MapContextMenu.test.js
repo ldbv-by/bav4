@@ -91,9 +91,9 @@ describe('MapContextMenu', () => {
 			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
 			const element = await setup();
 			const clickEvent = [300, 150];
-			
+
 			open(clickEvent, 'someId');
-			
+
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
 			//consider arrow offset of 20px
@@ -108,9 +108,9 @@ describe('MapContextMenu', () => {
 			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
 			const element = await setup();
 			const clickEvent = [700, 150];
-			
+
 			open(clickEvent, 'someId');
-			
+
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
 			//consider arrow offset of 20px
@@ -125,9 +125,9 @@ describe('MapContextMenu', () => {
 			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
 			const element = await setup();
 			const clickEvent = [700, 350];
-			
+
 			open(clickEvent, 'someId');
-			
+
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('700px');
 			//consider arrow offset of -20px
@@ -142,9 +142,9 @@ describe('MapContextMenu', () => {
 			spyOnProperty(window, 'innerHeight', 'get').and.returnValue(500);
 			const element = await setup();
 			const clickEvent = [300, 350];
-			
+
 			open(clickEvent, 'someId');
-			
+
 			const container = element.shadowRoot.querySelector('.context-menu');
 			expect(container.style.getPropertyValue('--mouse-x')).toBe('300px');
 			//consider arrow offset of -20px

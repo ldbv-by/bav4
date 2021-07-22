@@ -113,7 +113,7 @@ describe('LayersPlugin', () => {
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
-					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0'),
+					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
 
@@ -132,7 +132,7 @@ describe('LayersPlugin', () => {
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
 					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
-					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0'),
+					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
 				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
@@ -283,7 +283,7 @@ describe('LayersPlugin', () => {
 				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
-					new WMTSGeoResource('some0', 'someLabel0', 'someUrl0'),
+					new WMTSGeoResource('some0', 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', ['some0']));
 
@@ -440,7 +440,7 @@ describe('LayersPlugin', () => {
 				expect(result).toBe(fileId);
 			});
 
-			it('throws an error when a fileId could not be determined',  (done) => {
+			it('throws an error when a fileId could not be determined', (done) => {
 				const id = 'foo';
 				setup();
 				const instanceUnderTest = new LayersPlugin();

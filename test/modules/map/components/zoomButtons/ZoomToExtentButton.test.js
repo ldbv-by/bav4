@@ -18,7 +18,7 @@ describe('ExtentButton', () => {
 		const state = {
 			position: {
 				zoom: 14,
-				center: fromLonLat([9.604, 50.015]), 
+				center: fromLonLat([9.604, 50.015]),
 				fitRequest: null
 			}
 		};
@@ -28,7 +28,7 @@ describe('ExtentButton', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector
 			.registerSingleton('MapService', { getDefaultMapExtent: () => {
-				return extent;			 
+				return extent;
 			} });
 
 		element = await TestUtils.render(ZoomToExtentButton.tag);
@@ -38,7 +38,7 @@ describe('ExtentButton', () => {
 		it('shows zoom to extent button', () => {
 			expect(element.shadowRoot.querySelector('.zoom-to-extent')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.zoom-to-extent-button').title).toBe('map_zoomButtons_extent');
-			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
+			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();
 		});
 	});
 
@@ -46,7 +46,7 @@ describe('ExtentButton', () => {
 
 		it('zooms to extent', () => {
 			element.shadowRoot.querySelector('button').click();
-			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent); 
+			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
 		});
 	});
 });

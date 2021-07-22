@@ -10,7 +10,7 @@ describe('i18n for map module', () => {
 		expect(map.map_infoButton_title).toBe('Information');
 		expect(map.map_infoButton_help).toBe('Hilfe');
 		expect(map.map_infoButton_contact).toBe('Kontakt');
-		expect(map.map_infoButton_about).toBe('Impressum');		
+		expect(map.map_infoButton_about).toBe('Impressum');
 	});
 
 	it('provides translation for en', () => {
@@ -20,7 +20,7 @@ describe('i18n for map module', () => {
 		expect(map.map_infoButton_title).toBe('Information');
 		expect(map.map_infoButton_help).toBe('Help');
 		expect(map.map_infoButton_contact).toBe('Contact');
-		expect(map.map_infoButton_about).toBe('About us');		
+		expect(map.map_infoButton_about).toBe('About us');
 	});
 
 	it('have the expected amount of translations', () => {
@@ -31,7 +31,7 @@ describe('i18n for map module', () => {
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);										
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {

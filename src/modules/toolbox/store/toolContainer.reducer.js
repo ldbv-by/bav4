@@ -3,7 +3,7 @@ export const CONTENT_CHANGED = 'components/toolContainer/contentId';
 
 export const initialState = {
 	open: false,
-	contentId:false
+	contentId: false
 };
 
 export const toolContainerReducer = (state = initialState, action) => {

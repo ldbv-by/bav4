@@ -28,7 +28,7 @@ describe('provides checks for commons types', () => {
 		expect(isNumber(null, false)).toBeFalse();
 		expect(isNumber({}, false)).toBeFalse();
 		expect(isNumber('', false)).toBeFalse();
-        
+
 		expect(isNumber('123', false)).toBeTrue();
 		expect(isNumber('123.123', false)).toBeTrue();
 		expect(isNumber(123, false)).toBeTrue();

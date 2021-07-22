@@ -2,7 +2,7 @@
 /**
  * Checks if a value is a string (primitive or object).
  * @function
- * @param {*} val 
+ * @param {*} val
  * @returns {boolean} true if it is a string
  */
 export const isString = (val) => {
@@ -12,7 +12,7 @@ export const isString = (val) => {
 /**
  * Checks if a value is a string (primitive or object).
  * @function
- * @param {*} val 
+ * @param {*} val
  * @param {boolean} [strict=true] false if strings representing a number should be allowed
  * @returns {boolean} true if it is a number
  */
@@ -26,7 +26,7 @@ export const isNumber = (val, strict = true) => {
 /**
  * Checks if a value is a {@link Coordinate}.
  * @function
- * @param {*} val 
+ * @param {*} val
  * @returns {boolean} true if it is a coordinate
  */
 export const isCoordinate = (val) => {

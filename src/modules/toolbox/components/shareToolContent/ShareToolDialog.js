@@ -11,14 +11,14 @@ import css from './shareToolDialog.css';
  */
 export class ShareToolDialog extends BaElement {
 
-	constructor () {
+	constructor() {
 		super();
 		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 		this._translationService = translationService;
 		this._shareService = shareService;
 		this._shareUrl = null;
 
-	} 
+	}
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
@@ -36,7 +36,7 @@ export class ShareToolDialog extends BaElement {
 
 		return html.nothing;
 
-	} 
+	}
 
 	_buildShareItem(url, label) {
 		const translate = (key) => this._translationService.translate(key);
@@ -65,4 +65,4 @@ export class ShareToolDialog extends BaElement {
 	static get tag() {
 		return 'ba-sharetool-dialog';
 	}
-} 
+}

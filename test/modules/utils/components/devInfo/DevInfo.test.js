@@ -38,7 +38,7 @@ describe('DevInfo', () => {
 
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 		});
-		
+
 		it('adds nothing when SOFTWARE_INFO property is missing', async () => {
 
 			const element = await setup({ portrait: true, softwareInfo: undefined, runtimeMode: 'development' });

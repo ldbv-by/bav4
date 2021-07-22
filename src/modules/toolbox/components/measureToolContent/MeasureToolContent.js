@@ -118,7 +118,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			let id = 'startnew';
 			let title = translate('toolbox_measureTool_start_new');
 			let onClick = () => reset();
-			// alternate Finish-Button			
+			// alternate Finish-Button
 			if (finishAllowed) {
 				id = 'finish';
 				title = translate('toolbox_drawTool_finish');
@@ -179,7 +179,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			const title = translate('toolbox_measureTool_share');
 			const onClick = () => {
 				generateShareUrls().then(shareUrls => {
-					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>` );
+					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
 				});
 			};
 			return html`<ba-button id='share' 
@@ -221,7 +221,7 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { measurement } = globalState;

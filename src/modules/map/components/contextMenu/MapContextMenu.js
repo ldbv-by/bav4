@@ -7,7 +7,7 @@ import { close as closeContextMenu } from '../../store/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
 
 /**
- * 
+ *
  * @class
  */
 export class MapContextMenu extends BaElement {
@@ -28,7 +28,7 @@ export class MapContextMenu extends BaElement {
 
 		//window sector the click event occurred:
 		//0-1
-		//3-2	
+		//3-2
 
 		if (coordinate[0] <= widthBorder && coordinate[1] <= heightBorder) {
 			return 0;
@@ -57,7 +57,7 @@ export class MapContextMenu extends BaElement {
 		/**
 		  * Correct positioning of the context menu is a bit tricky, because we don't know
 		  * (and can't calculate) the dimensions of the context menu and its content child before rendering.
-		  * Therefore we translate the element after rendering by a css transformation. 
+		  * Therefore we translate the element after rendering by a css transformation.
 		*/
 		const sector = this._calculateSector(coordinate);
 		//consider css arrow offset of 20px
@@ -69,7 +69,7 @@ export class MapContextMenu extends BaElement {
 
 		//get content element
 		const content = document.getElementById(id);
-		//extract content element from the dom and render it here 
+		//extract content element from the dom and render it here
 		//see: https://lit-html.polymer-project.org/guide/template-reference#supported-data-types-for-text-bindings -> Node
 		return html`
         <style>${css}</style>

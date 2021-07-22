@@ -8,7 +8,7 @@ import { setFetching } from '../../../../../store/network/network.action';
 
 /**
  * Converts a geoResource to an ol layer.
- * Caching will be implemented in the future. 
+ * Caching will be implemented in the future.
  * @class
  * @author taulinger
  */
@@ -60,7 +60,7 @@ export class LayerService {
 			case GeoResourceTypes.VECTOR: {
 
 				const vectorLayer = new VectorLayer({
-					id: geoResource.id,
+					id: geoResource.id
 				});
 				let vectorSource;
 				if (geoResource.url) {

@@ -10,11 +10,11 @@ import css from './catalogContentPanel.css';
 
 
 /**
- * Renders a catalog definition for a specific topicId.  
+ * Renders a catalog definition for a specific topicId.
  * The rendering strategy of this component avoids unnecessary calls of #render() as much as possible.
  * While catalog data are fetched a spinner is shown. After catalog is data are available and rendered, no more
- * updates of the view happen.  
- * 
+ * updates of the view happen.
+ *
  * @class
  * @author taulinger
  * @author alsturm
@@ -42,7 +42,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 	initialize() {
 
 		const updateView = async (currentTopicId) => {
-			
+
 			if (this._topicId && currentTopicId === this._topicId) {
 
 				//we cache the catalog

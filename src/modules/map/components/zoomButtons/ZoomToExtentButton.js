@@ -6,8 +6,8 @@ import { setFit } from '../../../../store/position/position.action';
 
 /**
  * Button that zooms map to extent
- * @class 
- * @author bakir_en  
+ * @class
+ * @author bakir_en
  */
 
 export class ZoomToExtentButton extends BaElement {
@@ -15,17 +15,17 @@ export class ZoomToExtentButton extends BaElement {
 	constructor() {
 		super();
 		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
-		this._translationService = TranslationService;  
+		this._translationService = TranslationService;
 		this._mapService = MapService;
-	} 
+	}
 
 	/**
-     *@override 
+     *@override
      */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
-         
+
 		const zoomToExtent = () => {
 			setFit(getDefaultMapExtent());
 		};
@@ -41,5 +41,5 @@ export class ZoomToExtentButton extends BaElement {
 
 	static get tag() {
 		return 'ba-extent-button';
-	} 
-} 
+	}
+}

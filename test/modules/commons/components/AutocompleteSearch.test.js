@@ -14,7 +14,7 @@ describe('Button', () => {
 			return [
 				new SearchResult('id0', 'something0', '<b>something0</>', 'type', [0, 0]),
 				new SearchResult('id1', 'something1', '<b>something1</>', 'type', [1, 1]),
-				new SearchResult('id2', 'something2', '<b>something2</>', 'type', [2, 2]),
+				new SearchResult('id2', 'something2', '<b>something2</>', 'type', [2, 2])
 			];
 		}
 		return [];
@@ -126,7 +126,7 @@ describe('Button', () => {
 			element.provider = () => Promise.reject('Something got wrong');
 			const input = element.shadowRoot.querySelector('input');
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			input.value = 'some';
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js
@@ -145,7 +145,7 @@ describe('Button', () => {
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			const input = element.shadowRoot.querySelector('input');
 			const warnSpy = spyOn(console, 'warn');
-			
+
 			input.value = 'some';
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js
