@@ -33,6 +33,31 @@ describe('olMapUtils', () => {
 
 			expect(myLayer.get('id')).toBe('someId');
 		});
+
+		it('retrieves an olLayer from a handler', () => {
+			const mockHandler = {
+				activate() { }
+			};
+			const map = new Map();
+			const olLayer = new BaseLayer({});
+			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(olLayer);
+
+			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
+
+			expect(myLayer.get('id')).toBe('someId');
+		});
+
+		it('it passes return values from a handler', () => {
+			const mockHandler = {
+				activate() { }
+			};
+			const map = new Map();
+			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(null);
+
+			const myLayer = toOlLayerFromHandler('someId', mockHandler, map);
+
+			expect(myLayer).toBeNull();
+		});
 	});
 
 	describe('registerLongPressListener', () => {
@@ -123,6 +148,20 @@ describe('olMapUtils', () => {
 			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('does nothing on pointer move WITHOUT dragging)', () => {
+			const defaultDelay = 300;
+			const spy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, spy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, false);
+			jasmine.clock().tick(defaultDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });
