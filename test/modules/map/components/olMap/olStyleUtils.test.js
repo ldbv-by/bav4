@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 
@@ -50,6 +50,15 @@ describe('measureStyleFunction', () => {
 		expect(circle).toBeTruthy();
 		expect(nonCircle).toBeFalsy();
 		expect(circleStyle).toBeTruthy();
+	});
+});
+
+describe('baseStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = baseStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
 	});
 });
 

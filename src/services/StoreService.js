@@ -19,6 +19,7 @@ import { searchReducer } from '../store/search/search.reducer';
 import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
+import { drawReducer } from '../modules/map/store/draw.reducer';
 
 
 /**
@@ -47,6 +48,7 @@ export class StoreService {
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
+			draw: drawReducer,
 			geolocation: geolocationReducer,
 			topics: topicsReducer,
 			network: networkReducer,
@@ -65,6 +67,7 @@ export class StoreService {
 				TopicsPlugin: topicsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
+				DrawPlugin: drawPlugin,
 				PositionPlugin: positionPlugin,
 				ContextClickPlugin: contextClickPlugin,
 				HighlightPlugin: highlightPlugin,
@@ -76,6 +79,7 @@ export class StoreService {
 					'LayersPlugin',
 					'GeolocationPlugin',
 					'MeasurementPlugin',
+					'DrawPlugin',
 					'PositionPlugin',
 					'ContextClickPlugin',
 					'HighlightPlugin',
@@ -90,6 +94,7 @@ export class StoreService {
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
+				await drawPlugin.register(this._store);
 				await geolocationPlugin.register(this._store);
 				await contextClickPlugin.register(this._store);
 				await highlightPlugin.register(this._store);

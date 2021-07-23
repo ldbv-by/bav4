@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { measureStyleFunction } from '../olStyleUtils';
+import { baseStyleFunction, measureStyleFunction } from '../olStyleUtils';
 
 
 
@@ -31,6 +31,9 @@ export class StyleService {
 		switch (usingStyleType) {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
+				break;
+			case StyleTypes.DRAW:
+				this._addBaseStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -84,6 +87,8 @@ export class StyleService {
 		switch (styleType) {
 			case StyleTypes.MEASURE:
 				return measureStyleFunction;
+			case StyleTypes.DRAW:
+				return baseStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -117,6 +122,10 @@ export class StyleService {
 
 		olFeature.setStyle(measureStyleFunction(olFeature));
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	}
+
+	_addBaseStyle(olFeature) {
+		olFeature.setStyle(baseStyleFunction);
 	}
 
 	_detectStyleType(olFeature) {
