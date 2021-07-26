@@ -153,7 +153,7 @@ export class MainMenu extends BaElement {
 		<li  class="ba-list-item">
 		<span class="ba-list-item__text vertical-center">
 		<span class="ba-list-item__primary-text">
-		Lorem ipsum dolor
+		Dark mode
 		</span>              
 	</span>
 	<span class="ba-list-item__after">
