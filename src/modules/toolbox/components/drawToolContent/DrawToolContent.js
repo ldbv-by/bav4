@@ -3,6 +3,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import { setType } from '../../../map/store/draw.action';
 import css from './drawToolContent.css';
 
 
@@ -29,41 +30,35 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
-			activate: () => {},
-			deactivate: () => {}
+			activate: () => setType('Symbol')
 		}, {
 			id: 2,
 			name: 'text',
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
-			activate: () => {},
-			deactivate: () => {}
+			activate: () => setType('Text')
 		}, {
 			id: 3,
 			name: 'line',
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
-			activate: () => {},
-			deactivate: () => {}
+			activate: () => setType('Line')
 		}, {
 			id: 4,
 			name: 'polygon',
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => {},
-			deactivate: () => {}
-		}]
-		;
+			activate: () => setType('Polygon')
+		}];
 	}
 
 	_setActiveTool(tool) {
 		if (this._activeTool) {
 			if (this._activeTool !== tool) {
 				this._activeTool.active = false;
-				this._activeTool.deactivate();
 				this._showActive();
 			}
 		}
@@ -88,13 +83,10 @@ export class DrawToolContent extends AbstractToolContent {
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
 			const toggle = () => {
+				tool.active = !tool.active;
 				if (tool.active) {
-					tool.deactivate();
-				}
-				else {
 					tool.activate();
 				}
-				tool.active = !tool.active;
 				this._setActiveTool(tool);
 			};
 

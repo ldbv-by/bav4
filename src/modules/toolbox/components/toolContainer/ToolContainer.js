@@ -6,6 +6,7 @@ import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+import { activate as activateDraw, deactivate as deactivateDraw } from '../../../map/store/draw.action';
 import css from './toolContainer.css';
 
 /**
@@ -114,6 +115,9 @@ export class ToolContainer extends BaElement {
 			case MeasureToolContent.tag:
 				activateMeasurement();
 				break;
+			case DrawToolContent.tag:
+				activateDraw();
+				break;
 		}
 	}
 
@@ -121,6 +125,9 @@ export class ToolContainer extends BaElement {
 		switch (contentId) {
 			case MeasureToolContent.tag:
 				deactivateMeasurement();
+				break;
+			case DrawToolContent.tag:
+				deactivateDraw();
 				break;
 		}
 		this._lastContentId = false;
