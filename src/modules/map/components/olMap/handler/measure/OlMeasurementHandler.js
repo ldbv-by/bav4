@@ -665,11 +665,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const id = this._storageHandler.storageId ? this._storageHandler.storageId : createTempId();
 
-		let vgr = this._geoResourceService.byId(id);
-		if (!vgr) {
-			//create a georesource and set the data as source
-			vgr = new VectorGeoResource(id, label, VectorSourceType.KML);
-		}
+		const getOrCreateVectorGeoResource = () => {
+			const fromService = this._geoResourceService.byId(id);
+			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+		};
+		const vgr = getOrCreateVectorGeoResource();
 		vgr.setSource(this._storedContent, 4326);
 
 		//register georesource
