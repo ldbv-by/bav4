@@ -37,13 +37,15 @@ describe('MeasurementStorageHandler', () => {
 		return store;
 	};
 
-	it('has two methods and a property', () => {
+	it('has methods', () => {
 		setup();
 		const classUnderTest = new MeasurementStorageHandler();
 		expect(classUnderTest).toBeTruthy();
 		expect(classUnderTest.isValid).toBeTruthy();
 		expect(classUnderTest.store).toBeTruthy();
-		expect(classUnderTest.storageId).toBeTruthy();
+		expect(classUnderTest.isStorageId).toBeTruthy();
+		expect(classUnderTest.setStorageId).toBeTruthy();
+		expect(classUnderTest.getStorageId).toBeTruthy();
 	});
 
 	it('sets the storage id correctly', () => {
@@ -51,9 +53,9 @@ describe('MeasurementStorageHandler', () => {
 
 		const classUnderTest = new MeasurementStorageHandler();
 
-		classUnderTest.storageId = 'f_someId';
+		classUnderTest.setStorageId('f_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
-		classUnderTest.storageId = 'a_someId';
+		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 	});
 
@@ -61,12 +63,12 @@ describe('MeasurementStorageHandler', () => {
 		const store = setup();
 		const classUnderTest = new MeasurementStorageHandler();
 
-		expect(classUnderTest.storageId).toBe('init');
-		classUnderTest.storageId = 'a_someId';
+		expect(classUnderTest.getStorageId()).toBe('init');
+		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
-		expect(classUnderTest.storageId).toBeNull();
+		expect(classUnderTest.getStorageId()).toBeNull();
 		setFileSaveResult(null);
-		expect(classUnderTest.storageId).toBeNull();
+		expect(classUnderTest.getStorageId()).toBeNull();
 	});
 
 	it('recognize storageIds', () => {
@@ -88,9 +90,9 @@ describe('MeasurementStorageHandler', () => {
 		const classUnderTest = new MeasurementStorageHandler();
 
 		expect(classUnderTest.isValid()).toBeFalse();
-		classUnderTest.storageId = 'a_someId';
+		classUnderTest.setStorageId('a_someId');
 		expect(classUnderTest.isValid()).toBeFalse();
-		classUnderTest.storageId = 'f_someId';
+		classUnderTest.setStorageId('f_someId');
 		expect(classUnderTest.isValid()).toBeFalse();
 		setFileSaveResult(null);
 		expect(classUnderTest.isValid()).toBeFalse();
@@ -108,8 +110,6 @@ describe('MeasurementStorageHandler', () => {
 		const classUnderTest = new MeasurementStorageHandler();
 		await classUnderTest.store(content);
 
-
-		expect(classUnderTest._storedContent).toBeTruthy();
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith(null, content, FileStorageServiceDataTypes.KML);
@@ -126,7 +126,6 @@ describe('MeasurementStorageHandler', () => {
 		const classUnderTest = new MeasurementStorageHandler();
 		await classUnderTest.store(content);
 
-		expect(classUnderTest._storedContent).toBeTruthy();
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
@@ -155,7 +154,6 @@ describe('MeasurementStorageHandler', () => {
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
-		expect(classUnderTest._storedContent).toBeTruthy();
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 	});
 
@@ -171,9 +169,9 @@ describe('MeasurementStorageHandler', () => {
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
-		expect(classUnderTest._storedContent).toBeTruthy();
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
 	});
 
 
 });
+

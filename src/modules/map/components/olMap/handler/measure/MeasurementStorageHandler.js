@@ -4,25 +4,17 @@ import { setFileSaveResult } from '../../../../store/measurement.action';
 
 export class MeasurementStorageHandler {
 
-	constructor() {
-		const { StoreService, FileStorageService } = $injector.inject('StoreService', 'FileStorageService');
-		this._storeService = StoreService;
-		this._fileStorageService = FileStorageService;
-
-		this._storedContent = null;
-		this._lastFileSaveResult = null;
-	}
-
-	set storageId(value) {
-		if (this._fileStorageService.isAdminId(value)) {
+	setStorageId(value) {
+		const { FileStorageService } = $injector.inject('FileStorageService');
+		if (FileStorageService.isAdminId(value)) {
 			setFileSaveResult({ adminId: value, fileId: null });
 		}
-		if (this._fileStorageService.isFileId(value)) {
+		if (FileStorageService.isFileId(value)) {
 			setFileSaveResult({ fileId: value, adminId: null });
 		}
 	}
 
-	get storageId() {
+	getStorageId() {
 		const fileSaveResult = this._getLastFileSaveResult();
 		if (this._isValidFileSaveResult(fileSaveResult)) {
 			return fileSaveResult.fileId;
@@ -31,15 +23,17 @@ export class MeasurementStorageHandler {
 	}
 
 	isStorageId(candidate) {
-		return candidate == null ? false : this._fileStorageService.isAdminId(candidate) || this._fileStorageService.isFileId(candidate);
+		const { FileStorageService } = $injector.inject('FileStorageService');
+		return candidate == null ? false : FileStorageService.isAdminId(candidate) || FileStorageService.isFileId(candidate);
 	}
 
 	isValid() {
-		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.storageId);
+		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
 
 	_getLastFileSaveResult() {
-		const { measurement } = this._storeService.getStore().getState();
+		const { StoreService } = $injector.inject('StoreService');
+		const { measurement } = StoreService.getStore().getState();
 		return measurement.fileSaveResult;
 	}
 
@@ -52,12 +46,13 @@ export class MeasurementStorageHandler {
 	}
 
 	async store(content) {
+		const { StoreService, FileStorageService } = $injector.inject('StoreService', 'FileStorageService');
+
 		if (content) {
-			this._storedContent = content;
-			const { measurement } = this._storeService.getStore().getState();
+			const { measurement } = StoreService.getStore().getState();
 			if (measurement.fileSaveResult) {
 				try {
-					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await FileStorageService.save(measurement.fileSaveResult.adminId, content, FileStorageServiceDataTypes.KML);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
@@ -66,7 +61,7 @@ export class MeasurementStorageHandler {
 			}
 			else {
 				try {
-					const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await FileStorageService.save(null, content, FileStorageServiceDataTypes.KML);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {

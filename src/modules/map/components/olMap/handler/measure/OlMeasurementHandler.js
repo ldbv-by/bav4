@@ -116,7 +116,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
 				if (vgr) {
 
-					this._storageHandler.storageId = oldLayer.get('id');
+					this._storageHandler.setStorageId(oldLayer.get('id'));
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
@@ -460,6 +460,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		this._storageHandler.store(newContent);
+		this._storedContent = newContent;
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
@@ -663,7 +664,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return Temp_Session_Id;
 		};
 
-		const id = this._storageHandler.storageId ? this._storageHandler.storageId : createTempId();
+		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempId();
 
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
