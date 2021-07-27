@@ -6,7 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setFileSaveResult } from '../../../../store/measurement.action';
+import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
 import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
@@ -17,11 +17,11 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './HelpTooltip';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../../../utils/timer';
-import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
+import { MeasurementStorageHandler } from './MeasurementStorageHandler';
 
 
 export const MeasureStateType = {
@@ -54,13 +54,12 @@ const Temp_Session_Id = 'temp_measure_id';
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'OverlayService', 'StyleService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
 		this._geoResourceService = GeoResourceService;
-		this._fileStorageService = FileStorageService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
 		this._vectorLayer = null;
@@ -71,7 +70,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._isSnapOnLastPoint = false;
 		this._pointCount = 0;
 		this._listeners = [];
-		this._storedContent = null;
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -84,6 +82,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			dragging: false
 		};
 		this._helpTooltip = new HelpTooltip();
+		this._storageHandler = new MeasurementStorageHandler();
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
@@ -96,8 +95,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const getOldLayer = (map) => {
 			return map.getLayers().getArray().find(l => l.get('id') && (
-				this._fileStorageService.isAdminId(l.get('id')) ||
-				this._fileStorageService.isFileId(l.get('id')) ||
+				this._storageHandler.isStorageId(l.get('id')) ||
 				l.get('id') === Temp_Session_Id));
 		};
 
@@ -118,13 +116,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
 				if (vgr) {
 
-					const id = oldLayer.get('id');
-					if (this._fileStorageService.isAdminId(id)) {
-						setFileSaveResult({ adminId: id, fileId: null });
-					}
-					if (this._fileStorageService.isFileId(id)) {
-						setFileSaveResult({ fileId: id, adminId: null });
-					}
+					this._storageHandler.storageId = oldLayer.get('id');
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
@@ -467,36 +459,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		features.forEach(f => saveManualOverlayPosition(f));
 
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		const { measurement } = this._storeService.getStore().getState();
-		if (newContent) {
-			this._storedContent = newContent;
-
-			if (measurement.fileSaveResult) {
-				try {
-					const fileSaveResult = await this._fileStorageService.save(measurement.fileSaveResult.adminId, this._storedContent, FileStorageServiceDataTypes.KML);
-					setFileSaveResult(fileSaveResult);
-				}
-				catch (error) {
-					console.warn('Could not store content:', error);
-				}
-			}
-			else {
-				try {
-					const fileSaveResult = await this._fileStorageService.save(null, this._storedContent, FileStorageServiceDataTypes.KML);
-					setFileSaveResult(fileSaveResult);
-				}
-				catch (error) {
-					console.warn('Could not store content initially:', error);
-				}
-			}
-		}
-		else {
-			if (measurement.fileSaveResult) {
-				//DEBUG:throw new Error('Deleting existing fileSaveResult, caused by empty content. Current storedContent:' + this._storedContent );
-				setFileSaveResult(null);
-			}
-		}
-
+		this._storageHandler.store(newContent);
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
@@ -689,7 +652,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 
-		if (!this._isValidFileSaveResult(this._getLastFileSaveResult())) {
+		if (!this._storageHandler.isValid()) {
 			await this._save();
 		}
 
@@ -700,7 +663,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return Temp_Session_Id;
 		};
 
-		const id = this._getLastFileSaveResult() ? this._getLastFileSaveResult().fileId : createTempId();
+		const id = this._storageHandler.storageId ? this._storageHandler.storageId : createTempId();
 
 		let vgr = this._geoResourceService.byId(id);
 		if (!vgr) {
@@ -713,19 +676,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-	}
-
-	_getLastFileSaveResult() {
-		const { measurement } = this._storeService.getStore().getState();
-		return measurement.fileSaveResult;
-	}
-
-	_isValidFileSaveResult(fileSaveResult) {
-		if (fileSaveResult == null) {
-			return false;
-		}
-
-		return fileSaveResult.adminId !== null && fileSaveResult.fileId !== null;
 	}
 
 	_getSnapTolerancePerDevice() {
@@ -743,8 +693,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
- * todo: extract Util-method to kind of 'OlMapUtils'-file
- */
+     * todo: extract Util-method to kind of 'OlMapUtils'-file
+     */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;
 		itemCollection.forEach(i => {
