@@ -1,9 +1,9 @@
-import { $injector } from '../../../../../../../src/injection';
-import { MeasurementStorageService } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementStorageService';
-import { setFileSaveResult } from '../../../../../../../src/modules/map/store/measurement.action';
-import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
-import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
-import { TestUtils } from '../../../../../../test-utils.js';
+import { $injector } from '../../../../../../src/injection';
+import { MeasurementStorageService } from '../../../../../../src/modules/map/components/olMap/services/MeasurementStorageService';
+import { setFileSaveResult } from '../../../../../../src/modules/map/store/measurement.action';
+import { measurementReducer } from '../../../../../../src/modules/map/store/measurement.reducer';
+import { FileStorageServiceDataTypes } from '../../../../../../src/services/FileStorageService';
+import { TestUtils } from '../../../../../test-utils.js';
 
 describe('MeasurementStorageHandler', () => {
 	const fileStorageServiceMock = {

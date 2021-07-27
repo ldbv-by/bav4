@@ -1,6 +1,6 @@
-import { $injector } from '../../../../../../injection';
-import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { setFileSaveResult } from '../../../../store/measurement.action';
+import { $injector } from '../../../../../injection';
+import { FileStorageServiceDataTypes } from '../../../../../services/FileStorageService';
+import { setFileSaveResult } from '../../../store/measurement.action';
 
 
 /**
