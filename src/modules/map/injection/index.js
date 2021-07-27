@@ -10,7 +10,7 @@ import { StyleService } from '../components/olMap/services/StyleService';
 import { OverlayService } from '../components/olMap/services/OverlayService';
 import { DrawPlugin } from '../store/DrawPlugin';
 import { OlDrawHandler } from '../components/olMap/handler/draw/OlDrawHandler';
-import { MeasurementStorageService } from '../components/olMap/handler/measure/MeasurementStorageService';
+import { MeasurementStorageService } from '../components/olMap/services/MeasurementStorageService';
 
 export const mapModule = ($injector) => {
 	$injector
