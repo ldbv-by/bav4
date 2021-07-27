@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../../../src/injection';
-import { MeasurementStorageHandler } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementStorageHandler';
+import { MeasurementStorageService } from '../../../../../../../src/modules/map/components/olMap/handler/measure/MeasurementStorageService';
 import { setFileSaveResult } from '../../../../../../../src/modules/map/store/measurement.action';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
@@ -39,7 +39,7 @@ describe('MeasurementStorageHandler', () => {
 
 	it('has methods', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		expect(classUnderTest).toBeTruthy();
 		expect(classUnderTest.isValid).toBeTruthy();
 		expect(classUnderTest.store).toBeTruthy();
@@ -51,7 +51,7 @@ describe('MeasurementStorageHandler', () => {
 	it('sets the storage id correctly', () => {
 		const store = setup({ ...initialState, fileSaveResult: null });
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 
 		classUnderTest.setStorageId('f_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
@@ -61,7 +61,7 @@ describe('MeasurementStorageHandler', () => {
 
 	it('returns valid Id or null', () => {
 		const store = setup();
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
@@ -73,7 +73,7 @@ describe('MeasurementStorageHandler', () => {
 
 	it('recognize storageIds', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 
 		expect(classUnderTest.isStorageId('f_someId')).toBeTrue();
 		expect(classUnderTest.isStorageId('a_someId')).toBeTrue();
@@ -87,7 +87,7 @@ describe('MeasurementStorageHandler', () => {
 	it('detect valid storage state', () => {
 		setup();
 		const validFileSaveResult = { adminId: 'a_someId', fileId: 'f_someId' };
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 
 		expect(classUnderTest.isValid()).toBeFalse();
 		classUnderTest.setStorageId('a_someId');
@@ -107,7 +107,7 @@ describe('MeasurementStorageHandler', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
@@ -123,7 +123,7 @@ describe('MeasurementStorageHandler', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
@@ -136,7 +136,7 @@ describe('MeasurementStorageHandler', () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const emptyContent = null;
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		await classUnderTest.store(emptyContent);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
@@ -150,7 +150,7 @@ describe('MeasurementStorageHandler', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
@@ -165,7 +165,7 @@ describe('MeasurementStorageHandler', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageHandler();
+		const classUnderTest = new MeasurementStorageService();
 		await classUnderTest.store(content);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });

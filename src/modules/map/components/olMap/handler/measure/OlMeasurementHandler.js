@@ -21,7 +21,6 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
-import { MeasurementStorageHandler } from './MeasurementStorageHandler';
 
 
 export const MeasureStateType = {
@@ -54,7 +53,7 @@ const Temp_Session_Id = 'temp_measure_id';
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'OverlayService', 'StyleService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService, MeasurementStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'OverlayService', 'StyleService', 'MeasurementStorageService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -62,9 +61,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService = GeoResourceService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
+		this._storageHandler = MeasurementStorageService;
+
 		this._vectorLayer = null;
 		this._draw = false;
 		this._activeSketch = null;
+		this._storedContent = null;
 
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
@@ -82,7 +84,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			dragging: false
 		};
 		this._helpTooltip = new HelpTooltip();
-		this._storageHandler = new MeasurementStorageHandler();
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}

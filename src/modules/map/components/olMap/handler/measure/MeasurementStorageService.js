@@ -2,7 +2,15 @@ import { $injector } from '../../../../../../injection';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { setFileSaveResult } from '../../../../store/measurement.action';
 
-export class MeasurementStorageHandler {
+
+/**
+ * Facade for FileStorageService and StoreService,
+ * to give the measurement a simplified access for storage-functionality
+ *
+ * @class
+ * @author thiloSchlemmer
+ */
+export class MeasurementStorageService {
 
 	setStorageId(value) {
 		const { FileStorageService } = $injector.inject('FileStorageService');
