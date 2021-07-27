@@ -22,6 +22,7 @@ import { layersReducer } from '../../../../../../../src/store/layers/layers.redu
 import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
+import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -456,7 +457,7 @@ describe('OlMeasurementHandler', () => {
 
 			setTimeout(() => {
 				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String));
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				done();
 			});
 		});
@@ -490,7 +491,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.deactivate(map);
 
 			setTimeout(() => {
-				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String));
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
 					id: 'f_ooBarId',
@@ -887,7 +888,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String));
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				done();
 			});
 		});

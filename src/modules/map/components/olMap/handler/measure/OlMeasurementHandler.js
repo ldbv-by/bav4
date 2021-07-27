@@ -21,6 +21,7 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
+import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 
 
 export const MeasureStateType = {
@@ -460,7 +461,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		features.forEach(f => saveManualOverlayPosition(f));
 
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent);
+		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 		this._storedContent = newContent;
 	}
 

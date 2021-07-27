@@ -5,7 +5,7 @@ import { measurementReducer } from '../../../../../../src/modules/map/store/meas
 import { FileStorageServiceDataTypes } from '../../../../../../src/services/FileStorageService';
 import { TestUtils } from '../../../../../test-utils.js';
 
-describe('MeasurementStorageHandler', () => {
+describe('MeasurementStorageService', () => {
 	const fileStorageServiceMock = {
 		async save(adminId, content, format) {
 			if (adminId) {
@@ -108,7 +108,7 @@ describe('MeasurementStorageHandler', () => {
 		);
 
 		const classUnderTest = new MeasurementStorageService();
-		await classUnderTest.store(content);
+		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -124,7 +124,7 @@ describe('MeasurementStorageHandler', () => {
 		);
 
 		const classUnderTest = new MeasurementStorageService();
-		await classUnderTest.store(content);
+		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -137,7 +137,7 @@ describe('MeasurementStorageHandler', () => {
 		const emptyContent = null;
 
 		const classUnderTest = new MeasurementStorageService();
-		await classUnderTest.store(emptyContent);
+		await classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
 	});
@@ -151,7 +151,7 @@ describe('MeasurementStorageHandler', () => {
 		);
 
 		const classUnderTest = new MeasurementStorageService();
-		await classUnderTest.store(content);
+		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
@@ -166,7 +166,7 @@ describe('MeasurementStorageHandler', () => {
 		);
 
 		const classUnderTest = new MeasurementStorageService();
-		await classUnderTest.store(content);
+		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));

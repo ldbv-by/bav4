@@ -1,5 +1,4 @@
 import { $injector } from '../../../../../injection';
-import { FileStorageServiceDataTypes } from '../../../../../services/FileStorageService';
 import { setFileSaveResult } from '../../../store/measurement.action';
 
 
@@ -75,15 +74,16 @@ export class MeasurementStorageService {
 	/**
 	 * Stores the defined content to the FileStorageService
 	 * @param {string} content the content to be stored.
+	 * @param {FileStorageServiceDataTypes} type the content type
 	 */
-	async store(content) {
+	async store(content, type) {
 		const { StoreService: storeService, FileStorageService: fileStorageService } = $injector.inject('StoreService', 'FileStorageService');
 
 		if (content) {
 			const { measurement } = storeService.getStore().getState();
 			if (measurement.fileSaveResult) {
 				try {
-					const fileSaveResult = await fileStorageService.save(measurement.fileSaveResult.adminId, content, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await fileStorageService.save(measurement.fileSaveResult.adminId, content, type);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
@@ -92,7 +92,7 @@ export class MeasurementStorageService {
 			}
 			else {
 				try {
-					const fileSaveResult = await fileStorageService.save(null, content, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await fileStorageService.save(null, content, type);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
