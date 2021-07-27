@@ -13,11 +13,11 @@ import { setFileSaveResult } from '../../../store/measurement.action';
 export class MeasurementStorageService {
 
 	setStorageId(value) {
-		const { FileStorageService } = $injector.inject('FileStorageService');
-		if (FileStorageService.isAdminId(value)) {
+		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
+		if (fileStorageService.isAdminId(value)) {
 			setFileSaveResult({ adminId: value, fileId: null });
 		}
-		if (FileStorageService.isFileId(value)) {
+		if (fileStorageService.isFileId(value)) {
 			setFileSaveResult({ fileId: value, adminId: null });
 		}
 	}
@@ -31,8 +31,8 @@ export class MeasurementStorageService {
 	}
 
 	isStorageId(candidate) {
-		const { FileStorageService } = $injector.inject('FileStorageService');
-		return candidate == null ? false : FileStorageService.isAdminId(candidate) || FileStorageService.isFileId(candidate);
+		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
+		return candidate == null ? false : fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate);
 	}
 
 	isValid() {
@@ -40,8 +40,8 @@ export class MeasurementStorageService {
 	}
 
 	_getLastFileSaveResult() {
-		const { StoreService } = $injector.inject('StoreService');
-		const { measurement } = StoreService.getStore().getState();
+		const { StoreService: storeService } = $injector.inject('StoreService');
+		const { measurement } = storeService.getStore().getState();
 		return measurement.fileSaveResult;
 	}
 
@@ -54,13 +54,13 @@ export class MeasurementStorageService {
 	}
 
 	async store(content) {
-		const { StoreService, FileStorageService } = $injector.inject('StoreService', 'FileStorageService');
+		const { StoreService: storeService, FileStorageService: fileStorageService } = $injector.inject('StoreService', 'FileStorageService');
 
 		if (content) {
-			const { measurement } = StoreService.getStore().getState();
+			const { measurement } = storeService.getStore().getState();
 			if (measurement.fileSaveResult) {
 				try {
-					const fileSaveResult = await FileStorageService.save(measurement.fileSaveResult.adminId, content, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await fileStorageService.save(measurement.fileSaveResult.adminId, content, FileStorageServiceDataTypes.KML);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
@@ -69,7 +69,7 @@ export class MeasurementStorageService {
 			}
 			else {
 				try {
-					const fileSaveResult = await FileStorageService.save(null, content, FileStorageServiceDataTypes.KML);
+					const fileSaveResult = await fileStorageService.save(null, content, FileStorageServiceDataTypes.KML);
 					setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
