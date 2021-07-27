@@ -72,7 +72,7 @@ describe('MeasurementStorageHandler', () => {
 	});
 
 	it('recognize storageIds', () => {
-
+		setup();
 		const classUnderTest = new MeasurementStorageHandler();
 
 		expect(classUnderTest.isStorageId('f_someId')).toBeTrue();
