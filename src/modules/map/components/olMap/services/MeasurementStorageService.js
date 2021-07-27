@@ -12,6 +12,12 @@ import { setFileSaveResult } from '../../../store/measurement.action';
  */
 export class MeasurementStorageService {
 
+	/**
+	 *
+	 * @param {string} value the id, which defines/overrides the following storage-process.
+	 * A value evaluated to a AdminId refers to a 'save as update'.
+	 * A value evaluated to a FileId refers to a 'save as copy'.
+	 */
 	setStorageId(value) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 		if (fileStorageService.isAdminId(value)) {
@@ -22,6 +28,9 @@ export class MeasurementStorageService {
 		}
 	}
 
+	/**
+	 * @returns {string|null} the storageId
+	 */
 	getStorageId() {
 		const fileSaveResult = this._getLastFileSaveResult();
 		if (this._isValidFileSaveResult(fileSaveResult)) {
@@ -30,11 +39,21 @@ export class MeasurementStorageService {
 		return null;
 	}
 
+	/**
+	 * Tests, whether or not the candidate is a value to be evaluated as FileId or AdminId
+	 * @param {string|null} candidate the candidate of storageId-value
+	 * @returns {boolean} whether or not the candidate is a valid value to be evaluated as FileId or AdminId
+	 */
 	isStorageId(candidate) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 		return candidate == null ? false : fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate);
 	}
 
+	/**
+ 	 * Tests, whether or not the instance have a valid storage state. A valid storage state is reached
+ 	 * if one or more successful FileSaveResults are received from the FileStorageService
+ 	 * @returns {boolean}
+ 	 */
 	isValid() {
 		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
@@ -53,6 +72,10 @@ export class MeasurementStorageService {
 		return fileSaveResult.adminId !== null && fileSaveResult.fileId !== null;
 	}
 
+	/**
+	 * Stores the defined content to the FileStorageService
+	 * @param {string} content the content to be stored.
+	 */
 	async store(content) {
 		const { StoreService: storeService, FileStorageService: fileStorageService } = $injector.inject('StoreService', 'FileStorageService');
 
