@@ -98,7 +98,7 @@ Here's an overview of what project folder structure looks like:
 
 ### Prerequisites
 
-- Node.js 12
+- Node.js 14
 - npm 6
 
 ### Install
