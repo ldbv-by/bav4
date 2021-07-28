@@ -33,7 +33,7 @@ else if (files.length > 1) {
 	throw new Error('More than one test file found for "' + process.env.KARMA_SPEC + '"');
 }
 
-const BROWSER = process.env.KARMA_BROWSER || 'FirefoxHeadless';
+const browser = process.env.KARMA_BROWSER || 'FirefoxHeadless';
 
 module.exports = function (config) {
 
@@ -50,6 +50,6 @@ module.exports = function (config) {
 		preprocessors: {
 			'test/**/*.test.js': ['webpack']
 		},
-		browsers: [BROWSER]
+		browsers: [browser]
 	});
 };
