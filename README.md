@@ -114,10 +114,9 @@ Here's an overview of what project folder structure looks like:
 | `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
-| `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
-| `npm run test:single` | Runs a single test against Firefox (headless). Usage `npm run test:single --spec=MyTest.test.js`  |
-| `npm run test:debug` | Runs unit and component tests against Chrome (headless) with remote debugging enabled | 
-| `npm run test:webkit` | Runs unit and component tests against the Gnome Web Browser (Epiphany), which is based on WebKit. The browser must be installed locally. A code coverage report can be found under  `./coverage`  |
+| `npm run test` | Runs unit and component tests against Chrome (Chromium), Firefox and Webkit (all headless). A code coverage report can be found under  `./coverage`  |
+| `npm run test:single` | Runs a single test against a browser. Available browsers are `ChromeHeadless`, `FirefoxHeadless` (default), `WebkitHeadless`. Usage `npm run test:single --spec=MyTest.test.js --browser=ChromeHeadless`  |
+| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |

@@ -16,6 +16,7 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run es-check
+    - run: npm run ci:install-deps
     - run: npm run test:gha
 
     - name: Coveralls
