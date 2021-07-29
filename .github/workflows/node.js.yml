@@ -28,7 +28,9 @@ jobs:
       with:
         timeout_minutes: 1
         max_attempts: 3
-        command: npm run e2e
+        command: |
+          npm run start &
+          npm run e2e
 
     - name: Publish Coveralls report
       uses: coverallsapp/github-action@master
