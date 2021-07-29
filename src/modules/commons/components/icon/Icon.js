@@ -4,30 +4,30 @@ import css from './icon.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 /**
  * Clickable icon.
- * 
+ *
  * Configurable Attributes:
  * - `icon` (svg)
  * - `size` (in em)
  * - `color` (css color value)
  * - `color_hover` (css color value)
- * - `title` 
+ * - `title`
  * - `disabled` (default=false)
  * - `onClick()`
- * 
+ *
  * Observed Attributes:
  * - `disabled`
- * 
+ *
  * Configurable Properties:
  * - `disabled` (default=false)
  * - `onClick()`
- * 
+ *
  * Observed Properties:
  * - `disabled`
- * 
- * 
+ *
+ *
  * @class
- * 
- * 
+ *
+ *
  */
 export class Icon extends BaElement {
 

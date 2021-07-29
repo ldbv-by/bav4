@@ -12,7 +12,7 @@ export const initialState = {
 	center: [1288239.2412306187, 6130212.561641981],
 	rotation: 0,
 	liveRotation: 0,
-	fitRequest : null
+	fitRequest: null
 };
 
 export const positionReducer = (state = initialState, action) => {

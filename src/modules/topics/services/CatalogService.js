@@ -13,15 +13,15 @@ import { loadFallbackCatalog, loadBvvCatalog } from './provider/catalog.provider
 
 /**
  * Service for loading catalog definitions.
- * 
+ *
  * @class
  * @author taulinger
  */
 export class CatalogService {
 
 	/**
-	 * 
-	 * @param {CatalogProvider} [catalogProvider=loadBvvCatalog] 
+	 *
+	 * @param {CatalogProvider} [catalogProvider=loadBvvCatalog]
 	 */
 	constructor(provider = loadBvvCatalog) {
 		this._provider = provider;
@@ -44,7 +44,7 @@ export class CatalogService {
 			return this._cache.get(topicId);
 		}
 		catch (e) {
-			
+
 			//do we have a fallback topic?
 			if (FALLBACK_TOPICS_IDS.includes(topicId)) {
 				return this._newFallbackCatalog(topicId);

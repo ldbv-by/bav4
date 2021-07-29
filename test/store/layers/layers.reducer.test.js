@@ -361,9 +361,9 @@ describe('layersReducer', () => {
 		const store = setup();
 
 		expect(store.getState().layers.ready).toBeFalse();
-		
+
 		setReady();
-		
+
 		expect(store.getState().layers.ready).toBeTrue();
 	});
 

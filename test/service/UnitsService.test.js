@@ -20,21 +20,21 @@ describe('UnitsService', () => {
 
 	it('provides default formatted distance', () => {
 		spyOn(configService, 'getValue').and.returnValue(null);
-		
-		expect(instanceUnderTest.formatDistance(42.00)).toBe('42.00 m');		
+
+		expect(instanceUnderTest.formatDistance(42.00)).toBe('42.00 m');
 	});
 
 	it('provides default formatted area', () => {
 		spyOn(configService, 'getValue').and.returnValue(null);
-		
-		expect(instanceUnderTest.formatArea(42)).toBe('42.00 m&sup2;');		
+
+		expect(instanceUnderTest.formatArea(42)).toBe('42.00 m&sup2;');
 	});
 
 	it('provides formatted distance', () => {
 		const systemOfUnits = 'metric';
-		
+
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
-		
+
 		expect(instanceUnderTest.formatDistance(42, 0)).toBe('42 m');
 		expect(instanceUnderTest.formatDistance(999, 0)).toBe('999 m');
 		expect(instanceUnderTest.formatDistance(1000, 0)).toBe('1 km');
@@ -47,9 +47,9 @@ describe('UnitsService', () => {
 
 	it('provides formatted area', () => {
 		const systemOfUnits = 'metric';
-		
+
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
-		
+
 		expect(instanceUnderTest.formatArea(42, 0)).toBe('42 m&sup2;');
 		expect(instanceUnderTest.formatArea(999, 0)).toBe('999 m&sup2;');
 		expect(instanceUnderTest.formatArea(1000000, 0)).toBe('1 km&sup2;');

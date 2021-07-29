@@ -12,7 +12,7 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 /**
  * Contains informations for transformation-methods
  * @typedef {Object} CalculationHints
- * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'  
+ * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
  * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
  */
 
@@ -51,10 +51,10 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 			}
 			else if (lineStringCandidate instanceof Polygon) {
 				return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
-			}	
-		}; 
+			}
+		};
 		const lineString = getLineString(calculationGeometry);
-		
+
 
 		if (lineString) {
 			return lineString.getLength();
@@ -65,10 +65,10 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 
 /**
  * A wrapper method for ol/LineString.getCoordinateAt().
- * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry. 
- * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). * 
- * @param {Geometry} geometry 
- * @param {number} fraction 
+ * Return the coordinate at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
+ * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
+ * @param {Geometry} geometry
+ * @param {number} fraction
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
@@ -81,8 +81,8 @@ export const getCoordinateAt = (geometry, fraction) => {
 		}
 		else if (lineStringCandidate instanceof Polygon) {
 			return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
-		}	
-	}; 
+		}
+	};
 	const lineString = getLineString(geometry);
 
 	if (lineString) {
@@ -94,7 +94,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
  * @param {Geometry} geometry the geometry
- * @returns {boolean} 
+ * @returns {boolean}
  */
 export const canShowAzimuthCircle = (geometry) => {
 	if (geometry instanceof LineString) {
@@ -110,7 +110,7 @@ export const canShowAzimuthCircle = (geometry) => {
 
 /**
  * Calculates the azimuth-angle between the start(first coordinate) and end(last coordinate) of the geometry
- * @param {Geometry} geometry 
+ * @param {Geometry} geometry
  * @returns {number} the azimuth-angle as degree of arc with a value between 0 and 360
  */
 export const getAzimuth = (geometry) => {
@@ -138,7 +138,7 @@ export const getAzimuth = (geometry) => {
 
 
 /**
- * Calculates delta-value as a factor of the length of a provided geometry, 
+ * Calculates delta-value as a factor of the length of a provided geometry,
  * to get equal-distanced partition points related to the start of the geometry.
  * The count of the points is based on the resolution of the MapView.
  * @param {Geometry} geometry the linear/area-like geometry
@@ -148,15 +148,15 @@ export const getAzimuth = (geometry) => {
  */
 export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
 	const length = getGeometryLength(geometry, calculationHints);
-	
+
 	const minLengthResolution = 20;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution ;
-	};	
+		return partitionResolution > minLengthResolution && length > partition ;
+	};
 
 	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions 
+	const minDelta = 0.01; // results in max 100 allowed partitions
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
@@ -164,7 +164,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 		if (maxDelta < delta) {
 			return maxDelta;
 		}
-		if ( isValidForResolution(partitionLength)) {
+		if (isValidForResolution(partitionLength)) {
 			if (minDelta < delta) {
 				return delta;
 			}
@@ -172,7 +172,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 		const nextPartitionLength = partitionLength * stepFactor;
 		return findBestFittingDelta(nextPartitionLength);
 	};
-	
+
 	return findBestFittingDelta(minPartitionLength);
 };
 
@@ -195,11 +195,11 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 		}
 		if (geometry instanceof Point) {
 			return [geometry.getCoordinates()];
-		}	
+		}
 		return geometry.getCoordinates();
 	};
 	const coordinates = getCoordinates(geometry);
-	
+
 	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
 	return result ? true : false;
 };
@@ -207,7 +207,7 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 export const createOffsetGeometry = (geometry, lineOffsetInMeter) => {
 
 	const segments = [];
-	geometry.forEachSegment(function(from, to) {
+	geometry.forEachSegment(function (from, to) {
 		const coords = [];
 		const angle = Math.atan2(to[1] - from[1], to[0] - from[0]);
 		const newFrom = [

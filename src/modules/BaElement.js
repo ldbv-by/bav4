@@ -9,9 +9,9 @@ import css from './baElement.css';
  * Abstract base class for all BaElements.
  * BaElement classes represent the view model within the MVVM pattern.
  * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
- * 
+ *
  * Lifecycle:<br>
- * 
+ *
  * <center>
  *  {@link BaElement#extractState}<br>
  *      &darr;<br>
@@ -26,11 +26,11 @@ import css from './baElement.css';
  *  {@link BaElement#onWindowLoad}<br>
  *      &darr;<br>
  *  {@link BaElement#onDisconnect}<br>
- * 
+ *
  * </center>
  * State change loop:<br>
  * <center>
- * 
+ *
  *  {@link BaElement#extractState}<br>
  * 		&darr;<br>
  *  {@link BaElement#onStateChanged}<br>
@@ -41,8 +41,8 @@ import css from './baElement.css';
  *      &darr;<br>
  *  {@link BaElement#onAfterRender}<br>
  * </center>
- * 
- * 
+ *
+ *
  * @abstract
  * @class
  * @author taulinger
@@ -65,13 +65,13 @@ export class BaElement extends HTMLElement {
 		 */
 		this._storeService = StoreService;
 
-		/** 
-		 * The state of this component.  
+		/**
+		 * The state of this component.
 		 * Usually the state object is an extract of the application-wide store and/or local data.
 		 * @see {@link BaElement#extractState}
 		 * @see {@link BaElement#onStateChanged}
-		 * @member  {Object}  
-		 * 
+		 * @member  {Object}
+		 *
 		 */
 		this._state = {};
 
@@ -91,7 +91,7 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 *
-	 * @param {string} message 
+	 * @param {string} message
 	 * @protected
 	 */
 	log(message) {
@@ -148,8 +148,8 @@ export class BaElement extends HTMLElement {
 	}
 
 	/**
-	 * Triggers the state change loop which determines the new state for this component.  
-	 * Usually automatically called by the observer registered on global state changes.  
+	 * Triggers the state change loop which determines the new state for this component.
+	 * Usually automatically called by the observer registered on global state changes.
 	 * Manual calls are appropriate, e.g. if the state of this component is (partially) derived from local data
 	 * and local data have been changed.
 	 * @protected
@@ -189,7 +189,7 @@ export class BaElement extends HTMLElement {
 	/**
 	 * Extract and returns the state of this component from the application-wide state and/or from local data.
 	 * Extraction should be done carefully and should only contain state which is necessary for this component.
-	 * 
+	 *
 	 * @see {@link BaElement#onStateChanged}
 	 * @protected
 	 * @param {object} globalState **global** state
@@ -236,7 +236,7 @@ export class BaElement extends HTMLElement {
 
 	/**
 	 * @private
-	 * @param {TemplateResult} templateResult 
+	 * @param {TemplateResult} templateResult
 	 * @returns {boolean}
 	 */
 	_isNothing(templateResult) {
@@ -276,8 +276,8 @@ export class BaElement extends HTMLElement {
 	onWindowLoad() { }
 
 	/**
-	 * Called after the components state has been changed. 
-	 * Per default {@link BaElement#render} is called. 
+	 * Called after the components state has been changed.
+	 * Per default {@link BaElement#render} is called.
 	 * @protected
 	 * @param {object} state state of this component
 	 */

@@ -5,9 +5,9 @@
  * @author taulinger
  */
 export class ProcessEnvConfigService {
-	
+
 	constructor() {
-		
+
 		this._properties = new Map();
 		// eslint-disable-next-line no-undef
 		this._properties.set('RUNTIME_MODE', process.env.NODE_ENV);
@@ -30,8 +30,8 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 * 
-	 * @param {string} value 
+	 *
+	 * @param {string} value
 	 * @private
 	 */
 	_trailingSlash(value, append) {
@@ -46,9 +46,9 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 * 
-	 * @param {string} key 
-	 * @param {string} defaultValue 
+	 *
+	 * @param {string} key
+	 * @param {string} defaultValue
 	 * @public
 	 */
 	getValue(key, defaultValue) {
@@ -60,13 +60,13 @@ export class ProcessEnvConfigService {
 		if (defaultValue !== undefined) {
 			return defaultValue;
 		}
-		throw 'No value found for \'' + key + '\'';
+		throw new Error(`No value found for '${key}'`);
 	}
 
 	/**
 	 * Ensures that the value ends with a <code>/</code>
-	 * @param {string} key 
-	 * @param {string} defaultValue 
+	 * @param {string} key
+	 * @param {string} defaultValue
 	 * @public
 	 */
 	getValueAsPath(key, defaultValue) {
@@ -74,8 +74,8 @@ export class ProcessEnvConfigService {
 	}
 
 	/**
-	 * 
-	 * @param {string} key 
+	 *
+	 * @param {string} key
 	 * @public
 	 */
 	hasKey(key) {

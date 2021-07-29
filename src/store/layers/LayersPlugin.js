@@ -18,7 +18,7 @@ export class LayersPlugin extends BaPlugin {
 					modifyLayer(id, { label: value });
 				}
 				return Reflect.set(...arguments);
-			},
+			}
 		};
 	}
 
@@ -57,7 +57,7 @@ export class LayersPlugin extends BaPlugin {
 	_registerUnkownGeoResource(id) {
 		const {
 			GeoResourceService: geoResourceService,
-			TranslationService: translationService,
+			TranslationService: translationService
 		}
 			= $injector.inject('GeoResourceService', 'TranslationService');
 

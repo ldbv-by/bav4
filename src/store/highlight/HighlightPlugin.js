@@ -16,7 +16,7 @@ export class HighlightPlugin extends BaPlugin {
 
 	/**
 	 * @override
-	 * @param {Store} store 
+	 * @param {Store} store
 	 */
 	async register(store) {
 

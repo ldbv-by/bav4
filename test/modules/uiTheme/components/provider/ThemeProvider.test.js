@@ -22,7 +22,7 @@ describe('ThemeProvider', () => {
 
 
 		$injector.registerSingleton('EnvironmentService', {
-			getWindow: () => window,
+			getWindow: () => window
 		});
 		return TestUtils.render(ThemeProvider.tag);
 	};
@@ -36,11 +36,11 @@ describe('ThemeProvider', () => {
 					body: {
 						classList: {
 							add: addSpy,
-							remove: removeSpy,
+							remove: removeSpy
 						}
 					}
-				},
-				
+				}
+
 			};
 
 			await setup({ window: mockWindow });
@@ -60,10 +60,10 @@ describe('ThemeProvider', () => {
 					body: {
 						classList: {
 							add: addSpy,
-							remove: removeSpy,
+							remove: removeSpy
 						}
 					}
-				},
+				}
 			};
 
 			await setup({ window: mockWindow });

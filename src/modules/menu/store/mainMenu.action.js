@@ -47,7 +47,7 @@ export const toggle = () => {
 
 /**
  * Displays the tab for this index.
- * @param {MainMenuTabIndex} index 
+ * @param {MainMenuTabIndex} index
  */
 export const setTabIndex = (index) => {
 	getStore().dispatch({

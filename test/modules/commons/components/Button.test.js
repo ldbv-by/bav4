@@ -36,7 +36,7 @@ describe('Button', () => {
 
 			expect(button.innerText).toBe('bar');
 
-			//allocate the same value 
+			//allocate the same value
 			element.label = 'bar';
 
 			expect(button.innerText).toBe('bar');
@@ -95,7 +95,7 @@ describe('Button', () => {
 
 			expect(button.classList.contains('disabled')).toBeTrue();
 
-			//allocate the same value 
+			//allocate the same value
 			element.disabled = true;
 
 			expect(button.classList.contains('disabled')).toBeTrue();
@@ -153,7 +153,7 @@ describe('Button', () => {
 
 			expect(button.className).toBe('button primary');
 
-			//allocate the same value 
+			//allocate the same value
 			element.type = 'primary';
 
 			expect(button.className).toBe('button primary');

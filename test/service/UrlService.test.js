@@ -18,7 +18,7 @@ describe('UrlService', () => {
 
 	beforeEach(() => {
 		//we use mocked urlShortening and proxifyUrl provides
-		instanceUnderTest = new UrlService(async () => 'https://much.shorter', (url) => 'https://proxified/' + url);
+		instanceUnderTest = new UrlService(async () => 'https://much.shorter', (url) => 'https://proxified/' + url, (url) => 'https://qrcode/' + url);
 	});
 
 	describe('constructor', () => {
@@ -27,6 +27,7 @@ describe('UrlService', () => {
 
 			expect(service._proxifyUrlProvider).toBeDefined();
 			expect(service._urlShorteningProvider).toBeDefined();
+			expect(service._qrCodeUrlProvider).toBeDefined();
 		});
 	});
 
@@ -35,7 +36,7 @@ describe('UrlService', () => {
 		it('checks if cors is enabled (it is)', async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
-				timeout: 1500,
+				timeout: 1500
 			};
 			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
 				ok: true
@@ -149,6 +150,22 @@ describe('UrlService', () => {
 				expect(reason.message).toBe('Parameter \'url\' must be a string');
 				done();
 			});
+		});
+	});
+
+	describe('qrCode URL', () => {
+
+		it('returns qrCode URL by using a provider', () => {
+			const url = 'https://some.url';
+
+			const result = instanceUnderTest.qrCode(url);
+
+			expect(result).toBe('https://qrcode/' + url);
+		});
+
+		it('throws an exception when argument is not a string', () => {
+
+			expect(() => instanceUnderTest.qrCode(123)).toThrowError(Error, 'Parameter \'url\' must be a string');
 		});
 	});
 });

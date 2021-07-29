@@ -3,7 +3,7 @@ import { $injector } from '../../../injection';
 
 /**
  * Displays a hint if the app is in embedded mode, but not used within an iframe
- * @class 
+ * @class
  * @author taulinger
  */
 export class NonEmbeddedHint extends BaElement {

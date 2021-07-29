@@ -8,7 +8,7 @@ describe('Popup', () => {
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
-    
+
 	describe('when initialized with no attributes', () => {
 		it('renders the view', async () => {
 
@@ -26,17 +26,17 @@ describe('Popup', () => {
 			expect(element.shadowRoot.querySelector('slot').assignedNodes()[0].outerHTML).toEqual('<span>some slot content</span>');
 		});
 	});
-    
+
 	describe('when initialized with \'show\' attribute', () => {
 
 		it('renders the visible popup', async () => {
 
 			const element = await TestUtils.render(Popup.tag, {}, '<span>some</span>');
-            
+
 			expect(element.type).toBe('hide');
-            
+
 			element.setAttribute('type', 'show');
-            
+
 			expect(element.type).toBe('show');
 			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeTrue();
 		});
@@ -64,11 +64,11 @@ describe('Popup', () => {
 			expect(element.shadowRoot.querySelector('.popuptext').classList.contains('show')).toBeTrue();
 		});
 	});
-    
+
 	describe('when initialized with \'right\' and \'top\' attribute', () => {
 
 		it('renders the popup with \'right\' and \'top\' initial', async () => {
-			const element = await TestUtils.render(Popup.tag, { right:'60', top:'210' }, '<span>some</span>');
+			const element = await TestUtils.render(Popup.tag, { right: '60', top: '210' }, '<span>some</span>');
 
 			expect(element.shadowRoot.querySelector('.popup').style.right).toEqual('');
 			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('');
@@ -76,9 +76,9 @@ describe('Popup', () => {
 			element.setAttribute('type', 'show');
 
 			expect(element.shadowRoot.querySelector('.popup').style.right).toEqual('60px');
-			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('210px');      
-            
-		}); 
+			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('210px');
+
+		});
 
 		it('renders the popup with \'right\' and \'top\' property', async () => {
 			const element = await TestUtils.render(Popup.tag, {}, '<span>some</span>');
@@ -91,8 +91,8 @@ describe('Popup', () => {
 			element.setAttribute('type', 'show');
 
 			expect(element.shadowRoot.querySelector('.popup').style.right).toEqual('60px');
-			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('210px');      
-            
+			expect(element.shadowRoot.querySelector('.popup').style.top).toEqual('210px');
+
 		});
 	});
 });

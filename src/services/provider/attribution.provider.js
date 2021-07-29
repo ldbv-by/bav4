@@ -58,7 +58,7 @@ export const getDefaultAttribution = (georesource) => {
 
 /**
  * Returns a minimal attribution containing only a copyright label
- * @param {string} copyrightLabel 
+ * @param {string} copyrightLabel
  * @returns {Attribution}
  */
 export const getMinimalAttribution = (copyrightLabel) => {

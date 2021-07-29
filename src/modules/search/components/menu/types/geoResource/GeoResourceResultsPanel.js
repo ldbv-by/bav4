@@ -51,16 +51,16 @@ export class GeoResouceResultsPanel extends BaElement {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-		const toggleCollapse = () => {		
+		const toggleCollapse = () => {
 			if (this._geoRersourceSearchResults.length) {
 				this._isCollapsed = !this._isCollapsed;
 				this.render();
-			}	
+			}
 		};
 
 		const iconCollapseClass = {
 			iconexpand: !this._isCollapsed,
-			isdisabled:  !this._geoRersourceSearchResults.length
+			isdisabled: !this._geoRersourceSearchResults.length
 		};
 
 		const bodyCollapseClass = {
@@ -88,7 +88,7 @@ export class GeoResouceResultsPanel extends BaElement {
 
 	/**
      * @override
-     * @param {Object} state 
+     * @param {Object} state
      */
 	extractState(state) {
 		const { search: { query: { payload: term } } } = state;

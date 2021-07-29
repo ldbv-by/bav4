@@ -17,7 +17,7 @@ export const initialState = {
 
 /**
  * Sets the zIndex based of the current order within the layer list.
- * @param {*} list 
+ * @param {*} list
  */
 export const index = (list) => {
 	list.forEach((element, index) => {
@@ -29,7 +29,7 @@ export const index = (list) => {
 /**
  * Sorts the list based on the zIndex regarding the alwaysTop constraints.
  * Finally it calls {@link index()}.
- * @param {*} list 
+ * @param {*} list
  */
 export const sort = (list) => {
 

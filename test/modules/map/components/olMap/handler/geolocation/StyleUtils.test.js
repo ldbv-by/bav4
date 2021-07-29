@@ -69,7 +69,7 @@ describe('createAnimateFunction', () => {
 	const transform = [1, 0, 0, 1, 0, 0];
 	const projection = getProjection('EPSG:3857');
 	const viewState = {
-		projection: projection, resolution: 1, rotation: 0,
+		projection: projection, resolution: 1, rotation: 0
 	};
 	const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { } };
 	const setupMap = () => {
@@ -77,17 +77,17 @@ describe('createAnimateFunction', () => {
 			target: 'map',
 			view: new View({
 				center: initialCenter,
-				zoom: 1,
-			}),
+				zoom: 1
+			})
 		});
 
 	};
 	const setupLayer = (map, feature) => {
 		const source = new VectorSource({
-			wrapX: false,
+			wrapX: false
 		});
 		const vector = new VectorLayer({
-			source: source,
+			source: source
 		});
 		source.addFeature(feature);
 		map.addLayer(vector);

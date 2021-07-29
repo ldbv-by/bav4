@@ -11,21 +11,21 @@ import { $injector } from '../../injection';
  * @typedef {Object} HightlightFeature
  * @property {HightlightFeatureTypes} type  The type of this feature.
  * @property {HightlightCoordinate|HightlightGeometry} data The data which can be a coordinate or a geometry
- * @property {string} [label] Optional text 
- * 
+ * @property {string} [label] Optional text
+ *
  */
 
 /**
  * Coordinate data for a {@link HightlightFeature}
  * @typedef {Object} HightlightCoordinate
- * @property {Coordinate} coordinate 
+ * @property {Coordinate} coordinate
  */
 
 /**
  * Geometry data for a {@link HightlightFeature}
  * @typedef {Object} HightlightGeometry
- * @property {object|string} geometry Geometry (e.g. geoJson, WKT) 
- * @property {HightlightFeatureGeometryTypes} geometryType the type of the geometry 
+ * @property {object|string} geometry Geometry (e.g. geoJson, WKT)
+ * @property {HightlightFeatureGeometryTypes} geometryType the type of the geometry
  */
 
 export const HightlightFeatureTypes = Object.freeze({
@@ -50,7 +50,7 @@ const getStore = () => {
 /**
  * Sets the {@link HightlightFeature}.
  * @param {HightlightFeature} feature
- * @function 
+ * @function
  */
 export const setHighlightFeature = (feature) => {
 	getStore().dispatch({
@@ -71,7 +71,7 @@ export const removeHighlightFeature = () => {
 
 /**
  * Sets the secondary {@link HightlightFeature}.
- * @param {HightlightFeature} feature 
+ * @param {HightlightFeature} feature
  * @function
  */
 export const setTemporaryHighlightFeature = (feature) => {
@@ -93,7 +93,7 @@ export const removeTemporaryHighlightFeature = () => {
 };
 
 /**
- * Removes both the permanent and the secondary {@link HightlightFeature} 
+ * Removes both the permanent and the secondary {@link HightlightFeature}
  * @function
  */
 export const clearHighlightFeatures = () => {

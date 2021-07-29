@@ -13,7 +13,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 export class SearchResultsPanel extends AbstractContentPanel {
 
 	/**
-     * 
+     *
      */
 	createView() {
 		return html`

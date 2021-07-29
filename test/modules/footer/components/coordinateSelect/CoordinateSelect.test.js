@@ -12,18 +12,18 @@ describe('CoordinateSelect', () => {
 	const coordinateServiceMock = {
 		stringify() { },
 		toLonLat() { },
-		transform() { } 	
-	
+		transform() { }
+
 	};
 
 	const mapServiceMock = {
 		getSridDefinitionsForView: () => {
-			return [{ label: 'TEST', code: 99999 }, { label: 'WGS84', code: 1111 }]; 
+			return [{ label: 'TEST', code: 99999 }, { label: 'WGS84', code: 1111 }];
 		},
 		getSrid: () => {
-			return 3857; 
+			return 3857;
 		}
-	}; 
+	};
 
 	const setup = (config) => {
 		const { touch = false } = config;
@@ -48,14 +48,14 @@ describe('CoordinateSelect', () => {
 		return TestUtils.render(CoordinateSelect.tag);
 	};
 
-    
-    
+
+
 	describe('when initialized', () => {
 		it('renders nothing when pointer position equals null', async () => {
 			const element = await setup({ touch: false });
 
 			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeFalsy();
-		});	
+		});
 		it('adds a div which shows coordinate select and coordinate display', async () => {
 			const element = await setup({ touch: false });
 
@@ -70,10 +70,10 @@ describe('CoordinateSelect', () => {
 			expect(element.shadowRoot.querySelector('.coordinate-label')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toEqual('99999');
 			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual('1111');
-			expect(element.shadowRoot.querySelector('select').title).toBe('footer_coordinate_select');						
-		});	
+			expect(element.shadowRoot.querySelector('select').title).toBe('footer_coordinate_select');
+		});
 	});
-    
+
 	describe('on pointer move', () => {
 		it('updates the div which shows the current pointer position', async () => {
 			const element = await setup({ touch: false });
@@ -81,14 +81,14 @@ describe('CoordinateSelect', () => {
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 
-			const testCoordinate = [1211817.6233080907, 6168328.021915435]; 
+			const testCoordinate = [1211817.6233080907, 6168328.021915435];
 
 			// coordinates are shown after the pointer is moved, so initial there are no coordinates visible
 			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 
 			expect(element.shadowRoot.querySelector('select').value).toEqual('99999');
 			expect(element.shadowRoot.querySelector('.select-coordinate-option').innerHTML.includes('TEST')).toBeTruthy();
-            
+
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 
 			expect(transformMock).toHaveBeenCalledOnceWith(testCoordinate, 3857, 99999);

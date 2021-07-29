@@ -39,11 +39,11 @@ export class Injector {
 
 	/**
 	 * Register a new singleton dependency.
-	 * 
+	 *
 	 * @param {any} keyOrPOJO	Key of the dependency, javascript object with multiple dependencies defined.
 	 * @param {any} object		The dependency object.
 	 * @returns {Injector}		The Injector instance.
-	 * 
+	 *
 	 * @memberOf Injector
 	 */
 	registerSingleton(keyOrPOJO, object) {
@@ -51,7 +51,7 @@ export class Injector {
 	}
 
 	/**
-	 * Registers a "module". A module is a callback function which takes the injector as argument 
+	 * Registers a "module". A module is a callback function which takes the injector as argument
 	 * @param {function} moduleCallback callback function that registers takes the injector as argument
 	 * @returns {Injector} 				The Injector instance.
 	 */
@@ -87,7 +87,7 @@ export class Injector {
 
 	/**
 	 * Registers a callback function that will be invoked after the injector is marked as ready.
-	 * @param {function} listener 
+	 * @param {function} listener
 	 */
 	onReady(listener) {
 		this._listeners.push(listener);

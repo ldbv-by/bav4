@@ -22,7 +22,7 @@ export const MainMenuTabIndex = Object.freeze({
 
 
 /**
- *  
+ *
  * @class
  * @author alsturm
  * @author taulinger
@@ -63,7 +63,7 @@ export class MainMenu extends BaElement {
 	 */
 	createView(state) {
 
-		const { open, tabIndex, portrait, minWidth } = state;
+		const { open, tabIndex, portrait, minWidth, observeResponsiveParameter } = state;
 
 		this._activeTabIndex = tabIndex;
 
@@ -80,15 +80,19 @@ export class MainMenu extends BaElement {
 			return open ? 'is-open' : '';
 		};
 
+		const getPreloadClass = () => {
+			return observeResponsiveParameter ? '' : 'prevent-transition';
+		};
+
 		const contentPanels = Object.values(MainMenuTabIndex)
-		//Todo: refactor me when all content panels are real components	
+		//Todo: refactor me when all content panels are real components
 			.map(v => this._getContentPanel(v));
 
-		const translate = (key) => this._translationService.translate(key);	
+		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getPreloadClass()}">
 				<div class="main-menu ${getOverlayClass()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
@@ -149,7 +153,7 @@ export class MainMenu extends BaElement {
 		<li  class="ba-list-item">
 		<span class="ba-list-item__text vertical-center">
 		<span class="ba-list-item__primary-text">
-		Lorem ipsum dolor
+		Dark mode
 		</span>              
 	</span>
 	<span class="ba-list-item__after">
@@ -233,11 +237,11 @@ export class MainMenu extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth } } = globalState;
-		return { open, tabIndex, portrait, minWidth };
+		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
+		return { open, tabIndex, portrait, minWidth, observeResponsiveParameter };
 	}
 
 	static get tag() {

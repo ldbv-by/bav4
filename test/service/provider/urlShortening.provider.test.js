@@ -1,9 +1,9 @@
 import { $injector } from '../../../src/injection';
 import { shortenBvvUrls } from '../../../src/services/provider/urlShorteningProvider';
 
-describe('GeoResource provider', () => {
-	describe('Bvv GeoResource provider', () => {
+describe('UrlShortening provider', () => {
 
+	describe('Bvv UrlShortening provider', () => {
 
 		const configService = {
 			getValueAsPath: () => { }

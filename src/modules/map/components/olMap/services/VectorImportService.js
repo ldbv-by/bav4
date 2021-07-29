@@ -39,7 +39,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
  */
 export class VectorImportService {
 
-	_updateStyle(olFeature, olLayer, olMap)  {
+	_updateStyle(olFeature, olLayer, olMap) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		styleService.updateStyle(olFeature, olMap, {
 			visible: olLayer.getVisible(),
@@ -53,7 +53,7 @@ export class VectorImportService {
 
 		const { StyleService: styleService } = $injector.inject('StyleService');
 
-		
+
 		const addFeatureListenerKey = olVectorSource.on('addfeature', event => {
 			styleService.addStyle(event.feature, olMap);
 			this._updateStyle(event.feature, olLayer, olMap);
@@ -81,7 +81,7 @@ export class VectorImportService {
 
 
 	/**
-	 * If needed, adds specific stylings (and overlays) for this vector layer 
+	 * If needed, adds specific stylings (and overlays) for this vector layer
 	 * @param {ol.layer.Vector} olVectorLayer
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
@@ -110,7 +110,7 @@ export class VectorImportService {
 
 	/**
 	 * Builds an ol VectorSource from an internal VectorGeoResource
-	 * @param {VectorGeoResource} vectorGeoResource 
+	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
@@ -145,9 +145,9 @@ export class VectorImportService {
 	}
 
 	/**
-	 * 
+	 *
 	 * Builds an ol VectorSource from an external VectorGeoResource
-	 * @param {VectorGeoResource} vectorGeoResource 
+	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */

@@ -17,7 +17,7 @@ describe('LocationResultItem', () => {
 
 		const initialState = {
 			media: {
-				portrait: false,
+				portrait: false
 			},
 			...state
 		};
@@ -44,7 +44,7 @@ describe('LocationResultItem', () => {
 
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
-			
+
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
@@ -117,7 +117,7 @@ describe('LocationResultItem', () => {
 						open: true
 					},
 					media: {
-						portrait: portraitOrientation,
+						portrait: portraitOrientation
 					}
 				});
 				element.data = data;

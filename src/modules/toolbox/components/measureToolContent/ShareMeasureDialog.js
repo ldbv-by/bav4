@@ -6,7 +6,7 @@ import shareIcon from './assets/share.svg';
 import css from './shareMeasureDialog.css';
 
 /**
- * A content component to show and share perma-links of 
+ * A content component to show and share perma-links of
  * user-generated measurement-data
  * @class
  * @author thiloSchlemmer

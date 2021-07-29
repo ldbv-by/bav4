@@ -60,12 +60,12 @@ describe('Checkbox', () => {
 			expect(element.shadowRoot.querySelector('.input').disabled).toBeTrue();
 		});
 
-		
+
 		it('re-renders NOT the checkbox when attribute \'disabled\' is not changed', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const renderSpy = spyOn(element, 'render');
-			
+
 			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
 			element.setAttribute('disabled', 'false');
 			expect(element.disabled).toBeFalse();

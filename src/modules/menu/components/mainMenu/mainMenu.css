@@ -84,7 +84,7 @@
    top: 8.5em;
 }
 .is-tablet .main-menu__close-button {              
-   top: 8.5em;
+   top: 5em;
    }
 
 /*portrait */
@@ -248,3 +248,10 @@
 .divider {
    border-bottom: 1px solid var(--header-background-color);
 }
+
+.prevent-transition * {
+   -webkit-transition: none !important;
+   -moz-transition: none !important;
+   -ms-transition: none !important;
+   -o-transition: none !important;
+ }

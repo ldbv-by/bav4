@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 
 
 /**
- * A function that takes a coordinate and returns a promise with an administration object. 
+ * A function that takes a coordinate and returns a promise with an administration object.
  *
  * @typedef {function(coordinate) : (Promise<administration>)} administrationProvider
  */
@@ -31,13 +31,13 @@ export const loadBvvAdministration = async (coordinate3857) => {
 		const district = payload.gemarkung;
 		// later we have to add this for BAplus users
 		// const parcelDenomination = payload.flstBezeichnung;
-		if (community && district) {  
+		if (community && district) {
 			const bvvAdministration = {
 				community: community,
 				district: district
-			};           
+			};
 			return Object.freeze(bvvAdministration);
-		} 
+		}
 	}
 	throw new Error('Administration could not be retrieved');
-}; 
+};

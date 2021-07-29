@@ -8,7 +8,7 @@ describe('SearchResultProviderService', () => {
 		const locationSearchResultProvider = jasmine.createSpy();
 		const georesourceSearchResultProvider = jasmine.createSpy();
 		const instanceUnderTest = new SearchResultProviderService(locationSearchResultProvider, georesourceSearchResultProvider);
-        
+
 		instanceUnderTest.getLocationSearchResultProvider()('location');
 		instanceUnderTest.getGeoresourceSearchResultProvider()('georesource');
 
@@ -18,7 +18,7 @@ describe('SearchResultProviderService', () => {
 
 	it('provides the default provider functions for location and georesource search results', () => {
 		const instanceUnderTest = new SearchResultProviderService();
-		
+
 		expect(instanceUnderTest.getLocationSearchResultProvider()).toEqual(loadBvvLocationSearchResults);
 		expect(instanceUnderTest.getGeoresourceSearchResultProvider()).toEqual(loadBvvGeoResourceSearchResults);
 	});

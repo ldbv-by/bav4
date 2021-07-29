@@ -5,12 +5,12 @@ describe('AdministrationService', () => {
 
 	const setup = (provider = loadBvvAdministration) => {
 		return new AdministrationService(provider);
-	}; 
+	};
 
 	describe('init', () => {
 
 		it('initializes the service with custom provider', async () => {
-			const customProvider = async () => { }; 
+			const customProvider = async () => { };
 			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._administrationProvider).toBeDefined();
 			expect(instanceUnderTest._administrationProvider).toEqual(customProvider);
@@ -23,27 +23,27 @@ describe('AdministrationService', () => {
 
 		it('provides the administration values', async () => {
 			const administrationMock = { gemeinde: 'LDBV', gemarkung: 'Ref42' };
-			const instanceUnderTest = setup( async () => {
+			const instanceUnderTest = setup(async () => {
 				return administrationMock;
 			});
 
-			const mockCoordinate = [0, 0]; 
+			const mockCoordinate = [0, 0];
 
 			instanceUnderTest.getAdministration(mockCoordinate).then((returnValue) => {
 				expect(returnValue.gemeinde).toEqual(administrationMock.gemeinde);
 				expect(returnValue.gemarkung).toEqual(administrationMock.gemarkung);
 			});
-		}); 
-	}); 
+		});
+	});
 
-	describe('Error handling', () => { 
+	describe('Error handling', () => {
 
 		it('rejects when backend is not available', (done) => {
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Administration Provider error');
 			});
 
-			const mockCoordinate = [0, 0]; 
+			const mockCoordinate = [0, 0];
 
 			instanceUnderTest.getAdministration(mockCoordinate).then(() => {
 				done(new Error('Promise should not be resolved'));
@@ -77,4 +77,4 @@ describe('AdministrationService', () => {
 			});
 		});
 	});
-}); 
+});

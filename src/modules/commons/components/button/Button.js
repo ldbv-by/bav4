@@ -5,30 +5,30 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
  * Clickable icon.
- * 
+ *
  * Configurable Attributes:
  * - `label`
  * - `disabled` (true|false)
  * - `type` (primary|secondary)
  * - `onClick()`
- * 
+ *
  * Observed Attributes:
  * - `label`
  * - `disabled`
  * - `type`
- * 
+ *
  * Configurable Properties:
  * - `label`
  * - `disabled` (default=false)
  * - `type` (default=secondary)
  * - `onClick()`
- * 
+ *
  * Observed Properties:
  * - `label`
  * - `disabled`
  * - `type`
- * 
- * 
+ *
+ *
  * @class
  * @author taulinger
  */
@@ -79,16 +79,16 @@ export class Button extends BaElement {
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		switch (name) {
-			case 'disabled': 
-				this.disabled = newValue; 
+			case 'disabled':
+				this.disabled = newValue;
 				break;
-			case 'type': 
-				this.type = newValue; 
+			case 'type':
+				this.type = newValue;
 				break;
-			case 'label': 
-				this.label = newValue; 
+			case 'label':
+				this.label = newValue;
 				break;
-		} 
+		}
 	}
 
 	set disabled(value) {

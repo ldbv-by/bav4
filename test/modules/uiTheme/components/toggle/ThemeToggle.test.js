@@ -41,7 +41,7 @@ describe('ThemeToggle', () => {
 	describe('when toggle clicked', () => {
 		it('changes the theme', async () => {
 			const element = await setup();
-			
+
 			element.shadowRoot.querySelector('ba-toggle').click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();

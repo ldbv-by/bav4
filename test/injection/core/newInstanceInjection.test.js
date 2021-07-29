@@ -4,11 +4,11 @@ import { $injector } from './testsConfig';
  * This will overwrite the current keys "HttpServer" and "RouterService" that are already registered as
  * singletons with instance dependencies.
  */
-const instanceHttp  = function() {
-	this.get = 'I\'m a http service.'; 
+const instanceHttp = function () {
+	this.get = 'I\'m a http service.';
 };
-const instanceRouter = function() {
-	this.get = 'I\'m a router.'; 
+const instanceRouter = function () {
+	this.get = 'I\'m a router.';
 };
 
 $injector.register({

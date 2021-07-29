@@ -77,9 +77,9 @@ describe('ContextMenue', () => {
 			};
 
 			contextMenueOpen(contextMenueData);
-			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;			
+			const wasOpen = element.shadowRoot.getElementById('context-menu').firstChild !== null;
 			contextMenueClose();
-			
+
 
 			expect(wasOpen).toBe(true);
 			expect(element.shadowRoot.querySelector('.context-menu__items')).toBeFalsy();

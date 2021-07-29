@@ -19,7 +19,7 @@ export class TopicsService {
 
 	/**
 	 * Initializes this service, which means all available Topics are loaded and can be served in the future from the internal cache.
-	 * If initialsation fails, a fallback is delivered. 
+	 * If initialsation fails, a fallback is delivered.
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<Topic>>}

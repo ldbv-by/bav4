@@ -40,7 +40,7 @@ export class BaseLayerSwitcher extends BaElement {
 
 
 			const onClick = (geoR) => {
-				
+
 				const add = () => {
 					addLayer(geoR.id, { label: geoR.label, zIndex: 0 });
 				};
@@ -72,9 +72,9 @@ export class BaseLayerSwitcher extends BaElement {
 				</div>
 				<div class="baselayer__container">
 					${geoRs.map((geoR) => html`
-							<div class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
+							<button class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
 								<div class="baselayer__label">${geoR.label}</div>
-							</div>`)}
+							</button>`)}
 				</div>
 			`;
 		}

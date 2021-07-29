@@ -1,11 +1,11 @@
-import { html, nothing } from 'lit-html'; 
+import { html, nothing } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 
 /**
  * a class for displaying information about the base layer
  * @class
- * @author bakir_en 
+ * @author bakir_en
  */
 export class BaseLayerInfo extends BaElement {
 
@@ -14,11 +14,11 @@ export class BaseLayerInfo extends BaElement {
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
-	} 
+	}
 
 
 	/**
-     * @override 
+     * @override
      */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
@@ -28,22 +28,22 @@ export class BaseLayerInfo extends BaElement {
 
 		if (!geoResource) {
 			return nothing;
-		} 
-			
+		}
+
 		const description = geoResource.getAttribution(zoom)[0].description;
 
 		const label = description ? description : geoResource.label;
 
-		label ? this._content = label : this._content = translate('map_baseLayerInfo_fallback');		
-			
+		label ? this._content = label : this._content = translate('map_baseLayerInfo_fallback');
+
 		return html`
             <div>${translate('map_baseLayerInfo_label')}: ${this._content} </div>
 			`;
-	} 
+	}
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { layers: { active }, position: { zoom } } = globalState;
@@ -52,5 +52,5 @@ export class BaseLayerInfo extends BaElement {
 
 	static get tag() {
 		return 'ba-base-layer-info';
-	} 
+	}
 }
