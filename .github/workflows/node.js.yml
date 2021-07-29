@@ -24,8 +24,11 @@ jobs:
         npm run test:gha
      
     - name: Run e2e tests
-      run: |
-        npm run e2e
+      uses: nick-invision/retry@v2
+      with:
+      timeout_minutes: 1
+      max_attempts: 3
+      command: npm run e2e
 
     - name: Publish Coveralls report
       uses: coverallsapp/github-action@master
