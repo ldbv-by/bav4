@@ -98,7 +98,7 @@ Here's an overview of what project folder structure looks like:
 
 ### Prerequisites
 
-- Node.js 12
+- Node.js 14
 - npm 6
 
 ### Install
@@ -108,16 +108,21 @@ Here's an overview of what project folder structure looks like:
 ### List of npm scripts
 
 
-| command | what it does |
+| Run/Build | |
 |----|----|
 | `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
 | `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
 | `npm run build:dev` | Compiles all files without bundling and minification |
 | `npm run build:prod` | Compiles and minifies for production |
-| `npm run test` | Runs unit and component tests against Chrome (headless) and Firefox (headless). Both browsers must be installed locally. A code coverage report can be found under  `./coverage`  |
-| `npm run test:single` | Runs a single test against Firefox (headless). Usage `npm run test:single --spec=MyTest.test.js`  |
-| `npm run test:debug` | Runs unit and component tests against Chrome (headless) with remote debugging enabled | 
-| `npm run test:webkit` | Runs unit and component tests against the Gnome Web Browser (Epiphany), which is based on WebKit. The browser must be installed locally. A code coverage report can be found under  `./coverage`  |
+
+| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+|----|----|
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
+| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
+
+| Other | |
+|----|----|
 | `npm run lint` | Lints and fixes files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |

@@ -33,6 +33,8 @@ else if (files.length > 1) {
 	throw new Error('More than one test file found for "' + process.env.KARMA_SPEC + '"');
 }
 
+const browser = process.env.KARMA_BROWSER || 'FirefoxHeadless';
+
 module.exports = function (config) {
 
 	// Load base config
@@ -42,12 +44,12 @@ module.exports = function (config) {
 		frameworks: ['jasmine', 'webpack'],
 		// list of files / patterns to load in the browser
 		files: [
-			{ pattern: files[0], watched: false },
+			{ pattern: files[0], watched: false }
 		],
 		// preprocess matching files before serving them to the browser
 		preprocessors: {
-			'test/**/*.test.js': ['webpack'],
+			'test/**/*.test.js': ['webpack']
 		},
-		browsers: ['FirefoxHeadless'],
+		browsers: [browser]
 	});
 };
