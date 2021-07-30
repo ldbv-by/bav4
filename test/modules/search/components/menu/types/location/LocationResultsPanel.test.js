@@ -12,7 +12,7 @@ describe('LocationResultsPanel', () => {
 
 
 	const searchResultServiceMock = {
-		locationsByTerm() { },
+		locationsByTerm() { }
 	};
 
 	const setup = (state) => {

@@ -27,7 +27,7 @@ describe('GeoResource provider', () => {
 				attribution: {
 					copyright: attribution.copyright.label,
 					href: attribution.copyright.url,
-					description: attribution.description,
+					description: attribution.description
 				}
 			};
 			const result = parseBvvAttributionDefinition(attributionDefinition);
@@ -42,7 +42,7 @@ describe('GeoResource provider', () => {
 				attribution: {
 					copyright: 'label',
 					href: 'url',
-					description: 'description',
+					description: 'description'
 				},
 				extendedAttributions: [
 					{
@@ -51,10 +51,10 @@ describe('GeoResource provider', () => {
 					{
 						copyright: 'label1',
 						href: 'url1',
-						description: 'description1',
+						description: 'description1'
 					},
 					{
-						description: 'description2',
+						description: 'description2'
 					}
 
 				]
@@ -202,7 +202,7 @@ describe('GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources';
 			const expectedArgs1 = {
-				timeout: 2000,
+				timeout: 2000
 			};
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(

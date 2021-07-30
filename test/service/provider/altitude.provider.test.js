@@ -18,7 +18,7 @@ describe('Altitude provider', () => {
 				.registerSingleton('HttpService', httpService);
 		});
 
-		const coordinateMock = [21, 42];    
+		const coordinateMock = [21, 42];
 
 
 		it('loads Altitude', async () => {

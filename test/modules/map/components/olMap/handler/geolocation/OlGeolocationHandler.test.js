@@ -24,9 +24,9 @@ describe('OlGeolocationHandler', () => {
 	const setup = (state = initialState) => {
 		const geolocationState = {
 			geolocation: state,
-			pointer: { beingDragged:false }
+			pointer: { beingDragged: false }
 		};
-		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer, pointer:pointerReducer });
+		TestUtils.setupStoreAndDi(geolocationState, { geolocation: geolocationReducer, pointer: pointerReducer });
 	};
 
 	const setupMap = () => {
@@ -34,16 +34,16 @@ describe('OlGeolocationHandler', () => {
 		return new Map({
 			layers: [
 				new TileLayer({
-					source: new OSM(),
+					source: new OSM()
 				}),
 				new TileLayer({
-					source: new TileDebug(),
+					source: new TileDebug()
 				})],
 			target: container,
 			view: new View({
 				center: initialCenter,
-				zoom: 1,
-			}),
+				zoom: 1
+			})
 		});
 
 	};
@@ -181,7 +181,7 @@ describe('OlGeolocationHandler', () => {
 			});
 		});
 		describe('when geolocation-request is denied', () => {
-			
+
 			it('sets accuracy- and position-feature to default', () => {
 				const map = setupMap();
 				const state = { ...initialState, denied: true };

@@ -46,7 +46,7 @@ const mediaReducer = (state, action) => {
 
 /**
  * Provides a media reducer which has no initial state
- * @param {object} initialState 
+ * @param {object} initialState
  * @returns media reducer
  */
 export const createNoInitialStateMediaReducer = () => {
@@ -56,7 +56,7 @@ export const createNoInitialStateMediaReducer = () => {
 
 /**
  * Provides a media reducer which initial state is beeing obtained from the window object.
- * @param {Window} _window 
+ * @param {Window} _window
  * @returns media reducer
  */
 export const createMediaReducer = (_window = window) => {

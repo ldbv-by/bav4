@@ -16,7 +16,7 @@ describe('MediaPlugin', () => {
 	const setup = (mediaReducer) => {
 
 		const store = TestUtils.setupStoreAndDi({}, {
-			media: mediaReducer,
+			media: mediaReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { getWindow: () => environmentServiceWindowMock });

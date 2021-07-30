@@ -12,6 +12,7 @@ import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from '
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 import VectorSource from 'ol/source/Vector';
+import { Group as LayerGroup } from 'ol/layer';
 
 
 /**
@@ -30,16 +31,17 @@ export class OlMap extends BaElement {
 			LayerService: layerService,
 			EnvironmentService: environmentService,
 			OlMeasurementHandler: measurementHandler,
+			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler
-		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
 		this._eventHandler = new Map([]);
 	}
 
@@ -81,7 +83,7 @@ export class OlMap extends BaElement {
 			interactions: defaultInteractions({
 				//for embedded mode
 				//onFocusOnly: false,
-				pinchRotate: false,
+				pinchRotate: false
 
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()
@@ -161,7 +163,7 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;
@@ -216,6 +218,12 @@ export class OlMap extends BaElement {
 		// array difference right side
 		const toBeRemoved = currentIds.filter(id => !updatedIds.includes(id));
 
+		const clearVectorSource = olLayer => {
+			if (olLayer.getSource() instanceof VectorSource) {
+				olLayer.getSource().clear();
+			}
+		};
+
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
 			if (olLayer) {
@@ -223,8 +231,12 @@ export class OlMap extends BaElement {
 				if (this._layerHandler.has(id)) {
 					this._layerHandler.get(id).deactivate(this._map);
 				}
-				if (olLayer.getSource() instanceof VectorSource) {
-					olLayer.getSource().clear();
+
+				if (olLayer instanceof LayerGroup) {
+					olLayer.getLayers().forEach(clearVectorSource);
+				}
+				else {
+					clearVectorSource(olLayer);
 				}
 			}
 		});

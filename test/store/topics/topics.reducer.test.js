@@ -30,9 +30,9 @@ describe('topicsReducer', () => {
 		const store = setup();
 
 		expect(store.getState().topics.ready).toBeFalse();
-		
+
 		setReady();
-		
+
 		expect(store.getState().topics.ready).toBeTrue();
 	});
 });

@@ -104,7 +104,7 @@ describe('BvvFileStorageService', () => {
 					JSON.stringify(
 						{
 							adminId: adminId,
-							fileId: fileId,
+							fileId: fileId
 						}
 					),
 					{ status: 200 })
@@ -129,7 +129,7 @@ describe('BvvFileStorageService', () => {
 					JSON.stringify(
 						{
 							adminId: adminId,
-							fileId: fileId,
+							fileId: fileId
 						}
 					),
 					{ status: 200 })

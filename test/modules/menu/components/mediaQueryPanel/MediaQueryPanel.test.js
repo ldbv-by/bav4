@@ -24,10 +24,10 @@ describe('MediaQueryPanel', () => {
 	};
 
 	describe('when initialized', () => {
-		
+
 		it('layouts for landscape and width > 600px', async () => {
 
-			//mock 
+			//mock
 			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(false))
 				.withArgs('(min-width: 600px)').and.returnValue(TestUtils.newMediaQueryList(true));
@@ -41,7 +41,7 @@ describe('MediaQueryPanel', () => {
 
 		it('layouts for portrait and width > 600px', async () => {
 
-			//mock 
+			//mock
 			const matchMediaSpy = spyOn(windowMock, 'matchMedia')
 				.withArgs('(orientation: portrait)').and.returnValue(TestUtils.newMediaQueryList(true))
 				.withArgs('(min-width: 600px)').and.returnValue(TestUtils.newMediaQueryList(true));

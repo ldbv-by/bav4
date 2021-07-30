@@ -12,7 +12,7 @@ import { emitNotification } from '../../../../store/notifications/notifications.
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 
 /**
- * Displays a showcase of common and reusable components or 
+ * Displays a showcase of common and reusable components or
  * functional behaviors, which are not finally in place
  * @class
  * @author thiloSchlemmer

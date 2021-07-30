@@ -25,7 +25,7 @@ describe('i18n for map module', () => {
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);								
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {

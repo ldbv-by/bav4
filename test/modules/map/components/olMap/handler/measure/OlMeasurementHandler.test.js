@@ -4,8 +4,6 @@ import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
 import { fromLonLat } from 'ol/proj';
 import { Collection, Feature } from 'ol';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
@@ -15,16 +13,16 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
-import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset, setFileSaveResult } from '../../../../../../../src/modules/map/store/measurement.action';
+import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
+import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -66,24 +64,27 @@ describe('OlMeasurementHandler', () => {
 		}
 	};
 
-	const fileStorageServiceMock = {
-		async save() {
-			return { fileId: 'saveFooBarBazId' };
-		},
-		isFileId(id) {
-			return id.startsWith('f_');
-		},
-		isAdminId(id) {
-			return id.startsWith('a_');
-		}
 
+	const measurementStorageServiceMock = {
+		async store() {},
+		isValid() {
+			return false;
+		},
+		isStorageId() {
+			return false;
+		},
+		setStorageId() {},
+		getStorageId() {
+			return null;
+		}
 	};
+
 	const environmentServiceMock = { isTouch: () => false };
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
 		reset: null,
-		fileSaveResult: { adminId:'init', fileId:'init' }
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
 	const setup = (state = initialState) => {
@@ -99,7 +100,7 @@ describe('OlMeasurementHandler', () => {
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('FileStorageService', fileStorageServiceMock)
+			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {
@@ -115,14 +116,6 @@ describe('OlMeasurementHandler', () => {
 		return store;
 	};
 
-	const createLayer = () => {
-		const source = new VectorSource({ wrapX: false });
-		const layer = new VectorLayer({
-			source: source,
-		});
-		return layer;
-	};
-	
 	it('has two methods', () => {
 		setup();
 		const handler = new OlMeasurementHandler();
@@ -161,19 +154,28 @@ describe('OlMeasurementHandler', () => {
 			return new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: container,
 				view: new View({
 					center: initialCenter,
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 		};
+
+		it('adds a label to the session vectorlayer', () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+		});
 
 		describe('uses Interactions', () => {
 			it('adds a Draw-Interaction', () => {
@@ -315,57 +317,35 @@ describe('OlMeasurementHandler', () => {
 
 		});
 
-
-		it('looks for measurement-layer and adds the feature for update on save', (done) => {
-			const store = setup();
-			const classUnderTest = new OlMeasurementHandler();			
+		it('looks for measurement-layer and adds the feature for update/copy on save', (done) => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
-			
-			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
-			
+
 
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('a_lastId');
+				expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+				expect(storageSpy).toHaveBeenCalledWith('a_lastId');
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
-				expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: 'a_lastId', fileId: null });
 				done();
 			});
 		});
 
-		it('looks for measurement-layer and adds the feature for copy on save', (done) => {
-			const store = setup();
-			const classUnderTest = new OlMeasurementHandler();			
-			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
-			const map = setupMap();
-			const vectorGeoResource = new VectorGeoResource('f_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'f_lastId' }] });
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
-			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-
-			classUnderTest.activate(map);			
-			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
-
-			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('f_lastId');
-				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
-				expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: null, fileId: 'f_lastId' });
-				done();				
-			});
-		});
-
 		it('looks for temporary measurement-layer and adds the feature to session-layer', (done) => {
-			const state = { ...initialState, fileSaveResult:null };
+			const state = { ...initialState, fileSaveResult: null };
 			setup(state);
-			const classUnderTest = new OlMeasurementHandler();			
+			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('temp_measure_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
@@ -374,12 +354,12 @@ describe('OlMeasurementHandler', () => {
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 
-			classUnderTest.activate(map);			
+			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('temp_measure_id');
-				expect(addFeatureSpy).toHaveBeenCalledTimes(1);								
+				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 				done();
 			});
 		});
@@ -393,6 +373,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -418,6 +399,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -442,23 +424,22 @@ describe('OlMeasurementHandler', () => {
 			return new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: 'map',
 				view: new View({
 					center: initialCenter,
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 		};
 
 		const createFeature = () => {
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-			//feature.set('foo', 'bar');
 			return feature;
 		};
 
@@ -468,7 +449,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const fileStorageSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooId', adminId: 'barBazId' }));
+			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -476,7 +457,7 @@ describe('OlMeasurementHandler', () => {
 
 			setTimeout(() => {
 				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
-				expect(fileStorageSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				done();
 			});
 		});
@@ -486,10 +467,10 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const saveSpy = spyOn(classUnderTest, '_save');
+			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
 			spyOn(classUnderTest, '_isEmpty').and.returnValue(false);
 
 			classUnderTest.activate(map);
-			setFileSaveResult({ fileId: 'f_barId', adminId: 'a_barBazId' });
 			classUnderTest.deactivate(map);
 
 			expect(saveSpy).not.toHaveBeenCalled();
@@ -503,18 +484,17 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-			);
-
+			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
 
 			setTimeout(() => {
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-					id: 'fooBarId',
+					id: 'f_ooBarId',
 					label: 'map_olMap_handler_measure_layer_label'
 				}));
 				done();
@@ -528,10 +508,6 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const warnSpy = spyOn(console, 'warn');
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.reject(new Error('42'))
-			);
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -541,7 +517,6 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
-				expect(warnSpy).toHaveBeenCalled();
 				done();
 			});
 
@@ -551,13 +526,10 @@ describe('OlMeasurementHandler', () => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const feature = createFeature();
 			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._vectorLayer.getSource().removeFeature(feature);
 			classUnderTest.deactivate(map);
 
 			setTimeout(() => {
@@ -600,16 +572,16 @@ describe('OlMeasurementHandler', () => {
 			return new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: initialCenter,
 					zoom: zoom
-				}),
+				})
 			});
 
 		};
@@ -784,7 +756,6 @@ describe('OlMeasurementHandler', () => {
 		it('removes drawn feature if keypressed', (done) => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			classUnderTest._removeSelectedFeatures = spyOn(classUnderTest, '_removeSelectedFeatures').and.callThrough();
 			const map = setupMap();
 			const deleteKeyCode = 46;
 
@@ -792,9 +763,10 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
+			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
+
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
@@ -802,8 +774,7 @@ describe('OlMeasurementHandler', () => {
 
 
 			setTimeout(() => {
-				expect(classUnderTest._removeSelectedFeatures).toHaveBeenCalled();
-				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(0);
+				expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
 				done();
 			});
 		});
@@ -819,16 +790,16 @@ describe('OlMeasurementHandler', () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: [0, 0],
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 			map.renderSync();
@@ -838,7 +809,7 @@ describe('OlMeasurementHandler', () => {
 
 
 		describe('debouncing takes place', () => {
-
+			const afterDebounceDelay = OlMeasurementHandler.Debounce_Delay + 100;
 			beforeEach(function () {
 				jasmine.clock().install();
 			});
@@ -850,27 +821,46 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-				);
+				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
-				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
-				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
+				feature.getGeometry().dispatchEvent('change');			// -> first call of debounced _save, caused by vectorsource:changefeature-event
+				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(saveSpy).toHaveBeenCalledTimes(2);
+
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
+			});
+
+			it('stores twice after a feature removed', async () => {
+				setup();
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				feature.set('debug', 'stores twice after a feature removed');
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
+				classUnderTest._vectorLayer.getSource().removeFeature(feature);			// -> first call of debounced _save, caused by vectorsource:removefeature-event
+				jasmine.clock().tick(afterDebounceDelay);
+
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('stores only twice after multiple changes of a feature', async () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-					Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-				);
+				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -880,103 +870,27 @@ describe('OlMeasurementHandler', () => {
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
 				feature.getGeometry().dispatchEvent('change');
-				jasmine.clock().tick(OlMeasurementHandler.Debounce_Delay);
+				jasmine.clock().tick(afterDebounceDelay);
 
-				expect(saveSpy).toHaveBeenCalledTimes(2);
+				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
+				expect(storeSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 
 		it('stores after adding a feature', async (done) => {
-			const state  = { ... initialState, fileSaveResult:null };
-			const store = setup(state);
-			const classUnderTest = new OlMeasurementHandler();
+			setup();
 			const map = setupMap();
-			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-			);
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
+			const classUnderTest = new OlMeasurementHandler();
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'store').and.callFake(() => {});
 
 			classUnderTest.activate(map);
+			const feature = new Feature({ geometry: new LineString([[0, 0], [1, 0]]) });
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			setTimeout(() => {
-				expect(saveSpy).toHaveBeenCalledWith(null, jasmine.any(String), FileStorageServiceDataTypes.KML);
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				done();
 			});
-		});
-
-
-		it('stores with fileSaveResult on second store ', async (done) => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
-			setup(state);
-			const classUnderTest = new OlMeasurementHandler();
-			const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-			);
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest._vectorLayer = createLayer();
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._save();
-
-			setTimeout(() => {
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(saveSpy).toHaveBeenCalledTimes(1);
-				expect(saveSpy).toHaveBeenCalledWith('barBazId', jasmine.any(String), FileStorageServiceDataTypes.KML);
-				done();
-			});
-
-		});
-
-		it('logs warning on failed initial store ', async (done) => {
-			const state = { ...initialState, fileSaveResult: null };
-			const store = setup(state);
-			const classUnderTest = new OlMeasurementHandler();			
-			const map = setupMap();
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.reject(new Error('Failed'))
-			);
-			const warnSpy = spyOn(console, 'warn');
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-			classUnderTest.activate(map);
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-
-			setTimeout(() => {
-				expect(store.getState().measurement.fileSaveResult).toBeNull();
-				expect(classUnderTest._storedContent).toBeTruthy();
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
-				done();
-			});
-
-		});
-
-		it('logs warning on second store ', async (done) => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: 'barBazId' } };
-			setup(state);
-			const classUnderTest = new OlMeasurementHandler();
-			spyOn(fileStorageServiceMock, 'save').and.returnValue(
-				Promise.reject(new Error('Failed'))
-			);
-			const warnSpy = spyOn(console, 'warn');
-			const geometry = new LineString([[0, 0], [1, 0]]);
-			const feature = new Feature({ geometry: geometry });
-
-
-			classUnderTest._vectorLayer = createLayer();
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest._save();
-
-			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
-				done();
-			});
-
 		});
 
 	});
@@ -996,16 +910,16 @@ describe('OlMeasurementHandler', () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: [42, 42],
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 			map.renderSync();
@@ -1474,16 +1388,16 @@ describe('OlMeasurementHandler', () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
-						source: new OSM(),
+						source: new OSM()
 					}),
 					new TileLayer({
-						source: new TileDebug(),
+						source: new TileDebug()
 					})],
 				target: target,
 				view: new View({
 					center: [0, 0],
-					zoom: 1,
-				}),
+					zoom: 1
+				})
 			});
 
 			map.renderSync();
@@ -1601,19 +1515,6 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
-	});
-
-	describe('when using util _isValidFileSaveResult', () => {
-		it('evaluates fileSaveResult-objects', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-
-			expect(classUnderTest._isValidFileSaveResult({ adminId: 'a_42', fileId: 'f_42' })).toBeTrue();
-			expect(classUnderTest._isValidFileSaveResult(undefined)).toBeFalse();
-			expect(classUnderTest._isValidFileSaveResult(null)).toBeFalse();
-			expect(classUnderTest._isValidFileSaveResult({ adminId: 'a_42', fileId: null })).toBeFalse();
-			expect(classUnderTest._isValidFileSaveResult({ adminId: null, fileId: 'f_42' })).toBeFalse();
-		});
 	});
 
 	describe('when using util _Empty', () => {

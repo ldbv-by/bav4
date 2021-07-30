@@ -4,7 +4,7 @@ import { $injector } from '../../../injection';
 import css from './footer.css';
 
 /**
- * Container element for footer stuff. 
+ * Container element for footer stuff.
  * @class
  * @author taulinger
  */
@@ -29,13 +29,13 @@ export class Footer extends BaElement {
 	}
 
 	createView(state) {
-		
+
 		const { open, portrait } = state;
 
 		const getOverlayClass = () => {
 			return (open && !portrait) ? 'is-open' : '';
 		};
-		
+
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -60,7 +60,7 @@ export class Footer extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { mainMenu: { open }, media: { portrait } } = globalState;

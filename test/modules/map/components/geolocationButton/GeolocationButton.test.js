@@ -14,63 +14,63 @@ describe('GeolocationButton', () => {
 	const setup = async (geolocationState = defaultState) => {
 
 		const state = {
-			geolocation:geolocationState
+			geolocation: geolocationState
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { geolocation: geolocationReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
-		
+
 
 		return await TestUtils.render(GeolocationButton.tag);
 	};
 
 	describe('when initialized', () => {
-		it('shows geolocation button in inactive state', async() => {
+		it('shows geolocation button in inactive state', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_activate');
-			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
-			expect(element.shadowRoot.querySelector('.inactive')).toBeTruthy();	
+			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.inactive')).toBeTruthy();
 		});
 
 
-		it('shows geolocation button in active state', async() => {
-			const element = await setup({ ...defaultState, active:true });
-			
+		it('shows geolocation button in active state', async () => {
+			const element = await setup({ ...defaultState, active: true });
+
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_deactivate');
-			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
-			expect(element.shadowRoot.querySelector('.active')).toBeTruthy();	
+			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.active')).toBeTruthy();
 		});
 
-		it('shows geolocation button in denied state', async() => {
-			const element = await setup({ ...defaultState, denied:true });
-			
+		it('shows geolocation button in denied state', async () => {
+			const element = await setup({ ...defaultState, denied: true });
+
 			expect(element.shadowRoot.querySelector('.geolocation')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.geolocation-button').title).toBe('map_geolocationButton_title_denied');
-			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();	
-			expect(element.shadowRoot.querySelector('.denied')).toBeTruthy();	
+			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.denied')).toBeTruthy();
 		});
 	});
 
 	describe('when clicked', () => {
-		it('activates geolocation', async() => {
+		it('activates geolocation', async () => {
 			const element = await setup();
-            
-			expect(store.getState().geolocation.active).toBe(false); 
+
+			expect(store.getState().geolocation.active).toBe(false);
 			element.shadowRoot.querySelector('button').click();
 
-			expect(store.getState().geolocation.active).toBe(true); 
+			expect(store.getState().geolocation.active).toBe(true);
 		});
 
-		it('deactivates geolocation', async() => {
-			const element = await setup({ ...defaultState, active:true });
+		it('deactivates geolocation', async () => {
+			const element = await setup({ ...defaultState, active: true });
 
-			expect(store.getState().geolocation.active).toBe(true); 
+			expect(store.getState().geolocation.active).toBe(true);
 			element.shadowRoot.querySelector('button').click();
-			
-			expect(store.getState().geolocation.active).toBe(false); 
+
+			expect(store.getState().geolocation.active).toBe(false);
 		});
 	});
 });

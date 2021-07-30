@@ -6,7 +6,7 @@ import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
 /**
- * A function that returns a promise with an array of geoResources. 
+ * A function that returns a promise with an array of geoResources.
  *
  * @typedef {function(coordinate) : (Promise<Array<GeoResource>>)} geoResourceProvider
  */
@@ -25,7 +25,7 @@ export const loadBvvGeoResources = async () => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources';
 
 	const result = await httpService.get(url, {
-		timeout: 2000,
+		timeout: 2000
 	});
 
 	if (result.ok) {

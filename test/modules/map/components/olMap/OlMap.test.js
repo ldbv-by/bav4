@@ -17,6 +17,7 @@ import { pointerReducer } from '../../../../../src/modules/map/store/pointer.red
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
 import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
+import { Group as LayerGroup } from 'ol/layer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -63,6 +64,13 @@ describe('OlMap', () => {
 			return false;
 		}
 	};
+	const drawLayerHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'drawLayerHandlerMockId';
+		}
+	};
 	const geolocationLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -70,7 +78,6 @@ describe('OlMap', () => {
 			return 'geolocationLayerHandlerMockId';
 		}
 	};
-
 	const highlightLayerHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -93,7 +100,7 @@ describe('OlMap', () => {
 				center: initialCenter,
 				rotation: initialRotationValue,
 				fitRequest: null
-			},
+			}
 		};
 		const combinedState = {
 			...defaultState,
@@ -114,6 +121,7 @@ describe('OlMap', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
+			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('VectorImportService', vectorImportServiceMock)
@@ -508,6 +516,23 @@ describe('OlMap', () => {
 			expect(vectorSourceSpy).toHaveBeenCalled();
 		});
 
+		it('calls #clear on a vector source when layer group is removed', async () => {
+			const element = await setup();
+			const map = element._map;
+			const olVectorSource = new VectorSource();
+			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new LayerGroup({
+				id: geoResource.id,
+				layers: [new VectorLayer({ id: 'sub_' + geoResource.id, source: olVectorSource })]
+			}));
+
+			addLayer('id0');
+
+			removeLayer('id0');
+
+			expect(vectorSourceSpy).toHaveBeenCalled();
+		});
+
 		it('modifys the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -570,6 +595,32 @@ describe('OlMap', () => {
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(measurementLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('draw handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('drawLayerHandlerMockId')).toEqual(drawLayerHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(drawLayerHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(drawLayerHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(drawLayerHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(drawLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});

@@ -98,7 +98,7 @@ describe('positionReducer', () => {
 	it('places a \'fitRequest\' property', () => {
 		const store = setup();
 
-		setFit( [21, 21, 42, 42], { maxZoom:42 });
+		setFit([21, 21, 42, 42], { maxZoom: 42 });
 
 		expect(store.getState().position.fitRequest.payload.extent).toEqual([21, 21, 42, 42]);
 		expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(42);

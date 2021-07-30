@@ -19,11 +19,11 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { }
 	};
 	const altitudeServiceMock = {
-		getAltitude() {	} 
-	}; 
+		getAltitude() {	}
+	};
 	const administrationServiceMock = {
-		getAdministration() { } 
-	}; 
+		getAdministration() { }
+	};
 
 	const setup = () => {
 
@@ -69,7 +69,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
 			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_altitude_label');
-	
+
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('Ref42');
@@ -133,13 +133,13 @@ describe('OlMapContextMenuContent', () => {
 			});
 		});
 
-		it('logs a warn statement when Altitude Service is not available', async  (done) => {
+		it('logs a warn statement when Altitude Service is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('Altitude Error')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000]; 
+			element.coordinate = [1000, 2000];
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
@@ -148,13 +148,13 @@ describe('OlMapContextMenuContent', () => {
 			});
 		});
 
-		it('logs a warn statement when Administration Service is not available', async  (done) => {
+		it('logs a warn statement when Administration Service is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(new Error('Administration Error')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
-			element.coordinate = [1000, 2000]; 
+			element.coordinate = [1000, 2000];
 
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith('Administration Error');

@@ -22,7 +22,7 @@ const getStore = () => {
 /**
  * Sets information about the last click that occurred on the map.
  * @function
- * @param {PointerEvent} pointerEvent 
+ * @param {PointerEvent} pointerEvent
  */
 export const setClick = (pointerEvent) => {
 	getStore().dispatch({
@@ -34,7 +34,7 @@ export const setClick = (pointerEvent) => {
 /**
  * Sets information about the last context click that occurred on the map.
  * @function
- * @param {PointerEvent} pointerEvent 
+ * @param {PointerEvent} pointerEvent
  */
 export const setContextClick = (pointerEvent) => {
 	getStore().dispatch({
@@ -46,7 +46,7 @@ export const setContextClick = (pointerEvent) => {
 /**
  * Sets information about the last pointer move occurred on the map.
  * @function
- * @param {PointerEvent} pointerEvent 
+ * @param {PointerEvent} pointerEvent
  */
 export const setPointerMove = (pointerEvent) => {
 	getStore().dispatch({
@@ -58,7 +58,7 @@ export const setPointerMove = (pointerEvent) => {
 /**
  * Sets information wether the pointer is being dragged.
  * @function
- * @param {boolean} dragged 
+ * @param {boolean} dragged
  */
 export const setBeingDragged = (dragged) => {
 	getStore().dispatch({

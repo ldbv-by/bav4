@@ -11,7 +11,7 @@ import { toggle } from '../../menu/store/mainMenu.action';
 
 
 /**
- * Container element for header stuff. 
+ * Container element for header stuff.
  * @class
  * @author taulinger
  * @author alsturm
@@ -125,24 +125,24 @@ export class Header extends BaElement {
 			<style>${css}</style>
 			<div class="preload ${getOrientationClass()} ${getMinWidthClass()}">
 				<div class='header__logo'>				
-					<button class="action-button">
+					<div class="action-button">
 						<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 						</div>
 						<div class="action-button__icon">
 							<div class="ba">
 							</div>
 						</div>
-					</button>
-					<div class='header__text'>
 					</div>
-					<div class='header__emblem'>
+					<div class='header__text'>
 					</div>
 				</div>			
 				<div id='headerMobile' class='header__text-mobile'>	
 				</div>
+				<div class='header__emblem'>
+				</div>
 				<div  class="header ${getOverlayClass()}">   
-				<mask class="header__background">
-				</mask>
+					<div class="header__background">
+					</div>
 					<div class='header__search-container'>
 						<input id='input' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
@@ -159,9 +159,9 @@ export class Header extends BaElement {
 							<span>
 								${translate('header_tab_maps_button')}
 							</span>
-							 <span class="badges">
+							 <div class="badges">
 							 	${layerCount}
-							</span>
+							</div>
 						</button>
 						<button class="${getActiveClass(2)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
@@ -179,7 +179,7 @@ export class Header extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState 
+	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
 		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait: isPortrait, minWidth: hasMinWidth } } = globalState;

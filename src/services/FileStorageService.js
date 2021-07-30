@@ -11,7 +11,7 @@ import { $injector } from '../injection';
  * Checks if a string represents an adminId.
  * @function
  * @name FileStorageService#isAdminId
- * @param {String} id 
+ * @param {String} id
  * @returns {boolean} fileId
  */
 
@@ -20,7 +20,7 @@ import { $injector } from '../injection';
  * @function
  * @async
  * @name FileStorageService#isFileId
- * @param {String} id 
+ * @param {String} id
  * @returns {boolean} fileId
  */
 
@@ -29,7 +29,7 @@ import { $injector } from '../injection';
  * @function
  * @async
  * @name FileStorageService#getFileId
- * @param {String} adminId 
+ * @param {String} adminId
  * @returns {Promise<string>} fileId
  */
 
@@ -38,7 +38,7 @@ import { $injector } from '../injection';
  * @function
  * @async
  * @name FileStorageService#get
- * @param {String} fileId 
+ * @param {String} fileId
  * @returns {Promise<string>} content
  */
 
@@ -54,8 +54,8 @@ import { $injector } from '../injection';
  * @async
  * @name FileStorageService#save
  * @param {string|null|undefined} id ID of the file
- * @param {string} content 
- * @param {FileStorageServiceDataTypes} type 
+ * @param {string} content
+ * @param {FileStorageServiceDataTypes} type
  * @returns {Promise<FileSaveResult>} content
  */
 
@@ -113,7 +113,7 @@ export class BvvFileStorageService {
 
 	async getFileId(adminId) {
 		const url = `${this._getFileStorageUrl()}/${adminId}`;
-		
+
 		const result = await this._httpService.get(url);
 		if (result.ok) {
 			const { fileId } = await result.json();
@@ -153,7 +153,7 @@ export class BvvFileStorageService {
 				const data = await result.json();
 				return {
 					adminId: data.adminId,
-					fileId: data.fileId,
+					fileId: data.fileId
 				};
 			}
 

@@ -11,11 +11,11 @@ export class OlMapEventHandler {
 			throw new TypeError('Can not construct abstract class.');
 		}
 		if (!id) {
-			throw new TypeError('Id of this handler must be defined.');  
+			throw new TypeError('Id of this handler must be defined.');
 		}
 		this._id = id;
 	}
-    
+
 	get id() {
 		return this._id;
 	}

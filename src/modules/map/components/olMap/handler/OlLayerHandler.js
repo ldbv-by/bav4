@@ -6,7 +6,7 @@
 export class OlLayerHandler {
 
 	/**
-	 * 
+	 *
 	 * @param {string} id Id for this handler, which will be also the id of the layer created by this handler
 	 */
 	constructor(id) {
@@ -42,7 +42,7 @@ export class OlLayerHandler {
 
 	/**
 	 *  Deactivates this handler.
-	 * @param {Map} olmap 
+	 * @param {Map} olmap
 	 */
 	deactivate(map) {
 		this.onDeactivate(map);
@@ -65,7 +65,7 @@ export class OlLayerHandler {
 	 * Callback called when this handler is deactivated. The corresponding layer is already removed from the map.
 	 * @abstract
 	 * @protected
-	 * @param {Map} olmap 
+	 * @param {Map} olmap
 	 */
 	onDeactivate(/*eslint-disable no-unused-vars */ map) {
 		// The child has not implemented this method.

@@ -9,14 +9,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run es-check
-    - run: npm run test:gha
+        node-version: '14.x'
+    
+    - name: Build and test
+      run: |
+        npm ci
+        npm run lint
+        npm run es-check
+        npm run ci:install-deps
+        npm run test:gha
 
     - name: Coveralls
       uses: coverallsapp/github-action@master

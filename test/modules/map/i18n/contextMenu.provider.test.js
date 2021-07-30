@@ -6,13 +6,13 @@ describe('i18n for context menu', () => {
 	it('provides translation for en', () => {
 
 		const map = provide('en');
-		
-		expect(map.map_contextMenu_header).toBe('Location');		
-		expect(map.map_contextMenu_close_button).toBe('Close');		
+
+		expect(map.map_contextMenu_header).toBe('Location');
+		expect(map.map_contextMenu_close_button).toBe('Close');
 		expect(map.map_contextMenuContent_altitude_label).toBe('Alt.');
 		expect(map.map_contextMenuContent_community_label).toBe('Community');
 		expect(map.map_contextMenuContent_district_label).toBe('District');
-		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');			
+		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');
 	});
 
 
@@ -20,12 +20,12 @@ describe('i18n for context menu', () => {
 
 		const map = provide('de');
 
-		expect(map.map_contextMenu_header).toBe('Position');		
-		expect(map.map_contextMenu_close_button).toBe('Schließen');	
+		expect(map.map_contextMenu_header).toBe('Position');
+		expect(map.map_contextMenu_close_button).toBe('Schließen');
 		expect(map.map_contextMenuContent_altitude_label).toBe('Höhe');
 		expect(map.map_contextMenuContent_community_label).toBe('Gemeinde');
 		expect(map.map_contextMenuContent_district_label).toBe('Gemarkung');
-		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');		
+		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');
 	});
 
 	it('have the expected amount of translations', () => {
@@ -36,7 +36,7 @@ describe('i18n for context menu', () => {
 		const actualSize = (o) => Object.keys(o).length;
 
 		expect(actualSize(deMap)).toBe(expectedSize);
-		expect(actualSize(enMap)).toBe(expectedSize);										
+		expect(actualSize(enMap)).toBe(expectedSize);
 	});
 
 	it('provides an empty map for a unknown lang', () => {

@@ -50,7 +50,7 @@ describe('tests for ProcessEnvConfigService', () => {
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
 				'BACKEND_URL': 'BACKEND_URL_value',
-				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value',
+				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
@@ -69,7 +69,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(() => configService.getValue('unknown')).toThrow('No value found for \'unknown\'');
+			expect(() => configService.getValue('unknown')).toThrowError(Error, 'No value found for \'unknown\'');
 		});
 
 		it('provides the the default value for a non-existing key', () => {
@@ -84,7 +84,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides a path for required keys', () => {
 			// eslint-disable-next-line no-undef
 			process.env = {
-				'BACKEND_URL': 'BACKEND_URL_value',
+				'BACKEND_URL': 'BACKEND_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();

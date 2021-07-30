@@ -16,18 +16,18 @@ describe('UnitsService', () => {
 	it('provides default formatted distance', () => {
 		spyOn(configService, 'getValue').and.returnValue(null);
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatDistance(42.00)).toBe('42.00 m');		
+		expect(instanceUnderTest.formatDistance(42.00)).toBe('42.00 m');
 	});
 
 	it('provides default formatted area', () => {
 		spyOn(configService, 'getValue').and.returnValue(null);
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatArea(42)).toBe('42.00 m&sup2;');		
+		expect(instanceUnderTest.formatArea(42)).toBe('42.00 m&sup2;');
 	});
 
 	it('provides formatted distance for metric system', () => {
 		const systemOfUnits = 'metric';
-		
+
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
 		const instanceUnderTest = new UnitsService();
 		expect(instanceUnderTest.formatDistance(0, 0)).toBe('0 m');
@@ -44,7 +44,7 @@ describe('UnitsService', () => {
 
 	it('provides formatted area for metric system', () => {
 		const systemOfUnits = 'metric';
-		
+
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
 		const instanceUnderTest = new UnitsService();
 
@@ -61,7 +61,7 @@ describe('UnitsService', () => {
 
 	it('provides formatted distance for metric system as default', () => {
 		spyOn(configService, 'getValue').and.returnValue(undefined);
-		
+
 		const instanceUnderTest = new UnitsService();
 
 		expect(instanceUnderTest.formatDistance(42, 0)).toContain(' m');
@@ -78,7 +78,7 @@ describe('UnitsService', () => {
 	it('provides formatted distance for metric system as fallback', () => {
 		const systemOfUnits = 'something';
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
-				
+
 		const instanceUnderTest = new UnitsService();
 
 		expect(instanceUnderTest.formatDistance(42, 0)).toContain(' m');
@@ -87,9 +87,9 @@ describe('UnitsService', () => {
 	it('provides formatted area for metric system as fallback', () => {
 		const systemOfUnits = 'something';
 		spyOn(configService, 'getValue').and.returnValue(systemOfUnits);
-	
+
 		const instanceUnderTest = new UnitsService();
-		
+
 		expect(instanceUnderTest.formatArea(42, 0)).toContain('m&sup2;');
 	});
 });
