@@ -17,6 +17,7 @@ import { pointerReducer } from '../../../../../src/modules/map/store/pointer.red
 import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
 import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
+import { Group as LayerGroup } from 'ol/layer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -507,6 +508,23 @@ describe('OlMap', () => {
 			const olVectorSource = new VectorSource();
 			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new VectorLayer({ id: geoResource.id, source: olVectorSource }));
+
+			addLayer('id0');
+
+			removeLayer('id0');
+
+			expect(vectorSourceSpy).toHaveBeenCalled();
+		});
+
+		it('calls #clear on a vector source when layer group is removed', async () => {
+			const element = await setup();
+			const map = element._map;
+			const olVectorSource = new VectorSource();
+			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => new LayerGroup({
+				id: geoResource.id,
+				layers: [new VectorLayer({ id: 'sub_' + geoResource.id, source: olVectorSource })]
+			}));
 
 			addLayer('id0');
 
