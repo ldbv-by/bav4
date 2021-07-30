@@ -5,7 +5,7 @@ process.env.FIREFOX_BIN = playwright.firefox.executablePath();
 process.env.CHROME_BIN = playwright.chromium.executablePath();
 process.env.WEBKIT_HEADLESS_BIN = playwright.webkit.executablePath();
 
-const browsers = process.env.KARMA_BROWSERS ? process.env.KARMA_BROWSERS.split(',') : ['ChromeHeadless', 'FirefoxHeadless'];
+const browsers = process.env.KARMA_BROWSERS ? process.env.KARMA_BROWSERS.split(',') : ['ChromeHeadless', 'FirefoxHeadless', 'WebkitHeadless'];
 
 module.exports = function (config) {
 	config.set({
