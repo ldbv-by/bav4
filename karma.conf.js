@@ -1,8 +1,11 @@
 const webpackConfig = require('./webpack.test.config.js');
 const playwright = require('playwright');
+const path = require('path');
 process.env.FIREFOX_BIN = playwright.firefox.executablePath();
 process.env.CHROME_BIN = playwright.chromium.executablePath();
 process.env.WEBKIT_HEADLESS_BIN = playwright.webkit.executablePath();
+
+const browsers = process.env.KARMA_BROWSERS ? process.env.KARMA_BROWSERS.split(',') : ['ChromeHeadless', 'FirefoxHeadless', 'WebkitHeadless'];
 
 module.exports = function (config) {
 	config.set({
@@ -20,7 +23,7 @@ module.exports = function (config) {
 		// colors: true,
 		// logLevel: config.LOG_INFO,
 		// autoWatch: true,
-		browsers: ['ChromeHeadless', 'FirefoxHeadless'],
+		browsers: browsers,
 		customLaunchers: {
 			ChromeDebugging: {
 				base: 'ChromeHeadless',
@@ -31,7 +34,7 @@ module.exports = function (config) {
 		concurrency: Infinity,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
-			dir: 'coverage',
+			dir: path.join(__dirname, 'coverage'),
 			reports: ['text-summary', 'html']
 		}
 	});

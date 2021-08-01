@@ -38,7 +38,8 @@ describe('Modal', () => {
 
 			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('title');
-			expect(element.shadowRoot.querySelector('.modal__content').innerText).toBe('content');
+			//Note: Webkit appends a line break to the 'content' in this case
+			expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
 		});
 
 		it('closes the modal', async () => {

@@ -96,6 +96,7 @@ describe('GeolocationPlugin', () => {
 		it('registers an observer for beingDragged changes', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
+			spyOn(instanceUnderTest, '_activate');
 
 			await instanceUnderTest.register(store);
 

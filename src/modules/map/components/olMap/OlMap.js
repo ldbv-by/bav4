@@ -12,6 +12,7 @@ import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from '
 import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 import VectorSource from 'ol/source/Vector';
+import { Group as LayerGroup } from 'ol/layer';
 
 
 /**
@@ -217,6 +218,12 @@ export class OlMap extends BaElement {
 		// array difference right side
 		const toBeRemoved = currentIds.filter(id => !updatedIds.includes(id));
 
+		const clearVectorSource = olLayer => {
+			if (olLayer.getSource() instanceof VectorSource) {
+				olLayer.getSource().clear();
+			}
+		};
+
 		toBeRemoved.forEach(id => {
 			const olLayer = this._getOlLayerById(id);
 			if (olLayer) {
@@ -224,8 +231,12 @@ export class OlMap extends BaElement {
 				if (this._layerHandler.has(id)) {
 					this._layerHandler.get(id).deactivate(this._map);
 				}
-				if (olLayer.getSource() instanceof VectorSource) {
-					olLayer.getSource().clear();
+
+				if (olLayer instanceof LayerGroup) {
+					olLayer.getLayers().forEach(clearVectorSource);
+				}
+				else {
+					clearVectorSource(olLayer);
 				}
 			}
 		});
