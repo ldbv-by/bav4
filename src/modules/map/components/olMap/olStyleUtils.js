@@ -4,6 +4,7 @@ import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 
 
+const ZICON = 5;
 const ZPOLYGON = 10;
 const ZLINE = 20;
 const ZPOINT = 30;
@@ -11,8 +12,23 @@ const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
 
+
+
 export const baseStyleFunction = () => {
 	return [new Style()];
+};
+
+
+export const createMarkerDrawStyleFunction = (icon) => {
+	return () => {
+		const styles = [
+			new Style({
+				image: icon,
+				zIndex: ZICON
+			})
+		];
+		return styles;
+	};
 };
 
 export const measureStyleFunction = (feature) => {
@@ -27,7 +43,7 @@ export const measureStyleFunction = (feature) => {
 		lineDash: [8]
 	});
 
-	const zIndex = (feature.getGeometry() instanceof LineString) ?	ZLINE : ZPOLYGON;
+	const zIndex = (feature.getGeometry() instanceof LineString) ? ZLINE : ZPOLYGON;
 
 	const styles = [
 		new Style({
@@ -61,13 +77,13 @@ export const modifyStyleFunction = () => {
 			radius: 8,
 			stroke: new Stroke({
 				color: RED_COLOR,
-				width: 1 }),
+				width: 1
+			}),
 			fill: new Fill({
 				color: WHITE_COLOR
 			})
 		})
-	})]
-	;
+	})];
 };
 
 export const createSelectStyleFunction = (styleFunction) => {
@@ -76,7 +92,8 @@ export const createSelectStyleFunction = (styleFunction) => {
 			radius: 7,
 			stroke: new Stroke({
 				color: BLACK_COLOR,
-				width: 1 }),
+				width: 1
+			}),
 			fill: new Fill({
 				color: WHITE_COLOR
 			})
@@ -115,13 +132,14 @@ export const createSelectStyleFunction = (styleFunction) => {
 
 export const createSketchStyleFunction = (styleFunction) => {
 
-	const sketchPolygon = new Style({ fill: new Fill({
-		color: WHITE_COLOR.concat([0.4])
-	}),
-	stroke: new Stroke({
-		color: WHITE_COLOR,
-		width: 0
-	})
+	const sketchPolygon = new Style({
+		fill: new Fill({
+			color: WHITE_COLOR.concat([0.4])
+		}),
+		stroke: new Stroke({
+			color: WHITE_COLOR,
+			width: 0
+		})
 	});
 
 	return (feature, resolution) => {

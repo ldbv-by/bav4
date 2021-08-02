@@ -9,7 +9,11 @@ import { baseStyleFunction, measureStyleFunction } from '../olStyleUtils';
  */
 export const StyleTypes = Object.freeze({
 	MEASURE: 'measure',
-	DRAW: 'draw'
+	DRAW: 'draw',
+	MARKER: 'marker',
+	ANNOTATION: 'annotation',
+	LINE: 'line',
+	POLYGON: 'polygon'
 });
 
 /**

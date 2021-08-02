@@ -127,7 +127,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			'Polygon': new Draw({
 				source: source,
 				type: 'Polygon',
-				minPoints: 2,
+				minPoints: 3,
 				snapTolerance: this._getSnapTolerancePerDevice(),
 				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
 			})
