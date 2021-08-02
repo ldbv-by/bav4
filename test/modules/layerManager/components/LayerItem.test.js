@@ -1,9 +1,9 @@
-import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
+import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
+import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
+import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
+import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -43,9 +43,9 @@ describe('LayerItem', () => {
 
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, { layers: layersReducer });
-			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = layer ;
+			element.layer = layer;
 			return element;
 		};
 

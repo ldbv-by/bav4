@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import css from './layerItem.css';
-import { $injector } from '../../../../injection';
+import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { modifyLayer, removeLayer } from './../../../../store/layers/layers.action';
+import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
-import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
 /**
  * private Element of LayerManager to render a layer state and its possible actions
