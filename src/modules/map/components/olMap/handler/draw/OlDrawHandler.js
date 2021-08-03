@@ -109,7 +109,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				source: source,
 				type: 'Point',
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+				style: this._styleService.getStyleFunction(StyleTypes.MARKER)
 			}),
 			'Text': new Draw({
 				source: source,

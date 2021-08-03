@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { baseStyleFunction, measureStyleFunction } from '../olStyleUtils';
+import { baseStyleFunction, markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction } from '../olStyleUtils';
 
 
 
@@ -8,7 +8,10 @@ import { baseStyleFunction, measureStyleFunction } from '../olStyleUtils';
  * @enum
  */
 export const StyleTypes = Object.freeze({
+	NULL: 'null',
 	MEASURE: 'measure',
+	HIGHLIGHT: 'highlight',
+	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
 	ANNOTATION: 'annotation',
@@ -89,8 +92,16 @@ export class StyleService {
 	 */
 	getStyleFunction(styleType) {
 		switch (styleType) {
+			case StyleTypes.NULL:
+				return nullStyleFunction;
 			case StyleTypes.MEASURE:
 				return measureStyleFunction;
+			case StyleTypes.HIGHLIGHT:
+				return highlightStyleFunction;
+			case StyleTypes.HIGHLIGHT_TEMP:
+				return highlightTemporaryStyleFunction;
+			case StyleTypes.MARKER:
+				return markerStyleFunction;
 			case StyleTypes.DRAW:
 				return baseStyleFunction;
 			default:

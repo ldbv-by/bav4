@@ -1,10 +1,12 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './olGeometryUtils';
-import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
+import { Fill, Stroke, Style, Circle as CircleStyle, Icon } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
+import markerIcon from './assets/marker.svg';
+import locationIcon from './assets/location.svg';
+import tempLocationIcon from './assets/temporaryLocation.svg';
 
 
-const ZICON = 5;
 const ZPOLYGON = 10;
 const ZLINE = 20;
 const ZPOINT = 30;
@@ -17,19 +19,36 @@ const BLACK_COLOR = [0, 0, 0];
 export const baseStyleFunction = () => {
 	return [new Style()];
 };
+export const nullStyleFunction = () => [new Style({})];
+
+export const highlightStyleFunction = () => [new Style({
+	image: new Icon({
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: locationIcon
+	})
+})];
 
 
-export const createMarkerDrawStyleFunction = (icon) => {
-	return () => {
-		const styles = [
-			new Style({
-				image: icon,
-				zIndex: ZICON
-			})
-		];
-		return styles;
-	};
-};
+export const highlightTemporaryStyleFunction = () => [new Style({
+	image: new Icon({
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: tempLocationIcon
+	})
+})];
+
+export const markerStyleFunction = () => [new Style({
+	image: new Icon({
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: markerIcon,
+		color: '#BADA55'
+	})
+})];
 
 export const measureStyleFunction = (feature) => {
 	const stroke = new Stroke({
