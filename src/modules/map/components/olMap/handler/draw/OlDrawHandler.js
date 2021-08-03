@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, createSelectStyleFunction, createModifyStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
@@ -156,7 +156,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		// TODO: implement layerFilter
 		// TODO: implement featureFilter
 		const options = {
-			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
@@ -168,7 +168,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		// TODO: implement deleteContition
 		const options = {
 			features: this._select.getFeatures(),
-			style: modifyStyleFunction
+			style: createModifyStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
 		};
 
 		const modify = new Modify(options);

@@ -104,6 +104,29 @@ export const modifyStyleFunction = () => {
 		})
 	})];
 };
+export const createModifyStyleFunction = (styleFunction) => {
+	const appendableStyle = [new Style({
+		image: new CircleStyle({
+			radius: 8,
+			stroke: new Stroke({
+				color: RED_COLOR,
+				width: 1
+			}),
+			fill: new Fill({
+				color: WHITE_COLOR
+			})
+		})
+	})];
+
+
+	(feature, resolution) => {
+
+		const styles = styleFunction(feature, resolution);
+
+
+		return styles.concat([appendableStyle]);
+	};
+};
 
 export const createSelectStyleFunction = (styleFunction) => {
 	const appendableVertexStyle = new Style({
