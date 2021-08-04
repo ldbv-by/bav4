@@ -4,7 +4,7 @@
     "lit-html": "^1.4.1",
     "ol": "^6.6.1",
     "proj4": "^2.7.5",
-    "redux": "^4.1.0"
+    "redux": "^4.1.1"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
