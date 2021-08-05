@@ -26,28 +26,28 @@ export class DrawToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		return [{
 			id: 1,
-			name: 'symbol',
+			name: 'Symbol',
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
 			activate: () => setType('Symbol')
 		}, {
 			id: 2,
-			name: 'text',
+			name: 'Text',
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
 			activate: () => setType('Text')
 		}, {
 			id: 3,
-			name: 'line',
+			name: 'Line',
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
 			activate: () => setType('Line')
 		}, {
 			id: 4,
-			name: 'polygon',
+			name: 'Polygon',
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
@@ -66,19 +66,35 @@ export class DrawToolContent extends AbstractToolContent {
 		this._showActive();
 	}
 
+	_setActiveToolByType(type) {
+		this._tools.forEach(tool => {
+			if (tool.name === type) {
+				if (this._activeTool !== tool) {
+					tool.active = true;
+					this._setActiveTool(tool);
+				}
+			}
+		});
+	}
+
 	_showActive() {
 		const id = this._activeTool.name;
 		const element = this._root.querySelector('#' + id);
-		if (this._activeTool.active) {
-			element.classList.add('is-active');
+		if (element) {
+			if (this._activeTool.active) {
+				element.classList.add('is-active');
+			}
+			else {
+				element.classList.remove('is-active');
+			}
 		}
-		else {
-			element.classList.remove('is-active');
-		}
+
 	}
 
-	createView() {
+	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
+		const { type: preselectedType } = state;
+		this._setActiveToolByType(preselectedType);
 
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
@@ -135,6 +151,15 @@ export class DrawToolContent extends AbstractToolContent {
         </div>
         `;
 
+	}
+
+	/**
+	 * @override
+	 * @param {Object} globalState
+	 */
+	extractState(globalState) {
+		const { draw } = globalState;
+		return draw;
 	}
 
 	static get tag() {

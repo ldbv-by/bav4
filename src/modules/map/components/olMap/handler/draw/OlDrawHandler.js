@@ -51,8 +51,10 @@ export class OlDrawHandler extends OlLayerHandler {
 			});
 			return layer;
 		};
+
+
+		this._map = olMap;
 		if (!this._vectorLayer) {
-			this._map = olMap;
 			this._vectorLayer = createLayer();
 			this._mapContainer = olMap.getTarget();
 			const source = this._vectorLayer.getSource();
@@ -64,18 +66,21 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
+		}
+		this._map.addInteraction(this._select);
+		this._map.addInteraction(this._modify);
+		this._map.addInteraction(this._snap);
+		this._map.addInteraction(this._dragPan);
 
+		// eslint-disable-next-line no-unused-vars
+		for (const [key, draw] of Object.entries(this._drawTypes)) {
+			//draw.on('change:active', (e) => console.log('change:active changes for ' + key + ' to: ', e));
+			this._map.addInteraction(draw);
+		}
 
-			olMap.addInteraction(this._select);
-			olMap.addInteraction(this._modify);
-			olMap.addInteraction(this._snap);
-			olMap.addInteraction(this._dragPan);
-
-			// eslint-disable-next-line no-unused-vars
-			for (const [key, draw] of Object.entries(this._drawTypes)) {
-				//draw.on('change:active', (e) => console.log('change:active changes for ' + key + ' to: ', e));
-				olMap.addInteraction(draw);
-			}
+		const preselectDrawType = this._storeService.getStore().getState().draw.type;
+		if (preselectDrawType) {
+			this._init(preselectDrawType);
 		}
 
 		return this._vectorLayer;
@@ -258,6 +263,17 @@ export class OlDrawHandler extends OlLayerHandler {
 		for (const [key, draw] of Object.entries(this._drawTypes)) {
 			if (draw.getActive()) {
 				return draw;
+			}
+		}
+
+		return null;
+	}
+
+	_getActiveDrawType() {
+		// eslint-disable-next-line no-unused-vars
+		for (const [key, draw] of Object.entries(this._drawTypes)) {
+			if (draw.getActive()) {
+				return key;
 			}
 		}
 
