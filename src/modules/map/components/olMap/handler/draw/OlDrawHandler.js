@@ -269,17 +269,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		return null;
 	}
 
-	_getActiveDrawType() {
-		// eslint-disable-next-line no-unused-vars
-		for (const [key, draw] of Object.entries(this._drawTypes)) {
-			if (draw.getActive()) {
-				return key;
-			}
-		}
-
-		return null;
-	}
-
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
 			return 12;

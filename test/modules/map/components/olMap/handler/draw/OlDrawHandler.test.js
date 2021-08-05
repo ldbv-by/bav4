@@ -309,6 +309,44 @@ describe('OlDrawHandler', () => {
 				expect(removeSpy).toHaveBeenCalled();
 			});
 
+			it('starts with a preselected drawType', () => {
+				const state = { ...initialState, type: 'Symbol' };
+				setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).toHaveBeenCalled();
+				expect(classUnderTest._getActiveDraw()).toBeTruthy();
+			});
+
+			it('starts without a preselected drawType, caused by unknown type', () => {
+				const state = { ...initialState, type: 'somethingWrong' };
+				setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).toHaveBeenCalledWith('somethingWrong');
+				expect(classUnderTest._getActiveDraw()).toBeNull();
+			});
+
+			it('starts without a preselected drawType', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const initSpy = spyOn(classUnderTest, '_init');
+
+				classUnderTest.activate(map);
+
+				expect(initSpy).not.toHaveBeenCalled();
+				expect(classUnderTest._getActiveDraw()).toBeNull();
+			});
+
 			it('aborts drawing after reset-request', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
