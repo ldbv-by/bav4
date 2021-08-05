@@ -16,9 +16,12 @@ describe('DrawToolContent', () => {
 		const { embed = false } = config;
 
 		const state = {
-			toolContainer: {
-				open: false,
-				contentId: false
+			draw: {
+				active: false,
+				mode: null,
+				type: null,
+				reset: null,
+				fileSaveResult: { adminId: 'init', fileId: 'init' }
 			}
 		};
 
@@ -57,7 +60,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#line');
+			const toolButton = element.shadowRoot.querySelector('#Line');
 
 			toolButton.click();
 
@@ -70,7 +73,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#symbol');
+			const toolButton = element.shadowRoot.querySelector('#Symbol');
 
 			toolButton.click();
 
@@ -83,7 +86,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#text');
+			const toolButton = element.shadowRoot.querySelector('#Text');
 
 			toolButton.click();
 
@@ -96,7 +99,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#polygon');
+			const toolButton = element.shadowRoot.querySelector('#Polygon');
 
 			toolButton.click();
 
@@ -108,15 +111,15 @@ describe('DrawToolContent', () => {
 		it('deactivates last tool, when activate another', async () => {
 			const element = await setup();
 			const lastTool = {
-				name: 'polygon',
+				name: 'Polygon',
 				active: true,
 				activate: jasmine.createSpy()
 			};
 			element._activeTool = lastTool;
-			const lastButton = element.shadowRoot.querySelector('#polygon');
+			const lastButton = element.shadowRoot.querySelector('#Polygon');
 			lastButton.classList.add('is-active');
 
-			const toolButton = element.shadowRoot.querySelector('#line');
+			const toolButton = element.shadowRoot.querySelector('#Line');
 			toolButton.click();
 
 			expect(lastTool.active).toBeFalse();
@@ -128,7 +131,7 @@ describe('DrawToolContent', () => {
 
 			const element = await setup();
 			const spy = spyOn(element, '_setActiveTool').and.callThrough();
-			const toolButton = element.shadowRoot.querySelector('#line');
+			const toolButton = element.shadowRoot.querySelector('#Line');
 
 			toolButton.click();
 
@@ -137,7 +140,7 @@ describe('DrawToolContent', () => {
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalledTimes(2);
+			expect(spy).toHaveBeenCalledTimes(3);
 			expect(toolButton.classList.contains('is-active')).toBeFalse();
 		});
 	});
