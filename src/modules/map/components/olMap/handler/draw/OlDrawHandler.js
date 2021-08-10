@@ -188,27 +188,27 @@ export class OlDrawHandler extends OlLayerHandler {
 				source: source,
 				type: 'Point',
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: this._styleService.getStyleFunction(StyleTypes.MARKER)
+				style: this._getBaseStyle('Symbol')
 			}),
 			'Text': new Draw({
 				source: source,
 				type: 'Point',
 				minPoints: 1,
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+				style: createSketchStyleFunction(this._getBaseStyle('Text'))
 			}),
 			'Line': new Draw({
 				source: source,
 				type: 'LineString',
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+				style: createSketchStyleFunction(this._getBaseStyle('Line'))
 			}),
 			'Polygon': new Draw({
 				source: source,
 				type: 'Polygon',
 				minPoints: 3,
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.DRAW))
+				style: createSketchStyleFunction(this._getBaseStyle('Polygon'))
 			})
 		};
 
@@ -221,6 +221,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._isSnapOnLastPoint = false;
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
+				this._activeSketch.setStyle(this._getBaseStyle(key));
 			});
 
 			//draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
@@ -247,6 +248,15 @@ export class OlDrawHandler extends OlLayerHandler {
 		}, featureSnapOption);
 
 		return features;
+	}
+
+	_getBaseStyle(drawType) {
+		switch (drawType) {
+			case 'Symbol':
+				return this._styleService.getStyleFunction(StyleTypes.MARKER);
+			default:
+				return this._styleService.getStyleFunction(StyleTypes.DRAW);
+		}
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
