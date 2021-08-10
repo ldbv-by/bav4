@@ -4,16 +4,16 @@
     "lit-html": "^1.4.1",
     "ol": "^6.6.1",
     "proj4": "^2.7.5",
-    "redux": "^4.1.0"
+    "redux": "^4.1.1"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "css-loader": "^6.2.0",
     "dotenv-webpack": "^7.0.3",
-    "es-check": "^5.2.4",
-    "eslint": "^7.31.0",
+    "es-check": "^6.0.0",
+    "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
@@ -37,7 +37,7 @@
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.2.1",
     "to-string-loader": "^1.1.6",
-    "webpack": "^5.47.1",
+    "webpack": "^5.49.0",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"

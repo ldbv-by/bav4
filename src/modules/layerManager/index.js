@@ -1,5 +1,5 @@
-import { LayerManager } from './LayerManager';
-import { LayerItem } from './LayerItem';
+import { LayerManager } from './components/LayerManager';
+import { LayerItem } from './components/LayerItem';
 if (!window.customElements.get(LayerItem.tag)) {
 	window.customElements.define(LayerItem.tag, LayerItem);
 }

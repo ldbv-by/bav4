@@ -1,10 +1,10 @@
-import { LayerManager } from '../../../../../src/modules/map/components/layerManager/LayerManager';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
-import { modifyLayer } from '../../../../../src/store/layers/layers.action';
+import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
+import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
+import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
+import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
+import { modifyLayer } from '../../../../src/store/layers/layers.action';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
