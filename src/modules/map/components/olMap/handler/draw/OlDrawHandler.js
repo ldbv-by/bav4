@@ -8,6 +8,24 @@ import { createSketchStyleFunction, createSelectStyleFunction, createModifyStyle
 import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
+import { isVertexOfGeometry } from '../../olGeometryUtils';
+
+
+export const DrawStateType = {
+	ACTIVE: 'active',
+	DRAW: 'draw',
+	MODIFY: 'modify',
+	SELECT: 'select',
+	OVERLAY: 'overlay'
+};
+
+export const DrawSnapType = {
+	FIRSTPOINT: 'firstPoint',
+	LASTPOINT: 'lastPoint',
+	VERTEX: 'vertex',
+	EGDE: 'edge',
+	FACE: 'face'
+};
 
 /**
  * Handler for draw-interaction with the map
@@ -36,6 +54,26 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._select = null;
 		this._dragPan = null;
 		this._activeSketch = null;
+
+		this._storedContent = null;
+
+		this._isFinishOnFirstPoint = false;
+		this._isSnapOnLastPoint = false;
+		this._pointCount = 0;
+		this._listeners = [];
+
+		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
+		this._lastPointerMoveEvent = null;
+		this._lastDrawStateType = null;
+		this._measureState = {
+			type: null,
+			snap: null,
+			coordinate: null,
+			pointCount: this._pointCount,
+			dragging: false
+		};
+
+		this._drawStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
 
@@ -52,6 +90,38 @@ export class OlDrawHandler extends OlLayerHandler {
 			return layer;
 		};
 
+		const clickHandler = (event) => {
+			const coordinate = event.coordinate;
+			const dragging = event.dragging;
+			const pixel = event.pixel;
+			this._updateDrawState(coordinate, pixel, dragging);
+			const selectableFeatures = this._getSelectableFeatures(pixel);
+			if (this._drawState.type === DrawStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+				this._select.getFeatures().clear();
+
+				this._setDrawState({ ...this._measureState, type: DrawStateType.SELECT, snap: null });
+			}
+
+			if ([DrawStateType.MODIFY, DrawStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
+				selectableFeatures.forEach(f => {
+					const hasFeature = this._isInCollection(f, this._select.getFeatures());
+					if (!hasFeature) {
+						this._select.getFeatures().push(f);
+					}
+				});
+			}
+			this._modifyActivated = false;
+		};
+
+		const pointerMoveHandler = (event) => {
+			this._lastPointerMoveEvent = event;
+
+			const coordinate = event.coordinate;
+			const dragging = event.dragging;
+			const pixel = event.pixel;
+			this._updateDrawState(coordinate, pixel, dragging);
+		};
+
 
 		this._map = olMap;
 		if (!this._vectorLayer) {
@@ -66,6 +136,9 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
+			// DEBUG: this._onDrawStateChanged((drawState) => console.log(drawState));
+			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
+			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 		}
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
@@ -156,15 +229,75 @@ export class OlDrawHandler extends OlLayerHandler {
 		return drawTypes;
 	}
 
+	_getSelectableFeatures(pixel) {
+		const features = [];
+		const interactionLayer = this._vectorLayer;
+		const featureSnapOption = {
+			hitTolerance: 10,
+			layerFilter: itemLayer => {
+				return itemLayer === interactionLayer;
+			}
+		};
+
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				features.push(feature);
+			}
+		}, featureSnapOption);
+
+		return features;
+	}
+
+	_updateDrawState(coordinate, pixel, dragging) {
+		const drawState = {
+			type: null,
+			snap: null,
+			coordinate: coordinate,
+			pointCount: this._pointCount
+		};
+
+		drawState.snap = this._getSnapState(pixel);
+		const currentDraw = this._getActiveDraw();
+		if (currentDraw) {
+			drawState.type = DrawStateType.ACTIVE;
+
+			if (this._activeSketch) {
+				this._activeSketch.getGeometry();
+				drawState.type = DrawStateType.DRAW;
+
+				if (this._isFinishOnFirstPoint) {
+					drawState.snap = DrawSnapType.FIRSTPOINT;
+				}
+				else if (this._isSnapOnLastPoint) {
+					drawState.snap = DrawSnapType.LASTPOINT;
+				}
+			}
+		}
+
+		if (this._modify.getActive()) {
+			drawState.type = this._select.getFeatures().getLength() === 0 ? DrawStateType.SELECT : DrawStateType.MODIFY;
+		}
+
+		drawState.dragging = dragging;
+		this._setDrawState(drawState);
+	}
+
 
 	_createSelect() {
-		// TODO: implement layerFilter
-		// TODO: implement featureFilter
+		const layerFilter = (itemLayer) => {
+			itemLayer === this._vectorLayer;
+		};
+		// const featureFilter = (itemFeature, itemLayer) => {
+		// 	if (layerFilter(itemLayer)) {
+		// 		return itemFeature;
+		// 	}
+		// };
 		const options = {
+			layers: layerFilter,
+			// filter: featureFilter,
 			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
 		};
 		const select = new Select(options);
-		select.getFeatures().on('change:length', this._updateStatistics);
 
 		return select;
 	}
@@ -249,6 +382,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
+	_onDrawStateChanged(listener) {
+		this._drawStateChangedListeners.push(listener);
+	}
 
 	_register(store) {
 		return [
@@ -256,6 +392,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._startNew()),
 			observe(store, state => state.draw.remove, () => this._remove())];
+	}
+
+	_setDrawState(value) {
+		if (value !== this._drawState) {
+			this._drawState = value;
+			this._drawStateChangedListeners.forEach(l => l(value));
+		}
 	}
 
 	_getActiveDraw() {
@@ -267,6 +410,43 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		return null;
+	}
+
+	_getSnapState(pixel) {
+		let snapType = null;
+		const interactionLayer = this._vectorLayer;
+		const featureSnapOption = {
+			hitTolerance: 10,
+			layerFilter: itemLayer => {
+				return itemLayer === interactionLayer;
+			}
+		};
+		let vertexFeature = null;
+		let featuresFromInteractionLayerCount = 0;
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				featuresFromInteractionLayerCount++;
+			}
+			if (!layer && feature.get('features').length > 0) {
+				vertexFeature = feature;
+				return;
+			}
+		}, featureSnapOption);
+
+		if (vertexFeature) {
+			snapType = DrawSnapType.EGDE;
+			const vertexGeometry = vertexFeature.getGeometry();
+			const snappedFeature = vertexFeature.get('features')[0];
+			const snappedGeometry = snappedFeature.getGeometry();
+
+			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+				snapType = DrawSnapType.VERTEX;
+			}
+		}
+		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
+			snapType = DrawSnapType.FACE;
+		}
+		return snapType;
 	}
 
 	_getSnapTolerancePerDevice() {
