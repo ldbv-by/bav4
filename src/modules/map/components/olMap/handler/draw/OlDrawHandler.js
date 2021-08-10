@@ -102,7 +102,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._setDrawState({ ...this._measureState, type: DrawStateType.SELECT, snap: null });
 			}
 
-			if ([DrawStateType.MODIFY, DrawStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
+			if ([DrawStateType.MODIFY, DrawStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
 					const hasFeature = this._isInCollection(f, this._select.getFeatures());
 					if (!hasFeature) {
@@ -285,22 +285,35 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	// eslint-disable-next-line no-unused-vars
 	_updateDrawMode(state) {
-		// DEBUG: console.log(state.type ? '' + state.type : 'null');
+		// DEBUG:console.log(state.type ? '' + state.type : 'null');
 	}
 
+
+	/**
+     * todo: extract Util-method to kind of 'OlMapUtils'-file
+     */
+	_isInCollection(item, itemCollection) {
+		let isInCollection = false;
+		itemCollection.forEach(i => {
+			if (i === item) {
+				isInCollection = true;
+			}
+		});
+		return isInCollection;
+	}
 
 	_createSelect() {
 		const layerFilter = (itemLayer) => {
 			itemLayer === this._vectorLayer;
 		};
-		// const featureFilter = (itemFeature, itemLayer) => {
-		// 	if (layerFilter(itemLayer)) {
-		// 		return itemFeature;
-		// 	}
-		// };
+		const featureFilter = (itemFeature, itemLayer) => {
+			if (layerFilter(itemLayer)) {
+				return itemFeature;
+			}
+		};
 		const options = {
 			layers: layerFilter,
-			// filter: featureFilter,
+			filter: featureFilter,
 			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
 		};
 		const select = new Select(options);
