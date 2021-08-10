@@ -63,7 +63,7 @@ describe('drawReducer', () => {
 
 		setStyle(style);
 
-		expect(store.getState().draw.type).toBe('point');
+		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#BADA55', scale: 1 });
 	});
 
 	it('updates the fileSaveResult property', () => {

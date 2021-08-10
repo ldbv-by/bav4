@@ -71,6 +71,14 @@ export const drawReducer = (state = initialState, action) => {
 
 			};
 		}
+		case STYLE_CHANGED: {
+
+			return {
+				...state,
+				style: payload
+
+			};
+		}
 		case FILE_SAVE_RESULT_CHANGED: {
 
 			return {
