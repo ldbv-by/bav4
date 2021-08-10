@@ -1,6 +1,7 @@
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
+export const STYLE_CHANGED = 'draw/style';
 export const FILE_SAVE_RESULT_CHANGED = 'draw/fileSaveResult';
 export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
@@ -20,6 +21,10 @@ export const initialState = {
 	 * @type {String}
 	 */
 	type: null,
+	/**
+	 * @type {Object}
+	 */
+	style: null,
 	/**
 	 * @type {DrawFileSaveResult}
 	 */

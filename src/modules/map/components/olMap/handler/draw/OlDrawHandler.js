@@ -183,7 +183,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createDrawTypes(source) {
-		const styleOption = { symbolSrc: null, color: '#FFDAFF' };
+		const styleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
 		const drawTypes = {
 			'Symbol': new Draw({
 				source: source,
