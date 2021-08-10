@@ -40,15 +40,18 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 	})
 })];
 
-export const markerStyleFunction = () => [new Style({
-	image: new Icon({
+export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false }) => {
+	const markerSrc = styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon;
+	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
+	return [new Style({	image: new Icon({
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
-		src: markerIcon,
-		color: '#BADA55'
+		src: markerSrc,
+		color: markerColor
 	})
-})];
+	})];
+};
 
 export const measureStyleFunction = (feature) => {
 	const stroke = new Stroke({

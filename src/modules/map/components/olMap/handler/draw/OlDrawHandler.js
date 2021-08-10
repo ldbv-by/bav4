@@ -183,32 +183,33 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createDrawTypes(source) {
+		const styleOption = { symbolSrc: null, color: '#FFDAFF' };
 		const drawTypes = {
 			'Symbol': new Draw({
 				source: source,
 				type: 'Point',
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: this._getBaseStyle('Symbol')
+				style: this._getBaseStyle('Symbol', styleOption)
 			}),
 			'Text': new Draw({
 				source: source,
 				type: 'Point',
 				minPoints: 1,
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getBaseStyle('Text'))
+				style: createSketchStyleFunction(this._getBaseStyle('Text', styleOption))
 			}),
 			'Line': new Draw({
 				source: source,
 				type: 'LineString',
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getBaseStyle('Line'))
+				style: createSketchStyleFunction(this._getBaseStyle('Line', styleOption))
 			}),
 			'Polygon': new Draw({
 				source: source,
 				type: 'Polygon',
 				minPoints: 3,
 				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getBaseStyle('Polygon'))
+				style: createSketchStyleFunction(this._getBaseStyle('Polygon', styleOption))
 			})
 		};
 
@@ -221,7 +222,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._isSnapOnLastPoint = false;
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
-				this._activeSketch.setStyle(this._getBaseStyle(key));
+				this._activeSketch.setStyle(this._getBaseStyle(key, styleOption));
 			});
 
 			//draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
@@ -250,10 +251,13 @@ export class OlDrawHandler extends OlLayerHandler {
 		return features;
 	}
 
-	_getBaseStyle(drawType) {
+	_getBaseStyle(drawType, styleOption) {
 		switch (drawType) {
 			case 'Symbol':
-				return this._styleService.getStyleFunction(StyleTypes.MARKER);
+				return () => {
+					const styleFunction = this._styleService.getStyleFunction(StyleTypes.MARKER);
+					return styleFunction(styleOption);
+				};
 			default:
 				return this._styleService.getStyleFunction(StyleTypes.DRAW);
 		}
