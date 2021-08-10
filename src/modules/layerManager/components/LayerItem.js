@@ -10,8 +10,7 @@ import infoSvg from './assets/info.svg';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
 /**
- * private Element of LayerManager to render a layer state and its possible actions
- * (remove,change visibility and opacity)
+ * Child element of the LayerManager. Represents one layer and its state.
  * @class
  * @author thiloSchlemmer
  * @author taulinger

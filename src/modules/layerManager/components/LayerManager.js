@@ -6,8 +6,8 @@ import { modifyLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 
 /**
- * Element to render the curent layers state and its possible actions
- * (reorder,remove, change visibility and opacity)
+ * Renders a list of layers representing their order on a map and provides
+ * actions like reordering, removing and changing visibility and opacity
  * @class
  * @author thiloSchlemmer
  * @author taulinger
