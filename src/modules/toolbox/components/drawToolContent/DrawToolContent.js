@@ -103,6 +103,9 @@ export class DrawToolContent extends AbstractToolContent {
 				if (tool.active) {
 					tool.activate();
 				}
+				else {
+					setType(null);
+				}
 				this._setActiveTool(tool);
 			};
 

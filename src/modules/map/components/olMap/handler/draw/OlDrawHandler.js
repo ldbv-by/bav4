@@ -136,7 +136,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
-			// DEBUG: this._onDrawStateChanged((drawState) => console.log(drawState));
+			// DEBUG:
+			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 		}
@@ -282,6 +283,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._setDrawState(drawState);
 	}
 
+	// eslint-disable-next-line no-unused-vars
+	_updateDrawMode(state) {
+		// DEBUG: console.log(state.type ? '' + state.type : 'null');
+	}
+
 
 	_createSelect() {
 		const layerFilter = (itemLayer) => {
@@ -344,7 +350,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				draw.setActive(true);
 			}
 			else {
-				console.warn('Unknown DrawType, deactivate only current draw');
+				console.warn('Unknown DrawType [' + type + '], deactivate only current draw');
 			}
 		};
 
