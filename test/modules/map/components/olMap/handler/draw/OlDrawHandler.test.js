@@ -5,7 +5,7 @@ import { drawReducer } from '../../../../../../../src/modules/map/store/draw.red
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
-import { OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
+import { DrawStateType, OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -533,6 +533,45 @@ describe('OlDrawHandler', () => {
 			return map;
 
 		};
+
+		const simulateMapMouseEvent = (map, type, x, y, dragging) => {
+			const eventType = type;
+
+			const event = new Event(eventType);
+			//event.target = map.getViewport().firstChild;
+			event.clientX = x;
+			event.clientY = y;
+			event.pageX = x;
+			event.pageY = y;
+			event.shiftKey = false;
+			event.preventDefault = function () { };
+
+
+			const mapEvent = new MapBrowserEvent(eventType, map, event);
+			mapEvent.coordinate = [x, y];
+			mapEvent.dragging = dragging ? dragging : false;
+			map.dispatchEvent(mapEvent);
+		};
+
+		it('change measureState, when sketch is changing', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const drawStateSpy = jasmine.createSpy();
+			classUnderTest.activate(map);
+			classUnderTest._onDrawStateChanged(drawStateSpy);
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+
+			setType('Symbol');
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			classUnderTest._activeSketch = new Feature({ geometry: new Point([1, 0]) });
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+		});
+
 
 		it('adds/removes style for grabbing while modifying', () => {
 			setup();
