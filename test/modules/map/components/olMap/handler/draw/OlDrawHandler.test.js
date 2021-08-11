@@ -15,8 +15,8 @@ import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType } from '../../../../../../../src/modules/map/store/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
-import { LineString } from 'ol/geom';
-import { Feature } from 'ol';
+import { LineString, Point, Polygon } from 'ol/geom';
+import { Collection, Feature, MapBrowserEvent } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
 
 
@@ -554,6 +554,110 @@ describe('OlDrawHandler', () => {
 		});
 	});
 
+	describe('when pointer click', () => {
+		let target;
+		const setupMap = () => {
+			target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			const map = new Map({
+				layers: [
+					new TileLayer({
+						source: new OSM()
+					}),
+					new TileLayer({
+						source: new TileDebug()
+					})],
+				target: target,
+				view: new View({
+					center: [0, 0],
+					zoom: 1
+				})
+			});
+
+			map.renderSync();
+			return map;
+
+		};
+
+		const simulateMapMouseEvent = (map, type, x, y, dragging) => {
+			const eventType = type;
+
+			const event = new Event(eventType);
+			//event.target = map.getViewport().firstChild;
+			event.clientX = x;
+			event.clientY = y;
+			event.pageX = x;
+			event.pageY = y;
+			event.shiftKey = false;
+			event.preventDefault = function () { };
+
+
+			const mapEvent = new MapBrowserEvent(eventType, map, event);
+			mapEvent.coordinate = [x, y];
+			mapEvent.dragging = dragging ? dragging : false;
+			map.dispatchEvent(mapEvent);
+		};
+
+
+		it('deselect feature, if clickposition is disjoint to selected feature', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('Symbol');
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._getActiveDraw(), feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._getActiveDraw(), feature);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 550, 550);
+			expect(classUnderTest._select).toBeDefined();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 600, 0);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 600, 0);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+		});
+
+
+		it('select feature, if clickposition is in anyinteract to selected feature', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('Symbol');
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._drawTypes['Symbol'], feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._drawTypes['Symbol'], feature);
+			expect(classUnderTest._select).toBeDefined();
+
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 250, 250);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+	});
+
 	describe('when using EnvironmentService for snapTolerance', () => {
 
 		it('isTouch() resolves in higher snapTolerance', () => {
@@ -572,6 +676,41 @@ describe('OlDrawHandler', () => {
 
 			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(4);
 			expect(environmentSpy).toHaveBeenCalled();
+		});
+
+	});
+
+	describe('when using util _isInCollection', () => {
+
+		it('finds a item', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const item = { id: 'foo' };
+			const items = [item, { id: 'bar' }, { id: 'baz' }];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeTrue();
+		});
+
+		it('finds NOT a item', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const item = { id: '42' };
+			const items = [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
+		});
+
+
+		it('finds NOT a item in empty collection', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const item = { id: '42' };
+			const items = [];
+			const collection = new Collection(items);
+
+			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
 	});
