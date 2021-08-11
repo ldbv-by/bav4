@@ -15,7 +15,7 @@ import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType } from '../../../../../../../src/modules/map/store/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
-import { LineString, Point, Polygon } from 'ol/geom';
+import { LineString, Point } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
 import { DrawEvent } from 'ol/interaction/Draw';
 
