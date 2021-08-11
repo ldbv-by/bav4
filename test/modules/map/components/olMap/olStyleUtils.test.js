@@ -1,6 +1,9 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
+import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
+
+
 
 
 describe('measureStyleFunction', () => {
@@ -53,6 +56,15 @@ describe('measureStyleFunction', () => {
 	});
 });
 
+describe('nullStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = nullStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+});
+
 describe('baseStyleFunction', () => {
 	it('should return a style', () => {
 		const styles = baseStyleFunction();
@@ -60,6 +72,69 @@ describe('baseStyleFunction', () => {
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 	});
+});
+
+describe('highlightStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = highlightStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a ImageIcon', () => {
+		const styles = highlightStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getImage()).toBeTruthy();
+	});
+});
+
+describe('highlightTemporaryStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = highlightTemporaryStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a ImageIcon', () => {
+		const styles = highlightTemporaryStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getImage()).toBeTruthy();
+	});
+});
+
+describe('markerStyleFunction', () => {
+
+	it('should return a style', () => {
+		const styles = markerStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a default Image', () => {
+		const styles = markerStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+	});
+
+	it('should return a style specified by styleOption', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.5);
+		expect(image.getSrc()).toBe(markerIcon);
+	});
+
 });
 
 describe('modifyStyleFunction', () => {
