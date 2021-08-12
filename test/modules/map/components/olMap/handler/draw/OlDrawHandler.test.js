@@ -5,7 +5,7 @@ import { drawReducer } from '../../../../../../../src/modules/map/store/draw.red
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
-import { DrawStateType, OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
+import { DrawSnapType, DrawStateType, OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -508,6 +508,13 @@ describe('OlDrawHandler', () => {
 
 	});
 
+	const createSnappingFeatureMock = (coordinate, feature) => {
+		return {
+			get: () => [feature],
+			getGeometry: () => new Point(coordinate)
+		};
+	};
+
 	describe('when pointer move', () => {
 		let target;
 		const setupMap = () => {
@@ -572,7 +579,6 @@ describe('OlDrawHandler', () => {
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 		});
 
-
 		it('adds/removes style for grabbing while modifying', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -591,6 +597,91 @@ describe('OlDrawHandler', () => {
 			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
 			expect(mapContainer.classList.contains('grabbing')).toBeFalse();
 		});
+
+		describe('when switching to modify', () => {
+			const geometry = new LineString([[0, 0], [100, 0]]);
+			const feature = new Feature({ geometry: geometry });
+
+			it('pointer is not snapped on sketch', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callThrough();
+				const drawStateSpy = jasmine.createSpy();
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+
+				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			});
+
+			it('pointer is snapped to sketch boundary', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+
+				const drawStateSpy = jasmine.createSpy();
+				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+					callback(snappingFeatureMock, undefined);
+				});
+
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: DrawSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+			});
+
+			it('pointer is snapped to sketch vertex', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateSpy = jasmine.createSpy();
+
+				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
+				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+					callback(snappingFeatureMock, undefined);
+				});
+
+				classUnderTest.activate(map);
+				classUnderTest._onDrawStateChanged(drawStateSpy);
+				classUnderTest._select.getFeatures().push(feature);
+				classUnderTest._modify.setActive(true);
+				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+
+				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: DrawSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+			});
+
+			it('adds/removes style for grabbing while modifying', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const mapContainer = map.getTarget();
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+
+
+				expect(mapContainer.classList.contains('grabbing')).toBeTrue();
+				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
+				expect(mapContainer.classList.contains('grabbing')).toBeFalse();
+			});
+		});
+
+
 	});
 
 	describe('when pointer click', () => {
