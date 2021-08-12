@@ -54,6 +54,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._select = null;
 		this._dragPan = null;
 		this._activeSketch = null;
+		this._activeStyle = null;
 
 		this._storedContent = null;
 
@@ -223,8 +224,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(key, styleOption);
-				const styles = styleFunction(this._activeSketch);
-				this._activeSketch.setStyle(styles);
+				this._activeStyle = styleFunction(this._activeSketch);
+				this._activeSketch.setStyle(this._activeStyle);
 			});
 
 			//draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
@@ -327,10 +328,13 @@ export class OlDrawHandler extends OlLayerHandler {
 				return itemFeature;
 			}
 		};
+		const styleFunction = () => {
+			return this._activeStyle;
+		};
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
+			style: createSelectStyleFunction(styleFunction)
 		};
 		const select = new Select(options);
 
