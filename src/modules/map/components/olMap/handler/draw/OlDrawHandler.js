@@ -9,6 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
+import { setStyle } from '../../../../store/draw.action';
 
 
 export const DrawStateType = {
@@ -184,7 +185,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createDrawTypes(source) {
-		const styleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+		const styleOption = this._getStyleOption();
 		const drawTypes = {
 			'Symbol': new Draw({
 				source: source,
@@ -233,6 +234,17 @@ export class OlDrawHandler extends OlLayerHandler {
 			draw.setActive(false);
 		}
 		return drawTypes;
+	}
+
+	_getStyleOption() {
+		const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
+		if (currentStyleOptions == null) {
+			setStyle(defaultStyleOption);
+			return defaultStyleOption;
+		}
+
+		return currentStyleOptions;
 	}
 
 	_getSelectableFeatures(pixel) {
@@ -307,8 +319,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 	/**
-     * todo: extract Util-method to kind of 'OlMapUtils'-file
-     */
+	 * todo: extract Util-method to kind of 'OlMapUtils'-file
+	 */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;
 		itemCollection.forEach(i => {

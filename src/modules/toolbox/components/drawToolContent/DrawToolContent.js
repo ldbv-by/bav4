@@ -1,9 +1,9 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { setType } from '../../../map/store/draw.action';
+import { setStyle, setType } from '../../../map/store/draw.action';
 import css from './drawToolContent.css';
 
 
@@ -93,7 +93,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType } = state;
+		const { type: preselectedType, style: preselectedStyle } = state;
 		this._setActiveToolByType(preselectedType);
 
 		const toolTemplate = (tool) => {
@@ -122,6 +122,27 @@ export class DrawToolContent extends AbstractToolContent {
             `;
 		};
 
+		const getStyleTemplate = (style) => {
+			const onChange = (e) => {
+				const changedStyle = { ...style, color: e.target.value };
+				setStyle(changedStyle);
+			};
+			if (style) {
+				return html`
+				<div id='style'
+					class="tool-container__style" 
+					title='Styling'>
+					<div class="tool-container__style_color">
+						<label for="style_color">"${translate('toolbox_drawTool_style_color')}"</label>	
+						<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" value=${style.color} @change=${onChange}>						
+					</div>					
+				</div>
+				`;
+			}
+
+			return nothing;
+
+		};
 		return html`
         <style>${css}</style>
             <div class="container">
@@ -145,14 +166,15 @@ export class DrawToolContent extends AbstractToolContent {
                     ${translate('toolbox_drawTool_save')}
                     </button>                                             
                 </div>                
-                <div class="tool-container__info"> 
-                    <span>
-                    ${translate('toolbox_drawTool_info')}
-                    </span>
-                </div>
-            </div>	  
-        </div>
-        `;
+				${getStyleTemplate(preselectedStyle)}
+				<div class="tool-container__info">
+				<span>
+					${translate('toolbox_drawTool_info')}
+				</span>
+                </div >
+            </div >	  
+        </div >
+			`;
 
 	}
 
