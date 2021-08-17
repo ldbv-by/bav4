@@ -4,12 +4,13 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, createSelectStyleFunction, createModifyStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, modifyStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
 import { setStyle, setType } from '../../../../store/draw.action';
+import { unByKey } from 'ol/Observable';
 
 
 export const DrawStateType = {
@@ -173,8 +174,16 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 			olMap.removeInteraction(this._draw);
 		}
+
+		this._unreg(this._listeners);
+		this._unreg(this._registeredObservers);
 		this._draw = null;
 		this._map = null;
+	}
+
+	_unreg(listeners) {
+		unByKey(listeners);
+		listeners = [];
 	}
 
 	_createDrawByType(type, styleOption) {
@@ -328,15 +337,24 @@ export class OlDrawHandler extends OlLayerHandler {
 				return itemFeature;
 			}
 		};
-		const styleFunction = () => {
-			return this._activeStyle;
-		};
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(styleFunction)
+			style: null
 		};
 		const select = new Select(options);
+		select.getFeatures().on('add', (e) => {
+			const feature = e.element;
+			const styleFunction = selectStyleFunction();
+			const styles = styleFunction(feature);
+			e.element.setStyle(styles);
+		});
+		select.getFeatures().on('remove', (e) => {
+			const feature = e.element;
+			const styles = feature.getStyle();
+			styles.pop();
+			feature.setStyle(styles);
+		});
 
 		return select;
 	}
@@ -345,7 +363,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		// TODO: implement deleteContition
 		const options = {
 			features: this._select.getFeatures(),
-			style: createModifyStyleFunction(this._styleService.getStyleFunction(StyleTypes.MARKER))
+			style: modifyStyleFunction
 		};
 
 		const modify = new Modify(options);

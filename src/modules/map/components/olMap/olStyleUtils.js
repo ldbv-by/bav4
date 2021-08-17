@@ -124,12 +124,57 @@ export const createModifyStyleFunction = (styleFunction) => {
 	})];
 
 
-	(feature, resolution) => {
+	return 	(feature, resolution) => {
 
 		const styles = styleFunction(feature, resolution);
 
 
 		return styles.concat([appendableStyle]);
+	};
+};
+
+export const selectStyleFunction = () => {
+	const appendableVertexStyle = new Style({
+		image: new CircleStyle({
+			radius: 7,
+			stroke: new Stroke({
+				color: BLACK_COLOR,
+				width: 1
+			}),
+			fill: new Fill({
+				color: WHITE_COLOR
+			})
+		}),
+		geometry: (feature) => {
+			const getCoordinates = (geometry) => {
+				if (geometry instanceof LineString) {
+					return feature.getGeometry().getCoordinates();
+				}
+
+				if (geometry instanceof Polygon) {
+					return feature.getGeometry().getCoordinates()[0];
+				}
+			};
+
+			const coordinates = getCoordinates(feature.getGeometry());
+			if (coordinates) {
+				return new MultiPoint(coordinates);
+			}
+
+			return feature.getGeometry();
+
+		},
+		zIndex: ZPOINT - 1
+	});
+
+
+	return (feature, resolution) => {
+		const styleFunction = feature.getStyleFunction();
+		if (!styleFunction || !styleFunction(feature, resolution)) {
+			return [appendableVertexStyle];
+		}
+		const styles = styleFunction(feature, resolution);
+		return styles.concat([appendableVertexStyle]);
 	};
 };
 
