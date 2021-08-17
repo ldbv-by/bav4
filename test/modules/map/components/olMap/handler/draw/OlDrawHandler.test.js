@@ -11,7 +11,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
-import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
+import { DragPan, Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType } from '../../../../../../../src/modules/map/store/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
@@ -163,8 +163,8 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				// adds Interaction for select, draw (4x), modify,snap, dragPan
-				expect(map.addInteraction).toHaveBeenCalledTimes(8);
+				// adds Interaction for select, modify,snap, dragPan
+				expect(map.addInteraction).toHaveBeenCalledTimes(4);
 			});
 
 			it('removes Interaction', () => {
@@ -176,8 +176,22 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
-				// removes Interaction for select, draw, modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(8);
+				// removes Interaction for select, modify, snap, dragPan
+				expect(map.removeInteraction).toHaveBeenCalledTimes(4);
+			});
+
+			it('removes Interaction, draw inclusive', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const layerStub = {};
+				map.removeInteraction = jasmine.createSpy();
+				classUnderTest.activate(map);
+				setType('Line');
+				classUnderTest.deactivate(map, layerStub);
+
+				// removes Interaction for select, draw,modify, snap, dragPan
+				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
 			});
 
 			it('adds a select interaction', () => {
@@ -190,22 +204,6 @@ describe('OlDrawHandler', () => {
 
 				expect(classUnderTest._select).toBeInstanceOf(Select);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._select);
-			});
-
-			it('adds a draw interaction', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				map.addInteraction = jasmine.createSpy();
-
-				classUnderTest.activate(map);
-
-				expect(Object.keys(classUnderTest._drawTypes).length).toBe(4);
-				// eslint-disable-next-line no-unused-vars
-				for (const [key, draw] of Object.entries(classUnderTest._drawTypes)) {
-					expect(draw).toBeInstanceOf(Draw);
-					expect(map.addInteraction).toHaveBeenCalledWith(draw);
-				}
 			});
 
 			it('adds a modify interaction', () => {
@@ -244,19 +242,6 @@ describe('OlDrawHandler', () => {
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._dragPan);
 			});
 
-			it('initialize interactions and state objects only once on multiple activates', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				const createDrawSpy = spyOn(classUnderTest, '_createDrawTypes').and.callThrough();
-
-				classUnderTest.activate(map);
-				classUnderTest.activate(map);
-
-				expect(createDrawSpy).toHaveBeenCalledTimes(1);
-			});
-
-
 			it('register observer for type-changes', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -267,9 +252,8 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				setType('Symbol');
 
-				expect(classUnderTest._getActiveDraw()).toBeTruthy();
-				expect(classUnderTest._drawTypes['Symbol'].getActive()).toBeTrue();
-				expect(initSpy).toHaveBeenCalled();
+				expect(classUnderTest._draw).toBeTruthy();
+				expect(initSpy).toHaveBeenCalledWith('Symbol');
 			});
 
 			it('register observer for finish-request', () => {
@@ -319,7 +303,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 
 				expect(initSpy).toHaveBeenCalled();
-				expect(classUnderTest._getActiveDraw()).toBeTruthy();
+				expect(classUnderTest._draw).toBeTruthy();
 			});
 
 			it('starts without a preselected drawType, caused by unknown type', () => {
@@ -332,7 +316,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 
 				expect(initSpy).toHaveBeenCalledWith('somethingWrong');
-				expect(classUnderTest._getActiveDraw()).toBeNull();
+				expect(classUnderTest._draw).toBeNull();
 			});
 
 			it('starts without a preselected drawType', () => {
@@ -344,7 +328,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 
 				expect(initSpy).not.toHaveBeenCalled();
-				expect(classUnderTest._getActiveDraw()).toBeNull();
+				expect(classUnderTest._draw).toBeNull();
 			});
 
 			it('aborts drawing after reset-request', () => {
@@ -355,10 +339,12 @@ describe('OlDrawHandler', () => {
 				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
 
 				classUnderTest.activate(map);
-				const draw = classUnderTest._drawTypes['Line'];
-				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
+
 				setType('Line');
-				expect(classUnderTest._drawTypes['Line'].getActive()).toBeTrue();
+				const draw = classUnderTest._draw;
+				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
+				expect(classUnderTest._draw.getActive()).toBeTrue();
+
 				reset();
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
@@ -373,13 +359,11 @@ describe('OlDrawHandler', () => {
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 
 				classUnderTest.activate(map);
-				const draw = classUnderTest._drawTypes['Symbol'];
-				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
 				setType('Symbol');
-				expect(classUnderTest._drawTypes['Symbol'].getActive()).toBeTrue();
+				const abortSpy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
+				expect(classUnderTest._draw.getActive()).toBeTrue();
 				setType('Line');
-				expect(classUnderTest._drawTypes['Symbol'].getActive()).toBeFalse();
-				expect(initSpy).toHaveBeenCalled();
+				expect(initSpy).toHaveBeenCalledTimes(2);
 				expect(abortSpy).toHaveBeenCalled();
 			});
 
@@ -393,12 +377,10 @@ describe('OlDrawHandler', () => {
 				const warnSpy = spyOn(console, 'warn');
 
 				classUnderTest.activate(map);
-				const draw = classUnderTest._drawTypes['Symbol'];
-				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
 				setType('Symbol');
-				expect(classUnderTest._drawTypes['Symbol'].getActive()).toBeTrue();
-				setType(null);
-				expect(classUnderTest._drawTypes['Symbol'].getActive()).toBeFalse();
+				const draw = classUnderTest._draw;
+				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
+				setType('SomethingWrong');
 				expect(initSpy).toHaveBeenCalled();
 				expect(abortSpy).toHaveBeenCalled();
 				expect(warnSpy).toHaveBeenCalled();
@@ -416,13 +398,11 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-
-				const draw = classUnderTest._drawTypes['Line'];
-				const finishSpy = spyOn(draw, 'finishDrawing').and.callThrough();
 				setType('Line');
-				expect(classUnderTest._drawTypes['Line'].getActive()).toBeTrue();
+				const draw = classUnderTest._draw;
+				const finishSpy = spyOn(draw, 'finishDrawing').and.callThrough();
 
-				simulateDrawEvent('drawstart', classUnderTest._drawTypes['Line'], feature);
+				simulateDrawEvent('drawstart', draw, feature);
 				finish();
 
 				expect(startNewSpy).toHaveBeenCalled();
@@ -439,12 +419,13 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 
 				setType('Line');
-				expect(classUnderTest._drawTypes['Line'].getActive()).toBeTrue();
+				expect(classUnderTest._draw.getActive()).toBeTrue();
 
 				finish();
 
 				expect(startNewSpy).toHaveBeenCalled();
 				expect(classUnderTest._modify.getActive()).toBeTrue();
+				expect(classUnderTest._draw).toBeNull();
 			});
 		});
 
@@ -480,8 +461,9 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
+			setType('Line');
 
-			simulateDrawEvent('drawstart', classUnderTest._drawTypes['Line'], feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 			const id = feature.getId();
 
@@ -497,10 +479,10 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
+			setType('Line');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
-			simulateDrawEvent('drawstart', classUnderTest._drawTypes['Line'], feature);
-			simulateDrawEvent('drawend', classUnderTest._drawTypes['Line'], feature);
-
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 
 			expect(classUnderTest._modify.getActive()).toBeTrue();
 		});
@@ -741,9 +723,9 @@ describe('OlDrawHandler', () => {
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._getActiveDraw(), feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._getActiveDraw(), feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 550, 550);
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
@@ -766,9 +748,9 @@ describe('OlDrawHandler', () => {
 
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._drawTypes['Symbol'], feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._drawTypes['Symbol'], feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			expect(classUnderTest._select).toBeDefined();
 
 

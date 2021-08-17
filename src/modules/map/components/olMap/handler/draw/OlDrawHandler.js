@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
-import { setStyle } from '../../../../store/draw.action';
+import { setStyle, setType } from '../../../../store/draw.action';
 
 
 export const DrawStateType = {
@@ -130,7 +130,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._vectorLayer = createLayer();
 			this._mapContainer = olMap.getTarget();
 			const source = this._vectorLayer.getSource();
-			this._drawTypes = this._createDrawTypes(source);
 			this._select = this._createSelect();
 			this._select.setActive(false);
 			this._modify = this._createModify();
@@ -148,11 +147,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._map.addInteraction(this._snap);
 		this._map.addInteraction(this._dragPan);
 
-		// eslint-disable-next-line no-unused-vars
-		for (const [key, draw] of Object.entries(this._drawTypes)) {
-			//draw.on('change:active', (e) => console.log('change:active changes for ' + key + ' to: ', e));
-			this._map.addInteraction(draw);
-		}
 
 		const preselectDrawType = this._storeService.getStore().getState().draw.type;
 		if (preselectDrawType) {
@@ -176,64 +170,58 @@ export class OlDrawHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		// eslint-disable-next-line no-unused-vars
-		for (const [key, draw] of Object.entries(this._drawTypes)) {
-			olMap.removeInteraction(draw);
+		if (this._draw) {
+			olMap.removeInteraction(this._draw);
 		}
-
+		this._draw = null;
 		this._map = null;
 	}
 
-	_createDrawTypes(source) {
-		const styleOption = this._getStyleOption();
-		const drawTypes = {
-			'Symbol': new Draw({
-				source: source,
-				type: 'Point',
-				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: this._getStyleFunctionByDrawType('Symbol', styleOption)
-			}),
-			'Text': new Draw({
-				source: source,
-				type: 'Point',
-				minPoints: 1,
-				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Text', styleOption))
-			}),
-			'Line': new Draw({
-				source: source,
-				type: 'LineString',
-				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Line', styleOption))
-			}),
-			'Polygon': new Draw({
-				source: source,
-				type: 'Polygon',
-				minPoints: 3,
-				snapTolerance: this._getSnapTolerancePerDevice(),
-				style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Polygon', styleOption))
-			})
-		};
-
-
-		// eslint-disable-next-line no-unused-vars
-		for (const [key, draw] of Object.entries(drawTypes)) {
-			draw.on('drawstart', event => {
-				this._activeSketch = event.feature;
-				this._pointCount = 1;
-				this._isSnapOnLastPoint = false;
-
-				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
-				const styleFunction = this._getStyleFunctionByDrawType(key, styleOption);
-				this._activeStyle = styleFunction(this._activeSketch);
-				this._activeSketch.setStyle(this._activeStyle);
-			});
-
-			//draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
-			draw.on('drawend', event => this._activateModify(event.feature));
-			draw.setActive(false);
+	_createDrawByType(type, styleOption) {
+		if (type == null) {
+			return null;
 		}
-		return drawTypes;
+
+		if (this._vectorLayer == null) {
+			return null;
+		}
+		const source = this._vectorLayer.getSource();
+		const snapTolerance = this._getSnapTolerancePerDevice();
+
+		switch (type) {
+			case 'Symbol':
+				return new Draw({
+					source: source,
+					type: 'Point',
+					snapTolerance: snapTolerance,
+					style: this._getStyleFunctionByDrawType('Symbol', styleOption)
+				});
+			case 'Text':
+				return new Draw({
+					source: source,
+					type: 'Point',
+					minPoints: 1,
+					snapTolerance: snapTolerance,
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Text', styleOption))
+				});
+			case 'Line':
+				return new Draw({
+					source: source,
+					type: 'LineString',
+					snapTolerance: snapTolerance,
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Line', styleOption))
+				});
+			case 'Polygon':
+				return new Draw({
+					source: source,
+					type: 'Polygon',
+					minPoints: 3,
+					snapTolerance: snapTolerance,
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Polygon', styleOption))
+				});
+			default:
+				console.warn('unknown Drawtype: ' + type);
+		}
 	}
 
 	_getStyleOption() {
@@ -287,8 +275,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		drawState.snap = this._getSnapState(pixel);
-		const currentDraw = this._getActiveDraw();
-		if (currentDraw) {
+
+		if (this._draw) {
 			drawState.type = DrawStateType.ACTIVE;
 
 			if (this._activeSketch) {
@@ -375,10 +363,9 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_activateModify(feature) {
-		const currentDraw = this._getActiveDraw();
-
-		if (currentDraw) {
-			currentDraw.setActive(false);
+		if (this._draw) {
+			this._draw.setActive(false);
+			setType(null);
 		}
 
 		this._modify.setActive(true);
@@ -389,23 +376,30 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
-		const setActiveDraw = (type) => {
-			if (type in this._drawTypes) {
-				const draw = this._drawTypes[type];
-				draw.setActive(true);
-			}
-			else {
-				console.warn('Unknown DrawType [' + type + '], deactivate only current draw');
-			}
-		};
-
-		const currentDraw = this._getActiveDraw();
-
-		if (currentDraw) {
-			currentDraw.abortDrawing();
-			currentDraw.setActive(false);
+		const styleOption = this._getStyleOption();
+		if (this._draw) {
+			this._draw.abortDrawing();
+			this._draw.setActive(false);
+			this._map.removeInteraction(this._draw);
 		}
-		setActiveDraw(type);
+		this._draw = this._createDrawByType(type, styleOption);
+		if (this._draw) {
+			this._draw.on('drawstart', event => {
+				this._activeSketch = event.feature;
+				this._pointCount = 1;
+				this._isSnapOnLastPoint = false;
+
+				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
+				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
+				this._activeStyle = styleFunction(this._activeSketch);
+				this._activeSketch.setStyle(this._activeStyle);
+			});
+			this._draw.on('drawend', event => this._activateModify(event.feature));
+
+			this._map.addInteraction(this._draw);
+			this._draw.setActive(true);
+		}
+
 	}
 
 	_remove() {
@@ -413,10 +407,9 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_finish() {
-		const activeDraw = this._getActiveDraw();
-		if (activeDraw && activeDraw.getActive()) {
+		if (this._draw && this._draw.getActive()) {
 			if (this._activeSketch) {
-				activeDraw.finishDrawing();
+				this._draw.finishDrawing();
 			}
 			else {
 				this._activateModify(null);
@@ -425,11 +418,22 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_startNew() {
-		const activeDraw = this._getActiveDraw();
-		if (activeDraw) {
-			activeDraw.abortDrawing();
+		if (this._draw) {
+			this._draw.abortDrawing();
 			this._select.getFeatures().clear();
 			this._modify.setActive(false);
+
+			if (this._draw) {
+				const currenType = this._storeService.getStore().getState().draw.type;
+				this._init(currenType);
+			}
+		}
+	}
+
+	_updateStyle() {
+		if (this._draw) {
+			const currenType = this._storeService.getStore().getState().draw.type;
+			this._init(currenType);
 		}
 	}
 
@@ -440,6 +444,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_register(store) {
 		return [
 			observe(store, state => state.draw.type, (type) => this._init(type)),
+			observe(store, state => state.draw.style, () => this._updateStyle()),
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._startNew()),
 			observe(store, state => state.draw.remove, () => this._remove())];
@@ -450,17 +455,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._drawState = value;
 			this._drawStateChangedListeners.forEach(l => l(value));
 		}
-	}
-
-	_getActiveDraw() {
-		// eslint-disable-next-line no-unused-vars
-		for (const [key, draw] of Object.entries(this._drawTypes)) {
-			if (draw.getActive()) {
-				return draw;
-			}
-		}
-
-		return null;
 	}
 
 	_getSnapState(pixel) {

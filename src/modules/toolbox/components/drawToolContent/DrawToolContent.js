@@ -18,7 +18,6 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		this._activeTool = false;
 		this._tools = this._buildTools();
 	}
 
@@ -55,40 +54,24 @@ export class DrawToolContent extends AbstractToolContent {
 		}];
 	}
 
-	_setActiveTool(tool) {
-		if (this._activeTool) {
-			if (this._activeTool !== tool) {
-				this._activeTool.active = false;
-				this._showActive();
-			}
-		}
-		this._activeTool = tool;
+	_setActiveToolByType(type) {
+		this._tools.forEach(tool => tool.active = tool.name === type);
 		this._showActive();
 	}
 
-	_setActiveToolByType(type) {
+	_showActive() {
 		this._tools.forEach(tool => {
-			if (tool.name === type) {
-				if (this._activeTool !== tool) {
-					tool.active = true;
-					this._setActiveTool(tool);
+			const id = tool.name;
+			const element = this._root.querySelector('#' + id);
+			if (element) {
+				if (tool.active) {
+					element.classList.add('is-active');
+				}
+				else {
+					element.classList.remove('is-active');
 				}
 			}
 		});
-	}
-
-	_showActive() {
-		const id = this._activeTool.name;
-		const element = this._root.querySelector('#' + id);
-		if (element) {
-			if (this._activeTool.active) {
-				element.classList.add('is-active');
-			}
-			else {
-				element.classList.remove('is-active');
-			}
-		}
-
 	}
 
 	createView(state) {
@@ -106,7 +89,7 @@ export class DrawToolContent extends AbstractToolContent {
 				else {
 					setType(null);
 				}
-				this._setActiveTool(tool);
+				this._showActive();
 			};
 
 			return html`
