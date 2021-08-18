@@ -29,6 +29,10 @@ export const DrawSnapType = {
 	FACE: 'face'
 };
 
+export const MAX_SELECTION_SIZE = 1;
+
+const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+
 /**
  * Handler for draw-interaction with the map
  *
@@ -109,7 +113,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				selectableFeatures.forEach(f => {
 					const hasFeature = this._isInCollection(f, this._select.getFeatures());
 					if (!hasFeature) {
-						this._select.getFeatures().push(f);
+						this._setSelected(f);
 					}
 				});
 			}
@@ -234,7 +238,6 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
 		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
 		if (currentStyleOptions == null) {
 			setStyle(defaultStyleOption);
@@ -351,9 +354,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		});
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
-			const styles = feature.getStyle();
-			styles.pop();
-			feature.setStyle(styles);
+			if (feature) {
+				const styles = feature.getStyle();
+				styles.pop();
+				feature.setStyle(styles);
+			}
 		});
 
 		return select;
@@ -388,9 +393,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._modify.setActive(true);
 		this._modifyActivated = true;
-		if (feature) {
-			this._select.getFeatures().push(feature);
-		}
+		this._setSelected(feature);
 	}
 
 	_init(type) {
@@ -457,6 +460,41 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_onDrawStateChanged(listener) {
 		this._drawStateChangedListeners.push(listener);
+	}
+
+	_setSelected(feature) {
+		if (feature) {
+			const selectionSize = this._select.getFeatures().getLength();
+			if (MAX_SELECTION_SIZE <= selectionSize) {
+				this._select.getFeatures().clear();
+			}
+			this._select.getFeatures().push(feature);
+			const currentStyleOption = this._getStyleOption();
+			const styles = feature.getStyle();
+			const style = styles[0];
+			const stroke = style.getStroke();
+			const image = style.getImage();
+
+			const getColor = () => {
+				const componentToHex = (c) => {
+					const hex = c.toString(16);
+					return hex.length === 1 ? '0' + hex : hex;
+				};
+				const rgbToHex = (rgb) => {
+					return '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+				};
+				if (stroke) {
+					return rgbToHex(stroke.getColor());
+				}
+				if (image && image.getColor()) {
+					return rgbToHex(image.getColor());
+				}
+				return null;
+			};
+
+			const color = getColor() ? getColor() : currentStyleOption.color;
+			setStyle({ ...currentStyleOption, color: color });
+		}
 	}
 
 	_register(store) {
