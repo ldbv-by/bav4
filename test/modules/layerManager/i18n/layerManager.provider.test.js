@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/map/i18n/layerManager.provider';
+import { provide } from '../../../../src/modules/layerManager/i18n/layerManager.provider';
 
 
 describe('i18n for layer-manager', () => {

@@ -1,10 +1,10 @@
-import { LayerManager } from '../../../../../src/modules/map/components/layerManager/LayerManager';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
-import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
-import { modifyLayer } from '../../../../../src/store/layers/layers.action';
+import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
+import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
+import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
+import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
+import { modifyLayer } from '../../../../src/store/layers/layers.action';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -149,9 +149,9 @@ describe('LayerManager', () => {
 	describe('when layer items dragged', () => {
 		let element;
 		beforeEach(async () => {
-			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex: 0 };
-			const layer1 = { ...defaultLayerProperties, id: 'id1', label: '', visible: true, zIndex: 1 };
-			const layer2 = { ...defaultLayerProperties, id: 'id2', label: '', visible: true, zIndex: 2 };
+			const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'Label 0', visible: true, zIndex: 0 };
+			const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'Label 1', visible: true, zIndex: 1 };
+			const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'Label 2', visible: true, zIndex: 2 };
 			const state = {
 				layers: {
 					active: [layer0, layer1, layer2],
@@ -221,12 +221,11 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
-
+			const activePlaceholders = [...element.shadowRoot.querySelectorAll('.placeholder-active')];
 			expect(placeholders.length).toBe(4);
-			expect(placeholders[0].innerText).toBe('1');
-			expect(placeholders[1].innerText).toBe('1');
-			expect(placeholders[2].innerText).toBe('2');
-			expect(placeholders[3].innerText).toBe('3');
+			expect(activePlaceholders.length).toBe(2);
+			expect(activePlaceholders[0].innerText).toBe('2');
+			expect(activePlaceholders[1].innerText).toBe('3');
 		});
 
 		it('on dragstart should update placeholder-content for dragging 2th layer', () => {
@@ -238,12 +237,11 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
-
+			const activePlaceholders = [...element.shadowRoot.querySelectorAll('.placeholder-active')];
 			expect(placeholders.length).toBe(4);
-			expect(placeholders[0].innerText).toBe('1');
-			expect(placeholders[1].innerText).toBe('2');
-			expect(placeholders[2].innerText).toBe('2');
-			expect(placeholders[3].innerText).toBe('3');
+			expect(activePlaceholders.length).toBe(2);
+			expect(activePlaceholders[0].innerText).toBe('1');
+			expect(activePlaceholders[1].innerText).toBe('3');
 		});
 
 		it('on dragstart should update placeholder-content for dragging 3th layer', () => {
@@ -255,12 +253,11 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			const placeholders = [...element.shadowRoot.querySelectorAll('.placeholder')];
-
+			const activePlaceholders = [...element.shadowRoot.querySelectorAll('.placeholder-active')];
 			expect(placeholders.length).toBe(4);
-			expect(placeholders[0].innerText).toBe('1');
-			expect(placeholders[1].innerText).toBe('2');
-			expect(placeholders[2].innerText).toBe('3');
-			expect(placeholders[3].innerText).toBe('3');
+			expect(activePlaceholders.length).toBe(2);
+			expect(activePlaceholders[0].innerText).toBe('1');
+			expect(activePlaceholders[1].innerText).toBe('2');
 		});
 
 		it('on dragEnter of neighbouring placeholder no style changed', () => {
