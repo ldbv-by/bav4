@@ -1,0 +1,11 @@
+#
+# Docs: https://github.com/browserslist/browserslist
+#
+
+Firefox ESR
+last 1 FirefoxAndroid versions
+last 1 Chrome versions
+last 1 ChromeAndroid versions
+### last 1 iOS versions
+### last 1 Safari versions
+last 1 Edge versions

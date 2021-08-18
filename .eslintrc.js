@@ -8,10 +8,10 @@ module.exports = {
 	},
 	extends: [
 		'eslint:recommended',
-		'plugin:import/errors'
+		'plugin:import/errors',
+		'plugin:ecmascript-compat/recommended'
 	],
 	parserOptions: {
-		ecmaVersion: 11,
 		sourceType: 'module'
 	},
 	rules: {
