@@ -1,3 +1,4 @@
+import './i18n';
 import { LayerManager } from './components/LayerManager';
 import { LayerItem } from './components/LayerItem';
 if (!window.customElements.get(LayerItem.tag)) {
@@ -6,3 +7,4 @@ if (!window.customElements.get(LayerItem.tag)) {
 if (!window.customElements.get(LayerManager.tag)) {
 	window.customElements.define(LayerManager.tag, LayerManager);
 }
+
