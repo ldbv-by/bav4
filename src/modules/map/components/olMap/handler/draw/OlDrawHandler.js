@@ -60,7 +60,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._select = null;
 		this._dragPan = null;
 		this._activeSketch = null;
-		this._activeStyle = null;
 
 		this._storedContent = null;
 
@@ -402,7 +401,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._modify.setActive(true);
 		this._modifyActivated = true;
+
 		this._setSelected(feature);
+		this._activeSketch = null;
 	}
 
 	_init(type) {
@@ -422,8 +423,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
-				this._activeStyle = styleFunction(this._activeSketch);
-				this._activeSketch.setStyle(this._activeStyle);
+				const styles = styleFunction(this._activeSketch);
+				this._activeSketch.setStyle(styles);
 			});
 			this._draw.on('drawend', event => this._activateModify(event.feature));
 
