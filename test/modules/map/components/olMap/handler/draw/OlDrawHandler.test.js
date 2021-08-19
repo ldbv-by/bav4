@@ -468,7 +468,7 @@ describe('OlDrawHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/draw_[0-9]{13}/g);
+			expect(id).toMatch(/draw_Line_[0-9]{13}/g);
 		});
 
 		it('switches to modify after drawend', () => {
