@@ -32,14 +32,14 @@
     "karma-spec-reporter": "^0.0.32",
     "karma-webkit-launcher": "^1.0.1",
     "karma-webpack": "^5.0.0",
-    "playwright": "^1.13.1",
+    "playwright": "^1.14.0",
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.2.1",
     "to-string-loader": "^1.1.6",
     "webpack": "^5.50.0",
     "webpack-bundle-analyzer": "^4.4.2",
-    "webpack-cli": "^4.7.2",
+    "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
