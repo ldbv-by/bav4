@@ -116,7 +116,7 @@ export class DrawToolContent extends AbstractToolContent {
 					class="tool-container__style" 
 					title='Styling'>
 					<div class="tool-container__style_color">
-						<label for="style_color">"${translate('toolbox_drawTool_style_color')}"</label>	
+						<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 						<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChange}>						
 					</div>					
 				</div>
