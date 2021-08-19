@@ -141,7 +141,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
-			// DEBUG:
 			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
@@ -323,6 +322,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	// eslint-disable-next-line no-unused-vars
 	_updateDrawMode(state) {
 		// DEBUG:console.log(state.type ? '' + state.type : 'null');
+		// TODO: implement here any further notifications like tooltips
 	}
 
 
@@ -373,7 +373,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		// TODO: implement deleteContition
+		// TODO: implement deleteCondition
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction
