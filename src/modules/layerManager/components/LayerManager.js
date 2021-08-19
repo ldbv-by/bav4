@@ -151,7 +151,7 @@ export class LayerManager extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
-				<div class='title'>${translate('map_layerManager_title')}</div> 
+				<div class='title'>${translate('layerManager_title')}</div> 
 				<ul class='layers'>
                     ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex + '_' + layerItem.id, (layerItem, index) => html`
 					<li draggable=${layerItem.isDraggable} 
