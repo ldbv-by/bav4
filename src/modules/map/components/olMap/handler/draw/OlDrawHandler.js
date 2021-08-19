@@ -72,7 +72,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
 		this._lastDrawStateType = null;
-		this._measureState = {
+		this._drawState = {
 			type: null,
 			snap: null,
 			coordinate: null,
@@ -106,7 +106,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			if (this._drawState.type === DrawStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
 
-				this._setDrawState({ ...this._measureState, type: DrawStateType.SELECT, snap: null });
+				this._setDrawState({ ...this._drawState, type: DrawStateType.SELECT, snap: null });
 			}
 
 			if ([DrawStateType.MODIFY, DrawStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
@@ -266,6 +266,15 @@ export class OlDrawHandler extends OlLayerHandler {
 		return features;
 	}
 
+	_getStyleFunctionByFeatureId(featureId) {
+		const type_index = 1;
+		const seperator = '_';
+		const parts = featureId.split(seperator);
+		const type = parts[type_index];
+
+		return this._getStyleFunctionByDrawType(type, this._getStyleOption());
+	}
+
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		switch (drawType) {
 			case 'Symbol':
@@ -404,13 +413,14 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._map.removeInteraction(this._draw);
 		}
 		this._draw = this._createDrawByType(type, styleOption);
+		this._select.getFeatures().clear();
 		if (this._draw) {
 			this._draw.on('drawstart', event => {
 				this._activeSketch = event.feature;
 				this._pointCount = 1;
 				this._isSnapOnLastPoint = false;
 
-				this._activeSketch.setId(DRAW_TOOL_ID + '_' + new Date().getTime());
+				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
 				this._activeStyle = styleFunction(this._activeSketch);
 				this._activeSketch.setStyle(this._activeStyle);
@@ -452,9 +462,20 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateStyle() {
-		if (this._draw) {
+		if (this._drawState.type === DrawStateType.ACTIVE || this._drawState.type === DrawStateType.SELECT) {
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
+		}
+		if (this._drawState.type === DrawStateType.MODIFY) {
+			const feature = this._select.getFeatures().item(0);
+			const styleFunction = this._getStyleFunctionByFeatureId(feature.getId());
+			const newStyles = styleFunction(feature);
+
+			const currentStyles = feature.getStyle();
+			if (currentStyles.length > 1) {
+				currentStyles[0] = newStyles[0];
+			}
+			feature.setStyle(currentStyles);
 		}
 	}
 
