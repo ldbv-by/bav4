@@ -398,10 +398,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_activateModify(feature) {
-		if (this._draw) {
-			this._draw.setActive(false);
-			setType(null);
-		}
+		this._draw.setActive(false);
+		setType(null);
 
 		this._modify.setActive(true);
 		this._modifyActivated = true;
