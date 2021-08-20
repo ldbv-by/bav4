@@ -17,7 +17,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
-import { DrawEvent } from 'ol/interaction/Draw';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
 
 
 
@@ -429,6 +429,25 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
+		describe('_createDrawByType', () => {
+			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+			it('returns a draw-interaction for \'Symbol\'', async () => {
+
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				classUnderTest.activate(map);
+
+				expect(classUnderTest._createDrawByType('Symbol', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('Text', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('Line', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('Polygon', defaultStyleOption)).toEqual(jasmine.any(Draw));
+
+				classUnderTest._vectorLayer = null;
+				expect(classUnderTest._createDrawByType('Any', defaultStyleOption)).toBeNull();
+
+			});
+		});
 	});
 
 	describe('when draw a line', () => {
