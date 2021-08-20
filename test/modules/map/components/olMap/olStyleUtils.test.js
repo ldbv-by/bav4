@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -147,6 +147,36 @@ describe('modifyStyleFunction', () => {
 	});
 });
 
+describe('selectStyleFunction', () => {
+
+	it('should create a stylefunction', () => {
+
+		const styleFunction = selectStyleFunction();
+
+		expect(styleFunction).toBeDefined();
+	});
+
+	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		feature.setStyle(baseStyleFunction);
+		const styleFunction = selectStyleFunction();
+		const styles = styleFunction(feature);
+
+		const vertexStyle = styles[1];
+		const geometryFunction = vertexStyle.getGeometryFunction();
+
+
+		const lineFeature = feature;
+		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
+		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+
+		expect(geometryFunction(lineFeature)).toBeTruthy();
+		expect(geometryFunction(pointFeature)).toBeTruthy();
+		expect(geometryFunction(polygonFeature)).toBeTruthy();
+	});
+});
+
 describe('createSelectionStyleFunction', () => {
 
 	it('should create a stylefunction', () => {
@@ -218,5 +248,17 @@ describe('createSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+	});
+});
+
+describe('rgbToHex', () => {
+	it('should convert a rgb-array to hex-representation', () => {
+		expect(rgbToHex(null)).toBeNull();
+		expect(rgbToHex('foo')).toBeNull();
+		expect(rgbToHex([-1, -1, -1])).toBeNull();
+		expect(rgbToHex([0, 0, 0])).toBe('#000000');
+		expect(rgbToHex([186, 218, 85])).toBe('#bada55');
+		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
+		expect(rgbToHex([256, 256, 256])).toBeNull();
 	});
 });

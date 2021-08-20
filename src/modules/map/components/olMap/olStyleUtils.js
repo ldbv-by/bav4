@@ -44,14 +44,15 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	const markerSrc = styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon;
 	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
 	const markerScale = styleOption.scale ? styleOption.scale : 1;
-	return [new Style({	image: new Icon({
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: markerSrc,
-		color: markerColor,
-		scale: markerScale
-	})
+	return [new Style({
+		image: new Icon({
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: markerSrc,
+			color: markerColor,
+			scale: markerScale
+		})
 	})];
 };
 
@@ -108,29 +109,6 @@ export const modifyStyleFunction = () => {
 			})
 		})
 	})];
-};
-export const createModifyStyleFunction = (styleFunction) => {
-	const appendableStyle = [new Style({
-		image: new CircleStyle({
-			radius: 8,
-			stroke: new Stroke({
-				color: RED_COLOR,
-				width: 1
-			}),
-			fill: new Fill({
-				color: WHITE_COLOR
-			})
-		})
-	})];
-
-
-	return 	(feature, resolution) => {
-
-		const styles = styleFunction(feature, resolution);
-
-
-		return styles.concat([appendableStyle]);
-	};
 };
 
 export const selectStyleFunction = () => {
@@ -260,4 +238,30 @@ export const createSketchStyleFunction = (styleFunction) => {
 
 		return styles;
 	};
+};
+
+/**
+ * Converts an array of numeric RGB-values to a the hexadecimal String-Represenation or null.
+ * @param {Array<Number>} rgb
+ * @returns {String|null}
+ */
+export const rgbToHex = (rgb) => {
+	const rgb_min = 0;
+	const rgb_max = 255;
+	const rgb_component_count = 3;
+
+	if (!Array.isArray(rgb)) {
+		return null;
+	}
+
+	if (rgb.filter(c => rgb_min <= c && c <= rgb_max).length < rgb_component_count) {
+		return null;
+	}
+
+	const componentToHex = (c) => {
+		const hex = c.toString(16);
+		return hex.length === 1 ? '0' + hex : hex;
+	};
+
+	return '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
 };

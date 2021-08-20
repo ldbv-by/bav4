@@ -12,7 +12,7 @@ import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
 import { DragPan, Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType } from '../../../../../../../src/modules/map/store/draw.action';
+import { finish, reset, remove, setType, setStyle } from '../../../../../../../src/modules/map/store/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point } from 'ol/geom';
@@ -256,6 +256,20 @@ describe('OlDrawHandler', () => {
 				expect(initSpy).toHaveBeenCalledWith('Symbol');
 			});
 
+			it('register observer for style-changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const styleSpy = spyOn(classUnderTest, '_updateStyle').and.callThrough();
+
+				classUnderTest.activate(map);
+				setStyle(null);
+
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
+
+
 			it('register observer for finish-request', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -427,6 +441,49 @@ describe('OlDrawHandler', () => {
 				expect(classUnderTest._modify.getActive()).toBeTrue();
 				expect(classUnderTest._draw).toBeNull();
 			});
+
+			it('re-inits the drawing with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const drawStateFake = {
+					type: DrawStateType.ACTIVE
+				};
+
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('Line');
+
+				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
+				setStyle(style);
+
+				expect(initSpy).toHaveBeenCalledWith('Line');
+				expect(initSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates selected feature (modify) with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const feature = new Feature({ geometry: new Point([0, 0]) });
+				feature.setId('draw_Symbol_1234');
+				feature.setStyle([new Style(), new Style()]);
+				const drawStateFake = {
+					type: DrawStateType.MODIFY
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
+				setType('Symbol');
+
+				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 
 		describe('_createDrawByType', () => {
@@ -593,7 +650,7 @@ describe('OlDrawHandler', () => {
 			map.dispatchEvent(mapEvent);
 		};
 
-		it('change measureState, when sketch is changing', () => {
+		it('change drawState, when sketch is changing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();

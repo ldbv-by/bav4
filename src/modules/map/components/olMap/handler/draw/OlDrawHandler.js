@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, modifyStyleFunction, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, modifyStyleFunction, rgbToHex, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
@@ -500,13 +500,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			const image = style.getImage();
 
 			const getColor = () => {
-				const componentToHex = (c) => {
-					const hex = c.toString(16);
-					return hex.length === 1 ? '0' + hex : hex;
-				};
-				const rgbToHex = (rgb) => {
-					return '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
-				};
 				if (stroke) {
 					return rgbToHex(stroke.getColor());
 				}
