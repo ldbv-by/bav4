@@ -268,6 +268,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		const type_index = 1;
 		const seperator = '_';
 		const parts = featureId.split(seperator);
+
+		if (parts.length <= type_index) {
+			return null;
+		}
 		const type = parts[type_index];
 
 		return this._getStyleFunctionByDrawType(type, this._getStyleOption());

@@ -448,6 +448,38 @@ describe('OlDrawHandler', () => {
 
 			});
 		});
+
+		describe('_getStyleFunctionByFeatureId', () => {
+
+			it('returns a styleFunction for a valid featureId', async () => {
+				const styleFunctionMock = () => { };
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType').and.callFake(() => styleFunctionMock);
+
+
+				const styleFunction = classUnderTest._getStyleFunctionByFeatureId('foo_bar_12345');
+
+				expect(styleFunction).toBe(styleFunctionMock);
+				expect(typeSpy).toHaveBeenCalledWith('bar', jasmine.any(Object));
+			});
+
+			it('returns null for a INVALID featureId', async () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType');
+
+
+				const styleFunction = classUnderTest._getStyleFunctionByFeatureId('foo');
+
+				expect(styleFunction).toBeNull();
+				expect(typeSpy).not.toHaveBeenCalled();
+			});
+
+
+		});
+
+
 	});
 
 	describe('when draw a line', () => {
