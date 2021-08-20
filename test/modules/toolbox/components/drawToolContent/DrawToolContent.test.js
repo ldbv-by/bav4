@@ -3,6 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { setStyle } from '../../../../../src/modules/map/store/draw.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
@@ -11,24 +12,24 @@ describe('DrawToolContent', () => {
 	const windowMock = {
 		matchMedia() { }
 	};
-	const setup = async (config = {}) => {
 
-		const { embed = false } = config;
-
+	const drawDefaultState = {
+		active: false,
+		style: null,
+		mode: null,
+		type: null,
+		reset: null,
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
+	};
+	const setup = async (drawState = drawDefaultState) => {
 		const state = {
-			draw: {
-				active: false,
-				mode: null,
-				type: null,
-				reset: null,
-				fileSaveResult: { adminId: 'init', fileId: 'init' }
-			}
+			draw: drawState
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed,
+				isEmbedded: () => false,
 				getWindow: () => windowMock
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
@@ -136,5 +137,32 @@ describe('DrawToolContent', () => {
 			expect(spy).toHaveBeenCalledTimes(2);
 			expect(toolButton.classList.contains('is-active')).toBeFalse();
 		});
+
+		it('displays style form, when style is available', async () => {
+			const style = { symbolSrc: null, color: '#F00BA3', scale: 0.5 };
+			const element = await setup();
+
+
+			expect(element.shadowRoot.querySelector('#style')).toBeNull();
+			setStyle(style);
+			expect(element.shadowRoot.querySelector('#style')).toBeTruthy();
+		});
+
+		it('sets the style, after color changes in color-input', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 0.5 };
+			const newColor = '#ffffff';
+			const element = await setup({ ...drawDefaultState, style });
+
+			const colorInput = element.shadowRoot.querySelector('#style_color');
+			expect(colorInput).toBeTruthy();
+			expect(colorInput.value).toBe('#f00ba3');
+
+			colorInput.value = newColor;
+			colorInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.color).toBe(newColor);
+		});
+
+
 	});
 });
