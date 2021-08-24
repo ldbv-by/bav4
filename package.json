@@ -14,13 +14,13 @@
     "es-check": "^6.0.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-import": "^2.24.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
     "fucazu-minami": "^1.1.7",
     "html-webpack-plugin": "^5.3.2",
-    "jasmine": "^3.8.0",
+    "jasmine": "^3.9.0",
     "jsdoc": "^3.6.7",
     "karma": "^6.3.4",
     "karma-chrome-launcher": "^3.1.0",
@@ -38,10 +38,10 @@
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.2.1",
     "to-string-loader": "^1.1.6",
-    "webpack": "^5.50.0",
+    "webpack": "^5.51.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.0.0"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",
