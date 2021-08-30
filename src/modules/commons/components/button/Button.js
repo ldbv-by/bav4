@@ -1,7 +1,7 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../../BaElement';
 import css from './button.css';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 /**
  * Clickable icon.

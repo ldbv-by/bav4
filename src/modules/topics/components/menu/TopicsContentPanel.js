@@ -1,11 +1,11 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
 import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../store/topicsContentPanel.action';
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+import { unsafeSVG } from 'lit/directives/unsafe-svg';
 
 
 

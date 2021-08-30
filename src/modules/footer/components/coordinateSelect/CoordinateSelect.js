@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
 import css from './coordinateSelect.css';

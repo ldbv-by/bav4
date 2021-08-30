@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';

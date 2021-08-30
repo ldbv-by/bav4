@@ -1,6 +1,6 @@
-import { html } from 'lit-html';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { repeat } from 'lit-html/directives/repeat.js';
+import { html } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { setType } from '../../../map/store/draw.action';

@@ -1,7 +1,7 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../BaElement';
 import { $injector } from '../../../injection';
-import { repeat } from 'lit-html/directives/repeat.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { modifyLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 

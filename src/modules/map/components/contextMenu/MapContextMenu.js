@@ -1,5 +1,5 @@
-import { html, nothing } from 'lit-html';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { html, nothing } from 'lit';
+import { styleMap } from 'lit/directives/style-map.js';
 import { BaElement } from '../../../BaElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';

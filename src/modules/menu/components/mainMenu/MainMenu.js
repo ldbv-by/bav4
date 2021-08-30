@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { BaElement, renderTagOf } from '../../../BaElement';
 import css from './mainMenu.css';
 import { toggle } from '../../store/mainMenu.action';

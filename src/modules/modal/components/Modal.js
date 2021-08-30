@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { BaElement } from '../../BaElement';
 import { closeModal } from '../store/modal.action';
 import css from './modal.css';

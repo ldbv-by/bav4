@@ -1,5 +1,5 @@
 import { append, BaElement, renderTagOf } from '../../src/modules/BaElement';
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { TestUtils } from '../test-utils.js';
 
 

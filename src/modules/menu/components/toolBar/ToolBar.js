@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../../BaElement';
 import css from './toolBar.css';
 import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';

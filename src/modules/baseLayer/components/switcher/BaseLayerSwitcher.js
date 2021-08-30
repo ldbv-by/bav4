@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { $injector } from '../../../../injection';
 import { BaElement } from '../../../BaElement';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';

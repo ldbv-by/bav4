@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../BaElement';
 import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';

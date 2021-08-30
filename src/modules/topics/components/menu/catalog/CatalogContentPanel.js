@@ -1,5 +1,5 @@
-import { html, nothing } from 'lit-html';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+import { html, nothing } from 'lit';
+import { unsafeSVG } from 'lit/directives/unsafe-svg';
 import { $injector } from '../../../../../injection';
 import { renderTagOf } from '../../../../BaElement';
 import { Spinner } from '../../../../commons/components/spinner/Spinner';

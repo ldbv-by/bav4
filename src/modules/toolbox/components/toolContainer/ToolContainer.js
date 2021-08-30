@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';

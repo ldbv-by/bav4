@@ -1,9 +1,9 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { BaElement } from '../../../BaElement';
 import css from './rotationButton.css';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 /**
  * Button that indicates a rotation of the map and resets it on press.

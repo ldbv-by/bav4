@@ -1,6 +1,6 @@
-import { html, nothing } from 'lit-html';
+import { html, nothing } from 'lit';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 import css from './catalogNode.css';
 
 /**

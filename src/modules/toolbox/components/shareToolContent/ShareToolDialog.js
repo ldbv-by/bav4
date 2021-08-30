@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';

@@ -1,8 +1,8 @@
-import { html } from 'lit-html';
+import { html } from 'lit';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './geolocationButton.css';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { activate, deactivate } from '../../store/geolocation.action';
 
 /**

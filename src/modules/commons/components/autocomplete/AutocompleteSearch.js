@@ -1,6 +1,6 @@
-import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { repeat } from 'lit-html/directives/repeat.js';
+import { html } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html';
+import { repeat } from 'lit/directives/repeat.js';
 import { BaElement } from '../../../BaElement';
 import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';

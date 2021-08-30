@@ -1,6 +1,6 @@
-import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { html } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
@@ -70,7 +70,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
 						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyDistanceToClipboard}} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyDistanceToClipboard}>
 							</ba-icon>
 						</span>											
 					</div>														
@@ -81,7 +81,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
 						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyAreaToClipboard}>
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyAreaToClipboard}>
 							</ba-icon>
 						</ba-icon>
 						</span>			
