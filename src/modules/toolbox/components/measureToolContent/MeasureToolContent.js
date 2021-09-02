@@ -70,7 +70,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
 						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyDistanceToClipboard}} >
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyDistanceToClipboard}>
 							</ba-icon>
 						</span>											
 					</div>														
@@ -81,7 +81,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
 						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
-							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5} @click=${onCopyAreaToClipboard}>
+							<ba-icon class='close' icon='${clipboardIcon}' title=${translate('map_contextMenuContent_copy_icon')} size=1.5 @click=${onCopyAreaToClipboard}>
 							</ba-icon>
 						</ba-icon>
 						</span>			
