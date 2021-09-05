@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
-import { $injector } from '../../../../injection';
+import { BaElement } from '../../BaElement';
+import { $injector } from '../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer } from './../../../../store/layers/layers.action';
+import { modifyLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 
 /**
- * Element to render the curent layers state and its possible actions
- * (reorder,remove, change visibility and opacity)
+ * Renders a list of layers representing their order on a map and provides
+ * actions like reordering, removing and changing visibility and opacity
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -151,7 +151,7 @@ export class LayerManager extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
-				<div class='title'>${translate('map_layerManager_title')}</div> 
+				<div class='title'>${translate('layerManager_title')}</div> 
 				<ul class='layers'>
                     ${repeat(this._draggableItems, (layerItem) => layerItem.listIndex + '_' + layerItem.id, (layerItem, index) => html`
 					<li draggable=${layerItem.isDraggable} 

@@ -1,17 +1,16 @@
 import { html } from 'lit-html';
 import css from './layerItem.css';
-import { $injector } from '../../../../injection';
+import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { modifyLayer, removeLayer } from './../../../../store/layers/layers.action';
+import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
-import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
 /**
- * private Element of LayerManager to render a layer state and its possible actions
- * (remove,change visibility and opacity)
+ * Child element of the LayerManager. Represents one layer and its state.
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -63,7 +62,7 @@ export class LayerItem extends AbstractContentPanel {
 		const currentLabel = this._layer.label === '' ? this._layer.id : this._layer.label;
 
 		const getCollapseTitle = () => {
-			return this._layer.collapsed ? translate('map_layerManager_expand') : translate('map_layerManager_collapse');
+			return this._layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
 
 		const changeOpacity = (event) => {
@@ -106,7 +105,7 @@ export class LayerItem extends AbstractContentPanel {
 				<input  
 					type="range" 
 					min="1" 
-					title=${translate('map_layerManager_opacity')}
+					title=${translate('layerManager_opacity')}
 					max="100" 
 					value=${this._layer.opacity * 100} 
 					class='opacity-slider' 
@@ -118,7 +117,7 @@ export class LayerItem extends AbstractContentPanel {
 
 
 		const getVisibilityTitle = () => {
-			return this._layer.label + ' - ' + translate('map_layerManager_change_visibility');
+			return this._layer.label + ' - ' + translate('layerManager_change_visibility');
 		};
 
 		const iconCollapseClass = {
@@ -144,16 +143,16 @@ export class LayerItem extends AbstractContentPanel {
             <div class='collapse-content ba-list-item  ${classMap(bodyCollapseClass)}'>                                                                                                                                                                
 					${getSlider()}   
 					<div>                                                                                              
-						<ba-icon id='increase' icon='${arrowUpSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('map_layerManager_move_up')} @click=${increaseIndex}></ba-icon>                    				
+						<ba-icon id='increase' icon='${arrowUpSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('layerManager_move_up')} @click=${increaseIndex}></ba-icon>                    				
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('map_layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
+						<ba-icon id='decrease' icon='${arrowDownSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='info' icon='${infoSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 ></ba-icon>                 
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='remove' icon='${removeSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('map_layerManager_remove')} @click=${remove}></ba-icon>               
+						<ba-icon id='remove' icon='${removeSvg}' color=var(--primary-color) color_hover=var(--text3) size=2.6 title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               
 					</div>                                                                                              
             </div>
         </div>`;
