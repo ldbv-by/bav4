@@ -37,10 +37,10 @@
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.2.1",
     "to-string-loader": "^1.1.6",
-    "webpack": "^5.51.1",
+    "webpack": "^5.51.2",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.0.0"
+    "webpack-dev-server": "^4.1.0"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",
