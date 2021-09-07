@@ -1,9 +1,8 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
-
-
+import { Fill, Icon, Stroke, Style } from 'ol/style';
 
 
 describe('measureStyleFunction', () => {
@@ -261,4 +260,56 @@ describe('rgbToHex', () => {
 		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
 		expect(rgbToHex([256, 256, 256])).toBeNull();
 	});
+});
+
+describe('colorFrom', () => {
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+	const imageStyleWithTint = new Style({
+		image: new Icon({
+			src: markerIcon,
+			color: [255, 0, 0]
+		})
+	});
+
+	const imageStyleWithoutTint = new Style({
+		image: new Icon({
+			src: markerIcon
+		})
+	});
+
+	it('should extract a color from feature style (stroke)', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getColorFrom(featureMock)).toBe('#ffff00');
+	});
+
+	it('should extract a color from feature style (image)', () => {
+		const featureMock = { getStyle: () => [imageStyleWithTint] };
+
+		expect(getColorFrom(featureMock)).toBe('#ff0000');
+	});
+
+	it('should NOT extract a color from feature style (image), when tint color is not present', () => {
+		const featureMock = { getStyle: () => [imageStyleWithoutTint] };
+
+		expect(getColorFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getColorFrom(featureWithoutStyle)).toBeNull();
+		expect(getColorFrom(null)).toBeNull();
+		expect(getColorFrom(undefined)).toBeNull();
+	});
+
 });
