@@ -872,9 +872,59 @@ describe('OlDrawHandler', () => {
 
 			// re-select
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
-			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 250, 250);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 550, 550);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
+
+		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('Symbol');
+			const geometry = new Point([50, 50]);
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const feature2 = new Feature({ geometry: geometry });
+
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature1);
+			feature1.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature1);
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('Symbol');
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature2);
+			feature2.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature2);
+			expect(classUnderTest._select).toBeDefined();
+
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				if (pixel[0] === 0 && pixel[1] === 0) {
+					callback(feature1, classUnderTest._vectorLayer);
+				}
+				if (pixel[0] === 50 && pixel[1] === 50) {
+					callback(feature2, classUnderTest._vectorLayer);
+				}
+			});
+
+			// re-select
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 0, 0);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 50, 50);
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
 
 	});
 

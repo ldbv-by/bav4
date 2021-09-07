@@ -5,6 +5,7 @@ import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import markerIcon from './assets/marker.svg';
 import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
+import { Feature } from 'ol';
 
 
 const ZPOLYGON = 10;
@@ -264,4 +265,30 @@ export const rgbToHex = (rgb) => {
 	};
 
 	return '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+};
+
+/**
+ * extracts the color-value (as hex representation) or null from a feature
+ * @param {Feature} feature the feature with or without a style
+ * @returns {string|null} the color-value
+ */
+export const getColorFrom = (feature) => {
+	if (feature == null) {
+		return null;
+	}
+	const styles = feature.getStyle();
+	if (styles) {
+		const style = styles[0];
+		const stroke = style.getStroke();
+		const image = style.getImage();
+
+		if (stroke) {
+			return rgbToHex(stroke.getColor());
+		}
+		if (image && image.getColor()) {
+			return rgbToHex(image.getColor());
+		}
+	}
+
+	return null;
 };

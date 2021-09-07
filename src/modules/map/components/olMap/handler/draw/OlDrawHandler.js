@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, modifyStyleFunction, rgbToHex, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, modifyStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
@@ -457,10 +457,9 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._select.getFeatures().clear();
 			this._modify.setActive(false);
 
-			if (this._draw) {
-				const currenType = this._storeService.getStore().getState().draw.type;
-				this._init(currenType);
-			}
+			const currenType = this._storeService.getStore().getState().draw.type;
+			this._init(currenType);
+
 		}
 	}
 
@@ -494,22 +493,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			this._select.getFeatures().push(feature);
 			const currentStyleOption = this._getStyleOption();
-			const styles = feature.getStyle();
-			const style = styles[0];
-			const stroke = style.getStroke();
-			const image = style.getImage();
 
-			const getColor = () => {
-				if (stroke) {
-					return rgbToHex(stroke.getColor());
-				}
-				if (image && image.getColor()) {
-					return rgbToHex(image.getColor());
-				}
-				return null;
-			};
-
-			const color = getColor() ? getColor() : currentStyleOption.color;
+			const color = getColorFrom() ? getColorFrom() : currentStyleOption.color;
 			setStyle({ ...currentStyleOption, color: color });
 		}
 	}
