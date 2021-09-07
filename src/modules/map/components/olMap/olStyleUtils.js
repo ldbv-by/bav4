@@ -5,7 +5,6 @@ import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import markerIcon from './assets/marker.svg';
 import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
-import { Feature } from 'ol';
 
 
 const ZPOLYGON = 10;
