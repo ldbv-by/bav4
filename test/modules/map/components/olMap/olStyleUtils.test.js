@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -132,6 +132,35 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(image.getSrc()).toBe(markerIcon);
+	});
+
+});
+
+describe('lineStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = lineStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a default Stroke', () => {
+		const styles = lineStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getStroke().getWidth()).toBe(1);
+	});
+
+	it('should return a style specified by styleOption', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
+		const styles = lineStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const stroke = styles[0].getStroke();
+		expect(stroke).toBeTruthy();
+
+		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
+		expect(stroke.getWidth()).toBe(0.5);
 	});
 
 });
