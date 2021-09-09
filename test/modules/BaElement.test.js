@@ -1,4 +1,4 @@
-import { append, BaElement, renderTagOf } from '../../src/modules/BaElement';
+import { BaElement, renderTagOf } from '../../src/modules/BaElement';
 import { html, nothing } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
@@ -380,40 +380,3 @@ describe('renderTagOf', () => {
 		expect(renderTagOf(BaElementImpl)).toBeTruthy();
 	});
 });
-
-
-describe('append', () => {
-
-	it('throws an exception when id is undefined', () => {
-
-		expect(() => append('foo')).toThrowError(Error, 'Argument \'id\' must not be null or undefined');
-	});
-
-	it('appends content as a plain string to the body', () => {
-		const id = 'myId';
-		const value = 'foo';
-
-		append(value, id);
-
-		expect(document.getElementById(id).innerText).toBe(value);
-	});
-
-	it('appends content as a template string to the body', () => {
-		const id = 'myId';
-		const value = 'foo';
-
-		append(`${value}`, id);
-
-		expect(document.getElementById(id).innerText).toBe(value);
-	});
-
-	it('appends content as a lit-html TemplateResult to the body', () => {
-		const id = 'myId';
-		const value = 'foo';
-
-		append(html`${value}`, id);
-
-		expect(document.getElementById(id).innerText).toBe(value);
-	});
-});
-
