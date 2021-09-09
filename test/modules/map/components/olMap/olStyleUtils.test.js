@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -259,6 +259,19 @@ describe('rgbToHex', () => {
 		expect(rgbToHex([186, 218, 85])).toBe('#bada55');
 		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
 		expect(rgbToHex([256, 256, 256])).toBeNull();
+	});
+});
+
+describe('hexToRgb', () => {
+	it('should convert a color hex-representation to a rgb-array', () => {
+		expect(hexToRgb(null)).toBeNull();
+		expect(hexToRgb('#foo')).toBeNull();
+		expect(hexToRgb('#000')).toEqual([0, 0, 0]);
+		expect(hexToRgb('#000000')).toEqual([0, 0, 0]);
+		expect(hexToRgb('#bada55')).toEqual([186, 218, 85]);
+		expect(hexToRgb('#ad5')).toEqual([170, 221, 85]);
+		expect(hexToRgb('#aadd55')).toEqual([170, 221, 85]);
+		expect(hexToRgb('#fff')).toEqual([255, 255, 255]);
 	});
 });
 

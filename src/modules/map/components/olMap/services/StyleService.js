@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { baseStyleFunction, markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction } from '../olStyleUtils';
+import { baseStyleFunction, markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction } from '../olStyleUtils';
 
 
 
@@ -100,6 +100,8 @@ export class StyleService {
 				return highlightStyleFunction;
 			case StyleTypes.HIGHLIGHT_TEMP:
 				return highlightTemporaryStyleFunction;
+			case StyleTypes.LINE:
+				return lineStyleFunction;
 			case StyleTypes.MARKER:
 				return markerStyleFunction;
 			case StyleTypes.DRAW:

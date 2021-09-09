@@ -284,6 +284,11 @@ export class OlDrawHandler extends OlLayerHandler {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.MARKER);
 					return styleFunction(styleOption);
 				};
+			case 'Line':
+				return () => {
+					const styleFunction = this._styleService.getStyleFunction(StyleTypes.LINE);
+					return styleFunction(styleOption);
+				};
 			default:
 				return this._styleService.getStyleFunction(StyleTypes.DRAW);
 		}

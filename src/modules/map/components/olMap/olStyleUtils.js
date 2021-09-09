@@ -56,6 +56,18 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	})];
 };
 
+export const lineStyleFunction = (styleOption = { color: false, scale: false }) => {
+	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#BADA55');
+	const strokeWidth = styleOption.scale ? styleOption.scale : 1;
+	return [new Style({
+		stroke: new Stroke({
+			color: strokeColor.concat([1]),
+			width: strokeWidth
+		})
+	})];
+};
+
+
 export const measureStyleFunction = (feature) => {
 	const stroke = new Stroke({
 		color: RED_COLOR.concat([1]),
@@ -264,6 +276,27 @@ export const rgbToHex = (rgb) => {
 	};
 
 	return '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+};
+
+/**
+ * Converts the hexadecimal String-Represenation of a color to an array of numeric RGB-values or null.
+ * based on from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+ * @param {string} rgb
+ * @returns {Array<Number>|null}
+ */
+export const hexToRgb = (hex) => {
+	if (hex == null) {
+		return null;
+	}
+
+	// Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+	const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+		return r + r + g + g + b + b;
+	});
+
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? [parseInt(result[1], 16),	parseInt(result[2], 16), parseInt(result[3], 16)] : null;
 };
 
 /**
