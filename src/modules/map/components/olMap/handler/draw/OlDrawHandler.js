@@ -493,8 +493,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			this._select.getFeatures().push(feature);
 			const currentStyleOption = this._getStyleOption();
-
-			const color = getColorFrom() ? getColorFrom() : currentStyleOption.color;
+			const featureColor = getColorFrom(feature);
+			const color = featureColor ? featureColor : currentStyleOption.color;
 			setStyle({ ...currentStyleOption, color: color });
 		}
 	}
