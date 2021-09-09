@@ -106,8 +106,13 @@ export class DrawToolContent extends AbstractToolContent {
 		};
 
 		const getStyleTemplate = (style) => {
-			const onChange = (e) => {
+			const onChangeColor = (e) => {
 				const changedStyle = { ...style, color: e.target.value };
+				setStyle(changedStyle);
+			};
+
+			const onChangeSize = (e) => {
+				const changedStyle = { ...style, scale: e.target.value };
 				setStyle(changedStyle);
 			};
 			if (style) {
@@ -117,8 +122,12 @@ export class DrawToolContent extends AbstractToolContent {
 					title='Styling'>
 					<div class="tool-container__style_color">
 						<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
-						<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChange}>						
+						<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 					</div>					
+					<div class="tool-container__style_size">
+						<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>	
+						<input type="number" id="style_size" min="0.1" max="10" step="0.1" name="${translate('toolbox_drawTool_style_size')}" .value=${style.scale} @change=${onChangeSize}>
+					</div>
 				</div>
 				`;
 			}

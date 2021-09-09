@@ -163,6 +163,20 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
 
+		it('sets the style, after size changes in size-input', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 0.5 };
+			const newSize = '0.7';
+			const element = await setup({ ...drawDefaultState, style });
+
+			const sizeInput = element.shadowRoot.querySelector('#style_size');
+			expect(sizeInput).toBeTruthy();
+			expect(sizeInput.value).toBe('0.5');
+
+			sizeInput.value = newSize;
+			sizeInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.scale).toBe(newSize);
+		});
 
 	});
 });
