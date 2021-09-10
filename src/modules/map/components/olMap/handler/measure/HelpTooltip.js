@@ -1,5 +1,5 @@
 
-import { MeasurementOverlay, MeasurementOverlayTypes } from './MeasurementOverlay';
+import { BaOverlay, BaOverlayTypes } from './../../BaOverlay';
 import Overlay from 'ol/Overlay';
 
 import { $injector } from '../../../../../../injection';
@@ -15,7 +15,7 @@ export class HelpTooltip {
 
 	activate(map) {
 		this._map = map;
-		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, MeasurementOverlayTypes.HELP);
+		this._overlay = this._createOverlay({ offset: [15, 0], positioning: 'center-left' }, BaOverlayTypes.HELP);
 		this._map.addOverlay(this._overlay);
 	}
 
@@ -83,9 +83,10 @@ export class HelpTooltip {
 	}
 
 	_createOverlay(overlayOptions = {}, type) {
-		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
-		measurementOverlay.type = type;
-		return new Overlay({ ...overlayOptions, element: measurementOverlay });
+		const overlay = document.createElement(BaOverlay.tag);
+		console.log(overlay);
+		overlay.type = type;
+		return new Overlay({ ...overlayOptions, element: overlay });
 	}
 
 	_updateOverlay(coordinate, message) {
