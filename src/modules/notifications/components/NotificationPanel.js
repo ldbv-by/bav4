@@ -53,7 +53,7 @@ export class NotificationPanel extends AbstractContentPanel {
 
 	/**
 	  * @override
-	  * @param {Object} globalState 
+	  * @param {Object} globalState
 	  */
 	extractState(globalState) {
 		const { notifications: { notification } } = globalState;
@@ -71,7 +71,7 @@ export class NotificationPanel extends AbstractContentPanel {
 		if (this._lastNotification !== notification) {
 			this._lastNotification = notification;
 
-			// adding in LIFO-manner 
+			// adding in LIFO-manner
 			this._notifications = [{ ...notification.payload, id: notification.id }].concat(this._notifications);
 		}
 

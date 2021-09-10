@@ -121,7 +121,7 @@ describe('NotificationPanel', () => {
 		const notificationItemElement = notificationElement.shadowRoot.querySelector('.notification_item');
 
 		setTimeout(() => {
-			notificationItemElement.dispatchEvent(new Event('transitionend'));
+			notificationItemElement.dispatchEvent(new Event('animationend'));
 			setTimeout(() => {
 				expect(removeSpy).toHaveBeenCalledWith({ message: 'fooBar', id: jasmine.any(Number), level: LevelTypes.INFO, index: 0, permanent: false, autocloseTime: autocloseTime });
 			});

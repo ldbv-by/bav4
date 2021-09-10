@@ -1,33 +1,56 @@
 .notification_item {
-    color: var(--primary-color);;
-    background-color: var(--primary-bg-color);
-    padding: 2em;
-    margin: 0 0 1em;
-    display: flex;
-    align-items: center;
-    position: relative;    
-    transition: opacity 300ms ease-in;
-    border-radius: 0.2em;
-    border-color: orchid;
-    box-shadow: 2px;
+  animation-name: animateIn;
+  animation-duration: var(--animationtime-mainmenu);
+  animation-fill-mode: both;
+  background-color: var(--primary-bg-color);   
+  box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+  display: flex;
+  flex-direction: column;
+   margin:  .1em auto;
+   padding: 0.8em 1.5em;
+   width: -moz-min-content;
+   width: min-content;
+   min-width:25em;
 }
-
-.notification_item:last-child{
-    margin: 0;
+.notification_info {
+  border-left: .2em solid var(--info-color);
 }
-
-.notification_info{
-    color:var(--secondary-color)
-}
-
 .notification_warn{
-    color:orange
+  border-left: .2em solid var(--warning-color);
 }
-
 .notification_error{
-    color: red
+  border-left: .2em solid var(--error-color);
 }
-
+.notification_info .notification_level{
+  color:var(--info-color);
+}
+.notification_warn .notification_level{
+  color:var(--warning-color);
+}
+.notification_error .notification_level{
+  color:var(--error-color);
+}
 .notification_item_hide{
-    opacity: 0;
+    animation-name: animateOut;
+    animation-duration: var(--animationtime-mainmenu);
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
 }
+@keyframes animateIn{
+    0% {
+      opacity:0;
+      transform: translateY(200%);
+      100% {
+        opacity:1;   
+      }
+    }
+  }
+  @keyframes animateOut{
+    0% {
+      opacity:1;   
+    }
+    100% {       
+      opacity:0;      
+      transform: translateY(200%);
+    }
+  }

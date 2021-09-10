@@ -53,18 +53,6 @@ describe('NotificationItem', () => {
 			expect(hideSpy).toHaveBeenCalled();
 		});
 
-		it('starts hiding with click on Close-Button', async () => {
-			const autocloseTime = 1000;
-			const notification = { ...notificationTemplate, message: 'FooBar', autocloseTime: autocloseTime };
-
-			const element = await setup(notification);
-			const hideSpy = spyOn(element, '_hide').and.callThrough();
-			const closeElement = element.shadowRoot.querySelector('.notification_close');
-			closeElement.click();
-
-			expect(hideSpy).toHaveBeenCalled();
-		});
-
 		it('closes the notification item with call of onClose', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;
@@ -76,7 +64,7 @@ describe('NotificationItem', () => {
 			const notificationElement = element.shadowRoot.querySelector('.notification_item');
 
 			jasmine.clock().tick(laterThenAutoCloseTime);
-			notificationElement.dispatchEvent(new Event('transitionend'));
+			notificationElement.dispatchEvent(new Event('animationend'));
 			expect(hideSpy).toHaveBeenCalled();
 
 

@@ -27,21 +27,30 @@ export class NotificationItem extends BaElement {
 		const levelClass = {
 			notification_info: this._content.level === LevelTypes.INFO,
 			notification_warn: this._content.level === LevelTypes.WARN,
-			notification_error: this._content.level === LevelTypes.ERROR,
+			notification_error: this._content.level === LevelTypes.ERROR
 		};
-
+		const levelText = () => {
+			switch (this._content.level) {
+				case LevelTypes.INFO:
+					return 'notifications_item_info';
+				case LevelTypes.WARN:
+					return 'notifications_item_warn';
+				case LevelTypes.ERROR:
+					return 'notifications_item_error';
+			}
+		};
 		if (this._autocloseTime > 0) {
 			this._autocloseTimeout = setTimeout(() => {
 				this._hide();
 			}, this._autocloseTime);
 		}
-		const onClick = () => this._hide();
+
 		const message = this._content.message ? this._content.message : html.nothing;
 		return html`
 		<style>${css}</style>
 		<div class='notification_item ${classMap(levelClass)}'>
-        	<div class='notification_content'>${message}
-			<a class='notification_close' href='#' @click=${onClick}>${translate('notifications_item_close')}</a>
+        	<span class='notification_level'>${translate(levelText())}</span>
+        	<span class='notification_content'>${message}</span>			
 		</div>`;
 	}
 
@@ -51,7 +60,7 @@ export class NotificationItem extends BaElement {
 		// If the notification-item is not yet closed
 		root.classList.add('notification_item_hide');
 
-		root.addEventListener('transitionend', () => {
+		root.addEventListener('animationend', () => {
 			// If the notification-item is not yet closed
 			this.onClose(this._content);
 			clearTimeout(this._autocloseTimeout);
