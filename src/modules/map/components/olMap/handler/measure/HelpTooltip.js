@@ -3,7 +3,7 @@ import { MeasurementOverlay, MeasurementOverlayTypes } from './MeasurementOverla
 import Overlay from 'ol/Overlay';
 
 import { $injector } from '../../../../../../injection';
-import { MeasureSnapType, MeasureStateType } from './OlMeasurementHandler';
+import { InteractionSnapType, InteractionStateType } from './../../olInteractionUtils';
 
 export class HelpTooltip {
 
@@ -34,16 +34,16 @@ export class HelpTooltip {
 
 		const translate = (key) => this._translationService.translate(key);
 		let message = null;
-		if (measureState.type === MeasureStateType.ACTIVE) {
+		if (measureState.type === InteractionStateType.ACTIVE) {
 			message = translate('map_olMap_handler_measure_start');
 		}
 
-		if (measureState.type === MeasureStateType.DRAW) {
+		if (measureState.type === InteractionStateType.DRAW) {
 			message = translate('map_olMap_handler_measure_continue_line');
-			if (measureState.snap === MeasureSnapType.FIRSTPOINT) {
+			if (measureState.snap === InteractionSnapType.FIRSTPOINT) {
 				message = translate('map_olMap_handler_measure_snap_first_point');
 			}
-			if (measureState.snap === MeasureSnapType.LASTPOINT) {
+			if (measureState.snap === InteractionSnapType.LASTPOINT) {
 				message = translate('map_olMap_handler_measure_snap_last_point');
 			}
 			if (measureState.pointCount > 2) {
@@ -51,21 +51,21 @@ export class HelpTooltip {
 			}
 		}
 
-		if (measureState.type === MeasureStateType.MODIFY) {
+		if (measureState.type === InteractionStateType.MODIFY) {
 			message = translate('map_olMap_handler_measure_modify_key_for_delete');
-			if (measureState.snap === MeasureSnapType.VERTEX) {
+			if (measureState.snap === InteractionSnapType.VERTEX) {
 				message = translate('map_olMap_handler_measure_modify_click_or_drag');
 			}
-			if (measureState.snap === MeasureSnapType.EDGE) {
+			if (measureState.snap === InteractionSnapType.EDGE) {
 				message = translate('map_olMap_handler_measure_modify_click_new_point');
 			}
 		}
 
-		if (measureState.type === MeasureStateType.SELECT) {
+		if (measureState.type === InteractionStateType.SELECT) {
 			message = translate('map_olMap_handler_measure_select');
 		}
 
-		if (measureState.type === MeasureStateType.OVERLAY) {
+		if (measureState.type === InteractionStateType.OVERLAY) {
 			message = translate('map_olMap_handler_measure_modify_click_drag_overlay');
 		}
 

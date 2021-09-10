@@ -22,23 +22,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-
-
-export const MeasureStateType = {
-	ACTIVE: 'active',
-	DRAW: 'draw',
-	MODIFY: 'modify',
-	SELECT: 'select',
-	OVERLAY: 'overlay'
-};
-
-export const MeasureSnapType = {
-	FIRSTPOINT: 'firstPoint',
-	LASTPOINT: 'lastPoint',
-	VERTEX: 'vertex',
-	EGDE: 'edge',
-	FACE: 'face'
-};
+import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 
 const Debounce_Delay = 1000;
 
@@ -76,7 +60,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._lastMeasureStateType = null;
+		this._lastInteractionStateType = null;
 		this._measureState = {
 			type: null,
 			snap: null,
@@ -166,13 +150,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const pixel = event.pixel;
 			this._updateMeasureState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
-			if (this._measureState.type === MeasureStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
 				setStatistic({ length: 0, area: 0 });
-				this._setMeasureState({ ...this._measureState, type: MeasureStateType.SELECT, snap: null });
+				this._setMeasureState({ ...this._measureState, type: InteractionStateType.SELECT, snap: null });
 			}
 
-			if ([MeasureStateType.MODIFY, MeasureStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
+			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
 					const hasFeature = this._isInCollection(f, this._select.getFeatures());
 					if (!hasFeature) {
@@ -216,7 +200,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._helpTooltip.activate(this._map);
 				this._onMeasureStateChanged((measureState) => {
 					this._helpTooltip.notify(measureState);
-					if (measureState.snap === MeasureSnapType.VERTEX) {
+					if (measureState.snap === InteractionSnapType.VERTEX) {
 						this._mapContainer.classList.add('grab');
 					}
 					else {
@@ -450,9 +434,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateMeasurementMode(measureState) {
-		if (this._lastMeasureStateType !== measureState.type && measureState.type !== MeasureStateType.OVERLAY) {
-			this._lastMeasureStateType = measureState.type;
-			setMode(this._lastMeasureStateType);
+		if (this._lastInteractionStateType !== measureState.type && measureState.type !== InteractionStateType.OVERLAY) {
+			this._lastInteractionStateType = measureState.type;
+			setMode(this._lastInteractionStateType);
 		}
 	}
 
@@ -516,17 +500,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}, featureSnapOption);
 
 		if (vertexFeature) {
-			snapType = MeasureSnapType.EGDE;
+			snapType = InteractionSnapType.EGDE;
 			const vertexGeometry = vertexFeature.getGeometry();
 			const snappedFeature = vertexFeature.get('features')[0];
 			const snappedGeometry = snappedFeature.getGeometry();
 
 			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = MeasureSnapType.VERTEX;
+				snapType = InteractionSnapType.VERTEX;
 			}
 		}
 		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = MeasureSnapType.FACE;
+			snapType = InteractionSnapType.FACE;
 		}
 		return snapType;
 	}
@@ -561,27 +545,27 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		measureState.snap = this._getSnapState(pixel);
 
 		if (this._draw.getActive()) {
-			measureState.type = MeasureStateType.ACTIVE;
+			measureState.type = InteractionStateType.ACTIVE;
 
 			if (this._activeSketch) {
 				this._activeSketch.getGeometry();
-				measureState.type = MeasureStateType.DRAW;
+				measureState.type = InteractionStateType.DRAW;
 
 				if (this._isFinishOnFirstPoint) {
-					measureState.snap = MeasureSnapType.FIRSTPOINT;
+					measureState.snap = InteractionSnapType.FIRSTPOINT;
 				}
 				else if (this._isSnapOnLastPoint) {
-					measureState.snap = MeasureSnapType.LASTPOINT;
+					measureState.snap = InteractionSnapType.LASTPOINT;
 				}
 			}
 		}
 
 		if (this._modify.getActive()) {
-			measureState.type = this._select.getFeatures().getLength() === 0 ? MeasureStateType.SELECT : MeasureStateType.MODIFY;
+			measureState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
 		}
 		const dragableOverlay = getOverlays(this._vectorLayer).find(o => o.get('dragable') === true);
 		if (dragableOverlay) {
-			measureState.type = MeasureStateType.OVERLAY;
+			measureState.type = InteractionStateType.OVERLAY;
 		}
 
 		if (!this._dragPan.getActive()) {
@@ -696,8 +680,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-     * todo: extract Util-method to kind of 'OlMapUtils'-file
-     */
+	 * todo: extract Util-method to kind of 'OlMapUtils'-file
+	 */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;
 		itemCollection.forEach(i => {

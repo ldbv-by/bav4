@@ -5,7 +5,7 @@ import { drawReducer } from '../../../../../../../src/modules/map/store/draw.red
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
-import { DrawSnapType, DrawStateType, OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
+import { OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -18,6 +18,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
+import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 
 
 
@@ -448,7 +449,7 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
 				const drawStateFake = {
-					type: DrawStateType.ACTIVE
+					type: InteractionStateType.ACTIVE
 				};
 
 
@@ -472,7 +473,7 @@ describe('OlDrawHandler', () => {
 				feature.setId('draw_Symbol_1234');
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
-					type: DrawStateType.MODIFY
+					type: InteractionStateType.MODIFY
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
@@ -663,10 +664,10 @@ describe('OlDrawHandler', () => {
 
 			setType('Symbol');
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 			classUnderTest._activeSketch = new Feature({ geometry: new Point([1, 0]) });
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 		});
 
 		it('adds/removes style for grabbing while modifying', () => {
@@ -708,7 +709,7 @@ describe('OlDrawHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 			});
 
 			it('pointer is snapped to sketch boundary', () => {
@@ -730,7 +731,7 @@ describe('OlDrawHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: DrawSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
@@ -751,7 +752,7 @@ describe('OlDrawHandler', () => {
 				simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: DrawStateType.MODIFY, snap: DrawSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
 			});
 
 			it('adds/removes style for grabbing while modifying', () => {

@@ -1,7 +1,7 @@
 import { Overlay } from 'ol';
 import { $injector } from '../../../../../../../src/injection';
 import { HelpTooltip } from '../../../../../../../src/modules/map/components/olMap/handler/measure/HelpTooltip';
-import { MeasureSnapType, MeasureStateType } from '../../../../../../../src/modules/map/components/olMap/handler/measure/OlMeasurementHandler';
+import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import { TestUtils } from '../../../../../../test-utils.js';
 
 
@@ -14,7 +14,8 @@ $injector.registerSingleton('UnitsService', {
 	// eslint-disable-next-line no-unused-vars
 	formatArea: (area, decimals) => {
 		return area + ' m²';
-	} });
+	}
+});
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('HelpTooltip', () => {
@@ -52,7 +53,7 @@ describe('HelpTooltip', () => {
 	describe('on deactivate', () => {
 		it('removes the overlay', () => {
 			const removeSpy = jasmine.createSpy();
-			const mapMock = { addOverlay: () => {}, removeOverlay: removeSpy };
+			const mapMock = { addOverlay: () => { }, removeOverlay: removeSpy };
 			const classUnderTest = new HelpTooltip();
 
 			classUnderTest.activate(mapMock);
@@ -62,7 +63,7 @@ describe('HelpTooltip', () => {
 		});
 	});
 	describe('when notified', () => {
-		const mapStub = { addOverlay: () => {} };
+		const mapStub = { addOverlay: () => { } };
 		const measureStateTemplate = {
 			type: null,
 			snap: null,
@@ -74,7 +75,7 @@ describe('HelpTooltip', () => {
 		it('with measurestate \'active\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest._updateOverlay = jasmine.createSpy();
-			const measureState = { ...measureStateTemplate, type: MeasureStateType.ACTIVE };
+			const measureState = { ...measureStateTemplate, type: InteractionStateType.ACTIVE };
 
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify(measureState);
@@ -86,10 +87,10 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, pointCount: 1 });
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW });
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, snap: MeasureSnapType.FIRSTPOINT });
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.DRAW, snap: MeasureSnapType.LASTPOINT });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, pointCount: 1 });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT });
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_continue_line<br/>map_olMap_handler_delete_last_point');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_snap_first_point<br/>map_olMap_handler_delete_last_point');
@@ -101,9 +102,9 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY });
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY, snap: MeasureSnapType.VERTEX });
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.MODIFY, snap: MeasureSnapType.EDGE });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE });
 
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_key_for_delete');
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_or_drag');
@@ -115,7 +116,7 @@ describe('HelpTooltip', () => {
 			classUnderTest._updateOverlay = jasmine.createSpy();
 
 			classUnderTest.activate(mapStub);
-			classUnderTest.notify({ ...measureStateTemplate, type: MeasureStateType.OVERLAY });
+			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.OVERLAY });
 
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_drag_overlay');
 		});

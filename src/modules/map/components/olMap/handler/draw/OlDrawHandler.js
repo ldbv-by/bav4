@@ -11,23 +11,8 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
 import { setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
+import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 
-
-export const DrawStateType = {
-	ACTIVE: 'active',
-	DRAW: 'draw',
-	MODIFY: 'modify',
-	SELECT: 'select',
-	OVERLAY: 'overlay'
-};
-
-export const DrawSnapType = {
-	FIRSTPOINT: 'firstPoint',
-	LASTPOINT: 'lastPoint',
-	VERTEX: 'vertex',
-	EGDE: 'edge',
-	FACE: 'face'
-};
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -70,7 +55,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
-		this._lastDrawStateType = null;
+		this._lastInteractionStateType = null;
 		this._drawState = {
 			type: null,
 			snap: null,
@@ -102,13 +87,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			const pixel = event.pixel;
 			this._updateDrawState(coordinate, pixel, dragging);
 			const selectableFeatures = this._getSelectableFeatures(pixel);
-			if (this._drawState.type === DrawStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
 
-				this._setDrawState({ ...this._drawState, type: DrawStateType.SELECT, snap: null });
+				this._setDrawState({ ...this._drawState, type: InteractionStateType.SELECT, snap: null });
 			}
 
-			if ([DrawStateType.MODIFY, DrawStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
+			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
 					const hasFeature = this._isInCollection(f, this._select.getFeatures());
 					if (!hasFeature) {
@@ -305,23 +290,23 @@ export class OlDrawHandler extends OlLayerHandler {
 		drawState.snap = this._getSnapState(pixel);
 
 		if (this._draw) {
-			drawState.type = DrawStateType.ACTIVE;
+			drawState.type = InteractionStateType.ACTIVE;
 
 			if (this._activeSketch) {
 				this._activeSketch.getGeometry();
-				drawState.type = DrawStateType.DRAW;
+				drawState.type = InteractionStateType.DRAW;
 
 				if (this._isFinishOnFirstPoint) {
-					drawState.snap = DrawSnapType.FIRSTPOINT;
+					drawState.snap = InteractionSnapType.FIRSTPOINT;
 				}
 				else if (this._isSnapOnLastPoint) {
-					drawState.snap = DrawSnapType.LASTPOINT;
+					drawState.snap = InteractionSnapType.LASTPOINT;
 				}
 			}
 		}
 
 		if (this._modify.getActive()) {
-			drawState.type = this._select.getFeatures().getLength() === 0 ? DrawStateType.SELECT : DrawStateType.MODIFY;
+			drawState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
 		}
 
 		drawState.dragging = dragging;
@@ -469,11 +454,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateStyle() {
-		if (this._drawState.type === DrawStateType.ACTIVE || this._drawState.type === DrawStateType.SELECT) {
+		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
 		}
-		if (this._drawState.type === DrawStateType.MODIFY) {
+		if (this._drawState.type === InteractionStateType.MODIFY) {
 			const feature = this._select.getFeatures().item(0);
 			const styleFunction = this._getStyleFunctionByFeatureId(feature.getId());
 			const newStyles = styleFunction(feature);
@@ -542,17 +527,17 @@ export class OlDrawHandler extends OlLayerHandler {
 		}, featureSnapOption);
 
 		if (vertexFeature) {
-			snapType = DrawSnapType.EGDE;
+			snapType = InteractionSnapType.EGDE;
 			const vertexGeometry = vertexFeature.getGeometry();
 			const snappedFeature = vertexFeature.get('features')[0];
 			const snappedGeometry = snappedFeature.getGeometry();
 
 			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = DrawSnapType.VERTEX;
+				snapType = InteractionSnapType.VERTEX;
 			}
 		}
 		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = DrawSnapType.FACE;
+			snapType = InteractionSnapType.FACE;
 		}
 		return snapType;
 	}
