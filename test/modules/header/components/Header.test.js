@@ -216,8 +216,8 @@ describe('Header', () => {
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
 			expect(store.getState().modal.data.title).toBe('Showcase');
-			expect(document.querySelectorAll('ba-showcase')).toHaveSize(1);
-
+			//we expect a lit-html TemplateResult as content
+			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
 		});
 	});
 

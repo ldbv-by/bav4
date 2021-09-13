@@ -23,4 +23,5 @@ import './modules/iframe';
 import './modules/uiTheme';
 import './modules/modal';
 import './modules/baseLayer';
+import './modules/layerManager';
 import './modules/notifications';

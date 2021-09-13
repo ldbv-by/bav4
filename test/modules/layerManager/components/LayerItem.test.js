@@ -1,9 +1,9 @@
-import { LayerItem } from '../../../../../src/modules/map/components/layerManager/LayerItem';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
-import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
-import { TestUtils } from '../../../../test-utils';
-import { $injector } from '../../../../../src/injection';
+import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
+import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
+import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
+import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -43,9 +43,9 @@ describe('LayerItem', () => {
 
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, { layers: layersReducer });
-			$injector.registerSingleton('TranslationService', {	 translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = layer ;
+			element.layer = layer;
 			return element;
 		};
 
@@ -67,7 +67,7 @@ describe('LayerItem', () => {
 			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
 
-			expect(toggle.title).toBe('label0 - map_layerManager_change_visibility');
+			expect(toggle.title).toBe('label0 - layerManager_change_visibility');
 		});
 
 		it('use layer.opacity-property in slider ', async () => {
