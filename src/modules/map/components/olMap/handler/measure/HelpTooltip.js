@@ -84,7 +84,6 @@ export class HelpTooltip {
 
 	_createOverlay(overlayOptions = {}, type) {
 		const overlay = document.createElement(BaOverlay.tag);
-		console.log(overlay);
 		overlay.type = type;
 		return new Overlay({ ...overlayOptions, element: overlay });
 	}
