@@ -117,7 +117,7 @@ Here's an overview of what project folder structure looks like:
 
 | Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
 |----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
 | `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
 
