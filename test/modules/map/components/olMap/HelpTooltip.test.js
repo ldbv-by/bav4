@@ -1,9 +1,9 @@
 import { Overlay } from 'ol';
-import { $injector } from '../../../../../../../src/injection';
-import { HelpTooltip } from '../../../../../../../src/modules/map/components/olMap/HelpTooltip';
-import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
-import { TestUtils } from '../../../../../../test-utils.js';
-import { provide as measureProvide } from '../../../../../../../src/modules/map/components/olMap/handler/measure/tooltipMessage.provider';
+import { $injector } from '../../../../../src/injection';
+import { HelpTooltip } from '../../../../../src/modules/map/components/olMap/HelpTooltip';
+import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import { TestUtils } from '../../../../test-utils.js';
+import { provide as measureProvide } from '../../../../../src/modules/map/components/olMap/handler/measure/tooltipMessage.provider';
 
 
 TestUtils.setupStoreAndDi({});
@@ -40,6 +40,7 @@ describe('HelpTooltip', () => {
 		expect(classUnderTest._hide).not.toHaveBeenCalled();
 	});
 
+
 	describe('on activate', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
@@ -73,7 +74,7 @@ describe('HelpTooltip', () => {
 			dragging: false
 		};
 
-		it('with iinteractionstate \'active\' create overlay text', () => {
+		it('with interactionstate \'active\' create overlay text', () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest._updateOverlay = jasmine.createSpy();

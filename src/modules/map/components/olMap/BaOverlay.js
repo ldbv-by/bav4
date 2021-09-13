@@ -1,7 +1,6 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../BaElement';
-import { $injector } from '../../../../injection';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
@@ -37,8 +36,6 @@ export class BaOverlay extends BaElement {
 
 	constructor() {
 		super();
-		const { UnitsService } = $injector.inject('UnitsService');
-		this._unitsService = UnitsService;
 		this._value = '';
 		this._static = false;
 		this._type = BaOverlayTypes.TEXT;

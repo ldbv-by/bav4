@@ -47,9 +47,7 @@ export class HelpTooltip {
 	}
 
 	set messageProvideFunction(value) {
-		if (value !== this._tooltipMessageProvideFunction) {
-			this._tooltipMessageProvideFunction = value;
-		}
+		this._tooltipMessageProvideFunction = value;
 	}
 
 	_createOverlay(overlayOptions = {}, type) {
