@@ -15,7 +15,11 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_key_for_delete: 'Press DEL to delete the drawing',
 				map_olMap_handler_delete_last_point: 'Press DEL to remove the last point drawn',
 				map_olMap_handler_measure_select: 'Select existing or start new measurement',
-				map_olMap_handler_measure_layer_label: 'Measurement'
+				map_olMap_handler_measure_layer_label: 'Measurement',
+				map_olMap_handler_draw_start: 'Click to start drawing',
+				map_olMap_handler_draw_layer_label: 'Drawing',
+				map_olMap_handler_draw_continue_line: 'Click to continue drawing the line (double-click to finish)',
+				map_olMap_handler_draw_select: 'Select existing or start new drawing'
 			};
 
 		case 'de':
@@ -32,7 +36,11 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_key_for_delete: 'Zeichnung löschen: ENTF Taste',
 				map_olMap_handler_delete_last_point: 'Letzter Punkt löschen: ENTF Taste',
 				map_olMap_handler_measure_select: 'bestehende Messung auswählen oder neue Messung beginnen',
-				map_olMap_handler_measure_layer_label: 'Messung'
+				map_olMap_handler_measure_layer_label: 'Messung',
+				map_olMap_handler_draw_start: 'Klicken, um die Zeichnung zu beginnen',
+				map_olMap_handler_draw_layer_label: 'Zeichnung',
+				map_olMap_handler_draw_continue_line: 'Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)',
+				map_olMap_handler_draw_select: 'bestehende Zeichnung auswählen oder neue Zeichnung beginnen'
 			};
 
 		default:

@@ -14,7 +14,8 @@ import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
-import { HelpTooltip } from './HelpTooltip';
+import { HelpTooltip } from './../../HelpTooltip';
+import { provide as messageProvide } from './tooltipMessage.provider';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../../../utils/timer';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
@@ -69,6 +70,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			dragging: false
 		};
 		this._helpTooltip = new HelpTooltip();
+		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._measureStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}

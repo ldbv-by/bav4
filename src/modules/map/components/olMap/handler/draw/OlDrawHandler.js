@@ -12,6 +12,8 @@ import { isVertexOfGeometry } from '../../olGeometryUtils';
 import { setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { HelpTooltip } from '../../HelpTooltip';
+import { provide as messageProvide } from './tooltipMessage.provider';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -64,6 +66,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			dragging: false
 		};
 
+		this._helpTooltip = new HelpTooltip();
+		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
 		this._registeredObservers = this._register(this._storeService.getStore());
 	}
@@ -127,6 +131,18 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
 			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
+			if (!this._environmentService.isTouch()) {
+				this._helpTooltip.activate(this._map);
+				this._onDrawStateChanged((drawState) => {
+					this._helpTooltip.notify(drawState);
+					if (drawState.snap === InteractionSnapType.VERTEX) {
+						this._mapContainer.classList.add('grab');
+					}
+					else {
+						this._mapContainer.classList.remove('grab');
+					}
+				});
+			}
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 		}
