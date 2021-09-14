@@ -35,7 +35,7 @@ module.exports = function (config) {
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
 			dir: path.join(__dirname, 'coverage'),
-			reports: ['text-summary', 'html']
+			reports: ['text-summary', 'lcov']
 		}
 	});
 };

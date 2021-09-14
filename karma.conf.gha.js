@@ -1,4 +1,5 @@
 const baseConfig = require('./karma.conf.js');
+const path = require('path');
 
 module.exports = function (config) {
 
@@ -8,8 +9,8 @@ module.exports = function (config) {
 	config.set({
 		reporters: ['progress', 'coverage-istanbul'],
 		coverageIstanbulReporter: {
-			dir: 'coverage',
-			reports: ['text-summary', 'lcov']
+			dir: path.join(__dirname, 'coverage'),
+			reports: ['lcovonly']
 		}
 	});
 };
