@@ -7,7 +7,6 @@ describe('i18n for search module', () => {
 
 		const map = provide('de');
 
-		expect(map.notifications_item_close).toBe('Schliessen');
 		expect(map.notifications_item_info).toBe('Info');
 		expect(map.notifications_item_warn).toBe('Warnung');
 		expect(map.notifications_item_error).toBe('Fehler');
@@ -17,14 +16,13 @@ describe('i18n for search module', () => {
 
 		const map = provide('en');
 
-		expect(map.notifications_item_close).toBe('Close');
 		expect(map.notifications_item_info).toBe('Info');
 		expect(map.notifications_item_warn).toBe('Warning');
 		expect(map.notifications_item_error).toBe('Error');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 4;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
