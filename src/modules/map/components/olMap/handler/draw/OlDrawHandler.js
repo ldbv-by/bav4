@@ -14,6 +14,7 @@ import { unByKey } from 'ol/Observable';
 import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
+import { Polygon } from 'ol/geom';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -416,6 +417,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_init(type) {
 		const styleOption = this._getStyleOption();
+		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
@@ -423,18 +425,28 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		this._draw = this._createDrawByType(type, styleOption);
 		this._select.getFeatures().clear();
+		if (this._modify.getActive()) {
+			this._modify.setActive(false);
+		}
 		if (this._draw) {
 			this._draw.on('drawstart', event => {
 				this._activeSketch = event.feature;
 				this._pointCount = 1;
 				this._isSnapOnLastPoint = false;
+				const onFeatureChange = (event) => {
+					this._monitorDrawing(event.target, true);
+				};
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
 				const styles = styleFunction(this._activeSketch);
 				this._activeSketch.setStyle(styles);
+				listener = event.feature.on('change', onFeatureChange);
 			});
-			this._draw.on('drawend', event => this._activateModify(event.feature));
+			this._draw.on('drawend', event => {
+				this._activateModify(event.feature);
+				unByKey(listener);
+			});
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
@@ -485,6 +497,33 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			feature.setStyle(currentStyles);
 		}
+	}
+
+	_monitorDrawing(feature, isDrawing) {
+		const getLineCoordinates = (geometry, isDrawing) => {
+			if (geometry instanceof Polygon) {
+				return isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates()[0];
+			}
+			return geometry.getCoordinates();
+
+		};
+		const lineCoordinates = getLineCoordinates(feature.getGeometry(), isDrawing);
+
+		if (this._pointCount !== lineCoordinates.length) {
+			// a point is added or removed
+			this._pointCount = lineCoordinates.length;
+		}
+		else if (lineCoordinates.length > 1) {
+			const firstPoint = lineCoordinates[0];
+			const lastPoint = lineCoordinates[lineCoordinates.length - 1];
+			const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
+
+			const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
+			this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
+
+			this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+		}
+
 	}
 
 	_onDrawStateChanged(listener) {
