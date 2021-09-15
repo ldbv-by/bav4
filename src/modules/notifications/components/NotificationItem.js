@@ -39,7 +39,7 @@ export class NotificationItem extends BaElement {
 					return 'notifications_item_error';
 			}
 		};
-		if (this._autocloseTime > 0) {
+		if (this._autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER) {
 			this._autocloseTimeout = setTimeout(() => {
 				this._hide();
 			}, this._autocloseTime);
