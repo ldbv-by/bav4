@@ -15,22 +15,21 @@ jobs:
       with:
         node-version: '14.x'
     
-    - name: Build and run tests
+    - name: Install dependencies
       run: |
         npm ci
+        npx playwright install-deps
+
+    - name: Run checks and tests
+      run: |
         npm run lint
         npm run es-check
-        npm run ci:install-deps
         npm run test:gha
      
     - name: Run e2e tests
-      uses: nick-invision/retry@v2
-      with:
-        timeout_minutes: 1
-        max_attempts: 3
-        command: |
-          npm run start &
-          npm run e2e
+      run: |
+        npm run start
+        npm run e2e
 
     - name: Publish Coveralls report
       uses: coverallsapp/github-action@master
