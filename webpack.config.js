@@ -46,5 +46,13 @@ module.exports = {
 	devServer: {
 		static: './dist',
 		port: port
+	},
+	resolve: {
+		fallback: {
+			'https': false,
+			'http': false,
+			'buffer': false,
+			'fs': false
+		}
 	}
 };
