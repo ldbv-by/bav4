@@ -55,7 +55,7 @@
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:gha": "karma start karma.conf.gha.js --single-run",
     "ci:install-deps": "npx playwright install-deps",
-    "e2e": "npx playwright install; env URL=$npm_config_url;  npx playwright test --browser=webkit; npx playwright test --browser=firefox; npx playwright test --browser=chromium;",
+    "e2e": "npx playwright install; env URL=$npm_config_url; npx playwright test --browser=all --retries=3",
     "es-check": "es-check --module es9 \"./src/**/*.js\"",
     "analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
