@@ -15,7 +15,7 @@ import { DragPan, Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType, setStyle } from '../../../../../../../src/modules/map/store/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
-import { LineString, Point } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
@@ -113,6 +113,12 @@ describe('OlDrawHandler', () => {
 		const drawEvent = new DrawEvent(eventType, feature);
 
 		draw.dispatchEvent(drawEvent);
+	};
+
+	const simulateKeyEvent = (keyCode) => {
+		const keyEvent = new KeyboardEvent('keyup', { keyCode: keyCode, which: keyCode });
+
+		document.dispatchEvent(keyEvent);
 	};
 
 	it('has two methods', () => {
@@ -596,6 +602,88 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._modify.getActive()).toBeTrue();
 		});
 
+		it('removes last point if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('Line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBeFalse();
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+		});
+
+		it('removes NOT last point if other keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 42;
+
+			classUnderTest.activate(map);
+			setType('Line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._draw.removeLastPoint).not.toHaveBeenCalled();
+		});
+
+		it('removes currently drawing two-point feature if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const startNewSpy = spyOn(classUnderTest, '_startNew');
+			const map = setupMap();
+			const geometry = new Polygon([[[0, 0], [0, 0]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('Line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBeFalse();
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(startNewSpy).toHaveBeenCalled();
+		});
+
+		it('removes drawn feature if keypressed', (done) => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('Line');
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+			simulateKeyEvent(deleteKeyCode);
+
+
+			setTimeout(() => {
+				expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
+				done();
+			});
+		});
 
 	});
 
@@ -687,6 +775,29 @@ describe('OlDrawHandler', () => {
 			expect(mapContainer.classList.contains('grabbing')).toBeTrue();
 			classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
 			expect(mapContainer.classList.contains('grabbing')).toBeFalse();
+		});
+
+		it('uses _lastPointerMoveEvent on removeLast if keypressed', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new Polygon([[[50, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			const deleteKeyCode = 46;
+
+			classUnderTest.activate(map);
+			setType('Line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
+			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
+			feature.getGeometry().dispatchEvent('change');
+			expect(classUnderTest._modify.getActive()).toBeFalse();
+
+			simulateKeyEvent(deleteKeyCode);
+			expect(classUnderTest._drawState.type).toBe(InteractionStateType.DRAW);
+			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));
 		});
 
 		describe('when switching to modify', () => {

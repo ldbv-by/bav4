@@ -15,6 +15,7 @@ import { InteractionSnapType, InteractionStateType } from '../../olInteractionUt
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
+import { noModifierKeys, singleClick } from 'ol/events/condition';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -146,6 +147,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
+			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
 		}
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
@@ -384,10 +386,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		// TODO: implement deleteCondition
 		const options = {
 			features: this._select.getFeatures(),
-			style: modifyStyleFunction
+			style: modifyStyleFunction,
+			deleteCondition: event => {
+				const isDeletable = (noModifierKeys(event) && singleClick(event));
+				return isDeletable;
+			}
 		};
 
 		const modify = new Modify(options);
@@ -454,9 +459,40 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	}
 
-	_remove() {
-		// TODO: Implement logic for removing feature or part of feature
+	_removeSelectedFeatures() {
+		const selectedFeatures = this._select.getFeatures();
+		selectedFeatures.forEach(f => {
+			if (this._vectorLayer.getSource().hasFeature(f)) {
+				this._vectorLayer.getSource().removeFeature(f);
+			}
+		});
+		selectedFeatures.clear();
 	}
+
+	_removeLast(event) {
+		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
+			this._remove();
+		}
+	}
+
+	_remove() {
+		if (this._draw && this._draw.getActive()) {
+
+			this._draw.removeLastPoint();
+			if (this._pointCount === 1) {
+				this._startNew();
+			}
+			if (this._lastPointerMoveEvent) {
+				this._draw.handleEvent(this._lastPointerMoveEvent);
+			}
+		}
+
+		if (this._modify && this._modify.getActive()) {
+
+			this._removeSelectedFeatures();
+		}
+	}
+
 
 	_finish() {
 		if (this._draw && this._draw.getActive()) {
