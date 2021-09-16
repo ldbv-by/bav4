@@ -2,7 +2,7 @@
   "name": "bav4-nomigration",
   "dependencies": {
     "lit-html": "^1.4.1",
-    "ol": "^6.6.1",
+    "ol": "^6.7.0",
     "proj4": "^2.7.5",
     "redux": "^4.1.1"
   },
@@ -40,7 +40,7 @@
     "webpack": "^5.52.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.2.0"
+    "webpack-dev-server": "^4.2.1"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",

@@ -12,10 +12,10 @@ module.exports = {
 					{
 						loader: 'css-loader',
 						options: {
-							esModule: false,
-						},
-					},
-				],
+							esModule: false
+						}
+					}
+				]
 			},
 			{
 				test: /\.(woff2|svg|webp)$/,
@@ -27,7 +27,14 @@ module.exports = {
 				exclude: /node_modules|\.spec\.js$/,
 				use: '@jsdevtools/coverage-istanbul-loader'
 			}
-		],
+		]
 	},
-
+	resolve: {
+		fallback: {
+			'https': false,
+			'http': false,
+			'buffer': false,
+			'fs': false
+		}
+	}
 };
