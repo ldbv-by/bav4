@@ -758,6 +758,51 @@ describe('OlDrawHandler', () => {
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 		});
 
+		it('change drawState, when sketch is snapping to first point', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const snappedGeometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: snappedGeometry });
+
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('Line');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]);
+			feature.getGeometry().dispatchEvent('change');
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 6, dragging: jasmine.any(Boolean) });
+		});
+
+		it('change drawState, when sketch is snapping to last point', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const snappedGeometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: snappedGeometry });
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('Line');
+			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
+
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]);
+			feature.getGeometry().dispatchEvent('change');
+			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 6, dragging: jasmine.any(Boolean) });
+		});
+
+
 		it('adds/removes style for grabbing while modifying', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();

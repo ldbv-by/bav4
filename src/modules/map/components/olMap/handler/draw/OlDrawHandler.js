@@ -602,7 +602,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const featureSnapOption = {
 			hitTolerance: 10,
 			layerFilter: itemLayer => {
-				return itemLayer === interactionLayer;
+				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
 			}
 		};
 		let vertexFeature = null;
