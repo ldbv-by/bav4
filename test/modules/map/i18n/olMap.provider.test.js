@@ -15,7 +15,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_modify_click_new_point).toBe('Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen');
 		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen');
 		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Klicke und ziehen um die Beschriftung zu verschieben');
-		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
+		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF Taste');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Letzter Punkt löschen: ENTF Taste');
 		expect(map.map_olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.map_olMap_handler_measure_layer_label).toBe('Messung');
@@ -37,7 +37,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_modify_click_new_point).toBe('Click, to add point<br/> Click then drag to move the point');
 		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Click to delete the point.<br/> Click then drag to move the point');
 		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Click then drag to move the label');
-		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the drawing');
+		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the measurement');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
 		expect(map.map_olMap_handler_measure_select).toBe('Select existing or start new measurement');
 		expect(map.map_olMap_handler_measure_layer_label).toBe('Measurement');
