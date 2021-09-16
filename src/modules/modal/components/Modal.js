@@ -3,7 +3,6 @@ import { BaElement } from '../../BaElement';
 import { closeModal } from '../store/modal.action';
 import css from './modal.css';
 import { $injector } from '../../../injection';
-import { MODAL_CONTENT_ID } from '../store/modal.reducer';
 
 /**
  * Modal dialog container.
@@ -28,8 +27,7 @@ export class Modal extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		if (active) {
-			const { data: { title } } = state;
-			const content = document.getElementById(MODAL_CONTENT_ID);
+			const { data: { title, content } } = state;
 			return html`
         		<style>${css}</style>
 				<div class='modal__background' @click="${closeModal}">

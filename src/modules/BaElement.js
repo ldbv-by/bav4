@@ -1,4 +1,4 @@
-import { render as renderLitHtml, html, nothing, render } from 'lit-html';
+import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
@@ -360,20 +360,4 @@ export const renderTagOf = (baElementClazz) => {
 		return unsafeHTML(`<${baElementClazz.tag}/>`);
 	}
 	throw new TypeError(`${baElementClazz.name} does not inherit BaElement`);
-};
-
-/**
- * Appends content to the document by creating a container element
- * and inserting the (rendered) content.
- * @param {string|TemplateResult} content Could either be a plain `String`, a `TemplateString` or a lit-html `TemplateResult`
- * @param {string} id of the container of the content
- */
-export const append = (content, id) => {
-	if (!id) {
-		throw new Error('Argument \'id\' must not be null or undefined');
-	}
-	const container = document.createElement('div');
-	container.id = id;
-	document.body.appendChild(container);
-	render(html`${content}`, container);
 };
