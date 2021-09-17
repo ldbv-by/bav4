@@ -13,7 +13,7 @@ export class NotificationItem extends BaElement {
 		this._translationService = TranslationService;
 		this._content = { message: null, level: null };
 		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
-		this._autocloseTimeout = null;
+		this._autocloseTimeoutId = null;
 		this._onClose = () => { };
 	}
 
@@ -40,7 +40,7 @@ export class NotificationItem extends BaElement {
 			}
 		};
 		if (this._autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER) {
-			this._autocloseTimeout = setTimeout(() => {
+			this._autocloseTimeoutId = setTimeout(() => {
 				this._hide();
 			}, this._autocloseTime);
 		}
@@ -55,15 +55,15 @@ export class NotificationItem extends BaElement {
 	}
 
 	_hide() {
-		const root = this.shadowRoot.querySelector('.notification_item');
+		const element = this.shadowRoot.querySelector('.notification_item');
 
 		// If the notification-item is not yet closed
-		root.classList.add('notification_item_hide');
+		element.classList.add('notification_item_hide');
 
-		root.addEventListener('animationend', () => {
+		element.addEventListener('animationend', () => {
 			// If the notification-item is not yet closed
 			this.onClose(this._content);
-			clearTimeout(this._autocloseTimeout);
+			clearTimeout(this._autocloseTimeoutId);
 		});
 	}
 

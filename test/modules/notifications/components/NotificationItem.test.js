@@ -70,5 +70,30 @@ describe('NotificationItem', () => {
 
 			expect(element.onClose).toHaveBeenCalledWith(notification);
 		});
+
+		describe('displays the level type', () => {
+
+			it('info', async () => {
+				const element = await setup({ ...notificationTemplate, level: LevelTypes.INFO });
+				const contentElement = element.shadowRoot.querySelector('.notification_level');
+
+				expect(contentElement.innerText).toContain('notifications_item_info');
+			});
+
+			it('warn', async () => {
+				const element = await setup({ ...notificationTemplate, level: LevelTypes.WARN });
+				const contentElement = element.shadowRoot.querySelector('.notification_level');
+
+				expect(contentElement.innerText).toContain('notifications_item_warn');
+			});
+
+			it('error', async () => {
+				const element = await setup({ ...notificationTemplate, level: LevelTypes.ERROR });
+				const contentElement = element.shadowRoot.querySelector('.notification_level');
+
+				expect(contentElement.innerText).toContain('notifications_item_error');
+			});
+
+		});
 	});
 });

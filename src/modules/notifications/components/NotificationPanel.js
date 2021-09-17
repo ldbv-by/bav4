@@ -6,7 +6,7 @@ import css from './notificationPanel.css';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 
 
-const notification_autoclose_time = 10000;
+const Notification_Autoclose_Time = 10000;
 /**
  * Container for notifications.
  * @class
@@ -21,20 +21,14 @@ export class NotificationPanel extends AbstractContentPanel {
 		this._translationService = TranslationService;
 		this._notifications = [];
 		this._lastNotification = null;
-		this._notification_autoclose_time = notification_autoclose_time;
+		this._notification_autoclose_time = Notification_Autoclose_Time;
 	}
+
 
 	/**
 	 * @override
 	 */
-	createView(state) {
-
-		const { notification } = state;
-		const hasNotification = (candidate) => this._notifications.find(old => old.id === candidate.id);
-
-		if (notification && !hasNotification(notification)) {
-			this._add(notification);
-		}
+	createView() {
 
 		return html`
         <style>${css}</style>
@@ -57,8 +51,12 @@ export class NotificationPanel extends AbstractContentPanel {
 	  */
 	extractState(globalState) {
 		const { notifications: { notification } } = globalState;
+		const hasNotification = (candidate) => this._notifications.find(old => old.id === candidate.id);
 
-		return { notification };
+		if (notification && !hasNotification(notification)) {
+			this._add(notification);
+			return { notification };
+		}
 	}
 
 	static get tag() {
@@ -78,7 +76,7 @@ export class NotificationPanel extends AbstractContentPanel {
 	}
 
 	_remove(notification) {
-		this._notifications = this._notifications.filter(n => n.id !== notification.id && n.message !== notification.message);
+		this._notifications = this._notifications.filter(n => n.id !== notification.id);
 		this.render();
 	}
 }

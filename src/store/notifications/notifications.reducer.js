@@ -8,7 +8,7 @@ export const NOTIFICATION_ADDED = 'notification/added';
 export const LevelTypes = Object.freeze({
 	INFO: Symbol.for('info'),
 	WARN: Symbol.for('warn'),
-	ERROR: Symbol.for('error'),
+	ERROR: Symbol.for('error')
 });
 
 
@@ -16,7 +16,7 @@ export const LevelTypes = Object.freeze({
 * @typedef {Object} Notification
 * @property {string} message the notification message
 * @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
-* @property {Boolean} permanent whether the notification invalidates after 
+* @property {Boolean} permanent whether the notification invalidates after
 * a specific amount of time or stays relevant until the user decides to dismiss
 * the message
  */
