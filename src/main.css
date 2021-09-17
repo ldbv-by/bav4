@@ -52,6 +52,17 @@
     --width-mainmenu: 28em;
     --animationtime-mainmenu: 0.3s;
 
+  /* animation */
+    --animation-duration-large-open: 300ms;
+    --animation-duration-large-close: 250ms;
+    --animation-duration-medium-open: 250ms;
+    --animation-duration-medium-close: 200ms;
+    --animation-duration-small-open: 100ms;
+    --animation-duration-small-close: 75ms;
+
+    --animation-easing-open:  cubic-bezier(0.0, 0.0, 0.2, 1);
+    --animation-easing-close:  cubic-bezier(0.4, 0.0, 1, 1);
+
 }
 
 @media (min-width:135em){
