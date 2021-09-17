@@ -12,17 +12,6 @@ export const LevelTypes = Object.freeze({
 });
 
 
-/**
-* @typedef {Object} Notification
-* @property {string} message the notification message
-* @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
-* @property {Boolean} permanent whether the notification invalidates after
-* a specific amount of time or stays relevant until the user decides to dismiss
-* the message
- */
-
-
-
 export const initialState = {
 	/**
     * @type {EventLike<Notification>}
