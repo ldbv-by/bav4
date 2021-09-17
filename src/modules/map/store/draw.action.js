@@ -76,6 +76,17 @@ export const setStyle = (style) => {
 	});
 };
 
+/**
+ * set the description of a drawing.
+ * @function
+ */
+export const setDescription = (style) => {
+	getStore().dispatch({
+		type: STYLE_CHANGED,
+		payload: style
+	});
+};
+
 
 /**
  * set the {@link FileSaveResult}

@@ -2,6 +2,7 @@ export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
 export const STYLE_CHANGED = 'draw/style';
+export const DESCRIPTION_CHANGED = 'draw/description';
 export const FILE_SAVE_RESULT_CHANGED = 'draw/fileSaveResult';
 export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
@@ -25,6 +26,10 @@ export const initialState = {
 	 * @type {Object}
 	 */
 	style: null,
+	/**
+	 * @type {String}
+	 */
+	description: null,
 	/**
 	 * @type {DrawFileSaveResult}
 	 */
@@ -76,6 +81,14 @@ export const drawReducer = (state = initialState, action) => {
 			return {
 				...state,
 				style: payload
+
+			};
+		}
+		case DESCRIPTION_CHANGED: {
+
+			return {
+				...state,
+				description: payload
 
 			};
 		}
