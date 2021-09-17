@@ -26,7 +26,7 @@ const defaultStyleOption = {
 	width: 1, // used by Text, Line, Polygon
 	outlineWidth: 1, // used by Text, Polygon
 	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
-	outlinecolor: '#FFDAFF', // used by Polygon
+	outlineColor: '#FFDAFF', // used by Polygon
 	height: 10, //used by Text
 	text: '' // used by Text
 };

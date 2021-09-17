@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { setStyle } from '../../../../../src/modules/map/store/draw.action';
+import { setStyle, setType } from '../../../../../src/modules/map/store/draw.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
@@ -20,6 +20,17 @@ describe('DrawToolContent', () => {
 		type: null,
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
+	};
+
+	const StyleOptionTemplate = {
+		symbolSrc: null,
+		scale: 0.5,
+		width: 1,
+		outlineWidth: 1,
+		color: '#FFDAFF',
+		outlineColor: '#FFDAFF',
+		height: 10,
+		text: ''
 	};
 	const setup = async (drawState = drawDefaultState) => {
 		const state = {
@@ -139,20 +150,22 @@ describe('DrawToolContent', () => {
 		});
 
 		it('displays style form, when style is available', async () => {
-			const style = { symbolSrc: null, color: '#F00BA3', scale: 0.5 };
+			const style = { ...StyleOptionTemplate, color: '#f00ba3' };
 			const element = await setup();
+			const drawType = 'Symbol';
 
-
-			expect(element.shadowRoot.querySelector('#style')).toBeNull();
+			expect(element.shadowRoot.querySelector('#style_symbol')).toBeNull();
+			setType(drawType);
 			setStyle(style);
-			expect(element.shadowRoot.querySelector('#style')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#style_symbol')).toBeTruthy();
 		});
 
 		it('sets the style, after color changes in color-input', async () => {
-			const style = { symbolSrc: null, color: '#f00ba3', scale: 0.5 };
+			const style = { ...StyleOptionTemplate, color: '#f00ba3' };
 			const newColor = '#ffffff';
 			const element = await setup({ ...drawDefaultState, style });
 
+			setType('Symbol');
 			const colorInput = element.shadowRoot.querySelector('#style_color');
 			expect(colorInput).toBeTruthy();
 			expect(colorInput.value).toBe('#f00ba3');
@@ -168,14 +181,95 @@ describe('DrawToolContent', () => {
 			const newSize = '0.7';
 			const element = await setup({ ...drawDefaultState, style });
 
-			const sizeInput = element.shadowRoot.querySelector('#style_size');
-			expect(sizeInput).toBeTruthy();
-			expect(sizeInput.value).toBe('0.5');
+			setType('Symbol');
+			const scaleInput = element.shadowRoot.querySelector('#style_scale');
+			expect(scaleInput).toBeTruthy();
+			expect(scaleInput.value).toBe('0.5');
 
-			sizeInput.value = newSize;
-			sizeInput.dispatchEvent(new Event('change'));
+			scaleInput.value = newSize;
+			scaleInput.dispatchEvent(new Event('change'));
 
 			expect(store.getState().draw.style.scale).toBe(newSize);
+		});
+
+		it('sets the style, after outlineColor changes in outlineColor-input', async () => {
+			const style = { ...StyleOptionTemplate, outlineColor: '#000000' };
+			const newColor = '#bada55';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('Polygon');
+			const outlineColorInput = element.shadowRoot.querySelector('#style_outlineColor');
+			expect(outlineColorInput).toBeTruthy();
+			expect(outlineColorInput.value).toBe('#000000');
+
+			outlineColorInput.value = newColor;
+			outlineColorInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.outlineColor).toBe(newColor);
+		});
+
+		it('sets the style, after width changes in width-input', async () => {
+			const style = { ...StyleOptionTemplate, width: 1 };
+			const newWidth = '10';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('Polygon');
+			const widthInput = element.shadowRoot.querySelector('#style_width');
+			expect(widthInput).toBeTruthy();
+			expect(widthInput.value).toBe('1');
+
+			widthInput.value = newWidth;
+			widthInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.width).toBe(newWidth);
+		});
+
+		it('sets the style, after outlineWidth changes in outlineWidth-input', async () => {
+			const style = { ...StyleOptionTemplate, outLineWidth: 1 };
+			const newOutlineWidth = '10';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('Polygon');
+			const outlineWidthInput = element.shadowRoot.querySelector('#style_outlineWidth');
+			expect(outlineWidthInput).toBeTruthy();
+			expect(outlineWidthInput.value).toBe('1');
+
+			outlineWidthInput.value = newOutlineWidth;
+			outlineWidthInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.outlineWidth).toBe(newOutlineWidth);
+		});
+
+		it('sets the style, after height changes in height-input', async () => {
+			const style = { ...StyleOptionTemplate, height: 10 };
+			const newOutlineWidth = '20';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('Text');
+			const heightInput = element.shadowRoot.querySelector('#style_height');
+			expect(heightInput).toBeTruthy();
+			expect(heightInput.value).toBe('10');
+
+			heightInput.value = newOutlineWidth;
+			heightInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.height).toBe(newOutlineWidth);
+		});
+
+		it('sets the style, after text changes in text-input', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('Text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('change'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
 	});
