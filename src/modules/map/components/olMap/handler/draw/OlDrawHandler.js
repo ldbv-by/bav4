@@ -42,7 +42,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._styleService = StyleService;
 
 		this._vectorLayer = null;
-		this._drawType = null;
 		this._draw = null;
 		this._modify = null;
 		this._snap = null;
@@ -430,10 +429,20 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		this._draw = this._createDrawByType(type, styleOption);
 		this._select.getFeatures().clear();
-		if (this._modify.getActive()) {
+
+		// we deactivate the modify-interaction only,
+		// if the given drawType results in a valid draw-interaction
+		// otherwise we must force the modify-interaction to be active
+		if (this._modify.getActive() && this._draw) {
 			this._modify.setActive(false);
 		}
+		else if (this._draw == null) {
+			this._modify.setActive(true);
+		}
+
+
 		if (this._draw) {
+
 			this._draw.on('drawstart', event => {
 				this._activeSketch = event.feature;
 				this._pointCount = 1;
