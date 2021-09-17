@@ -48,6 +48,7 @@
     --z-mainmenu: 400;
     --z-header: 500;
     --z-modal: 600;
+    --z-notification: 700;
 
     --width-mainmenu: 28em;
     --animationtime-mainmenu: 0.3s;
@@ -78,7 +79,7 @@
     --secondary-color: var(--brand-secondary-light);   
     /* background */
     --primary-bg-color: var(--surface1-light);
-    --primary-bg-color-05: rgba( 255,255,255, 0.9);
+    --primary-bg-color-05: hsla(var(--brand-hue),20%,99%,0.9);
     --secondary-bg-color:var(--surface2-light); 
     --header-background-color: var(--surface3-light);    
     /* text */
