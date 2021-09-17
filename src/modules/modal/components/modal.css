@@ -25,7 +25,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   animation-name: animateIn;
   animation-duration: 250ms;
-  /* animation-delay: calc(var(--animation-order) * 20ms); */
+  animation-delay: calc(var(--animation-order) * 20ms);
   animation-fill-mode: both;
   animation-timing-function: ease-in-out;
 }
