@@ -20,7 +20,16 @@ import { noModifierKeys, singleClick } from 'ol/events/condition';
 
 export const MAX_SELECTION_SIZE = 1;
 
-const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+const defaultStyleOption = {
+	symbolSrc: null, // used by: Symbol
+	scale: 0.5, // used by Symbol
+	width: 1, // used by Text, Line, Polygon
+	outlineWidth: 1, // used by Text, Polygon
+	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
+	outlinecolor: '#FFDAFF', // used by Polygon
+	height: 10, //used by Text
+	text: '' // used by Text
+};
 
 /**
  * Handler for draw-interaction with the map
