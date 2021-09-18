@@ -2,7 +2,7 @@
  * Registers an observer for state changes of the store.
  * @function
  * @param {object} store The redux store
- * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparision
+ * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
  * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
  * @param {boolean|true} ignoreInitialState A boolean which indicate, if the callback should be initially called with the current state immediately after the observer has been registered
  * @returns  A function that unsubscribes the observer
