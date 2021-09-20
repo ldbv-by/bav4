@@ -42,8 +42,6 @@ class MvpElementImpl extends MvuElement {
 				};
 			}
 		}
-
-		super.update();
 	}
 
 	set foo(data) {
@@ -264,6 +262,23 @@ describe('MvuElement', () => {
 				expect(element.onAfterRenderCalled).toBe(7);
 				expect(onModelChangedSpy).toHaveBeenCalled();
 				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('other')).toBeTrue();
+				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
+			});
+		});
+
+		describe('when #signal is called with an unknown action type', () => {
+
+			it('does not call callbacks and does not update the view', async () => {
+				const element = await TestUtils.render(MvpElementImpl.tag);
+				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
+
+				element.signal('Unknown', 'other');
+
+				expect(element.onBeforeRenderCalled).toBe(1);
+				expect(element.onRenderCalled).toBe(2);
+				expect(element.onAfterRenderCalled).toBe(3);
+				expect(onModelChangedSpy).not.toHaveBeenCalled();
+				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBeTrue();
 				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
 			});
 		});

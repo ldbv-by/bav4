@@ -88,7 +88,7 @@ export class MvuElement extends HTMLElement {
 	 */
 	signal(type, data) {
 		const newModel = this.update(type, data, this._model);
-		if (!equals(newModel, this._model)) {
+		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
 			this.onModelChanged(this._model);
 		}
