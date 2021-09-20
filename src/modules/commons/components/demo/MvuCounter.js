@@ -49,7 +49,6 @@ export class MvuCounter extends MvuElement {
 				};
 			}
 		}
-		return super.update();
 	}
 
 
