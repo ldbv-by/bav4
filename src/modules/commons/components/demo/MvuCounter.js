@@ -76,8 +76,9 @@ export class MvuCounter extends MvuElement {
 	        <details>
     			<summary>Overview</summary>
 				
-				<div><img src="https://buildflutter.com/wp-content/uploads/2019/05/MVU.png" width="500"></div>
 				<div><img src="https://cloud.githubusercontent.com/assets/194400/25773775/b6a4b850-327b-11e7-9857-79b6972b49c3.png" width="500"></div>
+				<div><img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update.svg" width="500"></div>
+				<div><img src="https://elmprogramming.com/images/chapter-5/5.2-model-view-update-part-1/model-view-update-interaction-1.svg" width="500"></div>
 			</details>
 	    `;
 	}
