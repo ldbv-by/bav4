@@ -6,10 +6,10 @@ import css from './baElement.css';
 
 
 /**
- * Abstract base class for all BaElements.
- * BaElement classes represent the view model within the MVVM pattern.
- * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
+ * DEPRECATED
  *
+ * Abstract base class for all BaElements.
+ * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
  * Lifecycle:<br>
  *
  * <center>
@@ -46,6 +46,7 @@ import css from './baElement.css';
  * @abstract
  * @class
  * @author taulinger
+ * @deprecated
  */
 export class BaElement extends HTMLElement {
 
