@@ -84,6 +84,7 @@ export class MvuElement extends HTMLElement {
 	 * Action and data sent from the view
 	 * @param {string} type type of action
 	 * @param {Object|string|number} data data for updating the model
+	 * @protected
 	 */
 	signal(type, data) {
 		const newModel = this.update(type, data, this._model);
@@ -95,13 +96,15 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 * Updates the current model by return a copy of the current model with new or updated values.
+	 * @abstract
+	 * @protected
 	 * @param {*} type type of action
 	 * @param {*} data data to update the model
 	 * @param {*} model current model
 	 * @returns the new model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
-		throw `No model update implemented for ${type} action`;
+		throw new TypeError('Please implement abstract method #update or do not call super.update from child.');
 	}
 
 	/**

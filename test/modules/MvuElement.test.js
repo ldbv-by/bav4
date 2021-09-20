@@ -171,16 +171,16 @@ describe('MvuElement', () => {
 				expect(() => new MvuElementNoImpl().createView()).toThrowError(TypeError, 'Please implement abstract method #createView or do not call super.createView from child.');
 			});
 
+			it('throws exception when abstract #update is called without overriding', () => {
+				expect(() => new MvuElementNoImpl().update()).toThrowError(TypeError, 'Please implement abstract method #update or do not call super.update from child.');
+			});
+
 			it('throws exception when abstract static method #tag is called directly', () => {
 				expect(() => MvuElement.tag).toThrowError(TypeError, 'Can not call static abstract method #tag.');
 			});
 
 			it('throws exception when abstract static method #tag is called without overriding', () => {
 				expect(() => MvuElementNoImpl.tag).toThrowError(TypeError, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
-			});
-
-			it('throws exception when method #update is called without implementation', () => {
-				expect(() => new MvuElementNoImpl().update()).toThrow('No model update implemented for undefined action');
 			});
 		});
 
