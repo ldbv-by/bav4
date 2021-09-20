@@ -10,9 +10,9 @@ import css from './baElement.css';
  * on the Model-View-Update pattern.
  *
  * - The component holds an immutable model
- * - The view is setup and bound to the model by implementing  {@link MvuElement#createView}
- * - Model changes are defined in {@link MvuElement#update} and always return a copy of the model with new or updated values (how the model should change)
- * - Model updates are triggered by calling {@link MvuElement#signal} (when the model should change)
+ * - The View is setup and bound to the Model by implementing  {@link MvuElement#createView}
+ * - Model changes are defined in {@link MvuElement#update} and always return a copy of the Model with new or updated values (how the Model should change)
+ * - Model updates are triggered by calling {@link MvuElement#signal} (when the Model should change)
  *
  * Lifecycle:<br>
  *
@@ -52,7 +52,7 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 *
-	 * @param {object} model initial model of this component
+	 * @param {object} model initial Model of this component
 	 */
 	constructor(model = {}) {
 
@@ -70,7 +70,7 @@ export class MvuElement extends HTMLElement {
 		this._storeService = StoreService;
 
 		/**
-		 * The model of this component.
+		 * The Model of this component.
 		 * @member  {Object}
 		 * @private
 		 *
@@ -95,13 +95,13 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Updates the current model by return a copy of the current model with new or updated values.
+	 * Updates the current Model by return a copy of the current Model with new or updated values.
 	 * @abstract
 	 * @protected
 	 * @param {*} type type of action
-	 * @param {*} data data to update the model
-	 * @param {*} model current model
-	 * @returns the new model
+	 * @param {*} data data
+	 * @param {*} model current Model
+	 * @returns the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
 		throw new TypeError('Please implement abstract method #update or do not call super.update from child.');
@@ -149,11 +149,11 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the view with all data bindings
+	 * Creates the View with all data bindings
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @param {object} model the current model of this component
+	 * @param {object} model the current Model of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView(/*eslint-disable no-unused-vars */model) {
@@ -168,7 +168,7 @@ export class MvuElement extends HTMLElement {
 	initialize() { }
 
 	/**
-	 * Called before the view is rendered.
+	 * Called before the View is rendered.
 	 * @protected
 	 */
 	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
@@ -177,7 +177,7 @@ export class MvuElement extends HTMLElement {
 	 * (Re-) renders the HTML view.
 	 *
 	 * Calls of this method are usually not necessary, the component calls
-	 * this method itself after the model has changed.
+	 * this method itself after the Model has changed.
 	 *
 	 * Must not be overridden.
 	 * @protected
@@ -226,7 +226,7 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Called after the view has been rendered.
+	 * Called after the View has been rendered.
 	 * @protected
 	 */
 	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) { }
@@ -242,12 +242,12 @@ export class MvuElement extends HTMLElement {
 	onWindowLoad() { }
 
 	/**
-	 * Called after the components model has changed
+	 * Called after the components Model has changed
 	 * and triggers an update of the view
 	 * by calling {@link MvuElement#render}.
 	 *
 	 * Can be overridden.
-	 * @param {object} model the current model of this component
+	 * @param {object} model the updated Model of this component
 	 * @protected
 	 */
 	onModelChanged(/*eslint-disable no-unused-vars */model) {

@@ -8,9 +8,9 @@ import css from './baElement.css';
  * Base class for components. Improved version of {@link BaElement} and based on
  * on the Model-View-Presenter (Supervising Controller) pattern.
  *
- * The component holds a model and acts as a presenter.
- * The view is generated and bound to the model by implementing the {@link MvpElement#createView} method.
- * Changes to the model cause an update of the view (unidirectional binding).
+ * The component holds a Model and acts as a Presenter.
+ * The View is generated and bound to the Model by implementing the {@link MvpElement#createView} method.
+ * Changes to the Model cause an update of the View (unidirectional binding).
  *
  * Lifecycle:<br>
  *
@@ -58,13 +58,13 @@ export class MvpElement extends HTMLElement {
 		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
 		/**
-		 * Do not access the store in child classes. Always use {@link MvpElement#model}.
+		 * Do not access the store in child classes.
 		 * @private
 		 */
 		this._storeService = StoreService;
 
 		/**
-		 * The model of this component.
+		 * The Model of this component.
 		 * @member  {Object}
 		 * @private
 		 *
@@ -75,7 +75,8 @@ export class MvpElement extends HTMLElement {
 	}
 
 	/**
-	 * Updates the model by this data.
+	 * Updates the Model
+	 * @param {Object} data
 	 */
 	updateModel(data) {
 		Object.assign(this._model, data);
@@ -127,11 +128,11 @@ export class MvpElement extends HTMLElement {
 	}
 
 	/**
-	 * Creates the view with all data bindings
+	 * Creates the View with all data bindings
 	 * and is called by each render cycle.
 	 * @abstract
 	 * @protected
-	 * @param {object} model the model of this component
+	 * @param {object} model the Model of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
 	createView(/*eslint-disable no-unused-vars */model) {
@@ -146,7 +147,7 @@ export class MvpElement extends HTMLElement {
 	initialize() { }
 
 	/**
-	 * Called before the view is rendered.
+	 * Called before the View is rendered.
 	 * @protected
 	 */
 	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
@@ -155,7 +156,7 @@ export class MvpElement extends HTMLElement {
 	 * (Re-) renders the HTML view.
 	 *
 	 * Calls of this method are usually not necessary, the component calls
-	 * this method itself after the model has changed.
+	 * this method itself after the Model has changed.
 	 *
 	 * Must not be overridden.
 	 * @protected
@@ -220,7 +221,7 @@ export class MvpElement extends HTMLElement {
 	onWindowLoad() { }
 
 	/**
-	 * Called after the components model has changed
+	 * Called after the components Model has changed
 	 * and triggers an update of the view
 	 * by calling {@link MvpElement#render}.
 	 *
