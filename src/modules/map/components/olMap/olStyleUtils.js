@@ -47,7 +47,6 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			case 'small':
 			default:
 				return 0.5;
-
 		}
 	};
 	const markerScale = getMarkerScale(styleOption.scale) ;
@@ -73,6 +72,20 @@ export const lineStyleFunction = (styleOption = { color: false }) => {
 		})
 	})];
 };
+export const polygonStyleFunction = (styleOption = { color: false }) => {
+	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#BADA55');
+	const strokeWidth = 2;
+	return [new Style({
+		stroke: new Stroke({
+			color: strokeColor.concat([1]),
+			width: strokeWidth
+		}),
+		fill: new Fill({
+			color: strokeColor.concat([0.4])
+		})
+	})];
+};
+
 
 
 export const measureStyleFunction = (feature) => {

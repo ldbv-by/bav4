@@ -289,6 +289,11 @@ export class OlDrawHandler extends OlLayerHandler {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.LINE);
 					return styleFunction(styleOption);
 				};
+			case 'Polygon':
+				return () => {
+					const styleFunction = this._styleService.getStyleFunction(StyleTypes.POLYGON);
+					return styleFunction(styleOption);
+				};
 			default:
 				return this._styleService.getStyleFunction(StyleTypes.DRAW);
 		}
