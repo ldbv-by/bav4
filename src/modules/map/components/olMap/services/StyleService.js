@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { baseStyleFunction, markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction } from '../olStyleUtils';
 
 
 
@@ -14,7 +14,7 @@ export const StyleTypes = Object.freeze({
 	HIGHLIGHT_TEMP: 'highlight_temp',
 	DRAW: 'draw',
 	MARKER: 'marker',
-	ANNOTATION: 'annotation',
+	TEXT: 'text',
 	LINE: 'line',
 	POLYGON: 'polygon'
 });
@@ -105,7 +105,7 @@ export class StyleService {
 			case StyleTypes.MARKER:
 				return markerStyleFunction;
 			case StyleTypes.DRAW:
-				return baseStyleFunction;
+				return nullStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -142,7 +142,7 @@ export class StyleService {
 	}
 
 	_addBaseStyle(olFeature) {
-		olFeature.setStyle(baseStyleFunction);
+		olFeature.setStyle(nullStyleFunction);
 	}
 
 	_detectStyleType(olFeature) {
@@ -150,15 +150,22 @@ export class StyleService {
 			const regex = new RegExp('^' + type + '_');
 			return (regex.test(candidate));
 		};
-		let key;
+		const isDrawingStyleType = (type, candidate) => {
+			const regex = new RegExp('^draw_' + type + '_');
+			return (regex.test(candidate));
+		};
+
+		const getStyleTypeFromId = (id) => {
+			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
+			return drawingType ? drawingType : Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+		};
+
 		if (olFeature) {
 			const id = olFeature.getId();
-			key = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+
+			return getStyleTypeFromId(id);
 		}
 
-		if (key) {
-			return StyleTypes[key];
-		}
 		return null;
 	}
 }

@@ -14,11 +14,6 @@ const RED_COLOR = [255, 0, 0];
 const WHITE_COLOR = [255, 255, 255];
 const BLACK_COLOR = [0, 0, 0];
 
-
-
-export const baseStyleFunction = () => {
-	return [new Style()];
-};
 export const nullStyleFunction = () => [new Style({})];
 
 export const highlightStyleFunction = () => [new Style({
@@ -56,9 +51,9 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	})];
 };
 
-export const lineStyleFunction = (styleOption = { color: false, scale: false }) => {
+export const lineStyleFunction = (styleOption = { color: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#BADA55');
-	const strokeWidth = styleOption.scale ? styleOption.scale : 1;
+	const strokeWidth = 2;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),

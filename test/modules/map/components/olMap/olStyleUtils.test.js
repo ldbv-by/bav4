@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, baseStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -64,14 +64,6 @@ describe('nullStyleFunction', () => {
 	});
 });
 
-describe('baseStyleFunction', () => {
-	it('should return a style', () => {
-		const styles = baseStyleFunction();
-
-		expect(styles).toBeDefined();
-		expect(styles.length).toBe(1);
-	});
-});
 
 describe('highlightStyleFunction', () => {
 	it('should return a style', () => {
@@ -148,7 +140,7 @@ describe('lineStyleFunction', () => {
 		const styles = lineStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(1);
+		expect(styles[0].getStroke().getWidth()).toBe(2);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -160,7 +152,7 @@ describe('lineStyleFunction', () => {
 		expect(stroke).toBeTruthy();
 
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(0.5);
+		expect(stroke.getWidth()).toBe(2);
 	});
 
 });
@@ -187,7 +179,7 @@ describe('selectStyleFunction', () => {
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
 		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
-		feature.setStyle(baseStyleFunction);
+		feature.setStyle(nullStyleFunction);
 		const styleFunction = selectStyleFunction();
 		const styles = styleFunction(feature);
 
