@@ -21,6 +21,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_style_size_small).toBe('Klein');
 		expect(map.toolbox_drawTool_style_size_medium).toBe('Mittel');
 		expect(map.toolbox_drawTool_style_size_big).toBe('Groß');
+		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
@@ -68,6 +69,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_style_size_small).toBe('Small');
 		expect(map.toolbox_drawTool_style_size_medium).toBe('Medium');
 		expect(map.toolbox_drawTool_style_size_big).toBe('Big');
+		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
@@ -98,7 +100,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 41;
+		const expectedSize = 42;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

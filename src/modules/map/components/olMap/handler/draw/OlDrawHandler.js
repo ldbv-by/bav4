@@ -521,6 +521,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 			this._select.getFeatures().clear();
 			this._modify.setActive(false);
+			setSelectedStyle(null);
 
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
