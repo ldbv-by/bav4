@@ -133,8 +133,8 @@ export class DrawToolContent extends AbstractToolContent {
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 							</div>					
-							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_scale')}">
-								<label for="style_scale">${translate('toolbox_drawTool_style_scale')}</label>	
+							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
+								<label for="style_scale">${translate('toolbox_drawTool_style_size')}</label>	
 								<input type="number" id="style_scale" min="0.5" max="2" step="0.5" name="${translate('toolbox_drawTool_style_size')}" .value=${style.scale} @change=${onChangeScale}>
 							</div>
 						</div>
@@ -152,7 +152,7 @@ export class DrawToolContent extends AbstractToolContent {
 								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
 								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @change=${onChangeText}>
 							</div>
-							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_scale')}">
+							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_size')}">
 								<label for="style_height">${translate('toolbox_drawTool_style_size')}</label>	
 								<input type="number" id="style_height" min="5" max="30" name="${translate('toolbox_drawTool_style_scale')}" .value=${style.scale} @change=${onChangeScale}>
 							</div>
