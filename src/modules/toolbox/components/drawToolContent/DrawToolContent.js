@@ -76,7 +76,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle } = state;
+		const { type: preselectedType, style: preselectedStyle, selectedStyle } = state;
 		this._setActiveToolByType(preselectedType);
 
 		const toolTemplate = (tool) => {
@@ -104,42 +104,25 @@ export class DrawToolContent extends AbstractToolContent {
             </div>
             `;
 		};
+		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
+		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
+
 
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
 				const changedStyle = { ...style, color: e.target.value };
 				setStyle(changedStyle);
 			};
-			const onChangeOutlineColor = (e) => {
-				const changedStyle = { ...style, outlineColor: e.target.value };
-				setStyle(changedStyle);
-			};
 			const onChangeScale = (e) => {
 				const changedStyle = { ...style, scale: e.target.value };
 				setStyle(changedStyle);
 			};
-			const onChangeWidth = (e) => {
-				const changedStyle = { ...style, width: e.target.value };
-				setStyle(changedStyle);
-			};
-
-			const onChangeOutlineWidth = (e) => {
-				const changedStyle = { ...style, outlineWidth: e.target.value };
-				setStyle(changedStyle);
-			};
-
-			const onChangeHeight = (e) => {
-				const changedStyle = { ...style, height: e.target.value };
-				setStyle(changedStyle);
-			};
-
 			const onChangeText = (e) => {
 				const changedStyle = { ...style, text: e.target.value };
 				setStyle(changedStyle);
 			};
 
-
-			if (style && type) {
+			if (type && style) {
 				switch (type) {
 					case 'Symbol':
 						return html`
@@ -165,17 +148,13 @@ export class DrawToolContent extends AbstractToolContent {
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 							</div>					
-							<div class="tool-container__style_outlineColor" title="${translate('toolbox_drawTool_style_outlineColor')}">
-								<label for="style_color">${translate('toolbox_drawTool_style_outlineColor')}</label>	
-								<input type="color" id="style_outlineColor" name="${translate('toolbox_drawTool_style_outlineColor')}" .value=${style.outlineColor} @change=${onChangeOutlineColor}>						
-							</div>					
 							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
 								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
 								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @change=${onChangeText}>
 							</div>
-							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_height')}">
+							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_scale')}">
 								<label for="style_height">${translate('toolbox_drawTool_style_size')}</label>	
-								<input type="number" id="style_height" min="5" max="30" name="${translate('toolbox_drawTool_style_height')}" .value=${style.height} @change=${onChangeHeight}>
+								<input type="number" id="style_height" min="5" max="30" name="${translate('toolbox_drawTool_style_scale')}" .value=${style.scale} @change=${onChangeScale}>
 							</div>
 						</div>
 						`;
@@ -188,10 +167,6 @@ export class DrawToolContent extends AbstractToolContent {
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 							</div>					
-							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_width')}">
-								<label for="style_size">${translate('toolbox_drawTool_style_width')}</label>	
-								<input type="number" id="style_width" min="1" max="10" name="${translate('toolbox_drawTool_style_width')}" .value=${style.width} @change=${onChangeWidth}>
-							</div>
 						</div>
 						`;
 					case 'Polygon':
@@ -202,19 +177,7 @@ export class DrawToolContent extends AbstractToolContent {
 								<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 									<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 									<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
-								</div>					
-								<div class="tool-container__style_width" title="${translate('toolbox_drawTool_style_width')}">
-									<label for="style_width">${translate('toolbox_drawTool_style_width')}</label>	
-									<input type="number" id="style_width" min="1" max="10" name="${translate('toolbox_drawTool_style_width')}" .value=${style.width} @change=${onChangeWidth}>
-								</div>
-								<div class="tool-container__style_outlineColor" title="${translate('toolbox_drawTool_style_outlineColor')}">
-									<label for="style_outlineColor">${translate('toolbox_drawTool_style_outlineColor')}</label>	
-									<input type="color" id="style_outlineColor" name="${translate('toolbox_drawTool_style_outlineColor')}" .value=${style.outlineColor} @change=${onChangeOutlineColor}>						
-								</div>					
-								<div class="tool-container__style_outlineWidth" title="${translate('toolbox_drawTool_style_outlineWidth')}">
-									<label for="style_outlineWidth">${translate('toolbox_drawTool_style_outlineWidth')}</label>	
-									<input type="number" id="style_outlineWidth" min="1" max="10" name="${translate('toolbox_drawTool_style_outlineWidth')}" .value=${style.outlineWidth} @change=${onChangeOutlineWidth}>
-								</div>
+								</div>				
 							</div>
 							`;
 					default:
@@ -239,7 +202,7 @@ export class DrawToolContent extends AbstractToolContent {
                 ${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
                 </div>	
 				<div class="tool-container__form">
-				${getStyleTemplate(preselectedType, preselectedStyle)}
+				${getStyleTemplate(drawingType, drawingStyle)}
 				</div>				
                 <div class="tool-container__buttons-secondary">                         
                     <button>                                 

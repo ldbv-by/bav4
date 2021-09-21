@@ -176,9 +176,9 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
 
-		it('sets the style, after size changes in size-input', async () => {
+		it('sets the style, after scale changes in scale-input', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 0.5 };
-			const newSize = '0.7';
+			const newScale = '0.7';
 			const element = await setup({ ...drawDefaultState, style });
 
 			setType('Symbol');
@@ -186,74 +186,10 @@ describe('DrawToolContent', () => {
 			expect(scaleInput).toBeTruthy();
 			expect(scaleInput.value).toBe('0.5');
 
-			scaleInput.value = newSize;
+			scaleInput.value = newScale;
 			scaleInput.dispatchEvent(new Event('change'));
 
-			expect(store.getState().draw.style.scale).toBe(newSize);
-		});
-
-		it('sets the style, after outlineColor changes in outlineColor-input', async () => {
-			const style = { ...StyleOptionTemplate, outlineColor: '#000000' };
-			const newColor = '#bada55';
-			const element = await setup({ ...drawDefaultState, style });
-
-			setType('Polygon');
-			const outlineColorInput = element.shadowRoot.querySelector('#style_outlineColor');
-			expect(outlineColorInput).toBeTruthy();
-			expect(outlineColorInput.value).toBe('#000000');
-
-			outlineColorInput.value = newColor;
-			outlineColorInput.dispatchEvent(new Event('change'));
-
-			expect(store.getState().draw.style.outlineColor).toBe(newColor);
-		});
-
-		it('sets the style, after width changes in width-input', async () => {
-			const style = { ...StyleOptionTemplate, width: 1 };
-			const newWidth = '10';
-			const element = await setup({ ...drawDefaultState, style });
-
-			setType('Polygon');
-			const widthInput = element.shadowRoot.querySelector('#style_width');
-			expect(widthInput).toBeTruthy();
-			expect(widthInput.value).toBe('1');
-
-			widthInput.value = newWidth;
-			widthInput.dispatchEvent(new Event('change'));
-
-			expect(store.getState().draw.style.width).toBe(newWidth);
-		});
-
-		it('sets the style, after outlineWidth changes in outlineWidth-input', async () => {
-			const style = { ...StyleOptionTemplate, outLineWidth: 1 };
-			const newOutlineWidth = '10';
-			const element = await setup({ ...drawDefaultState, style });
-
-			setType('Polygon');
-			const outlineWidthInput = element.shadowRoot.querySelector('#style_outlineWidth');
-			expect(outlineWidthInput).toBeTruthy();
-			expect(outlineWidthInput.value).toBe('1');
-
-			outlineWidthInput.value = newOutlineWidth;
-			outlineWidthInput.dispatchEvent(new Event('change'));
-
-			expect(store.getState().draw.style.outlineWidth).toBe(newOutlineWidth);
-		});
-
-		it('sets the style, after height changes in height-input', async () => {
-			const style = { ...StyleOptionTemplate, height: 10 };
-			const newOutlineWidth = '20';
-			const element = await setup({ ...drawDefaultState, style });
-
-			setType('Text');
-			const heightInput = element.shadowRoot.querySelector('#style_height');
-			expect(heightInput).toBeTruthy();
-			expect(heightInput.value).toBe('10');
-
-			heightInput.value = newOutlineWidth;
-			heightInput.dispatchEvent(new Event('change'));
-
-			expect(store.getState().draw.style.height).toBe(newOutlineWidth);
+			expect(store.getState().draw.style.scale).toBe(newScale);
 		});
 
 		it('sets the style, after text changes in text-input', async () => {

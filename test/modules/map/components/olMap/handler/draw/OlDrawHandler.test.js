@@ -513,16 +513,17 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
-		describe('_getStyleFunctionByFeatureId', () => {
+		describe('_getStyleFunctionFrom', () => {
 
-			it('returns a styleFunction for a valid featureId', async () => {
+			it('returns a styleFunction for a faeture with valid featureId', async () => {
 				const styleFunctionMock = () => { };
 				setup();
 				const classUnderTest = new OlDrawHandler();
+				const featureMock = { getId: () => 'foo_bar_12345' };
 				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType').and.callFake(() => styleFunctionMock);
 
 
-				const styleFunction = classUnderTest._getStyleFunctionByFeatureId('foo_bar_12345');
+				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
 
 				expect(styleFunction).toBe(styleFunctionMock);
 				expect(typeSpy).toHaveBeenCalledWith('bar', jasmine.any(Object));
@@ -531,10 +532,11 @@ describe('OlDrawHandler', () => {
 			it('returns null for a INVALID featureId', async () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
+				const featureMock = { getId: () => 'foo' };
 				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType');
 
 
-				const styleFunction = classUnderTest._getStyleFunctionByFeatureId('foo');
+				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
 
 				expect(styleFunction).toBeNull();
 				expect(typeSpy).not.toHaveBeenCalled();

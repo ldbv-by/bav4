@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
-import { setStyle, setType } from '../../../../store/draw.action';
+import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
@@ -23,11 +23,7 @@ export const MAX_SELECTION_SIZE = 1;
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: 0.5, // used by Symbol
-	width: 1, // used by Text, Line, Polygon
-	outlineWidth: 1, // used by Text, Polygon
 	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
-	outlineColor: '#FFDAFF', // used by Polygon
-	height: 10, //used by Text
 	text: '' // used by Text
 };
 
@@ -103,7 +99,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const selectableFeatures = this._getSelectableFeatures(pixel);
 			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
-
+				setSelectedStyle(null);
 				this._setDrawState({ ...this._drawState, type: InteractionStateType.SELECT, snap: null });
 			}
 
@@ -276,17 +272,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		return features;
 	}
 
-	_getStyleFunctionByFeatureId(featureId) {
-		const type_index = 1;
-		const seperator = '_';
-		const parts = featureId.split(seperator);
-
-		if (parts.length <= type_index) {
-			return null;
-		}
-		const type = parts[type_index];
-
-		return this._getStyleFunctionByDrawType(type, this._getStyleOption());
+	_getStyleFunctionFrom(feature) {
+		const type = this._getDrawingTypeFrom(feature);
+		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
 	}
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
@@ -540,9 +528,10 @@ export class OlDrawHandler extends OlLayerHandler {
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
 		}
+
 		if (this._drawState.type === InteractionStateType.MODIFY) {
 			const feature = this._select.getFeatures().item(0);
-			const styleFunction = this._getStyleFunctionByFeatureId(feature.getId());
+			const styleFunction = this._getStyleFunctionFrom(feature);
 			const newStyles = styleFunction(feature);
 
 			const currentStyles = feature.getStyle();
@@ -550,6 +539,18 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
+		}
+
+		if (this._drawState.type === InteractionStateType.DRAW) {
+			if (this._activeSketch) {
+				const styleFunction = this._getStyleFunctionFrom(this._activeSketch);
+				const newStyles = styleFunction(this._activeSketch);
+				this._activeSketch.setStyle(newStyles);
+			}
+		}
+
+		if (this._drawState.type == null) {
+			this._startNew();
 		}
 	}
 
@@ -594,7 +595,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			const currentStyleOption = this._getStyleOption();
 			const featureColor = getColorFrom(feature);
 			const color = featureColor ? featureColor : currentStyleOption.color;
-			setStyle({ ...currentStyleOption, color: color });
+			const selectedStyle = { type: this._getDrawingTypeFrom(feature), style: { ...currentStyleOption, color: color } };
+			setSelectedStyle(selectedStyle);
 		}
 	}
 
@@ -649,6 +651,21 @@ export class OlDrawHandler extends OlLayerHandler {
 			snapType = InteractionSnapType.FACE;
 		}
 		return snapType;
+	}
+
+	_getDrawingTypeFrom(feature) {
+		if (feature) {
+			const featureId = feature.getId();
+			const type_index = 1;
+			const seperator = '_';
+			const parts = featureId.split(seperator);
+
+			if (parts.length <= type_index) {
+				return null;
+			}
+			return parts[type_index];
+		}
+		return null;
 	}
 
 	_getSnapTolerancePerDevice() {

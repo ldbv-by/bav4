@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the drwa tool
  * @module map/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED } from './draw.reducer';
+import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED } from './draw.reducer';
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
 
@@ -14,6 +14,21 @@ import { EventLike } from '../../../utils/storeUtils';
  * @property {string} fileId The fileId of the succesfully saved drawing
  */
 
+/**
+ * the Options of a Style-Request
+ * @typedef {Object} DrawingStyleOption
+ * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
+ * @property {number} scale the scale-factor of a drawing; used by symbol- and text-drawing
+ * @property {string} color the hex-string representation of a RGB-Color; used by Symbol-, Text-, Line- and Polygon-drawing
+ * @property {string} text the text-content of a Text-drawing
+ */
+
+/**
+ * the style-options for a selected drawing
+ * @typedef SelectedDrawingStyleOption
+ * @property {string} type the type of the selected drawing
+ * @property {DrawingStyleOption} style the styleOptions of the selected drawing
+ */
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -77,13 +92,27 @@ export const setStyle = (style) => {
 };
 
 /**
+ * set the style of a drawing.
+ * @function
+ * @param {SelectedDrawingStyleOption} selectedStyle the styleOptions of the selected drawing
+ */
+export const setSelectedStyle = (selectedSyle) => {
+	getStore().dispatch({
+		type: SELECTED_STYLE_CHANGED,
+		payload: selectedSyle
+	});
+};
+
+
+/**
  * set the description of a drawing.
  * @function
+ * @param {string} description the description of a drawing
  */
-export const setDescription = (style) => {
+export const setDescription = (description) => {
 	getStore().dispatch({
-		type: STYLE_CHANGED,
-		payload: style
+		type: DESCRIPTION_CHANGED,
+		payload: description
 	});
 };
 
