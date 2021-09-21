@@ -21,8 +21,8 @@ class MvpElementImpl extends MvpElement {
 		this.model.local = data;
 	}
 
-	initialize() {
-		this.initializeCalled = this.callOrderIndex++;
+	onInitialize() {
+		this.onInitializeCalled = this.callOrderIndex++;
 	}
 
 	isRenderingSkipped() {
@@ -165,7 +165,7 @@ describe('MvpElement', () => {
 		it('calls lifecycle callbacks in correct order', async () => {
 			const element = await TestUtils.render(MvpElementImpl.tag);
 
-			expect(element.initializeCalled).toBe(0);
+			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onBeforeRenderCalled).toBe(1);
 			expect(element.onRenderCalled).toBe(2);
 			expect(element.onAfterRenderCalled).toBe(3);
@@ -176,7 +176,7 @@ describe('MvpElement', () => {
 			skipRendering = true;
 			const element = await TestUtils.render(MvpElementImpl.tag);
 
-			expect(element.initializeCalled).toBe(0);
+			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onWindowLoadCalled).toBe(1);
 		});
 

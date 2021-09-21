@@ -15,7 +15,7 @@ import css from './baElement.css';
  * Lifecycle:<br>
  *
  * <center>
- *  {@link MvpElement#initialize}<br>
+ *  {@link MvpElement#onInitialize}<br>
  *      &darr;<br>
  *  {@link MvpElement#onBeforeRender}<br>
  *      &darr;<br>
@@ -95,7 +95,7 @@ export class MvpElement extends HTMLElement {
 			this.onWindowLoad();
 		});
 
-		this.initialize();
+		this.onInitialize();
 		this._initialized = true;
 
 		this.render();
@@ -144,7 +144,7 @@ export class MvpElement extends HTMLElement {
 	 * Called after after the component is connected to the DOM.
 	 * @protected
 	 */
-	initialize() { }
+	onInitialize() { }
 
 	/**
 	 * Called before the View is rendered.
