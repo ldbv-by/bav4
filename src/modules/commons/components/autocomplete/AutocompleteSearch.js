@@ -5,6 +5,7 @@ import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';
 import { MvuElement } from '../../../MvuElement';
 
+const Update_Candidates = 'update_candidates';
 /**
 
  *
@@ -16,8 +17,6 @@ import { MvuElement } from '../../../MvuElement';
  * @class
  * @author taulinger
  */
-const Update_Candidates = 'update_candidates';
-
 export class AutocompleteSearch extends MvuElement {
 
 	constructor() {

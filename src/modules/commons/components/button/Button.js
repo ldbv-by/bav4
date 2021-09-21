@@ -3,6 +3,12 @@ import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 
+
+const Init_Model = 'init_model';
+const Update_Disabled = 'update_disabled';
+const Update_Label = 'update_label';
+const Update_Type = 'update_type';
+
 /**
  * Clickable icon.
  *
@@ -28,12 +34,6 @@ import { MvuElement } from '../../../MvuElement';
  * @class
  * @author taulinger
  */
-
-const Init_Model = 'init_model';
-const Update_Disabled = 'update_disabled';
-const Update_Label = 'update_label';
-const Update_Type = 'update_type';
-
 export class Button extends MvuElement {
 
 	constructor() {
