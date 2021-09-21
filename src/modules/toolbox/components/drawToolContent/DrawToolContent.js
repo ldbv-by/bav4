@@ -79,7 +79,6 @@ export class DrawToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const { type: preselectedType, style: preselectedStyle, selectedStyle } = state;
 		this._setActiveToolByType(preselectedType);
-
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
 			const toggle = () => {

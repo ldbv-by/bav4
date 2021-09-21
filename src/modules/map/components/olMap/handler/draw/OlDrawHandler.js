@@ -539,6 +539,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
+			setSelectedStyle({ type: this._getDrawingTypeFrom(feature), style: this._getStyleOption() });
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
@@ -552,6 +553,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._drawState.type == null) {
 			this._startNew();
 		}
+
+
 	}
 
 	_monitorDrawing(feature, isDrawing) {
@@ -595,7 +598,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			const currentStyleOption = this._getStyleOption();
 			const featureColor = getColorFrom(feature);
 			const color = featureColor ? featureColor : currentStyleOption.color;
-			const selectedStyle = { type: this._getDrawingTypeFrom(feature), style: { ...currentStyleOption, color: color } };
+			const style = { ...currentStyleOption, color: color };
+			const selectedStyle = { type: this._getDrawingTypeFrom(feature), style: style };
 			setSelectedStyle(selectedStyle);
 		}
 	}
