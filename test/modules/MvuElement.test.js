@@ -247,6 +247,20 @@ describe('MvuElement', () => {
 
 	});
 
+	describe('getModel', () => {
+
+		it('return a copy of thee current model', async () => {
+			const element = await TestUtils.render(MvpElementImpl.tag);
+			const copiedModel = element.getModel();
+
+			expect(copiedModel).toEqual(element._model);
+
+			element.signal(Update_Foo, 'other');
+
+			expect(copiedModel).not.toEqual(element._model);
+		});
+	});
+
 	describe('model update', () => {
 
 		describe('when #signal is called', () => {

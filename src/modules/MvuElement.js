@@ -108,6 +108,14 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
+	 * Returns a copy of the current model.
+	 * @protected
+	 */
+	getModel() {
+		return { ...this._model };
+	}
+
+	/**
 	 * @private
 	 */
 	connectedCallback() {
