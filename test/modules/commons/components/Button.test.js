@@ -17,8 +17,6 @@ describe('Button', () => {
 
 			const element = await TestUtils.render(Button.tag, { label: 'some' });
 
-			expect(element.disabled).toBeFalse();
-
 			const button = element.shadowRoot.querySelector('button');
 			expect(button).toBeTruthy();
 			expect(button.classList.contains('button')).toBeTrue();
@@ -33,25 +31,8 @@ describe('Button', () => {
 			expect(button.innerText).toBe('foo');
 
 			element.label = 'bar';
-
 			expect(button.innerText).toBe('bar');
-
-			//allocate the same value
-			element.label = 'bar';
-
-			expect(button.innerText).toBe('bar');
-		});
-
-		it('re-renders the view when attribute \'label\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { label: 'foo' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.innerText).toBe('foo');
-
-			element.setAttribute('label', 'bar');
-
-			expect(button.innerText).toBe('bar');
+			expect(element.label).toBe('bar');
 		});
 
 		it('add the a default label when attribute is missing', async () => {
@@ -67,6 +48,16 @@ describe('Button', () => {
 		it('renders the view enabled', async () => {
 
 			const element = await TestUtils.render(Button.tag, { disabled: false });
+
+			expect(element.disabled).toBeFalse;
+			const button = element.shadowRoot.querySelector('button');
+			expect(button).toBeTruthy();
+			expect(button.classList.contains('disabled')).toBeFalse();
+		});
+
+		it('renders the view with default value', async () => {
+
+			const element = await TestUtils.render(Button.tag);
 
 			expect(element.disabled).toBeFalse;
 			const button = element.shadowRoot.querySelector('button');
@@ -94,25 +85,10 @@ describe('Button', () => {
 			element.disabled = true;
 
 			expect(button.classList.contains('disabled')).toBeTrue();
-
-			//allocate the same value
-			element.disabled = true;
-
-			expect(button.classList.contains('disabled')).toBeTrue();
-		});
-
-		it('re-renders the view when attribute \'disabled\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { disabled: 'false' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.classList.contains('disabled')).toBeFalse();
-
-			element.setAttribute('disabled', 'true');
-
-			expect(button.classList.contains('disabled')).toBeTrue();
+			expect(element.disabled).toBeTrue();
 		});
 	});
+
 	describe('when initialized with \'type\' attribute', () => {
 
 		it('renders the view with default css classes', async () => {
@@ -152,23 +128,7 @@ describe('Button', () => {
 			element.type = 'primary';
 
 			expect(button.className).toBe('button primary');
-
-			//allocate the same value
-			element.type = 'primary';
-
-			expect(button.className).toBe('button primary');
-		});
-
-		it('re-renders the view when attribute \'type\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { type: 'secondary' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.className).toBe('button secondary');
-
-			element.setAttribute('type', 'primary');
-
-			expect(button.className).toBe('button primary');
+			expect(element.type).toBe('primary');
 		});
 	});
 

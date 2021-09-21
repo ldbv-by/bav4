@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { MvuElement } from '../../../MvuElement';
 
 /**
  * Clickable icon.
@@ -12,10 +12,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * - `type` (primary|secondary)
  * - `onClick()`
  *
- * Observed Attributes:
- * - `label`
- * - `disabled`
- * - `type`
  *
  * Configurable Properties:
  * - `label`
@@ -32,40 +28,83 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * @class
  * @author taulinger
  */
-export class Button extends BaElement {
 
+const Init_Model = 'init_model';
+const Update_Disabled = 'update_disabled';
+const Update_Label = 'zpdate_label';
+const Update_Type = 'update_type';
+
+export class Button extends MvuElement {
+
+	constructor() {
+		super({
+			disabled: null,
+			label: null,
+			type: null
+		});
+	}
 
 	/**
 	 * @override
 	 */
-	initialize() {
+	onInitialize() {
 		//properties 'onClick' and 'disabled' are exposed via getter and setter
 		this._onClick = () => { };
-		this._disabled = this.getAttribute('disabled') === 'true';
-		//properties 'label' and 'type' are not exposed
-		this._label = this.getAttribute('label') || 'label';
-		this._type = this.getAttribute('type') || 'secondary';
+
+		this.signal(Init_Model, {
+			disabled: this.getAttribute('disabled') === 'true',
+			label: this.getAttribute('label') || 'label',
+			type: this.getAttribute('type') || 'secondary'
+		});
+	}
+
+	update(type, data, model) {
+
+		switch (type) {
+			case Init_Model:
+				return {
+					...model,
+					disabled: data.disabled,
+					label: data.label,
+					type: data.type
+				};
+			case Update_Disabled:
+				return {
+					...model,
+					disabled: data
+				};
+			case Update_Label:
+				return {
+					...model,
+					label: data
+				};
+			case Update_Type:
+				return {
+					...model,
+					type: data
+				};
+		}
 	}
 
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { disabled, label, type } = model;
 		const onClick = () => {
 			this._onClick();
 		};
 
-
 		const classes = {
-			primary: this._type === 'primary',
-			secondary: this._type !== 'primary',
-			disabled: this._disabled
+			primary: type === 'primary',
+			secondary: type !== 'primary',
+			disabled: disabled
 		};
 
 		return html`
 		 <style>${css}</style> 
-		 <button class='button ${classMap(classes)}' ?disabled=${this._disabled} @click=${onClick}>${this._label}</button>
+		 <button class='button ${classMap(classes)}' ?disabled=${disabled} @click=${onClick}>${label}</button>
 		`;
 	}
 
@@ -73,55 +112,28 @@ export class Button extends BaElement {
 		return 'ba-button';
 	}
 
-	static get observedAttributes() {
-		return ['disabled', 'type', 'label'];
-	}
-
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'disabled':
-				this.disabled = newValue;
-				break;
-			case 'type':
-				this.type = newValue;
-				break;
-			case 'label':
-				this.label = newValue;
-				break;
-		}
-	}
-
 	set disabled(value) {
-		if (value !== this.disabled) {
-			this._disabled = value;
-			this.render();
-		}
+		this.signal(Update_Disabled, value);
 	}
 
 	get disabled() {
-		return this._disabled;
+		return this.getModel().disabled;
 	}
 
 	set type(value) {
-		if (value !== this.type) {
-			this._type = value;
-			this.render();
-		}
+		this.signal(Update_Type, value);
 	}
 
 	get type() {
-		return this._type;
+		return this.getModel().type;
 	}
 
 	set label(value) {
-		if (value !== this.label) {
-			this._label = value;
-			this.render();
-		}
+		this.signal(Update_Label, value);
 	}
 
 	get label() {
-		return this._label;
+		return this.getModel().label;
 	}
 
 	set onClick(callback) {
