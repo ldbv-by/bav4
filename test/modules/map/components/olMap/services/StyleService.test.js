@@ -49,6 +49,19 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.MEASURE);
 		});
 
+		it('detects drawStyleTypes as type from olFeature', () => {
+			const markerFeature = { getId: () => 'draw_marker_123' };
+			const textFeature = { getId: () => 'draw_text_123' };
+			const lineFeature = { getId: () => 'draw_line_123' };
+			const polygonFeature = { getId: () => 'draw_polygon_123' };
+
+			expect(instanceUnderTest._detectStyleType(markerFeature)).toEqual(StyleTypes.MARKER);
+			expect(instanceUnderTest._detectStyleType(textFeature)).toEqual(StyleTypes.TEXT);
+			expect(instanceUnderTest._detectStyleType(lineFeature)).toEqual(StyleTypes.LINE);
+			expect(instanceUnderTest._detectStyleType(polygonFeature)).toEqual(StyleTypes.POLYGON);
+		});
+
+
 		it('detects not the type from olFeature', () => {
 			const feature1 = { getId: () => 'mea_sure_123' };
 			const feature2 = { getId: () => '123_measure_123' };

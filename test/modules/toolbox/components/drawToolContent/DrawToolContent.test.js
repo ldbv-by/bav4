@@ -177,17 +177,17 @@ describe('DrawToolContent', () => {
 		});
 
 		it('sets the style, after scale changes in scale-input', async () => {
-			const style = { symbolSrc: null, color: '#f00ba3', scale: 0.5 };
-			const newScale = '0.7';
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const newScale = 'big';
 			const element = await setup({ ...drawDefaultState, style });
 
 			setType('Symbol');
-			const scaleInput = element.shadowRoot.querySelector('#style_scale');
-			expect(scaleInput).toBeTruthy();
-			expect(scaleInput.value).toBe('0.5');
+			const sizeSelect = element.shadowRoot.querySelector('#style_size');
+			expect(sizeSelect).toBeTruthy();
+			expect(sizeSelect.value).toBe('medium');
 
-			scaleInput.value = newScale;
-			scaleInput.dispatchEvent(new Event('change'));
+			sizeSelect.value = newScale;
+			sizeSelect.dispatchEvent(new Event('change'));
 
 			expect(store.getState().draw.style.scale).toBe(newScale);
 		});

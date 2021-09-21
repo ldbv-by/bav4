@@ -5,7 +5,7 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { createSketchStyleFunction, modifyStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
-import { StyleTypes } from '../../services/StyleService';
+import { StyleSizeTypes, StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
@@ -22,7 +22,7 @@ export const MAX_SELECTION_SIZE = 1;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
-	scale: 0.5, // used by Symbol
+	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
 	text: '' // used by Text
 };

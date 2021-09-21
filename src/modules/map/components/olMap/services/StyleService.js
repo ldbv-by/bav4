@@ -1,9 +1,6 @@
 import { $injector } from '../../../../../injection';
 import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction } from '../olStyleUtils';
 
-
-
-
 /**
  * @enum
  */
@@ -17,6 +14,16 @@ export const StyleTypes = Object.freeze({
 	TEXT: 'text',
 	LINE: 'line',
 	POLYGON: 'polygon'
+});
+
+
+/**
+ * @enum
+ */
+export const StyleSizeTypes = Object.freeze({
+	SMALL: 'small',
+	MEDIUM: 'medium',
+	BIG: 'big'
 });
 
 /**
@@ -157,7 +164,14 @@ export class StyleService {
 
 		const getStyleTypeFromId = (id) => {
 			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
-			return drawingType ? drawingType : Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+			if (drawingType) {
+				return StyleTypes[drawingType];
+			}
+			const otherType = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+			if (otherType) {
+				return StyleTypes[otherType];
+			}
+			return null;
 		};
 
 		if (olFeature) {
@@ -165,7 +179,6 @@ export class StyleService {
 
 			return getStyleTypeFromId(id);
 		}
-
 		return null;
 	}
 }

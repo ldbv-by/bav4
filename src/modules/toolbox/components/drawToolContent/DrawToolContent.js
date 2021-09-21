@@ -5,6 +5,7 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { setStyle, setType } from '../../../map/store/draw.action';
 import css from './drawToolContent.css';
+import { StyleSizeTypes } from '../../../map/components/olMap/services/StyleService';
 
 
 /**
@@ -122,6 +123,10 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
+			const selectTemplate = (sizes, selectedSize) => {
+				return sizes.map((size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)} </option>)}`);
+			};
+
 			if (type && style) {
 				switch (type) {
 					case 'Symbol':
@@ -134,11 +139,15 @@ export class DrawToolContent extends AbstractToolContent {
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 							</div>					
 							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
-								<label for="style_scale">${translate('toolbox_drawTool_style_size')}</label>	
-								<input type="number" id="style_scale" min="0.5" max="2" step="0.5" name="${translate('toolbox_drawTool_style_size')}" .value=${style.scale} @change=${onChangeScale}>
+								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>	
+								<select id="style_size" @change=${onChangeScale}>
+								${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
+								</select>
+								
 							</div>
 						</div>
 						`;
+						//<input type="number" id="style_scale" min="0.5" max="2" step="0.5" name="${translate('toolbox_drawTool_style_size')}" .value=${style.scale} @change=${onChangeScale}>
 					case 'Text':
 						return html`
 						<div id='style_Text'

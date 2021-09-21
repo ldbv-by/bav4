@@ -38,7 +38,19 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
 	const markerSrc = styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon;
 	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
-	const markerScale = styleOption.scale ? styleOption.scale : 1;
+	const getMarkerScale = (sizeKeyword) => {
+		switch (sizeKeyword) {
+			case 'big':
+				return 1;
+			case 'medium':
+				return 0.75;
+			case 'small':
+			default:
+				return 0.5;
+
+		}
+	};
+	const markerScale = getMarkerScale(styleOption.scale) ;
 	return [new Style({
 		image: new Icon({
 			anchor: [0.5, 1],
