@@ -6,4 +6,4 @@ import './components/popup';
 import './components/icon';
 import './components/autocomplete';
 import './components/spinner';
-import './components/demo';
+import './components/examples';
