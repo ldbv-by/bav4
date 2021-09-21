@@ -31,7 +31,7 @@ import { MvuElement } from '../../../MvuElement';
 
 const Init_Model = 'init_model';
 const Update_Disabled = 'update_disabled';
-const Update_Label = 'zpdate_label';
+const Update_Label = 'update_label';
 const Update_Type = 'update_type';
 
 export class Button extends MvuElement {
