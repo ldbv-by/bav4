@@ -48,8 +48,8 @@ class MvpElementImpl extends MvuElement {
 		this.signal(Update_Index, data);
 	}
 
-	initialize() {
-		this.initializeCalled = this.callOrderIndex++;
+	onInitialize() {
+		this.onInitializeCalled = this.callOrderIndex++;
 	}
 
 	isRenderingSkipped() {
@@ -196,7 +196,7 @@ describe('MvuElement', () => {
 		it('calls lifecycle callbacks in correct order', async () => {
 			const element = await TestUtils.render(MvpElementImpl.tag);
 
-			expect(element.initializeCalled).toBe(0);
+			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onBeforeRenderCalled).toBe(1);
 			expect(element.onRenderCalled).toBe(2);
 			expect(element.onAfterRenderCalled).toBe(3);
@@ -207,7 +207,7 @@ describe('MvuElement', () => {
 			skipRendering = true;
 			const element = await TestUtils.render(MvpElementImpl.tag);
 
-			expect(element.initializeCalled).toBe(0);
+			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onWindowLoadCalled).toBe(1);
 		});
 

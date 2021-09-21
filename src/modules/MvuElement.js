@@ -17,7 +17,7 @@ import css from './baElement.css';
  * Lifecycle:<br>
  *
  * <center>
- *  {@link MvuElement#initialize}<br>
+ *  {@link MvuElement#onInitialize}<br>
  *      &darr;<br>
  *  {@link MvuElement#onBeforeRender}<br>
  *      &darr;<br>
@@ -116,7 +116,7 @@ export class MvuElement extends HTMLElement {
 			this.onWindowLoad();
 		});
 
-		this.initialize();
+		this.onInitialize();
 		this._initialized = true;
 
 		this.render();
@@ -165,7 +165,7 @@ export class MvuElement extends HTMLElement {
 	 * Called after after the component is connected to the DOM.
 	 * @protected
 	 */
-	initialize() { }
+	onInitialize() { }
 
 	/**
 	 * Called before the View is rendered.
