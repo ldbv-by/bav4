@@ -12,7 +12,7 @@ export class MvpCounter extends MvpElement {
 		});
 	}
 
-	initialize() {
+	onInitialize() {
 		//we synchronize the global "topics.current" property with our model
 		this.observe(state => state.topics.current, current => this.model.current = current);
 	}

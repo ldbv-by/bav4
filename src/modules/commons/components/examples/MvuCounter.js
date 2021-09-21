@@ -16,7 +16,7 @@ export class MvuCounter extends MvuElement {
 
 	}
 
-	initialize() {
+	onInitialize() {
 		//we synchronize the global "topics.current" property with our model
 		this.observe(state => state.topics.current, current => this.signal(Update_Topic, current));
 	}
