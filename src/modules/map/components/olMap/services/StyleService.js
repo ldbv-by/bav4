@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction } from '../olStyleUtils';
 
 /**
  * @enum
@@ -113,6 +113,8 @@ export class StyleService {
 				return polygonStyleFunction;
 			case StyleTypes.MARKER:
 				return markerStyleFunction;
+			case StyleTypes.TEXT:
+				return textStyleFunction;
 			case StyleTypes.DRAW:
 				return nullStyleFunction;
 			default:

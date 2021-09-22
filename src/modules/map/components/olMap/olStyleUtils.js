@@ -1,6 +1,6 @@
 
 import { getGeometryLength, canShowAzimuthCircle } from './olGeometryUtils';
-import { Fill, Stroke, Style, Circle as CircleStyle, Icon } from 'ol/style';
+import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import markerIcon from './assets/marker.svg';
 import locationIcon from './assets/location.svg';
@@ -49,7 +49,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 				return 0.5;
 		}
 	};
-	const markerScale = getMarkerScale(styleOption.scale) ;
+	const markerScale = getMarkerScale(styleOption.scale);
 	return [new Style({
 		image: new Icon({
 			anchor: [0.5, 1],
@@ -58,6 +58,40 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			src: markerSrc,
 			color: markerColor,
 			scale: markerScale
+		})
+	})];
+};
+
+export const textStyleFunction = (styleOption = { color: false, scale: false, text: false }) => {
+	const strokeColor = styleOption.color ? styleOption.color : '#BADA55';
+	const textContent = styleOption.text ? styleOption.text : 'New Text';
+	const strokeWidth = 2;
+	const getTextScale = (sizeKeyword) => {
+		switch (sizeKeyword) {
+			case 'big':
+				return 2;
+			case 'medium':
+				return 1.5;
+			case 'small':
+			default:
+				return 1;
+		}
+	};
+	const textScale = getTextScale(styleOption.scale);
+
+	return [new Style({
+		text: new TextStyle({
+			text: textContent,
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({
+				color: getContrastColorFrom(hexToRgb(strokeColor)).concat(0.4),
+				width: strokeWidth
+			}),
+			fill: new Fill({
+				color: hexToRgb(strokeColor).concat([1])
+			}),
+			scale: textScale,
+			offsetY: -5
 		})
 	})];
 };
@@ -316,7 +350,77 @@ export const hexToRgb = (hex) => {
 	});
 
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result ? [parseInt(result[1], 16),	parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+	return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+};
+
+/**
+ * Converts a color from RGB- to HSV-colorspace
+ * based on accepted answer from https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620
+ * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
+ * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
+ */
+export const rgbToHsv = (rgb) => {
+	if (rgb == null) {
+		return null;
+	}
+	if (rgb.length !== 3) {
+		return null;
+	}
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const v = Math.max(r, g, b);
+	const c = v - Math.min(r, g, b);
+	const h = c && ((v === r) ? (g - b) / c : ((v === g) ? 2 + (b - r) / c : 4 + (r - g) / c));
+	return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+};
+
+/**
+ * Converts a color from HSV- to RGB-colorspace
+ * based on accepted answer from https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
+ * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
+ * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
+ */
+export const hsvToRgb = (hsv) => {
+	if (hsv == null) {
+		return null;
+	}
+	if (hsv.length !== 3) {
+		return null;
+	}
+	const h = hsv[0] / 360;
+	const s = hsv[1];
+	const v = hsv[2];
+
+
+	const i = Math.floor(h * 6);
+	const f = h * 6 - i;
+	const p = v * (1 - s);
+	const q = v * (1 - f * s);
+	const t = v * (1 - (1 - f) * s);
+	const calculateNormalizedRgb = () => {
+		switch (i % 6) {
+			case 0:
+				return [v, t, p];
+			case 1:
+				return [q, v, p];
+			case 2:
+				return [p, v, t];
+			case 3:
+				return [p, q, v];
+			case 4:
+				return [t, p, v];
+			case 5:
+				return [v, p, q];
+		}
+	};
+
+	const normalizedRgb = calculateNormalizedRgb();
+	return [
+		Math.round(normalizedRgb[0] * 255),
+		Math.round(normalizedRgb[1] * 255),
+		Math.round(normalizedRgb[2] * 255)
+	];
 };
 
 /**
@@ -343,4 +447,28 @@ export const getColorFrom = (feature) => {
 	}
 
 	return null;
+};
+
+/**
+ *
+ * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
+ * @returns {Array<Number>} the rgb-color-array (black or white), which has better contrast to the basecolor
+ */
+export const getContrastColorFrom = (baseColor) => {
+	return baseColor[1] >= 160 ? [0, 0, 0] : [255, 255, 255];
+};
+
+/**
+ *from https://www.tutorialspoint.com/javascript-complementary-colors-builder
+ * @param {*} color
+ * @returns
+ */
+export const getComplementaryColor = (color = '') => {
+	const colorPart = color.slice(1);
+	const ind = parseInt(colorPart, 16);
+	let iter = ((1 << 4 * colorPart.length) - 1 - ind).toString(16);
+	while (iter.length < colorPart.length) {
+		iter = '0' + iter;
+	}
+	return '#' + iter;
 };

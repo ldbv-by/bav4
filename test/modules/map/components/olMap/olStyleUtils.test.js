@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -295,6 +295,86 @@ describe('hexToRgb', () => {
 		expect(hexToRgb('#fff')).toEqual([255, 255, 255]);
 	});
 });
+
+const Rgb_White = [255, 255, 255];
+const Rgb_Red = [255, 0, 0];
+const Hsv_Red = [0, 1, 1];
+const Rgb_Green = [0, 255, 0];
+const Hsv_Green = [120, 1, 1];
+const Rgb_Blue = [0, 0, 255];
+const Hsv_Blue = [240, 1, 1];
+const Rgb_Cyan = [0, 255, 255];
+const Hsv_Cyan = [180, 1, 1];
+const Rgb_Yellow = [255, 255, 0];
+const Hsv_Yellow = [60, 1, 1];
+const Rgb_Magenta = [255, 0, 255];
+const Hsv_Magenta = [300, 1, 1];
+const Rgb_Black = [0, 0, 0];
+
+describe('rgbToHsv', () => {
+
+	it('should convert a rgb-color array to a hsv-color-array', () => {
+		const tooShortArray = [0, 0];
+		expect(rgbToHsv(null)).toBeNull();
+		expect(rgbToHsv(tooShortArray)).toBeNull();
+		expect(rgbToHsv(Rgb_Red)).toEqual(Hsv_Red);
+		expect(rgbToHsv(Rgb_Green)).toEqual(Hsv_Green);
+		expect(rgbToHsv(Rgb_Blue)).toEqual(Hsv_Blue);
+		expect(rgbToHsv(Rgb_Cyan)).toEqual(Hsv_Cyan);
+		expect(rgbToHsv(Rgb_Magenta)).toEqual(Hsv_Magenta);
+		expect(rgbToHsv(Rgb_Yellow)).toEqual(Hsv_Yellow);
+	});
+});
+
+describe('hsvToRgb', () => {
+
+	it('should convert a hsv-color array to a rgb-color-array', () => {
+		const tooShortArray = [0, 0];
+		expect(hsvToRgb(null)).toBeNull();
+		expect(hsvToRgb(tooShortArray)).toBeNull();
+		expect(hsvToRgb(Hsv_Red)).toEqual(Rgb_Red);
+		expect(hsvToRgb(Hsv_Green)).toEqual(Rgb_Green);
+		expect(hsvToRgb(Hsv_Blue)).toEqual(Rgb_Blue);
+		expect(hsvToRgb(Hsv_Cyan)).toEqual(Rgb_Cyan);
+		expect(hsvToRgb(Hsv_Magenta)).toEqual(Rgb_Magenta);
+		expect(hsvToRgb(Hsv_Yellow)).toEqual(Rgb_Yellow);
+	});
+});
+
+describe('hsvToRgb', () => {
+
+	it('should convert a hsv-color array to a rgb-color-array', () => {
+		const tooShortArray = [0, 0];
+		expect(hsvToRgb(null)).toBeNull();
+		expect(hsvToRgb(tooShortArray)).toBeNull();
+		expect(hsvToRgb(Hsv_Red)).toEqual(Rgb_Red);
+		expect(hsvToRgb(Hsv_Green)).toEqual(Rgb_Green);
+		expect(hsvToRgb(Hsv_Blue)).toEqual(Rgb_Blue);
+		expect(hsvToRgb(Hsv_Cyan)).toEqual(Rgb_Cyan);
+		expect(hsvToRgb(Hsv_Magenta)).toEqual(Rgb_Magenta);
+		expect(hsvToRgb(Hsv_Yellow)).toEqual(Rgb_Yellow);
+	});
+});
+
+describe('getComplementaryColor', () => {
+
+	it('should find a color with maximum contrast', () => {
+
+		expect(getComplementaryColor(rgbToHex(Rgb_Red))).toEqual('#00ffff');
+
+	});
+});
+
+describe('getContrastColorFrom', () => {
+
+	it('should find a color with best contrast', () => {
+
+		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_White);
+		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
+
+	});
+});
+
 
 describe('colorFrom', () => {
 	const strokeStyle = new Style({

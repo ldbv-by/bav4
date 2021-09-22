@@ -221,7 +221,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Text', styleOption))
+					style: this._getStyleFunctionByDrawType('Text', styleOption)
 				});
 			case 'Line':
 				return new Draw({
@@ -282,6 +282,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			case 'Symbol':
 				return () => {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.MARKER);
+					return styleFunction(styleOption);
+				};
+			case 'Text':
+				return () => {
+					const styleFunction = this._styleService.getStyleFunction(StyleTypes.TEXT);
 					return styleFunction(styleOption);
 				};
 			case 'Line':
