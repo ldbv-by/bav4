@@ -75,5 +75,9 @@ test.describe('page', () => {
 		test('should contain a <ba-modal> component', async ({ page }) => {
 			expect(await page.$$('ba-modal')).toHaveLength(1);
 		});
+
+		test('should contain a <ba-notification-panel> component', async ({ page }) => {
+			expect(await page.$$('ba-notification-panel')).toHaveLength(1);
+		});
 	});
 });
