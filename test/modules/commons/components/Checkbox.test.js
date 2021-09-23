@@ -12,7 +12,7 @@ describe('Checkbox', () => {
 
 	describe('when initialized', () => {
 
-		it('the model contains default values', async () => {
+		it('contains default values in the model', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 
@@ -40,7 +40,7 @@ describe('Checkbox', () => {
 
 	describe('when property\'disabled\' changes', () => {
 
-		it('renders the checkbox', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
@@ -59,7 +59,7 @@ describe('Checkbox', () => {
 
 	describe('when property\'checked\' changes', () => {
 
-		it('renders the checkbox', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
@@ -78,7 +78,7 @@ describe('Checkbox', () => {
 
 	describe('when property\'title\' changes', () => {
 
-		it('renders the title of the label', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const label = element.shadowRoot.querySelector('label');
