@@ -98,9 +98,9 @@ export class MvuElement extends HTMLElement {
 	 * Updates the current Model by return a copy of the current Model with new or updated values.
 	 * @abstract
 	 * @protected
-	 * @param {*} type type of action
-	 * @param {*} data data
-	 * @param {*} model current Model
+	 * @param {string} type type of action
+	 * @param {object|number|string} data data
+	 * @param {object} model current Model
 	 * @returns the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
