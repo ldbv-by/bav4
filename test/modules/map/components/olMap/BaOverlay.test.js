@@ -47,6 +47,19 @@ describe('BaOverlay', () => {
 			expect(element.static).toBeFalse();
 			expect(element.value).toBe('foo');
 		});
+
+		it('have no effect on rendering the help view, when static is set to \'true\' ', async () => {
+			const properties = { type: BaOverlayTypes.HELP, value: 'foo', static: true };
+			const element = await setup(properties);
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('help')).toBeTrue();
+			expect(div.classList.contains('floating')).toBeFalse();
+			expect(div.classList.contains('static')).toBeFalse();
+			expect(element.type).toBe(BaOverlayTypes.HELP);
+			expect(element.static).toBeTrue();
+			expect(element.value).toBe('foo');
+		});
 	});
 
 	describe('when type changed', () => {
@@ -66,6 +79,17 @@ describe('BaOverlay', () => {
 			expect(element.type).toBe(BaOverlayTypes.HELP);
 			expect(element.static).toBeFalse();
 		});
+
+		it('renders NOT the view, when type value is unchanged', async () => {
+
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+
+			element.type = BaOverlayTypes.HELP;
+			element.type = BaOverlayTypes.HELP;
+
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('when geometry changed', () => {
@@ -79,6 +103,27 @@ describe('BaOverlay', () => {
 			expect(positionSpy).toHaveBeenCalled();
 			expect(element.geometry).toBeTruthy();
 			expect(element.position).toBeTruthy();
+		});
+	});
+
+	describe('when draggable changed', () => {
+		it('renders the changed view', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+
+			element.isDraggable = true;
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('renders NOT the view, when draggable-value is unchanged', async () => {
+			const element = await setup();
+			const spy = spyOn(element, 'render').and.callThrough();
+
+			element.isDraggable = true;
+			element.isDraggable = true;
+
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
 });
