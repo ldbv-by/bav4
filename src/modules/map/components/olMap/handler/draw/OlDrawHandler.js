@@ -381,11 +381,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		});
 		select.getFeatures().on('remove', (e) => {
 			const feature = e.element;
-			if (feature) {
-				const styles = feature.getStyle();
-				styles.pop();
-				feature.setStyle(styles);
-			}
+			const styles = feature.getStyle();
+			styles.pop();
+			feature.setStyle(styles);
 		});
 
 		return select;
@@ -675,7 +673,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const seperator = '_';
 			const parts = featureId.split(seperator);
 
-			if (parts.length <= type_index) {
+			if (parts.length <= type_index + 1) {
 				return null;
 			}
 			return parts[type_index];

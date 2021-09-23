@@ -333,7 +333,9 @@ describe('StyleService', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.HIGHLIGHT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.HIGHLIGHT_TEMP)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.MARKER)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.TEXT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.LINE)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.POLYGON)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
 		});
 

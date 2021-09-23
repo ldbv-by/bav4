@@ -161,6 +161,20 @@ describe('OlDrawHandler', () => {
 			expect(layer).toBeTruthy();
 		});
 
+		it('creates a layer to draw ONLY once', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const spy = spyOn(classUnderTest, '_createSelect').and.callThrough();
+			const map = setupMap();
+
+			const layer = classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+			classUnderTest.activate(map);
+
+			expect(layer).toBeTruthy();
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
 		describe('uses Interactions', () => {
 			it('adds Interactions', () => {
 				setup();
@@ -470,6 +484,52 @@ describe('OlDrawHandler', () => {
 				expect(initSpy).toHaveBeenCalledTimes(1);
 			});
 
+			it('updates drawing feature with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
+				feature.setId('draw_line_1234');
+				feature.setStyle([new Style(), new Style()]);
+				const drawStateFake = {
+					type: InteractionStateType.DRAW
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				classUnderTest._activeSketch = feature;
+
+				setType('Line');
+
+				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates not until drawing feature is present, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
+				feature.setId('draw_line_1234');
+				feature.setStyle([new Style(), new Style()]);
+				const drawStateFake = {
+					type: InteractionStateType.DRAW
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+
+
+				setType('Line');
+
+				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledTimes(0);
+			});
+
 			it('updates selected feature (modify) with new style, when store changes', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -490,6 +550,28 @@ describe('OlDrawHandler', () => {
 				setStyle(style);
 
 				expect(styleSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates NOT selected unstyled feature (modify) with new style, when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const feature = new Feature({ geometry: new Point([0, 0]) });
+				feature.setId('draw_Symbol_1234');
+				feature.setStyle([]);
+				const drawStateFake = {
+					type: InteractionStateType.MODIFY
+				};
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
+				setType('Symbol');
+
+				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
+				setStyle(style);
+
+				expect(styleSpy).toHaveBeenCalledWith([]);
 			});
 		});
 
@@ -754,6 +836,29 @@ describe('OlDrawHandler', () => {
 			mapEvent.dragging = dragging ? dragging : false;
 			map.dispatchEvent(mapEvent);
 		};
+
+		it('creates and activates helpTooltip', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBeTrue();
+		});
+
+		it('creates and NOT activates helpTooltip', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			expect(classUnderTest._helpTooltip).toBeDefined();
+			expect(classUnderTest._helpTooltip.active).toBeFalse();
+			expect(environmentSpy).toHaveBeenCalled();
+		});
 
 		it('change drawState, when sketch is changing', () => {
 			setup();
@@ -1097,8 +1202,39 @@ describe('OlDrawHandler', () => {
 			simulateMapMouseEvent(map, MapBrowserEventType.CLICK, 50, 50);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
+	});
 
+	describe('_getDrawingTypeFrom', () => {
+		it('get the DrawingType from valid feature', () => {
 
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const feature = new Feature({ geometry: new Point([0, 0]) });
+
+			expect(classUnderTest._getDrawingTypeFrom(null)).toBeNull();
+			feature.setId('draw_Symbol_1234');
+			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('Symbol');
+			feature.setId('draw_Foo_1234');
+			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('Foo');
+			feature.setId('draw_1234');
+			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe(null);
+		});
+	});
+
+	describe('_setDrawState', () => {
+		it('left the current drawState as it is, when value not changes', () => {
+			setup();
+			const drawStateSpy = jasmine.createSpy();
+			const classUnderTest = new OlDrawHandler();
+
+			classUnderTest._onDrawStateChanged(drawStateSpy);
+
+			const newDrawState = { ...classUnderTest._drawState };
+			classUnderTest._setDrawState(newDrawState);
+			classUnderTest._setDrawState(newDrawState);
+
+			expect(drawStateSpy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('when using EnvironmentService for snapTolerance', () => {

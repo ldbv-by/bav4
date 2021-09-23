@@ -63,9 +63,7 @@ export class HelpTooltip {
 	}
 
 	_hide() {
-		if (this._overlay) {
-			this._overlay.setPosition(undefined);
-		}
+		this._overlay.setPosition(undefined);
 	}
 
 }
