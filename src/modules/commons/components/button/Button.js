@@ -63,10 +63,7 @@ export class Button extends MvuElement {
 		switch (type) {
 			case Init_Model:
 				return {
-					...model,
-					disabled: data.disabled,
-					label: data.label,
-					type: data.type
+					...data
 				};
 			case Update_Disabled:
 				return {
@@ -85,7 +82,6 @@ export class Button extends MvuElement {
 				};
 		}
 	}
-
 
 	/**
 	 * @override
