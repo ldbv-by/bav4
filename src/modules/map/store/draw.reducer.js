@@ -28,6 +28,10 @@ export const initialState = {
 	 */
 	style: null,
 	/**
+	 * @type {Object}
+	 */
+	selectedStyle: null,
+	/**
 	 * @type {String}
 	 */
 	description: null,

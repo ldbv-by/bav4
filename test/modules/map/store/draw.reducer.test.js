@@ -1,7 +1,8 @@
 import { drawReducer } from '../../../../src/modules/map/store/draw.reducer';
-import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle } from '../../../../src/modules/map/store/draw.action';
+import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription } from '../../../../src/modules/map/store/draw.action';
 import { TestUtils } from '../../../test-utils.js';
 import { EventLike } from '../../../../src/utils/storeUtils';
+import { StyleSizeTypes, StyleTypes } from '../../../../src/modules/map/components/olMap/services/StyleService';
 
 
 
@@ -19,6 +20,8 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.mode).toBeNull();
 		expect(store.getState().draw.type).toBeNull();
 		expect(store.getState().draw.style).toBeNull();
+		expect(store.getState().draw.selectedStyle).toBeNull();
+		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
 		expect(store.getState().draw.fileSaveResult).toBeNull();
 	});
@@ -59,11 +62,29 @@ describe('drawReducer', () => {
 	it('updates the style property', () => {
 		const store = setup();
 
-		const style = { symbolSrc: 'something', color: '#BADA55', scale: 1 };
+		const style = { symbolSrc: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL };
 
 		setStyle(style);
 
-		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#BADA55', scale: 1 });
+		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL });
+	});
+
+	it('updates the selectedStyle property', () => {
+		const store = setup();
+
+		const style = { text: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL };
+		const selectedStyle = { type: StyleTypes.TEXT, style: style };
+		setSelectedStyle(selectedStyle);
+
+		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
+	});
+
+	it('updates the description property', () => {
+		const store = setup();
+
+		setDescription('some description');
+
+		expect(store.getState().draw.description).toBe('some description');
 	});
 
 	it('updates the fileSaveResult property', () => {
