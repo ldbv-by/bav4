@@ -1,9 +1,21 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 
+const Rgb_Red = [255, 0, 0];
+const Hsv_Red = [0, 1, 1];
+const Rgb_Green = [0, 255, 0];
+const Hsv_Green = [120, 1, 1];
+const Rgb_Blue = [0, 0, 255];
+const Hsv_Blue = [240, 1, 1];
+const Rgb_Cyan = [0, 255, 255];
+const Hsv_Cyan = [180, 1, 1];
+const Rgb_Yellow = [255, 255, 0];
+const Hsv_Yellow = [60, 1, 1];
+const Rgb_Magenta = [255, 0, 255];
+const Hsv_Magenta = [300, 1, 1];
 
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
@@ -113,8 +125,8 @@ describe('markerStyleFunction', () => {
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
 	});
 
-	it('should return a style specified by styleOption', () => {
-		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.5 };
+	it('should return a style specified by styleOption; small image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -126,6 +138,71 @@ describe('markerStyleFunction', () => {
 		expect(image.getSrc()).toBe(markerIcon);
 	});
 
+	it('should return a style specified by styleOption; medium image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.75);
+		expect(image.getSrc()).toBe(markerIcon);
+	});
+
+	it('should return a style specified by styleOption; big image', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'big' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(1);
+		expect(image.getSrc()).toBe(markerIcon);
+	});
+
+});
+
+
+describe('textStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = textStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a default Text', () => {
+		const styles = textStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getText().getText()).toBe('New Text');
+	});
+
+	it('should return a style specified by styleOption; big image', () => {
+		const styleOption = { color: '#BEDA55', scale: 'big', text: 'Foo' };
+		const styles = textStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const textStyle = styles[0].getText();
+		expect(textStyle.getText()).toBe('Foo');
+		expect(textStyle.getScale()).toBe(2);
+		expect(textStyle.getStroke().getColor()).toEqual([79, 90, 35, 0.4]);
+	});
+
+	it('should return a style specified by styleOption; big image', () => {
+		const styleOption = { color: '#BEDA55', scale: 'medium', text: 'Bar' };
+		const styles = textStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const textStyle = styles[0].getText();
+		expect(textStyle.getText()).toBe('Bar');
+		expect(textStyle.getScale()).toBe(1.5);
+		expect(textStyle.getStroke().getColor()).toEqual([79, 90, 35, 0.4]);
+	});
 });
 
 describe('lineStyleFunction', () => {
@@ -151,6 +228,38 @@ describe('lineStyleFunction', () => {
 		const stroke = styles[0].getStroke();
 		expect(stroke).toBeTruthy();
 
+		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
+		expect(stroke.getWidth()).toBe(2);
+	});
+
+});
+
+describe('polygonStyleFunction', () => {
+	it('should return a style', () => {
+		const styles = polygonStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+	});
+
+	it('should return a style with a default Stroke', () => {
+		const styles = polygonStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getStroke().getWidth()).toBe(2);
+	});
+
+	it('should return a style specified by styleOption', () => {
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55' };
+		const styles = polygonStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const stroke = styles[0].getStroke();
+		const fill = styles[0].getFill();
+		expect(stroke).toBeTruthy();
+		expect(fill).toBeTruthy();
+
+		expect(fill.getColor()).toEqual([190, 218, 85, 0.4]);
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
 		expect(stroke.getWidth()).toBe(2);
 	});
@@ -296,20 +405,6 @@ describe('hexToRgb', () => {
 	});
 });
 
-const Rgb_White = [255, 255, 255];
-const Rgb_Red = [255, 0, 0];
-const Hsv_Red = [0, 1, 1];
-const Rgb_Green = [0, 255, 0];
-const Hsv_Green = [120, 1, 1];
-const Rgb_Blue = [0, 0, 255];
-const Hsv_Blue = [240, 1, 1];
-const Rgb_Cyan = [0, 255, 255];
-const Hsv_Cyan = [180, 1, 1];
-const Rgb_Yellow = [255, 255, 0];
-const Hsv_Yellow = [60, 1, 1];
-const Rgb_Magenta = [255, 0, 255];
-const Hsv_Magenta = [300, 1, 1];
-const Rgb_Black = [0, 0, 0];
 
 describe('rgbToHsv', () => {
 
@@ -368,10 +463,12 @@ describe('getComplementaryColor', () => {
 describe('getContrastColorFrom', () => {
 
 	it('should find a color with best contrast', () => {
-
-		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_White);
-		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
-
+		const rgbDarkBlue = [11, 1, 57];
+		const rgbLightBlue = [36, 3, 185];
+		expect(getContrastColorFrom((Rgb_Red))).toEqual([128, 0, 0]);
+		expect(getContrastColorFrom((Rgb_Yellow))).toEqual([128, 128, 0]);
+		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(rgbLightBlue);
+		expect(getContrastColorFrom(rgbLightBlue)).toEqual(rgbDarkBlue);
 	});
 });
 

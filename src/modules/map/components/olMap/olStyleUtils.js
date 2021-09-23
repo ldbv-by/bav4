@@ -450,12 +450,20 @@ export const getColorFrom = (feature) => {
 };
 
 /**
- *
+ * creates a ligther or darker version of the specified basecolor
  * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
- * @returns {Array<Number>} the rgb-color-array (black or white), which has better contrast to the basecolor
+ * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
-	return baseColor[1] >= 160 ? [0, 0, 0] : [255, 255, 255];
+	const HSV_Brightness_Limit = .5;
+	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
+	const lighter = (hsv) => [hsv[0], hsv[1], hsv[2] + 0.5];
+	const darker = (hsv) => [hsv[0], hsv[1], hsv[2] - 0.5];
+
+	const hsv = rgbToHsv(baseColor);
+	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
+
+	return hsvToRgb(contrastHsv);
 };
 
 /**
