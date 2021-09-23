@@ -274,7 +274,7 @@ describe('ShareToolContent', () => {
 			const button = element.shadowRoot.querySelector('.preview_button');
 
 			expect(button.getAttribute('disabled')).toBe('true');
-			expect(checkbox.getAttribute('checked')).toBe('false');
+			expect(checkbox.checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer');
 		});
 

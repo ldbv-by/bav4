@@ -181,7 +181,7 @@ export class ShareToolContent extends AbstractToolContent {
 				</div>
 				<div class="ba-tool-container__content">      					                  					
 					<div class="tool-container__checkbox">						
-						<ba-checkbox tabindex='0' @toggle=${onToggle} checked=false> 
+						<ba-checkbox tabindex='0' @toggle=${onToggle} .checked=${false}> 
 							<span class="disclaimer-text">${unsafeHTML(`${translate('toolbox_shareTool_disclaimer')}`)}</span>
 						</ba-checkbox>						
 					</div>    

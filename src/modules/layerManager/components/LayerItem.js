@@ -134,7 +134,7 @@ export class LayerItem extends AbstractContentPanel {
         <div class='ba-section divider'>
             <div class='ba-list-item'>          
                 <span  class='ba-list-item__text'>
-                    <ba-checkbox title='${getVisibilityTitle()}' checked=${this._layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
+                    <ba-checkbox .title='${getVisibilityTitle()}' .checked=${this._layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
                 </span>                                         
                 <button class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
