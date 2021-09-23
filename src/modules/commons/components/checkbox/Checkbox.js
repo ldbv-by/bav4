@@ -1,38 +1,42 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './checkbox.css';
 
+const Update_Disabled = 'update_disabled';
+const Update_Checked = 'update_checked';
+const Update_Title = 'update_title';
+
 /**
- * Checkbox.
+ * Events:
+ * - onToggle()
  *
- * Configurable Attributes:
- * - `onToggle()`
- * - `checked` (true|false)
- * - `disabled` (true|false)
- * - `title`
- *
- * Configurable Properties:
- * - `onToggle()`
+ * Properties:
  * - `checked` (default=false)
- * - `title` (default='')
  * - `disabled` (default=false)
+ * - `title` (default='')
+ *
  *
  * @class
  * @author alsturm
  * @author taulinger
  */
-export class Checkbox extends BaElement {
+export class Checkbox extends MvuElement {
+
+	constructor() {
+		super({
+			checked: false,
+			disabled: false,
+			title: ''
+		});
+	}
 
 
 	/**
 	 * @override
 	 */
-	initialize() {
-		//properties 'onToggle', 'checked', 'disabled', 'title' are exposed via getter and setter
+	onInitialize() {
+
 		this._onToggle = () => { };
-		this._checked = this.getAttribute('checked') === 'true';
-		this._disabled = this.getAttribute('disabled') === 'true';
-		this._title = this.getAttribute('title') || '';
 
 		this.addEventListener('click', (event) => {
 			this._click();
@@ -49,13 +53,39 @@ export class Checkbox extends BaElement {
 		});
 	}
 
+	update(type, data, model) {
+
+		switch (type) {
+			case Update_Checked: {
+				return {
+					...model,
+					checked: data
+				};
+			}
+			case Update_Disabled: {
+				return {
+					...model,
+					disabled: data
+				};
+			}
+			case Update_Title: {
+				return {
+					...model,
+					title: data
+				};
+			}
+		}
+	}
+
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { title, disabled, checked } = model;
+
 		const onChange = (event) => {
 			const checked = event.target.checked;
-			this.checked = checked;
+			this.signal(Update_Checked, checked);
 			this.dispatchEvent(new CustomEvent('toggle', {
 				detail: { checked: checked }
 			}));
@@ -65,8 +95,8 @@ export class Checkbox extends BaElement {
 
 		return html`
         <style>${css}</style>
-		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${this._disabled} .checked=${this._checked} />
-		<label title='${this._title}' class="ba-checkbox" >
+		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${disabled} .checked=${checked} />
+		<label title='${title}' class="ba-checkbox" >
 		  		<span>
 			  	<svg width="100%" height="100%" viewbox="0 0 12 9">
 					<polyline points="1 5 4 8 11 1"></polyline>
@@ -83,59 +113,32 @@ export class Checkbox extends BaElement {
 		return 'ba-checkbox';
 	}
 
-	static get observedAttributes() {
-		return ['disabled', 'checked', 'title'];
-	}
-
 	_click() {
 		this._root.querySelector('#cbx').click();
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'disabled':
-				this.disabled = (newValue === 'true');
-				break;
-			case 'checked':
-				this.checked = (newValue === 'true');
-				break;
-			case 'title':
-				this.title = newValue;
-				break;
-		}
-	}
-
 	set title(value) {
-		if (value !== this._title) {
-			this._title = value;
-			this.render();
-		}
+		this.signal(Update_Title, value);
 	}
 
 	get title() {
-		return this._title;
+		return this.getModel().title;
 	}
 
 	set disabled(value) {
-		if (value !== this._disabled) {
-			this._disabled = value;
-			this.render();
-		}
+		this.signal(Update_Disabled, value);
 	}
 
 	get disabled() {
-		return this._disabled;
+		return this.getModel().disabled;
 	}
 
 	set checked(value) {
-		if (value !== this._checked) {
-			this._checked = value;
-			this.render();
-		}
+		this.signal(Update_Checked, value);
 	}
 
 	get checked() {
-		return this._checked;
+		return this.getModel().checked;
 	}
 
 	set onToggle(callback) {
