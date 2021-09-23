@@ -515,7 +515,7 @@ describe('OlDrawHandler', () => {
 
 		describe('_getStyleFunctionFrom', () => {
 
-			it('returns a styleFunction for a faeture with valid featureId', async () => {
+			it('returns a styleFunction for a feature with valid featureId', async () => {
 				const styleFunctionMock = () => { };
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -543,6 +543,20 @@ describe('OlDrawHandler', () => {
 			});
 
 
+		});
+
+		describe('_getStyleFunctionByDrawType', () => {
+			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+			it('returns a styleFunction', async () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+
+				expect(classUnderTest._getStyleFunctionByDrawType('Symbol', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('Text', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('Line', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('Polygon', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)()).toContain(jasmine.any(Style));
+			});
 		});
 
 

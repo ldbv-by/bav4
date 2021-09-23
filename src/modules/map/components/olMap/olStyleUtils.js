@@ -467,9 +467,10 @@ export const getContrastColorFrom = (baseColor) => {
 };
 
 /**
- *from https://www.tutorialspoint.com/javascript-complementary-colors-builder
- * @param {*} color
- * @returns
+ * creates the complementary color for the specified color
+ * from https://www.tutorialspoint.com/javascript-complementary-colors-builder
+ * @param {string} color the color as hex-string
+ * @returns {string} the complementary color as hex string
  */
 export const getComplementaryColor = (color = '') => {
 	const colorPart = color.slice(1);
