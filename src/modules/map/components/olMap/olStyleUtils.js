@@ -437,12 +437,16 @@ export const getColorFrom = (feature) => {
 		const style = styles[0];
 		const stroke = style.getStroke();
 		const image = style.getImage();
+		const text = style.getText();
 
 		if (stroke) {
 			return rgbToHex(stroke.getColor());
 		}
 		if (image && image.getColor()) {
 			return rgbToHex(image.getColor());
+		}
+		if (text) {
+			return rgbToHex(text.getFill().getColor());
 		}
 	}
 
