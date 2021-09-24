@@ -110,7 +110,8 @@ describe('Button', () => {
 		});
 
 		it('does nothing when disabled', async () => {
-			const element = await TestUtils.render(Button.tag);
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });
 			element.disabled = true;
 
 			element.onClick = jasmine.createSpy();
@@ -119,6 +120,7 @@ describe('Button', () => {
 			button.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
+			expect(window.alert).not.toHaveBeenCalledWith('called');
 		});
 
 	});

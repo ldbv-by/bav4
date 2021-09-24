@@ -119,13 +119,16 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				const element = await TestUtils.render(Checkbox.tag);
+
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
 				element.click();
 
 				expect(element.onClick).not.toHaveBeenCalled();
+				expect(window.alert).not.toHaveBeenCalledWith('called');
 				expect(element.checked).toBeFalse();
 			});
 		});
