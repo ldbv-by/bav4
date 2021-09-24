@@ -111,7 +111,6 @@ describe('Checkbox', () => {
 
 				spyOn(window, 'alert');
 				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
-				element.onToggle = jasmine.createSpy();
 
 				element.click();
 
