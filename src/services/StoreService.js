@@ -18,6 +18,7 @@ import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
 import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
+import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
 import { drawReducer } from '../modules/map/store/draw.reducer';
 
@@ -55,6 +56,7 @@ export class StoreService {
 			search: searchReducer,
 			topicsContentPanel: topicsContentPanelReducer,
 			highlight: highlightReducer,
+			notifications: notificationReducer,
 			media: createMediaReducer()
 		});
 
