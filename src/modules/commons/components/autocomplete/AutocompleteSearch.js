@@ -9,9 +9,11 @@ const Update_Candidates = 'update_candidates';
 /**
 
  *
- * Configurable Properties:
+ * Events:
+ * - `onSelect()`
+ *
+ * Properties:
  * - `provider` (SearchResult provider function)
- * - `onSelect() (callback function)`
  *
  *
  * @class
@@ -26,15 +28,14 @@ export class AutocompleteSearch extends MvuElement {
 
 		this._currentFocus = -1;
 		this._provider = null;
+
+		this._onSelect = () => { };
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Candidates:
-				return {
-					...model,
-					candidates: data
-				};
+				return { ...model, candidates: data };
 		}
 	}
 
@@ -117,7 +118,7 @@ export class AutocompleteSearch extends MvuElement {
 
 		const onInput = (e) => debounced(200, requestData(e));
 		const onClick = (candidate) => {
-			this.onSelect(candidate);
+			this._onSelect(candidate);
 			this._setSearchValue(candidate.label);
 			this._clearCandidates();
 		};
@@ -166,5 +167,27 @@ export class AutocompleteSearch extends MvuElement {
 
 	static get tag() {
 		return 'ba-autocomplete-search';
+	}
+
+	/**
+	 * @property {function} onSelect - Callback function. Will be called with the current selection as argument.
+	 */
+	set onSelect(callback) {
+		this._onSelect = callback;
+	}
+
+	get onSelect() {
+		return this._onSelect;
+	}
+
+	/**
+	 * @property {function} provider - Function that takes a term an returns an array of SearchResults
+	 */
+	set provider(provider) {
+		this._provider = provider;
+	}
+
+	get provider() {
+		return this._provider;
 	}
 }
