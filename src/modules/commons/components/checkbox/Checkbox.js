@@ -11,9 +11,9 @@ const Update_Title = 'update_title';
  * - onToggle()
  *
  * Properties:
- * - `checked` (default=false)
- * - `disabled` (default=false)
- * - `title` (default='')
+ * - `checked`
+ * - `disabled`
+ * - `title`
  *
  *
  * @class
@@ -56,24 +56,14 @@ export class Checkbox extends MvuElement {
 	update(type, data, model) {
 
 		switch (type) {
-			case Update_Checked: {
-				return {
-					...model,
-					checked: data
-				};
-			}
-			case Update_Disabled: {
-				return {
-					...model,
-					disabled: data
-				};
-			}
-			case Update_Title: {
-				return {
-					...model,
-					title: data
-				};
-			}
+			case Update_Checked:
+				return { ...model, checked: data };
+
+			case Update_Disabled:
+				return { ...model, disabled: data };
+
+			case Update_Title:
+				return { ...model, title: data };
 		}
 	}
 
@@ -117,6 +107,9 @@ export class Checkbox extends MvuElement {
 		this._root.querySelector('#cbx').click();
 	}
 
+	/**
+	 * @property {string} title='' - The title of the button
+	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
@@ -125,6 +118,9 @@ export class Checkbox extends MvuElement {
 		return this.getModel().title;
 	}
 
+	/**
+	 * @property {boolean} disabled=false - Checkbox clickable?
+	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -133,6 +129,9 @@ export class Checkbox extends MvuElement {
 		return this.getModel().disabled;
 	}
 
+	/**
+	 * @property {boolean} checked=false - Checkbox checked?
+	 */
 	set checked(value) {
 		this.signal(Update_Checked, value);
 	}
@@ -141,6 +140,9 @@ export class Checkbox extends MvuElement {
 		return this.getModel().checked;
 	}
 
+	/**
+	 * @property {function} onToggle - Callback function
+	 */
 	set onToggle(callback) {
 		this._onToggle = callback;
 	}

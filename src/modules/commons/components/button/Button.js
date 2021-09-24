@@ -38,20 +38,11 @@ export class Button extends MvuElement {
 
 		switch (type) {
 			case Update_Disabled:
-				return {
-					...model,
-					disabled: data
-				};
+				return { ...model, disabled: data };
 			case Update_Label:
-				return {
-					...model,
-					label: data
-				};
+				return { ...model, label: data };
 			case Update_Type:
-				return {
-					...model,
-					type: data
-				};
+				return { ...model, type: data };
 		}
 	}
 
@@ -80,6 +71,9 @@ export class Button extends MvuElement {
 		return 'ba-button';
 	}
 
+	/**
+	 * @property {boolean} disabled=false - Button clickable?
+	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -88,6 +82,9 @@ export class Button extends MvuElement {
 		return this.getModel().disabled;
 	}
 
+	/**
+	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary'
+	 */
 	set type(value) {
 		this.signal(Update_Type, value);
 	}
@@ -96,6 +93,9 @@ export class Button extends MvuElement {
 		return this.getModel().type;
 	}
 
+	/**
+	 * @property {string} label='' - Label of the button
+	 */
 	set label(value) {
 		this.signal(Update_Label, value);
 	}
@@ -104,6 +104,9 @@ export class Button extends MvuElement {
 		return this.getModel().label;
 	}
 
+	/**
+	 * @property {function} onClick - Callback function
+	 */
 	set onClick(callback) {
 		this._onClick = callback;
 	}
