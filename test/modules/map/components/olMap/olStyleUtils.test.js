@@ -4,6 +4,7 @@ import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 
+const Rgb_WHITE = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
 const Hsv_Red = [0, 1, 1];
 const Rgb_Green = [0, 255, 0];
@@ -16,6 +17,7 @@ const Rgb_Yellow = [255, 255, 0];
 const Hsv_Yellow = [60, 1, 1];
 const Rgb_Magenta = [255, 0, 255];
 const Hsv_Magenta = [300, 1, 1];
+const Rgb_Black = [0, 0, 0];
 
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
@@ -182,7 +184,7 @@ describe('textStyleFunction', () => {
 		expect(styles[0].getText().getText()).toBe('New Text');
 	});
 
-	it('should return a style specified by styleOption; big image', () => {
+	it('should return a style specified by styleOption; big text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'big', text: 'Foo' };
 		const styles = textStyleFunction(styleOption);
 
@@ -190,10 +192,10 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Foo');
 		expect(textStyle.getScale()).toBe(2);
-		expect(textStyle.getStroke().getColor()).toEqual([79, 90, 35, 0.4]);
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
 	});
 
-	it('should return a style specified by styleOption; big image', () => {
+	it('should return a style specified by styleOption; medium text', () => {
 		const styleOption = { color: '#BEDA55', scale: 'medium', text: 'Bar' };
 		const styles = textStyleFunction(styleOption);
 
@@ -201,7 +203,7 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1.5);
-		expect(textStyle.getStroke().getColor()).toEqual([79, 90, 35, 0.4]);
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
 	});
 });
 
@@ -465,10 +467,10 @@ describe('getContrastColorFrom', () => {
 	it('should find a color with best contrast', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightBlue = [36, 3, 185];
-		expect(getContrastColorFrom((Rgb_Red))).toEqual([128, 0, 0]);
-		expect(getContrastColorFrom((Rgb_Yellow))).toEqual([128, 128, 0]);
-		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(rgbLightBlue);
-		expect(getContrastColorFrom(rgbLightBlue)).toEqual(rgbDarkBlue);
+		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_Black);
+		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
+		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_WHITE);
+		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
 	});
 });
 

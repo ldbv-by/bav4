@@ -459,10 +459,12 @@ export const getColorFrom = (feature) => {
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
-	const HSV_Brightness_Limit = .5;
+	const HSV_Brightness_Limit = .7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
-	const lighter = (hsv) => [hsv[0], hsv[1], hsv[2] + 0.5];
-	const darker = (hsv) => [hsv[0], hsv[1], hsv[2] - 0.5];
+
+	// only Black & White
+	const lighter = (hsv) => [hsv[0], 0, 1];
+	const darker = (hsv) => [hsv[0], 0, 0];
 
 	const hsv = rgbToHsv(baseColor);
 	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
