@@ -4,28 +4,16 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 
 
-const Init_Model = 'init_model';
 const Update_Disabled = 'update_disabled';
 const Update_Label = 'update_label';
 const Update_Type = 'update_type';
 
 /**
- * Clickable icon.
- *
- * Configurable Attributes:
- * - `label`
- * - `disabled` (true|false)
- * - `type` (primary|secondary)
+ * Events;
  * - `onClick()`
  *
  *
- * Configurable Properties:
- * - `label`
- * - `disabled` (default=false)
- * - `type` (default=secondary)
- * - `onClick()`
- *
- * Observed Properties:
+ * Properties:
  * - `label`
  * - `disabled`
  * - `type`
@@ -38,33 +26,17 @@ export class Button extends MvuElement {
 
 	constructor() {
 		super({
-			disabled: null,
-			label: null,
-			type: null
+			disabled: false,
+			label: 'label',
+			type: 'secondary'
 		});
-	}
-
-	/**
-	 * @override
-	 */
-	onInitialize() {
-		//properties 'onClick' and 'disabled' are exposed via getter and setter
 		this._onClick = () => { };
-
-		this.signal(Init_Model, {
-			disabled: this.getAttribute('disabled') === 'true',
-			label: this.getAttribute('label') || 'label',
-			type: this.getAttribute('type') || 'secondary'
-		});
 	}
+
 
 	update(type, data, model) {
 
 		switch (type) {
-			case Init_Model:
-				return {
-					...data
-				};
 			case Update_Disabled:
 				return {
 					...model,
