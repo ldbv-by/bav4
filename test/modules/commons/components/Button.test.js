@@ -87,7 +87,7 @@ describe('Button', () => {
 
 	describe('when clicked', () => {
 
-		it('calls the onClick Callback via property callback', async () => {
+		it('calls the onClick callback via property binding', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			element.onClick = jasmine.createSpy();
@@ -99,7 +99,7 @@ describe('Button', () => {
 			expect(element.onClick).toHaveBeenCalled();
 		});
 
-		it('calls the onClick callback via attribute callback', async () => {
+		it('calls the onClick callback via attribute binding', async () => {
 
 			spyOn(window, 'alert');
 			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });

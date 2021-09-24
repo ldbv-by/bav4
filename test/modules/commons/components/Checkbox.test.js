@@ -152,7 +152,7 @@ describe('Checkbox', () => {
 				expect(element.checked).toBeFalse();
 			});
 
-			it('calls the onToggle callback via property callback', async () => {
+			it('calls the onToggle callback via property binding', async () => {
 
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
@@ -163,7 +163,7 @@ describe('Checkbox', () => {
 				expect(element.checked).toBeTrue();
 			});
 
-			it('calls the onToggle callback via attribute callback', async () => {
+			it('calls the onToggle callback via attribute binding', async () => {
 
 				spyOn(window, 'alert');
 				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
