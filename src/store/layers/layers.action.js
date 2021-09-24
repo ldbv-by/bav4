@@ -1,6 +1,6 @@
 /**
  * Action creators to change the list of active layers and update properties of a layer.
- * @module map/action
+ * @module layer/action
  */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY } from './layers.reducer';
 import { $injector } from '../../injection';
