@@ -187,7 +187,7 @@ export class ShareToolContent extends AbstractToolContent {
 					</div>    
 				</div>				
 				<div class="ba-tool-container__actions">           
-					<ba-button class="preview_button" type=primary label=${translate('toolbox_shareTool_preview')} disabled=true></ba-button>
+					<ba-button class="preview_button" .type=${'primary'} .label=${translate('toolbox_shareTool_preview')} .disabled=${true}></ba-button>
 				</div>           
             </div>	  
         `;

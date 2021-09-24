@@ -108,7 +108,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		const getButton = (id, title, onClick) => {
 			return html`<ba-button id=${id} 
 								class="tool-container__button" 
-								label="${title}"
+								.label=${title}
 								@click=${onClick}></ba-button>`;
 		};
 		// Start-New-Button
@@ -184,7 +184,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			};
 			return html`<ba-button id='share' 
 			class="tool-container__button" 
-			label="${title}"
+			.label=${title}
 			@click=${onClick}></ba-button>`;
 
 		}
