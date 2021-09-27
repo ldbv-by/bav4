@@ -47,12 +47,12 @@ describe('Icon', () => {
 	describe('when property\'icon\' changes', () => {
 
 		it('updates the view', async () => {
-
+			const fakeBase64Svg = 'data:image/svg+xml;base64,foo';
 			const element = await TestUtils.render(Icon.tag);
 
-			element.icon = 'some svg icon';
+			element.icon = fakeBase64Svg;
 
-			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain('some svg icon');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain(fakeBase64Svg);
 		});
 	});
 
