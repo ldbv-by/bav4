@@ -59,7 +59,7 @@ export class MvuElement extends HTMLElement {
 		super();
 		if (this.constructor === MvuElement) {
 			// Abstract class can not be constructed.
-			throw new TypeError('Can not construct abstract class.');
+			throw new Error('Can not construct abstract class.');
 		}
 		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
@@ -95,7 +95,7 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Updates the current Model by return a copy of the current Model with new or updated values.
+	 * Updates the current Model by returning a copy of the current Model with new or updated values.
 	 * @abstract
 	 * @protected
 	 * @param {string} type type of action
@@ -104,7 +104,7 @@ export class MvuElement extends HTMLElement {
 	 * @returns the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
-		throw new TypeError('Please implement abstract method #update or do not call super.update from child.');
+		throw new Error('Please implement abstract method #update or do not call super.update from child.');
 	}
 
 	/**
@@ -166,7 +166,7 @@ export class MvuElement extends HTMLElement {
 	 */
 	createView(/*eslint-disable no-unused-vars */model) {
 		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
+		throw new Error('Please implement abstract method #createView or do not call super.createView from child.');
 	}
 
 	/**
@@ -274,12 +274,12 @@ export class MvuElement extends HTMLElement {
 	static get tag() {
 		if (this === MvuElement) {
 			// Abstract methods can not be called directly.
-			throw new TypeError('Can not call static abstract method #tag.');
+			throw new Error('Can not call static abstract method #tag.');
 		}
 
 		else {
 			// The child has implemented this method but also called `super.foo()`.
-			throw new TypeError('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+			throw new Error('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 		}
 	}
 
