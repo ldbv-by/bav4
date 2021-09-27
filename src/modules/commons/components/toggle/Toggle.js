@@ -94,10 +94,6 @@ export class Toggle extends MvuElement {
 		return 'ba-toggle';
 	}
 
-	/**
-	 * Mainly for testing purposes.<br>
-	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
-	 */
 	_click() {
 		this._root.querySelector('label').click();
 	}
