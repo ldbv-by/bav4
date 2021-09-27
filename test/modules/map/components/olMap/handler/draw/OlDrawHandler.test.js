@@ -208,7 +208,7 @@ describe('OlDrawHandler', () => {
 				const layerStub = {};
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.activate(map);
-				setType('Line');
+				setType('line');
 				classUnderTest.deactivate(map, layerStub);
 
 				// removes Interaction for select, draw,modify, snap, dragPan
@@ -271,10 +271,10 @@ describe('OlDrawHandler', () => {
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 
 				classUnderTest.activate(map);
-				setType('Symbol');
+				setType('marker');
 
 				expect(classUnderTest._draw).toBeTruthy();
-				expect(initSpy).toHaveBeenCalledWith('Symbol');
+				expect(initSpy).toHaveBeenCalledWith('marker');
 			});
 
 			it('register observer for style-changes', () => {
@@ -329,7 +329,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('starts with a preselected drawType', () => {
-				const state = { ...initialState, type: 'Symbol' };
+				const state = { ...initialState, type: 'marker' };
 				setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
@@ -375,7 +375,7 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				setType('Line');
+				setType('line');
 				const draw = classUnderTest._draw;
 				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
 				expect(classUnderTest._draw.getActive()).toBeTrue();
@@ -394,10 +394,10 @@ describe('OlDrawHandler', () => {
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 
 				classUnderTest.activate(map);
-				setType('Symbol');
+				setType('marker');
 				const abortSpy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
 				expect(classUnderTest._draw.getActive()).toBeTrue();
-				setType('Line');
+				setType('line');
 				expect(initSpy).toHaveBeenCalledTimes(2);
 				expect(abortSpy).toHaveBeenCalled();
 			});
@@ -412,7 +412,7 @@ describe('OlDrawHandler', () => {
 				const warnSpy = spyOn(console, 'warn');
 
 				classUnderTest.activate(map);
-				setType('Symbol');
+				setType('marker');
 				const draw = classUnderTest._draw;
 				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
 				setType('SomethingWrong');
@@ -433,7 +433,7 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				setType('Line');
+				setType('line');
 				const draw = classUnderTest._draw;
 				const finishSpy = spyOn(draw, 'finishDrawing').and.callThrough();
 
@@ -453,7 +453,7 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 
-				setType('Line');
+				setType('line');
 				expect(classUnderTest._draw.getActive()).toBeTrue();
 
 				finish();
@@ -475,12 +475,12 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				setType('Line');
+				setType('line');
 
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 				setStyle(style);
 
-				expect(initSpy).toHaveBeenCalledWith('Line');
+				expect(initSpy).toHaveBeenCalledWith('line');
 				expect(initSpy).toHaveBeenCalledTimes(1);
 			});
 
@@ -499,7 +499,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._drawState = drawStateFake;
 				classUnderTest._activeSketch = feature;
 
-				setType('Line');
+				setType('line');
 
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
@@ -522,7 +522,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._drawState = drawStateFake;
 
 
-				setType('Line');
+				setType('line');
 
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
@@ -544,7 +544,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
 				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
-				setType('Symbol');
+				setType('marker');
 
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
@@ -566,7 +566,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
 				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
-				setType('Symbol');
+				setType('marker');
 
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
@@ -584,10 +584,10 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				classUnderTest.activate(map);
 
-				expect(classUnderTest._createDrawByType('Symbol', defaultStyleOption)).toEqual(jasmine.any(Draw));
-				expect(classUnderTest._createDrawByType('Text', defaultStyleOption)).toEqual(jasmine.any(Draw));
-				expect(classUnderTest._createDrawByType('Line', defaultStyleOption)).toEqual(jasmine.any(Draw));
-				expect(classUnderTest._createDrawByType('Polygon', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('marker', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('text', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('line', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('polygon', defaultStyleOption)).toEqual(jasmine.any(Draw));
 
 				classUnderTest._vectorLayer = null;
 				expect(classUnderTest._createDrawByType('Any', defaultStyleOption)).toBeNull();
@@ -633,9 +633,9 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 
-				expect(classUnderTest._getStyleFunctionByDrawType('Symbol', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('Text', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('Line', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('Polygon', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)()).toContain(jasmine.any(Style));
 			});
@@ -674,14 +674,14 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/draw_Line_[0-9]{13}/g);
+			expect(id).toMatch(/draw_line_[0-9]{13}/g);
 		});
 
 		it('switches to modify after drawend', () => {
@@ -692,7 +692,7 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
@@ -709,7 +709,7 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
 			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
@@ -729,7 +729,7 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 42;
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
 			feature.getGeometry().dispatchEvent('change');
@@ -748,7 +748,7 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
@@ -764,7 +764,7 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
 			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
@@ -871,7 +871,7 @@ describe('OlDrawHandler', () => {
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 
-			setType('Symbol');
+			setType('marker');
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 			classUnderTest._activeSketch = new Feature({ geometry: new Point([1, 0]) });
@@ -888,7 +888,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
@@ -910,7 +910,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
@@ -952,7 +952,7 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
-			setType('Line');
+			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
@@ -1104,7 +1104,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setType('Symbol');
+			setType('marker');
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
@@ -1128,7 +1128,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setType('Symbol');
+			setType('marker');
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
 
@@ -1160,7 +1160,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setType('Symbol');
+			setType('marker');
 			const geometry = new Point([50, 50]);
 			const feature1 = new Feature({ geometry: new Point([0, 0]) });
 			const feature2 = new Feature({ geometry: geometry });
@@ -1172,7 +1172,7 @@ describe('OlDrawHandler', () => {
 			simulateDrawEvent('drawend', classUnderTest._draw, feature1);
 			expect(classUnderTest._select).toBeDefined();
 
-			setType('Symbol');
+			setType('marker');
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature2);
 			feature2.getGeometry().dispatchEvent('change');
@@ -1212,8 +1212,8 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: new Point([0, 0]) });
 
 			expect(classUnderTest._getDrawingTypeFrom(null)).toBeNull();
-			feature.setId('draw_Symbol_1234');
-			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('Symbol');
+			feature.setId('draw_marker_1234');
+			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('marker');
 			feature.setId('draw_Foo_1234');
 			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('Foo');
 			feature.setId('draw_1234');

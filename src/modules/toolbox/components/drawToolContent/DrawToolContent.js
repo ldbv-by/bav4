@@ -26,32 +26,32 @@ export class DrawToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		return [{
 			id: 1,
-			name: 'Symbol',
+			name: 'marker',
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
-			icon: 'symbol',
-			activate: () => setType('Symbol')
+			icon: 'marker',
+			activate: () => setType('marker')
 		}, {
 			id: 2,
-			name: 'Text',
+			name: 'text',
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
-			activate: () => setType('Text')
+			activate: () => setType('text')
 		}, {
 			id: 3,
-			name: 'Line',
+			name: 'line',
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
-			activate: () => setType('Line')
+			activate: () => setType('line')
 		}, {
 			id: 4,
-			name: 'Polygon',
+			name: 'polygon',
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => setType('Polygon')
+			activate: () => setType('polygon')
 		}];
 	}
 
@@ -128,9 +128,9 @@ export class DrawToolContent extends AbstractToolContent {
 
 			if (type && style) {
 				switch (type) {
-					case 'Symbol':
+					case 'marker':
 						return html`
-						<div id='style_symbol'
+						<div id='style_marker'
 							class="tool-container__style" 
 							title='Symbol'>
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
@@ -145,7 +145,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>
 						</div>
 						`;
-					case 'Text':
+					case 'text':
 						return html`
 						<div id='style_Text'
 							class="tool-container__style" 
@@ -166,7 +166,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>							
 						</div>
 						`;
-					case 'Line':
+					case 'line':
 						return html`
 						<div id='style_line'
 							class="tool-container__style" 
@@ -177,7 +177,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>					
 						</div>
 						`;
-					case 'Polygon':
+					case 'polygon':
 						return html`
 							<div id='style_polygon'
 								class="tool-container__style" 

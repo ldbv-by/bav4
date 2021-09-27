@@ -208,35 +208,35 @@ export class OlDrawHandler extends OlLayerHandler {
 		const snapTolerance = this._getSnapTolerancePerDevice();
 
 		switch (type) {
-			case 'Symbol':
+			case 'marker':
 				return new Draw({
 					source: source,
 					type: 'Point',
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType('Symbol', styleOption)
+					style: this._getStyleFunctionByDrawType('marker', styleOption)
 				});
-			case 'Text':
+			case 'text':
 				return new Draw({
 					source: source,
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType('Text', styleOption)
+					style: this._getStyleFunctionByDrawType('text', styleOption)
 				});
-			case 'Line':
+			case 'line':
 				return new Draw({
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Line', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
 				});
-			case 'Polygon':
+			case 'polygon':
 				return new Draw({
 					source: source,
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('Polygon', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
 				});
 			default:
 				console.warn('unknown Drawtype: ' + type);
@@ -279,22 +279,22 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		switch (drawType) {
-			case 'Symbol':
+			case 'marker':
 				return () => {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.MARKER);
 					return styleFunction(styleOption);
 				};
-			case 'Text':
+			case 'text':
 				return () => {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.TEXT);
 					return styleFunction(styleOption);
 				};
-			case 'Line':
+			case 'line':
 				return () => {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.LINE);
 					return styleFunction(styleOption);
 				};
-			case 'Polygon':
+			case 'polygon':
 				return () => {
 					const styleFunction = this._styleService.getStyleFunction(StyleTypes.POLYGON);
 					return styleFunction(styleOption);
