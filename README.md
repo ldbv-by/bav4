@@ -18,14 +18,11 @@ Next-generation web-map viewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-- Modern Js (ES9), currently no transpiler
-- Model–View–ViewModel (MVVM) structuring:
-  - Data objects derived from the state store and service classes => *Model*
-  - DOM => *View*
-  - Web components  =>  *ViewModel*
+- Modern Js (ES9), no transpiler
+- Vanilla CSS 
+- Components are based on the Model–View–Update pattern
 - Built-in dependency injection
 - Map state is decoupled from map implementation
-- Vanilla CSS 
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
@@ -59,7 +56,7 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contain further directories:
-   - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
+   - `/components` : Components and all of their dependencies like CSS, assets, ...
    - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
