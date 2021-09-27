@@ -1,32 +1,39 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './themeToggle.css';
 import { toggleSchema } from '../../../../store/media/media.action';
+import { MvuElement } from '../../../MvuElement';
+
+const Update_Schema = 'update_schema';
+
 
 /**
  * Toggles the UI between a light and a dark theme
  * @class
  * @author taulinger
  */
-export class ThemeToggle extends BaElement {
+export class ThemeToggle extends MvuElement {
 
 	constructor() {
-		super();
+		super({ darkSchema: false });
 
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+
+		this.observe(state => state.media.darkSchema, darkSchema => this.signal(Update_Schema, darkSchema));
 	}
 
-	extractState(globalState) {
-		const { media: { darkSchema } } = globalState;
-		return { darkSchema };
+	update(type, data, model) {
+		switch (type) {
+			case Update_Schema:
+				return { ...model, darkSchema: data };
+		}
 	}
 
 
-	createView(state) {
+	createView(model) {
 
-		const { darkSchema } = state;
+		const { darkSchema } = model;
 		const titleSuffix = darkSchema ? 'dark' : 'light';
 		const title = this._translationService.translate(`uiTheme_toggle_tooltip_${titleSuffix}`);
 
