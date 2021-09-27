@@ -11,8 +11,8 @@ import css from './baElement.css';
  *
  * - The component holds an immutable model
  * - The View is setup and bound to the Model by implementing  {@link MvuElement#createView}
- * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model with new or updated values (*how* the Model should change)
- * - Updates of the Model are triggered by calling {@link MvuElement#signal} (*when* the Model should change)
+ * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model with new or updated data
+ * - Calling {@link MvuElement#signal} dispatches an update request containing new or updated data
  *
  * Lifecycle Hooks:<br>
  *
