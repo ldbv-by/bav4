@@ -99,8 +99,9 @@ describe('Toggle', () => {
 
 				const element = await TestUtils.render(Toggle.tag);
 				element.onToggle = jasmine.createSpy();
+				const label = element.shadowRoot.querySelector('label');
 
-				element.click();
+				label.click();
 
 				expect(element.onToggle).toHaveBeenCalled();
 				expect(element.checked).toBeTrue();
@@ -110,8 +111,9 @@ describe('Toggle', () => {
 
 				spyOn(window, 'alert');
 				const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
+				const label = element.shadowRoot.querySelector('label');
 
-				element.click();
+				label.click();
 
 				expect(window.alert).toHaveBeenCalledWith('called');
 				expect(element.checked).toBeTrue();
@@ -123,8 +125,9 @@ describe('Toggle', () => {
 				const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
+				const label = element.shadowRoot.querySelector('label');
 
-				element.click();
+				label.click();
 
 				expect(element.onClick).not.toHaveBeenCalled();
 				expect(window.alert).not.toHaveBeenCalledWith('called');
