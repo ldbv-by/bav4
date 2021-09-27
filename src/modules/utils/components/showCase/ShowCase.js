@@ -139,10 +139,10 @@ export class ShowCase extends BaElement {
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
 			<div class='icons'>		
-						<ba-icon icon='${arrowUpSvg}' @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' disabled=true @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' size=1 @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' size=2.5 @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>
 						
 			</div>
 			<p>ba-buttons</p>
