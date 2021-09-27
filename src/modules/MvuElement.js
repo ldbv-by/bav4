@@ -96,7 +96,6 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 * Updates the current Model by returning a copy of the current Model with new or updated values.
-	 * @abstract
 	 * @protected
 	 * @param {string} type type of action
 	 * @param {object|number|string} data data
@@ -104,7 +103,7 @@ export class MvuElement extends HTMLElement {
 	 * @returns the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
-		throw new Error('Please implement abstract method #update or do not call super.update from child.');
+		throw new Error('Please implement method #update before calling #signal or do not call super.update from child.');
 	}
 
 	/**

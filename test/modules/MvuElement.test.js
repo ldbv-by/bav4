@@ -169,8 +169,8 @@ describe('MvuElement', () => {
 				expect(() => new MvuElementNoImpl().createView()).toThrowError(Error, 'Please implement abstract method #createView or do not call super.createView from child.');
 			});
 
-			it('throws exception when abstract #update is called without overriding', () => {
-				expect(() => new MvuElementNoImpl().update()).toThrowError(Error, 'Please implement abstract method #update or do not call super.update from child.');
+			it('throws exception when #update is called without overriding', () => {
+				expect(() => new MvuElementNoImpl().update()).toThrowError(Error, 'Please implement method #update before calling #signal or do not call super.update from child.');
 			});
 
 			it('throws exception when abstract static method #tag is called directly', () => {
