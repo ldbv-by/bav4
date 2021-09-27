@@ -24,15 +24,6 @@ export class ThemeToggle extends BaElement {
 	}
 
 
-	onAfterRender(firsttime) {
-		if (firsttime) {
-			// register callback on toggle
-			this._root.querySelector('ba-toggle').onToggle = () => {
-				toggleSchema();
-			};
-		}
-	}
-
 	createView(state) {
 
 		const { darkSchema } = state;
@@ -41,7 +32,7 @@ export class ThemeToggle extends BaElement {
 
 		return html`
 		<style>${css}</style>
-		<ba-toggle title='${title}' checked=${darkSchema} ><div class='container'><i class='icon adjust'></i></div></ba-toggle>
+		<ba-toggle .title='${title}' .checked=${darkSchema} @toggle=${toggleSchema}><div class='container'><i class='icon adjust'></i></div></ba-toggle>
 		`;
 	}
 
