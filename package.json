@@ -1,7 +1,7 @@
 {
   "name": "bav4-nomigration",
   "dependencies": {
-    "lit-html": "^1.4.1",
+    "lit-html": "^2.0.0",
     "ol": "^6.8.1",
     "proj4": "^2.7.5",
     "redux": "^4.1.1"
