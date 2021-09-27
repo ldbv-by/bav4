@@ -6,7 +6,7 @@ import css from './baElement.css';
 
 
 /**
- * DEPRECATED
+ * DEPRECATED - please use {@link MvuElement} instead
  *
  * Abstract base class for all BaElements.
  * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.

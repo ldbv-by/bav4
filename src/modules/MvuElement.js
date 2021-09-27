@@ -11,17 +11,15 @@ import css from './baElement.css';
  *
  * - The component holds an immutable model
  * - The View is setup and bound to the Model by implementing  {@link MvuElement#createView}
- * - Model changes are defined in {@link MvuElement#update} and always return a copy of the Model with new or updated values (how the Model should change)
- * - Model updates are triggered by calling {@link MvuElement#signal} (when the Model should change)
+ * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model with new or updated values (*how* the Model should change)
+ * - Updates of the Model are triggered by calling {@link MvuElement#signal} (*when* the Model should change)
  *
- * Lifecycle:<br>
+ * Lifecycle Hooks:<br>
  *
  * <center>
  *  {@link MvuElement#onInitialize}<br>
  *      &darr;<br>
  *  {@link MvuElement#onBeforeRender}<br>
- *      &darr;<br>
- *  {@link MvuElement#render}<br>
  *      &darr;<br>
  *  {@link MvuElement#onAfterRender}<br>
  *      &darr;<br>
@@ -30,14 +28,12 @@ import css from './baElement.css';
  *  {@link MvuElement#onDisconnect}<br>
  *
  * </center>
- * Model change loop:<br>
+ * Model change hooks:<br>
  * <center>
  *
  *  {@link MvuElement#onModelChanged}<br>
  *      &darr;<br>
  *  {@link MvuElement#onBeforeRender}<br>
- *      &darr;<br>
- *  {@link MvuElement#render}<br>
  *      &darr;<br>
  *  {@link MvuElement#onAfterRender}<br>
  * </center>
@@ -82,9 +78,9 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 * Action and data sent from the view
+	 * @protected
 	 * @param {string} type type of action
 	 * @param {Object|string|number} data data for updating the model
-	 * @protected
 	 */
 	signal(type, data) {
 		const newModel = this.update(type, data, this._model);
