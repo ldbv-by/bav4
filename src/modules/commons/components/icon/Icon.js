@@ -141,7 +141,7 @@ export class Icon extends MvuElement {
 	}
 
 	/**
-	 * @property {string} icon=null - SVG icon
+	 * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
 	 */
 	set icon(value) {
 		this.signal(Update_Icon, value);
