@@ -11,14 +11,23 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { isVertexOfGeometry } from '../../olGeometryUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
+import { create as createKML, readFeatures } from '../../formats/kml';
 import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
+import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
+import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
+import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
+import { debounced } from '../../../../../../utils/timer';
 
 
 export const MAX_SELECTION_SIZE = 1;
+
+
+const Temp_Session_Id = 'temp_draw_id';
+const Debounce_Delay = 1000;
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
@@ -36,7 +45,7 @@ const defaultStyleOption = {
 export class OlDrawHandler extends OlLayerHandler {
 	constructor() {
 		super(DRAW_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, MeasurementStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'MeasurementStorageService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -45,6 +54,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
+		this._storageHandler = MeasurementStorageService;
 
 		this._vectorLayer = null;
 		this._draw = null;
@@ -83,11 +93,51 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+		const getOldLayer = (map) => {
+			return map.getLayers().getArray().find(l => l.get('id') && (
+				this._storageHandler.isStorageId(l.get('id')) ||
+				l.get('id') === Temp_Session_Id));
+		};
+
 		const createLayer = () => {
+			const translate = (key) => this._translationService.translate(key);
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source
 			});
+			layer.label = translate('map_olMap_handler_draw_layer_label');
+			return layer;
+		};
+
+		const addOldFeatures = async (layer, oldLayer) => {
+			if (oldLayer) {
+
+				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
+				if (vgr) {
+
+					this._storageHandler.setStorageId(oldLayer.get('id'));
+					vgr.getData().then(data => {
+						const oldFeatures = readFeatures(data);
+						oldFeatures.forEach(f => {
+							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+							f.set('srid', this._mapService.getSrid(), true);
+							layer.getSource().addFeature(f);
+						});
+					})
+						.then(() => removeLayer(oldLayer.get('id')))
+						.then(() => this._finish());
+				}
+			}
+		};
+
+		const getOrCreateLayer = () => {
+			const oldLayer = getOldLayer(this._map);
+			const layer = createLayer();
+			addOldFeatures(layer, oldLayer);
+			const saveDebounced = debounced(Debounce_Delay, () => this._save());
+			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
+			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
+			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
 			return layer;
 		};
 
@@ -126,12 +176,12 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._map = olMap;
 		if (!this._vectorLayer) {
-			this._vectorLayer = createLayer();
+			this._vectorLayer = getOrCreateLayer();
 			this._mapContainer = olMap.getTarget();
 			const source = this._vectorLayer.getSource();
 			this._select = this._createSelect();
-			this._select.setActive(false);
 			this._modify = this._createModify();
+			this._select.setActive(false);
 			this._modify.setActive(false);
 			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
@@ -185,9 +235,18 @@ export class OlDrawHandler extends OlLayerHandler {
 			olMap.removeInteraction(this._draw);
 		}
 
+		this._helpTooltip.deactivate();
+
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
+
+		this._convertToPermanentLayer();
 		this._draw = null;
+		this._modify = false;
+		this._select = false;
+		this._snap = false;
+		this._dragPan = false;
+		this._vectorLayer = null;
 		this._map = null;
 	}
 
@@ -340,7 +399,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	// eslint-disable-next-line no-unused-vars
 	_updateDrawMode(state) {
-		// DEBUG:console.log(state.type ? '' + state.type : 'null');
+		// DEBUG: console.log(state.type ? '' + state.type : 'null');
 		// TODO: implement here any further notifications like tooltips
 	}
 
@@ -414,9 +473,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_activateModify(feature) {
-		this._draw.setActive(false);
-		setType(null);
+		if (this._draw) {
+			this._draw.setActive(false);
+			setType(null);
 
+		}
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 
@@ -509,13 +570,11 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 	_finish() {
-		if (this._draw && this._draw.getActive()) {
-			if (this._activeSketch) {
-				this._draw.finishDrawing();
-			}
-			else {
-				this._activateModify(null);
-			}
+		if (this._activeSketch) {
+			this._draw.finishDrawing();
+		}
+		else {
+			this._activateModify(null);
 		}
 	}
 
@@ -528,8 +587,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
-
 		}
+
 	}
 
 	_updateStyle() {
@@ -627,6 +686,56 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._drawState = value;
 			this._drawStateChangedListeners.forEach(l => l(value));
 		}
+	}
+
+	async _convertToPermanentLayer() {
+		const translate = (key) => this._translationService.translate(key);
+		const label = translate('map_olMap_handler_measure_layer_label');
+
+		if (this._isEmpty()) {
+			console.warn('Cannot store empty layer');
+			return;
+		}
+
+
+		if (!this._storageHandler.isValid()) {
+			await this._save();
+		}
+
+		const createTempId = () => {
+			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: propagate the failing to UI-feedback-channel
+			console.warn('Could not store layer-data. The data will get lost after this session.');
+			return Temp_Session_Id;
+		};
+
+		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempId();
+
+		const getOrCreateVectorGeoResource = () => {
+			const fromService = this._geoResourceService.byId(id);
+			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+		};
+		const vgr = getOrCreateVectorGeoResource();
+		vgr.setSource(this._storedContent, 4326);
+
+		//register georesource
+		this._geoResourceService.addOrReplace(vgr);
+		//add a layer that displays the georesource in the map
+		addLayer(id, { label: label });
+	}
+
+
+	async _save() {
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		this._storedContent = newContent;
+	}
+
+	_isEmpty() {
+		if (this._vectorLayer) {
+			return !this._vectorLayer.getSource().getFeatures().length > 0;
+		}
+		return true;
 	}
 
 	_getSnapState(pixel) {

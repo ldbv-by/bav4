@@ -58,6 +58,20 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
+	const measurementStorageServiceMock = {
+		async store() { },
+		isValid() {
+			return false;
+		},
+		isStorageId() {
+			return false;
+		},
+		setStorageId() { },
+		getStorageId() {
+			return null;
+		}
+	};
+
 	const fileStorageServiceMock = {
 		async save() {
 			return { fileId: 'saveFooBarBazId' };
@@ -92,6 +106,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -168,7 +183,6 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			const layer = classUnderTest.activate(map);
-			classUnderTest.deactivate(map);
 			classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
