@@ -1,8 +1,15 @@
 /* eslint-disable no-undef */
 import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
+import checkedIcon from '../../../../../src/modules/map/components/contextMenu/assets/checked.svg';
+import clipboardIcon from '../../../../../src/modules/map/components/contextMenu/assets/clipboard.svg';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
+
+
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
+window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
 
@@ -24,10 +31,16 @@ describe('OlMapContextMenuContent', () => {
 	const administrationServiceMock = {
 		getAdministration() { }
 	};
+	let store;
 
 	const setup = () => {
+		const state = {
+			notifications: {
+				notification: null
+			}
+		};
 
-		TestUtils.setupStoreAndDi();
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
@@ -47,6 +60,7 @@ describe('OlMapContextMenuContent', () => {
 	});
 
 	describe('when screen coordinate available', () => {
+
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
 			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
@@ -89,7 +103,7 @@ describe('OlMapContextMenuContent', () => {
 
 		});
 
-		it('copies a coordinate to the clipboard', async () => {
+		it('copies a coordinate to the clipboard', async (done) => {
 			const coordinateMock = [1000, 2000];
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
@@ -103,14 +117,24 @@ describe('OlMapContextMenuContent', () => {
 			element.coordinate = coordinateMock;
 
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
-			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
 
-
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
+			//check icon change
+			expect(copyIcon.color).toBe('var(--sucess-color)');
+			expect(copyIcon.color_hover).toBe('var(--sucess-color)');
+			expect(copyIcon.icon).toBe(checkedIcon);
+
+			//check icon reset after one second
+			setTimeout(() => {
+				expect(copyIcon.color).toBe('var(--primary-color)');
+				expect(copyIcon.color_hover).toBe('var(--primary-color)');
+				expect(copyIcon.icon).toBe(clipboardIcon);
+				done();
+			}, 1000 + 100);
 		});
 
-		it('logs a warn statement when Clipboard API is not available', async (done) => {
+		it('fires a notification and logs a warn statement when Clipboard API is not available', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
@@ -126,6 +150,9 @@ describe('OlMapContextMenuContent', () => {
 			copyIcon.click();
 
 			setTimeout(() => {
+				expect(copyIcon.disabled).toBeTrue();
+				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
+				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 				done();
 			});

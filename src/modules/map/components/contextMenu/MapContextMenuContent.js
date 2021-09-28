@@ -2,7 +2,10 @@ import { html, nothing } from 'lit-html';
 import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
+import checkedIcon from './assets/checked.svg';
 import { MvuElement } from '../../../MvuElement';
+import { emitNotification } from '../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Altitude = 'update_altitude';
@@ -94,6 +97,38 @@ export class MapContextMenuContent extends MvuElement {
 		}
 	}
 
+	_copyCoordinateToClipboard(transformedCoordinate, iconId) {
+		const baIcon = this.getRenderTarget().querySelector(`#${iconId}`);
+		const color = baIcon.color;
+		const color_hover = baIcon.color_hover;
+		const onClickCallback = baIcon.onClick;
+		const successColor = 'var(--sucess-color)';
+
+		//change the icon
+		baIcon.color = successColor;
+		baIcon.color_hover = successColor;
+		baIcon.icon = checkedIcon;
+		baIcon.onClick = () => { };
+
+		this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {
+			setTimeout(() => {
+				//reset the icon
+				baIcon.icon = clipboardIcon;
+				baIcon.color = color;
+				baIcon.color_hover = color_hover;
+				baIcon.onClick = onClickCallback;
+			}, 1000);
+		}, () => {
+			emitNotification(this._translationService.translate('map_contextMenuContent_clipboard_error'), LevelTypes.WARN);
+			console.warn('Clipboard API not available');
+			//disable the icon
+			baIcon.icon = clipboardIcon;
+			baIcon.color = color;
+			baIcon.color_hover = color_hover;
+			baIcon.disabled = true;
+		});
+	}
+
 
 	createView(model) {
 
@@ -105,17 +140,18 @@ export class MapContextMenuContent extends MvuElement {
 			const sridDefinitions = this._mapService.getSridDefinitionsForView(coordinate);
 			const stringifiedCoords = sridDefinitions.map(definition => {
 				const { label, code } = definition;
+				const iconId = `icon${code}`;
 				const transformedCoordinate = this._coordinateService.transform(coordinate, this._mapService.getSrid(), code);
-
-				const copyCoordinate = () => {
-					this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => { }, () => {
-						console.warn('Clipboard API not available');
-					});
+				const onClick = () => {
+					this._copyCoordinateToClipboard(transformedCoordinate, iconId);
 				};
-
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
-				return html`<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
-				<span class='icon'><ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${copyCoordinate}></ba-icon></span>`;
+				return html`
+				<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
+				<span class='icon'>
+					<ba-icon id=${iconId} class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${onClick}></ba-icon>
+				</span>
+				`;
 			});
 
 

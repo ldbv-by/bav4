@@ -13,6 +13,7 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_community_label).toBe('Community');
 		expect(map.map_contextMenuContent_district_label).toBe('District');
 		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');
+		expect(map.map_contextMenuContent_clipboard_error).toBe('"Copy to clipboard" is not available');
 	});
 
 
@@ -26,10 +27,11 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_community_label).toBe('Gemeinde');
 		expect(map.map_contextMenuContent_district_label).toBe('Gemarkung');
 		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');
+		expect(map.map_contextMenuContent_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 6;
+		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
