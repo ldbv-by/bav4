@@ -1515,6 +1515,17 @@ describe('OlDrawHandler', () => {
 
 	});
 
+	describe('when using util _getFeatureSnapOption', () => {
+		it('returns a object with afilter-function, which returns true for the defined layer', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const mockLayer = {};
+
+			const option = classUnderTest._getFeatureSnapOption(mockLayer);
+			expect(option.layerFilter(mockLayer)).toBeTrue();
+
+		});
+	});
 
 	describe('when using util _Empty', () => {
 		it('evaluates the _vectorLayer-object', () => {

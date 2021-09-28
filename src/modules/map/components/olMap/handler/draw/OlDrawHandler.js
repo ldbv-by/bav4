@@ -310,20 +310,21 @@ export class OlDrawHandler extends OlLayerHandler {
 	_getSelectableFeatures(pixel) {
 		const features = [];
 		const interactionLayer = this._vectorLayer;
-		const featureSnapOption = {
-			hitTolerance: 10,
-			layerFilter: itemLayer => {
-				return itemLayer === interactionLayer;
-			}
-		};
 
 		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
 			if (layer === interactionLayer) {
 				features.push(feature);
 			}
-		}, featureSnapOption);
+		}, this._getFeatureSnapOption(interactionLayer));
 
 		return features;
+	}
+
+	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
+		const filter = modifiedFeaturesOnly ?
+			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
+			itemLayer => itemLayer === interactionLayer;
+		return { hitTolerance: 10, layerFilter: filter } ;
 	}
 
 	_getStyleFunctionFrom(feature) {
@@ -719,12 +720,6 @@ export class OlDrawHandler extends OlLayerHandler {
 	_getSnapState(pixel) {
 		let snapType = null;
 		const interactionLayer = this._vectorLayer;
-		const featureSnapOption = {
-			hitTolerance: 10,
-			layerFilter: itemLayer => {
-				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-			}
-		};
 		let vertexFeature = null;
 		let featuresFromInteractionLayerCount = 0;
 		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
@@ -735,7 +730,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				vertexFeature = feature;
 				return;
 			}
-		}, featureSnapOption);
+		}, this._getFeatureSnapOption(interactionLayer, true));
 
 		if (vertexFeature) {
 			snapType = InteractionSnapType.EGDE;
