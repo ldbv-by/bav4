@@ -6,6 +6,12 @@ const Update_Counter = 'update_counter';
 const Update_Topic = 'update_topic';
 const Update_Feedback = 'update_feedback';
 
+/**
+ * Example implementation of {@link MvuElement}.
+ *
+ * @class
+ * @author taulinger
+ */
 export class MvuCounter extends MvuElement {
 
 	constructor() {
