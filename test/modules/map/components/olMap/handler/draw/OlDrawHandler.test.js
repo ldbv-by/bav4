@@ -625,6 +625,30 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
+		it('looks for measurement-layer and gets no georesource', (done) => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => { });
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+
+			setTimeout(() => {
+				expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+				expect(storageSpy).not.toHaveBeenCalled();
+				expect(addFeatureSpy).not.toHaveBeenCalled();
+				done();
+			});
+		});
+
 		it('looks for temporary measurement-layer and adds the feature to session-layer', (done) => {
 			const state = { ...initialState, fileSaveResult: null };
 			setup(state);
