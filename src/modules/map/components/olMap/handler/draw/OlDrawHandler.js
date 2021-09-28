@@ -21,6 +21,7 @@ import { FileStorageServiceDataTypes } from '../../../../../../services/FileStor
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
+import { setMode } from '../../../../store/measurement.action';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -397,10 +398,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._setDrawState(drawState);
 	}
 
-	// eslint-disable-next-line no-unused-vars
-	_updateDrawMode(state) {
+	_updateDrawMode(drawState) {
 		// DEBUG: console.log(state.type ? '' + state.type : 'null');
-		// TODO: implement here any further notifications like tooltips
+		if (this._lastInteractionStateType !== drawState.type && drawState.type !== InteractionStateType.OVERLAY) {
+			this._lastInteractionStateType = drawState.type;
+			setMode(this._lastInteractionStateType);
+		}
 	}
 
 
