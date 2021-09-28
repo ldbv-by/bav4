@@ -33,7 +33,7 @@ describe('ThemeToggle', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('ba-toggle').title).toBe('uiTheme_toggle_tooltip_dark');
-			expect(element.shadowRoot.querySelector('ba-toggle').getAttribute('checked')).toBe('true');
+			expect(element.shadowRoot.querySelector('ba-toggle').checked).toBeTrue();
 			expect(element.shadowRoot.querySelector('.icon.adjust')).toBeTruthy();
 		});
 	});
@@ -42,10 +42,10 @@ describe('ThemeToggle', () => {
 		it('changes the theme', async () => {
 			const element = await setup();
 
-			element.shadowRoot.querySelector('ba-toggle').click();
+			element.shadowRoot.querySelector('.icon.adjust').click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();
-			expect(element.shadowRoot.querySelector('ba-toggle').getAttribute('checked')).toBe('false');
+			expect(element.shadowRoot.querySelector('ba-toggle').checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('ba-toggle').title).toBe('uiTheme_toggle_tooltip_light');
 		});
 	});

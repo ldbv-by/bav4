@@ -1,8 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
 import { $injector } from '../../../../../injection';
-import { renderTagOf } from '../../../../BaElement';
-import { Spinner } from '../../../../commons/components/spinner/Spinner';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { setIndex } from '../../../store/topicsContentPanel.action';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
@@ -102,7 +100,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 					<li class="ba-list-item">
             			<span class="ba-list-item__text ">
                 			<span class="ba-list-item__primary-text">
-                				${renderTagOf(Spinner)}
+                				<ba-spinner></ba-spinner>
                 			</span>
             			</span>
         			</li>

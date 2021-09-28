@@ -6,10 +6,10 @@ import css from './baElement.css';
 
 
 /**
- * Abstract base class for all BaElements.
- * BaElement classes represent the view model within the MVVM pattern.
- * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
+ * DEPRECATED - please use {@link MvuElement} instead
  *
+ * Abstract base class for all BaElements.
+ * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
  * Lifecycle:<br>
  *
  * <center>
@@ -46,6 +46,7 @@ import css from './baElement.css';
  * @abstract
  * @class
  * @author taulinger
+ * @deprecated
  */
 export class BaElement extends HTMLElement {
 
@@ -354,6 +355,7 @@ export class BaElement extends HTMLElement {
  * Returns a lit-html Part instance.
  * @param {*} Clazz A class that inherits BaElement
  * @returns {Part} A lit-html Part instance
+ * @deprecated
  */
 export const renderTagOf = (baElementClazz) => {
 	if (baElementClazz.prototype instanceof BaElement) {
