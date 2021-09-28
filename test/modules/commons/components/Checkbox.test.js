@@ -10,16 +10,27 @@ describe('Checkbox', () => {
 	});
 
 
-	describe('when initialized with no attributes', () => {
+	describe('when initialized', () => {
+
+		it('contains default values in the model', async () => {
+
+			const element = await TestUtils.render(Checkbox.tag);
+
+			//model
+			expect(element.disabled).toBeFalse();
+			expect(element.checked).toBeFalse();
+			expect(element.title).toBe('');
+		});
+
 		it('renders the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag, {}, '<span>some</span>');
 
-			expect(element.disabled).toBeFalse();
-			expect(element.checked).toBeFalse();
-			expect(element.title).toBe('');
+			//view
 			expect(element.shadowRoot.querySelector('.ba-checkbox')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.input')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('.input').checked).toBeFalse();
+			expect(element.shadowRoot.querySelector('label').title).toBe('');
 			//has slot tag?
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
@@ -27,128 +38,56 @@ describe('Checkbox', () => {
 		});
 	});
 
-	describe('when initialized with \'disabled\' attribute', () => {
+	describe('when property\'disabled\' changes', () => {
 
-		it('renders the checkbox enabled', async () => {
+		it('updates the view', async () => {
 
-			const element = await TestUtils.render(Checkbox.tag, { disabled: false });
+			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
+
+			expect(input.disabled).toBeFalse();
+
+			element.disabled = true;
+
+			expect(input.disabled).toBeTrue();
+
+			element.disabled = false;
+
 			expect(input.disabled).toBeFalse();
 		});
-
-		it('renders the checkbox disabled', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag, { disabled: true });
-			const input = element.shadowRoot.querySelector('input');
-			expect(input.disabled).toBeTrue();
-		});
-
-		it('re-renders the checkbox when property \'disabled\' changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
-			element.disabled = true;
-			expect(element.shadowRoot.querySelector('.input').disabled).toBeTrue();
-		});
-
-		it('re-renders the checkbox when attribute \'disabled\' changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
-			element.setAttribute('disabled', 'true');
-			expect(element.disabled).toBeTrue();
-			expect(element.shadowRoot.querySelector('.input').disabled).toBeTrue();
-		});
-
-
-		it('re-renders NOT the checkbox when attribute \'disabled\' is not changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-			const renderSpy = spyOn(element, 'render');
-
-			expect(element.shadowRoot.querySelector('.input').disabled).toBeFalse();
-			element.setAttribute('disabled', 'false');
-			expect(element.disabled).toBeFalse();
-			expect(renderSpy).not.toHaveBeenCalled();
-		});
 	});
 
-	describe('when initialized with \'checked\' attribute', () => {
+	describe('when property\'checked\' changes', () => {
 
-		it('renders the checkbox unchecked', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag, { checked: false });
-			const input = element.shadowRoot.querySelector('input');
-			expect(input.checked).toBeFalse();
-		});
-
-		it('renders the checkbox checked', async () => {
-			const element = await TestUtils.render(Checkbox.tag, { checked: true });
-			const input = element.shadowRoot.querySelector('input');
-			expect(input.checked).toBeTrue();
-		});
-
-
-		it('re-renders the checkbox when property \'checked\' changed', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
+
 			expect(input.checked).toBeFalse();
+
 			element.checked = true;
+
 			expect(input.checked).toBeTrue();
-		});
 
-		it('re-renders the checkbox when attribute \'checked\' changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-			const input = element.shadowRoot.querySelector('input');
-			expect(input.checked).toBeFalse();
-			element.setAttribute('checked', 'true');
-			expect(element.checked).toBeTrue();
-			expect(input.checked).toBeTrue();
-		});
-
-		it('re-renders NOT the checkbox when attribute \'checked\' is not changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-			const renderSpy = spyOn(element, 'render');
-			const input = element.shadowRoot.querySelector('input');
+			element.checked = false;
 
 			expect(input.checked).toBeFalse();
-			element.setAttribute('checked', 'false');
-			expect(element.checked).toBeFalse();
-			expect(renderSpy).not.toHaveBeenCalled();
 		});
 	});
 
-	describe('when initialized with \'title\' attribute', () => {
+	describe('when property\'title\' changes', () => {
 
-		it('renders the title', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag, { title: 'someTitle' });
-			const label = element.shadowRoot.querySelector('label');
-			expect(label.title).toBe('someTitle');
-		});
-
-		it('re-renders the checkbox when property \'title\' changed', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-
-			const label = element.shadowRoot.querySelector('label');
-			expect(label.title).toBe('');
-
-			element.title = 'someTitle';
-
-			expect(label.title).toBe('someTitle');
-		});
-
-		it('re-renders the checkbox when attribute \'title\' changed', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Checkbox.tag);
 			const label = element.shadowRoot.querySelector('label');
+
 			expect(label.title).toBe('');
-			element.setAttribute('title', 'someTitle');
-			expect(label.title).toBe('someTitle');
+
+			element.title = 'foo';
+
+			expect(label.title).toBe('foo');
 		});
 	});
 
@@ -172,7 +111,6 @@ describe('Checkbox', () => {
 
 				spyOn(window, 'alert');
 				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
-				element.onToggle = jasmine.createSpy();
 
 				element.click();
 
@@ -181,12 +119,16 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+
+				spyOn(window, 'alert');
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
 				element.click();
 
 				expect(element.onClick).not.toHaveBeenCalled();
+				expect(window.alert).not.toHaveBeenCalledWith('called');
 				expect(element.checked).toBeFalse();
 			});
 		});
@@ -210,7 +152,7 @@ describe('Checkbox', () => {
 				expect(element.checked).toBeFalse();
 			});
 
-			it('calls the onToggle callback via property callback', async () => {
+			it('calls the onToggle callback via property binding', async () => {
 
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
@@ -221,7 +163,7 @@ describe('Checkbox', () => {
 				expect(element.checked).toBeTrue();
 			});
 
-			it('calls the onToggle callback via attribute callback', async () => {
+			it('calls the onToggle callback via attribute binding', async () => {
 
 				spyOn(window, 'alert');
 				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
@@ -234,7 +176,8 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+				const element = await TestUtils.render(Checkbox.tag);
+				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
 				element.dispatchEvent(event);
@@ -288,6 +231,7 @@ describe('Checkbox', () => {
 
 			it('does nothing when disabled', async () => {
 				const element = await TestUtils.render(Checkbox.tag, { disabled: true });
+				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
 				element.dispatchEvent(event);
