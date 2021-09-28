@@ -19,7 +19,7 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { }
 	};
 	const altitudeServiceMock = {
-		getAltitude() {	}
+		getAltitude() { }
 	};
 	const administrationServiceMock = {
 		getAdministration() { }
@@ -59,12 +59,9 @@ describe('OlMapContextMenuContent', () => {
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
 
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
-
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
@@ -84,25 +81,27 @@ describe('OlMapContextMenuContent', () => {
 
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
-			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
-			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
-			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
+			expect(getSridDefinitionsForViewMock).toHaveBeenCalledWith([1000, 2000]);
+			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
+			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
 			expect(altitudeMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
+			const coordinateMock = [1000, 2000];
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
+			element.coordinate = coordinateMock;
+
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
@@ -121,8 +120,7 @@ describe('OlMapContextMenuContent', () => {
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
+
 			const copyIcon = element.shadowRoot.querySelector('ba-icon');
 			expect(copyIcon).toBeTruthy();
 			copyIcon.click();
