@@ -1515,6 +1515,37 @@ describe('OlDrawHandler', () => {
 
 	});
 
+
+	describe('when using util _Empty', () => {
+		it('evaluates the _vectorLayer-object', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+
+			expect(classUnderTest._isEmpty()).toBeTrue();
+
+			classUnderTest._vectorLayer = {
+				getSource() {
+					return {
+						getFeatures() {
+							return [];
+						}
+					};
+				}
+			};
+			expect(classUnderTest._isEmpty()).toBeTrue();
+			classUnderTest._vectorLayer = {
+				getSource() {
+					return {
+						getFeatures() {
+							return [{}, {}];
+						}
+					};
+				}
+			};
+			expect(classUnderTest._isEmpty()).toBeFalse();
+
+		});
+	});
 });
 
 

@@ -268,29 +268,23 @@ export class OlDrawHandler extends OlLayerHandler {
 		const snapTolerance = this._getSnapTolerancePerDevice();
 
 		switch (type) {
-			case 'marker':
-				return new Draw({
-					source: source,
-					type: 'Point',
-					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType('marker', styleOption)
-				});
-			case 'text':
+			case StyleTypes.MARKER:
+			case StyleTypes.TEXT:
 				return new Draw({
 					source: source,
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType('text', styleOption)
+					style: this._getStyleFunctionByDrawType(type, styleOption)
 				});
-			case 'line':
+			case StyleTypes.LINE:
 				return new Draw({
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
 					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
 				});
-			case 'polygon':
+			case StyleTypes.POLYGON:
 				return new Draw({
 					source: source,
 					type: 'Polygon',
@@ -338,30 +332,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleFunctionByDrawType(drawType, styleOption) {
-		switch (drawType) {
-			case 'marker':
-				return () => {
-					const styleFunction = this._styleService.getStyleFunction(StyleTypes.MARKER);
-					return styleFunction(styleOption);
-				};
-			case 'text':
-				return () => {
-					const styleFunction = this._styleService.getStyleFunction(StyleTypes.TEXT);
-					return styleFunction(styleOption);
-				};
-			case 'line':
-				return () => {
-					const styleFunction = this._styleService.getStyleFunction(StyleTypes.LINE);
-					return styleFunction(styleOption);
-				};
-			case 'polygon':
-				return () => {
-					const styleFunction = this._styleService.getStyleFunction(StyleTypes.POLYGON);
-					return styleFunction(styleOption);
-				};
-			default:
-				return this._styleService.getStyleFunction(StyleTypes.DRAW);
+		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
+		if (drawTypes.includes(drawType)) {
+			return this._styleService.getStyleFunction(drawType, styleOption);
 		}
+		return this._styleService.getStyleFunction(StyleTypes.DRAW);
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
