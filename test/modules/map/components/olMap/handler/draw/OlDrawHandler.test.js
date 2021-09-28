@@ -1530,10 +1530,12 @@ describe('OlDrawHandler', () => {
 		it('returns a object with a filter-function, which returns true for the defined (modified) layer', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const mockLayer = { getStyle: () => modifyStyleFunction };
+			const mockModifiedLayer = { getStyle: () => modifyStyleFunction };
+			const mockNotModifiedLayer = { getStyle: () => () => [new Style()] };
 
-			const option = classUnderTest._getFeatureSnapOption(mockLayer, true);
-			expect(option.layerFilter(mockLayer)).toBeTrue();
+			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockModifiedLayer)).toBeTrue();
+
+			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockNotModifiedLayer)).toBeFalse();
 
 		});
 	});
