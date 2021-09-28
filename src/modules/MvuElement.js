@@ -9,10 +9,15 @@ import css from './baElement.css';
  * Base class for components. Improved version of {@link BaElement} and based on
  * on the Model-View-Update pattern.
  *
- * - The component holds an immutable model
- * - The View is setup and bound to the Model by implementing  {@link MvuElement#createView}
- * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model with new or updated data
- * - Calling {@link MvuElement#signal} dispatches an update request containing new or updated data
+ *
+ *  MODEL &rarr; <i>render</i> &rarr; VIEW &rarr; <i>signal</i> &rarr; UPDATE <br>
+ * 	&nbsp;&nbsp;&nbsp;&nbsp;&uarr; ______________________________ &darr;
+ *
+ *
+ * - The component holds an immutable Model
+ * - The View renders the Model by calling  {@link MvuElement#createView}
+ * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model
+ * - User interaction on the view calls {@link MvuElement#signal} containing new or updated data, which trigger an update of the Model
  *
  * Lifecycle Hooks:<br>
  *
