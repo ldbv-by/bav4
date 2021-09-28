@@ -181,7 +181,7 @@ export class AutocompleteSearch extends MvuElement {
 	}
 
 	/**
-	 * @property {function} provider - Function that takes a term an returns an array of SearchResults
+	 * @property {function} provider - Function that takes a term and returns an array of SearchResults
 	 */
 	set provider(provider) {
 		this._provider = provider;
