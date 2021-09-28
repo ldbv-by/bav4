@@ -19,6 +19,8 @@ import { LineString, Point, Polygon } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
+import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 
 
 
@@ -187,6 +189,15 @@ describe('OlDrawHandler', () => {
 
 			expect(layer).toBeTruthy();
 			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
+		it('adds a label to the session vectorlayer', () => {
+			setup();
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
 		});
 
 		describe('uses Interactions', () => {
@@ -589,6 +600,53 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
+		it('looks for measurement-layer and adds the feature for update/copy on save', (done) => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => { });
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+
+			setTimeout(() => {
+				expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
+				expect(storageSpy).toHaveBeenCalledWith('a_lastId');
+				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+				done();
+			});
+		});
+
+		it('looks for temporary measurement-layer and adds the feature to session-layer', (done) => {
+			const state = { ...initialState, fileSaveResult: null };
+			setup(state);
+			const classUnderTest = new OlDrawHandler();
+			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('temp_draw_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'temp_draw_id' }] });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			setTimeout(() => {
+				expect(spy).toHaveBeenCalledWith('temp_draw_id');
+				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
+				done();
+			});
+		});
+
 		describe('_createDrawByType', () => {
 			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
 			it('returns a draw-interaction for \'Symbol\'', async () => {
@@ -650,11 +708,136 @@ describe('OlDrawHandler', () => {
 				expect(classUnderTest._getStyleFunctionByDrawType('marker', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('text', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('line', defaultStyleOption)()).toContain(jasmine.any(Style));
-				expect(classUnderTest._getStyleFunctionByDrawType('Polygon', defaultStyleOption)()).toContain(jasmine.any(Style));
+				expect(classUnderTest._getStyleFunctionByDrawType('polygon', defaultStyleOption)()).toContain(jasmine.any(Style));
 				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)()).toContain(jasmine.any(Style));
 			});
 		});
 
+
+	});
+
+	describe('when deactivated over olMap', () => {
+
+		const initialCenter = fromLonLat([11.57245, 48.14021]);
+
+		const setupMap = () => {
+			return new Map({
+				layers: [
+					new TileLayer({
+						source: new OSM()
+					}),
+					new TileLayer({
+						source: new TileDebug()
+					})],
+				target: 'map',
+				view: new View({
+					center: initialCenter,
+					zoom: 1
+				})
+			});
+
+		};
+
+		const createFeature = () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			return feature;
+		};
+
+		it('writes features to kml format for persisting purpose', (done) => {
+			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
+			setup(state);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				done();
+			});
+		});
+
+		it('uses already written features for persisting purpose', () => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const saveSpy = spyOn(classUnderTest, '_save');
+			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
+			spyOn(classUnderTest, '_isEmpty').and.returnValue(false);
+
+			classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+
+			expect(saveSpy).not.toHaveBeenCalled();
+		});
+
+
+		it('adds a vectorGeoResource for persisting purpose', (done) => {
+			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
+			setup(state);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
+				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+					id: 'f_ooBarId',
+					label: 'map_olMap_handler_draw_layer_label'
+				}));
+				done();
+			});
+
+		});
+
+		it('adds layer with temporaryId while persisting layer failed', (done) => {
+			const state = { ...initialState, fileSaveResult: null };
+			const store = setup(state);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+
+			classUnderTest.activate(map);
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('temp_draw_id');
+				done();
+			});
+
+		});
+
+		it('adds no layer when empty', (done) => {
+			const store = setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const warnSpy = spyOn(console, 'warn');
+
+			classUnderTest.activate(map);
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
+				done();
+			});
+
+		});
 
 	});
 

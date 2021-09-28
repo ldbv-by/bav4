@@ -690,7 +690,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
-		const label = translate('map_olMap_handler_measure_layer_label');
+		const label = translate('map_olMap_handler_draw_layer_label');
 
 		if (this._isEmpty()) {
 			console.warn('Cannot store empty layer');

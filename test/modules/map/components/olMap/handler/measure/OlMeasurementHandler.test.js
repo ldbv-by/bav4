@@ -867,10 +867,10 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 				classUnderTest._vectorLayer.getSource().addFeature(feature); // -> first call of _save, caused by vectorsource:addfeature-event
-				feature.getGeometry().dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
-				feature.getGeometry().dispatchEvent('change');
-				feature.getGeometry().dispatchEvent('change');
-				feature.getGeometry().dispatchEvent('change');
+				feature.dispatchEvent('change');			// -> second call of debounced _save, caused by vectorsource:changefeature-event
+				feature.dispatchEvent('change');
+				feature.dispatchEvent('change');
+				feature.dispatchEvent('change');
 				jasmine.clock().tick(afterDebounceDelay);
 
 				expect(privateSaveSpy).toHaveBeenCalledTimes(2);
