@@ -7,13 +7,13 @@ const Update_Topic = 'update_topic';
 const Update_Feedback = 'update_feedback';
 
 export class MvuCounter extends MvuElement {
+
 	constructor() {
 		super({
 			counter: 5,
 			current: null,
 			message: null
 		});
-
 	}
 
 	onInitialize() {
@@ -21,36 +21,19 @@ export class MvuCounter extends MvuElement {
 		this.observe(state => state.topics.current, current => this.signal(Update_Topic, current));
 	}
 
-
 	update(type, data, model) {
 
 		switch (type) {
-			case Update_Counter: {
+			case Update_Counter:
+				return { ...model, counter: data, message: null };
 
-				return {
-					...model,
-					counter: data,
-					message: null
-				};
-			}
+			case Update_Topic:
+				return { ...model, current: data };
 
-			case Update_Topic: {
-
-				return {
-					...model,
-					current: data
-				};
-			}
-			case Update_Feedback: {
-
-				return {
-					...model,
-					message: data
-				};
-			}
+			case Update_Feedback:
+				return { ...model, message: data };
 		}
 	}
-
 
 	createView(model) {
 		const { counter, current, message } = model;
