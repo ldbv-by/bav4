@@ -122,6 +122,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						oldFeatures.forEach(f => {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
+							this._styleService.addStyle(f);
 							layer.getSource().addFeature(f);
 						});
 					})

@@ -67,7 +67,11 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 	const textContent = styleOption.text ? styleOption.text : 'New Text';
 	const strokeWidth = 2;
 	const getTextScale = (sizeKeyword) => {
+		if (typeof (sizeKeyword) === 'number') {
+			return sizeKeyword;
+		}
 		switch (sizeKeyword) {
+
 			case 'big':
 				return 2;
 			case 'medium':
@@ -218,7 +222,7 @@ export const selectStyleFunction = () => {
 			return [appendableVertexStyle];
 		}
 		const styles = styleFunction(feature, resolution);
-		return styles.concat([appendableVertexStyle]);
+		return styles[0] ? styles.concat([appendableVertexStyle]) : [styles, appendableVertexStyle];
 	};
 };
 

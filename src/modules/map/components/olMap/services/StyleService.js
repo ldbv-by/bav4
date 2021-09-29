@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex } from '../olStyleUtils';
 
 /**
  * @enum
@@ -48,6 +48,13 @@ export class StyleService {
 				break;
 			case StyleTypes.DRAW:
 				this._addBaseStyle(olFeature);
+				break;
+			case StyleTypes.TEXT:
+				this._addTextStyle(olFeature);
+				break;
+			case StyleTypes.POLYGON:
+			case StyleTypes.LINE:
+				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -153,6 +160,28 @@ export class StyleService {
 
 		olFeature.setStyle(measureStyleFunction(olFeature));
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	}
+
+	_addTextStyle(olFeature) {
+		const styles = olFeature.getStyle();
+		const getStyleOption = () => {
+			if (typeof (styles) === 'function') {
+				const currentStyle = styles(olFeature);
+				const currentColor = currentStyle.getText().getFill().getColor();
+				const currentText = currentStyle.getText().getText();
+				const currentScale = currentStyle.getText().getScale();
+				return { color: rgbToHex(currentColor), scale: currentScale, text: currentText };
+			}
+			const currentStyle = styles[0];
+			const currentColor = currentStyle.getText().getFill().getColor();
+			const currentText = currentStyle.getText().getText();
+			const currentScale = currentStyle.getText().getScale();
+			return { color: currentColor, scale: currentScale, text: currentText };
+		};
+
+		const newStyle = textStyleFunction(getStyleOption());
+
+		olFeature.setStyle(() => newStyle);
 	}
 
 	_addBaseStyle(olFeature) {
