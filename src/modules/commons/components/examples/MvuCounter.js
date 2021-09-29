@@ -65,14 +65,14 @@ export class MvuCounter extends MvuElement {
 		};
 
 		return html`
-			<h2>Model-View-Update</h2>
-	        <div>${current}</div>
-	        <div>${counter}</div>
-	        <button @click=${() => this.signal(Update_Counter, model.counter + 1)}>+1</button>
-	        <button @click=${decrement}>-1</button>
-	        <button @click=${() => this.signal(Update_Counter, 0)}>Reset</button>
-	        <button @click=${() => setCurrent(`topic${model.counter}`)}>Update Topic</button>
-	        <div>${message}</div>
+			<h2 id='counterTitle'>Model-View-Update</h2>
+	        <div id='currentTopic'>${current}</div>
+	        <div id='counterValue'>${counter}</div>
+	        <button id='incrementBtn'   @click=${() => this.signal(Update_Counter, model.counter + 1)}>+1</button>
+	        <button id='decrementBtn'   @click=${decrement}>-1</button>
+	        <button id='resetBtn'       @click=${() => this.signal(Update_Counter, 0)}>Reset</button>
+	        <button id='updateTopicBtn' @click=${() => setCurrent(`topic${model.counter}`)}>Update Topic</button>
+	        <div id='errorMessageId'>${message}</div>
 	        <details>
     			<summary>Overview</summary>
 				
