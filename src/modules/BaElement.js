@@ -6,7 +6,7 @@ import css from './baElement.css';
 
 
 /**
- * DEPRECATED
+ * DEPRECATED - please use {@link MvuElement} instead
  *
  * Abstract base class for all BaElements.
  * The view is generated and bound to the view model by implementing the {@link BaElement#createView} method.
@@ -355,6 +355,7 @@ export class BaElement extends HTMLElement {
  * Returns a lit-html Part instance.
  * @param {*} Clazz A class that inherits BaElement
  * @returns {Part} A lit-html Part instance
+ * @deprecated
  */
 export const renderTagOf = (baElementClazz) => {
 	if (baElementClazz.prototype instanceof BaElement) {

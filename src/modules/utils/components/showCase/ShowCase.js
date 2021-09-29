@@ -8,6 +8,8 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
+import { emitNotification } from '../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -91,6 +93,18 @@ export class ShowCase extends BaElement {
 			this.render();
 		};
 
+		const onClickEmitInfo = () => {
+			emitNotification('This is just a Info (' + new Date() + ')', LevelTypes.INFO);
+		};
+
+		const onClickEmitWarn = () => {
+			emitNotification('This is a Warning! Prepare yourself! (' + new Date() + ')', LevelTypes.WARN);
+		};
+
+		const onClickEmitError = () => {
+			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -107,14 +121,14 @@ export class ShowCase extends BaElement {
 			</p>
 			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
 			<p>Measure Distance</p>
-			<ba-button id='buttonActivateMeasureDistance' label='Measure Distance' type="primary" @click=${activateMeasrementTool}></ba-button>	
-			<ba-button id='buttonDeactivateMeasureDistance' label='Deactivate Measure Distance' type="secondary" @click=${deactivateMeasrementTool}></ba-button>	
+			<ba-button id='buttonActivateMeasureDistance' .label=${'Measure Distance'} .type=${'primary'} @click=${activateMeasrementTool}></ba-button>	
+			<ba-button id='buttonDeactivateMeasureDistance' .label=${'Deactivate Measure Distance'} .type=${'secondary'} @click=${deactivateMeasrementTool}></ba-button>	
 			
 			<p>BaseLayer Switcher</p>
 			<div><ba-base-layer-switcher></ba-base-layer-switcher></div>
 
 			<p>Url of State</p>
-			<ba-button id='buttonActivateMeasureDistance' label='Copy Url' type="primary" @click=${onGenerateUrlButtonClick}></ba-button>	
+			<ba-button id='buttonActivateMeasureDistance' .label=${'Copy Url'} .type=${'primary'} @click=${onGenerateUrlButtonClick}></ba-button>	
 			<input readonly='readonly' value=${this._url}></input>	
 			<input readonly='readonly' value=${this._shortUrl}></input>	
 
@@ -125,30 +139,36 @@ export class ShowCase extends BaElement {
 			<h3>Common components or functional behaviors</h3>
 			<p>ba-icons</p>
 			<div class='icons'>		
-						<ba-icon icon='${arrowUpSvg}' @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' disabled=true @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' size=1 @click=${onClick0}></ba-icon>
-						<ba-icon icon='${arrowUpSvg}' size=2.5 @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>
 						
 			</div>
 			<p>ba-buttons</p>
 			<div class='buttons'>		
-						<ba-button id='button0' label='primary style' type="primary" @click=${onClick0}></ba-button>
-						<ba-button id='button1' label='secondary style' @click=${onClick1}></ba-button>
-						<ba-button id='button2' label='disabled' type='primary' disabled=true ></ba-button>
-						<ba-button id='button3' label='disabled' disabled=true></ba-button>
+						<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
+						<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
+						<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
+						<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
 			</div>
 			<p>Toggle-Button</p>
-			<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle id='toggle' title="Toggle" @toggle=${onToggle}><span>Toggle me!</span></ba-toggle></div>
+			<div class='toggle' style="display: flex;justify-content: flex-start;"><ba-toggle id='toggle' .title=${'Toggle'} @toggle=${onToggle}><span>Toggle me!</span></ba-toggle></div>
 			<p>Checkbox</p>
-			<div><ba-checkbox  title="checkbox title" @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
-			<div><ba-checkbox  checked=true title="checkbox title" @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox></div>
-			<div><ba-checkbox  disabled=true title="checkbox title" @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox></div>
-			<div><ba-checkbox  checked=true disabled=true title="checkbox title" @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox></div>
+			<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
+			<div><ba-checkbox .checked=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox></div>
+			<div><ba-checkbox .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox></div>
+			<div><ba-checkbox .checked=${true} .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox></div>
 			
 			<p>Loading hint</p>
 			<div><ba-spinner></ba-spinner></div>
 			<hr>
+			<p>Notifications</p>
+			<div class='buttons'>
+						<ba-button id='notification0' label='Info Notification' type="primary" @click=${onClickEmitInfo}></ba-button>
+						<ba-button id='notification1' label='Warn Notification' type="primary" @click=${onClickEmitWarn}></ba-button>
+						<ba-button id='notification2' label='Error Notification' type="primary" @click=${onClickEmitError} ></ba-button>
+			</div>
 		</div>`;
 	}
 

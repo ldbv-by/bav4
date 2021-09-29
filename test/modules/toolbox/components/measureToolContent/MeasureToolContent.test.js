@@ -105,7 +105,7 @@ describe('MeasureToolContent', () => {
 
 			expect(element._tool).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#finish').getAttribute('label')).toBe('toolbox_drawTool_finish');
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
 		});
 
 		it('finishes the measurement', async () => {
@@ -142,7 +142,7 @@ describe('MeasureToolContent', () => {
 			const resetButton = element.shadowRoot.querySelector('#startnew');
 
 			resetButton.click();
-			expect(resetButton.getAttribute('label')).toBe('toolbox_measureTool_start_new');
+			expect(resetButton.label).toBe('toolbox_measureTool_start_new');
 			expect(store.getState().measurement.reset).toBeInstanceOf(EventLike);
 		});
 
@@ -160,7 +160,7 @@ describe('MeasureToolContent', () => {
 			const removeButton = element.shadowRoot.querySelector('#remove');
 
 			removeButton.click();
-			expect(removeButton.getAttribute('label')).toBe('toolbox_measureTool_delete_measure');
+			expect(removeButton.label).toBe('toolbox_measureTool_delete_measure');
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 
@@ -178,7 +178,7 @@ describe('MeasureToolContent', () => {
 			const removeButton = element.shadowRoot.querySelector('#remove');
 
 			removeButton.click();
-			expect(removeButton.getAttribute('label')).toBe('toolbox_measureTool_delete_point');
+			expect(removeButton.label).toBe('toolbox_measureTool_delete_point');
 			expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
 		});
 

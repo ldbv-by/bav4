@@ -9,19 +9,22 @@ import css from './baElement.css';
  * Base class for components. Improved version of {@link BaElement} and based on
  * on the Model-View-Update pattern.
  *
- * - The component holds an immutable model
- * - The View is setup and bound to the Model by implementing  {@link MvuElement#createView}
- * - Model changes are defined in {@link MvuElement#update} and always return a copy of the Model with new or updated values (how the Model should change)
- * - Model updates are triggered by calling {@link MvuElement#signal} (when the Model should change)
  *
- * Lifecycle:<br>
+ *  MODEL &rarr; <i>render</i> &rarr; VIEW &rarr; <i>signal</i> &rarr; UPDATE <br>
+ * 	&nbsp;&nbsp;&nbsp;&nbsp;&uarr; ______________________________ &darr;
+ *
+ *
+ * - The component holds an immutable Model
+ * - The View renders the Model by calling  {@link MvuElement#createView}
+ * - Updates of the Model are defined within {@link MvuElement#update} and always return a copy of the Model
+ * - User interaction on the view calls {@link MvuElement#signal} containing new or updated data, which trigger an update of the Model
+ *
+ * Lifecycle Hooks:<br>
  *
  * <center>
  *  {@link MvuElement#onInitialize}<br>
  *      &darr;<br>
  *  {@link MvuElement#onBeforeRender}<br>
- *      &darr;<br>
- *  {@link MvuElement#render}<br>
  *      &darr;<br>
  *  {@link MvuElement#onAfterRender}<br>
  *      &darr;<br>
@@ -30,14 +33,12 @@ import css from './baElement.css';
  *  {@link MvuElement#onDisconnect}<br>
  *
  * </center>
- * Model change loop:<br>
+ * Model change hooks:<br>
  * <center>
  *
  *  {@link MvuElement#onModelChanged}<br>
  *      &darr;<br>
  *  {@link MvuElement#onBeforeRender}<br>
- *      &darr;<br>
- *  {@link MvuElement#render}<br>
  *      &darr;<br>
  *  {@link MvuElement#onAfterRender}<br>
  * </center>
@@ -59,7 +60,7 @@ export class MvuElement extends HTMLElement {
 		super();
 		if (this.constructor === MvuElement) {
 			// Abstract class can not be constructed.
-			throw new TypeError('Can not construct abstract class.');
+			throw new Error('Can not construct abstract class.');
 		}
 		this._root = this.attachShadow({ mode: 'open' });
 		const { StoreService } = $injector.inject('StoreService');
@@ -82,9 +83,9 @@ export class MvuElement extends HTMLElement {
 
 	/**
 	 * Action and data sent from the view
+	 * @protected
 	 * @param {string} type type of action
 	 * @param {Object|string|number} data data for updating the model
-	 * @protected
 	 */
 	signal(type, data) {
 		const newModel = this.update(type, data, this._model);
@@ -95,16 +96,15 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Updates the current Model by return a copy of the current Model with new or updated values.
-	 * @abstract
+	 * Updates the current Model by returning a copy of the current Model with new or updated values.
 	 * @protected
-	 * @param {*} type type of action
-	 * @param {*} data data
-	 * @param {*} model current Model
+	 * @param {string} type type of action
+	 * @param {object|number|string} data data
+	 * @param {object} model current Model
 	 * @returns the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */type, data, model) {
-		throw new TypeError('Please implement abstract method #update or do not call super.update from child.');
+		throw new Error('Please implement method #update before calling #signal or do not call super.update from child.');
 	}
 
 	/**
@@ -166,7 +166,7 @@ export class MvuElement extends HTMLElement {
 	 */
 	createView(/*eslint-disable no-unused-vars */model) {
 		// The child has not implemented this method.
-		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
+		throw new Error('Please implement abstract method #createView or do not call super.createView from child.');
 	}
 
 	/**
@@ -274,12 +274,12 @@ export class MvuElement extends HTMLElement {
 	static get tag() {
 		if (this === MvuElement) {
 			// Abstract methods can not be called directly.
-			throw new TypeError('Can not call static abstract method #tag.');
+			throw new Error('Can not call static abstract method #tag.');
 		}
 
 		else {
 			// The child has implemented this method but also called `super.foo()`.
-			throw new TypeError('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+			throw new Error('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 		}
 	}
 

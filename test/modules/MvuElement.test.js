@@ -160,25 +160,25 @@ describe('MvuElement', () => {
 
 		describe('constructor', () => {
 			it('throws exception when instantiated without inheritance', () => {
-				expect(() => new MvuElement()).toThrowError(TypeError, 'Can not construct abstract class.');
+				expect(() => new MvuElement()).toThrowError(Error, 'Can not construct abstract class.');
 			});
 		});
 
 		describe('methods', () => {
 			it('throws exception when abstract #createView is called without overriding', () => {
-				expect(() => new MvuElementNoImpl().createView()).toThrowError(TypeError, 'Please implement abstract method #createView or do not call super.createView from child.');
+				expect(() => new MvuElementNoImpl().createView()).toThrowError(Error, 'Please implement abstract method #createView or do not call super.createView from child.');
 			});
 
-			it('throws exception when abstract #update is called without overriding', () => {
-				expect(() => new MvuElementNoImpl().update()).toThrowError(TypeError, 'Please implement abstract method #update or do not call super.update from child.');
+			it('throws exception when #update is called without overriding', () => {
+				expect(() => new MvuElementNoImpl().update()).toThrowError(Error, 'Please implement method #update before calling #signal or do not call super.update from child.');
 			});
 
 			it('throws exception when abstract static method #tag is called directly', () => {
-				expect(() => MvuElement.tag).toThrowError(TypeError, 'Can not call static abstract method #tag.');
+				expect(() => MvuElement.tag).toThrowError(Error, 'Can not call static abstract method #tag.');
 			});
 
 			it('throws exception when abstract static method #tag is called without overriding', () => {
-				expect(() => MvuElementNoImpl.tag).toThrowError(TypeError, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+				expect(() => MvuElementNoImpl.tag).toThrowError(Error, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 			});
 		});
 

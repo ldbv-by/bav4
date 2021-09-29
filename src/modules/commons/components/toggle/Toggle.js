@@ -1,52 +1,77 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import css from './toggle.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { MvuElement } from '../../../MvuElement';
 
+const Update_Disabled = 'update_disabled';
+const Update_Checked = 'update_checked';
+const Update_Title = 'update_title';
 
 /**
+ *
+ * Events:
+ * - onToggle()
+ *
+ * Properties:
+ * - `checked`
+ * - `disabled`
+ * - `title`
  *
  * @class
  * @author taulinger
  */
-export class Toggle extends BaElement {
+export class Toggle extends MvuElement {
 
+	constructor() {
+		super({
+			checked: false,
+			disabled: false,
+			title: ''
+		});
 
-	/**
-	 * @override
-	 */
-	initialize() {
-		//properties 'onToggle', 'checked', 'disabled', 'title' are exposed via getter and setter
 		this._onToggle = () => { };
-		this._checked = this.getAttribute('checked') === 'true';
-		this._disabled = this.getAttribute('disabled') === 'true';
-		this._title = this.getAttribute('title') || '';
+	}
+
+	update(type, data, model) {
+
+		switch (type) {
+			case Update_Checked:
+				return { ...model, checked: data };
+
+			case Update_Disabled:
+				return { ...model, disabled: data };
+
+			case Update_Title:
+				return { ...model, title: data };
+		}
 	}
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+
+		const { title, disabled, checked } = model;
+
 		const onChange = (event) => {
 			const checked = event.target.checked;
-			this.checked = checked;
+			this.signal(Update_Checked, checked);
 			this.dispatchEvent(new CustomEvent('toggle', {
 				detail: { checked: checked }
 			}));
-
 			this._onToggle(event);
 		};
 		const classes = {
-			disabled: this._disabled,
-			active: this._checked
+			disabled: disabled,
+			active: checked
 		};
 
 		return html`
         <style>${css}</style>
-        <label title='${this._title}' class='switch ${classMap(classes)}'>
+        <label title='${title}' class='switch ${classMap(classes)}'>
             <slot></slot>
 			<div>
-		  		<input type='checkbox' @change=${onChange} ?disabled=${this._disabled} .checked=${this._checked}>
+		  		<input type='checkbox' @change=${onChange} ?disabled=${disabled} .checked=${checked}>
 		  		<span class='slider round'></span>
 			</div>
 	  	</label>
@@ -57,65 +82,42 @@ export class Toggle extends BaElement {
 		return 'ba-toggle';
 	}
 
-	static get observedAttributes() {
-		return ['disabled', 'checked', 'title'];
-	}
-
 	/**
-	 * Mainly for testing purposes.<br>
-	 * Shortcut for <code>element.shadowRoot.querySelector('label').click()</code>
+	 * @property {string} title='' - The title of the button
 	 */
-	click() {
-		this._root.querySelector('label').click();
-	}
-
-	attributeChangedCallback(name, oldValue, newValue) {
-		switch (name) {
-			case 'disabled':
-				this.disabled = (newValue === 'true');
-				break;
-			case 'checked':
-				this.checked = (newValue === 'true');
-				break;
-			case 'title':
-				this.title = newValue;
-				break;
-		}
-	}
-
 	set title(value) {
-		if (value !== this._title) {
-			this._title = value;
-			this.render();
-		}
+		this.signal(Update_Title, value);
 	}
 
 	get title() {
-		return this._title;
+		return this.getModel().title;
 	}
 
+	/**
+	 * @property {boolean} disabled=false - Checkbox clickable?
+	 */
 	set disabled(value) {
-		if (value !== this._disabled) {
-			this._disabled = value;
-			this.render();
-		}
+		this.signal(Update_Disabled, value);
 	}
 
 	get disabled() {
-		return this._disabled;
+		return this.getModel().disabled;
 	}
 
+	/**
+	 * @property {boolean} checked=false - Checkbox checked?
+	 */
 	set checked(value) {
-		if (value !== this._checked) {
-			this._checked = value;
-			this.render();
-		}
+		this.signal(Update_Checked, value);
 	}
 
 	get checked() {
-		return this._checked;
+		return this.getModel().checked;
 	}
 
+	/**
+	 * @property {function} onToggle - Callback function
+	 */
 	set onToggle(callback) {
 		this._onToggle = callback;
 	}

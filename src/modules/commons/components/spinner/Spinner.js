@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './spinner.css';
 
 /**
  * @class
  * @author taulinger
  */
-export class Spinner extends BaElement {
+export class Spinner extends MvuElement {
 
 	constructor() {
 		super();

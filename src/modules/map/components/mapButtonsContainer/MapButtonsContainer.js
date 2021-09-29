@@ -1,22 +1,19 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './mapButtonsContainer.css';
 
 /**
  * Container for Map-Buttons
  * @class
- *@author alsturm
+ * @author alsturm
  */
 
-export class MapButtonsContainer extends BaElement {
+export class MapButtonsContainer extends MvuElement {
 
-	constructor() {
-		super();
-	}
 
 	/**
-     *@override
-     */
+	 *@override
+	 */
 	createView() {
 		return html`
             <style>${css}</style>
