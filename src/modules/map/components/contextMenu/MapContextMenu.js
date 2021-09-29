@@ -1,25 +1,42 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
 import { close as closeContextMenu } from '../../store/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
+
+const Update = 'update';
 
 /**
  *
  * @class
  * @author taulinger
  */
-export class MapContextMenu extends BaElement {
+export class MapContextMenu extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			coordinate: null,
+			content: null
+		});
 		const {
 			TranslationService: translastionService
 		} = $injector.inject('TranslationService');
 
 		this._translationService = translastionService;
+	}
+
+	onInitialize() {
+		this.observe(state => state.mapContextMenu, data => this.signal(Update, data));
+	}
+
+	update(type, data) {
+		const { coordinate, content } = data;
+		switch (type) {
+			case Update:
+				return { coordinate: coordinate, content: content };
+		}
 	}
 
 	_calculateSector(coordinate) {
@@ -47,9 +64,9 @@ export class MapContextMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	createView(state) {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { coordinate, content } = state;
+		const { coordinate, content } = model;
 
 		if (!coordinate || !content) {
 			return nothing;
@@ -73,14 +90,6 @@ export class MapContextMenu extends BaElement {
 			<div class='header'>${translate('map_contextMenu_header')}<ba-icon class='close' .icon='${closeIcon}' .title=${translate('map_contextMenu_close_button')} .size=${1.5} .color=${'white'} .color_hover=${'white'} @click=${closeContextMenu}></ba-icon></div>
 			${content}
         </div>`;
-	}
-
-	/**
-	 * @override
-	 */
-	extractState(globalState) {
-		const { mapContextMenu: { coordinate, content } } = globalState;
-		return { coordinate, content };
 	}
 
 	static get tag() {
