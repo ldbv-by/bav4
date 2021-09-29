@@ -67,21 +67,6 @@ describe('MapContextMenu', () => {
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});
 
-
-		// it('renders a content html element', async () => {
-		// 	const element = await setup();
-		// 	const contentElementId = 'mockContentId';
-		// 	const mockContent = document.createElement('div');
-		// 	mockContent.innerText = 'mockContentText';
-		// 	mockContent.id = contentElementId;
-		// 	document.body.appendChild(mockContent);
-
-		// 	open([10, 20], contentElementId);
-
-		// 	const container = element.shadowRoot.querySelector('.context-menu');
-		// 	expect(element.shadowRoot.querySelector('#' + contentElementId).parentElement).toEqual(container);
-		// });
-
 		it('calls the _calculateSector() method', async () => {
 			const element = await setup();
 			const clickEvent = [10, 20];
