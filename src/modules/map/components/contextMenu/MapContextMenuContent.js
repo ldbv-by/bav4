@@ -105,8 +105,6 @@ export class MapContextMenuContent extends MvuElement {
 		const onClickCallback = baIcon.onClick;
 		const successColor = 'var(--sucess-color)';
 
-
-
 		this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {
 			//change the icon
 			baIcon.color = successColor;
@@ -137,12 +135,10 @@ export class MapContextMenuContent extends MvuElement {
 		});
 	}
 
-
 	createView(model) {
 
 		const { coordinate, altitude, administration: { community, district } } = model;
 		const translate = (key) => this._translationService.translate(key);
-
 
 		if (coordinate) {
 			const sridDefinitions = this._mapService.getSridDefinitionsForView(coordinate);
@@ -161,7 +157,6 @@ export class MapContextMenuContent extends MvuElement {
 				</span>
 				`;
 			});
-
 
 			return html`
 			<style>${css}</style>
