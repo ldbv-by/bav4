@@ -6,6 +6,7 @@ import checkedIcon from './assets/checked.svg';
 import { MvuElement } from '../../../MvuElement';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { Icon } from '../../../commons/components/icon/Icon';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Altitude = 'update_altitude';
@@ -104,13 +105,15 @@ export class MapContextMenuContent extends MvuElement {
 		const onClickCallback = baIcon.onClick;
 		const successColor = 'var(--sucess-color)';
 
-		//change the icon
-		baIcon.color = successColor;
-		baIcon.color_hover = successColor;
-		baIcon.icon = checkedIcon;
-		baIcon.onClick = () => { };
+
 
 		this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {
+			//change the icon
+			baIcon.color = successColor;
+			baIcon.color_hover = null;
+			baIcon.icon = checkedIcon;
+			baIcon.onClick = () => { };
+
 			setTimeout(() => {
 				//reset the icon
 				baIcon.icon = clipboardIcon;
@@ -119,13 +122,17 @@ export class MapContextMenuContent extends MvuElement {
 				baIcon.onClick = onClickCallback;
 			}, 1000);
 		}, () => {
-			emitNotification(this._translationService.translate('map_contextMenuContent_clipboard_error'), LevelTypes.WARN);
+			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-			//disable the icon
-			baIcon.icon = clipboardIcon;
-			baIcon.color = color;
-			baIcon.color_hover = color_hover;
-			baIcon.disabled = true;
+
+			this.getRenderTarget().querySelectorAll(Icon.tag).forEach(baIcon => {
+				baIcon.icon = clipboardIcon;
+				baIcon.color = color;
+				baIcon.color_hover = color_hover;
+				baIcon.disabled = true;
+				baIcon.title = message;
+			});
 		});
 	}
 

@@ -88,7 +88,7 @@ describe('OlMapContextMenuContent', () => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('42 (m)');
 			});
 
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			copyIcon.click();
@@ -116,15 +116,16 @@ describe('OlMapContextMenuContent', () => {
 
 			element.coordinate = coordinateMock;
 
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			copyIcon.click();
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
-			//check icon change
-			expect(copyIcon.color).toBe('var(--sucess-color)');
-			expect(copyIcon.color_hover).toBe('var(--sucess-color)');
-			expect(copyIcon.icon).toBe(checkedIcon);
-
+			setTimeout(() => {
+				//check icon change
+				expect(copyIcon.color).toBe('var(--sucess-color)');
+				expect(copyIcon.color_hover).toBeNull();
+				expect(copyIcon.icon).toBe(checkedIcon);
+			});
 			//check icon reset after one second
 			setTimeout(() => {
 				expect(copyIcon.color).toBe('var(--primary-color)');
@@ -134,7 +135,7 @@ describe('OlMapContextMenuContent', () => {
 			}, 1000 + 100);
 		});
 
-		it('fires a notification and logs a warn statement when Clipboard API is not available', async (done) => {
+		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
@@ -145,12 +146,18 @@ describe('OlMapContextMenuContent', () => {
 
 			element.coordinate = [1000, 2000];
 
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
+
 			copyIcon.click();
 
 			setTimeout(() => {
+				//all copyIcon should be disabled now
 				expect(copyIcon.disabled).toBeTrue();
+				expect(copyIcon.icon).toBe(clipboardIcon);
+				expect(copyIcon.title).toBe('map_contextMenuContent_clipboard_error');
+				expect(copyIcon.color).toBe('var(--primary-color)');
+
 				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
 				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
