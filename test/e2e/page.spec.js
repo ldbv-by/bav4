@@ -79,5 +79,9 @@ test.describe('page', () => {
 		test('should contain a <ba-notification-panel> component', async ({ page }) => {
 			expect(await page.$$('ba-notification-panel')).toHaveLength(1);
 		});
+
+		test('should contain a <ba-map-context-menu> component', async ({ page }) => {
+			expect(await page.$$('ba-map-context-menu')).toHaveLength(1);
+		});
 	});
 });
