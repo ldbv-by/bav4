@@ -126,6 +126,7 @@ export class MapContextMenuContent extends MvuElement {
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 
+			//disable all buttons
 			this.getRenderTarget().querySelectorAll(Icon.tag).forEach(baIcon => {
 				baIcon.icon = clipboardIcon;
 				baIcon.color = color;
