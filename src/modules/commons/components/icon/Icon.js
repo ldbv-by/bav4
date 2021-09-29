@@ -89,9 +89,10 @@ export class Icon extends MvuElement {
 			--size: ${size}em; 
 			background: ${color}; 
 		}`;
-		const anchorClassHover = `.anchor:hover .icon{
+		const anchorClassHover = color_hover ? `.anchor:hover .icon{
+			transform: scale(1.1);
 			background: ${color_hover}; 
-		}`;
+		}` : '';
 		const customIconClass = icon ? `.icon-custom {
 			mask : url("${icon}");
 			-webkit-mask-image : url("${icon}");
@@ -174,7 +175,7 @@ export class Icon extends MvuElement {
 	}
 
 	/**
-	 * @property {string} color_hover=var(--primary-color) - Hover color as Css variable
+	 * @property {string} color_hover=var(--primary-color) - Hover color as Css variable. A value of `null` removes the hover effect.
 	 */
 	set color_hover(value) {
 		this.signal(Update_Color_Hover, value);
