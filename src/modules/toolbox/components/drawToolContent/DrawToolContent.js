@@ -29,7 +29,7 @@ export class DrawToolContent extends AbstractToolContent {
 			name: 'marker',
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
-			icon: 'marker',
+			icon: 'symbol',
 			activate: () => setType('marker')
 		}, {
 			id: 2,

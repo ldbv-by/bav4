@@ -324,7 +324,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const filter = modifiedFeaturesOnly ?
 			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
 			itemLayer => itemLayer === interactionLayer;
-		return { hitTolerance: 10, layerFilter: filter } ;
+		return { hitTolerance: 10, layerFilter: filter };
 	}
 
 	_getStyleFunctionFrom(feature) {
@@ -335,7 +335,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
-			return this._styleService.getStyleFunction(drawType, styleOption);
+			const styleFunction = this._styleService.getStyleFunction(drawType);
+			return () => styleFunction(styleOption);
 		}
 		return this._styleService.getStyleFunction(StyleTypes.DRAW);
 	}
