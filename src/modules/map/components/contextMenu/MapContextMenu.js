@@ -9,6 +9,7 @@ import closeIcon from './assets/x-square.svg';
 /**
  *
  * @class
+ * @author taulinger
  */
 export class MapContextMenu extends BaElement {
 
@@ -48,9 +49,9 @@ export class MapContextMenu extends BaElement {
 	 */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
-		const { coordinate, id } = state;
+		const { coordinate, content } = state;
 
-		if (!coordinate || !id) {
+		if (!coordinate || !content) {
 			return nothing;
 		}
 
@@ -66,11 +67,6 @@ export class MapContextMenu extends BaElement {
 		const style = { '--mouse-x': coordinate[0] + 'px', '--mouse-y': coordinate[1] + yOffset + 'px' };
 		const sectorClass = 'sector-' + sector;
 
-
-		//get content element
-		const content = document.getElementById(id);
-		//extract content element from the dom and render it here
-		//see: https://lit-html.polymer-project.org/guide/template-reference#supported-data-types-for-text-bindings -> Node
 		return html`
         <style>${css}</style>
 		<div class='context-menu ${sectorClass}' style=${styleMap(style)}>
@@ -83,8 +79,8 @@ export class MapContextMenu extends BaElement {
 	 * @override
 	 */
 	extractState(globalState) {
-		const { mapContextMenu: { coordinate, id } } = globalState;
-		return { coordinate, id };
+		const { mapContextMenu: { coordinate, content } } = globalState;
+		return { coordinate, content };
 	}
 
 	static get tag() {
