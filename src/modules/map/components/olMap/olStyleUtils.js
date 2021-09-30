@@ -18,9 +18,12 @@ export const baseStyleFunction = () => {
 const getRulerStyle = (feature, resolution) => {
 	const geom = feature.getGeometry();
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-	const partition = getPartitionDelta(geom, resolution, calculationHints);
-	const partitionLength = getPartitionDelta(geom, resolution, calculationHints) * getGeometryLength(geom);
-	const partitionTickDistance = partitionLength / resolution;
+	const fallBackResolution = feature.get('partition_resolution');
+
+	const currentResolution = resolution ? resolution : fallBackResolution;
+	const partition = getPartitionDelta(geom, currentResolution, calculationHints);
+	const partitionLength = partition * getGeometryLength(geom);
+	const partitionTickDistance = partitionLength / currentResolution;
 
 	const fill = new Fill({ color: RED_COLOR.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -92,6 +95,9 @@ const getRulerStyle = (feature, resolution) => {
  * @returns
  */
 export const measureStyleFunction = (feature, resolution) => {
+	if (resolution === undefined) {
+		console.warn('Resolution is not defined');
+	}
 	const stroke = new Stroke({
 		color: RED_COLOR.concat([1]),
 		width: 3
