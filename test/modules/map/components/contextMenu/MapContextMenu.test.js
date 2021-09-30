@@ -4,6 +4,7 @@ import { initialState, mapContextMenuReducer } from '../../../../../src/modules/
 import { TestUtils } from '../../../../test-utils.js';
 import { close, open } from '../../../../../src/modules/map/store/mapContextMenu.action';
 import { $injector } from '../../../../../src/injection';
+import { html } from 'lit-html';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {
@@ -20,32 +21,37 @@ describe('MapContextMenu', () => {
 	};
 
 	describe('when initialized', () => {
-		it('renders nothing', async () => {
-			const element = await setup();
-			const container = element.shadowRoot.querySelector('.context-menu');
 
-			expect(container).toBeFalsy();
+		it('renders nothing', async () => {
+
+			const element = await setup();
+
+			expect(element.childElementCount).toBe(0);
 		});
 	});
 
 	describe('store changed', () => {
-		it('shows/hides the context menu', async () => {
+
+		it('shows/hides the context menu and its content', async () => {
 			const element = await setup();
 
-			open([10, 10], 'unknownId');
+			open([10, 10], html`<span class="foo">bar</span>`);
 
 			const container = element.shadowRoot.querySelector('.context-menu');
+			const content = element.shadowRoot.querySelector('.foo');
 			expect(window.getComputedStyle(container).display).toBe('block');
+			expect(content.innerText).toBe('bar');
 
 			close();
 
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
 		});
 	});
+
 	describe('when opened', () => {
 
 		it('shows a header and a close button which closes the menu', async () => {
-			const element = await setup({ coordinate: [10, 20], id: 'someId' });
+			const element = await setup({ coordinate: [10, 20], content: 'someId' });
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
@@ -59,21 +65,6 @@ describe('MapContextMenu', () => {
 			icon.click();
 
 			expect(element.shadowRoot.querySelector('.context-menu')).toBeFalsy();
-		});
-
-
-		it('renders a content html element', async () => {
-			const element = await setup();
-			const contentElementId = 'mockContentId';
-			const mockContent = document.createElement('div');
-			mockContent.innerText = 'mockContentText';
-			mockContent.id = contentElementId;
-			document.body.appendChild(mockContent);
-
-			open([10, 20], contentElementId);
-
-			const container = element.shadowRoot.querySelector('.context-menu');
-			expect(element.shadowRoot.querySelector('#' + contentElementId).parentElement).toEqual(container);
 		});
 
 		it('calls the _calculateSector() method', async () => {

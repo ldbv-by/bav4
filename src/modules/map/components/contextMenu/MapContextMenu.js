@@ -1,24 +1,42 @@
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
 import { close as closeContextMenu } from '../../store/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
 
+const Update = 'update';
+
 /**
  *
  * @class
+ * @author taulinger
  */
-export class MapContextMenu extends BaElement {
+export class MapContextMenu extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			coordinate: null,
+			content: null
+		});
 		const {
 			TranslationService: translastionService
 		} = $injector.inject('TranslationService');
 
 		this._translationService = translastionService;
+	}
+
+	onInitialize() {
+		this.observe(state => state.mapContextMenu, data => this.signal(Update, data));
+	}
+
+	update(type, data) {
+		const { coordinate, content } = data;
+		switch (type) {
+			case Update:
+				return { coordinate: coordinate, content: content };
+		}
 	}
 
 	_calculateSector(coordinate) {
@@ -46,11 +64,11 @@ export class MapContextMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	createView(state) {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { coordinate, id } = state;
+		const { coordinate, content } = model;
 
-		if (!coordinate || !id) {
+		if (!coordinate || !content) {
 			return nothing;
 		}
 
@@ -66,25 +84,12 @@ export class MapContextMenu extends BaElement {
 		const style = { '--mouse-x': coordinate[0] + 'px', '--mouse-y': coordinate[1] + yOffset + 'px' };
 		const sectorClass = 'sector-' + sector;
 
-
-		//get content element
-		const content = document.getElementById(id);
-		//extract content element from the dom and render it here
-		//see: https://lit-html.polymer-project.org/guide/template-reference#supported-data-types-for-text-bindings -> Node
 		return html`
         <style>${css}</style>
 		<div class='context-menu ${sectorClass}' style=${styleMap(style)}>
 			<div class='header'>${translate('map_contextMenu_header')}<ba-icon class='close' .icon='${closeIcon}' .title=${translate('map_contextMenu_close_button')} .size=${1.5} .color=${'white'} .color_hover=${'white'} @click=${closeContextMenu}></ba-icon></div>
 			${content}
         </div>`;
-	}
-
-	/**
-	 * @override
-	 */
-	extractState(globalState) {
-		const { mapContextMenu: { coordinate, id } } = globalState;
-		return { coordinate, id };
 	}
 
 	static get tag() {

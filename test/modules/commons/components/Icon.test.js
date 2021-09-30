@@ -38,6 +38,7 @@ describe('Icon', () => {
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('--size: 2em; background: var(--primary-color);');
 			//anchorClassHover
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('background: var(--primary-color);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('transform: scale(1.1)');
 			//customIconClass
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain('data:image/svg+xml;base64,PHN2ZyB4');
 
@@ -90,6 +91,11 @@ describe('Icon', () => {
 			element.color_hover = 'var(--foo)';
 
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('background: var(--foo);');
+
+			element.color_hover = null;
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).not.toContain('background: var(--primary-color);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).not.toContain('transform: scale(1.1)');
 		});
 	});
 
