@@ -11,80 +11,33 @@ describe('Button', () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
+	describe('when initialized', () => {
 
-	describe('when initialized with label attribute', () => {
-		it('renders the view', async () => {
-
-			const element = await TestUtils.render(Button.tag, { label: 'some' });
-
-			expect(element.disabled).toBeFalse();
-
-			const button = element.shadowRoot.querySelector('button');
-			expect(button).toBeTruthy();
-			expect(button.classList.contains('button')).toBeTrue();
-			expect(button.innerText).toBe('some');
-		});
-
-		it('re-renders the view when property \'label\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { label: 'foo' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.innerText).toBe('foo');
-
-			element.label = 'bar';
-
-			expect(button.innerText).toBe('bar');
-
-			//allocate the same value
-			element.label = 'bar';
-
-			expect(button.innerText).toBe('bar');
-		});
-
-		it('re-renders the view when attribute \'label\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { label: 'foo' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.innerText).toBe('foo');
-
-			element.setAttribute('label', 'bar');
-
-			expect(button.innerText).toBe('bar');
-		});
-
-		it('add the a default label when attribute is missing', async () => {
+		it('contains default values in the model', async () => {
 
 			const element = await TestUtils.render(Button.tag);
+
+			//model
+			expect(element.disabled).toBeFalse();
+			expect(element.label).toBe('label');
+			expect(element.type).toBe('secondary');
+		});
+
+		it('renders the view', async () => {
+
+			const element = await TestUtils.render(Button.tag);
+
+			//view
 			const button = element.shadowRoot.querySelector('button');
+			expect(button.classList.contains('secondary')).toBeTrue();
+			expect(button.classList.contains('disabled')).toBeFalse();
 			expect(button.innerText).toBe('label');
 		});
 	});
 
-	describe('when initialized with \'disabled\' attribute', () => {
+	describe('when property\'disabled\' changes', () => {
 
-		it('renders the view enabled', async () => {
-
-			const element = await TestUtils.render(Button.tag, { disabled: false });
-
-			expect(element.disabled).toBeFalse;
-			const button = element.shadowRoot.querySelector('button');
-			expect(button).toBeTruthy();
-			expect(button.classList.contains('disabled')).toBeFalse();
-		});
-
-		it('renders the view disabled', async () => {
-
-			const element = await TestUtils.render(Button.tag, { disabled: true });
-
-			expect(element.disabled).toBeTrue();
-			const button = element.shadowRoot.querySelector('button');
-			expect(button).toBeTruthy();
-			expect(button.classList.contains('disabled')).toBeTrue();
-		});
-
-		it('re-renders the view when property \'disabled\' changed', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
@@ -95,54 +48,30 @@ describe('Button', () => {
 
 			expect(button.classList.contains('disabled')).toBeTrue();
 
-			//allocate the same value
-			element.disabled = true;
-
-			expect(button.classList.contains('disabled')).toBeTrue();
-		});
-
-		it('re-renders the view when attribute \'disabled\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { disabled: 'false' });
-			const button = element.shadowRoot.querySelector('button');
+			element.disabled = false;
 
 			expect(button.classList.contains('disabled')).toBeFalse();
-
-			element.setAttribute('disabled', 'true');
-
-			expect(button.classList.contains('disabled')).toBeTrue();
 		});
 	});
-	describe('when initialized with \'type\' attribute', () => {
 
-		it('renders the view with default css classes', async () => {
+	describe('when property\'label\' changes', () => {
+
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
-			expect(button).toBeTruthy();
-			expect(button.className).toBe('button secondary');
+			expect(button.innerText).toBe('label');
+
+			element.label = 'foo';
+
+			expect(button.innerText).toBe('foo');
 		});
+	});
 
-		it('renders the view with secondary css classes', async () => {
+	describe('when property\'type\' changes', () => {
 
-			const element = await TestUtils.render(Button.tag, { type: 'secondary' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button).toBeTruthy();
-			expect(button.className).toBe('button secondary');
-		});
-
-		it('renders the view with primary css classes', async () => {
-
-			const element = await TestUtils.render(Button.tag, { type: 'primary' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button).toBeTruthy();
-			expect(button.className).toBe('button primary');
-		});
-
-		it('re-renders the view when property \'type\' changed', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
@@ -152,41 +81,38 @@ describe('Button', () => {
 			element.type = 'primary';
 
 			expect(button.className).toBe('button primary');
-
-			//allocate the same value
-			element.type = 'primary';
-
-			expect(button.className).toBe('button primary');
-		});
-
-		it('re-renders the view when attribute \'type\' changed', async () => {
-
-			const element = await TestUtils.render(Button.tag, { type: 'secondary' });
-			const button = element.shadowRoot.querySelector('button');
-
-			expect(button.className).toBe('button secondary');
-
-			element.setAttribute('type', 'primary');
-
-			expect(button.className).toBe('button primary');
 		});
 	});
+
 
 	describe('when clicked', () => {
 
-		it('call the onClick Callback', async () => {
+		it('calls the onClick callback via property binding', async () => {
 
 			const element = await TestUtils.render(Button.tag);
 			element.onClick = jasmine.createSpy();
 
 			const button = element.shadowRoot.querySelector('button');
+
 			button.click();
 
 			expect(element.onClick).toHaveBeenCalled();
 		});
 
+		it('calls the onClick callback via attribute binding', async () => {
+
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });
+
+			element.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
+		});
+
 		it('does nothing when disabled', async () => {
-			const element = await TestUtils.render(Button.tag, { disabled: true });
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });
+			element.disabled = true;
 
 			element.onClick = jasmine.createSpy();
 
@@ -194,6 +120,7 @@ describe('Button', () => {
 			button.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
+			expect(window.alert).not.toHaveBeenCalledWith('called');
 		});
 
 	});

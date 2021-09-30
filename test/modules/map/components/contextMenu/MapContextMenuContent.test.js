@@ -1,8 +1,15 @@
 /* eslint-disable no-undef */
 import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
+import checkedIcon from '../../../../../src/modules/map/components/contextMenu/assets/checked.svg';
+import clipboardIcon from '../../../../../src/modules/map/components/contextMenu/assets/clipboard.svg';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
+
+
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
+window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
 
@@ -19,15 +26,21 @@ describe('OlMapContextMenuContent', () => {
 		copyToClipboard() { }
 	};
 	const altitudeServiceMock = {
-		getAltitude() {	}
+		getAltitude() { }
 	};
 	const administrationServiceMock = {
 		getAdministration() { }
 	};
+	let store;
 
 	const setup = () => {
+		const state = {
+			notifications: {
+				notification: null
+			}
+		};
 
-		TestUtils.setupStoreAndDi();
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
@@ -47,6 +60,7 @@ describe('OlMapContextMenuContent', () => {
 	});
 
 	describe('when screen coordinate available', () => {
+
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
 			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
@@ -59,12 +73,9 @@ describe('OlMapContextMenuContent', () => {
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
 
 			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
-
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
@@ -77,41 +88,54 @@ describe('OlMapContextMenuContent', () => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('42 (m)');
 			});
 
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			copyIcon.click();
 
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
-			expect(getSridDefinitionsForViewMock).toHaveBeenCalledOnceWith([1000, 2000]);
-			expect(transformMock).toHaveBeenCalledOnceWith([1000, 2000], 3857, 42);
-			expect(stringifyMock).toHaveBeenCalledOnceWith([21, 21], 42, { digits: 7 });
+			expect(getSridDefinitionsForViewMock).toHaveBeenCalledWith([1000, 2000]);
+			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
+			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
 			expect(altitudeMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 		});
 
-		it('copies a coordinate to the clipboard', async () => {
+		it('copies a coordinate to the clipboard', async (done) => {
+			const coordinateMock = [1000, 2000];
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
+			spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
-			element.coordinate = [1000, 2000];
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
-			expect(copyIcon).toBeTruthy();
+			element.coordinate = coordinateMock;
+
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			copyIcon.click();
 
-
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
+			setTimeout(() => {
+				//check icon change
+				expect(copyIcon.color).toBe('var(--sucess-color)');
+				expect(copyIcon.color_hover).toBeNull();
+				expect(copyIcon.icon).toBe(checkedIcon);
+			});
+			//check icon reset after one second
+			setTimeout(() => {
+				expect(copyIcon.color).toBe('var(--primary-color)');
+				expect(copyIcon.color_hover).toBe('var(--primary-color)');
+				expect(copyIcon.icon).toBe(clipboardIcon);
+				done();
+			}, 1000 + 100);
 		});
 
-		it('logs a warn statement when Clipboard API is not available', async (done) => {
+		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async (done) => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
@@ -121,13 +145,21 @@ describe('OlMapContextMenuContent', () => {
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
-			//after we set the coordinate, we need to trigger rendering manually in this case
-			element.render();
-			const copyIcon = element.shadowRoot.querySelector('ba-icon');
+
+			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
+
 			copyIcon.click();
 
 			setTimeout(() => {
+				//all copyIcon should be disabled now
+				expect(copyIcon.disabled).toBeTrue();
+				expect(copyIcon.icon).toBe(clipboardIcon);
+				expect(copyIcon.title).toBe('map_contextMenuContent_clipboard_error');
+				expect(copyIcon.color).toBe('var(--primary-color)');
+
+				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
+				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 				done();
 			});

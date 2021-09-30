@@ -7,118 +7,162 @@ window.customElements.define(Icon.tag, Icon);
 
 describe('Icon', () => {
 
-	const svg = 'data:image/svg+xml,%3csvg width=\'1em\' height=\'1em\' viewBox=\'0 0 16 16\' class=\'bi bi-list\' fill=\'currentColor\' xmlns=\'http://www.w3.org/2000/svg\'%3e %3cpath fill-rule=\'evenodd\' d=\'M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z\'/%3e %3c/svg%3e';
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
-	describe('when initialized with default values', () => {
-		it('has correct properties', async () => {
+	describe('when initialized', () => {
+
+		it('contains default values in the model', async () => {
 
 			const element = await TestUtils.render(Icon.tag);
 
-			expect(element.icon).toBeNull;
-			expect(element.title).toBe('');
 			expect(element.disabled).toBeFalse();
+			expect(element.icon).toBe('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=');
+			expect(element.title).toBe('');
 			expect(element.size).toBe(2);
 			expect(element.color).toBe('var(--primary-color)');
-
+			expect(element.color_hover).toBe('var(--primary-color)');
 		});
 
 		it('renders the view', async () => {
+
+			const element = await TestUtils.render(Icon.tag);
+
+			const anchor = element.shadowRoot.querySelector('.anchor');
+			expect(anchor.title).toBe('');
+			const span = element.shadowRoot.querySelector('.icon.icon-custom');
+			expect(span.classList.contains('disabled')).toBeFalse();
+			//stylesheets
+			//iconClass
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('--size: 2em; background: var(--primary-color);');
+			//anchorClassHover
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('background: var(--primary-color);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('transform: scale(1.1)');
+			//customIconClass
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain('data:image/svg+xml;base64,PHN2ZyB4');
+
+		});
+	});
+
+	describe('when property\'icon\' changes', () => {
+
+		it('updates the view', async () => {
+			const fakeBase64Svg = 'data:image/svg+xml;base64,foo';
+			const element = await TestUtils.render(Icon.tag);
+
+			element.icon = fakeBase64Svg;
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain(fakeBase64Svg);
+		});
+	});
+
+	describe('when property\'size\' changes', () => {
+
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Icon.tag);
 			const anchor = element.shadowRoot.querySelector('.anchor');
-			expect(anchor).toBeTruthy();
+
+			element.title = 'foo';
+
+			expect(anchor.title).toBe('foo');
 		});
 	});
 
-	describe('when initialized with custom values', () => {
-		it('has correct properties', async () => {
+	describe('when property\'color\' changes', () => {
 
-			const element = await TestUtils.render(Icon.tag, { icon: svg, title: 'someTitle', disabled: false, size: 40, color: 'white' });
-
-			expect(element.icon).toBe(svg);
-			expect(element.title).toBe('someTitle');
-			expect(element.disabled).toBeFalse();
-			expect(element.size).toBe(40);
-			expect(element.color).toBe('white');
-
-		});
-
-		it('renders the view', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Icon.tag);
-			const h = element.shadowRoot.querySelector('.anchor');
-			expect(h).toBeTruthy();
+
+			element.color = 'var(--foo)';
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('background: var(--foo);');
 		});
 	});
 
-	describe('\'disabled\' value', () => {
+	describe('when property\'color_hover\' changes', () => {
 
-		it('renders the view disabled', async () => {
-
-			const element = await TestUtils.render(Icon.tag, { disabled: true });
-
-			expect(element.disabled).toBeTrue();
-			const icon = element.shadowRoot.querySelector('.icon');
-			expect(icon).toBeTruthy();
-			expect(icon.classList.contains('disabled')).toBeTrue();
-		});
-
-		it('re-renders the view when property \'disabled\' is changed', async () => {
+		it('updates the view', async () => {
 
 			const element = await TestUtils.render(Icon.tag);
-			const icon = element.shadowRoot.querySelector('.icon');
 
-			expect(icon.classList.contains('disabled')).toBeFalse();
+			element.color_hover = 'var(--foo)';
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('background: var(--foo);');
+
+			element.color_hover = null;
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).not.toContain('background: var(--primary-color);');
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).not.toContain('transform: scale(1.1)');
+		});
+	});
+
+	describe('when property\'title\' changes', () => {
+
+		it('updates the view', async () => {
+
+			const element = await TestUtils.render(Icon.tag);
+			const span = element.shadowRoot.querySelector('.icon.icon-custom');
 
 			element.disabled = true;
 
-			expect(icon.classList.contains('disabled')).toBeTrue();
-		});
+			expect(span.classList.contains('disabled')).toBeTrue();
 
-		it('re-renders the view when attribute \'disabled\' is changed', async () => {
+			element.disabled = false;
 
-			const element = await TestUtils.render(Icon.tag);
-			const icon = element.shadowRoot.querySelector('.icon');
-
-			expect(icon.classList.contains('disabled')).toBeFalse();
-
-			element.setAttribute('disabled', true);
-
-			expect(icon.classList.contains('disabled')).toBeTrue();
+			expect(span.classList.contains('disabled')).toBeFalse();
 		});
 	});
 
+	describe('when property\'disabled\' changes', () => {
 
+		it('updates the view', async () => {
+
+			const element = await TestUtils.render(Icon.tag);
+
+			element.size = 5;
+
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('--size: 5em;');
+		});
+	});
 
 	describe('when clicked', () => {
 
-		it('calls the onClick Callback', async () => {
+		it('calls the onClick callback via property binding', async () => {
 
 			const element = await TestUtils.render(Icon.tag);
 			element.onClick = jasmine.createSpy();
+			const icon = element.shadowRoot.querySelector('a');
 
-			const anchor = element.shadowRoot.querySelector('.anchor');
-			anchor.click();
+			icon.click();
 
 			expect(element.onClick).toHaveBeenCalled();
 		});
 
+		it('calls the onClick callback via attribute binding', async () => {
+
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Icon.tag, { onClick: 'alert(\'called\')' });
+
+			element.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
+		});
+
 		it('does nothing when disabled', async () => {
-			const element = await TestUtils.render(Icon.tag, { disabled: true });
-
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(Icon.tag, { onClick: 'alert(\'called\')' });
+			element.disabled = true;
 			element.onClick = jasmine.createSpy();
-
 			const anchor = element.shadowRoot.querySelector('.anchor');
+
 			anchor.click();
 
 			expect(element.onClick).not.toHaveBeenCalled();
+			expect(window.alert).not.toHaveBeenCalledWith('called');
 		});
 
 	});
-
-
 });

@@ -1,4 +1,4 @@
-# BAv4 (#nomigration)
+# BAv4
 
 [![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js%20CI/badge.svg)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
@@ -18,21 +18,18 @@ Next-generation web-map viewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-- Modern Js (ES9), currently no transpiler
-- Model–View–ViewModel (MVVM) structuring:
-  - Data objects derived from the state store and service classes => *Model*
-  - DOM => *View*
-  - Web components  =>  *ViewModel*
+- Modern Js (ES9), no transpiler
+- Vanilla CSS 
+- Components are based on the Model–View–Update pattern
 - Built-in dependency injection
 - Map state is decoupled from map implementation
-- Vanilla CSS 
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
   - [webpack](https://webpack.js.org): Bundler
-  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): tests
-- Basic concept inspired by Adam Bien (https://airhacks.io/)
+  - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
+  - [playwright](https://playwright.dev/) E2E Tests
 
 ## Structure
 
@@ -59,7 +56,7 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contain further directories:
-   - `/components` : ViewModel classes and all of their dependencies like CSS, assets, ...
+   - `/components` : Components and all of their dependencies like CSS, assets, ...
    - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
@@ -120,6 +117,11 @@ Here's an overview of what project folder structure looks like:
 | `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
 | `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
+
+| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+|----|----|
+| `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
+| `npx playwright test --help` | Shows information about all options |
 
 | Other | |
 |----|----|
