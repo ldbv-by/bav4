@@ -9,7 +9,7 @@ import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
-import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
+import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
@@ -88,6 +88,12 @@ export class OlMap extends BaElement {
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()
 			})])
+		});
+
+		this._map.on('singleclick', (evt) => {
+			evt.preventDefault();
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		});
 
 		this._map.on('movestart', () => {
