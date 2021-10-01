@@ -3,9 +3,10 @@ import { $injector } from '../../../../../../src/injection';
 import { TestUtils } from '../../../../../test-utils.js';
 import { StyleService, StyleTypes } from '../../../../../../src/modules/map/components/olMap/services/StyleService';
 import { OverlayService } from '../../../../../../src/modules/map/components/olMap/services/OverlayService';
-import { Polygon } from 'ol/geom';
+import { Polygon, Point } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { Style, Text } from 'ol/style';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -132,11 +133,67 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock, 'measure');
+			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.MEASURE);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('adds text-style to feature with explicit style-type', () => {
+			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			featureWithStyleArray.setId('draw_text_12345678');
+			featureWithStyleFunction.setId('draw_text_9876543');
+			featureWithStyleArray.setStyle([new Style({ text: new Text({ text: 'foo' }) })]);
+			featureWithStyleFunction.setStyle(() => new Style({ text: new Text({ text: 'foo' }) }));
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			let textStyle = null;
+			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f => textStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, StyleTypes.TEXT);
+			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f => textStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, StyleTypes.TEXT);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds NO style to feature with explicit style-type of LINE or POLYGON', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.LINE);
+			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.POLYGON);
+
+			expect(styleSetterSpy).not.toHaveBeenCalled();
 		});
 
 		it('adds draw-style to feature with explicit style-type', () => {
