@@ -10,7 +10,8 @@ export const provide = (lang) => {
 				map_contextMenuContent_community_label: 'Community',
 				map_contextMenuContent_district_label: 'District',
 				map_contextMenuContent_copy_icon: 'Copy to clipboard',
-				map_contextMenuContent_clipboard_error: '"Copy to clipboard" is not available'
+				map_contextMenuContent_clipboard_error: '"Copy to clipboard" is not available',
+				map_contextMenuContent_clipboard_success: 'was copied to clipboard'
 			};
 
 		case 'de':
@@ -22,7 +23,8 @@ export const provide = (lang) => {
 				map_contextMenuContent_community_label: 'Gemeinde',
 				map_contextMenuContent_district_label: 'Gemarkung',
 				map_contextMenuContent_copy_icon: 'In die Zwischenablage kopieren',
-				map_contextMenuContent_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung'
+				map_contextMenuContent_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
+				map_contextMenuContent_clipboard_success: 'wurde in die Zwischenablage kopiert'
 			};
 
 		default:

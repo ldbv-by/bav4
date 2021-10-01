@@ -121,6 +121,9 @@ describe('OlMapContextMenuContent', () => {
 
 			expect(copyToClipboardMock).toHaveBeenCalledWith('21, 21');
 			setTimeout(() => {
+				//check notification
+				expect(store.getState().notifications.notification.payload.message).toBe('"21, 21" map_contextMenuContent_clipboard_success');
+				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.INFO);
 				//check icon change
 				expect(copyIcon.color).toBe('var(--sucess-color)');
 				expect(copyIcon.color_hover).toBeNull();

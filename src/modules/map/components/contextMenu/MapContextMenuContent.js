@@ -105,12 +105,15 @@ export class MapContextMenuContent extends MvuElement {
 		const onClickCallback = baIcon.onClick;
 		const successColor = 'var(--sucess-color)';
 
-		this._shareService.copyToClipboard(transformedCoordinate.join(', ')).then(() => {
+		const coordinate = transformedCoordinate.join(', ');
+
+		this._shareService.copyToClipboard(coordinate).then(() => {
 			//change the icon
 			baIcon.color = successColor;
 			baIcon.color_hover = null;
 			baIcon.icon = checkedIcon;
 			baIcon.onClick = () => { };
+			emitNotification(`"${coordinate}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 
 			setTimeout(() => {
 				//reset the icon
