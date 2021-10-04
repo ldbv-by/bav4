@@ -1,5 +1,5 @@
-import { MvuElement } from '../../src/modules/MvuElement';
 import { html, nothing } from 'lit-html';
+import { MvuElement } from '../../src/modules/MvuElement';
 import { TestUtils } from '../test-utils.js';
 
 
@@ -8,7 +8,7 @@ let skipRendering = false;
 const Update_Foo = 'update_foo';
 const Update_Index = 'update_index';
 
-class MvpElementImpl extends MvuElement {
+class MvuElementImpl extends MvuElement {
 
 	constructor() {
 		super({
@@ -118,7 +118,7 @@ class MvuElementNoDefaultCss extends MvuElement {
 	}
 }
 
-window.customElements.define(MvpElementImpl.tag, MvpElementImpl);
+window.customElements.define(MvuElementImpl.tag, MvuElementImpl);
 window.customElements.define('ba-element', MvuElement);
 window.customElements.define('ba-element-noimpl', MvuElementNoImpl);
 window.customElements.define('ba-element-default-css', MvuElementDefaultCss);
@@ -187,14 +187,14 @@ describe('MvuElement', () => {
 	describe('when initialized', () => {
 
 		it('renders the view', async () => {
-			const element = await TestUtils.render(MvpElementImpl.tag);
+			const element = await TestUtils.render(MvuElementImpl.tag);
 
 			expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('foo')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
 		});
 
 		it('calls lifecycle callbacks in correct order', async () => {
-			const element = await TestUtils.render(MvpElementImpl.tag);
+			const element = await TestUtils.render(MvuElementImpl.tag);
 
 			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onBeforeRenderCalled).toBe(1);
@@ -205,14 +205,14 @@ describe('MvuElement', () => {
 
 		it('calls lifecycle callbacks in correct order when rendering is skipped', async () => {
 			skipRendering = true;
-			const element = await TestUtils.render(MvpElementImpl.tag);
+			const element = await TestUtils.render(MvuElementImpl.tag);
 
 			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onWindowLoadCalled).toBe(1);
 		});
 
 		it('does not call render() as long as not initialized', async () => {
-			const instance = new MvpElementImpl();
+			const instance = new MvuElementImpl();
 			spyOn(instance, 'onBeforeRender');
 
 			instance.render();
@@ -226,7 +226,7 @@ describe('MvuElement', () => {
 		});
 
 		it('calls render callbacks with argument', async () => {
-			const instance = new MvpElementImpl();
+			const instance = new MvuElementImpl();
 			const onBeforeRenderSpy = spyOn(instance, 'onBeforeRender');
 			const onAfterRenderSpy = spyOn(instance, 'onAfterRender');
 
@@ -250,7 +250,7 @@ describe('MvuElement', () => {
 	describe('getModel', () => {
 
 		it('return a copy of thee current model', async () => {
-			const element = await TestUtils.render(MvpElementImpl.tag);
+			const element = await TestUtils.render(MvuElementImpl.tag);
 			const copiedModel = element.getModel();
 
 			expect(copiedModel).toEqual(element._model);
@@ -266,7 +266,7 @@ describe('MvuElement', () => {
 		describe('when #signal is called', () => {
 
 			it('calls callbacks in correct order and updates the view', async () => {
-				const element = await TestUtils.render(MvpElementImpl.tag);
+				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
 
 				element.signal(Update_Foo, 'other');
@@ -283,7 +283,7 @@ describe('MvuElement', () => {
 		describe('when #signal is called with an unknown action type', () => {
 
 			it('does not call callbacks and does not update the view', async () => {
-				const element = await TestUtils.render(MvpElementImpl.tag);
+				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
 
 				element.signal('Unknown', 'other');
@@ -300,7 +300,7 @@ describe('MvuElement', () => {
 		describe('when #signal is called from an observer', () => {
 
 			it('calls callbacks in correct order and updates the view', async () => {
-				const element = await TestUtils.render(MvpElementImpl.tag);
+				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
 
 				store.dispatch({
@@ -319,11 +319,10 @@ describe('MvuElement', () => {
 
 	});
 
-
 	describe('default css', () => {
 
 		it('checks if a template result contains content', async () => {
-			const element = await TestUtils.render(MvpElementImpl.tag);
+			const element = await TestUtils.render(MvuElementImpl.tag);
 
 			expect(element._isNothing(nothing)).toBeTrue();
 			expect(element._isNothing(undefined)).toBeTrue();
@@ -342,5 +341,49 @@ describe('MvuElement', () => {
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeFalsy();
 		});
 
+	});
+
+	describe('observeModel', () => {
+
+		it('registers model observers', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			const elementStateIndexCallback = jasmine.createSpy();
+			const someUnknownFieldCallback = jasmine.createSpy();
+			const errorSpy = spyOn(console, 'error');
+			//let's register an observer of model.index three times
+			element.observeModel('index', elementStateIndexCallback);
+			element.observeModel(['index', 'index'], elementStateIndexCallback);
+			element.observeModel('someUnknowField', someUnknownFieldCallback);
+
+			//change state after registration
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+
+			expect(elementStateIndexCallback).toHaveBeenCalledWith(42);
+			expect(elementStateIndexCallback).toHaveBeenCalledTimes(3);
+			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
+		});
+
+		it('registers observers and calls the callbacks immediately', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			const elementStateIndexCallback = jasmine.createSpy();
+			const someUnknownFieldCallback = jasmine.createSpy();
+			const errorSpy = spyOn(console, 'error');
+
+			//change state before registration
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+			element.observeModel('index', elementStateIndexCallback, true);
+			element.observeModel('someUnknowField', someUnknownFieldCallback, true);
+
+			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
+			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
+		});
 	});
 });

@@ -79,6 +79,8 @@ export class MvuElement extends HTMLElement {
 		this._model = model;
 
 		this._rendered = false;
+
+		this._observer = [];
 	}
 
 	/**
@@ -91,6 +93,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this._model);
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
+			this._observer.forEach(o => o());
 			this.onModelChanged(this._model);
 		}
 	}
@@ -285,15 +288,54 @@ export class MvuElement extends HTMLElement {
 
 
 	/**
-	 * Registers an observer for state changes of the global store.
+	 * Registers an observer on state changes of the global store.
 	 * @param {function(state)} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {function(observedPartOfState, state)} onChange A function that will be called when the observed state has changed
-	 * @param {boolean|true} ignoreInitialState A boolean which indicate, if the callback should be initially called with the current state immediately after the observer has been registered
+	 * @param {boolean|true} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
 	 * @returns  A function that unsubscribes the observer
 	 * @see observe
 	 */
-	observe(extract, onChange, immediately = false) {
+	observe(extract, onChange, immediately = true) {
 		//calls observe from storeUtils.js
-		return observe(this._storeService.getStore(), extract, onChange, immediately);
+		return observe(this._storeService.getStore(), extract, onChange, !immediately);
+	}
+
+	/**
+	 * Registers an observer on changes of a field of the Model of this component.
+	 * Observers are called right before {@link MvuElement#onModelChanged}.
+	 * @protected
+	 * @param {(string|string[])} names Name(s) of the observed field(s)
+	 * @param {function(observedField)} onChange A function that will be called when the observed field has changed
+	 * @param {boolean|false} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
+	 */
+	observeModel(names, onChange, immediately = false) {
+
+		const createObserver = (key, onChange) => {
+			let currentState = this._model[key];
+
+			return () => {
+				const nextState = this._model[key];
+				if (!equals(nextState, currentState)) {
+					currentState = nextState;
+					onChange(currentState);
+				}
+			};
+		};
+
+		const keys = Array.isArray(names) ? names : [names];
+
+		keys.forEach(key => {
+			if (this._model[key] !== undefined) {
+
+				this._observer.push(createObserver(key, onChange));
+
+				if (immediately) {
+					onChange(this._model[key]);
+				}
+			}
+			else {
+				console.error(`Could not register observer --> '${key}' is not a field in the Model of ${this.constructor.name}`);
+			}
+		});
 	}
 }
