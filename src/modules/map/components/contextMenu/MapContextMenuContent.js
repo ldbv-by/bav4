@@ -2,11 +2,9 @@ import { html, nothing } from 'lit-html';
 import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
-import checkedIcon from './assets/checked.svg';
 import { MvuElement } from '../../../MvuElement';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
-import { Icon } from '../../../commons/components/icon/Icon';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Altitude = 'update_altitude';
@@ -98,43 +96,14 @@ export class MapContextMenuContent extends MvuElement {
 		}
 	}
 
-	_copyCoordinateToClipboard(transformedCoordinate, iconId) {
-		const baIcon = this.getRenderTarget().querySelector(`#${iconId}`);
-		const color = baIcon.color;
-		const color_hover = baIcon.color_hover;
-		const onClickCallback = baIcon.onClick;
-		const successColor = 'var(--sucess-color)';
+	_copyCoordinateToClipboard(stringifiedCoord) {
 
-		const coordinate = transformedCoordinate.join(', ');
-
-		this._shareService.copyToClipboard(coordinate).then(() => {
-			//change the icon
-			baIcon.color = successColor;
-			baIcon.color_hover = null;
-			baIcon.icon = checkedIcon;
-			baIcon.onClick = () => { };
-			emitNotification(`"${coordinate}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
-
-			setTimeout(() => {
-				//reset the icon
-				baIcon.icon = clipboardIcon;
-				baIcon.color = color;
-				baIcon.color_hover = color_hover;
-				baIcon.onClick = onClickCallback;
-			}, 1000);
+		this._shareService.copyToClipboard(stringifiedCoord).then(() => {
+			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 		}, () => {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-
-			//disable all buttons
-			this.getRenderTarget().querySelectorAll(Icon.tag).forEach(baIcon => {
-				baIcon.icon = clipboardIcon;
-				baIcon.color = color;
-				baIcon.color_hover = color_hover;
-				baIcon.disabled = true;
-				baIcon.title = message;
-			});
 		});
 	}
 
@@ -147,16 +116,15 @@ export class MapContextMenuContent extends MvuElement {
 			const sridDefinitions = this._mapService.getSridDefinitionsForView(coordinate);
 			const stringifiedCoords = sridDefinitions.map(definition => {
 				const { label, code } = definition;
-				const iconId = `icon${code}`;
 				const transformedCoordinate = this._coordinateService.transform(coordinate, this._mapService.getSrid(), code);
-				const onClick = () => {
-					this._copyCoordinateToClipboard(transformedCoordinate, iconId);
-				};
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
+				const onClick = () => {
+					this._copyCoordinateToClipboard(stringifiedCoord);
+				};
 				return html`
 				<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
 				<span class='icon'>
-					<ba-icon id=${iconId} class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${onClick}></ba-icon>
+					<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${onClick}></ba-icon>
 				</span>
 				`;
 			});
