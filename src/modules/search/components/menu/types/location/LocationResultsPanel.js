@@ -18,12 +18,14 @@ export class LocationResultsPanel extends BaElement {
 	constructor() {
 		super();
 		const { SearchResultService: searchResultService, TranslationService: translationService }
-            = $injector.inject('SearchResultService', 'TranslationService');
+			= $injector.inject('SearchResultService', 'TranslationService');
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
 		this._locationSearchResults = [];
 		this._isCollapsed = false;
+		this._isShowAll = false;
+		this._maxShow = 7;
 	}
 
 
@@ -34,6 +36,7 @@ export class LocationResultsPanel extends BaElement {
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
 			async (term) => {
 				this._locationSearchResults = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
+				this._isShowAll = (this._locationSearchResults.length > this._maxShow) ? false : true;
 				this.render();
 			});
 
@@ -58,6 +61,11 @@ export class LocationResultsPanel extends BaElement {
 			}
 		};
 
+		const toggleShowAll = () => {
+			this._isShowAll = !this._isShowAll;
+			this.render();
+		};
+
 		const iconCollapseClass = {
 			iconexpand: !this._isCollapsed,
 			isdisabled: !this._locationSearchResults.length
@@ -67,20 +75,33 @@ export class LocationResultsPanel extends BaElement {
 			iscollaps: this._isCollapsed
 		};
 
+		const panelShowAll = {
+			isshowall: this._isShowAll
+		};
+
 		return html`
         <style>${css}</style>
-		<div class="location-results-panel">
-			<div class="location-label">
+        <style>
+		.location-items > *:nth-child(-n+${this._maxShow}) {
+			display: block;
+		  }
+		</style>
+		<div class="location-results-panel divider ${classMap(panelShowAll)}'">
+			<div class="location-label" @click="${toggleCollapse}">
 				<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>			
-				<a class='location-label__collapse' @click="${toggleCollapse}">
+				<a class='location-label__collapse' >
 					<i class='icon chevron ${classMap(iconCollapseClass)}'>
 					</i>
 				</a>   
-			</div>			
-			<ul class="location-items divider ${classMap(bodyCollapseClass)}">	
-				${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
-			</ul>
-			</div>
+			</div>		
+			<div class="${classMap(bodyCollapseClass)}">		
+				<ul class="location-items">	
+					${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
+				</ul>
+				<div class="show-all" @click="${toggleShowAll}">
+				${translate('search_menu_showAll_label')}
+				</div>
+			</div>	
 		</div>
         `;
 	}

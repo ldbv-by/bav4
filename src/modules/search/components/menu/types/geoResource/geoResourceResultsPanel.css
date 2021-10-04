@@ -1,6 +1,10 @@
 .georesource-label{
   display: flex;
 }
+.georesource-label:hover .georesource-label__text{
+  color:var(--primary-color);
+  cursor: pointer;
+}
 .georesource-label__text{
    font-weight: bold;
    padding: .8em 1.5em;
@@ -9,11 +13,13 @@
 .georesource-items{
   max-height: 100em;
   overflow:hidden;
-  transition: all .4s ease-in-out;
+  transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+}
+.georesource-items > *{
+    display:none
 }
 .georesource-label__collapse{
   padding: .8em 1.5em;
-  cursor: pointer;
 }
 .icon {
    background: var(--primary-color);
@@ -25,6 +31,7 @@
    -moz-transform:rotate(90deg);
    -webkit-transform:rotate(90deg);
    transform:rotate(90deg);
+   transition: all var(--animation-duration-large-open) var(--animation-easing-open)
 }
 .chevron {
   position: relative;
@@ -42,11 +49,26 @@ filter: brightness(.8);
   -moz-transform:rotate(270deg);
   -webkit-transform:rotate(270deg);
   transform:rotate(270deg);
-  transition: all .4s ease-in-out;
 }
 .iscollaps{
   max-height: 0;    
+  display:none;
 }
 .divider {
   border-bottom: 1px solid var(--header-background-color);
+}
+.show-all{
+  padding: .8em 1.5em;
+  cursor: pointer;
+  background: var(--primary-bg-color);
+  width:100%;
+}
+.isshowall .show-all{
+  display:none;
+}
+.show-all:hover{
+  color:var(--primary-color);
+}
+.isshowall .georesource-items > *{
+  display:block;
 }

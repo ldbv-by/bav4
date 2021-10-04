@@ -24,6 +24,8 @@ export class GeoResouceResultsPanel extends BaElement {
 		this._translationService = translationService;
 		this._geoRersourceSearchResults = [];
 		this._isCollapsed = false;
+		this._isShowAll = false;
+		this._maxShow = 7;
 	}
 
 
@@ -34,6 +36,7 @@ export class GeoResouceResultsPanel extends BaElement {
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
 			async (term) => {
 				this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
+				this._isShowAll = (this._geoRersourceSearchResults.length > this._maxShow) ? false : true;
 				this.render();
 			});
 
@@ -58,6 +61,11 @@ export class GeoResouceResultsPanel extends BaElement {
 			}
 		};
 
+		const toggleShowAll = () => {
+			this._isShowAll = !this._isShowAll;
+			this.render();
+		};
+
 		const iconCollapseClass = {
 			iconexpand: !this._isCollapsed,
 			isdisabled: !this._geoRersourceSearchResults.length
@@ -67,21 +75,33 @@ export class GeoResouceResultsPanel extends BaElement {
 			iscollaps: this._isCollapsed
 		};
 
-
+		const panelShowAll = {
+			isshowall: this._isShowAll
+		};
 
 		return html`
         <style>${css}</style>
-			<div class="georesource-results-panel">
-				<div class="georesource-label">
+		<style>
+		.georesource-items > *:nth-child(-n+${this._maxShow}) {
+			display: block;
+		  }
+		</style>
+		<div class="location-results-panel divider ${classMap(panelShowAll)}'">
+				<div class="georesource-label" @click="${toggleCollapse}">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
-					<a class='georesource-label__collapse' @click="${toggleCollapse}">
+					<a class='georesource-label__collapse' >
 						<i class='icon chevron ${classMap(iconCollapseClass)}'>
 						</i>
 					</a>   
 				</div>
-				<ul class="georesource-items divider ${classMap(bodyCollapseClass)}">	
-					${this._geoRersourceSearchResults.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
-				</ul>
+				<div class="${classMap(bodyCollapseClass)}">	
+					<ul class="georesource-items ">	
+						${this._geoRersourceSearchResults.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
+					</ul>
+					<div class="show-all" @click="${toggleShowAll}">
+					${translate('search_menu_showAll_label')}
+					</div>
+				</div>
 			</div>
         `;
 	}
