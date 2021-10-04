@@ -4,7 +4,7 @@
     background: transparent;
     border: none;
     font-weight: bold;   
-    transition: all .2s ease-in-out;  
+    transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
     color: var(--primary-color);
 }
 .primary {
