@@ -9,7 +9,7 @@
   z-index: 1;
   left: -410px;
   top: 50px;
-  transition: transform 0.5s ease-out;
+  transition: all var(--animation-duration-big-open) var(--animation-easing-linea);  
 }
 
 .overlay-landscape-closed {
@@ -26,7 +26,7 @@
   z-index: 1;
   bottom: 0px;
   left: 0;
-  transition: transform 0.5s ease-out;
+  transition: all var(--animation-duration-big-open) var(--animation-easing-linea);  
 }
 
 .overlay-portrait-closed {

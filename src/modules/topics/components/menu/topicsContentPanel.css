@@ -2,7 +2,7 @@
    width: 200%;
    display: inline-grid;
    grid-template-columns: 50% 50%;
-   transition: transform var(--animationtime-mainmenu) ease-out;             
+   transition: transform var(--animation-duration-large-open) var(--animation-easing-open);              
 }
 .col{
    width: 100%; 

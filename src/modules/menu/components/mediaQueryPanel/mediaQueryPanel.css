@@ -12,7 +12,7 @@
      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
      overflow-x: hidden;
      overflow-y: auto;
-     transition: transform 0.3s ease-out;     
+     transition: transform var(--animation-duration-large-open) var(--animation-easing-open);    
 }
 .content-panel__close-button {           
     position: absolute;
