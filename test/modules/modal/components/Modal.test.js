@@ -93,6 +93,7 @@ describe('Modal', () => {
 
 				const background = element.shadowRoot.querySelector('.modal__background');
 				background.click();
+
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
 				elementModal.dispatchEvent(new Event('animationend'));
 
