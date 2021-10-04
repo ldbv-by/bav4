@@ -18,7 +18,7 @@ describe('i18n for search module', () => {
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Places');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Data');
-		expect(map.search_menu_showAll_label).toBe('More...');
+		expect(map.search_menu_showAll_label).toBe('Show more...');
 	});
 
 	it('have the expected amount of translations', () => {
