@@ -98,12 +98,10 @@ export class MapContextMenuContent extends MvuElement {
 		}
 	}
 
-	_copyCoordinateToClipboard(transformedCoordinate) {
+	_copyCoordinateToClipboard(stringifiedCoord) {
 
-		const coordinate = transformedCoordinate.join(', ');
-
-		this._shareService.copyToClipboard(coordinate).then(() => {
-			emitNotification(`"${coordinate}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+		this._shareService.copyToClipboard(stringifiedCoord).then(() => {
+			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 		}, () => {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
@@ -121,10 +119,10 @@ export class MapContextMenuContent extends MvuElement {
 			const stringifiedCoords = sridDefinitions.map(definition => {
 				const { label, code } = definition;
 				const transformedCoordinate = this._coordinateService.transform(coordinate, this._mapService.getSrid(), code);
-				const onClick = () => {
-					this._copyCoordinateToClipboard(transformedCoordinate);
-				};
 				const stringifiedCoord = this._coordinateService.stringify(transformedCoordinate, code, { digits: definition.digits });
+				const onClick = () => {
+					this._copyCoordinateToClipboard(stringifiedCoord);
+				};
 				return html`
 				<span class='label'>${label}</span><span class='coordinate'>${stringifiedCoord}</span>
 				<span class='icon'>
