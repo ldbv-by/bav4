@@ -11,6 +11,7 @@ import css from './locationResultsPanel.css';
  * Displays location search results.
  * @class
  * @author taulinger
+ * @author alsturm
  */
 export class LocationResultsPanel extends BaElement {
 
@@ -35,9 +36,11 @@ export class LocationResultsPanel extends BaElement {
 		//requestData call has to be debounced
 		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
 			async (term) => {
-				this._locationSearchResults = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
-				this._isShowAll = (this._locationSearchResults.length > this._maxShow) ? false : true;
-				this.render();
+				if (term) {
+					this._locationSearchResults = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
+					this._isShowAll = (this._locationSearchResults.length > this._maxShow) ? false : true;
+					this.render();
+				}
 			});
 
 		this.observe('term', term => requestLocationDataAndUpdateViewHandler(term), true);

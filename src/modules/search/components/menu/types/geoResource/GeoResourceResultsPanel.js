@@ -11,6 +11,7 @@ import css from './geoResourceResultsPanel.css';
  * Displays geoResource search results.
  * @class
  * @author taulinger
+ * @author alsturm
  */
 export class GeoResouceResultsPanel extends BaElement {
 
@@ -35,9 +36,11 @@ export class GeoResouceResultsPanel extends BaElement {
 		//requestData call has to be debounced
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
 			async (term) => {
-				this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
-				this._isShowAll = (this._geoRersourceSearchResults.length > this._maxShow) ? false : true;
-				this.render();
+				if (term) {
+					this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
+					this._isShowAll = (this._geoRersourceSearchResults.length > this._maxShow) ? false : true;
+					this.render();
+				}
 			});
 
 		this.observe('term', (term) => requestGeoResourceDataAndUpdateViewHandler(term), true);
@@ -86,7 +89,7 @@ export class GeoResouceResultsPanel extends BaElement {
 			display: block;
 		  }
 		</style>
-		<div class="location-results-panel divider ${classMap(panelShowAll)}'">
+		<div class="georesource-results-panel divider ${classMap(panelShowAll)}'">
 				<div class="georesource-label" @click="${toggleCollapse}">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
 					<a class='georesource-label__collapse' >
