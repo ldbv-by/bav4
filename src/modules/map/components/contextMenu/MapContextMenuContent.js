@@ -2,11 +2,9 @@ import { html, nothing } from 'lit-html';
 import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
-import checkedIcon from './assets/checked.svg';
 import { MvuElement } from '../../../MvuElement';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
-import { Icon } from '../../../commons/components/icon/Icon';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Altitude = 'update_altitude';

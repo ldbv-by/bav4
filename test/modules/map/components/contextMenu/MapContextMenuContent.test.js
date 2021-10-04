@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
-import checkedIcon from '../../../../../src/modules/map/components/contextMenu/assets/checked.svg';
-import clipboardIcon from '../../../../../src/modules/map/components/contextMenu/assets/clipboard.svg';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
@@ -66,7 +64,6 @@ describe('OlMapContextMenuContent', () => {
 			const stringifiedCoord = 'stringified coordinate';
 			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
