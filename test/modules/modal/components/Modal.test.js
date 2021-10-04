@@ -78,6 +78,9 @@ describe('Modal', () => {
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
 				closeBtn.click();
 
+				const elementModal = element.shadowRoot.querySelector('.modal__container');
+				elementModal.dispatchEvent(new Event('animationend'));
+
 				expect(store.getState().modal.active).toBeFalse();
 			});
 		});
@@ -90,6 +93,8 @@ describe('Modal', () => {
 
 				const background = element.shadowRoot.querySelector('.modal__background');
 				background.click();
+				const elementModal = element.shadowRoot.querySelector('.modal__container');
+				elementModal.dispatchEvent(new Event('animationend'));
 
 				expect(store.getState().modal.active).toBeFalse();
 			});
