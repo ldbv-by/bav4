@@ -124,18 +124,8 @@ describe('OlMapContextMenuContent', () => {
 				//check notification
 				expect(store.getState().notifications.notification.payload.message).toBe('"21, 21" map_contextMenuContent_clipboard_success');
 				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.INFO);
-				//check icon change
-				expect(copyIcon.color).toBe('var(--sucess-color)');
-				expect(copyIcon.color_hover).toBeNull();
-				expect(copyIcon.icon).toBe(checkedIcon);
-			});
-			//check icon reset after one second
-			setTimeout(() => {
-				expect(copyIcon.color).toBe('var(--primary-color)');
-				expect(copyIcon.color_hover).toBe('var(--primary-color)');
-				expect(copyIcon.icon).toBe(clipboardIcon);
 				done();
-			}, 1000 + 100);
+			});
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async (done) => {
@@ -155,12 +145,6 @@ describe('OlMapContextMenuContent', () => {
 			copyIcon.click();
 
 			setTimeout(() => {
-				//all copyIcon should be disabled now
-				expect(copyIcon.disabled).toBeTrue();
-				expect(copyIcon.icon).toBe(clipboardIcon);
-				expect(copyIcon.title).toBe('map_contextMenuContent_clipboard_error');
-				expect(copyIcon.color).toBe('var(--primary-color)');
-
 				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
 				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
