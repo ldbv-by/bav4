@@ -31,7 +31,7 @@ const Temp_Session_Id = 'temp_draw_id';
 const Debounce_Delay = 1000;
 
 const defaultStyleOption = {
-	symbolSrc: null, // used by: Symbol
+	symbolSrc: 'marker', // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
 	text: '' // used by Text

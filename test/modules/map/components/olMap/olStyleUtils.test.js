@@ -3,6 +3,8 @@ import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
+import { TestUtils } from '../../../../test-utils';
+import { $injector } from '../../../../../src/injection';
 
 const Rgb_WHITE = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -112,7 +114,16 @@ describe('highlightTemporaryStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
+	const configService = {
+		getValue: () => { },
+		getValueAsPath: () => 'backend/'
+	};
+	beforeAll(() => {
+		TestUtils.setupStoreAndDi();
+		$injector
+			.registerSingleton('ConfigService', configService);
 
+	});
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -128,7 +139,7 @@ describe('markerStyleFunction', () => {
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
-		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small' };
+		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'small' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -137,11 +148,11 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
-		expect(image.getSrc()).toBe(markerIcon);
+		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
 	});
 
 	it('should return a style specified by styleOption; medium image', () => {
-		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
+		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'medium' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -150,11 +161,11 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		expect(image.getSrc()).toBe(markerIcon);
+		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
 	});
 
 	it('should return a style specified by styleOption; big image', () => {
-		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'big' };
+		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'big' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -163,7 +174,7 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
-		expect(image.getSrc()).toBe(markerIcon);
+		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
 	});
 
 });

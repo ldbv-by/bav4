@@ -208,5 +208,45 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
+
+
+		it('sets the style-inputs for symbol-tool', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#style_size')).toBeTruthy();
+		});
+
+		it('sets the style-inputs for symbol-tool', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#style_size')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#style_text')).toBeTruthy();
+		});
+
+		it('sets the style-inputs for line-tool', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('line');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+		});
+
+		it('sets the style-inputs for polygon-tool', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('polygon');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+		});
 	});
 });
