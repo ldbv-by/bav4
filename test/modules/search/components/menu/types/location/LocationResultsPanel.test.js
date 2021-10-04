@@ -24,15 +24,6 @@ describe('LocationResultsPanel', () => {
 		return TestUtils.render(LocationResultsPanel.tag);
 	};
 
-	beforeEach(async () => {
-		jasmine.clock().install();
-		TestUtils.setupStoreAndDi({});
-	});
-
-	afterEach(function () {
-		jasmine.clock().uninstall();
-	});
-
 	describe('static properties', () => {
 
 		it('defines a debounce time', async () => {
@@ -47,24 +38,25 @@ describe('LocationResultsPanel', () => {
 
 	describe('when initialized', () => {
 
-		it('renders the view', async () => {
+		it('renders the view', async (done) => {
 
 			const element = await setup();
 
-			//internally uses debounce
-			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
 			//wait for elements
-			window.requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-			});
+				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+				done();
+			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 
-		it('renders the view based on a current query', async () => {
+		it('renders the view based on a current query with less then "maxShow" results', async (done) => {
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -76,26 +68,66 @@ describe('LocationResultsPanel', () => {
 
 			const element = await setup(initialState);
 
-			//internally uses debounce
-			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
 
 			//wait for elements
-			window.requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
-			});
+				done();
+			}, LocationResultsPanel.Debounce_Delay + 100);
+		});
+
+
+		it('renders the view based on a current query with more than "maxShow" results', async (done) => {
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
+				.and.resolveTo([
+					new SearchResult('location0', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location1', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location2', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location3', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location4', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location5', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location6', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location7', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)
+				]);
+
+			const element = await setup(initialState);
+
+
+			//wait for elements
+			setTimeout(() => {
+				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+
+				expect(getLocationSearchResultProvider).toHaveBeenCalled();
+				done();
+			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 	});
 
 	describe('when state changes', () => {
 
-		it('updates the view based on a current query', async () => {
+		it('updates the view based on a current query', async (done) => {
 			const query = 'foo';
 			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
 				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
@@ -103,11 +135,8 @@ describe('LocationResultsPanel', () => {
 			const element = await setup();
 			setQuery(query);
 
-			//internally uses debounce
-			jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
-
 			//wait for elements
-			window.requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
@@ -116,7 +145,8 @@ describe('LocationResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
-			});
+				done();
+			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 	});
 
@@ -124,7 +154,7 @@ describe('LocationResultsPanel', () => {
 
 		describe('when items are available', () => {
 
-			it('toggles the list of item', async () => {
+			it('toggles the list of item', async (done) => {
 				const query = 'foo';
 				const initialState = {
 					search: {
@@ -136,11 +166,8 @@ describe('LocationResultsPanel', () => {
 
 				const element = await setup(initialState);
 
-				//internally uses debounce
-				jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
-
 				//wait for elements
-				window.requestAnimationFrame(() => {
+				setTimeout(() => {
 					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
 					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
 					expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
@@ -161,20 +188,19 @@ describe('LocationResultsPanel', () => {
 					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 					expect(getLocationSearchResultProvider).toHaveBeenCalled();
-				});
+					done();
+
+				}, LocationResultsPanel.Debounce_Delay + 100);
 			});
 		});
 
 		describe('items are NOT available', () => {
 
-			it('disables the collapse button', async () => {
+			it('disables the collapse button', async (done) => {
 				const element = await setup();
 
-				//internally uses debounce
-				jasmine.clock().tick(LocationResultsPanel.Debounce_Delay + 100);
-
 				//wait for elements
-				window.requestAnimationFrame(() => {
+				setTimeout(() => {
 
 					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
 					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
@@ -189,8 +215,51 @@ describe('LocationResultsPanel', () => {
 
 					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				});
+					done();
+
+				}, LocationResultsPanel.Debounce_Delay + 100);
 			});
+		});
+	});
+
+	describe('show-all button', () => {
+
+		it('displays all results on click', async (done) => {
+			const query = 'foo';
+			const initialState = {
+				search: {
+					query: new EventLike(query)
+				}
+			};
+			spyOn(searchResultServiceMock, 'locationsByTerm')
+				.and.resolveTo([
+					new SearchResult('location0', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location1', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location2', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location3', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location4', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location5', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location6', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
+					new SearchResult('location7', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)
+				]);
+
+			const element = await setup(initialState);
+
+
+			//wait for elements
+			setTimeout(() => {
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
+				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+
+				element.shadowRoot.querySelector('.show-all').click();
+
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
+				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+				done();
+
+			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 	});
 });
