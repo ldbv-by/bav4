@@ -380,6 +380,28 @@ describe('StyleService', () => {
 			expect(measureOverlayMock).toEqual({ style: { opacity: 0.5, display: 'inherit' } });
 		});
 
+		it('takes no action on non-measure-style features', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const viewMock = {
+				getResolution() {
+					return 50;
+				}
+			};
+			const mapMock = {
+				getView: () => viewMock,
+				getOverlays() {
+					return [];
+				},
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			const spy = spyOn(mapMock, 'getOverlays');
+			instanceUnderTest.updateStyle(feature, mapMock, { visible: true, opacity: 0.5, top: true }, 'foo');
+			expect(spy).not.toHaveBeenCalled();
+		});
+
 	});
 
 	describe('getStyleFunction', () => {
