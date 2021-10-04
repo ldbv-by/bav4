@@ -11,11 +11,7 @@
     filter: brightness(0.8) ;
     cursor: not-allowed;   
 }
-  
-.anchor:hover .icon {
-    transform: scale(1.1);
-}
-  
+
 .icon:active {
     transform: scale(1.15);
 }

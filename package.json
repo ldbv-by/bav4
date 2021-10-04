@@ -2,13 +2,14 @@
   "name": "bav4-nomigration",
   "dependencies": {
     "lit-html": "^1.4.1",
-    "ol": "^6.7.0",
+    "ol": "^6.8.1",
     "proj4": "^2.7.5",
     "redux": "^4.1.1"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "css-loader": "^6.2.0",
+    "@playwright/test": "^1.15.1",
+    "css-loader": "^6.3.0",
     "dotenv-webpack": "^7.0.3",
     "es-check": "^6.0.0",
     "eslint": "^7.32.0",
@@ -32,15 +33,15 @@
     "karma-spec-reporter": "^0.0.32",
     "karma-webkit-launcher": "^1.0.2",
     "karma-webpack": "^5.0.0",
-    "playwright": "^1.14.1",
+    "playwright": "^1.15.1",
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
-    "style-loader": "^3.2.1",
+    "style-loader": "^3.3.0",
     "to-string-loader": "^1.1.6",
-    "webpack": "^5.52.1",
+    "webpack": "^5.55.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.2.1"
+    "webpack-dev-server": "^4.3.0"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",
@@ -53,7 +54,7 @@
     "test:single": "npx playwright install; env KARMA_SPEC=$npm_config_spec env KARMA_BROWSER=$npm_config_browser karma start karma.conf.single.js --single-run",
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:gha": "karma start karma.conf.gha.js --single-run",
-    "ci:install-deps": "npx playwright install-deps",
+    "e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
     "es-check": "es-check --module es9 \"./src/**/*.js\"",
     "analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }

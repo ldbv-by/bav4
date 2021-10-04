@@ -1,88 +1,117 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './icon.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+
+const Update_Disabled = 'update_disabled';
+const Update_Icon = 'update_icon';
+const Update_Size = 'update_size';
+const Update_Color = 'update_color';
+const Update_Color_Hover = 'update_hover';
+const Update_Title = 'update_title';
+
+const defaultIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
 /**
  * Clickable icon.
  *
- * Configurable Attributes:
- * - `icon` (svg)
- * - `size` (in em)
- * - `color` (css color value)
- * - `color_hover` (css color value)
+ *  Events:
+ * - `onClick()`
+ *
+ * Properties:
+ * - `icon`
+ * - `size`
+ * - `color`
+ * - `color_hover`
  * - `title`
- * - `disabled` (default=false)
- * - `onClick()`
- *
- * Observed Attributes:
  * - `disabled`
- *
- * Configurable Properties:
- * - `disabled` (default=false)
- * - `onClick()`
- *
- * Observed Properties:
- * - `disabled`
- *
  *
  * @class
+ * @author taulinger
+ * @author alsturm
  *
  *
  */
-export class Icon extends BaElement {
+export class Icon extends MvuElement {
 
-	/**
-	 * @override
-	 * @protected
-	 */
-	initialize() {
-		this._icon = this.getAttribute('icon') || null;
+	constructor() {
+		super({
+			disabled: false,
+			icon: defaultIcon,
+			title: '',
+			size: 2,
+			color: 'var(--primary-color)',
+			color_hover: 'var(--primary-color)'
+		});
 		this._onClick = () => { };
-		this._disabled = this.getAttribute('disabled') === 'true';
-		this._title = this.getAttribute('title') || '';
-		this._size = this.getAttribute('size') ? parseFloat(this.getAttribute('size')) : 2;
-		this._color = this.getAttribute('color') ? this.getAttribute('color') : 'var(--primary-color)';
-		this._color_hover = this.getAttribute('color_hover') ? this.getAttribute('color_hover') : 'var(--primary-color)';
 	}
 
+	update(type, data, model) {
+		switch (type) {
+			case Update_Disabled:
+				return { ...model, disabled: data };
+			case Update_Icon:
+				return { ...model, icon: data };
+			case Update_Title:
+				return { ...model, title: data };
+			case Update_Size:
+				return { ...model, size: data };
+			case Update_Color:
+				return { ...model, color: data };
+			case Update_Color_Hover:
+				return { ...model, color_hover: data };
+		}
+	}
+
+	onInitialize() {
+		/**
+		 * To harmonize click event handling
+		 * for both attribute and property callback, we register an event handler
+		 * here on the render target
+		 */
+		this.getRenderTarget().addEventListener('click', (e) => {
+			if (this.getModel().disabled) {
+				e.stopPropagation();
+			}
+			else {
+				this._onClick();
+			}
+		});
+	}
 
 	/**
 	 * @override
 	 * @protected
 	 */
-	createView() {
-		const onClick = () => {
-			if (!this._disabled) {
-				this._onClick();
-			}
-		};
+	createView(model) {
+		const { size, color, color_hover, icon, disabled, title } = model;
 
 		const iconClass = `.icon {
-			--size: ${this._size}em; 
-			background: ${this._color}; 
+			--size: ${size}em; 
+			background: ${color}; 
 		}`;
-		const anchorClassHover = `.anchor:hover .icon{
-			background: ${this._color_hover}; 
-		}`;
-		const customIconClass = this._icon ? `.icon-custom {
-			mask : url("${this._icon}");
-			-webkit-mask-image : url("${this._icon}");
+		const anchorClassHover = color_hover ? `.anchor:hover .icon{
+			transform: scale(1.1);
+			background: ${color_hover}; 
+		}` : '';
+		const customIconClass = icon ? `.icon-custom {
+			mask : url("${icon}");
+			-webkit-mask-image : url("${icon}");
 		}` : '';
 
 		const classes = {
-			disabled: this._disabled
+			disabled: disabled
 		};
 
 		return html`
-		<style>
-		${iconClass}
-		${anchorClassHover}
-		${customIconClass}
-		${css}
-		</style>	
-		<a class='anchor' title=${this._title} ?disabled=${this._disabled} @click=${onClick}>
-		<span class='icon icon-custom ${classMap(classes)}'></span >
-		</a>
+			<style>
+			${iconClass}
+			${anchorClassHover}
+			${customIconClass}
+			${css}
+			</style>	
+			<a class='anchor' title=${title}>
+				<span class='icon icon-custom ${classMap(classes)}'></span >
+			</a>
 			`;
 	}
 
@@ -90,25 +119,9 @@ export class Icon extends BaElement {
 		return 'ba-icon';
 	}
 
-	static get observedAttributes() {
-		return ['disabled'];
-	}
-
-	attributeChangedCallback(name, oldValue, newValue) {
-		this.disabled = newValue;
-	}
-
-	set disabled(value) {
-		if (value !== this._disabled) {
-			this._disabled = value;
-			this.render();
-		}
-	}
-
-	get disabled() {
-		return this._disabled;
-	}
-
+	/**
+	 * @property {function} onClick - Callback function
+	*/
 	set onClick(callback) {
 		this._onClick = callback;
 	}
@@ -117,15 +130,69 @@ export class Icon extends BaElement {
 		return this._onClick;
 	}
 
+	/**
+	 * @property {boolean} disabled=false - Icon clickable?
+	 */
+	set disabled(value) {
+		this.signal(Update_Disabled, value);
+	}
+
+	get disabled() {
+		return this.getModel().disabled;
+	}
+
+	/**
+	 * @property {string} icon='default_svg_icon' - Data-URI of Base64 encoded SVG
+	 */
+	set icon(value) {
+		this.signal(Update_Icon, value);
+	}
+
 	get icon() {
-		return this._icon;
+		return this.getModel().icon;
+	}
+
+	/**
+	 * @property {number} size=2 - Size of the icon in em
+	 */
+	set size(value) {
+		this.signal(Update_Size, value);
 	}
 
 	get size() {
-		return this._size;
+		return this.getModel().size;
+	}
+
+	/**
+	 * @property {string} color=var(--primary-color) - Color as Css variable
+	 */
+	set color(value) {
+		this.signal(Update_Color, value);
 	}
 
 	get color() {
-		return this._color;
+		return this.getModel().color;
+	}
+
+	/**
+	 * @property {string} color_hover=var(--primary-color) - Hover color as Css variable. A value of `null` removes the hover effect.
+	 */
+	set color_hover(value) {
+		this.signal(Update_Color_Hover, value);
+	}
+
+	get color_hover() {
+		return this.getModel().color_hover;
+	}
+
+	/**
+	 * @property {string} title='' - Title of the Icon
+	 */
+	set title(value) {
+		this.signal(Update_Title, value);
+	}
+
+	get title() {
+		return this.getModel().title;
 	}
 }

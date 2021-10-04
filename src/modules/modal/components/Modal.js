@@ -44,7 +44,7 @@ export class Modal extends BaElement {
 						<div class='modal__title'>${title}</div>
 						<div class='modal__content'>${content}</div>
 						<div class='modal__actions'>
-							<ba-button  label='${translate('modal_close_button')}' @click='${hide}'></ba-button>
+							<ba-button .label=${translate('modal_close_button')} @click=${closeModal}></ba-button>
 						</div>
 					</div>
 				</div>
