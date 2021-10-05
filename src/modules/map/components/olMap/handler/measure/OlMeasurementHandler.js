@@ -9,7 +9,7 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
-import { isVertexOfGeometry, getGeometryLength, getArea } from '../../olGeometryUtils';
+import { getGeometryLength, getArea } from '../../olGeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
@@ -23,7 +23,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getFeatureSnapOption, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 
 const Debounce_Delay = 1000;
 
@@ -522,7 +522,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			pointCount: this._pointCount
 		};
 
-		measureState.snap = this._getSnapState(pixel);
+		measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
 
 		if (this._draw.getActive()) {
 			measureState.type = InteractionStateType.ACTIVE;
@@ -567,40 +567,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	/**
 	 * todo: redundant, extract Util-method
 	 */
-	_getSnapState(pixel) {
-		let snapType = null;
-		const interactionLayer = this._vectorLayer;
-		let vertexFeature = null;
-		let featuresFromInteractionLayerCount = 0;
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				featuresFromInteractionLayerCount++;
-			}
-			if (!layer && feature.get('features').length > 0) {
-				vertexFeature = feature;
-				return;
-			}
-		}, this._getFeatureSnapOption(interactionLayer, false));
-
-		if (vertexFeature) {
-			snapType = InteractionSnapType.EGDE;
-			const vertexGeometry = vertexFeature.getGeometry();
-			const snappedFeature = vertexFeature.get('features')[0];
-			const snappedGeometry = snappedFeature.getGeometry();
-
-			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = InteractionSnapType.VERTEX;
-			}
-		}
-		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = InteractionSnapType.FACE;
-		}
-		return snapType;
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
 	_getSelectableFeatures(pixel) {
 		const features = [];
 		const interactionLayer = this._vectorLayer;
@@ -609,19 +575,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			if (layer === interactionLayer) {
 				features.push(feature);
 			}
-		}, this._getFeatureSnapOption(interactionLayer));
+		}, getFeatureSnapOption(interactionLayer));
 
 		return features;
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
-		const filter = modifiedFeaturesOnly ?
-			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
-			itemLayer => itemLayer === interactionLayer;
-		return { hitTolerance: 10, layerFilter: filter };
 	}
 
 	/**

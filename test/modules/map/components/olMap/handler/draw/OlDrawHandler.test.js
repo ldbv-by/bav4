@@ -21,7 +21,6 @@ import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
-import { modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/olStyleUtils';
 
 
 
@@ -1514,30 +1513,6 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
-	});
-
-	describe('when using util _getFeatureSnapOption', () => {
-		it('returns a object with a filter-function, which returns true for the defined layer', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const mockLayer = {};
-
-			const option = classUnderTest._getFeatureSnapOption(mockLayer);
-			expect(option.layerFilter(mockLayer)).toBeTrue();
-
-		});
-
-		it('returns a object with a filter-function, which returns true for the defined (modified) layer', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const mockModifiedLayer = { getStyle: () => modifyStyleFunction };
-			const mockNotModifiedLayer = { getStyle: () => () => [new Style()] };
-
-			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockModifiedLayer)).toBeTrue();
-
-			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockNotModifiedLayer)).toBeFalse();
-
-		});
 	});
 
 	describe('when using util _Empty', () => {

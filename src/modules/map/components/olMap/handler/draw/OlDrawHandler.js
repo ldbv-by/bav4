@@ -8,11 +8,10 @@ import { createSketchStyleFunction, modifyStyleFunction, getColorFrom, selectSty
 import { StyleSizeTypes, StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { isVertexOfGeometry } from '../../olGeometryUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
-import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getFeatureSnapOption, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
@@ -527,7 +526,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			pointCount: this._pointCount
 		};
 
-		drawState.snap = this._getSnapState(pixel);
+		drawState.snap = getSnapState(this._map, this._vectorLayer, pixel);
 
 		if (this._draw) {
 			drawState.type = InteractionStateType.ACTIVE;
@@ -655,40 +654,6 @@ export class OlDrawHandler extends OlLayerHandler {
 	/**
 	 * todo: redundant, extract Util-method
 	 */
-	_getSnapState(pixel) {
-		let snapType = null;
-		const interactionLayer = this._vectorLayer;
-		let vertexFeature = null;
-		let featuresFromInteractionLayerCount = 0;
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				featuresFromInteractionLayerCount++;
-			}
-			if (!layer && feature.get('features').length > 0) {
-				vertexFeature = feature;
-				return;
-			}
-		}, this._getFeatureSnapOption(interactionLayer, true));
-
-		if (vertexFeature) {
-			snapType = InteractionSnapType.EGDE;
-			const vertexGeometry = vertexFeature.getGeometry();
-			const snappedFeature = vertexFeature.get('features')[0];
-			const snappedGeometry = snappedFeature.getGeometry();
-
-			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = InteractionSnapType.VERTEX;
-			}
-		}
-		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = InteractionSnapType.FACE;
-		}
-		return snapType;
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
 	_getSelectableFeatures(pixel) {
 		const features = [];
 		const interactionLayer = this._vectorLayer;
@@ -697,20 +662,9 @@ export class OlDrawHandler extends OlLayerHandler {
 			if (layer === interactionLayer) {
 				features.push(feature);
 			}
-		}, this._getFeatureSnapOption(interactionLayer));
+		}, getFeatureSnapOption(interactionLayer));
 
 		return features;
-	}
-
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
-		const filter = modifiedFeaturesOnly ?
-			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
-			itemLayer => itemLayer === interactionLayer;
-		return { hitTolerance: 10, layerFilter: filter };
 	}
 
 	/**
