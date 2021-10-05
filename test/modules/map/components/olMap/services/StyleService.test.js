@@ -6,7 +6,7 @@ import { OverlayService } from '../../../../../../src/modules/map/components/olM
 import { Polygon, Point } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { Style, Text } from 'ol/style';
+import { Icon, Style, Text } from 'ol/style';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -15,7 +15,8 @@ describe('StyleService', () => {
 	const mapServiceMock = { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 };
 
 	const environmentServiceMock = {
-		isTouch() { }
+		isTouch() { },
+		isStandalone: () => true
 	};
 
 	const unitsServiceMock = {
@@ -143,10 +144,11 @@ describe('StyleService', () => {
 		it('adds text-style to feature with explicit style-type', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({ text: new Text({ text: 'foo' }) });
 			featureWithStyleArray.setId('draw_text_12345678');
 			featureWithStyleFunction.setId('draw_text_9876543');
-			featureWithStyleArray.setStyle([new Style({ text: new Text({ text: 'foo' }) })]);
-			featureWithStyleFunction.setStyle(() => new Style({ text: new Text({ text: 'foo' }) }));
+			featureWithStyleArray.setStyle([style]);
+			featureWithStyleFunction.setStyle(() => style);
 
 			const viewMock = {
 				getResolution() {
@@ -171,6 +173,40 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, StyleTypes.TEXT);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds marker-style to feature with explicit style-type', () => {
+			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
+			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
+			const style = new Style({ image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction',	anchorYUnits: 'fraction', color: '#BADA55' }) });
+			featureWithStyleArray.setId('draw_marker_12345678');
+			featureWithStyleFunction.setId('draw_marker_9876543');
+			featureWithStyleArray.setStyle([style]);
+			featureWithStyleFunction.setStyle(() => style);
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			let markerStyle = null;
+			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f => markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, StyleTypes.MARKER);
+			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
+
+			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f => markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, StyleTypes.MARKER);
+			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle).toContain(jasmine.any(Style));
 		});
 
 		it('adds NO style to feature with explicit style-type of LINE or POLYGON', () => {
