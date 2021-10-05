@@ -442,15 +442,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	async _save() {
-		const features = this._vectorLayer.getSource().getFeatures();
-		features.forEach(f => saveManualOverlayPosition(f));
-
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		this._storedContent = newContent;
-	}
-
 	_createMeasureGeometry(feature, isDrawing = false) {
 		let measureGeometry = feature.getGeometry();
 
@@ -478,62 +469,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		}
 		return measureGeometry;
-	}
-
-	_getSnapState(pixel) {
-		let snapType = null;
-		const interactionLayer = this._vectorLayer;
-		const featureSnapOption = {
-			hitTolerance: 10,
-			layerFilter: itemLayer => {
-				return itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction);
-			}
-		};
-		let vertexFeature = null;
-		let featuresFromInteractionLayerCount = 0;
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				featuresFromInteractionLayerCount++;
-			}
-			if (!layer && feature.get('features').length > 0) {
-				vertexFeature = feature;
-				return;
-			}
-		}, featureSnapOption);
-
-		if (vertexFeature) {
-			snapType = InteractionSnapType.EGDE;
-			const vertexGeometry = vertexFeature.getGeometry();
-			const snappedFeature = vertexFeature.get('features')[0];
-			const snappedGeometry = snappedFeature.getGeometry();
-
-			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = InteractionSnapType.VERTEX;
-			}
-		}
-		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = InteractionSnapType.FACE;
-		}
-		return snapType;
-	}
-
-	_getSelectableFeatures(pixel) {
-		const features = [];
-		const interactionLayer = this._vectorLayer;
-		const featureSnapOption = {
-			hitTolerance: 10,
-			layerFilter: itemLayer => {
-				return itemLayer === interactionLayer;
-			}
-		};
-
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				features.push(feature);
-			}
-		}, featureSnapOption);
-
-		return features;
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {
@@ -631,6 +566,81 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return modify;
 	}
 
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getSnapState(pixel) {
+		let snapType = null;
+		const interactionLayer = this._vectorLayer;
+		let vertexFeature = null;
+		let featuresFromInteractionLayerCount = 0;
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				featuresFromInteractionLayerCount++;
+			}
+			if (!layer && feature.get('features').length > 0) {
+				vertexFeature = feature;
+				return;
+			}
+		}, this._getFeatureSnapOption(interactionLayer, false));
+
+		if (vertexFeature) {
+			snapType = InteractionSnapType.EGDE;
+			const vertexGeometry = vertexFeature.getGeometry();
+			const snappedFeature = vertexFeature.get('features')[0];
+			const snappedGeometry = snappedFeature.getGeometry();
+
+			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+				snapType = InteractionSnapType.VERTEX;
+			}
+		}
+		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
+			snapType = InteractionSnapType.FACE;
+		}
+		return snapType;
+	}
+
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getSelectableFeatures(pixel) {
+		const features = [];
+		const interactionLayer = this._vectorLayer;
+
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				features.push(feature);
+			}
+		}, this._getFeatureSnapOption(interactionLayer));
+
+		return features;
+	}
+
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
+		const filter = modifiedFeaturesOnly ?
+			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
+			itemLayer => itemLayer === interactionLayer;
+		return { hitTolerance: 10, layerFilter: filter };
+	}
+
+	/**
+	 * todo: redundant
+	 */
+	async _save() {
+		const features = this._vectorLayer.getSource().getFeatures();
+		features.forEach(f => saveManualOverlayPosition(f));
+
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		this._storedContent = newContent;
+	}
+
+	/**
+	 * todo: redundant
+	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
@@ -667,6 +677,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		addLayer(id, { label: label });
 	}
 
+	/**
+	 * todo: redudant, extract Util-method
+	 */
 	_getSnapTolerancePerDevice() {
 		if (this._environmentService.isTouch()) {
 			return 12;
@@ -674,6 +687,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return 4;
 	}
 
+	/**
+	 * todo: redundant, extract Util-method
+	 */
 	_isEmpty() {
 		if (this._vectorLayer) {
 			return !this._vectorLayer.getSource().getFeatures().length > 0;
@@ -682,7 +698,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: extract Util-method to kind of 'OlMapUtils'-file
+	 * todo: redundant, extract Util-method to kind of 'OlMapUtils'-file
 	 */
 	_isInCollection(item, itemCollection) {
 		let isInCollection = false;

@@ -28,9 +28,10 @@ import { LevelTypes } from '../../../../../../store/notifications/notifications.
 
 export const MAX_SELECTION_SIZE = 1;
 
+const Debounce_Delay = 1000;
 
 const Temp_Session_Id = 'temp_draw_id';
-const Debounce_Delay = 1000;
+
 
 const defaultStyleOption = {
 	symbolSrc: 'marker', // used by: Symbol
@@ -310,25 +311,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		return currentStyleOptions;
 	}
 
-	_getSelectableFeatures(pixel) {
-		const features = [];
-		const interactionLayer = this._vectorLayer;
-
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				features.push(feature);
-			}
-		}, this._getFeatureSnapOption(interactionLayer));
-
-		return features;
-	}
-
-	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
-		const filter = modifiedFeaturesOnly ?
-			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
-			itemLayer => itemLayer === interactionLayer;
-		return { hitTolerance: 10, layerFilter: filter };
-	}
 
 	_getStyleFunctionFrom(feature) {
 		const type = this._getDrawingTypeFrom(feature);
@@ -379,25 +361,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateDrawMode(drawState) {
-		// DEBUG: console.log(state.type ? '' + state.type : 'null');
 		if (this._lastInteractionStateType !== drawState.type && drawState.type !== InteractionStateType.OVERLAY) {
 			this._lastInteractionStateType = drawState.type;
 			setMode(this._lastInteractionStateType);
 		}
-	}
-
-
-	/**
-	 * todo: extract Util-method to kind of 'OlMapUtils'-file
-	 */
-	_isInCollection(item, itemCollection) {
-		let isInCollection = false;
-		itemCollection.forEach(i => {
-			if (i === item) {
-				isInCollection = true;
-			}
-		});
-		return isInCollection;
 	}
 
 	_createSelect() {
@@ -671,6 +638,96 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
+	_getDrawingTypeFrom(feature) {
+		if (feature) {
+			const featureId = feature.getId();
+			const type_index = 1;
+			const seperator = '_';
+			const parts = featureId.split(seperator);
+
+			if (parts.length <= type_index + 1) {
+				return null;
+			}
+			return parts[type_index];
+		}
+		return null;
+	}
+
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getSnapState(pixel) {
+		let snapType = null;
+		const interactionLayer = this._vectorLayer;
+		let vertexFeature = null;
+		let featuresFromInteractionLayerCount = 0;
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				featuresFromInteractionLayerCount++;
+			}
+			if (!layer && feature.get('features').length > 0) {
+				vertexFeature = feature;
+				return;
+			}
+		}, this._getFeatureSnapOption(interactionLayer, true));
+
+		if (vertexFeature) {
+			snapType = InteractionSnapType.EGDE;
+			const vertexGeometry = vertexFeature.getGeometry();
+			const snappedFeature = vertexFeature.get('features')[0];
+			const snappedGeometry = snappedFeature.getGeometry();
+
+			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
+				snapType = InteractionSnapType.VERTEX;
+			}
+		}
+		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
+			snapType = InteractionSnapType.FACE;
+		}
+		return snapType;
+	}
+
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getSelectableFeatures(pixel) {
+		const features = [];
+		const interactionLayer = this._vectorLayer;
+
+		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+			if (layer === interactionLayer) {
+				features.push(feature);
+			}
+		}, this._getFeatureSnapOption(interactionLayer));
+
+		return features;
+	}
+
+
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getFeatureSnapOption(interactionLayer, modifiedFeaturesOnly = false) {
+		const filter = modifiedFeaturesOnly ?
+			itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
+			itemLayer => itemLayer === interactionLayer;
+		return { hitTolerance: 10, layerFilter: filter };
+	}
+
+	/**
+	 * todo: redundant
+	 */
+	async _save() {
+		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
+		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		this._storedContent = newContent;
+	}
+
+
+	/**
+	 *
+	 * todo: redundant
+	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_draw_layer_label');
@@ -708,13 +765,19 @@ export class OlDrawHandler extends OlLayerHandler {
 		addLayer(id, { label: label });
 	}
 
-
-	async _save() {
-		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		this._storedContent = newContent;
+	/**
+	 * todo: redundant, extract Util-method
+	 */
+	_getSnapTolerancePerDevice() {
+		if (this._environmentService.isTouch()) {
+			return 12;
+		}
+		return 4;
 	}
 
+	/**
+	 * todo: redundant, extract Util-method
+	 */
 	_isEmpty() {
 		if (this._vectorLayer) {
 			return !this._vectorLayer.getSource().getFeatures().length > 0;
@@ -722,56 +785,16 @@ export class OlDrawHandler extends OlLayerHandler {
 		return true;
 	}
 
-	_getSnapState(pixel) {
-		let snapType = null;
-		const interactionLayer = this._vectorLayer;
-		let vertexFeature = null;
-		let featuresFromInteractionLayerCount = 0;
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				featuresFromInteractionLayerCount++;
+	/**
+	 * todo: redundant, extract Util-method to kind of 'OlMapUtils'-file
+	 */
+	_isInCollection(item, itemCollection) {
+		let isInCollection = false;
+		itemCollection.forEach(i => {
+			if (i === item) {
+				isInCollection = true;
 			}
-			if (!layer && feature.get('features').length > 0) {
-				vertexFeature = feature;
-				return;
-			}
-		}, this._getFeatureSnapOption(interactionLayer, true));
-
-		if (vertexFeature) {
-			snapType = InteractionSnapType.EGDE;
-			const vertexGeometry = vertexFeature.getGeometry();
-			const snappedFeature = vertexFeature.get('features')[0];
-			const snappedGeometry = snappedFeature.getGeometry();
-
-			if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-				snapType = InteractionSnapType.VERTEX;
-			}
-		}
-		if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-			snapType = InteractionSnapType.FACE;
-		}
-		return snapType;
-	}
-
-	_getDrawingTypeFrom(feature) {
-		if (feature) {
-			const featureId = feature.getId();
-			const type_index = 1;
-			const seperator = '_';
-			const parts = featureId.split(seperator);
-
-			if (parts.length <= type_index + 1) {
-				return null;
-			}
-			return parts[type_index];
-		}
-		return null;
-	}
-
-	_getSnapTolerancePerDevice() {
-		if (this._environmentService.isTouch()) {
-			return 12;
-		}
-		return 4;
+		});
+		return isInCollection;
 	}
 }

@@ -24,6 +24,7 @@ import { OverlayService } from '../../../../../../../src/modules/map/components/
 import { Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import { modifyStyleFunction } from '../../../../../../../src/modules/map/components/olMap/olStyleUtils';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -1541,6 +1542,30 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
+	});
+
+	describe('when using util _getFeatureSnapOption', () => {
+		it('returns a object with a filter-function, which returns true for the defined layer', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const mockLayer = {};
+
+			const option = classUnderTest._getFeatureSnapOption(mockLayer);
+			expect(option.layerFilter(mockLayer)).toBeTrue();
+
+		});
+
+		it('returns a object with a filter-function, which returns true for the defined (modified) layer', () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const mockModifiedLayer = { getStyle: () => modifyStyleFunction };
+			const mockNotModifiedLayer = { getStyle: () => () => [new Style()] };
+
+			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockModifiedLayer)).toBeTrue();
+
+			expect(classUnderTest._getFeatureSnapOption(mockModifiedLayer, true).layerFilter(mockNotModifiedLayer)).toBeFalse();
+
+		});
 	});
 
 	describe('when using util _Empty', () => {
