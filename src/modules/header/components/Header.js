@@ -13,6 +13,7 @@ const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
 const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_HasSearchTerm = 'update_hasSearchTerm';
 
 /**
  * Container element for header stuff.
@@ -29,7 +30,8 @@ export class Header extends MvuElement {
 			isFetching: false,
 			layers: [],
 			isPortrait: false,
-			hasMinWidth: false
+			hasMinWidth: false,
+			hasSearchTerm: false
 		});
 
 		const {
@@ -54,6 +56,8 @@ export class Header extends MvuElement {
 				return { ...model, layers: data };
 			case Update_IsPortrait_HasMinWidth:
 				return { ...model, ...data };
+			case Update_HasSearchTerm:
+				return { ...model, hasInput: data };
 		}
 	}
 
@@ -122,8 +126,10 @@ export class Header extends MvuElement {
 		};
 
 		const onInput = (evt) => {
+			const term = evt.target.value;
 			openMainMenu();
-			setQuery(evt.target.value);
+			setQuery(term);
+			this.signal(Update_HasSearchTerm, !!evt.target.value);
 		};
 
 		const onInputBlur = () => {

@@ -74,7 +74,8 @@ describe('Header', () => {
 				isFetching: false,
 				layers: [],
 				isPortrait: false,
-				hasMinWidth: false
+				hasMinWidth: false,
+				hasSearchTerm: false
 			});
 		});
 	});
