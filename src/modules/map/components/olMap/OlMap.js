@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
@@ -9,22 +9,30 @@ import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
-import { setBeingDragged, setContextClick, setPointerMove } from '../../store/pointer.action';
+import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../store/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 
+const Update_Position = 'update_position';
+const Update_Layers = 'update_layers';
 
 /**
  * Element which renders the ol map.
  * @class
  * @author taulinger
  */
-export class OlMap extends BaElement {
+export class OlMap extends MvuElement {
 
 
 	constructor() {
-		super();
+		super({
+			zoom: null,
+			center: null,
+			rotation: null,
+			fitRequest: null,
+			layers: []
+		});
 		const {
 			MapService: mapService,
 			GeoResourceService: georesourceService,
@@ -48,6 +56,18 @@ export class OlMap extends BaElement {
 	/**
 	 * @override
 	 */
+	update(type, data, model) {
+		switch (type) {
+			case Update_Position:
+				return { ...model, ...data };
+			case Update_Layers:
+				return { ...model, layers: data };
+		}
+	}
+
+	/**
+	 * @override
+	 */
 	createView() {
 		return html`
 			<style>${olCss + css}</style>
@@ -58,8 +78,12 @@ export class OlMap extends BaElement {
 	/**
 	 * @override
 	 */
-	initialize() {
-		const { zoom, center, rotation } = this.getState();
+	onInitialize() {
+		//observe global state (position, active layers)
+		this.observe(state => state.position, data => this.signal(Update_Position, data));
+		this.observe(state => state.layers.active, data => this.signal(Update_Layers, data));
+
+		const { zoom, center, rotation } = this.getModel();
 
 		this._view = new View({
 			center: center,
@@ -88,6 +112,12 @@ export class OlMap extends BaElement {
 			}).extend([new PinchRotate({
 				threshold: this._mapService.getMinimalRotation()
 			})])
+		});
+
+		this._map.on('singleclick', (evt) => {
+			evt.preventDefault();
+			const coord = this._map.getEventCoordinate(evt.originalEvent);
+			setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
 		});
 
 		this._map.on('movestart', () => {
@@ -138,7 +168,9 @@ export class OlMap extends BaElement {
 			handler.register(this._map);
 		});
 
-		this.observe('fitRequest', (fitRequest) => {
+		//register particular obeservers on our Model
+		//handle fitRequest
+		this.observeModel('fitRequest', (fitRequest) => {
 			this._viewSyncBlocked = true;
 			const onAfterFit = () => {
 				this._viewSyncBlocked = false;
@@ -148,9 +180,9 @@ export class OlMap extends BaElement {
 			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
 		});
 		//sync layers
-		this.observe('layers', () => this._syncLayers());
+		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
-		this.observe(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
+		this.observeModel(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
 	}
 
 	/**
@@ -163,17 +195,8 @@ export class OlMap extends BaElement {
 
 	/**
 	 * @override
-	 * @param {Object} globalState
 	 */
-	extractState(globalState) {
-		const { position: { zoom, center, rotation, fitRequest }, layers: { active: layers } } = globalState;
-		return { zoom, center, rotation, fitRequest, layers };
-	}
-
-	/**
-	 * @override
-	 */
-	onStateChanged() {
+	onModelChanged() {
 		//nothing to do here
 	}
 
@@ -190,7 +213,7 @@ export class OlMap extends BaElement {
 	}
 
 	_syncView() {
-		const { zoom, center, rotation } = this.getState();
+		const { zoom, center, rotation } = this.getModel();
 
 		if (!this._viewSyncBlocked) {
 
@@ -204,7 +227,7 @@ export class OlMap extends BaElement {
 	}
 
 	_syncLayers() {
-		const { layers } = this.getState();
+		const { layers } = this.getModel();
 
 		const updatedIds = layers.map(layer => layer.geoResourceId);
 		const currentIds = this._map.getLayers()

@@ -261,7 +261,25 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('contextmenu', () => {
+	describe('single click event', () => {
+
+		it('updates the \'click\' property in pointer store', async () => {
+			const element = await setup();
+			const map = element._map;
+			const coordinate = [38, 75];
+			const screenCoordinate = [21, 42];
+			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+			const preventDefault = jasmine.createSpy();
+
+			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+
+			expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+			expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+			expect(preventDefault).toHaveBeenCalled();
+		});
+	});
+
+	describe('context click event', () => {
 
 		beforeEach(async () => {
 			jasmine.clock().install();
