@@ -80,7 +80,7 @@ export class Header extends MvuElement {
 
 	createView(model) {
 
-		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth } = model;
+		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, hasSearchTerm } = model;
 
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase>`);
@@ -104,6 +104,10 @@ export class Header extends MvuElement {
 
 		const getActiveClass = (buttonIndex) => {
 			return (tabIndex === buttonIndex) ? 'is-active' : '';
+		};
+
+		const getIsClearClass = () => {
+			return (hasSearchTerm) ? 'is-clear' : '';
 		};
 
 		const layerCount = layers.length;
@@ -156,6 +160,10 @@ export class Header extends MvuElement {
 			openMainMenu();
 		};
 
+		const clearSearchInput = () => {
+			this.shadowRoot.getElementById('input').value = null;
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
@@ -180,7 +188,9 @@ export class Header extends MvuElement {
 					<div class="header__background">
 					</div>
 					<div class='header__search-container'>
-						<input id='input' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />             
+						<input id='input' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
+						<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
+						</span>       
 						<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 						&nbsp;
 						</button>
