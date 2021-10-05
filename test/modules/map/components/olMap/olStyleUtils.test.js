@@ -154,7 +154,8 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
-		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
@@ -167,7 +168,8 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
-		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; medium image', () => {
@@ -180,7 +182,8 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; big image', () => {
@@ -193,7 +196,8 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
-		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 });

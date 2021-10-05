@@ -37,20 +37,20 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 })];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
-
+	// const { EnvironmentService } = $injector.inject('EnvironmentService');
+	// const environmentService = EnvironmentService;
+	const isOfflineModus = true; // environmentService.isStandalone()
 	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
 
 	const getMarkerSrc = () => {
-		const { EnvironmentService } = $injector.inject('EnvironmentService');
-		const environmentService = EnvironmentService;
-		if (!environmentService.isStandalone()) {
-			const defaultSymbol = 'marker';
-			if (styleOption.symbolSrc != null && styleOption.symbolSrc !== false) {
-				return getIconUrl(styleOption.symbolSrc);
+		const defaultSymbol = 'marker';
+		if (styleOption.symbolSrc != null && styleOption.symbolSrc !== false) {
+			if (styleOption.symbolSrc.startsWith('http://') || styleOption.symbolSrc.startsWith('https://')) {
+				return styleOption.symbolSrc;
 			}
-			return getIconUrl(defaultSymbol);
+			return getIconUrl(styleOption.symbolSrc, hexToRgb(markerColor));
 		}
-		return markerIcon;
+		return getIconUrl(defaultSymbol);
 	};
 	const getMarkerScale = (sizeKeyword) => {
 		switch (sizeKeyword) {
@@ -63,15 +63,27 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 				return 0.5;
 		}
 	};
-	const iconOptions = {
+
+	const fallbackIconOptions = {
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: markerIcon,
+		scale: getMarkerScale(styleOption.scale),
+		color: markerColor
+	};
+
+	const defaultIconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: getMarkerSrc(),
 		scale: getMarkerScale(styleOption.scale)
 	};
+
+	const iconOptions = isOfflineModus ? fallbackIconOptions : defaultIconOptions;
 	return [new Style({
-		image: new Icon({ ...iconOptions, color: markerColor })
+		image: new Icon(iconOptions)
 	})];
 };
 
