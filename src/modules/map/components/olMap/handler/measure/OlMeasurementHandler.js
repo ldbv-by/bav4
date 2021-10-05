@@ -283,6 +283,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			observe(store, state => state.measurement.remove, () => this._remove())];
 	}
 
+	_removeSelectedFeatures() {
+		const selectedFeatures = this._select.getFeatures();
+		selectedFeatures.forEach(f => {
+			this._overlayService.remove(f, this._map);
+			if (this._vectorLayer.getSource().hasFeature(f)) {
+				this._vectorLayer.getSource().removeFeature(f);
+			}
+		});
+		selectedFeatures.clear();
+	}
 
 	_removeLast(event) {
 		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
@@ -330,17 +340,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
 		this._simulateClickEvent();
-	}
-
-	_removeSelectedFeatures() {
-		const selectedFeatures = this._select.getFeatures();
-		selectedFeatures.forEach(f => {
-			this._overlayService.remove(f, this._map);
-			if (this._vectorLayer.getSource().hasFeature(f)) {
-				this._vectorLayer.getSource().removeFeature(f);
-			}
-		});
-		selectedFeatures.clear();
 	}
 
 	_createDraw(source) {
@@ -400,6 +399,50 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		);
 
 		return draw;
+	}
+
+	_createSelect() {
+		const layerFilter = (itemLayer) => {
+			itemLayer === this._vectorLayer;
+		};
+		const featureFilter = (itemFeature, itemLayer) => {
+			if (layerFilter(itemLayer)) {
+				return itemFeature;
+			}
+		};
+		const options = {
+			layers: layerFilter,
+			filter: featureFilter,
+			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+		};
+		const select = new Select(options);
+		select.getFeatures().on('change:length', this._updateStatistics);
+
+		return select;
+	}
+
+	_createModify() {
+		const options = {
+			features: this._select.getFeatures(),
+			style: modifyStyleFunction,
+			deleteCondition: event => {
+				const isDeletable = (noModifierKeys(event) && singleClick(event));
+				return isDeletable;
+			}
+		};
+
+		const modify = new Modify(options);
+		modify.on('modifystart', (event) => {
+			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
+				this._mapContainer.classList.add('grabbing');
+			}
+		});
+		modify.on('modifyend', event => {
+			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
+				this._mapContainer.classList.remove('grabbing');
+			}
+		});
+		return modify;
 	}
 
 	_activateModify(feature) {
@@ -519,51 +562,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		measureState.dragging = dragging;
 		this._setMeasureState(measureState);
-	}
-
-
-	_createSelect() {
-		const layerFilter = (itemLayer) => {
-			itemLayer === this._vectorLayer;
-		};
-		const featureFilter = (itemFeature, itemLayer) => {
-			if (layerFilter(itemLayer)) {
-				return itemFeature;
-			}
-		};
-		const options = {
-			layers: layerFilter,
-			filter: featureFilter,
-			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
-		};
-		const select = new Select(options);
-		select.getFeatures().on('change:length', this._updateStatistics);
-
-		return select;
-	}
-
-	_createModify() {
-		const options = {
-			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && singleClick(event));
-				return isDeletable;
-			}
-		};
-
-		const modify = new Modify(options);
-		modify.on('modifystart', (event) => {
-			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
-				this._mapContainer.classList.add('grabbing');
-			}
-		});
-		modify.on('modifyend', event => {
-			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
-				this._mapContainer.classList.remove('grabbing');
-			}
-		});
-		return modify;
 	}
 
 	/**

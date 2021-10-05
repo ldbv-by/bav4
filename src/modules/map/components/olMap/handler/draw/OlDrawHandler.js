@@ -260,180 +260,26 @@ export class OlDrawHandler extends OlLayerHandler {
 		listeners = [];
 	}
 
-	_createDrawByType(type, styleOption) {
-		if (type == null) {
-			return null;
-		}
-
-		if (this._vectorLayer == null) {
-			return null;
-		}
-		const source = this._vectorLayer.getSource();
-		const snapTolerance = this._getSnapTolerancePerDevice();
-
-		switch (type) {
-			case StyleTypes.MARKER:
-			case StyleTypes.TEXT:
-				return new Draw({
-					source: source,
-					type: 'Point',
-					minPoints: 1,
-					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType(type, styleOption)
-				});
-			case StyleTypes.LINE:
-				return new Draw({
-					source: source,
-					type: 'LineString',
-					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
-				});
-			case StyleTypes.POLYGON:
-				return new Draw({
-					source: source,
-					type: 'Polygon',
-					minPoints: 3,
-					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
-				});
-			default:
-				console.warn('unknown Drawtype: ' + type);
+	_setDrawState(value) {
+		if (value !== this._drawState) {
+			this._drawState = value;
+			this._drawStateChangedListeners.forEach(l => l(value));
 		}
 	}
 
-	_getStyleOption() {
-		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
-		if (currentStyleOptions == null) {
-			setStyle(defaultStyleOption);
-			return defaultStyleOption;
-		}
-
-		return currentStyleOptions;
+	_onDrawStateChanged(listener) {
+		this._drawStateChangedListeners.push(listener);
 	}
 
-
-	_getStyleFunctionFrom(feature) {
-		const type = this._getDrawingTypeFrom(feature);
-		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
+	_register(store) {
+		return [
+			observe(store, state => state.draw.type, (type) => this._init(type)),
+			observe(store, state => state.draw.style, () => this._updateStyle()),
+			observe(store, state => state.draw.finish, () => this._finish()),
+			observe(store, state => state.draw.reset, () => this._startNew()),
+			observe(store, state => state.draw.remove, () => this._remove())];
 	}
 
-	_getStyleFunctionByDrawType(drawType, styleOption) {
-		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
-		if (drawTypes.includes(drawType)) {
-			const styleFunction = this._styleService.getStyleFunction(drawType);
-			return () => styleFunction(styleOption);
-		}
-		return this._styleService.getStyleFunction(StyleTypes.DRAW);
-	}
-
-	_updateDrawState(coordinate, pixel, dragging) {
-		const drawState = {
-			type: null,
-			snap: null,
-			coordinate: coordinate,
-			pointCount: this._pointCount
-		};
-
-		drawState.snap = this._getSnapState(pixel);
-
-		if (this._draw) {
-			drawState.type = InteractionStateType.ACTIVE;
-
-			if (this._activeSketch) {
-				this._activeSketch.getGeometry();
-				drawState.type = InteractionStateType.DRAW;
-
-				if (this._isFinishOnFirstPoint) {
-					drawState.snap = InteractionSnapType.FIRSTPOINT;
-				}
-				else if (this._isSnapOnLastPoint) {
-					drawState.snap = InteractionSnapType.LASTPOINT;
-				}
-			}
-		}
-
-		if (this._modify.getActive()) {
-			drawState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
-		}
-
-		drawState.dragging = dragging;
-		this._setDrawState(drawState);
-	}
-
-	_updateDrawMode(drawState) {
-		if (this._lastInteractionStateType !== drawState.type && drawState.type !== InteractionStateType.OVERLAY) {
-			this._lastInteractionStateType = drawState.type;
-			setMode(this._lastInteractionStateType);
-		}
-	}
-
-	_createSelect() {
-		const layerFilter = (itemLayer) => {
-			itemLayer === this._vectorLayer;
-		};
-		const featureFilter = (itemFeature, itemLayer) => {
-			if (layerFilter(itemLayer)) {
-				return itemFeature;
-			}
-		};
-		const options = {
-			layers: layerFilter,
-			filter: featureFilter,
-			style: null
-		};
-		const select = new Select(options);
-		select.getFeatures().on('add', (e) => {
-			const feature = e.element;
-			const styleFunction = selectStyleFunction();
-			const styles = styleFunction(feature);
-			e.element.setStyle(styles);
-		});
-		select.getFeatures().on('remove', (e) => {
-			const feature = e.element;
-			const styles = feature.getStyle();
-			styles.pop();
-			feature.setStyle(styles);
-		});
-
-		return select;
-	}
-
-	_createModify() {
-		const options = {
-			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && singleClick(event));
-				return isDeletable;
-			}
-		};
-
-		const modify = new Modify(options);
-		modify.on('modifystart', (event) => {
-			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
-				this._mapContainer.classList.add('grabbing');
-			}
-		});
-		modify.on('modifyend', event => {
-			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
-				this._mapContainer.classList.remove('grabbing');
-			}
-		});
-		return modify;
-	}
-
-	_activateModify(feature) {
-		if (this._draw) {
-			this._draw.setActive(false);
-			setType(null);
-
-		}
-		this._modify.setActive(true);
-		this._modifyActivated = true;
-
-		this._setSelected(feature);
-		this._activeSketch = null;
-	}
 
 	_init(type) {
 		const styleOption = this._getStyleOption();
@@ -518,7 +364,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
-
 	_finish() {
 		if (this._activeSketch) {
 			this._draw.finishDrawing();
@@ -539,6 +384,180 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._init(currenType);
 		}
 
+	}
+
+	_createDrawByType(type, styleOption) {
+		if (type == null) {
+			return null;
+		}
+
+		if (this._vectorLayer == null) {
+			return null;
+		}
+		const source = this._vectorLayer.getSource();
+		const snapTolerance = this._getSnapTolerancePerDevice();
+
+		switch (type) {
+			case StyleTypes.MARKER:
+			case StyleTypes.TEXT:
+				return new Draw({
+					source: source,
+					type: 'Point',
+					minPoints: 1,
+					snapTolerance: snapTolerance,
+					style: this._getStyleFunctionByDrawType(type, styleOption)
+				});
+			case StyleTypes.LINE:
+				return new Draw({
+					source: source,
+					type: 'LineString',
+					snapTolerance: snapTolerance,
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
+				});
+			case StyleTypes.POLYGON:
+				return new Draw({
+					source: source,
+					type: 'Polygon',
+					minPoints: 3,
+					snapTolerance: snapTolerance,
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
+				});
+			default:
+				console.warn('unknown Drawtype: ' + type);
+		}
+	}
+
+	_createSelect() {
+		const layerFilter = (itemLayer) => {
+			itemLayer === this._vectorLayer;
+		};
+		const featureFilter = (itemFeature, itemLayer) => {
+			if (layerFilter(itemLayer)) {
+				return itemFeature;
+			}
+		};
+		const options = {
+			layers: layerFilter,
+			filter: featureFilter,
+			style: null
+		};
+		const select = new Select(options);
+		select.getFeatures().on('add', (e) => {
+			const feature = e.element;
+			const styleFunction = selectStyleFunction();
+			const styles = styleFunction(feature);
+			e.element.setStyle(styles);
+		});
+		select.getFeatures().on('remove', (e) => {
+			const feature = e.element;
+			const styles = feature.getStyle();
+			styles.pop();
+			feature.setStyle(styles);
+		});
+
+		return select;
+	}
+
+	_createModify() {
+		const options = {
+			features: this._select.getFeatures(),
+			style: modifyStyleFunction,
+			deleteCondition: event => {
+				const isDeletable = (noModifierKeys(event) && singleClick(event));
+				return isDeletable;
+			}
+		};
+
+		const modify = new Modify(options);
+		modify.on('modifystart', (event) => {
+			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
+				this._mapContainer.classList.add('grabbing');
+			}
+		});
+		modify.on('modifyend', event => {
+			if (event.mapBrowserEvent.type === MapBrowserEventType.POINTERUP || event.mapBrowserEvent.type === MapBrowserEventType.CLICK) {
+				this._mapContainer.classList.remove('grabbing');
+			}
+		});
+		return modify;
+	}
+
+	_activateModify(feature) {
+		if (this._draw) {
+			this._draw.setActive(false);
+			setType(null);
+
+		}
+		this._modify.setActive(true);
+		this._modifyActivated = true;
+
+		this._setSelected(feature);
+		this._activeSketch = null;
+	}
+
+	_getStyleOption() {
+		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
+		if (currentStyleOptions == null) {
+			setStyle(defaultStyleOption);
+			return defaultStyleOption;
+		}
+
+		return currentStyleOptions;
+	}
+
+	_getStyleFunctionFrom(feature) {
+		const type = this._getDrawingTypeFrom(feature);
+		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
+	}
+
+	_getStyleFunctionByDrawType(drawType, styleOption) {
+		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
+		if (drawTypes.includes(drawType)) {
+			const styleFunction = this._styleService.getStyleFunction(drawType);
+			return () => styleFunction(styleOption);
+		}
+		return this._styleService.getStyleFunction(StyleTypes.DRAW);
+	}
+
+	_updateDrawState(coordinate, pixel, dragging) {
+		const drawState = {
+			type: null,
+			snap: null,
+			coordinate: coordinate,
+			pointCount: this._pointCount
+		};
+
+		drawState.snap = this._getSnapState(pixel);
+
+		if (this._draw) {
+			drawState.type = InteractionStateType.ACTIVE;
+
+			if (this._activeSketch) {
+				this._activeSketch.getGeometry();
+				drawState.type = InteractionStateType.DRAW;
+
+				if (this._isFinishOnFirstPoint) {
+					drawState.snap = InteractionSnapType.FIRSTPOINT;
+				}
+				else if (this._isSnapOnLastPoint) {
+					drawState.snap = InteractionSnapType.LASTPOINT;
+				}
+			}
+		}
+
+		if (this._modify.getActive()) {
+			drawState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
+		}
+
+		drawState.dragging = dragging;
+		this._setDrawState(drawState);
+	}
+
+	_updateDrawMode(drawState) {
+		if (this._lastInteractionStateType !== drawState.type && drawState.type !== InteractionStateType.OVERLAY) {
+			this._lastInteractionStateType = drawState.type;
+			setMode(this._lastInteractionStateType);
+		}
 	}
 
 	_updateStyle() {
@@ -602,10 +621,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	}
 
-	_onDrawStateChanged(listener) {
-		this._drawStateChangedListeners.push(listener);
-	}
-
 	_setSelected(feature) {
 		if (feature) {
 			const selectionSize = this._select.getFeatures().getLength();
@@ -619,22 +634,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			const style = { ...currentStyleOption, color: color };
 			const selectedStyle = { type: this._getDrawingTypeFrom(feature), style: style };
 			setSelectedStyle(selectedStyle);
-		}
-	}
-
-	_register(store) {
-		return [
-			observe(store, state => state.draw.type, (type) => this._init(type)),
-			observe(store, state => state.draw.style, () => this._updateStyle()),
-			observe(store, state => state.draw.finish, () => this._finish()),
-			observe(store, state => state.draw.reset, () => this._startNew()),
-			observe(store, state => state.draw.remove, () => this._remove())];
-	}
-
-	_setDrawState(value) {
-		if (value !== this._drawState) {
-			this._drawState = value;
-			this._drawStateChangedListeners.forEach(l => l(value));
 		}
 	}
 
