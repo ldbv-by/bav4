@@ -309,20 +309,45 @@ describe('Header', () => {
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 
-			it('shows and hides a clear button', async () => {
+			describe('and width > 80em', () => {
 
-				const element = await setup();
+				it('shows and hides a clear button', async () => {
+					const state = {
+						media: {
+							minWidth: true
+						}
+					};
+					const element = await setup(state);
 
-				const inputElement = element.shadowRoot.querySelector('#input');
-				inputElement.value = 'foo';
-				inputElement.dispatchEvent(new Event('input'));
+					const inputElement = element.shadowRoot.querySelector('#input');
+					inputElement.value = 'foo';
+					inputElement.dispatchEvent(new Event('input'));
 
-				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeTrue();
+					expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeTrue();
 
-				inputElement.value = '';
-				inputElement.dispatchEvent(new Event('input'));
+					inputElement.value = '';
+					inputElement.dispatchEvent(new Event('input'));
 
-				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+					expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+				});
+			});
+
+			describe('and width < 80em', () => {
+
+				it('shows and hides a clear button', async () => {
+					const state = {
+						media: {
+							minWidth: false
+						}
+					};
+					const element = await setup(state);
+
+					const inputElement = element.shadowRoot.querySelector('#input');
+					inputElement.value = 'foo';
+					inputElement.dispatchEvent(new Event('input'));
+
+					expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+				});
 			});
 		});
 

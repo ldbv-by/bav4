@@ -107,7 +107,7 @@ export class Header extends MvuElement {
 		};
 
 		const getIsClearClass = () => {
-			return hasSearchTerm ? 'is-clear-visible' : '';
+			return hasSearchTerm && hasMinWidth ? 'is-clear-visible' : '';
 		};
 
 		const layerCount = layers.length;
