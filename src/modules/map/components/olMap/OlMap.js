@@ -114,11 +114,16 @@ export class OlMap extends MvuElement {
 			})])
 		});
 
-		this._map.on('singleclick', (evt) => {
-			evt.preventDefault();
-			const coord = this._map.getEventCoordinate(evt.originalEvent);
-			setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
-		});
+		const singleClickHandler = (evt) => {
+			//when no layer handler is currently active
+			if ([...this._layerHandler.values()].filter(lh => lh.active).length === 0) {
+				evt.preventDefault();
+				const coord = this._map.getEventCoordinate(evt.originalEvent);
+				setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+			}
+		};
+
+		this._map.on('singleclick', singleClickHandler);
 
 		this._map.on('movestart', () => {
 			setMoveStart();
