@@ -19,14 +19,13 @@ export class GeoResouceResultsPanel extends BaElement {
 	constructor() {
 		super();
 		const { SearchResultService: searchResultService, TranslationService: translationService }
-            = $injector.inject('SearchResultService', 'TranslationService');
+			= $injector.inject('SearchResultService', 'TranslationService');
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
 		this._geoRersourceSearchResults = [];
 		this._isCollapsed = false;
-		this._isShowAll = false;
-		this._maxShow = 7;
+		this._isAllShown = false;
 	}
 
 
@@ -38,7 +37,7 @@ export class GeoResouceResultsPanel extends BaElement {
 			async (term) => {
 				if (term) {
 					this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
-					this._isShowAll = (this._geoRersourceSearchResults.length > this._maxShow) ? false : true;
+					this._isAllShown = (this._geoRersourceSearchResults.length > GeoResouceResultsPanel.Default_Result_Item_Length) ? false : true;
 					this.render();
 				}
 			});
@@ -52,8 +51,8 @@ export class GeoResouceResultsPanel extends BaElement {
 
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
@@ -65,7 +64,7 @@ export class GeoResouceResultsPanel extends BaElement {
 		};
 
 		const toggleShowAll = () => {
-			this._isShowAll = !this._isShowAll;
+			this._isAllShown = !this._isAllShown;
 			this.render();
 		};
 
@@ -78,30 +77,29 @@ export class GeoResouceResultsPanel extends BaElement {
 			iscollaps: this._isCollapsed
 		};
 
-		const panelShowAll = {
-			isshowall: this._isShowAll
+		const showAllButton = {
+			hidden: this._isAllShown || this._geoRersourceSearchResults.length === 0
 		};
+
+		const indexEnd = this._isAllShown ? this._geoRersourceSearchResults.length : GeoResouceResultsPanel.Default_Result_Item_Length;
 
 		return html`
         <style>${css}</style>
-		<style>
-		.georesource-items > *:nth-child(-n+${this._maxShow}) {
-			display: block;
-		  }
-		</style>
-		<div class="georesource-results-panel divider ${classMap(panelShowAll)}'">
+		<div class="georesource-results-panel divider">
 				<div class="georesource-label" @click="${toggleCollapse}">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
-					<a class='georesource-label__collapse' >
+					<a class='georesource-label__collapse'>
 						<i class='icon chevron ${classMap(iconCollapseClass)}'>
 						</i>
 					</a>   
 				</div>
 				<div class="${classMap(bodyCollapseClass)}">	
-					<ul class="georesource-items ">	
-						${this._geoRersourceSearchResults.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
+					<ul class="georesource-items">	
+						${this._geoRersourceSearchResults
+		.slice(0, indexEnd)
+		.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
 					</ul>
-					<div class="show-all" @click="${toggleShowAll}">
+					<div class="show-all ${classMap(showAllButton)}" @click="${toggleShowAll}">
 					${translate('search_menu_showAll_label')}
 					</div>
 				</div>
@@ -110,9 +108,9 @@ export class GeoResouceResultsPanel extends BaElement {
 	}
 
 	/**
-     * @override
-     * @param {Object} state
-     */
+	 * @override
+	 * @param {Object} state
+	 */
 	extractState(state) {
 		const { search: { query: { payload: term } } } = state;
 		return { term };
@@ -128,5 +126,9 @@ export class GeoResouceResultsPanel extends BaElement {
 
 	static get Min_Query_Length() {
 		return 2;
+	}
+
+	static get Default_Result_Item_Length() {
+		return 7;
 	}
 }

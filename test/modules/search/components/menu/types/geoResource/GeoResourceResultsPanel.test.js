@@ -34,9 +34,12 @@ describe('GeoResouceResultsPanel', () => {
 			expect(GeoResouceResultsPanel.Min_Query_Length).toBe(2);
 		});
 
+		it('defines a default result item size', async () => {
+			expect(GeoResouceResultsPanel.Default_Result_Item_Length).toBe(7);
+		});
 	});
 
-	describe('collaps button of item list', () => {
+	describe('GeoResourceResultPanel', () => {
 
 		it('renders the view', async (done) => {
 
@@ -51,13 +54,13 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 				done();
 			}, GeoResouceResultsPanel.Debounce_Delay + 100);
 		});
 
-		it('renders the view based on a current query with less than "maxShow" results', async (done) => {
+		it('renders the view based on a current query with "Default_Result_Item_Length" results', async (done) => {
+			const results = Array.from({ length: GeoResouceResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -65,7 +68,7 @@ describe('GeoResouceResultsPanel', () => {
 				}
 			};
 			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
@@ -73,11 +76,10 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.georesource-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResouceResultsPanel.Default_Result_Item_Length);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 
 				expect(searchResultService).toHaveBeenCalled();
@@ -86,7 +88,9 @@ describe('GeoResouceResultsPanel', () => {
 			}, GeoResouceResultsPanel.Debounce_Delay + 100);
 		});
 
-		it('renders the view based on a current query with more than "maxShow" results', async (done) => {
+		it('renders the view based on a current query with more than "Default_Result_Item_Length" results', async (done) => {
+			const results = Array.from({ length: GeoResouceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
+
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -94,16 +98,7 @@ describe('GeoResouceResultsPanel', () => {
 				}
 			};
 			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo([
-					new SearchResult('geoResource0', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource1', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource2', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource3', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource4', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource5', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource6', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource7', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)
-				]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
@@ -113,11 +108,10 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.georesource-label__collapse')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(8);
+				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResouceResultsPanel.Default_Result_Item_Length);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
 				expect(searchResultService).toHaveBeenCalled();
@@ -230,6 +224,7 @@ describe('GeoResouceResultsPanel', () => {
 	describe('show-all button', () => {
 
 		it('displays all results on click', async (done) => {
+			const results = Array.from({ length: GeoResouceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -237,29 +232,18 @@ describe('GeoResouceResultsPanel', () => {
 				}
 			};
 			spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo([
-					new SearchResult('geoResource0', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource1', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource2', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource3', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource4', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource5', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource6', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE),
-					new SearchResult('geoResource7', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)
-				]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
 			//wait for elements
 			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(8);
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResouceResultsPanel.Default_Result_Item_Length);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
 				element.shadowRoot.querySelector('.show-all').click();
 
-				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(8);
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResouceResultsPanel.Default_Result_Item_Length + 1);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 				done();
 

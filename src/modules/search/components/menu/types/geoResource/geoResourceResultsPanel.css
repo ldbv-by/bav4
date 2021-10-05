@@ -15,9 +15,6 @@
   overflow:hidden;
   transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
 }
-.georesource-items > *{
-    display:none
-}
 .georesource-label__collapse{
   padding: .8em 1.5em;
 }
@@ -63,12 +60,9 @@ filter: brightness(.8);
   background: var(--primary-bg-color);
   width:100%;
 }
-.isshowall .show-all{
+.show-all.hidden{
   display:none;
 }
 .show-all:hover{
   color:var(--primary-color);
-}
-.isshowall .georesource-items > *{
-  display:block;
 }
