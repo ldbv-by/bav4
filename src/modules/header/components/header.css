@@ -244,7 +244,7 @@ input[type="search"]::-webkit-search-results-decoration {
   background:var(--secondary-bg-color);
 }
 
-.is-clear{
+.is-clear-visible{
   display:flex;
 }
 
