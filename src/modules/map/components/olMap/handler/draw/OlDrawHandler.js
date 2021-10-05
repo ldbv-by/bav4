@@ -22,6 +22,8 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
 import { setMode } from '../../../../store/measurement.action';
+import { emitNotification } from '../../../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -687,6 +689,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			// TODO: offline-support is needed to properly working with temporary ids
 			// TODO: propagate the failing to UI-feedback-channel
 			console.warn('Could not store layer-data. The data will get lost after this session.');
+			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
 		};
 

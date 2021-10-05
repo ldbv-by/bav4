@@ -52,6 +52,9 @@ export class StyleService {
 			case StyleTypes.TEXT:
 				this._addTextStyle(olFeature);
 				break;
+			case StyleTypes.MARKER:
+				this._addMarkerStyle(olFeature);
+				break;
 			case StyleTypes.POLYGON:
 			case StyleTypes.LINE:
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
@@ -180,6 +183,27 @@ export class StyleService {
 		};
 
 		const newStyle = textStyleFunction(getStyleOption());
+
+		olFeature.setStyle(() => newStyle);
+	}
+
+	_addMarkerStyle(olFeature) {
+
+		const getStyle = (styles) => {
+			if (typeof (styles) === 'function') {
+				return styles(olFeature)[0];
+			}
+			return styles[0];
+		};
+		const getStyleOption = (styles) => {
+			const style = getStyle(styles);
+			const color = style.getImage().getColor();
+			const symbolSrc = style.getImage().getSrc();
+			const scale = style.getImage().getScale();
+			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale };
+		};
+
+		const newStyle = markerStyleFunction(getStyleOption(olFeature.getStyle()));
 
 		olFeature.setStyle(() => newStyle);
 	}

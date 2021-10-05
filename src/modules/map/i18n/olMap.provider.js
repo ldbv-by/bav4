@@ -19,7 +19,8 @@ export const provide = (lang) => {
 				map_olMap_handler_draw_start: 'Click to start drawing',
 				map_olMap_handler_draw_layer_label: 'Drawing',
 				map_olMap_handler_draw_continue_line: 'Click to continue drawing the line (double-click to finish)',
-				map_olMap_handler_draw_select: 'Select existing or start new drawing'
+				map_olMap_handler_draw_select: 'Select existing or start new drawing',
+				map_olMap_handler_storage_offline: 'Offline: Could not store layer-data. The data will get lost after this session.'
 			};
 
 		case 'de':
@@ -40,7 +41,8 @@ export const provide = (lang) => {
 				map_olMap_handler_draw_start: 'Klicken, um die Zeichnung zu beginnen',
 				map_olMap_handler_draw_layer_label: 'Zeichnung',
 				map_olMap_handler_draw_continue_line: 'Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)',
-				map_olMap_handler_draw_select: 'bestehende Zeichnung auswählen oder neue Zeichnung beginnen'
+				map_olMap_handler_draw_select: 'bestehende Zeichnung auswählen oder neue Zeichnung beginnen',
+				map_olMap_handler_storage_offline: 'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.'
 			};
 
 		default:
