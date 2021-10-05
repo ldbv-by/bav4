@@ -26,7 +26,7 @@ export class LocationResultsPanel extends BaElement {
 		this._locationSearchResults = [];
 		this._isCollapsed = false;
 		this._isShowAll = false;
-		this._maxShow = 7;
+		this._isAllShown = false;
 	}
 
 
@@ -38,7 +38,7 @@ export class LocationResultsPanel extends BaElement {
 			async (term) => {
 				if (term) {
 					this._locationSearchResults = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
-					this._isShowAll = (this._locationSearchResults.length > this._maxShow) ? false : true;
+					this._isAllShown = (this._locationSearchResults.length > LocationResultsPanel.Default_Result_Item_Length) ? false : true;
 					this.render();
 				}
 			});
@@ -65,7 +65,7 @@ export class LocationResultsPanel extends BaElement {
 		};
 
 		const toggleShowAll = () => {
-			this._isShowAll = !this._isShowAll;
+			this._isAllShown = !this._isAllShown;
 			this.render();
 		};
 
@@ -78,30 +78,29 @@ export class LocationResultsPanel extends BaElement {
 			iscollaps: this._isCollapsed
 		};
 
-		const panelShowAll = {
-			isshowall: this._isShowAll
+		const showAllButton = {
+			hidden: this._isAllShown || this._locationSearchResults.length === 0
 		};
+
+		const indexEnd = this._isAllShown ? this._locationSearchResults.length : LocationResultsPanel.Default_Result_Item_Length;
 
 		return html`
         <style>${css}</style>
-        <style>
-		.location-items > *:nth-child(-n+${this._maxShow}) {
-			display: block;
-		  }
-		</style>
-		<div class="location-results-panel divider ${classMap(panelShowAll)}'">
+		<div class="location-results-panel divider">
 			<div class="location-label" @click="${toggleCollapse}">
 				<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>			
-				<a class='location-label__collapse' >
+				<a class='location-label__collapse'>
 					<i class='icon chevron ${classMap(iconCollapseClass)}'>
 					</i>
 				</a>   
 			</div>		
 			<div class="${classMap(bodyCollapseClass)}">		
 				<ul class="location-items">	
-					${this._locationSearchResults.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
+					${this._locationSearchResults
+		.slice(0, indexEnd)
+		.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
 				</ul>
-				<div class="show-all" @click="${toggleShowAll}">
+				<div class="show-all ${classMap(showAllButton)}" @click="${toggleShowAll}">
 				${translate('search_menu_showAll_label')}
 				</div>
 			</div>	
@@ -128,5 +127,9 @@ export class LocationResultsPanel extends BaElement {
 
 	static get Min_Query_Length() {
 		return 2;
+	}
+
+	static get Default_Result_Item_Length() {
+		return 7;
 	}
 }

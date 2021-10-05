@@ -14,10 +14,7 @@
     overflow:hidden;
     transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
 }
-.location-items > *{
-    display:none
-}
- .location-label__collapse{
+.location-label__collapse{
     padding: .8em 1.5em;
  }
  .icon {
@@ -62,12 +59,10 @@
     background: var(--primary-bg-color);
     width:100%;
 }
-.isshowall .show-all{
+.show-all.hidden{
     display:none;
 }
 .show-all:hover{
     color:var(--primary-color);
- }
-.isshowall .location-items > *{
-    display:block;
- }
+}
+  

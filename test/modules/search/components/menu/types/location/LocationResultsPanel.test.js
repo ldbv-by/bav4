@@ -34,6 +34,9 @@ describe('LocationResultsPanel', () => {
 			expect(LocationResultsPanel.Min_Query_Length).toBe(2);
 		});
 
+		it('defines a default result item size', async () => {
+			expect(LocationResultsPanel.Default_Result_Item_Length).toBe(7);
+		});
 	});
 
 	describe('when initialized', () => {
@@ -50,13 +53,13 @@ describe('LocationResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 				done();
 			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 
-		it('renders the view based on a current query with less then "maxShow" results', async (done) => {
+		it('renders the view based on a current query with "Default_Result_Item_Length" results', async (done) => {
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -64,7 +67,7 @@ describe('LocationResultsPanel', () => {
 				}
 			};
 			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
@@ -73,11 +76,10 @@ describe('LocationResultsPanel', () => {
 			setTimeout(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
@@ -87,6 +89,7 @@ describe('LocationResultsPanel', () => {
 
 
 		it('renders the view based on a current query with more than "maxShow" results', async (done) => {
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -94,16 +97,7 @@ describe('LocationResultsPanel', () => {
 				}
 			};
 			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo([
-					new SearchResult('location0', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location1', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location2', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location3', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location4', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location5', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location6', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location7', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)
-				]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
@@ -112,11 +106,10 @@ describe('LocationResultsPanel', () => {
 			setTimeout(() => {
 				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
@@ -225,6 +218,7 @@ describe('LocationResultsPanel', () => {
 	describe('show-all button', () => {
 
 		it('displays all results on click', async (done) => {
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -232,30 +226,19 @@ describe('LocationResultsPanel', () => {
 				}
 			};
 			spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo([
-					new SearchResult('location0', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location1', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location2', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location3', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location4', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location5', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location6', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION),
-					new SearchResult('location7', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)
-				]);
+				.and.resolveTo(results);
 
 			const element = await setup(initialState);
 
 
 			//wait for elements
 			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
 				element.shadowRoot.querySelector('.show-all').click();
 
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(8);
-				expect(element.shadowRoot.querySelector('.isshowall')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length + 1);
 				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 				done();
 
