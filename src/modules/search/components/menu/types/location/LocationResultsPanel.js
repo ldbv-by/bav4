@@ -54,6 +54,9 @@ export class LocationResultsPanel extends MvuElement {
 					const allShown = (results.length > LocationResultsPanel.Default_Result_Item_Length) ? false : true;
 					this.signal(Update_Results_AllShown, { results, allShown });
 				}
+				else {
+					this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				}
 			});
 
 		this.observe(state => state.search.query, query => requestLocationDataAndUpdateViewHandler(query.payload), true);

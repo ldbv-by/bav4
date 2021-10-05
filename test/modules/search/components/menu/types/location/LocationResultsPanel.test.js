@@ -118,7 +118,7 @@ describe('LocationResultsPanel', () => {
 		});
 	});
 
-	describe('when state changes', () => {
+	describe('when query changes', () => {
 
 		it('updates the view based on a current query', async (done) => {
 			const query = 'foo';
@@ -138,7 +138,21 @@ describe('LocationResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 				expect(getLocationSearchResultProvider).toHaveBeenCalled();
-				done();
+
+				setQuery(null);
+
+				setTimeout(() => {
+					expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+
+					done();
+
+				}, LocationResultsPanel.Debounce_Delay + 100);
 			}, LocationResultsPanel.Debounce_Delay + 100);
 		});
 	});
