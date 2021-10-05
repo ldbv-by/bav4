@@ -308,6 +308,38 @@ describe('Header', () => {
 
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
+
+			it('shows and hides a clear button', async () => {
+
+				const element = await setup();
+
+				const inputElement = element.shadowRoot.querySelector('#input');
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeTrue();
+
+				inputElement.value = '';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+			});
+		});
+
+		describe('when input clear button is clicked', () => {
+
+			it('updates the store', async () => {
+
+				const element = await setup({
+					search: {
+						query: new EventLike('foo')
+					}
+				});
+
+				element.shadowRoot.querySelector('.header__search-clear').click();
+
+				expect(store.getState().search.query.payload).toBe('');
+			});
 		});
 
 		describe('when input is focused or blurred ', () => {

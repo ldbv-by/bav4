@@ -57,7 +57,7 @@ export class Header extends MvuElement {
 			case Update_IsPortrait_HasMinWidth:
 				return { ...model, ...data };
 			case Update_HasSearchTerm:
-				return { ...model, hasInput: data };
+				return { ...model, hasSearchTerm: data };
 		}
 	}
 
@@ -107,7 +107,7 @@ export class Header extends MvuElement {
 		};
 
 		const getIsClearClass = () => {
-			return (hasSearchTerm) ? 'is-clear' : '';
+			return hasSearchTerm ? 'is-clear-visible' : '';
 		};
 
 		const layerCount = layers.length;
@@ -133,7 +133,7 @@ export class Header extends MvuElement {
 			const term = evt.target.value;
 			openMainMenu();
 			setQuery(term);
-			this.signal(Update_HasSearchTerm, !!evt.target.value);
+			this.signal(Update_HasSearchTerm, !!term);
 		};
 
 		const onInputBlur = () => {
@@ -161,7 +161,9 @@ export class Header extends MvuElement {
 		};
 
 		const clearSearchInput = () => {
-			this.shadowRoot.getElementById('input').value = null;
+			const input = this.shadowRoot.getElementById('input');
+			input.value = '';
+			input.dispatchEvent(new Event('input'));
 		};
 
 		const translate = (key) => this._translationService.translate(key);
