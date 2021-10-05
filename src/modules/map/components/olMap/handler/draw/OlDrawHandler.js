@@ -11,7 +11,7 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
-import { getFeatureSnapOption, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
@@ -150,7 +150,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 			this._updateDrawState(coordinate, pixel, dragging);
-			const selectableFeatures = this._getSelectableFeatures(pixel);
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
 				setSelectedStyle(null);
@@ -651,21 +651,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		return null;
 	}
 
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_getSelectableFeatures(pixel) {
-		const features = [];
-		const interactionLayer = this._vectorLayer;
-
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				features.push(feature);
-			}
-		}, getFeatureSnapOption(interactionLayer));
-
-		return features;
-	}
 
 	/**
 	 * todo: redundant

@@ -23,7 +23,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { getFeatureSnapOption, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
 
 const Debounce_Delay = 1000;
 
@@ -151,7 +151,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 			this._updateMeasureState(coordinate, pixel, dragging);
-			const selectableFeatures = this._getSelectableFeatures(pixel);
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
 				this._select.getFeatures().clear();
 				setStatistic({ length: 0, area: 0 });
@@ -564,21 +564,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._setMeasureState(measureState);
 	}
 
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_getSelectableFeatures(pixel) {
-		const features = [];
-		const interactionLayer = this._vectorLayer;
-
-		this._map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-			if (layer === interactionLayer) {
-				features.push(feature);
-			}
-		}, getFeatureSnapOption(interactionLayer));
-
-		return features;
-	}
 
 	/**
 	 * todo: redundant

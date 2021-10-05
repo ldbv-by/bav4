@@ -54,3 +54,16 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 	}
 	return snapType;
 };
+
+export const getSelectableFeatures = (map, interactionLayer, pixel) => {
+	const features = [];
+
+	map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+		if (layer === interactionLayer) {
+			features.push(feature);
+		}
+	}, getFeatureSnapOption(interactionLayer));
+
+	return features;
+};
+
