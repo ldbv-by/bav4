@@ -62,6 +62,23 @@ describe('Header', () => {
 		return TestUtils.render(Header.tag);
 	};
 
+	describe('when instantiated', () => {
+
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new Header().getModel();
+
+			expect(model).toEqual({
+				isOpen: false,
+				tabIndex: 0,
+				isFetching: false,
+				layers: [],
+				isPortrait: false,
+				hasMinWidth: false
+			});
+		});
+	});
+
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape and width >= 80em', async () => {

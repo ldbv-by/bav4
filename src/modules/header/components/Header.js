@@ -1,5 +1,4 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../BaElement';
 import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
@@ -8,7 +7,12 @@ import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { toggle } from '../../menu/store/mainMenu.action';
+import { MvuElement } from '../../MvuElement';
 
+const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
+const Update_Fetching = 'update_fetching';
+const Update_Layers = 'update_layers';
+const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 
 /**
  * Container element for header stuff.
@@ -16,10 +20,17 @@ import { toggle } from '../../menu/store/mainMenu.action';
  * @author taulinger
  * @author alsturm
  */
-export class Header extends BaElement {
+export class Header extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			isOpen: false,
+			tabIndex: 0,
+			isFetching: false,
+			layers: [],
+			isPortrait: false,
+			hasMinWidth: false
+		});
 
 		const {
 			CoordinateService: coordinateService,
@@ -31,7 +42,26 @@ export class Header extends BaElement {
 		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._classMobileHeader = '';
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_IsOpen_TabIndex:
+				return { ...model, ...data };
+			case Update_Fetching:
+				return { ...model, isFetching: data };
+			case Update_Layers:
+				return { ...model, layers: data };
+			case Update_IsPortrait_HasMinWidth:
+				return { ...model, ...data };
+		}
+	}
+
+	onInitialize() {
+		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tabIndex }));
+		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
+		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active));
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 	}
 
 	onWindowLoad() {
@@ -44,9 +74,9 @@ export class Header extends BaElement {
 		return this._environmentService.isEmbedded();
 	}
 
-	createView(state) {
+	createView(model) {
 
-		const { open, tabIndex, fetching, layers, isPortrait, hasMinWidth } = state;
+		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth } = model;
 
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase>`);
@@ -61,11 +91,11 @@ export class Header extends BaElement {
 		};
 
 		const getOverlayClass = () => {
-			return (open && !isPortrait) ? 'is-open' : '';
+			return (isOpen && !isPortrait) ? 'is-open' : '';
 		};
 
 		const getAnimatedBorderClass = () => {
-			return fetching ? 'animated-action-button__border__running' : '';
+			return isFetching ? 'animated-action-button__border__running' : '';
 		};
 
 		const getActiveClass = (buttonIndex) => {
@@ -175,15 +205,6 @@ export class Header extends BaElement {
 				</div>				
             </div>
 		`;
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, network: { fetching }, layers: { active: layers }, media: { portrait: isPortrait, minWidth: hasMinWidth } } = globalState;
-		return { open, tabIndex, fetching, layers, isPortrait, hasMinWidth };
 	}
 
 	static get tag() {
