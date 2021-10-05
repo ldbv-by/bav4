@@ -59,7 +59,7 @@ export class LocationResultsPanel extends MvuElement {
 				}
 			});
 
-		this.observe(state => state.search.query, query => requestLocationDataAndUpdateViewHandler(query.payload), true);
+		this.observe(state => state.search.query, query => requestLocationDataAndUpdateViewHandler(query.payload));
 	}
 
 	/**

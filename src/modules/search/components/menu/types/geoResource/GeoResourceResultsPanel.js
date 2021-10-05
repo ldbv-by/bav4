@@ -61,7 +61,7 @@ export class GeoResouceResultsPanel extends MvuElement {
 				}
 			});
 
-		this.observe(state => state.search.query, query => requestGeoResourceDataAndUpdateViewHandler(query.payload), true);
+		this.observe(state => state.search.query, query => requestGeoResourceDataAndUpdateViewHandler(query.payload));
 	}
 
 	/**
