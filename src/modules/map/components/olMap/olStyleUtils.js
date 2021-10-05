@@ -41,8 +41,14 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
 
 	const getMarkerSrc = () => {
-		if (styleOption.symbolSrc != null && styleOption.symbolSrc !== false) {
-			return getIconUrl(styleOption.symbolSrc);
+		const { EnvironmentService } = $injector.inject('EnvironmentService');
+		const environmentService = EnvironmentService;
+		if (!environmentService.isStandalone()) {
+			const defaultSymbol = 'marker';
+			if (styleOption.symbolSrc != null && styleOption.symbolSrc !== false) {
+				return getIconUrl(styleOption.symbolSrc);
+			}
+			return getIconUrl(defaultSymbol);
 		}
 		return markerIcon;
 	};

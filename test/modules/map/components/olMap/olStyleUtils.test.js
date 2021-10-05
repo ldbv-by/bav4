@@ -118,9 +118,14 @@ describe('markerStyleFunction', () => {
 		getValue: () => { },
 		getValueAsPath: () => 'backend/'
 	};
+
+	const environmentService = {
+		isStandalone: () => false
+	};
 	beforeAll(() => {
 		TestUtils.setupStoreAndDi();
 		$injector
+			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('ConfigService', configService);
 
 	});
@@ -131,11 +136,25 @@ describe('markerStyleFunction', () => {
 		expect(styles.length).toBe(1);
 	});
 
-	it('should return a style with a default Image', () => {
+	it('should return a style with a default Image for offline-modus', () => {
+		spyOn(environmentService, 'isStandalone').and.returnValue(true);
 		const styles = markerStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+	});
+
+	it('should return a style with a default Image', () => {
+		const styleOption = { color: '#BEDA55', scale: 'small' };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.5);
+		expect(image.getSrc()).toContain('backend/icons/255,255,255/marker');
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
