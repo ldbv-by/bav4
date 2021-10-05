@@ -56,6 +56,9 @@ export class GeoResouceResultsPanel extends MvuElement {
 					const allShown = (results.length > GeoResouceResultsPanel.Default_Result_Item_Length) ? false : true;
 					this.signal(Update_Results_AllShown, { results, allShown });
 				}
+				else {
+					this.signal(Update_Results_AllShown, { results: [], allShown: false });
+				}
 			});
 
 		this.observe(state => state.search.query, query => requestGeoResourceDataAndUpdateViewHandler(query.payload), true);

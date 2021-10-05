@@ -121,16 +121,15 @@ describe('GeoResouceResultsPanel', () => {
 		});
 	});
 
-	describe('when state changes', () => {
+	describe('when query changes', () => {
 
 		it('updates the view based on a current query', async (done) => {
 			const query = 'foo';
 			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
 				.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
-
 			const element = await setup();
-			setQuery(query);
 
+			setQuery(query);
 
 			//wait for elements
 			setTimeout(() => {
@@ -143,7 +142,22 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
 				expect(searchResultService).toHaveBeenCalled();
-				done();
+
+				setQuery(null);
+
+				setTimeout(() => {
+					expect(element.shadowRoot.querySelector('.georesource-results-panel')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
+					expect(element.shadowRoot.querySelector('.georesource-label__collapse')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(0);
+					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+					expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+
+					done();
+
+				}, GeoResouceResultsPanel.Debounce_Delay + 100);
 
 			}, GeoResouceResultsPanel.Debounce_Delay + 100);
 		});
