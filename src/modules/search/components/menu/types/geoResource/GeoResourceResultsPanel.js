@@ -2,86 +2,97 @@ import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../../../injection';
 import { debounced } from '../../../../../../utils/timer';
-import { BaElement } from '../../../../../BaElement';
+import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
 import css from './geoResourceResultsPanel.css';
 
 
+const Update_Collapsed = 'update_collapsed';
+const Update_AllShown = 'update_allShown';
+const Update_Results_AllShown = 'update_results_allShown';
+
 /**
- * Displays geoResource search results.
+ * Displays GeoResource search results.
  * @class
  * @author taulinger
  * @author alsturm
  */
-export class GeoResouceResultsPanel extends BaElement {
+export class GeoResouceResultsPanel extends MvuElement {
 
 
 	constructor() {
-		super();
+		super({
+			results: [],
+			collapsed: false,
+			allShown: false
+		});
 		const { SearchResultService: searchResultService, TranslationService: translationService }
 			= $injector.inject('SearchResultService', 'TranslationService');
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
-		this._geoRersourceSearchResults = [];
-		this._isCollapsed = false;
-		this._isAllShown = false;
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Collapsed:
+				return { ...model, collapsed: data };
+			case Update_AllShown:
+				return { ...model, allShown: data };
+			case Update_Results_AllShown:
+				return { ...model, ...data };
+		}
 	}
 
 
-	initialize() {
+	onInitialize() {
 		const searchResultProvider = (term) => this._searchResultService.geoResourcesByTerm(term);
 
 		//requestData call has to be debounced
 		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
 			async (term) => {
 				if (term) {
-					this._geoRersourceSearchResults = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
-					this._isAllShown = (this._geoRersourceSearchResults.length > GeoResouceResultsPanel.Default_Result_Item_Length) ? false : true;
-					this.render();
+					const results = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
+					const allShown = (results.length > GeoResouceResultsPanel.Default_Result_Item_Length) ? false : true;
+					this.signal(Update_Results_AllShown, { results, allShown });
 				}
 			});
 
-		this.observe('term', (term) => requestGeoResourceDataAndUpdateViewHandler(term), true);
+		this.observe(state => state.search.query, query => requestGeoResourceDataAndUpdateViewHandler(query.payload), true);
 	}
-
-	onStateChanged() {
-		//we we do nothing here, because we will call #render() manually after search results are available
-	}
-
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { collapsed, allShown, results } = model;
+
 		const translate = (key) => this._translationService.translate(key);
 
 		const toggleCollapse = () => {
-			if (this._geoRersourceSearchResults.length) {
-				this._isCollapsed = !this._isCollapsed;
-				this.render();
+			if (results.length) {
+				this.signal(Update_Collapsed, !collapsed);
 			}
 		};
 
 		const toggleShowAll = () => {
-			this._isAllShown = !this._isAllShown;
-			this.render();
+			this.signal(Update_AllShown, !allShown);
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !this._isCollapsed,
-			isdisabled: !this._geoRersourceSearchResults.length
+			iconexpand: !collapsed,
+			isdisabled: !results.length
 		};
 
 		const bodyCollapseClass = {
-			iscollaps: this._isCollapsed
+			iscollaps: collapsed
 		};
 
 		const showAllButton = {
-			hidden: this._isAllShown || this._geoRersourceSearchResults.length === 0
+			hidden: allShown || results.length === 0
 		};
 
-		const indexEnd = this._isAllShown ? this._geoRersourceSearchResults.length : GeoResouceResultsPanel.Default_Result_Item_Length;
+		const indexEnd = allShown ? results.length : GeoResouceResultsPanel.Default_Result_Item_Length;
 
 		return html`
         <style>${css}</style>
@@ -95,7 +106,7 @@ export class GeoResouceResultsPanel extends BaElement {
 				</div>
 				<div class="${classMap(bodyCollapseClass)}">	
 					<ul class="georesource-items">	
-						${this._geoRersourceSearchResults
+						${results
 		.slice(0, indexEnd)
 		.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
 					</ul>
@@ -105,15 +116,6 @@ export class GeoResouceResultsPanel extends BaElement {
 				</div>
 			</div>
         `;
-	}
-
-	/**
-	 * @override
-	 * @param {Object} state
-	 */
-	extractState(state) {
-		const { search: { query: { payload: term } } } = state;
-		return { term };
 	}
 
 	static get tag() {
