@@ -356,10 +356,12 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .is-tablet  .header__search{
   width:3.5em;
+  z-index:1;
   transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
 }
 .is-tablet  .header__search:focus {
   width: 100%;
+  z-index:0;
 }
 .hide{
   display:none !important;
