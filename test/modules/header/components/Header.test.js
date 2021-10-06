@@ -343,6 +343,7 @@ describe('Header', () => {
 				element.shadowRoot.querySelector('.header__search-clear').click();
 
 				expect(store.getState().search.query.payload).toBe('');
+				expect(element.shadowRoot.querySelector('#input').matches(':focus')).toBeTrue();
 			});
 		});
 
