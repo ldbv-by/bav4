@@ -20,9 +20,9 @@ Next-generation web-map viewer based on web standards.
 - Use of web standards as far as possible
 - Modern Js (ES9), no transpiler
 - Vanilla CSS 
-- Components are based on the Model–View–Update pattern
+- Components based on the Model–View–Update pattern
 - Built-in dependency injection
-- Map state is decoupled from map implementation
+- Map state decoupled from map implementation
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
