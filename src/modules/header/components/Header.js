@@ -64,7 +64,7 @@ export class Header extends MvuElement {
 	onInitialize() {
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tabIndex }));
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
-		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active));
+		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active.filter(l => l.constraints.hidden === false)));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 	}
 
