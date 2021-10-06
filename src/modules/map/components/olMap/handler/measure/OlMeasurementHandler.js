@@ -25,6 +25,8 @@ import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { isEmptyLayer } from '../../olMapUtils';
+import { emitNotification } from '../../../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 
 const Debounce_Delay = 1000;
 
@@ -585,14 +587,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const createTempId = () => {
+		const createTempIdAndWarn = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: propagate the failing to UI-feedback-channel
 			console.warn('Could not store layer-data. The data will get lost after this session.');
+			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
 		};
 
-		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempId();
+		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
 
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);

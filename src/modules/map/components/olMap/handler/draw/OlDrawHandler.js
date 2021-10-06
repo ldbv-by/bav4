@@ -668,15 +668,16 @@ export class OlDrawHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const createTempId = () => {
+		const createTempIdAndWarn = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: propagate the failing to UI-feedback-channel
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
 		};
 
-		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempId();
+		// todo: enable full storage-functionality, after complete implementation of backend-functions to manage and store symbols
+		//const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
+		const id = createTempIdAndWarn();
 
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
