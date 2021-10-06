@@ -67,3 +67,16 @@ export const getSelectableFeatures = (map, interactionLayer, pixel) => {
 	return features;
 };
 
+
+export const removeSelectedFeatures = (selectedFeatures, interactionLayer, additionalAction) => {
+	const additionalRemoveAction = typeof (additionalAction) === 'function' ? additionalAction : () => { };
+	selectedFeatures.forEach(f => {
+		additionalRemoveAction(f);
+		if (interactionLayer.getSource().hasFeature(f)) {
+			interactionLayer.getSource().removeFeature(f);
+		}
+	});
+	selectedFeatures.clear();
+	return selectedFeatures;
+};
+

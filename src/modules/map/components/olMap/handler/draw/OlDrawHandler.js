@@ -11,7 +11,7 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
-import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
@@ -279,7 +279,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.remove, () => this._remove())];
 	}
 
-
 	_init(type) {
 		const styleOption = this._getStyleOption();
 		let listener;
@@ -329,16 +328,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	}
 
-	_removeSelectedFeatures() {
-		const selectedFeatures = this._select.getFeatures();
-		selectedFeatures.forEach(f => {
-			if (this._vectorLayer.getSource().hasFeature(f)) {
-				this._vectorLayer.getSource().removeFeature(f);
-			}
-		});
-		selectedFeatures.clear();
-	}
-
 	_removeLast(event) {
 		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 			this._remove();
@@ -358,8 +347,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-
-			this._removeSelectedFeatures();
+			//this._removeSelectedFeatures();
+			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
 		}
 	}
 

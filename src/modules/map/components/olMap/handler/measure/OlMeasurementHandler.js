@@ -23,7 +23,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 
 const Debounce_Delay = 1000;
 
@@ -283,17 +283,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			observe(store, state => state.measurement.remove, () => this._remove())];
 	}
 
-	_removeSelectedFeatures() {
-		const selectedFeatures = this._select.getFeatures();
-		selectedFeatures.forEach(f => {
-			this._overlayService.remove(f, this._map);
-			if (this._vectorLayer.getSource().hasFeature(f)) {
-				this._vectorLayer.getSource().removeFeature(f);
-			}
-		});
-		selectedFeatures.clear();
-	}
-
 	_removeLast(event) {
 		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
 			this._remove();
@@ -313,8 +302,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-
-			this._removeSelectedFeatures();
+			//this._removeSelectedFeatures();
+			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
+			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
 		}
 	}
 
