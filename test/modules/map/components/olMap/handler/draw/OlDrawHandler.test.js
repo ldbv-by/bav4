@@ -21,6 +21,7 @@ import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
+import VectorSource from 'ol/source/Vector';
 
 
 
@@ -789,11 +790,13 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
+			const source = new VectorSource({ wrapX: false });
+			source.addFeature(createFeature());
 			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
-			spyOn(classUnderTest, '_isEmpty').and.returnValue(false);
 
 			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 
 			expect(saveSpy).not.toHaveBeenCalled();
@@ -1513,37 +1516,6 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
-	});
-
-	describe('when using util _Empty', () => {
-		it('evaluates the _vectorLayer-object', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-
-			expect(classUnderTest._isEmpty()).toBeTrue();
-
-			classUnderTest._vectorLayer = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [];
-						}
-					};
-				}
-			};
-			expect(classUnderTest._isEmpty()).toBeTrue();
-			classUnderTest._vectorLayer = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [{}, {}];
-						}
-					};
-				}
-			};
-			expect(classUnderTest._isEmpty()).toBeFalse();
-
-		});
 	});
 });
 

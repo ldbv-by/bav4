@@ -24,6 +24,7 @@ import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
+import { isEmptyLayer } from '../../olMapUtils';
 
 const Debounce_Delay = 1000;
 
@@ -574,7 +575,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 
-		if (this._isEmpty()) {
+		if (isEmptyLayer(this._vectorLayer)) {
 			console.warn('Cannot store empty layer');
 			return;
 		}
@@ -614,16 +615,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			return 12;
 		}
 		return 4;
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_isEmpty() {
-		if (this._vectorLayer) {
-			return !this._vectorLayer.getSource().getFeatures().length > 0;
-		}
-		return true;
 	}
 
 	/**

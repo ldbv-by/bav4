@@ -24,6 +24,7 @@ import { OverlayService } from '../../../../../../../src/modules/map/components/
 import { Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import VectorSource from 'ol/source/Vector';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -492,11 +493,14 @@ describe('OlMeasurementHandler', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
+			const source = new VectorSource({ wrapX: false });
+			source.addFeature(createFeature());
 			const saveSpy = spyOn(classUnderTest, '_save');
 			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
-			spyOn(classUnderTest, '_isEmpty').and.returnValue(false);
+
 
 			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.setSource(source);
 			classUnderTest.deactivate(map);
 
 			expect(saveSpy).not.toHaveBeenCalled();
@@ -1541,37 +1545,6 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
 		});
 
-	});
-
-	describe('when using util _Empty', () => {
-		it('evaluates the _vectorLayer-object', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-
-			expect(classUnderTest._isEmpty()).toBeTrue();
-
-			classUnderTest._vectorLayer = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [];
-						}
-					};
-				}
-			};
-			expect(classUnderTest._isEmpty()).toBeTrue();
-			classUnderTest._vectorLayer = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [{}, {}];
-						}
-					};
-				}
-			};
-			expect(classUnderTest._isEmpty()).toBeFalse();
-
-		});
 	});
 });
 

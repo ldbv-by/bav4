@@ -23,6 +23,7 @@ import { debounced } from '../../../../../../utils/timer';
 import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
+import { isEmptyLayer } from '../../olMapUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -640,7 +641,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		return null;
 	}
 
-
 	/**
 	 * todo: redundant
 	 */
@@ -650,7 +650,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = newContent;
 	}
 
-
 	/**
 	 *
 	 * todo: redundant
@@ -659,7 +658,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_draw_layer_label');
 
-		if (this._isEmpty()) {
+		if (isEmptyLayer(this._vectorLayer)) {
 			console.warn('Cannot store empty layer');
 			return;
 		}
@@ -700,16 +699,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			return 12;
 		}
 		return 4;
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_isEmpty() {
-		if (this._vectorLayer) {
-			return !this._vectorLayer.getSource().getFeatures().length > 0;
-		}
-		return true;
 	}
 
 	/**
