@@ -33,7 +33,7 @@ Next-generation web-map viewer based on web standards.
 
 ## Structure
 
-The project's source code is located under `src`, unit and component tests under `test`.
+The project's source code is located under `src`, unit, component and e2e tests under `test`.
 
 The source code is distributed among the following directories:
 
