@@ -28,6 +28,7 @@ test.describe('page', () => {
 
 		test('should contain a title tag', async ({ page }) => {
 			const title = await page.title();
+
 			expect(title).toBe('BAv4 (#nomigration)');
 		});
 
