@@ -334,7 +334,7 @@ describe('Header', () => {
 
 			describe('and width < 80em', () => {
 
-				it('shows and hides a clear button', async () => {
+				xit('shows and hides a clear button', async () => {
 					const state = {
 						media: {
 							minWidth: false

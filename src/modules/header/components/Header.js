@@ -107,7 +107,7 @@ export class Header extends MvuElement {
 		};
 
 		const getIsClearClass = () => {
-			return hasSearchTerm && hasMinWidth ? 'is-clear-visible' : '';
+			return hasSearchTerm ? 'is-clear-visible' : '';
 		};
 
 		const layerCount = layers.length;
@@ -163,6 +163,7 @@ export class Header extends MvuElement {
 		const clearSearchInput = () => {
 			const input = this.shadowRoot.getElementById('input');
 			input.value = '';
+			input.focus();
 			input.dispatchEvent(new Event('input'));
 		};
 
