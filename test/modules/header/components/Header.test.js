@@ -62,6 +62,24 @@ describe('Header', () => {
 		return TestUtils.render(Header.tag);
 	};
 
+	describe('when instantiated', () => {
+
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new Header().getModel();
+
+			expect(model).toEqual({
+				isOpen: false,
+				tabIndex: 0,
+				isFetching: false,
+				layers: [],
+				isPortrait: false,
+				hasMinWidth: false,
+				hasSearchTerm: false
+			});
+		});
+	});
+
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape and width >= 80em', async () => {
@@ -289,6 +307,43 @@ describe('Header', () => {
 				inputElement.dispatchEvent(new Event('input'));
 
 				expect(store.getState().mainMenu.open).toBeTrue();
+			});
+
+			it('shows and hides a clear button', async () => {
+				const state = {
+					media: {
+						minWidth: true
+					}
+				};
+				const element = await setup(state);
+
+				const inputElement = element.shadowRoot.querySelector('#input');
+				inputElement.value = 'foo';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeTrue();
+
+				inputElement.value = '';
+				inputElement.dispatchEvent(new Event('input'));
+
+				expect(element.shadowRoot.querySelector('.header__search-clear').classList.contains('is-clear-visible')).toBeFalse();
+			});
+		});
+
+		describe('when input clear button is clicked', () => {
+
+			it('updates the store', async () => {
+
+				const element = await setup({
+					search: {
+						query: new EventLike('foo')
+					}
+				});
+
+				element.shadowRoot.querySelector('.header__search-clear').click();
+
+				expect(store.getState().search.query.payload).toBe('');
+				expect(element.shadowRoot.querySelector('#input').matches(':focus')).toBeTrue();
 			});
 		});
 
