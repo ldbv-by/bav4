@@ -1,6 +1,6 @@
 import { AttributionInfo } from '../../../../../src/modules/map/components/attributionInfo/AttributionInfo';
 import { TestUtils } from '../../../../test-utils.js';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
+import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { changeZoom } from '../../../../../src/store/position/position.action';
@@ -31,7 +31,7 @@ describe('AttributionInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders AttributionInfo component', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -70,7 +70,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders no content when geo resource could not be fetched', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -86,7 +86,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders no content when no attribution provided', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -111,7 +111,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders no content when no visible layers are available', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: false };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: false };
 			const state = {
 				layers: {
 					active: [layer]
@@ -134,8 +134,8 @@ describe('AttributionInfo', () => {
 		});
 
 		it('updates AttributionInfo component on layer action', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -188,8 +188,8 @@ describe('AttributionInfo', () => {
 		});
 
 		it('does not show duplicate attribution', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer, layer2]
@@ -218,7 +218,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('updates AttributionInfo component on zoom change', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -263,7 +263,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders link when attribution.url parameter provided', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -294,7 +294,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders text when attribution.url parameter is not provided', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -322,7 +322,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders link and label', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -358,7 +358,7 @@ describe('AttributionInfo', () => {
 		});
 
 		it('show and hide collapse on click', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
