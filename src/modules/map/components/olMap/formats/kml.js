@@ -15,12 +15,13 @@ const tryRectifyingLineString = (polygonCandidate) => {
 
 const sanitizeStyle = (styles) => {
 	const style = styles[0] ? styles[0] : styles;
+
 	const kmlStyleProperties = {
-		fill: style.getFill(),
-		stroke: style.getStroke(),
-		text: style.getText(),
-		image: style.getImage(),
-		zIndex: style.getZIndex()
+		fill: style.getFill ? style.getFill() : null,
+		stroke: style.getStroke ? style.getStroke() : null,
+		text: style.getText ? style.getText() : null,
+		image: style.getImage ? style.getImage() : null,
+		zIndex: style.getZIndex ? style.getZIndex() : null
 	};
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
