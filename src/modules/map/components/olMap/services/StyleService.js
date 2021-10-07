@@ -161,7 +161,7 @@ export class StyleService {
 			olMap.getView().once('change:resolution', () => olMap.once('moveend', (e) => overlayService.update(olFeature, e.map, StyleTypes.MEASURE)));
 		}
 
-		olFeature.setStyle(measureStyleFunction(olFeature));
+		olFeature.setStyle(measureStyleFunction);
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
 	}
 

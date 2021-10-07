@@ -8,7 +8,7 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { modifyStyleFunction, createSketchStyleFunction, createSelectStyleFunction } from '../../olStyleUtils';
+import { modifyStyleFunction, createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { getGeometryLength, getArea } from '../../olGeometryUtils';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -120,7 +120,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 							f.set('srid', this._mapService.getSrid(), true);
 							layer.getSource().addFeature(f);
 							this._styleService.removeStyle(f, olMap);
-							this._styleService.addStyle(f, olMap, StyleTypes.MEASURE);
+							this._styleService.addStyle(f, olMap);
 							f.on('change', onFeatureChange);
 						});
 					})
@@ -386,6 +386,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
 
 		draw.on('drawend', event => {
+			this._styleService.addStyle(this._activeSketch, this._map);
 			finishDistanceOverlay(event);
 			this._activateModify(event.feature);
 		}
@@ -406,10 +407,22 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
-			style: createSelectStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: null
 		};
 		const select = new Select(options);
 		select.getFeatures().on('change:length', this._updateStatistics);
+		select.getFeatures().on('add', (e) => {
+			const feature = e.element;
+			const styleFunction = selectStyleFunction();
+			const styles = styleFunction(feature);
+			e.element.setStyle(styles);
+		});
+		select.getFeatures().on('remove', (e) => {
+			const feature = e.element;
+			const styles = feature.getStyle();
+			styles.pop();
+			feature.setStyle(styles);
+		});
 
 		return select;
 	}

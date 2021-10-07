@@ -106,7 +106,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.addStyle(feature, mapMock);
 
-			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
@@ -136,7 +136,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.MEASURE);
 
-			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
@@ -307,7 +307,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.addStyle(feature, mapMock, 'measure');
 
-			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(onceSpy).toHaveBeenCalled();
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
@@ -340,7 +340,7 @@ describe('StyleService', () => {
 
 			instanceUnderTest.addStyle(feature, mapMock, 'measure');
 
-			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Array));
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(onceSpy).not.toHaveBeenCalled();
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);

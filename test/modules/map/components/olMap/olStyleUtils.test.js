@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, createSelectStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -329,36 +329,6 @@ describe('selectStyleFunction', () => {
 		const styles = styleFunction(feature);
 
 		const vertexStyle = styles[1];
-		const geometryFunction = vertexStyle.getGeometryFunction();
-
-
-		const lineFeature = feature;
-		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
-		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-
-		expect(geometryFunction(lineFeature)).toBeTruthy();
-		expect(geometryFunction(pointFeature)).toBeTruthy();
-		expect(geometryFunction(polygonFeature)).toBeTruthy();
-	});
-});
-
-describe('createSelectionStyleFunction', () => {
-
-	it('should create a stylefunction', () => {
-
-		const styleFunction = createSelectStyleFunction(measureStyleFunction);
-
-		expect(styleFunction).toBeDefined();
-	});
-
-	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
-		const feature = new Feature({ geometry: geometry });
-
-		const styleFunction = createSelectStyleFunction(measureStyleFunction);
-		const styles = styleFunction(feature);
-
-		const vertexStyle = styles[2];
 		const geometryFunction = vertexStyle.getGeometryFunction();
 
 

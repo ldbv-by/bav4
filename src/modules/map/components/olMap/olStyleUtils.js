@@ -251,52 +251,7 @@ export const selectStyleFunction = () => {
 	};
 };
 
-export const createSelectStyleFunction = (styleFunction) => {
-	const appendableVertexStyle = new Style({
-		image: new CircleStyle({
-			radius: 7,
-			stroke: new Stroke({
-				color: Black_Color,
-				width: 1
-			}),
-			fill: new Fill({
-				color: White_Color
-			})
-		}),
-		geometry: (feature) => {
-			const getCoordinates = (geometry) => {
-				if (geometry instanceof LineString) {
-					return feature.getGeometry().getCoordinates();
-				}
-
-				if (geometry instanceof Polygon) {
-					return feature.getGeometry().getCoordinates()[0];
-				}
-			};
-
-			const coordinates = getCoordinates(feature.getGeometry());
-			if (coordinates) {
-				return new MultiPoint(coordinates);
-			}
-
-			return feature.getGeometry();
-
-		},
-		zIndex: Z_Point - 1
-	});
-
-
-	return (feature, resolution) => {
-
-		const styles = styleFunction(feature, resolution);
-
-
-		return styles.concat([appendableVertexStyle]);
-	};
-};
-
 export const createSketchStyleFunction = (styleFunction) => {
-
 	const sketchPolygon = new Style({
 		fill: new Fill({
 			color: White_Color.concat([0.4])
