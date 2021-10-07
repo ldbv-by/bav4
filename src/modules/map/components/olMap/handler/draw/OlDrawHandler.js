@@ -30,7 +30,7 @@ export const MAX_SELECTION_SIZE = 1;
 
 const Debounce_Delay = 1000;
 
-const Temp_Session_Id = 'temp_draw_id';
+const Temp_Session_Id = 'temp_measure_id';
 
 
 const defaultStyleOption = {
@@ -109,7 +109,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const layer = new VectorLayer({
 				source: source
 			});
-			layer.label = translate('map_olMap_handler_draw_layer_label');
+			layer.label = translate('map_olMap_handler_measure_layer_label');
 			return layer;
 		};
 
@@ -122,11 +122,16 @@ export class OlDrawHandler extends OlLayerHandler {
 					this._storageHandler.setStorageId(oldLayer.get('id'));
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
+						const onFeatureChange = (event) => {
+							this._styleService.updateStyle(event.target, olMap);
+						};
 						oldFeatures.forEach(f => {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
-							this._styleService.addStyle(f);
+							this._styleService.removeStyle(f, olMap);
+							this._styleService.addStyle(f, olMap);
 							layer.getSource().addFeature(f);
+							f.on('change', onFeatureChange);
 						});
 					})
 						.then(() => removeLayer(oldLayer.get('id')))
@@ -246,6 +251,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._unreg(this._registeredObservers);
 
 		this._convertToPermanentLayer();
+		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
 		this._draw = null;
 		this._modify = false;
 		this._select = false;
@@ -656,7 +662,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
-		const label = translate('map_olMap_handler_draw_layer_label');
+		const label = translate('map_olMap_handler_measure_layer_label');
 
 		if (isEmptyLayer(this._vectorLayer)) {
 			console.warn('Cannot store empty layer');
