@@ -12,12 +12,23 @@ test.describe('page', () => {
 
 	test.describe('when loaded', () => {
 
-		test('should contain a lang attribute', async ({ page }) => {
+		test('should contains correct lang attribute', async ({ page }) => {
 			expect(await page.$('html[lang=\'en\']')).toBeTruthy();
+		});
+
+		test('should contains correct translate attribute', async ({ page }) => {
+			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
+		});
+
+		test('should contain google specific translate meta tag', async ({ page }) => {
+			const content = await page.getAttribute('head > meta[name=\'google\']', 'content');
+
+			expect(content).toContain('notranslate');
 		});
 
 		test('should contain a title tag', async ({ page }) => {
 			const title = await page.title();
+
 			expect(title).toBe('BAv4 (#nomigration)');
 		});
 
