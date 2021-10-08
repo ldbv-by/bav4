@@ -8,6 +8,8 @@ import { closeToolContainer } from '../../store/toolContainer.action';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
 import { activate as activateDraw, deactivate as deactivateDraw } from '../../../map/store/draw.action';
 import css from './toolContainer.css';
+import { emitNotification } from '../../../../store/notifications/notifications.action';
+import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 
 /**
  * @class
@@ -20,11 +22,13 @@ export class ToolContainer extends BaElement {
 		super();
 
 		const {
-			EnvironmentService: environmentService
+			EnvironmentService: environmentService,
+			TranslationService: translationService
 		}
-			= $injector.inject('EnvironmentService');
+			= $injector.inject('EnvironmentService', 'TranslationService');
 
 		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._lastContentId = false;
 	}
 
@@ -36,32 +40,46 @@ export class ToolContainer extends BaElement {
 	createView(state) {
 
 		const { open, contentId, portrait, minWidth } = state;
+		const translate = (key) => this._translationService.translate(key);
+		const getContent = (contentId) => {
+			switch (contentId) {
+				case DrawToolContent.tag:
+					return html`<ba-tool-draw-content></ba-tool-draw-content>`;
+				case MeasureToolContent.tag:
+					return html`<ba-tool-measure-content></ba-tool-measure-content>`;
+				case ShareToolContent.tag:
+					return html`<ba-tool-share-content></ba-tool-share-content>`;
+				default:
+					return null;
+			}
+		};
 
-		let content;
-		switch (contentId) {
-			case DrawToolContent.tag:
-				content = html`<ba-tool-draw-content></ba-tool-draw-content>`;
-				break;
-			case MeasureToolContent.tag:
-				content = html`<ba-tool-measure-content></ba-tool-measure-content>`;
-				break;
-			case ShareToolContent.tag:
-				content = html`<ba-tool-share-content></ba-tool-share-content>`;
-				break;
-			default:
-				return nothing;
-		}
 
-		if (this._lastContentId !== contentId && open) {
-			this._deactivateByContentId(this._lastContentId);
-			this._activateByContentId(contentId);
-		}
+		const getNextActiveContent = () => {
+			if (this._lastContentId !== contentId && open) {
+				if (this._lastContentId) {
+					return this._lastContentId;
+				}
 
-		if (!open) {
-			this._deactivateByContentId(this._lastContentId);
+			}
+			if (!open) {
+				return null;
+			}
+			return contentId;
+		};
+		const nextActiveContentId = getNextActiveContent();
+		if (nextActiveContentId === this._lastContentId) {
+			emitNotification(translate('toolbox_prevent_switching_tool'), LevelTypes.WARN);
+
 		}
 		else {
-			this._lastContentId = contentId;
+			if (nextActiveContentId) {
+				this._lastContentId = nextActiveContentId;
+				this._activateByContentId(nextActiveContentId);
+			}
+			else {
+				this._deactivateByContentId(this._lastContentId);
+			}
 		}
 
 		const getOrientationClass = () => {
@@ -75,6 +93,10 @@ export class ToolContainer extends BaElement {
 		const getOverlayClass = () => {
 			return open ? 'is-open' : '';
 		};
+		const content = getContent(nextActiveContentId);
+		if (content == null) {
+			return nothing;
+		}
 
 		return html`
 			<style>${css}</style>		
@@ -91,6 +113,7 @@ export class ToolContainer extends BaElement {
 			</div>		
 			</div>		
 		`;
+
 	}
 
 	isRenderingSkipped() {
@@ -98,9 +121,9 @@ export class ToolContainer extends BaElement {
 	}
 
 	/**
- * @override
- * @param {Object} globalState
- */
+* @override
+* @param {Object} globalState
+*/
 	extractState(globalState) {
 		const { toolContainer: { open, contentId }, media: { portrait, minWidth } } = globalState;
 		return { open, contentId, portrait, minWidth };
