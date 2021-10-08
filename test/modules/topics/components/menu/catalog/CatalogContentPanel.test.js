@@ -6,10 +6,10 @@ import { loadExampleCatalog } from '../../../../../../src/modules/topics/service
 import { setCurrent } from '../../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { TestUtils } from '../../../../../test-utils.js';
-import { topicsContentPanelReducer } from '../../../../../../src/modules/topics/store/topicsContentPanel.reducer';
 import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../../src/services/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
+import { topicsContentPanelReducer } from '../../../../../../src/store/topics/topicsContentPanel.reducer';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 

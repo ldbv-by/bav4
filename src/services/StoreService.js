@@ -14,13 +14,13 @@ import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
-import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
 import { drawReducer } from '../modules/map/store/draw.reducer';
 import { modalReducer } from '../store/modal/modal.reducer';
 import { toolContainerReducer } from '../store/toolbox/toolContainer.reducer';
+import { topicsContentPanelReducer } from '../store/topics/topicsContentPanel.reducer';
 
 
 /**

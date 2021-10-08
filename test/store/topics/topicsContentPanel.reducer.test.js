@@ -1,7 +1,7 @@
-import { TestUtils } from '../../../test-utils.js';
-import { topicsContentPanelReducer } from '../../../../src/modules/topics/store/topicsContentPanel.reducer.js';
-import { setIndex } from '../../../../src/modules/topics/store/topicsContentPanel.action.js';
-import { TopicsContentPanelIndex } from '../../../../src/modules/topics/components/menu/TopicsContentPanel.js';
+import { TestUtils } from '../../test-utils.js';
+import { TopicsContentPanelIndex } from '../../../src/modules/topics/components/menu/TopicsContentPanel.js';
+import { topicsContentPanelReducer } from '../../../src/store/topics/topicsContentPanel.reducer.js';
+import { setIndex } from '../../../src/store/topics/topicsContentPanel.action.js';
 
 
 describe('topicsContentPanelReducer', () => {

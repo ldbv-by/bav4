@@ -3,7 +3,7 @@
  * @module menu/action
  */
 import { INDEX_CHANGED } from './topicsContentPanel.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
