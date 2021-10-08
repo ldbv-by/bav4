@@ -1,6 +1,6 @@
-import { TestUtils } from '../../../test-utils.js';
-import { toolBarReducer } from '../../../../src/modules/menu/store/toolBar.reducer';
-import { openToolBar, closeToolBar, toggleToolBar } from '../../../../src/modules/menu/store/toolBar.action';
+import { closeToolBar, openToolBar, toggleToolBar } from '../../../src/store/toolbox/toolBar.action';
+import { toolBarReducer } from '../../../src/store/toolbox/toolBar.reducer';
+import { TestUtils } from '../../test-utils';
 
 
 describe('toolBarReducer', () => {
