@@ -3,7 +3,7 @@
  * @module menu/action
  */
 import { OPEN_CLOSED_CHANGED, CONTENT_CHANGED } from './toolContainer.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

@@ -5,8 +5,8 @@ import { DrawToolContent } from '../../../toolbox/components/drawToolContent/Dra
 import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../../../toolbox/components/shareToolContent/ShareToolContent';
 import { toggleToolBar } from '../../store/toolBar.action';
-import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
 import { $injector } from '../../../../injection';
+import { openToolContainer, setContainerContent, toggleToolContainer } from '../../../../store/toolbox/toolContainer.action';
 
 
 /**

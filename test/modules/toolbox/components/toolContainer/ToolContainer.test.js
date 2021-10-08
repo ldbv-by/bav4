@@ -1,9 +1,7 @@
 /* eslint-disable no-undef */
 
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
-import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
-import { setContainerContent, toggleToolContainer } from '../../../../../src/modules/toolbox/store/toolContainer.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
@@ -11,6 +9,8 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
+import { toolContainerReducer } from '../../../../../src/store/toolbox/toolContainer.reducer';
+import { setContainerContent, toggleToolContainer } from '../../../../../src/store/toolbox/toolContainer.action';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);

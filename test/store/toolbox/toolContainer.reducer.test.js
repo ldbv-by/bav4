@@ -1,6 +1,6 @@
-import { TestUtils } from '../../../test-utils.js';
-import { toolContainerReducer } from '../../../../src/modules/toolbox/store/toolContainer.reducer';
-import { openToolContainer, closeToolContainer, toggleToolContainer, setContainerContent } from '../../../../src/modules/toolbox/store/toolContainer.action';
+import { TestUtils } from '../../test-utils.js';
+import { toolContainerReducer } from '../../../src/store/toolbox/toolContainer.reducer.js';
+import { closeToolContainer, openToolContainer, setContainerContent, toggleToolContainer } from '../../../src/store/toolbox/toolContainer.action.js';
 
 
 describe('toolContainerReducer', () => {
