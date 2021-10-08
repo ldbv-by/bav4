@@ -1,9 +1,9 @@
 import { Modal } from '../../../../src/modules/modal/components/Modal';
-import { closeModal, openModal } from '../../../../src/modules/modal/store/modal.action';
-import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
 import { html, TemplateResult } from 'lit-html';
+import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 
 window.customElements.define(Modal.tag, Modal);

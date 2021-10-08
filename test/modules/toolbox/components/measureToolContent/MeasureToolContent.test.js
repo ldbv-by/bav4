@@ -5,8 +5,8 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);

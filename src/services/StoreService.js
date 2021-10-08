@@ -4,7 +4,6 @@ import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
-import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
@@ -21,6 +20,7 @@ import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
 import { drawReducer } from '../modules/map/store/draw.reducer';
+import { modalReducer } from '../store/modal/modal.reducer';
 
 
 /**

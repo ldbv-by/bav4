@@ -4,10 +4,10 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import { finish, remove, reset } from '../../../map/store/measurement.action';
-import { openModal } from '../../../modal/store/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import { openModal } from '../../../../store/modal/modal.action';
 /**
  * @class
  * @author thiloSchlemmer

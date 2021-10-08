@@ -1,7 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
-import { closeModal } from '../../../modal/store/modal.action';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
@@ -10,6 +9,7 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { closeModal } from '../../../../store/modal/modal.action';
 
 /**
  * Displays a showcase of common and reusable components or

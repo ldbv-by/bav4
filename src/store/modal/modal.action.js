@@ -3,7 +3,7 @@
  * @module modal/action
  */
 import { MODAL_CHANGED } from './modal.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

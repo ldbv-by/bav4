@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
-import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
@@ -12,6 +11,7 @@ import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMe
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(Header.tag, Header);
 
