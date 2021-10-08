@@ -17,7 +17,12 @@ export const InteractionSnapType = {
 	FACE: 'face'
 };
 
-
+/**
+ * Creates a snapOption-object for calls on openlayers map-objects
+ * @param {Layer} interactionLayer the layer with the features to snap on
+ * @param {boolean} modifiedFeaturesOnly whether or not only currently modified features a relevant for snapping
+ * @returns {Object}
+ */
 export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = false) => {
 	const filter = modifiedFeaturesOnly ?
 		itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
@@ -25,6 +30,14 @@ export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = fa
 	return { hitTolerance: 10, layerFilter: filter };
 };
 
+
+/**
+ * returns the InteractionSnapType for a possible feature on a defined pixel-position and in a defined layer
+ * @param {Map} map the openlayes map
+ * @param {Layer} interactionLayer the layer with the feature(s) to snap on
+ * @param {Pixel} pixel the position of the snapping
+ * @returns {InteractionSnapType| null}
+ */
 export const getSnapState = (map, interactionLayer, pixel) => {
 	let snapType = null;
 	let vertexFeature = null;
@@ -55,6 +68,14 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 	return snapType;
 };
 
+
+/**
+ * returns a list of selectable features for a defined layer on a defined pixel-position
+ * @param {Map} map
+ * @param {Layer} interactionLayer
+ * @param {Pixel} pixel
+ * @returns {Array<Feature>} list of selectable features
+ */
 export const getSelectableFeatures = (map, interactionLayer, pixel) => {
 	const features = [];
 
@@ -67,7 +88,12 @@ export const getSelectableFeatures = (map, interactionLayer, pixel) => {
 	return features;
 };
 
-
+/**
+ * removes the defined list of features from the defined layer
+ * @param {Array<Feature>} selectedFeatures
+ * @param {Layer} interactionLayer the layer, which contains the features
+ * @param {Function} additionalAction a additional action before the removing of each feature takes place
+ */
 export const removeSelectedFeatures = (selectedFeatures, interactionLayer, additionalAction) => {
 	const additionalRemoveAction = typeof (additionalAction) === 'function' ? additionalAction : () => { };
 	selectedFeatures.forEach(f => {
@@ -77,6 +103,5 @@ export const removeSelectedFeatures = (selectedFeatures, interactionLayer, addit
 		}
 	});
 	selectedFeatures.clear();
-	return selectedFeatures;
 };
 

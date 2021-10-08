@@ -354,7 +354,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		if (this._modify && this._modify.getActive()) {
-			//this._removeSelectedFeatures();
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
 		}
 	}
