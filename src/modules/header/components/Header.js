@@ -1,9 +1,8 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTabIndex } from '../../menu/store/mainMenu.action';
+import { open as openMainMenu, setTabIndex, TabIndex } from '../../menu/store/mainMenu.action';
 import { openModal } from '../../modal/store/modal.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
-import { MainMenuTabIndex } from '../../menu/components/mainMenu/MainMenu';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { toggle } from '../../menu/store/mainMenu.action';
@@ -114,7 +113,7 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTabIndex(MainMenuTabIndex.SEARCH);
+			setTabIndex(TabIndex.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -146,17 +145,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTabIndex(MainMenuTabIndex.TOPICS);
+			setTabIndex(TabIndex.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(MainMenuTabIndex.MAPS);
+			setTabIndex(TabIndex.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(MainMenuTabIndex.MORE);
+			setTabIndex(TabIndex.MORE);
 			openMainMenu();
 		};
 

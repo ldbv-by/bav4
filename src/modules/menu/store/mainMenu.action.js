@@ -4,6 +4,7 @@
  */
 import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../../injection';
+import { MainMenuTabIndex } from '../components/mainMenu/MainMenu';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -45,13 +46,25 @@ export const toggle = () => {
 	});
 };
 
+
+
+export const TabIndex = Object.freeze({
+	TOPICS: 0,
+	MAPS: 1,
+	MORE: 2,
+	ROUTING: 3,
+	SEARCH: 4,
+	FEATUREINFO: 5
+});
+
 /**
- * Displays the tab for this index.
- * @param {MainMenuTabIndex} index
+ * Displays the tab for a given index.
+ * @see {@link TabIndex}
+ * @param {number} index
  */
 export const setTabIndex = (index) => {
 	getStore().dispatch({
 		type: INDEX_CHANGED,
-		payload: index.id
+		payload: index
 	});
 };
