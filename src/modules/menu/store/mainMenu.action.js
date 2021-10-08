@@ -4,7 +4,6 @@
  */
 import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../../injection';
-import { MainMenuTabIndex } from '../components/mainMenu/MainMenu';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -46,8 +45,10 @@ export const toggle = () => {
 	});
 };
 
-
-
+/**
+ *Available menu tabs.
+ @enum
+ */
 export const TabIndex = Object.freeze({
 	TOPICS: 0,
 	MAPS: 1,
