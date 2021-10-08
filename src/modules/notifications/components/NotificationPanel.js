@@ -3,7 +3,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
 import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
 import css from './notificationPanel.css';
-import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
+import { BaElement } from '../../BaElement';
 
 
 const Notification_Autoclose_Time = 10000;
@@ -12,7 +12,7 @@ const Notification_Autoclose_Time = 10000;
  * @class
  * @author thiloSchlemmer
  */
-export class NotificationPanel extends AbstractContentPanel {
+export class NotificationPanel extends BaElement {
 
 
 	constructor() {
