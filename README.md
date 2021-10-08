@@ -57,18 +57,17 @@ Modules meet the following conventions:
 
 3. Each module may contain further directories:
    - `/components` : Components and all of their dependencies like CSS, assets, ...
-   - `/store` : Redux related files like reducers, actions and plugins
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
 
-4. Outside their package, modules are only allowed to use global services, actions from the global store, and BaElement components from other modules for composition.
+4. Outside their package, modules are only allowed to use global services, actions from the global store and BaElement components from other modules for composition.
 
 
 ### `src/services`
 All global services like the `HttpService`, providers and domain classes are located here.
 
 ### `src/store`
-Global redux related files like reducers, actions and plugins.
+All redux related files like reducers, actions and plugins.
 
 ### `src/utils`
 Contains global utilities.
