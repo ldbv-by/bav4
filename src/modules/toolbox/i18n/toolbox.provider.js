@@ -46,7 +46,10 @@ export const provide = (lang) => {
 				toolbox_measureTool_share_link_edit: 'Link to editable share your measurement',
 				toolbox_measureTool_share_link_title: 'shared with BayernAtlas.de',
 				toolbox_drawTool_finish: 'Finish',
-				toolbox_prevent_switching_tool: 'Please close the current tool first'
+				toolbox_prevent_switching_tool: 'Please close the current tool first',
+				toolbox_toolbar_draw_button: 'Draw',
+				toolbox_toolbar_share_button: 'Share',
+				toolbox_toolbar_measure_button: 'Measure'
 			};
 
 		case 'de':
@@ -94,7 +97,10 @@ export const provide = (lang) => {
 				toolbox_measureTool_share_link_edit: 'Link zum Editieren Ihrer Zeichnung',
 				toolbox_measureTool_share_link_title: 'geteilt über BayernAtlas.de',
 				toolbox_drawTool_finish: 'Fertig',
-				toolbox_prevent_switching_tool: 'Bitte erst das alte Werkzeug schließen/beenden.'
+				toolbox_prevent_switching_tool: 'Bitte erst das alte Werkzeug schließen/beenden.',
+				toolbox_toolbar_draw_button: 'Zeichnen',
+				toolbox_toolbar_share_button: 'Teilen',
+				toolbox_toolbar_measure_button: 'Messen'
 			};
 
 		default:

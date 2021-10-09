@@ -50,6 +50,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 		expect(map.toolbox_prevent_switching_tool).toBe('Bitte erst das alte Werkzeug schließen/beenden.');
+		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
+		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
+		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 	});
 
 	it('provides translation for en', () => {
@@ -99,10 +102,13 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
+		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
+		expect(map.toolbox_toolbar_share_button).toBe('Share');
+		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 43;
+		const expectedSize = 46;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
