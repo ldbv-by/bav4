@@ -1,7 +1,7 @@
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
-import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 
@@ -127,7 +127,7 @@ describe('LayerItem', () => {
 
 	describe('when user interacts with layer item', () => {
 		const layer = {
-			...defaultLayerProperties,
+			...createDefaultLayerProperties(),
 			id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
 		};
 
@@ -193,15 +193,15 @@ describe('LayerItem', () => {
 
 		it('click on increase-button change state in store', async () => {
 			const layer0 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
 			};
 			const layer1 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id1', label: 'label1', visible: true, zIndex: 1, opacity: 1
 			};
 			const layer2 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id2', label: 'label2', visible: true, zIndex: 2, opacity: 1
 			};
 			const state = {
@@ -227,15 +227,15 @@ describe('LayerItem', () => {
 
 		it('click on decrease-button change state in store', async () => {
 			const layer0 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
 			};
 			const layer1 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id1', label: 'label1', visible: true, zIndex: 1, opacity: 1
 			};
 			const layer2 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id2', label: 'label2', visible: true, zIndex: 2, opacity: 1
 			};
 			const state = {
@@ -261,15 +261,15 @@ describe('LayerItem', () => {
 
 		it('click on decrease-button for first layer change not state in store', async () => {
 			const layer0 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
 			};
 			const layer1 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id1', label: 'label1', visible: true, zIndex: 1, opacity: 1
 			};
 			const layer2 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id2', label: 'label2', visible: true, zIndex: 2, opacity: 1
 			};
 			const state = {
@@ -295,15 +295,15 @@ describe('LayerItem', () => {
 
 		it('click on remove-button change state in store', async () => {
 			const layer0 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
 			};
 			const layer1 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id1', label: 'label1', visible: true, zIndex: 1, opacity: 1
 			};
 			const layer2 = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id2', label: 'label2', visible: true, zIndex: 2, opacity: 1
 			};
 			const state = {

@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 
-import { ToolBar } from '../../../../../src/modules/menu/components/toolBar/ToolBar';
-import { toolBarReducer } from '../../../../../src/modules/menu/store/toolBar.reducer';
+import { ToolBar } from '../../../../../src/modules/toolbox/components/toolBar/ToolBar';
+import { toolBarReducer } from '../../../../../src/modules/toolbox/store/toolBar.reducer';
 import { toolContainerReducer } from '../../../../../src/modules/toolbox/store/toolContainer.reducer';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';
-import { toggleToolBar } from '../../../../../src/modules/menu/store/toolBar.action';
+import { toggleToolBar } from '../../../../../src/modules/toolbox/store/toolBar.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';

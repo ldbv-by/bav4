@@ -1,6 +1,6 @@
 import { LayerManager } from '../../../../src/modules/layerManager/components/LayerManager';
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
-import { layersReducer, defaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
+import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
@@ -40,7 +40,7 @@ describe('LayerManager', () => {
 
 		it('with one layer displays one layer item', async () => {
 			const layer = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0
 			};
 			const state = {
@@ -56,7 +56,7 @@ describe('LayerManager', () => {
 
 		it('with one not visible layer displays one layer item', async () => {
 			const layer = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: false, zIndex: 0
 			};
 			const state = {
@@ -74,12 +74,12 @@ describe('LayerManager', () => {
 
 		it('displays one out of two layers - one is hidden', async () => {
 			const layer = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', visible: true, zIndex: 0
 			};
 
 			const hiddenLayer = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id1', label: 'label1', visible: false, zIndex: 0, constraints: { hidden: true, alwaysOnTop: false }
 			};
 			const state = {
@@ -110,9 +110,9 @@ describe('LayerManager', () => {
 	describe('when layer items are rendered', () => {
 		let element;
 		beforeEach(async () => {
-			const layer0 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex: 0, draggable: true };
-			const layer1 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex: 1, draggable: true };
-			const layer2 = { ...defaultLayerProperties, id: 'id0', label: '', visible: true, zIndex: 2, draggable: true };
+			const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: '', visible: true, zIndex: 0, draggable: true };
+			const layer1 = { ...createDefaultLayerProperties(), id: 'id0', label: '', visible: true, zIndex: 1, draggable: true };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id0', label: '', visible: true, zIndex: 2, draggable: true };
 			const state = {
 				layers: {
 					active: [layer0, layer1, layer2],
@@ -149,9 +149,9 @@ describe('LayerManager', () => {
 	describe('when layer items dragged', () => {
 		let element;
 		beforeEach(async () => {
-			const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'Label 0', visible: true, zIndex: 0 };
-			const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'Label 1', visible: true, zIndex: 1 };
-			const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'Label 2', visible: true, zIndex: 2 };
+			const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'Label 0', visible: true, zIndex: 0 };
+			const layer1 = { ...createDefaultLayerProperties(), id: 'id1', label: 'Label 1', visible: true, zIndex: 1 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id2', label: 'Label 2', visible: true, zIndex: 2 };
 			const state = {
 				layers: {
 					active: [layer0, layer1, layer2],
@@ -398,7 +398,7 @@ describe('LayerManager', () => {
 
 		it('renders changed layer.label', async () => {
 			const layer = {
-				...defaultLayerProperties,
+				...createDefaultLayerProperties(),
 				id: 'id0', label: 'Foo'
 			};
 			const state = {
@@ -421,7 +421,7 @@ describe('LayerManager', () => {
 
 		it('renders changed layer.opacity', async () => {
 			const layer = {
-				...defaultLayerProperties, id: 'id0'
+				...createDefaultLayerProperties(), id: 'id0'
 			};
 			const state = {
 				layers: {
@@ -445,7 +445,7 @@ describe('LayerManager', () => {
 
 		it('renders changed layer.visible', async () => {
 			const layer = {
-				...defaultLayerProperties, id: 'id0', visible: false
+				...createDefaultLayerProperties(), id: 'id0', visible: false
 			};
 			const state = {
 				layers: {

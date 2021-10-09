@@ -1,11 +1,11 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './toolBar.css';
-import { DrawToolContent } from '../../../toolbox/components/drawToolContent/DrawToolContent';
-import { MeasureToolContent } from '../../../toolbox/components/measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '../../../toolbox/components/shareToolContent/ShareToolContent';
+import { DrawToolContent } from '../drawToolContent/DrawToolContent';
+import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
+import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { toggleToolBar } from '../../store/toolBar.action';
-import { toggleToolContainer, setContainerContent, openToolContainer } from '../../../toolbox/store/toolContainer.action';
+import { toggleToolContainer, setContainerContent, openToolContainer } from '../../store/toolContainer.action';
 import { $injector } from '../../../../injection';
 
 
@@ -97,21 +97,21 @@ export class ToolBar extends BaElement {
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
-							${translate('menu_toolbar_measure_button')}
+							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
 					<button  @click="${toggleDrawTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
-							${translate('menu_toolbar_draw_button')}
+							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
 					<button  @click="${toggleShareTool}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
-							${translate('menu_toolbar_share_button')}
+							${translate('toolbox_toolbar_share_button')}
 						</div>  
 					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		

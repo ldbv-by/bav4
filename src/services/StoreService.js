@@ -2,7 +2,7 @@ import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
 import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
 import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
-import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
+import { toolBarReducer } from '../modules/toolbox/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
 import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';

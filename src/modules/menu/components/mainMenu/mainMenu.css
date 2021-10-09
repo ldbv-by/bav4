@@ -8,7 +8,9 @@
     width: 28em;   
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     overflow: visible;
-    transition: transform 0.3s ease-out;     
+    transition-property: transform;
+    transition-duration: var(--animation-duration-large-open);
+    transition-timing-function:var(--animation-easing-linea);   
 }
 .main-menu__container{
    overflow-y: auto;
@@ -44,8 +46,9 @@
    padding: 0 1em;
 
    transition-property: left;
-   transition-duration: 0.3s;
-   transition-delay: 0.3s;
+   transition-duration: var(--animation-duration-large-open);
+   transition-delay:var(--animation-duration-large-open);
+   transition-timing-function:var(--animation-easing-linea);  
 
 }
 .is-open .main-menu__close-button {           
