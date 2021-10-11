@@ -25,7 +25,7 @@ export const InteractionSnapType = {
  */
 export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = false) => {
 	const filter = modifiedFeaturesOnly ?
-		itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
+		itemLayer => itemLayer === interactionLayer && (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
 		itemLayer => itemLayer === interactionLayer;
 	return { hitTolerance: 10, layerFilter: filter };
 };
@@ -33,7 +33,7 @@ export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = fa
 
 /**
  * returns the InteractionSnapType for a possible feature on a defined pixel-position and in a defined layer
- * @param {Map} map the openlayes map
+ * @param {Map} map the openlayers map
  * @param {Layer} interactionLayer the layer with the feature(s) to snap on
  * @param {Pixel} pixel the position of the snapping
  * @returns {InteractionSnapType| null}
@@ -102,6 +102,5 @@ export const removeSelectedFeatures = (selectedFeatures, interactionLayer, addit
 			interactionLayer.getSource().removeFeature(f);
 		}
 	});
-	selectedFeatures.clear();
 };
 
