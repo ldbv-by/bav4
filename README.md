@@ -12,8 +12,7 @@ Next-generation web-map viewer based on web standards.
 3. [Structure](#structure)
 4. [Details](#details)
 5. [Best Practices](#best-practices)
-6. [Pending Questions](#pending-questions)
-7. [Links](#links)
+6. [Links](#links)
 
 
 ## Concept
