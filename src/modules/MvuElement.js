@@ -84,12 +84,13 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * Action and data sent from the view
+	 * Requests a specific update of the Model.
 	 * @protected
-	 * @param {string} type type of action
-	 * @param {Object|string|number} data data for updating the model
+	 * @see {@link MvuElement#update}
+	 * @param {string} type type of update
+	 * @param {Object|string|number} [data=null] data of this update request
 	 */
-	signal(type, data) {
+	signal(type, data = null) {
 		const newModel = this.update(type, data, this._model);
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
@@ -101,8 +102,9 @@ export class MvuElement extends HTMLElement {
 	/**
 	 * Updates the current Model by returning a copy of the current Model with new or updated values.
 	 * @protected
-	 * @param {string} type type of action
-	 * @param {object|number|string} data data
+	 * @see {@link MvuElement#signal}
+	 * @param {string} type type of update
+	 * @param {object|number|string} [data=null] data of this update request
 	 * @param {object} model current Model
 	 * @returns the new Model
 	 */
