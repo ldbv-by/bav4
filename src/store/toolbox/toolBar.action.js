@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the state of the Toolbar.
- * @module menu/action
+ * @module toolbox/action
  */
 import { OPEN_CLOSED_CHANGED } from './toolBar.reducer';
 import { $injector } from '../../injection';

@@ -1,4 +1,4 @@
-export const MODAL_CHANGED = 'components/modal/contentChanged';
+export const MODAL_CHANGED = 'modal/contentChanged';
 
 export const initialState = {
 	/**

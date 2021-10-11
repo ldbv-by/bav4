@@ -1,4 +1,4 @@
-export const INDEX_CHANGED = 'components/topics/topicsPanel/index';
+export const INDEX_CHANGED = 'topics/topicsContentPane/index';
 
 export const initialState = {
 	/**

@@ -1,5 +1,5 @@
-export const OPEN_CLOSED_CHANGED = 'components/toolContainer/open';
-export const CONTENT_CHANGED = 'components/toolContainer/contentId';
+export const OPEN_CLOSED_CHANGED = 'toolbox/toolContainer/open';
+export const CONTENT_CHANGED = 'toolbox/toolContainer/contentId';
 
 export const initialState = {
 	open: false,
