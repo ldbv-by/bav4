@@ -153,11 +153,11 @@ For example, they could be responsible for setting an initial state or reacting 
 - Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
-- Common places for mutating state are:
-  - `MvuElement` implementations
+- Common places for updating global state are:
+  - `BaElement` components
   - `BaPlugin` implementations
 
-- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. For this purpose it's recommended to use `EventLike` in storeUtils.js.
+- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
 
 ## Links
 
