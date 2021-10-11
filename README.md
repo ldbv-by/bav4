@@ -18,9 +18,9 @@ Next-generation web-map viewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-- Modern Js (ES9), no transpiler
-- Vanilla CSS 
-- Components based on the Model–View–Update pattern
+  - Modern Js (ES9), no transpiler
+  - Web Components
+  - Vanilla CSS 
 - Built-in dependency injection
 - Map state decoupled from map implementation
 - Tools
@@ -129,15 +129,31 @@ Here's an overview of what project folder structure looks like:
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
-## Best Practices
+## Details
 
-### State
+### Global State
+
+Global state and its management is realized by Redux (reducers and actions).
+
+### Components
+
+Components are based on `MvuElement`. This class inherits from HTMLElement and provides the Model-View-Update pattern and a well-defined component lifecycle as the programming model. For more information have a look at the `MvuElement` docs.
+Components hold local state within their model.
+
+### Plugins
+
+`BaPlugins` implementations are a second important place for structuring code and logic.  
+In contrast to components, they often act on a higher abstraction level
+managing global state being consumed by different components afterward.  
+For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app. 
+
+### Best practices
 
 - Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 - Common places for mutating state are:
-  - `BaElement` components
+  - `MvuElement` implementations
   - `BaPlugin` implementations
 
 - If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. For this purpose it's recommended to use `EventLike` in storeUtils.js.
