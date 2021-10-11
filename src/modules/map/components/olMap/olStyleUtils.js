@@ -37,10 +37,11 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 })];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
+	// todo: reactivate usage of environmentService, when backend is ready with icon-functions
 	// const { EnvironmentService } = $injector.inject('EnvironmentService');
 	// const environmentService = EnvironmentService;
 	const isOfflineModus = true; // environmentService.isStandalone()
-	const markerColor = styleOption.color ? styleOption.color : '#BADA55';
+	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 	const getMarkerSrc = () => {
 		const defaultSymbol = 'marker';
@@ -73,22 +74,24 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		color: markerColor
 	};
 
-	const defaultIconOptions = {
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: getMarkerSrc(),
-		scale: getMarkerScale(styleOption.scale)
+	const getDefaultIconOptions = () => {
+		return {
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: getMarkerSrc(),
+			scale: getMarkerScale(styleOption.scale)
+		};
 	};
 
-	const iconOptions = isOfflineModus ? fallbackIconOptions : defaultIconOptions;
+	const iconOptions = isOfflineModus ? fallbackIconOptions : getDefaultIconOptions();
 	return [new Style({
 		image: new Icon(iconOptions)
 	})];
 };
 
 export const textStyleFunction = (styleOption = { color: false, scale: false, text: false }) => {
-	const strokeColor = styleOption.color ? styleOption.color : '#BADA55';
+	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
 	const textContent = styleOption.text ? styleOption.text : 'New Text';
 	const strokeWidth = 2;
 	const getTextScale = (sizeKeyword) => {
@@ -126,7 +129,7 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 };
 
 export const lineStyleFunction = (styleOption = { color: false }) => {
-	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#BADA55');
+	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 2;
 	return [new Style({
 		stroke: new Stroke({
@@ -136,7 +139,7 @@ export const lineStyleFunction = (styleOption = { color: false }) => {
 	})];
 };
 export const polygonStyleFunction = (styleOption = { color: false }) => {
-	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#BADA55');
+	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 2;
 	return [new Style({
 		stroke: new Stroke({

@@ -392,7 +392,7 @@ describe('rgbToHex', () => {
 		expect(rgbToHex('foo')).toBeNull();
 		expect(rgbToHex([-1, -1, -1])).toBeNull();
 		expect(rgbToHex([0, 0, 0])).toBe('#000000');
-		expect(rgbToHex([186, 218, 85])).toBe('#bada55');
+		expect(rgbToHex([186, 218, 85])).toBe('#ff0000');
 		expect(rgbToHex([255, 255, 255])).toBe('#ffffff');
 		expect(rgbToHex([256, 256, 256])).toBeNull();
 	});
@@ -404,7 +404,7 @@ describe('hexToRgb', () => {
 		expect(hexToRgb('#foo')).toBeNull();
 		expect(hexToRgb('#000')).toEqual([0, 0, 0]);
 		expect(hexToRgb('#000000')).toEqual([0, 0, 0]);
-		expect(hexToRgb('#bada55')).toEqual([186, 218, 85]);
+		expect(hexToRgb('#ff0000')).toEqual([186, 218, 85]);
 		expect(hexToRgb('#ad5')).toEqual([170, 221, 85]);
 		expect(hexToRgb('#aadd55')).toEqual([170, 221, 85]);
 		expect(hexToRgb('#fff')).toEqual([255, 255, 255]);

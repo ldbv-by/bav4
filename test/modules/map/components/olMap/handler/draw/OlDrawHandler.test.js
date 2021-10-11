@@ -493,7 +493,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const drawStateFake = {
 					type: InteractionStateType.ACTIVE
 				};
@@ -514,7 +514,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
 				feature.setId('draw_line_1234');
 				feature.setStyle([new Style(), new Style()]);
@@ -537,7 +537,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
 				feature.setId('draw_line_1234');
 				feature.setStyle([new Style(), new Style()]);
@@ -560,7 +560,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 				feature.setId('draw_Symbol_1234');
 				feature.setStyle([new Style(), new Style()]);
@@ -582,7 +582,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#badA55', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 				feature.setId('draw_Symbol_1234');
 				feature.setStyle([]);

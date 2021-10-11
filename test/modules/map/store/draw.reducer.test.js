@@ -62,17 +62,17 @@ describe('drawReducer', () => {
 	it('updates the style property', () => {
 		const store = setup();
 
-		const style = { symbolSrc: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL };
+		const style = { symbolSrc: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
 
 		setStyle(style);
 
-		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL });
+		expect(store.getState().draw.style).toEqual({ symbolSrc: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL });
 	});
 
 	it('updates the selectedStyle property', () => {
 		const store = setup();
 
-		const style = { text: 'something', color: '#BADA55', scale: StyleSizeTypes.SMALL };
+		const style = { text: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
 		const selectedStyle = { type: StyleTypes.TEXT, style: style };
 		setSelectedStyle(selectedStyle);
 

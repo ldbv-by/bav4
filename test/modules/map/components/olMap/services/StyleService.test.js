@@ -178,7 +178,7 @@ describe('StyleService', () => {
 		it('adds marker-style to feature with explicit style-type', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
-			const style = new Style({ image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#BADA55' }) });
+			const style = new Style({ image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }) });
 			featureWithStyleArray.setId('draw_marker_12345678');
 			featureWithStyleFunction.setId('draw_marker_9876543');
 			featureWithStyleArray.setStyle([style]);

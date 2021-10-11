@@ -5,8 +5,8 @@ import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { closeToolContainer } from '../../store/toolContainer.action';
-import { activate as activateMeasurement } from '../../../map/store/measurement.action';
-import { activate as activateDraw } from '../../../map/store/draw.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+import { activate as activateDraw, deactivate as deactivateDraw } from '../../../map/store/draw.action';
 import css from './toolContainer.css';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
@@ -78,7 +78,7 @@ export class ToolContainer extends BaElement {
 				this._activateByContentId(nextActiveContentId);
 			}
 			else {
-				this._lastContentId = false;
+				this._deactivateByContentId(this._lastContentId);
 			}
 		}
 
@@ -142,5 +142,17 @@ export class ToolContainer extends BaElement {
 				activateDraw();
 				break;
 		}
+	}
+
+	_deactivateByContentId(contentId) {
+		switch (contentId) {
+			case MeasureToolContent.tag:
+				deactivateMeasurement();
+				break;
+			case DrawToolContent.tag:
+				deactivateDraw();
+				break;
+		}
+		this._lastContentId = false;
 	}
 }
