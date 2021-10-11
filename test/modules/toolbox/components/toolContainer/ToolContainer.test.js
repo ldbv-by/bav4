@@ -151,6 +151,41 @@ describe('ToolContainer', () => {
 			expect(store.getState().measurement.active).toBeFalse();
 		});
 
+		it('deactivates measurement, when contentTool is closing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
+			expect(store.getState().measurement.active).toBeTrue();
+
+			const closeButton = element.shadowRoot.querySelector('.tool-container__close-button');
+
+			closeButton.click();
+
+			expect(store.getState().measurement.active).toBeFalse();
+		});
+
+
+		it('deactivates draw, when contentTool is closing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+			expect(store.getState().draw.active).toBeTrue();
+
+			const closeButton = element.shadowRoot.querySelector('.tool-container__close-button');
+
+			closeButton.click();
+
+			expect(store.getState().draw.active).toBeFalse();
+		});
+
 		it('prevent switching from one tool to other, if toolcontent is open', async () => {
 			const element = await setup();
 
