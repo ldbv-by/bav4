@@ -10,10 +10,10 @@ Next-generation web-map viewer based on web standards.
 1. [Concept](#concept)
 2. [Structure](#structure)
 3. [Setup](#setup)
-3. [Details](#details)
-4. [Best Practices](#best-practices)
-5. [Pending Questions](#pending-questions)
-6. [Links](#links)
+4. [Details](#details)
+5. [Best Practices](#best-practices)
+6. [Pending Questions](#pending-questions)
+7. [Links](#links)
 
 
 ## Concept
