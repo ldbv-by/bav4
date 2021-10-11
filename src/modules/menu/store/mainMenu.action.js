@@ -46,12 +46,26 @@ export const toggle = () => {
 };
 
 /**
- * Displays the tab for this index.
- * @param {MainMenuTabIndex} index
+ *Available menu tabs.
+ @enum
+ */
+export const TabIndex = Object.freeze({
+	TOPICS: 0,
+	MAPS: 1,
+	MORE: 2,
+	ROUTING: 3,
+	SEARCH: 4,
+	FEATUREINFO: 5
+});
+
+/**
+ * Displays the tab for a given index.
+ * @see {@link TabIndex}
+ * @param {number} index
  */
 export const setTabIndex = (index) => {
 	getStore().dispatch({
 		type: INDEX_CHANGED,
-		payload: index.id
+		payload: index
 	});
 };

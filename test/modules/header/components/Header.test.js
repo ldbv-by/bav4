@@ -8,10 +8,10 @@ import { OlCoordinateService } from '../../../../src/services/OlCoordinateServic
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
-import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { TabIndex } from '../../../../src/modules/menu/store/mainMenu.action';
 
 window.customElements.define(Header.tag, Header);
 
@@ -271,11 +271,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MORE.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MORE);
 		});
 
 	});
@@ -487,7 +487,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {
