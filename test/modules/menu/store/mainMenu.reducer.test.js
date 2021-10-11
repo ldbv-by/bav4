@@ -1,7 +1,6 @@
 import { TestUtils } from '../../../test-utils.js';
 import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
-import { open, close, toggle, setTabIndex } from '../../../../src/modules/menu/store/mainMenu.action';
-import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu.js';
+import { open, close, toggle, setTabIndex, TabIndex } from '../../../../src/modules/menu/store/mainMenu.action';
 
 
 describe('mainMenuReducer', () => {
@@ -100,9 +99,9 @@ describe('mainMenuReducer', () => {
 		it('set the tab index', () => {
 			const store = setup(createNoInitialStateMainMenuReducer());
 
-			setTabIndex(MainMenuTabIndex.MAPS);
+			setTabIndex(TabIndex.MAPS);
 			expect(store.getState().mainMenu.tabIndex).toBe(1);
-			setTabIndex(MainMenuTabIndex.MORE);
+			setTabIndex(TabIndex.MORE);
 			expect(store.getState().mainMenu.tabIndex).toBe(2);
 		});
 	});

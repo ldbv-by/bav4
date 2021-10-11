@@ -2,8 +2,8 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import cssmain from '../../../../main.css';
 import css from './mediaQueryPanel.css';
-import { closeSidePanel } from '../../store/sidePanel.action';
 import { $injector } from '../../../../injection';
+import { close } from '../../store/mainMenu.action';
 
 
 /**
@@ -74,7 +74,7 @@ export class MediaQueryPanel extends BaElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()}">
 				<div class="content-panel ${getOverlayClass()} ${getMinWidthClass()}">            
-					<button @click="${closeSidePanel}" class="content-panel__close-button">
+					<button @click="${close}" class="content-panel__close-button">
 						<span class='arrow'></span>	
 					</button>
 				</div>			
@@ -87,7 +87,7 @@ export class MediaQueryPanel extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { sidePanel: { open } } = globalState;
+		const { mainMenu: { open } } = globalState;
 		return { open };
 	}
 
