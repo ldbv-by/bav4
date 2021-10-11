@@ -100,7 +100,7 @@ Modules meet the following conventions:
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
 
-4. Outside their package, modules are only allowed to use global services, actions from the global store and BaElement components from other modules for composition.
+4. Outside their package, modules are only allowed to use global services, actions from the global store and components from other modules for composition.
 
 
 ### `src/services`
@@ -154,7 +154,7 @@ For example, they could be responsible for setting an initial state or reacting 
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
 - Common places for updating global state are:
-  - `BaElement` components
+  - `MvuElement` based components
   - `BaPlugin` implementations
 
 - If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
