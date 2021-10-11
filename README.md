@@ -8,8 +8,8 @@ Next-generation web-map viewer based on web standards.
 
 #### Table of Contents
 1. [Concept](#concept)
-2. [Structure](#structure)
-3. [Setup](#setup)
+2. [Setup](#setup)
+3. [Structure](#structure)
 4. [Details](#details)
 5. [Best Practices](#best-practices)
 6. [Pending Questions](#pending-questions)
@@ -31,6 +31,46 @@ Next-generation web-map viewer based on web standards.
   - [webpack](https://webpack.js.org): Bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
   - [playwright](https://playwright.dev/) E2E Tests
+
+## Setup
+
+### Prerequisites
+
+- Node.js 14
+- npm 6
+
+### Install
+
+`npm i`
+
+### List of npm scripts
+
+
+| Run/Build | |
+|----|----|
+| `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
+| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
+| `npm run build:dev` | Compiles all files without bundling and minification |
+| `npm run build:prod` | Compiles and minifies for production |
+
+| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+|----|----|
+| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
+| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
+
+| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+|----|----|
+| `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
+| `npx playwright test --help` | Shows information about all options |
+
+| Other | |
+|----|----|
+| `npm run lint` | Lints and fixes files |
+| `npm run doc` | Generates jsdoc files (see:  `./docs`) |
+| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
+| `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
+
 
 ## Structure
 
@@ -90,45 +130,6 @@ Here's an overview of what project folder structure looks like:
     |    + -- utils
     + -- test # test code
 ```
-
-## Setup
-
-### Prerequisites
-
-- Node.js 14
-- npm 6
-
-### Install
-
-`npm i`
-
-### List of npm scripts
-
-
-| Run/Build | |
-|----|----|
-| `npm run start` | Compiles and hot-reloads for development. Will serve the project under `http://localhost:8080` (or the next available port if `8080` is already used, see console output) |
-| `npm run start:nohostcheck` | Compiles and hot-reloads for development. Will serve the project under `http://0.0.0.0:8080` (or the next available port if `8080` is already used, see console output) with disabled host checking so that the application is reachable from another device|
-| `npm run build:dev` | Compiles all files without bundling and minification |
-| `npm run build:prod` | Compiles and minifies for production |
-
-| Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
-|----|----|
-| `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
-| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
-| `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
-
-| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
-|----|----|
-| `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
-| `npx playwright test --help` | Shows information about all options |
-
-| Other | |
-|----|----|
-| `npm run lint` | Lints and fixes files |
-| `npm run doc` | Generates jsdoc files (see:  `./docs`) |
-| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
-| `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
 ## Details
 
