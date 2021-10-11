@@ -36,7 +36,7 @@ const Temp_Session_Id = 'temp_measure_id';
 const defaultStyleOption = {
 	symbolSrc: 'marker', // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
-	color: '#FFDAFF', // used by Symbol, Text, Line, Polygon
+	color: '#FF0000', // used by Symbol, Text, Line, Polygon
 	text: '' // used by Text
 };
 

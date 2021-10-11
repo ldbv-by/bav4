@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -20,6 +20,22 @@ const Hsv_Yellow = [60, 1, 1];
 const Rgb_Magenta = [255, 0, 255];
 const Hsv_Magenta = [300, 1, 1];
 const Rgb_Black = [0, 0, 0];
+
+const configService = {
+	getValue: () => { },
+	getValueAsPath: () => 'http://backend.url/'
+};
+
+const environmentService = {
+	isStandalone: () => false
+};
+beforeAll(() => {
+	TestUtils.setupStoreAndDi();
+	$injector
+		.registerSingleton('EnvironmentService', environmentService)
+		.registerSingleton('ConfigService', configService);
+
+});
 
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
@@ -114,21 +130,7 @@ describe('highlightTemporaryStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
-	const configService = {
-		getValue: () => { },
-		getValueAsPath: () => 'backend/'
-	};
 
-	const environmentService = {
-		isStandalone: () => false
-	};
-	beforeAll(() => {
-		TestUtils.setupStoreAndDi();
-		$injector
-			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('ConfigService', configService);
-
-	});
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -237,6 +239,29 @@ describe('textStyleFunction', () => {
 		const textStyle = styles[0].getText();
 		expect(textStyle.getText()).toBe('Bar');
 		expect(textStyle.getScale()).toBe(1.5);
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+	});
+
+	it('should return a style specified by styleOption; small text', () => {
+		const styleOption = { color: '#BEDA55', scale: 'small', text: 'Bar' };
+		const styles = textStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const textStyle = styles[0].getText();
+		expect(textStyle.getText()).toBe('Bar');
+		expect(textStyle.getScale()).toBe(1);
+		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
+	});
+
+
+	it('should return a style specified by styleOption; text scale as number ', () => {
+		const styleOption = { color: '#BEDA55', scale: 2, text: 'Foo' };
+		const styles = textStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const textStyle = styles[0].getText();
+		expect(textStyle.getText()).toBe('Foo');
+		expect(textStyle.getScale()).toBe(2);
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
 	});
 });
@@ -383,6 +408,15 @@ describe('createSketchStyleFunction', () => {
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(1);
+	});
+});
+
+describe('getIconUrl', () => {
+	it('creates valid URL with default color', () => {
+		const iconId = 'foo';
+
+		expect(getIconUrl(iconId)).toBe('http://backend.url/icons/255,255,255/foo');
+		expect(getIconUrl(iconId, [0, 0, 0])).toBe('http://backend.url/icons/0,0,0/foo');
 	});
 });
 
