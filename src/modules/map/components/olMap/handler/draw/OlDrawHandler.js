@@ -432,6 +432,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				return itemFeature;
 			}
 		};
+		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getSelectOptions
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
@@ -455,6 +456,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
+		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getModifyOptions
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction,
@@ -501,11 +503,17 @@ export class OlDrawHandler extends OlLayerHandler {
 		return currentStyleOptions;
 	}
 
+	/**
+ 	* todo: util-function, extracted to olStyleUtils
+ 	*/
 	_getStyleFunctionFrom(feature) {
 		const type = this._getDrawingTypeFrom(feature);
 		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
 	}
 
+	/**
+ 	* todo: util-function, extracted to olStyleUtils
+ 	*/
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
@@ -633,6 +641,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
+	/**
+ 	* todo: util-function, extracted to olStyleUtils
+ 	*/
 	_getDrawingTypeFrom(feature) {
 		if (feature) {
 			const featureId = feature.getId();
@@ -649,7 +660,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of _storageHandler
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
@@ -659,7 +670,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	/**
 	 *
-	 * todo: redundant
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of _storageHandler
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);

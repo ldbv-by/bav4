@@ -403,6 +403,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				return itemFeature;
 			}
 		};
+		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getSelectOptions
 		const options = {
 			layers: layerFilter,
 			filter: featureFilter,
@@ -427,6 +428,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
+		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getModifyOptions
 		const options = {
 			features: this._select.getFeatures(),
 			style: modifyStyleFunction,
@@ -571,7 +573,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 
 	/**
-	 * todo: redundant
+	 * todo: redundant with OlDrawHandler, possible responsibility of _storageHandler
 	 */
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
@@ -583,7 +585,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant
+	 * todo: redundant with OlDrawHandler, possible responsibility of _storageHandler
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
