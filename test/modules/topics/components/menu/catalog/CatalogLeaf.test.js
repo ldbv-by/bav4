@@ -87,7 +87,7 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.info')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 			});
 
 			it('renders a checkbox unchecked', async () => {
