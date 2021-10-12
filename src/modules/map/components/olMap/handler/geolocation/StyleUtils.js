@@ -35,7 +35,7 @@ export const nullStyleFunction = () => [new Style({})];
  */
 export const createAnimateFunction = (map, feature, endCallback) => {
 	const duration = 1000; // 1 second
-	const start = +new Date();
+	const start = Date.now();
 
 	const animate = (event) => {
 		const vectorContext = getVectorContext(event);
