@@ -42,7 +42,8 @@ export const createAnimateFunction = (map, feature, endCallback) => {
 		const frameState = event.frameState;
 		const flashGeom = feature.getGeometry().clone();
 		const elapsed = frameState.time - start;
-		const elapsedRatio = elapsed / duration;
+		// don't allow negative values for radius
+		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / duration;
 		// radius will be 6 at start and 30 at end.
 		const radius = easeOut(elapsedRatio) * 24 + 6;
 		const opacity = easeOut(1 - elapsedRatio);
