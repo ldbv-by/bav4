@@ -253,6 +253,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
+		setStyle(defaultStyleOption);
 		this._draw = null;
 		this._modify = false;
 		this._select = false;
