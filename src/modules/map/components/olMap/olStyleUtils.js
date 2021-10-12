@@ -54,6 +54,9 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		return getIconUrl(defaultSymbol);
 	};
 	const getMarkerScale = (sizeKeyword) => {
+		if (typeof (sizeKeyword) === 'number') {
+			return sizeKeyword;
+		}
 		switch (sizeKeyword) {
 			case 'big':
 				return 1;
