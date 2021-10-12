@@ -11,7 +11,7 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
-import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
@@ -193,7 +193,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._modify = this._createModify();
 			this._select.setActive(false);
 			this._modify.setActive(false);
-			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
+			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
 			this._onDrawStateChanged((drawState) => this._updateDrawMode(drawState));
@@ -391,7 +391,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			return null;
 		}
 		const source = this._vectorLayer.getSource();
-		const snapTolerance = this._getSnapTolerancePerDevice();
+		const snapTolerance = getSnapTolerancePerDevice();
 
 		switch (type) {
 			case StyleTypes.MARKER:
@@ -697,16 +697,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-	}
-
-	/**
-	 * todo: redundant, extract Util-method
-	 */
-	_getSnapTolerancePerDevice() {
-		if (this._environmentService.isTouch()) {
-			return 12;
-		}
-		return 4;
 	}
 
 	/**

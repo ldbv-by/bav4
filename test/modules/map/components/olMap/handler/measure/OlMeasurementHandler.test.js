@@ -572,27 +572,6 @@ describe('OlMeasurementHandler', () => {
 
 	});
 
-	describe('when using EnvironmentService for snapTolerance', () => {
-
-		it('isTouch() resolves in higher snapTolerance', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
-
-			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(12);
-			expect(environmentSpy).toHaveBeenCalled();
-		});
-
-		it('isTouch() resolves in lower snapTolerance', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
-
-			expect(classUnderTest._getSnapTolerancePerDevice()).toBe(4);
-			expect(environmentSpy).toHaveBeenCalled();
-		});
-
-	});
 
 	describe('when draw a line', () => {
 		const initialCenter = fromLonLat([42, 42]);

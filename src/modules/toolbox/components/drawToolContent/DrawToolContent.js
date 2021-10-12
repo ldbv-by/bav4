@@ -126,6 +126,8 @@ export class DrawToolContent extends AbstractToolContent {
 				return sizes.map((size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)} </option>)}`);
 			};
 
+
+			// todo: refactor to specific toolStyleContent-Components or factory
 			if (type && style) {
 				switch (type) {
 					case 'marker':
@@ -200,7 +202,7 @@ export class DrawToolContent extends AbstractToolContent {
 		return html`
         <style>${css}</style>
             <div class="container">
-                <div class="ba-tool-container__item ba-tool-menu__zeichnen">
+                <div class="ba-tool-container__item ba-tool-menu__draw">
                 <div>
                     <span class="tool-container__header">
                     ${translate('toolbox_drawTool_header')}

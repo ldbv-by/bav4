@@ -1,7 +1,19 @@
 import { Point } from 'ol/geom';
 import Style from 'ol/style/Style';
-import { getFeatureSnapOption, getSelectableFeatures, getSnapState, InteractionSnapType, removeSelectedFeatures } from '../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import { $injector } from '../../../../../src/injection';
+import { getFeatureSnapOption, getSelectableFeatures, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, removeSelectedFeatures } from '../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import { modifyStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { TestUtils } from '../../../../test-utils';
+
+const environmentService = {
+	isStandalone: () => false,
+	isTouch: () => false
+};
+beforeAll(() => {
+	TestUtils.setupStoreAndDi();
+	$injector
+		.registerSingleton('EnvironmentService', environmentService);
+});
 
 describe('olInteractionUtils', () => {
 
@@ -185,4 +197,22 @@ describe('removeSelectedFeatures', () => {
 		expect(removeSpy).toHaveBeenCalledTimes(4);
 		expect(additionalSpy).toHaveBeenCalledTimes(4);
 	});
+});
+
+describe('getSnapTolerancePerDevice', () => {
+
+	it('isTouch() resolves in higher snapTolerance', () => {
+		const environmentSpy = spyOn(environmentService, 'isTouch').and.returnValue(true);
+
+		expect(getSnapTolerancePerDevice()).toBe(12);
+		expect(environmentSpy).toHaveBeenCalled();
+	});
+
+	it('isTouch() resolves in lower snapTolerance', () => {
+		const environmentSpy = spyOn(environmentService, 'isTouch').and.returnValue(false);
+
+		expect(getSnapTolerancePerDevice()).toBe(4);
+		expect(environmentSpy).toHaveBeenCalled();
+	});
+
 });

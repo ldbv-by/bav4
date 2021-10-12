@@ -1,5 +1,6 @@
 import { isVertexOfGeometry } from './olGeometryUtils';
 import { modifyStyleFunction } from './olStyleUtils';
+import { $injector } from '../../../../injection';
 
 export const InteractionStateType = {
 	ACTIVE: 'active',
@@ -102,5 +103,14 @@ export const removeSelectedFeatures = (selectedFeatures, interactionLayer, addit
 			interactionLayer.getSource().removeFeature(f);
 		}
 	});
+};
+
+export const getSnapTolerancePerDevice = () => {
+	const { EnvironmentService } = $injector.inject('EnvironmentService');
+	const environmentService = EnvironmentService;
+	if (environmentService.isTouch()) {
+		return 12;
+	}
+	return 4;
 };
 

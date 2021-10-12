@@ -23,7 +23,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { getSelectableFeatures, getSnapState, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
+import { getSelectableFeatures, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
@@ -197,7 +197,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._modify = this._createModify();
 			this._modify.setActive(false);
 			this._draw = this._createDraw(source);
-			this._snap = new Snap({ source: source, pixelTolerance: this._getSnapTolerancePerDevice() });
+			this._snap = new Snap({ source: source, pixelTolerance: getSnapTolerancePerDevice() });
 			this._dragPan = new DragPan();
 			this._dragPan.setActive(false);
 			this._onMeasureStateChanged((measureState) => this._updateMeasurementMode(measureState));
@@ -339,7 +339,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			source: source,
 			type: 'Polygon',
 			minPoints: 2,
-			snapTolerance: this._getSnapTolerancePerDevice(),
+			snapTolerance: getSnapTolerancePerDevice(),
 			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
 		});
 
@@ -621,15 +621,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		addLayer(id, { label: label });
 	}
 
-	/**
-	 * todo: redudant, extract Util-method
-	 */
-	_getSnapTolerancePerDevice() {
-		if (this._environmentService.isTouch()) {
-			return 12;
-		}
-		return 4;
-	}
 
 	/**
 	 * todo: redundant, extract Util-method to kind of 'OlMapUtils'-file
