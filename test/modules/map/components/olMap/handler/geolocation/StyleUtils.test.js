@@ -11,7 +11,6 @@ import { get as getProjection } from 'ol/proj';
 
 import RenderEvent from 'ol/render/Event';
 
-
 describe('geolocationStyleFunction', () => {
 	it('should create a style for a point-feature', () => {
 		const geometry = new Point([0, 0]);
@@ -71,7 +70,7 @@ describe('createAnimateFunction', () => {
 	const viewState = {
 		projection: projection, resolution: 1, rotation: 0
 	};
-	const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { } };
+	const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { }, setStyle: () => {} };
 	const setupMap = () => {
 		return new Map({
 			target: 'map',
@@ -100,12 +99,12 @@ describe('createAnimateFunction', () => {
 		};
 	};
 
+	const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), contextStub);
+
 	const getFeature = () => {
 		const geometry = new Point([0, 0]);
 		return new Feature({ geometry: geometry });
-
 	};
-
 
 	it('should create animation-function', () => {
 		const feature = getFeature();
@@ -117,9 +116,20 @@ describe('createAnimateFunction', () => {
 		expect(functionUnderTest).toBeDefined();
 	});
 
-	it('when animation ends, should NOT call the endCallback', () => {
-		const startFrameState = setupFrameState(new Date());
+	it('should avoid negative radius-values by edge-case framestate-times (framestate.time < start)', () => {
+		const feature = getFeature();
+		const map = setupMap();
+		const layer = setupLayer(map, feature);
+		const earlyEvent = getPostRenderEvent(Date.now() - 1000);
+		const endCallback = () => { };
 
+		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
+		layer.on('postrender', functionUnderTest);
+
+		expect(() => layer.dispatchEvent(earlyEvent)).not.toThrow();
+	});
+
+	it('when animation ends, should NOT call the endCallback', () => {
 		const feature = getFeature();
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
@@ -128,7 +138,7 @@ describe('createAnimateFunction', () => {
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
-		layer.dispatchEvent(new RenderEvent('postrender', transform, startFrameState, contextStub));
+		layer.dispatchEvent(getPostRenderEvent(Date.now()));
 
 		expect(functionUnderTest).toBeDefined();
 		expect(endCallback).not.toHaveBeenCalled();
@@ -136,9 +146,6 @@ describe('createAnimateFunction', () => {
 	});
 
 	it('when animation ends, should call the endCallback', () => {
-		const startFrameState = setupFrameState(+new Date());
-		const endFrameState = setupFrameState(+new Date() + 1100);
-
 		const feature = getFeature();
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
@@ -147,11 +154,11 @@ describe('createAnimateFunction', () => {
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
-		layer.dispatchEvent(new RenderEvent('postrender', transform, startFrameState, contextStub));
+		layer.dispatchEvent(getPostRenderEvent(Date.now()));
 
 		expect(functionUnderTest).toBeDefined();
 
-		layer.dispatchEvent(new RenderEvent('postrender', transform, endFrameState, contextStub));
+		layer.dispatchEvent(getPostRenderEvent(Date.now() + 1100));
 		expect(endCallback).toHaveBeenCalled();
 
 	});
