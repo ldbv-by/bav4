@@ -49,12 +49,12 @@ export const equals = (value0, value1) => {
 export class EventLike {
 
 	constructor(payload) {
-		this._paylod = payload;
+		this._payload = payload;
 		this._id = Date.now() + Math.random();
 	}
 
 	get payload() {
-		return this._paylod;
+		return this._payload;
 	}
 
 	get id() {
