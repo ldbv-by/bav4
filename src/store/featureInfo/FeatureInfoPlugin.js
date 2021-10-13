@@ -1,6 +1,6 @@
 import { observe } from '../../utils/storeUtils';
 import { BaPlugin } from '../../store/BaPlugin';
-import { add, updateFeatureInfo } from './featureInfo.action';
+import { add } from './featureInfo.action';
 import { html } from 'lit-html';
 import { close, open, setTabIndex, TabIndex } from '../../modules/menu/store/mainMenu.action';
 
