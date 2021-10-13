@@ -22,6 +22,7 @@ import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
+import { FeatureInfoPlugin } from '../store/featureInfo/FeatureInfoPlugin';
 
 
 $injector
@@ -46,6 +47,7 @@ $injector
 	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerSingleton('MediaPlugin', new MediaPlugin())
+	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
