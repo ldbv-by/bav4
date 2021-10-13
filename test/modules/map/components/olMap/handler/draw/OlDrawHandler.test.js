@@ -1461,40 +1461,6 @@ describe('OlDrawHandler', () => {
 		});
 	});
 
-	describe('when using util _isInCollection', () => {
-
-		it('finds a item', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const item = { id: 'foo' };
-			const items = [item, { id: 'bar' }, { id: 'baz' }];
-			const collection = new Collection(items);
-
-			expect(classUnderTest._isInCollection(item, collection)).toBeTrue();
-		});
-
-		it('finds NOT a item', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const item = { id: '42' };
-			const items = [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }];
-			const collection = new Collection(items);
-
-			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
-		});
-
-
-		it('finds NOT a item in empty collection', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const item = { id: '42' };
-			const items = [];
-			const collection = new Collection(items);
-
-			expect(classUnderTest._isInCollection(item, collection)).toBeFalse();
-		});
-
-	});
 });
 
 

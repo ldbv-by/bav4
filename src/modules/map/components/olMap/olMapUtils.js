@@ -1,4 +1,3 @@
-
 export const updateOlLayer = (olLayer, layer) => {
 
 	olLayer.setVisible(layer.visible);
@@ -47,4 +46,20 @@ export const isEmptyLayer = (layer) => {
 		return !layer.getSource().getFeatures().length > 0;
 	}
 	return true;
+};
+
+/**
+ * Checks whether or not the defined item is in the item-collection
+ * @param {Object} candidate the candidate to test
+ * @param {Collection} collection the collection
+ * @returns {boolean} whether or not the defined item is in the item-collection
+ */
+export const isInCollection = (candidate, collection) => {
+	let isInCollection = false;
+	collection.forEach(c => {
+		if (c === candidate) {
+			isInCollection = true;
+		}
+	});
+	return isInCollection;
 };

@@ -22,7 +22,7 @@ import { debounced } from '../../../../../../utils/timer';
 import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
-import { isEmptyLayer } from '../../olMapUtils';
+import { isEmptyLayer, isInCollection } from '../../olMapUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -164,7 +164,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
-					const hasFeature = this._isInCollection(f, this._select.getFeatures());
+					const hasFeature = isInCollection(f, this._select.getFeatures());
 					if (!hasFeature) {
 						this._setSelected(f);
 					}
@@ -683,18 +683,5 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-	}
-
-	/**
-	 * todo: redundant, extract Util-method to kind of 'OlMapUtils'-file
-	 */
-	_isInCollection(item, itemCollection) {
-		let isInCollection = false;
-		itemCollection.forEach(i => {
-			if (i === item) {
-				isInCollection = true;
-			}
-		});
-		return isInCollection;
 	}
 }
