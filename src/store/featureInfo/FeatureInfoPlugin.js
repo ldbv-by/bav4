@@ -1,6 +1,6 @@
 import { observe } from '../../utils/storeUtils';
 import { BaPlugin } from '../../store/BaPlugin';
-import { add } from './featureInfo.action';
+import { add, clear } from './featureInfo.action';
 import { html } from 'lit-html';
 import { close, open, setTabIndex, TabIndex } from '../../modules/menu/store/mainMenu.action';
 
@@ -19,13 +19,13 @@ export class FeatureInfoPlugin extends BaPlugin {
 		let previousTabIndex = 0;
 		let wasOpen = null;
 
-		const onPointerClick = async () => {
+		const onPointerClick = () => {
 			add({ title: 'title', content: html`<div>myFeatureInfo</div>` });
 			setTabIndex(TabIndex.FEATUREINFO);
 			open();
 		};
 
-		const onFeatureInfoChanged = async (current) => {
+		const onFeatureInfoChanged = current => {
 			if (current.length === 0) {
 				if (!wasOpen) {
 					close();
@@ -34,15 +34,18 @@ export class FeatureInfoPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, state => state.featureInfo.current, onFeatureInfoChanged);
-		observe(store, state => state.pointer.click, onPointerClick);
-		observe(store, store => store.mainMenu.tabIndex, (tabIndex, state) => {
-			if (tabIndex !== TabIndex.FEATUREINFO) {
-				previousTabIndex = tabIndex;
-			}
-			else {
+		const onTabIndexChanged = (tabIndex, state) => {
+			if (tabIndex === TabIndex.FEATUREINFO) {
 				wasOpen = state.mainMenu.open;
 			}
-		}, false);
+			else {
+				previousTabIndex = tabIndex;
+				clear();
+			}
+		};
+
+		observe(store, state => state.featureInfo.current, onFeatureInfoChanged);
+		observe(store, state => state.pointer.click, onPointerClick);
+		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}
 }
