@@ -14,6 +14,17 @@ const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
 const Black_Color = [0, 0, 0];
+const Default_Symbol = 'marker';
+
+export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
+	if (symbolSrc != null && symbolSrc !== false) {
+		if (symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
+			return symbolSrc;
+		}
+		return getIconUrl(symbolSrc, hexToRgb(symbolColor));
+	}
+	return getIconUrl(Default_Symbol);
+};
 
 export const nullStyleFunction = () => [new Style({})];
 
@@ -43,16 +54,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	const isOfflineModus = true; // environmentService.isStandalone()
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
-	const getMarkerSrc = () => {
-		const defaultSymbol = 'marker';
-		if (styleOption.symbolSrc != null && styleOption.symbolSrc !== false) {
-			if (styleOption.symbolSrc.startsWith('http://') || styleOption.symbolSrc.startsWith('https://')) {
-				return styleOption.symbolSrc;
-			}
-			return getIconUrl(styleOption.symbolSrc, hexToRgb(markerColor));
-		}
-		return getIconUrl(defaultSymbol);
-	};
+
 	const getMarkerScale = (sizeKeyword) => {
 		if (typeof (sizeKeyword) === 'number') {
 			return sizeKeyword;
@@ -82,7 +84,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			anchor: [0.5, 1],
 			anchorXUnits: 'fraction',
 			anchorYUnits: 'fraction',
-			src: getMarkerSrc(),
+			src: getMarkerSrc(styleOption.symbolSrc, markerColor),
 			scale: getMarkerScale(styleOption.scale)
 		};
 	};

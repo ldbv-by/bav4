@@ -1,8 +1,8 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
-import { Fill, Icon, Stroke, Style } from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 
@@ -34,6 +34,24 @@ beforeAll(() => {
 	$injector
 		.registerSingleton('EnvironmentService', environmentService)
 		.registerSingleton('ConfigService', configService);
+
+});
+
+describe('getMarkerSrc', () => {
+	it('returns a default marker source', () => {
+		expect(getMarkerSrc()).toBe('http://backend.url/icons/255,255,255/marker');
+	});
+
+	it('returns a defined marker source', () => {
+		const symbolName = 'foo';
+		const color = '#ff0000';
+		expect(getMarkerSrc(symbolName, color)).toBe('http://backend.url/icons/255,0,0/foo');
+	});
+
+	it('does nothing when markerSrc is already a URL', () => {
+		const markerSrc = 'http://foo.bar/42/baz';
+		expect(getMarkerSrc(markerSrc)).toBe('http://foo.bar/42/baz');
+	});
 
 });
 
@@ -198,6 +216,20 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
+		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
+	});
+
+	it('should return a style specified by styleOption; scale value as number', () => {
+		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 0.75 };
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		const image = styles[0].getImage();
+		expect(image).toBeTruthy();
+
+		expect(image.getColor()).toEqual([190, 218, 85, 1]);
+		expect(image.getScale()).toBe(0.75);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
 		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
@@ -513,7 +545,7 @@ describe('getContrastColorFrom', () => {
 });
 
 
-describe('colorFrom', () => {
+describe('getColorFrom', () => {
 	const strokeStyle = new Style({
 		fill: new Fill({
 			color: [255, 255, 255, 0.4]
@@ -537,6 +569,17 @@ describe('colorFrom', () => {
 		})
 	});
 
+	const textStyle = new Style({
+		text: new TextStyle({
+			text: 'Foo',
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({ color: [0, 0, 0], width: 2 }),
+			fill: new Fill({
+				color: [255, 255, 0, 1]
+			})
+		})
+	});
+
 	it('should extract a color from feature style (stroke)', () => {
 		const featureMock = { getStyle: () => [strokeStyle] };
 
@@ -553,6 +596,12 @@ describe('colorFrom', () => {
 		const featureMock = { getStyle: () => [imageStyleWithoutTint] };
 
 		expect(getColorFrom(featureMock)).toBeNull();
+	});
+
+	it('should extract a color from feature style (text)', () => {
+		const featureMock = { getStyle: () => [textStyle] };
+
+		expect(getColorFrom(featureMock)).toBe('#ffff00');
 	});
 
 	it('should return null for empty feature', () => {

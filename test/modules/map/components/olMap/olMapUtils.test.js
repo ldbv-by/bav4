@@ -188,6 +188,8 @@ describe('olMapUtils', () => {
 			};
 			expect(isEmptyLayer(emptyLayerMock)).toBeTrue();
 			expect(isEmptyLayer(filledLayerMock)).toBeFalse();
+			expect(isEmptyLayer(null)).toBeTrue();
+			expect(isEmptyLayer(undefined)).toBeTrue();
 		});
 	});
 });

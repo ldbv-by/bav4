@@ -4,18 +4,17 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, modifyStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
 import { StyleSizeTypes, StyleTypes } from '../../services/StyleService';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
-import { getSelectableFeatures, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
+import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { Polygon } from 'ol/geom';
-import { noModifierKeys, singleClick } from 'ol/events/condition';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
@@ -424,21 +423,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createSelect() {
-		const layerFilter = (itemLayer) => {
-			itemLayer === this._vectorLayer;
-		};
-		const featureFilter = (itemFeature, itemLayer) => {
-			if (layerFilter(itemLayer)) {
-				return itemFeature;
-			}
-		};
-		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getSelectOptions
-		const options = {
-			layers: layerFilter,
-			filter: featureFilter,
-			style: null
-		};
-		const select = new Select(options);
+		const select = new Select(getSelectOptions(this._vectorLayer));
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
 			const styleFunction = selectStyleFunction();
@@ -456,17 +441,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getModifyOptions
-		const options = {
-			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && singleClick(event));
-				return isDeletable;
-			}
-		};
-
-		const modify = new Modify(options);
+		const modify = new Modify(getModifyOptions(this._select.getFeatures()));
 		modify.on('modifystart', (event) => {
 			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
 				this._mapContainer.classList.add('grabbing');
@@ -504,16 +479,16 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
- 	* todo: util-function, extracted to olStyleUtils
- 	*/
+	  * todo: util-function, extracted to olStyleUtils
+	  */
 	_getStyleFunctionFrom(feature) {
 		const type = this._getDrawingTypeFrom(feature);
 		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
 	}
 
 	/**
- 	* todo: util-function, extracted to olStyleUtils
- 	*/
+	  * todo: util-function, extracted to olStyleUtils
+	  */
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
@@ -642,8 +617,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
- 	* todo: util-function, extracted to olStyleUtils
- 	*/
+	  * todo: util-function, extracted to olStyleUtils
+	  */
 	_getDrawingTypeFrom(feature) {
 		if (feature) {
 			const featureId = feature.getId();

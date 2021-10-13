@@ -8,9 +8,8 @@ import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode } from '../../../../store/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { modifyStyleFunction, createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { getGeometryLength, getArea } from '../../olGeometryUtils';
-import { noModifierKeys, singleClick } from 'ol/events/condition';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
@@ -23,7 +22,7 @@ import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
-import { getSelectableFeatures, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
+import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
@@ -395,21 +394,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createSelect() {
-		const layerFilter = (itemLayer) => {
-			itemLayer === this._vectorLayer;
-		};
-		const featureFilter = (itemFeature, itemLayer) => {
-			if (layerFilter(itemLayer)) {
-				return itemFeature;
-			}
-		};
-		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getSelectOptions
-		const options = {
-			layers: layerFilter,
-			filter: featureFilter,
-			style: null
-		};
-		const select = new Select(options);
+		const select = new Select(getSelectOptions(this._vectorLayer));
 		select.getFeatures().on('change:length', this._updateStatistics);
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
@@ -428,17 +413,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		// todo: extract to olInteractionUtils, similar to getFeatureSnapOption -> getModifyOptions
-		const options = {
-			features: this._select.getFeatures(),
-			style: modifyStyleFunction,
-			deleteCondition: event => {
-				const isDeletable = (noModifierKeys(event) && singleClick(event));
-				return isDeletable;
-			}
-		};
-
-		const modify = new Modify(options);
+		const modify = new Modify(getModifyOptions(this._select.getFeatures()));
 		modify.on('modifystart', (event) => {
 			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
 				this._mapContainer.classList.add('grabbing');

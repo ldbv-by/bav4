@@ -1,6 +1,7 @@
 import { isVertexOfGeometry } from './olGeometryUtils';
 import { modifyStyleFunction } from './olStyleUtils';
 import { $injector } from '../../../../injection';
+import { noModifierKeys, singleClick } from 'ol/events/condition';
 
 export const InteractionStateType = {
 	ACTIVE: 'active',
@@ -29,6 +30,47 @@ export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = fa
 		itemLayer => itemLayer === interactionLayer && (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
 		itemLayer => itemLayer === interactionLayer;
 	return { hitTolerance: 10, layerFilter: filter };
+};
+
+/**
+ * Creates a standard option-object for a openlayers select-interaction, to make
+ * all features in the defined layer selectable
+ * @param {Layer} interactionLayer the interactionLayer with possible selectable features
+ * @returns {Object} the option-object for the select-interaction
+ */
+export const getSelectOptions = (interactionLayer) => {
+	const layerFilter = (itemLayer) => {
+		return itemLayer === interactionLayer;
+	};
+	const featureFilter = (itemFeature, itemLayer) => {
+		if (layerFilter(itemLayer)) {
+			return itemFeature;
+		}
+		return null;
+	};
+	return {
+		layers: layerFilter,
+		filter: featureFilter,
+		style: null
+	};
+};
+
+
+/**
+ * Creates a standard optn-object for a openlayers modify-interaction, to make
+ * all features in the defined feature-collection modifyable
+ * @param {Collection<Feature>} modifyableFeatures the collection of all possible modifyable features
+ * @returns {Object} the option-object
+ */
+export const getModifyOptions = (modifyableFeatures) => {
+	return {
+		features: modifyableFeatures,
+		style: modifyStyleFunction,
+		deleteCondition: event => {
+			const isDeletable = (noModifierKeys(event) && singleClick(event));
+			return isDeletable;
+		}
+	};
 };
 
 
