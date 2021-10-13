@@ -13,6 +13,7 @@ import { highlightReducer } from '../../../../../src/store/highlight/highlight.r
 import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
+import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -27,7 +28,7 @@ describe('MainMenuTabIndex', () => {
 		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
 		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
 		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchResultsPanel });
-		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: null });
+		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: FeatureInfoPanel });
 	});
 });
 

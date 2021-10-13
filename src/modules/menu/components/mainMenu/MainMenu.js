@@ -7,6 +7,8 @@ import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
 /**
  * @enum
@@ -17,7 +19,7 @@ export const MainMenuTabIndex = Object.freeze({
 	MORE: { id: 2, component: null },
 	ROUTING: { id: 3, component: null },
 	SEARCH: { id: 4, component: SearchResultsPanel },
-	FEATUREINFO: { id: 5, component: null }
+	FEATUREINFO: { id: 5, component: FeatureInfoPanel }
 });
 
 
@@ -115,16 +117,17 @@ export class MainMenu extends BaElement {
 		`;
 	}
 
-	_getContentPanel(index) {
+	_getContentPanel(definition) {
 		//Todo: can be removed when all content panels are real components
-		switch (index) {
+		switch (definition) {
 			case MainMenuTabIndex.MAPS:
 				return this._demoMapContent();
 			case MainMenuTabIndex.MORE:
 				return this._demoMoreContent();
 			case MainMenuTabIndex.SEARCH:
 			case MainMenuTabIndex.TOPICS:
-				return html`${renderTagOf(index.component)}`;
+			case MainMenuTabIndex.FEATUREINFO:
+				return html`${unsafeHTML(`<${definition.component.tag}/>`)}`;
 			default:
 				return nothing;
 		}
