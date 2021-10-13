@@ -72,9 +72,6 @@ test.describe('page', () => {
 			expect(await page.$$('ba-tool-container')).toHaveLength(1);
 		});
 
-		test('should contain a <ba-context-menue> component', async ({ page }) => {
-			expect(await page.$$('ba-context-menue')).toHaveLength(1);
-		});
 		test('should contain a <ba-nonembedded-hint> component', async ({ page }) => {
 			expect(await page.$$('ba-nonembedded-hint')).toHaveLength(1);
 		});

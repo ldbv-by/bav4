@@ -4,7 +4,6 @@ import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { toolBarReducer } from '../modules/toolbox/store/toolBar.reducer';
 import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
 import { modalReducer } from '../modules/modal/store/modal.reducer';
-import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
@@ -43,7 +42,6 @@ export class StoreService {
 			mainMenu: createMainMenuReducer(),
 			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
-			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
