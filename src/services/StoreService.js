@@ -20,6 +20,7 @@ import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
 import { drawReducer } from '../modules/map/store/draw.reducer';
+import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 
 
 /**
@@ -55,6 +56,7 @@ export class StoreService {
 			topicsContentPanel: topicsContentPanelReducer,
 			highlight: highlightReducer,
 			notifications: notificationReducer,
+			featureInfo: featureInfoReducer,
 			media: createMediaReducer()
 		});
 
@@ -72,6 +74,7 @@ export class StoreService {
 				ContextClickPlugin: contextClickPlugin,
 				HighlightPlugin: highlightPlugin,
 				MediaPlugin: mediaPlugin,
+				FeatureInfoPlugin: featureInfoPlugin,
 				EnvironmentService: environmentService
 			}
 				= $injector.inject(
@@ -84,7 +87,8 @@ export class StoreService {
 					'ContextClickPlugin',
 					'HighlightPlugin',
 					'MediaPlugin',
-					'EnvironmentService'
+					'EnvironmentService',
+					'FeatureInfoPlugin'
 				);
 
 			setTimeout(async () => {
@@ -98,6 +102,7 @@ export class StoreService {
 				await geolocationPlugin.register(this._store);
 				await contextClickPlugin.register(this._store);
 				await highlightPlugin.register(this._store);
+				await featureInfoPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});

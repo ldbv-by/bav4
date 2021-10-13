@@ -35,6 +35,9 @@ describe('StoreService', () => {
 		const highlightPluginMock = {
 			register() { }
 		};
+		const featureInfoPluginMock = {
+			register() { }
+		};
 		const mediaPluginMock = {
 			register() { }
 		};
@@ -57,6 +60,7 @@ describe('StoreService', () => {
 				.registerSingleton('PositionPlugin', positionPluginMock)
 				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
 				.registerSingleton('HighlightPlugin', highlightPluginMock)
+				.registerSingleton('FeatureInfoPlugin', featureInfoPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 
@@ -71,7 +75,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(20);
+			expect(reducerKeys.length).toBe(21);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -91,6 +95,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('topicsContentPanel')).toBeTrue();
 			expect(reducerKeys.includes('highlight')).toBeTrue();
 			expect(reducerKeys.includes('notifications')).toBeTrue();
+			expect(reducerKeys.includes('featureInfo')).toBeTrue();
 			expect(reducerKeys.includes('media')).toBeTrue();
 		});
 
@@ -104,6 +109,7 @@ describe('StoreService', () => {
 			const positionPluginSpy = spyOn(positionPluginMock, 'register');
 			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
 			const highlightPluginSpy = spyOn(highlightPluginMock, 'register');
+			const featureInfoPluginSpy = spyOn(featureInfoPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -122,6 +128,7 @@ describe('StoreService', () => {
 					expect(positionPluginSpy).toHaveBeenCalledWith(store);
 					expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
 					expect(highlightPluginSpy).toHaveBeenCalledWith(store);
+					expect(featureInfoPluginSpy).toHaveBeenCalledWith(store);
 					expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 					done();
 				});
