@@ -316,7 +316,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._pointCount = 1;
 				this._isSnapOnLastPoint = false;
 				const onFeatureChange = (event) => {
-					this._monitorDrawing(event.target, true);
+					this._monitorSketchProperties(event.target);
 				};
 
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
@@ -573,15 +573,12 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	}
 
-	_monitorDrawing(feature, isDrawing) {
-		const getLineCoordinates = (geometry, isDrawing) => {
-			if (geometry instanceof Polygon) {
-				return isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates()[0];
-			}
-			return geometry.getCoordinates();
-
+	// todo: extract with _pointCount, _isFinishOnFirstPoint, _isSnapOnLastPoint to OlSketchPropertyHandler
+	_monitorSketchProperties(feature) {
+		const getLineCoordinates = (geometry) => {
+			return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
 		};
-		const lineCoordinates = getLineCoordinates(feature.getGeometry(), isDrawing);
+		const lineCoordinates = getLineCoordinates(feature.getGeometry());
 
 		if (this._pointCount !== lineCoordinates.length) {
 			// a point is added or removed
@@ -597,7 +594,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
 		}
-
 	}
 
 	_setSelected(feature) {

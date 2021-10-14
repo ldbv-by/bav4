@@ -363,6 +363,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._pointCount = 1;
 			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
+				this._monitorSketchProperties(event.target);
 				const measureGeometry = this._createMeasureGeometry(event.target, true);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
@@ -467,33 +468,40 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
+	// todo: extract with _pointCount, _isFinishOnFirstPoint, _isSnapOnLastPoint to OlSketchPropertyHandler
+	_monitorSketchProperties(feature) {
+		const getLineCoordinates = (geometry) => {
+			return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
+		};
+		const lineCoordinates = getLineCoordinates(feature.getGeometry());
+
+		if (this._pointCount !== lineCoordinates.length) {
+			// a point is added or removed
+			this._pointCount = lineCoordinates.length;
+		}
+		else if (lineCoordinates.length > 1) {
+			const firstPoint = lineCoordinates[0];
+			const lastPoint = lineCoordinates[lineCoordinates.length - 1];
+			const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
+
+			const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
+			this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
+
+			this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+		}
+	}
+
 	_createMeasureGeometry(feature, isDrawing = false) {
-		let measureGeometry = feature.getGeometry();
 
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
 
-
-			if (this._pointCount !== lineCoordinates.length) {
-				// a point is added or removed
-				this._pointCount = lineCoordinates.length;
-			}
-			else if (lineCoordinates.length > 1) {
-				const firstPoint = lineCoordinates[0];
-				const lastPoint = lineCoordinates[lineCoordinates.length - 1];
-				const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
-
-				const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-				this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
-
-				this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
-			}
 			if (!this._isFinishOnFirstPoint) {
-				measureGeometry = new LineString(lineCoordinates);
+				return new LineString(lineCoordinates);
 			}
 
 		}
-		return measureGeometry;
+		return feature.getGeometry();
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {
