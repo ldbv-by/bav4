@@ -1,6 +1,6 @@
 import { observe } from '../../utils/storeUtils';
 import { BaPlugin } from '../../store/BaPlugin';
-import { add, clear } from './featureInfo.action';
+import { add, clear, updateCoordinate } from './featureInfo.action';
 import { html } from 'lit-html';
 import { close, open, setTabIndex, TabIndex } from '../../modules/menu/store/mainMenu.action';
 
@@ -19,7 +19,10 @@ export class FeatureInfoPlugin extends BaPlugin {
 		let previousTabIndex = 0;
 		let wasOpen = null;
 
-		const onPointerClick = () => {
+		const onPointerClick = (evt) => {
+			const { payload: { coordinate } } = evt;
+			updateCoordinate(coordinate);
+			//we simulate a FeatureInfo item here. Later we will call the FeatureInfoService.
 			add({ title: 'title', content: html`<div>myFeatureInfo</div>` });
 			setTabIndex(TabIndex.FEATUREINFO);
 			open();

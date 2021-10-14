@@ -28,48 +28,53 @@ describe('FeatureInfoPlugin', () => {
 		return store;
 	};
 
-	describe('when mainMenu is initially open', () => {
+	describe('when pointer click property changes', () => {
 
-		it('adds a FeatureInfo item and changes the mainMenu state', async () => {
-			const store = setup();
-			const instanceUnderTest = new FeatureInfoPlugin();
-			await instanceUnderTest.register(store);
+		describe('and mainMenu is initially open', () => {
 
-			setClick({ coordinate: [11, 22], screenCoordinate: [33, 44] });
+			it('adds a FeatureInfo item and changes the mainMenu state', async () => {
+				const store = setup();
+				const instanceUnderTest = new FeatureInfoPlugin();
+				await instanceUnderTest.register(store);
 
-			expect(store.getState().featureInfo.current.length).toBe(1);
-			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-			expect(store.getState().mainMenu.open).toBeTrue();
+				setClick({ coordinate: [11, 22], screenCoordinate: [33, 44] });
 
-			clear();
+				expect(store.getState().featureInfo.current.length).toBe(1);
+				expect(store.getState().featureInfo.coordinate.payload).toEqual([11, 22]);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
+				expect(store.getState().mainMenu.open).toBeTrue();
 
-			expect(store.getState().mainMenu.tabIndex).toBe(2);
-			expect(store.getState().mainMenu.open).toBeTrue();
-		});
-	});
+				clear();
 
-	describe('when mainMenu initially closed', () => {
-
-		it('adds a FeatureInfo item and changes the mainMenu state', async () => {
-			const store = setup({
-				mainMenu: {
-					tabIndex: 2,
-					open: false
-				}
+				expect(store.getState().mainMenu.tabIndex).toBe(2);
+				expect(store.getState().mainMenu.open).toBeTrue();
 			});
-			const instanceUnderTest = new FeatureInfoPlugin();
-			await instanceUnderTest.register(store);
+		});
 
-			setClick({ coordinate: [11, 22], screenCoordinate: [33, 44] });
+		describe('and mainMenu initially closed', () => {
 
-			expect(store.getState().featureInfo.current.length).toBe(1);
-			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-			expect(store.getState().mainMenu.open).toBeTrue();
+			it('adds a FeatureInfo item and changes the mainMenu state', async () => {
+				const store = setup({
+					mainMenu: {
+						tabIndex: 2,
+						open: false
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+				await instanceUnderTest.register(store);
 
-			clear();
+				setClick({ coordinate: [11, 22], screenCoordinate: [33, 44] });
 
-			expect(store.getState().mainMenu.tabIndex).toBe(2);
-			expect(store.getState().mainMenu.open).toBeFalse();
+				expect(store.getState().featureInfo.current.length).toBe(1);
+				expect(store.getState().featureInfo.coordinate.payload).toEqual([11, 22]);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
+				expect(store.getState().mainMenu.open).toBeTrue();
+
+				clear();
+
+				expect(store.getState().mainMenu.tabIndex).toBe(2);
+				expect(store.getState().mainMenu.open).toBeFalse();
+			});
 		});
 	});
 
