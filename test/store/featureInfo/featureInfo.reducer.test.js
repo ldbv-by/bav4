@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
-import { add, clear } from '../../../src/store/featureInfo/featureInfo.action.js';
+import { add, clear, updateCoordinate } from '../../../src/store/featureInfo/featureInfo.action.js';
 
 
 describe('featureInfoReducer', () => {
@@ -14,9 +14,10 @@ describe('featureInfoReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().featureInfo.current).toEqual([]);
+		expect(store.getState().featureInfo.coordinate).toBeNull();
 	});
 
-	it('updates the stores properties', () => {
+	it('updates the \'current}\' property', () => {
 		const store = setup();
 
 		add({ title: 'title0', content: 'content0' });
@@ -27,5 +28,13 @@ describe('featureInfoReducer', () => {
 		clear();
 
 		expect(store.getState().featureInfo.current).toEqual([]);
+	});
+
+	it('updates the \'coordinate}\' property', () => {
+		const store = setup();
+
+		updateCoordinate([21, 42]);
+
+		expect(store.getState().featureInfo.coordinate.payload).toEqual([21, 42]);
 	});
 });
