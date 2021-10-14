@@ -117,7 +117,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(copyToClipboardMock).toHaveBeenCalledWith(stringifiedCoord);
 			setTimeout(() => {
 				//check notification
-				expect(store.getState().notifications.notification.payload.message).toBe(`"${stringifiedCoord}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.notification.payload.content).toBe(`"${stringifiedCoord}" map_contextMenuContent_clipboard_success`);
 				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.INFO);
 				done();
 			});
@@ -140,7 +140,7 @@ describe('OlMapContextMenuContent', () => {
 			copyIcon.click();
 
 			setTimeout(() => {
-				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
+				expect(store.getState().notifications.notification.payload.content).toBe('map_contextMenuContent_clipboard_error');
 				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 				done();

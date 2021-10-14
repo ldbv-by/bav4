@@ -18,7 +18,7 @@ describe('notificationReducer', () => {
 	it('sets the \'notification\' property', () => {
 		const store = setup();
 		const notification = {
-			message: 'foo',
+			content: 'foo',
 			level: LevelTypes.INFO,
 			permanent: false
 		};

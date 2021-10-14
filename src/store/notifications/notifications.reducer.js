@@ -8,7 +8,8 @@ export const NOTIFICATION_ADDED = 'notification/added';
 export const LevelTypes = Object.freeze({
 	INFO: Symbol.for('info'),
 	WARN: Symbol.for('warn'),
-	ERROR: Symbol.for('error')
+	ERROR: Symbol.for('error'),
+	CUSTOM: Symbol.for('custom')
 });
 
 

@@ -7,7 +7,7 @@ window.customElements.define(NotificationItem.tag, NotificationItem);
 
 describe('NotificationItem', () => {
 	const notificationTemplate = {
-		message: null,
+		content: null,
 		level: LevelTypes.INFO,
 		permanent: false,
 		id: 1234,
@@ -34,7 +34,7 @@ describe('NotificationItem', () => {
 		};
 
 		it('displays the notification message', async () => {
-			const element = await setup({ ...notificationTemplate, message: 'FooBar' });
+			const element = await setup({ ...notificationTemplate, content: 'FooBar' });
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toContain('FooBar');
@@ -43,7 +43,7 @@ describe('NotificationItem', () => {
 		it('starts hiding with autoclose after 1 sec.', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;
-			const notification = { ...notificationTemplate, message: 'FooBar', autocloseTime: autocloseTime };
+			const notification = { ...notificationTemplate, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
 			const hideSpy = spyOn(element, '_hide').and.callThrough();
@@ -56,7 +56,7 @@ describe('NotificationItem', () => {
 		it('closes the notification item with call of onClose', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;
-			const notification = { ...notificationTemplate, message: 'FooBar', autocloseTime: autocloseTime };
+			const notification = { ...notificationTemplate, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
 			element.onClose = jasmine.createSpy();

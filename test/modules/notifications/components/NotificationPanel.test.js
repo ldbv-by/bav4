@@ -34,7 +34,7 @@ describe('NotificationPanel', () => {
 
 		expect(element._notifications.length).toBe(1);
 		expect(element._notifications[0].id).toEqual(jasmine.any(Number));
-		expect(element._notifications[0].message).toBe('fooBar');
+		expect(element._notifications[0].content).toBe('fooBar');
 		expect(element._notifications[0].level).toBe(LevelTypes.INFO);
 		expect(element._notifications[0].permanent).toBeFalse();
 
@@ -123,7 +123,7 @@ describe('NotificationPanel', () => {
 		setTimeout(() => {
 			notificationItemElement.dispatchEvent(new Event('animationend'));
 			setTimeout(() => {
-				expect(removeSpy).toHaveBeenCalledWith({ message: 'fooBar', id: jasmine.any(Number), level: LevelTypes.INFO, index: 0, permanent: false, autocloseTime: autocloseTime });
+				expect(removeSpy).toHaveBeenCalledWith({ content: 'fooBar', id: jasmine.any(Number), level: LevelTypes.INFO, index: 0, permanent: false, autocloseTime: autocloseTime });
 			});
 			done();
 		}, laterThenPanelAutoCloseTime);

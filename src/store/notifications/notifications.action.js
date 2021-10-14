@@ -9,8 +9,8 @@ const getStore = () => {
 
 /**
 * @typedef {Object} Notification
-* @property {string} message the notification message
-* @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+* @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
+* @property {'info'|'warn'|'error'|'custom'} level the notification level (@see {@link LevelTypes})
 * @property {Boolean} permanent whether the notification invalidates after
 * a specific amount of time or stays relevant until the user decides to dismiss
 * the message
@@ -18,15 +18,15 @@ const getStore = () => {
 
 /**
  * Emits a new notification to the system
- * @param {string} message the notification message
- * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+ * @param {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
+ * @param {'info'|'warn'|'error'|'custom'} level the notification level (@see {@link LevelTypes})
  * @param {Boolean} [isPermanent=false] whether the notification invalidates after
  * a specific amount of time or stays relevant until the user decides to dismiss
  * the message
  */
-export const emitNotification = (message, level, isPermanent = false) => {
+export const emitNotification = (content, level, isPermanent = false) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
-		payload: new EventLike({ message: message, level: level, permanent: isPermanent })
+		payload: new EventLike({ content: content, level: level, permanent: isPermanent })
 	});
 };

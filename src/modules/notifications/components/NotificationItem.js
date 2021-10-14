@@ -11,7 +11,7 @@ export class NotificationItem extends BaElement {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._content = { message: null, level: null };
+		this._notification = { content: null, level: null };
 		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
 		this._autocloseTimeoutId = null;
 		this._onClose = () => { };
@@ -25,18 +25,21 @@ export class NotificationItem extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const levelClass = {
-			notification_info: this._content.level === LevelTypes.INFO,
-			notification_warn: this._content.level === LevelTypes.WARN,
-			notification_error: this._content.level === LevelTypes.ERROR
+			notification_info: this._level === LevelTypes.INFO,
+			notification_warn: this._level === LevelTypes.WARN,
+			notification_error: this._level === LevelTypes.ERROR,
+			notification_custom: this._level === LevelTypes.CUSTOM
 		};
-		const levelText = () => {
-			switch (this._content.level) {
+		const getLevelText = (level) => {
+			switch (level) {
 				case LevelTypes.INFO:
-					return 'notifications_item_info';
+					return html`<div class='notification_level'>${translate('notifications_item_info')}</div>`;
 				case LevelTypes.WARN:
-					return 'notifications_item_warn';
+					return html`<div class='notification_level'>${translate('notifications_item_warn')}</div>`;
 				case LevelTypes.ERROR:
-					return 'notifications_item_error';
+					return html`<div class='notification_level'>${translate('notifications_item_error')}</div>`;
+				default:
+					return html.nothing;
 			}
 		};
 		if (this._autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER) {
@@ -45,12 +48,12 @@ export class NotificationItem extends BaElement {
 			}, this._autocloseTime);
 		}
 
-		const message = this._content.message ? this._content.message : html.nothing;
+		const content = this._notification.content ? this._notification.content : html.nothing;
 		return html`
 		<style>${css}</style>
 		<div class='notification_item ${classMap(levelClass)}'>
-        	<span class='notification_level'>${translate(levelText())}</span>
-        	<span class='notification_content'>${message}</span>			
+        	${getLevelText(this._notification.level)}
+        	<div class='notification_content'>${content}</div>			
 		</div>`;
 	}
 
@@ -62,7 +65,7 @@ export class NotificationItem extends BaElement {
 
 		element.addEventListener('animationend', () => {
 			// If the notification-item is not yet closed
-			this.onClose(this._content);
+			this.onClose(this._notification);
 			clearTimeout(this._autocloseTimeoutId);
 		});
 	}
@@ -72,7 +75,7 @@ export class NotificationItem extends BaElement {
 	}
 
 	set content(value) {
-		this._content = value;
+		this._notification = value;
 		this._autocloseTime = value.autocloseTime;
 		this.render();
 	}

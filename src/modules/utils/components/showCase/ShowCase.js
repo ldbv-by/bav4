@@ -74,12 +74,12 @@ export class ShowCase extends BaElement {
 			console.log('toggled ' + event.detail.checked);
 		};
 
-		const activateMeasrementTool = () => {
+		const activateMeasurementTool = () => {
 			activateMeasurement();
 			closeModal();
 		};
 
-		const deactivateMeasrementTool = () => {
+		const deactivateMeasurementTool = () => {
 			deactivateMeasurement();
 			closeModal();
 		};
@@ -105,6 +105,15 @@ export class ShowCase extends BaElement {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
 		};
 
+		const onClickEmitCustom = () => {
+			const content = html`<div>
+				<h3>Wait...</h3>
+				<div style="color: white;background-color: var(--warning-color);">This is something </div>
+				<div style="color: white;background-color: var(--error-color);">completly different!</div>
+				</div>`;
+			emitNotification(content, LevelTypes.CUSTOM);
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -121,8 +130,8 @@ export class ShowCase extends BaElement {
 			</p>
 			<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>				
 			<p>Measure Distance</p>
-			<ba-button id='buttonActivateMeasureDistance' .label=${'Measure Distance'} .type=${'primary'} @click=${activateMeasrementTool}></ba-button>	
-			<ba-button id='buttonDeactivateMeasureDistance' .label=${'Deactivate Measure Distance'} .type=${'secondary'} @click=${deactivateMeasrementTool}></ba-button>	
+			<ba-button id='buttonActivateMeasureDistance' .label=${'Measure Distance'} .type=${'primary'} @click=${activateMeasurementTool}></ba-button>	
+			<ba-button id='buttonDeactivateMeasureDistance' .label=${'Deactivate Measure Distance'} .type=${'secondary'} @click=${deactivateMeasurementTool}></ba-button>	
 			
 			<p>BaseLayer Switcher</p>
 			<div><ba-base-layer-switcher></ba-base-layer-switcher></div>
@@ -168,6 +177,7 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification0' label='Info Notification' type="primary" @click=${onClickEmitInfo}></ba-button>
 						<ba-button id='notification1' label='Warn Notification' type="primary" @click=${onClickEmitWarn}></ba-button>
 						<ba-button id='notification2' label='Error Notification' type="primary" @click=${onClickEmitError} ></ba-button>
+						<ba-button id='notification2' label='Custom Notification' type="primary" @click=${onClickEmitCustom} ></ba-button>
 			</div>
 		</div>`;
 	}
