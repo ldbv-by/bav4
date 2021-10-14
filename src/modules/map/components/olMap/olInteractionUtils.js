@@ -26,10 +26,10 @@ export const InteractionSnapType = {
  * @returns {Object}
  */
 export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = false) => {
-	const filter = modifiedFeaturesOnly ?
-		itemLayer => itemLayer === interactionLayer && (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) :
-		itemLayer => itemLayer === interactionLayer;
-	return { hitTolerance: 10, layerFilter: filter };
+	if (modifiedFeaturesOnly) {
+		return { hitTolerance: 10, layerFilter: itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) };
+	}
+	return { hitTolerance: 10, layerFilter: itemLayer => itemLayer === interactionLayer };
 };
 
 /**
@@ -82,33 +82,31 @@ export const getModifyOptions = (modifyableFeatures) => {
  * @returns {InteractionSnapType| null}
  */
 export const getSnapState = (map, interactionLayer, pixel) => {
-	let snapType = null;
-	let vertexFeature = null;
-	let featuresFromInteractionLayerCount = 0;
-	map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+	const featuresFromInteractionLayer = [];
+	const vertexFeature = map.forEachFeatureAtPixel(pixel, (feature, layer) => {
 		if (layer === interactionLayer) {
-			featuresFromInteractionLayerCount++;
+			featuresFromInteractionLayer.push(feature);
 		}
 		if (!layer && feature.get('features').length > 0) {
-			vertexFeature = feature;
-			return;
+			return feature;
 		}
 	}, getFeatureSnapOption(interactionLayer, true));
 
 	if (vertexFeature) {
-		snapType = InteractionSnapType.EGDE;
+
 		const vertexGeometry = vertexFeature.getGeometry();
 		const snappedFeature = vertexFeature.get('features')[0];
 		const snappedGeometry = snappedFeature.getGeometry();
 
 		if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
-			snapType = InteractionSnapType.VERTEX;
+			return InteractionSnapType.VERTEX;
 		}
+		return InteractionSnapType.EGDE;
 	}
-	if (!vertexFeature && featuresFromInteractionLayerCount > 0) {
-		snapType = InteractionSnapType.FACE;
+	if (!vertexFeature && featuresFromInteractionLayer.length > 0) {
+		return InteractionSnapType.FACE;
 	}
-	return snapType;
+	return null;
 };
 
 

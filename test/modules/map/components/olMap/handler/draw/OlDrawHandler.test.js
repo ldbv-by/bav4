@@ -1221,7 +1221,7 @@ describe('OlDrawHandler', () => {
 				const drawStateSpy = jasmine.createSpy();
 				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback(snappingFeatureMock, undefined);
+					return callback(snappingFeatureMock, undefined);
 				});
 
 
@@ -1243,7 +1243,7 @@ describe('OlDrawHandler', () => {
 
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback(snappingFeatureMock, undefined);
+					return callback(snappingFeatureMock, undefined);
 				});
 
 				classUnderTest.activate(map);

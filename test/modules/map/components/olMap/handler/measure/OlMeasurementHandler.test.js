@@ -1233,7 +1233,7 @@ describe('OlMeasurementHandler', () => {
 				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([50, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback(snappingFeatureMock, undefined);
+					return callback(snappingFeatureMock, undefined);
 				});
 
 
@@ -1253,7 +1253,7 @@ describe('OlMeasurementHandler', () => {
 				const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 				const snappingFeatureMock = createSnappingFeatureMock([0, 0], feature);
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
-					callback(snappingFeatureMock, undefined);
+					return callback(snappingFeatureMock, undefined);
 				});
 
 				classUnderTest.activate(map);
@@ -1277,8 +1277,8 @@ describe('OlMeasurementHandler', () => {
 				let toggleOnce = true;
 				map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
 					if (toggleOnce) {
-						callback(snappingFeatureMock, undefined);
 						toggleOnce = false;
+						return callback(snappingFeatureMock, undefined);
 					}
 				});
 

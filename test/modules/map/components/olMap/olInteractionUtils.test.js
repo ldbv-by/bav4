@@ -35,7 +35,7 @@ describe('olInteractionUtils', () => {
 			const aDifferentLayer = { getStyle: () => () => [new Style()] };
 
 			const option = getFeatureSnapOption(mockModifiedLayer, true);
-			expect(option.layerFilter(mockModifiedLayer)).toBeFalse();
+			expect(option.layerFilter(mockModifiedLayer)).toBeTrue();
 			spyOn(mockModifiedLayer, 'getStyle').and.returnValue(modifyStyleFunction);
 			expect(option.layerFilter(mockModifiedLayer)).toBeTrue();
 

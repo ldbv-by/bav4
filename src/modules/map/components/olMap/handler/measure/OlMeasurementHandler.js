@@ -505,7 +505,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
-
 		if (this._draw.getActive()) {
 			measureState.type = InteractionStateType.ACTIVE;
 
