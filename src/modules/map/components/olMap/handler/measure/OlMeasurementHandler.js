@@ -384,8 +384,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		draw.on('drawabort', event => this._overlayService.remove(event.feature, this._map));
 
 		draw.on('drawend', event => {
-			this._styleService.addStyle(this._activeSketch, this._map);
 			finishDistanceOverlay(event);
+			this._styleService.addStyle(event.feature, this._map);
 			this._activateModify(event.feature);
 		}
 		);
