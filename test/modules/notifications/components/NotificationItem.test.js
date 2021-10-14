@@ -2,6 +2,7 @@ import { NotificationItem } from '../../../../src/modules/notifications/componen
 import { LevelTypes, notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { html } from 'lit-html';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
@@ -33,11 +34,20 @@ describe('NotificationItem', () => {
 			return element;
 		};
 
-		it('displays the notification message', async () => {
+		it('displays the notification content', async () => {
 			const element = await setup({ ...notificationTemplate, content: 'FooBar' });
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toContain('FooBar');
+		});
+
+		it('displays the notification content from a lit-html template-result', async () => {
+			const template = (str) => html`${str}`;
+
+			const element = await setup({ ...notificationTemplate, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
+			const contentElement = element.shadowRoot.querySelector('.notification_content');
+
+			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
 		});
 
 		it('starts hiding with autoclose after 1 sec.', async () => {
@@ -92,6 +102,12 @@ describe('NotificationItem', () => {
 				const contentElement = element.shadowRoot.querySelector('.notification_level');
 
 				expect(contentElement.innerText).toContain('notifications_item_error');
+			});
+
+			it('custom', async () => {
+				const element = await setup({ ...notificationTemplate, level: LevelTypes.custom });
+
+				expect(element.shadowRoot.querySelector('.notification_level')).toBeFalsy();
 			});
 
 		});
