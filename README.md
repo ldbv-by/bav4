@@ -144,7 +144,7 @@ Components hold local state within their model.
 ### Plugins
 
 `BaPlugins` implementations are a second important place for structuring code and logic.  
-In contrast to components, they often act on a higher abstraction level
+In contrast to components, they often act as a Controller on a higher abstraction level
 managing global state being consumed by different components afterward.  
 For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app. 
 
