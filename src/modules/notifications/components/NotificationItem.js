@@ -25,10 +25,10 @@ export class NotificationItem extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const levelClass = {
-			notification_info: this._level === LevelTypes.INFO,
-			notification_warn: this._level === LevelTypes.WARN,
-			notification_error: this._level === LevelTypes.ERROR,
-			notification_custom: this._level === LevelTypes.CUSTOM
+			notification_info: this._notification.level === LevelTypes.INFO,
+			notification_warn: this._notification.level === LevelTypes.WARN,
+			notification_error: this._notification.level === LevelTypes.ERROR,
+			notification_custom: this._notification.level === LevelTypes.CUSTOM
 		};
 		const getLevelText = (level) => {
 			switch (level) {
