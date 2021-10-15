@@ -1,8 +1,10 @@
 import { MvuCounterList } from '../../../../../src/modules/commons/components/examples/MvuCounterList.js';
+import { MvuTopicItem } from '../../../../../src/modules/commons/components/examples/MvuTopicItem.js';
 import { setCurrent } from '../../../../../src/store/topics/topics.action.js';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 
+window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
 window.customElements.define(MvuCounterList.tag, MvuCounterList);
 
 const state = {
@@ -28,38 +30,74 @@ describe('MvuCounterList', () => {
 
 		const element = await setup(state);
 
-		expect(element.shadowRoot.querySelector('h2').textContent).toBe(expectedTitle);
+		expect(element.shadowRoot.querySelector('h2').innerText).toBe(expectedTitle);
 	});
 
 	it('should sort the order of topics', async () => {
 
 		const element = await setup(state);
-		setCurrent('ba');
 
+		setCurrent('ba');
 		const btnSort = element.shadowRoot.querySelector('.btnSort');
 		btnSort.dispatchEvent(new MouseEvent('click'));
 
-		expect(element.shadowRoot.querySelector('li').textContent).toBe('ba');
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+		const span = topicItems[0].shadowRoot.querySelector('span');
+
+		expect(topicItems.length).toBe(5);
+		expect(span.innerText).toBe('ba');
 	});
 
 	it('should reverse the order of topics', async () => {
 
 		const element = await setup(state);
-		setCurrent('ba');
 
+		setCurrent('ba');
 		const btnReverse = element.shadowRoot.querySelector('.btnReverse');
 		btnReverse.dispatchEvent(new MouseEvent('click'));
 
-		expect(element.shadowRoot.querySelector('li').textContent).toBe('ba');
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+		const span = topicItems[0].shadowRoot.querySelector('span');
+
+		expect(topicItems.length).toBe(5);
+		expect(span.innerText).toBe('ba');
 	});
 
 	it('should update the topics adding ba topic to the list', async () => {
 
 		const element = await setup(state);
-		setCurrent('ba');
 
 		element.signal(TOPIC_UPDATE, 'ba');
 
-		expect(element.shadowRoot.querySelector('li').textContent).toBe('topic3');
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+		const span = topicItems[0].shadowRoot.querySelector('span');
+
+		expect(topicItems.length).toBe(5);
+		expect(span.innerText).toBe('topic3');
+	});
+
+	it('should remove the first topic of the list new first element should be topic2 ', async () => {
+
+		const element = await setup(state);
+		setCurrent('ba');
+
+		const topicItem = element.shadowRoot.querySelector('ba-mvu-topic-item');
+		topicItem.dispatchEvent(new MouseEvent('click'));
+
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+		const span = topicItems[0].shadowRoot.querySelector('span');
+
+		expect(topicItems.length).toBe(4);
+		expect(span.innerText).toBe('topic2');
+	});
+
+	it('should render label of the first topicItem', async () => {
+
+		const element = await setup(state);
+
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+
+		expect(topicItems[0].label).toBe('topic3');
+		expect(topicItems.length).toBe(4);
 	});
 });

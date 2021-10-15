@@ -4,6 +4,7 @@ import { MvuElement } from '../../../MvuElement';
 const TOPIC_SORT = 'TOPIC_SORT';
 const TOPIC_REVERSE = 'TOPIC_REVERSE';
 const TOPIC_UPDATE = 'TOPIC_UPDATE';
+const TOPIC_REMOVE = 'TOPIC_REMOVE';
 
 export class MvuCounterList extends MvuElement {
 
@@ -20,6 +21,8 @@ export class MvuCounterList extends MvuElement {
 	}
 
 	update(type, data, model) {
+		// in the cases: sort and reverse, we have to create a copy of the topics array in order
+		// to avoid overriding the array instance of the model as argument of the update function
 		switch (type) {
 			case TOPIC_SORT:
 				return { ...model,
@@ -33,6 +36,10 @@ export class MvuCounterList extends MvuElement {
 				return { ...model,
 					topics: [...model.topics, data]
 				};
+			case TOPIC_REMOVE:
+				return { ...model,
+					topics: [...model.topics.filter(e => e !== data)]
+				};
 		}
 	}
 
@@ -45,7 +52,9 @@ export class MvuCounterList extends MvuElement {
 			<div>------------------------</div>
 			<ul>
 				${model.topics.map((topic) => html`
-				<li>${topic}</li>
+				<li>
+				<ba-mvu-topic-item .label=${topic} @click=${() => this.signal(TOPIC_REMOVE, topic, model)}></ba-mvu-topic-item>
+				</li>
 				`)}
 			</ul>
 			<br>
