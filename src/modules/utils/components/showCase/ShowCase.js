@@ -110,7 +110,8 @@ export class ShowCase extends BaElement {
 				<h3>Wait...</h3>
 				<div style="color: white;background-color: var(--warning-color);">This is something </div>
 				<div style="color: white;background-color: var(--error-color);">completly different!</div>
-				</div>`;
+				<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
+			</div>`;
 			emitNotification(content, LevelTypes.CUSTOM);
 		};
 
