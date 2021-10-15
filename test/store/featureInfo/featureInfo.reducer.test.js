@@ -17,13 +17,25 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.coordinate).toBeNull();
 	});
 
-	it('updates the \'current}\' property', () => {
+	it('updates the \'current}\' property with object as argument', () => {
 		const store = setup();
 
 		add({ title: 'title0', content: 'content0' });
 		add({ title: 'title1', content: 'content1' });
 
 		expect(store.getState().featureInfo.current).toEqual([{ title: 'title1', content: 'content1' }, { title: 'title0', content: 'content0' }]);
+
+		clear();
+
+		expect(store.getState().featureInfo.current).toEqual([]);
+	});
+
+	it('updates the \'current}\' property with array as argument', () => {
+		const store = setup();
+
+		add([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+
+		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
 		clear();
 

@@ -21,14 +21,16 @@ const getStore = () => {
 
 
 /**
-  * Adds a  {@link FeatureInfo} item
-  * @param {FeatureInfo} featureInfo
+  * Adds an single or an array of {@link FeatureInfo} items
+  * @param {{Array.<FeatureInfo>}} featureInfo
   */
 export const add = (featureInfo) => {
 
+	const featureInfoAsArray = Array.isArray(featureInfo) ? [...featureInfo] : [featureInfo];
+
 	getStore().dispatch({
 		type: FEATURE_INFO_ADDED,
-		payload: featureInfo
+		payload: featureInfoAsArray
 	});
 };
 
