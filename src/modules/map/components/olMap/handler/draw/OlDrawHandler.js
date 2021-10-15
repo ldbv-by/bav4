@@ -5,7 +5,8 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { createSketchStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
-import { StyleSizeTypes, StyleTypes } from '../../services/StyleService';
+import { StyleTypes } from '../../services/StyleService';
+import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
@@ -22,7 +23,7 @@ import { debounced } from '../../../../../../utils/timer';
 import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
-import { isEmptyLayer, isInCollection } from '../../olMapUtils';
+import { isEmptyLayer } from '../../olMapUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -164,7 +165,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
-					const hasFeature = isInCollection(f, this._select.getFeatures());
+					const hasFeature = this._select.getFeatures().getArray().includes(f);
 					if (!hasFeature) {
 						this._setSelected(f);
 					}

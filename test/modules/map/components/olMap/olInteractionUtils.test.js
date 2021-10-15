@@ -3,7 +3,7 @@ import { Point } from 'ol/geom';
 import MapBrowserEventType from 'ol/src/MapBrowserEventType';
 import Style from 'ol/style/Style';
 import { $injector } from '../../../../../src/injection';
-import { getFeatureSnapOption, getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, removeSelectedFeatures } from '../../../../../src/modules/map/components/olMap/olInteractionUtils';
+import { getFeatureSnapOption, getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import { modifyStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { TestUtils } from '../../../../test-utils';
 
@@ -18,6 +18,32 @@ beforeAll(() => {
 });
 
 describe('olInteractionUtils', () => {
+
+	describe('enum InteractionStateType', () => {
+
+		it('is an enum with a value', () => {
+			expect(Object.entries(InteractionStateType).length).toBe(5);
+			expect(Object.isFrozen(InteractionStateType)).toBeTrue();
+			expect(InteractionStateType.ACTIVE).toEqual('active');
+			expect(InteractionStateType.DRAW).toEqual('draw');
+			expect(InteractionStateType.MODIFY).toEqual('modify');
+			expect(InteractionStateType.SELECT).toEqual('select');
+			expect(InteractionStateType.OVERLAY).toEqual('overlay');
+		});
+	});
+
+	describe('enum InteractionSnapType', () => {
+
+		it('is an enum with a value', () => {
+			expect(Object.entries(InteractionSnapType).length).toBe(5);
+			expect(Object.isFrozen(InteractionSnapType)).toBeTrue();
+			expect(InteractionSnapType.FIRSTPOINT).toEqual('firstPoint');
+			expect(InteractionSnapType.LASTPOINT).toEqual('lastPoint');
+			expect(InteractionSnapType.VERTEX).toEqual('vertex');
+			expect(InteractionSnapType.EGDE).toEqual('edge');
+			expect(InteractionSnapType.FACE).toEqual('face');
+		});
+	});
 
 	describe('when using getFeatureSnapOption', () => {
 		it('returns a object with a filter-function, which returns true for the defined layer', () => {

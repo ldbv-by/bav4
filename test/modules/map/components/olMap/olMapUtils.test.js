@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
-import { Collection, Map } from 'ol';
-import { isEmptyLayer, isInCollection, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { Map } from 'ol';
+import { isEmptyLayer, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
 
@@ -191,34 +191,5 @@ describe('olMapUtils', () => {
 			expect(isEmptyLayer(null)).toBeTrue();
 			expect(isEmptyLayer(undefined)).toBeTrue();
 		});
-	});
-
-	describe('isInCollection', () => {
-
-		it('finds a item', () => {
-			const item = { id: 'foo' };
-			const items = [item, { id: 'bar' }, { id: 'baz' }];
-			const collection = new Collection(items);
-
-			expect(isInCollection(item, collection)).toBeTrue();
-		});
-
-		it('finds NOT a item', () => {
-			const item = { id: '42' };
-			const items = [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }];
-			const collection = new Collection(items);
-
-			expect(isInCollection(item, collection)).toBeFalse();
-		});
-
-
-		it('finds NOT a item in empty collection', () => {
-			const item = { id: '42' };
-			const items = [];
-			const collection = new Collection(items);
-
-			expect(isInCollection(item, collection)).toBeFalse();
-		});
-
 	});
 });

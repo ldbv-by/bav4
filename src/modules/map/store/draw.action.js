@@ -15,7 +15,7 @@ import { EventLike } from '../../../utils/storeUtils';
  */
 
 /**
- * the Options of a Style-Request
+ * The Options of a Style-Request
  * @typedef {Object} DrawingStyleOption
  * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
  * @property {small|medium|big} scale the scale-factor of a drawing; used by symbol- and text-drawing
@@ -24,7 +24,7 @@ import { EventLike } from '../../../utils/storeUtils';
  */
 
 /**
- * the style-options for a selected drawing
+ * The style-options for a selected drawing
  * @typedef SelectedDrawingStyleOption
  * @property {string} type the type of the selected drawing
  * @property {DrawingStyleOption} style the styleOptions of the selected drawing
@@ -59,7 +59,7 @@ export const deactivate = () => {
 
 
 /**
- * set the mode of a drawing.
+ * Set the mode of a drawing.
  * @function
  */
 export const setMode = (mode) => {
@@ -70,7 +70,7 @@ export const setMode = (mode) => {
 };
 
 /**
- * set the type of a drawing.
+ * Set the type of a drawing.
  * @function
  */
 export const setType = (type) => {
@@ -81,7 +81,7 @@ export const setType = (type) => {
 };
 
 /**
- * set the style of a drawing.
+ * Set the style of a drawing.
  * @function
  */
 export const setStyle = (style) => {
@@ -92,7 +92,7 @@ export const setStyle = (style) => {
 };
 
 /**
- * set the style of a drawing.
+ * Set the style of a drawing.
  * @function
  * @param {SelectedDrawingStyleOption} selectedStyle the styleOptions of the selected drawing
  */
@@ -105,7 +105,7 @@ export const setSelectedStyle = (selectedSyle) => {
 
 
 /**
- * set the description of a drawing.
+ * Set the description of a drawing.
  * @function
  * @param {string} description the description of a drawing
  */
@@ -118,7 +118,7 @@ export const setDescription = (description) => {
 
 
 /**
- * set the {@link FileSaveResult}
+ * Set the {@link FileSaveResult}
  * @function
  * @param {DrawFileSaveResult} fileSaveResult the fileSaveResult of the stored drawing-data
  */
@@ -132,7 +132,7 @@ export const setFileSaveResult = (fileSaveResult) => {
 
 
 /**
- * set the reset request.
+ * Set the reset request.
  * @function
  */
 export const reset = () => {
@@ -144,7 +144,7 @@ export const reset = () => {
 
 
 /**
- * set the reset request.
+ * Set the reset request.
  * @function
  */
 export const finish = () => {
@@ -156,7 +156,7 @@ export const finish = () => {
 
 
 /**
- * set the delete request.
+ * Set the delete request.
  * @function
  */
 export const remove = () => {

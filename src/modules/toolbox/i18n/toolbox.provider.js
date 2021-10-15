@@ -97,7 +97,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_share_link_edit: 'Link zum Editieren Ihrer Zeichnung',
 				toolbox_measureTool_share_link_title: 'geteilt über BayernAtlas.de',
 				toolbox_drawTool_finish: 'Fertig',
-				toolbox_prevent_switching_tool: 'Bitte erst das alte Werkzeug schließen/beenden.',
+				toolbox_prevent_switching_tool: 'Bitte zuerst das aktuelle Werkzeug schließen/beenden',
 				toolbox_toolbar_draw_button: 'Zeichnen',
 				toolbox_toolbar_share_button: 'Teilen',
 				toolbox_toolbar_measure_button: 'Messen'

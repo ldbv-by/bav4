@@ -48,7 +48,7 @@ export class BaOverlay extends BaElement {
 	 * @override
 	 */
 	createView() {
-		const content = this._contentFunction();
+		const content = this._getContent(this._type);
 
 		const classes = {
 			help: this._type === BaOverlayTypes.HELP,
@@ -73,12 +73,14 @@ export class BaOverlay extends BaElement {
 	}
 
 	/**
+	 * Returns the displayable content of Overlay
 	 * @protected
+	 * @abstract
+	 * @param {string|BaOverlayTypes} type the BaOverlayType
+	 * @returns {string}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	_setContentFunctionBy(type) {
-		this._contentFunction = () => this._value;
-
+	_getContent(/*eslint-disable no-unused-vars */type) {
+		return this._value;
 	}
 
 	static get tag() {
@@ -99,7 +101,6 @@ export class BaOverlay extends BaElement {
 	set type(value) {
 		if (value !== this.type) {
 			this._type = value;
-			this._setContentFunctionBy(value);
 			this.render();
 		}
 	}

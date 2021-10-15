@@ -10,6 +10,7 @@ import { activate as activateDraw, deactivate as deactivateDraw } from '../../..
 import css from './toolContainer.css';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
 /**
  * @class
@@ -44,11 +45,11 @@ export class ToolContainer extends BaElement {
 		const getContent = (contentId) => {
 			switch (contentId) {
 				case DrawToolContent.tag:
-					return html`<ba-tool-draw-content></ba-tool-draw-content>`;
+					return html`${unsafeHTML(`<${DrawToolContent.tag}/>`)}`;
 				case MeasureToolContent.tag:
-					return html`<ba-tool-measure-content></ba-tool-measure-content>`;
+					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
 				case ShareToolContent.tag:
-					return html`<ba-tool-share-content></ba-tool-share-content>`;
+					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
 				default:
 					return null;
 			}

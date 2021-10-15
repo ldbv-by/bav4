@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { setStyle, setType } from '../../../map/store/draw.action';
 import css from './drawToolContent.css';
-import { StyleSizeTypes } from '../../../map/components/olMap/services/StyleService';
+import { StyleSizeTypes } from '../../../../services/domain/styles';
 
 
 /**

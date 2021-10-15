@@ -3,21 +3,21 @@ import { modifyStyleFunction } from './olStyleUtils';
 import { $injector } from '../../../../injection';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 
-export const InteractionStateType = {
+export const InteractionStateType = Object.freeze({
 	ACTIVE: 'active',
 	DRAW: 'draw',
 	MODIFY: 'modify',
 	SELECT: 'select',
 	OVERLAY: 'overlay'
-};
+});
 
-export const InteractionSnapType = {
+export const InteractionSnapType = Object.freeze({
 	FIRSTPOINT: 'firstPoint',
 	LASTPOINT: 'lastPoint',
 	VERTEX: 'vertex',
 	EGDE: 'edge',
 	FACE: 'face'
-};
+});
 
 /**
  * Creates a snapOption-object for calls on openlayers map-objects

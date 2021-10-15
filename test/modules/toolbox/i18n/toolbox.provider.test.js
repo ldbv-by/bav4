@@ -49,7 +49,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share_link_edit).toBe('Link zum Editieren Ihrer Zeichnung');
 		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
-		expect(map.toolbox_prevent_switching_tool).toBe('Bitte erst das alte Werkzeug schließen/beenden.');
+		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');

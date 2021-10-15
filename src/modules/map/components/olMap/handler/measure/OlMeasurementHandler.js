@@ -23,7 +23,7 @@ import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
-import { isEmptyLayer, isInCollection } from '../../olMapUtils';
+import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 
@@ -162,7 +162,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
-					const hasFeature = isInCollection(f, this._select.getFeatures());
+					const hasFeature = this._select.getFeatures().getArray().includes(f);
 					if (!hasFeature) {
 						this._select.getFeatures().push(f);
 					}

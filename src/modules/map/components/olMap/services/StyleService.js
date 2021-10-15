@@ -18,15 +18,6 @@ export const StyleTypes = Object.freeze({
 
 
 /**
- * @enum
- */
-export const StyleSizeTypes = Object.freeze({
-	SMALL: 'small',
-	MEDIUM: 'medium',
-	BIG: 'big'
-});
-
-/**
  * Adds or removes styles and overlays to ol.feature.
  * @class
  * @author thiloSchlemmer
