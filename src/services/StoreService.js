@@ -1,7 +1,6 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
 import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
-import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
@@ -42,7 +41,6 @@ export class StoreService {
 			mainMenu: createMainMenuReducer(),
 			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
-			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,
