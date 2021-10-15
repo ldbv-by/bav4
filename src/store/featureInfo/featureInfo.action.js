@@ -21,8 +21,8 @@ const getStore = () => {
 
 
 /**
-  * Adds an single or an array of {@link FeatureInfo} items
-  * @param {{Array.<FeatureInfo>}} featureInfo
+  * Adds a single or an array of {@link FeatureInfo} items
+  * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
   */
 export const add = (featureInfo) => {
 
