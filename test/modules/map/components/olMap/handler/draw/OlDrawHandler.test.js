@@ -232,13 +232,18 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const layerStub = {};
-				map.removeInteraction = jasmine.createSpy();
+
 				classUnderTest.activate(map);
 				setType('line');
+				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.deactivate(map, layerStub);
 
 				// removes Interaction for select, draw,modify, snap, dragPan
-				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
+				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Draw));
+				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Select));
+				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Modify));
+				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(Snap));
+				expect(map.removeInteraction).toHaveBeenCalledWith(jasmine.any(DragPan));
 			});
 
 			it('adds a select interaction', () => {

@@ -104,6 +104,7 @@ export class DrawToolContent extends AbstractToolContent {
             </div>
             `;
 		};
+
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
 
