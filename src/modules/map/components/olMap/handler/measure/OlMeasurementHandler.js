@@ -26,6 +26,7 @@ import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState
 import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
+import { OlSketchPropertyHandler } from '../OlSketchPropertyHandler';
 
 const Debounce_Delay = 1000;
 
@@ -56,9 +57,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._activeSketch = null;
 		this._storedContent = null;
 
-		this._isFinishOnFirstPoint = false;
-		this._isSnapOnLastPoint = false;
-		this._pointCount = 0;
+		this._sketchPropertyHandler = null;
 		this._listeners = [];
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
@@ -68,7 +67,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: null,
 			snap: null,
 			coordinate: null,
-			pointCount: this._pointCount,
+			pointCount: 0,
 			dragging: false
 		};
 		this._helpTooltip = new HelpTooltip();
@@ -295,7 +294,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw && this._draw.getActive()) {
 
 			this._draw.removeLastPoint();
-			if (this._pointCount === 1) {
+			if (this._sketchPropertyHandler && this._sketchPropertyHandler.pointCount === 1) {
 				this._startNew();
 			}
 			if (this._lastPointerMoveEvent) {
@@ -349,10 +348,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const geometry = event.feature.getGeometry();
 			const distanceOverlay = event.feature.get('measurement');
 			distanceOverlay.getElement().static = true;
-			if (geometry instanceof Polygon && !this._isFinishOnFirstPoint) {
+			if (geometry instanceof Polygon && this._sketchPropertyHandler && !this._sketchPropertyHandler.isFinishOnFirstPoint) {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));
 			}
+			this._sketchPropertyHandler.release();
+			this._sketchPropertyHandler = null;
 			this._activeSketch = null;
 			unByKey(listener);
 			unByKey(zoomListener);
@@ -360,10 +361,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawstart', event => {
 			this._activeSketch = event.feature;
-			this._pointCount = 1;
-			this._isSnapOnLastPoint = false;
 			const onFeatureChange = (event) => {
-				this._monitorSketchProperties(event.target);
 				const measureGeometry = this._createMeasureGeometry(event.target, true);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
@@ -376,7 +374,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			this._activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
 			this._overlayService.add(this._activeSketch, this._map, StyleTypes.MEASURE);
-
+			this._sketchPropertyHandler = new OlSketchPropertyHandler(event.feature);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
 
@@ -468,35 +466,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	// todo: extract with _pointCount, _isFinishOnFirstPoint, _isSnapOnLastPoint to OlSketchPropertyHandler
-	_monitorSketchProperties(feature) {
-		const getLineCoordinates = (geometry) => {
-			return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
-		};
-		const lineCoordinates = getLineCoordinates(feature.getGeometry());
-
-		if (this._pointCount !== lineCoordinates.length) {
-			// a point is added or removed
-			this._pointCount = lineCoordinates.length;
-		}
-		else if (lineCoordinates.length > 1) {
-			const firstPoint = lineCoordinates[0];
-			const lastPoint = lineCoordinates[lineCoordinates.length - 1];
-			const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
-
-			const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-			this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
-
-			this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
-		}
-	}
-
 	_createMeasureGeometry(feature, isDrawing = false) {
 
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
 
-			if (!this._isFinishOnFirstPoint) {
+			if (this._sketchPropertyHandler && !this._sketchPropertyHandler.isFinishOnFirstPoint) {
 				return new LineString(lineCoordinates);
 			}
 
@@ -509,7 +484,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: null,
 			snap: null,
 			coordinate: coordinate,
-			pointCount: this._pointCount
+			pointCount: this._sketchPropertyHandler ? this._sketchPropertyHandler.pointCount : 0
 		};
 
 		measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
@@ -520,10 +495,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._activeSketch.getGeometry();
 				measureState.type = InteractionStateType.DRAW;
 
-				if (this._isFinishOnFirstPoint) {
+				if (this._sketchPropertyHandler && this._sketchPropertyHandler.isFinishOnFirstPoint) {
 					measureState.snap = InteractionSnapType.FIRSTPOINT;
 				}
-				else if (this._isSnapOnLastPoint) {
+				else if (this._sketchPropertyHandler && this._sketchPropertyHandler.isSnapOnLastPoint) {
 					measureState.snap = InteractionSnapType.LASTPOINT;
 				}
 			}

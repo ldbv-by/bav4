@@ -15,7 +15,6 @@ import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { Polygon } from 'ol/geom';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
@@ -24,6 +23,7 @@ import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { isEmptyLayer } from '../../olMapUtils';
+import { OlSketchPropertyHandler } from '../OlSketchPropertyHandler';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -69,10 +69,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._activeSketch = null;
 
 		this._storedContent = null;
-
-		this._isFinishOnFirstPoint = false;
-		this._isSnapOnLastPoint = false;
-		this._pointCount = 0;
+		this._sketchPropertyHandler = null;
 		this._listeners = [];
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
@@ -82,7 +79,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			type: null,
 			snap: null,
 			coordinate: null,
-			pointCount: this._pointCount,
+			pointCount: 0,
 			dragging: false
 		};
 
@@ -291,7 +288,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_init(type) {
 		const styleOption = this._getStyleOption();
-		let listener;
+
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
@@ -315,21 +312,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._draw.on('drawstart', event => {
 				this._activeSketch = event.feature;
-				this._pointCount = 1;
-				this._isSnapOnLastPoint = false;
-				const onFeatureChange = (event) => {
-					this._monitorSketchProperties(event.target);
-				};
-
 				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
 				const styles = styleFunction(this._activeSketch);
 				this._activeSketch.setStyle(styles);
-				listener = event.feature.on('change', onFeatureChange);
+				this._sketchPropertyHandler = new OlSketchPropertyHandler(event.feature);
+				//listener = event.feature.on('change', onFeatureChange);
 			});
 			this._draw.on('drawend', event => {
 				this._activateModify(event.feature);
-				unByKey(listener);
+				this._sketchPropertyHandler.release();
+				// unByKey(listener);
 			});
 
 			this._map.addInteraction(this._draw);
@@ -501,11 +494,12 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
+		const pointCount = this._sketchPropertyHandler ? this._sketchPropertyHandler.pointCount : 0;
 		const drawState = {
 			type: null,
 			snap: null,
 			coordinate: coordinate,
-			pointCount: this._pointCount
+			pointCount: pointCount
 		};
 
 		drawState.snap = getSnapState(this._map, this._vectorLayer, pixel);
@@ -517,10 +511,10 @@ export class OlDrawHandler extends OlLayerHandler {
 				this._activeSketch.getGeometry();
 				drawState.type = InteractionStateType.DRAW;
 
-				if (this._isFinishOnFirstPoint) {
+				if (this._sketchPropertyHandler.isFinishOnFirstPoint) {
 					drawState.snap = InteractionSnapType.FIRSTPOINT;
 				}
-				else if (this._isSnapOnLastPoint) {
+				else if (this._sketchPropertyHandler.isSnapOnLastPoint) {
 					drawState.snap = InteractionSnapType.LASTPOINT;
 				}
 			}
@@ -576,27 +570,27 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	// todo: extract with _pointCount, _isFinishOnFirstPoint, _isSnapOnLastPoint to OlSketchPropertyHandler
-	_monitorSketchProperties(feature) {
-		const getLineCoordinates = (geometry) => {
-			return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
-		};
-		const lineCoordinates = getLineCoordinates(feature.getGeometry());
+	// _monitorSketchProperties(feature) {
+	// 	const getLineCoordinates = (geometry) => {
+	// 		return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
+	// 	};
+	// 	const lineCoordinates = getLineCoordinates(feature.getGeometry());
 
-		if (this._pointCount !== lineCoordinates.length) {
-			// a point is added or removed
-			this._pointCount = lineCoordinates.length;
-		}
-		else if (lineCoordinates.length > 1) {
-			const firstPoint = lineCoordinates[0];
-			const lastPoint = lineCoordinates[lineCoordinates.length - 1];
-			const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
+	// 	if (this._pointCount !== lineCoordinates.length) {
+	// 		// a point is added or removed
+	// 		this._pointCount = lineCoordinates.length;
+	// 	}
+	// 	else if (lineCoordinates.length > 1) {
+	// 		const firstPoint = lineCoordinates[0];
+	// 		const lastPoint = lineCoordinates[lineCoordinates.length - 1];
+	// 		const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
 
-			const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-			this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
+	// 		const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
+	// 		this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
 
-			this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
-		}
-	}
+	// 		this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
+	// 	}
+	// }
 
 	_setSelected(feature) {
 		if (feature) {

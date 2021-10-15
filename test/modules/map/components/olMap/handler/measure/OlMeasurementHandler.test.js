@@ -25,6 +25,7 @@ import { Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import VectorSource from 'ol/source/Vector';
+import { OlSketchPropertyHandler } from '../../../../../../../src/modules/map/components/olMap/handler/OlSketchPropertyHandler';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -307,6 +308,7 @@ describe('OlMeasurementHandler', () => {
 			it('register observer for remove-request', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
+				classUnderTest._sketchPropertyHandler = { pointCount: 1 };
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
 				const removeSpy = spyOn(classUnderTest, '_remove').and.callThrough();
@@ -1044,15 +1046,18 @@ describe('OlMeasurementHandler', () => {
 		it('change measureState, when sketch is snapping to last point', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
+
+
 			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: snappedGeometry });
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			classUnderTest._sketchPropertyHandler = new OlSketchPropertyHandler(feature);
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 1, dragging: jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]]);
@@ -1134,22 +1139,6 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-		});
-
-		it('does not change feature snapping states, after drawends', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-			const snappedGeometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
-			const feature = new Feature({ geometry: snappedGeometry });
-
-			classUnderTest.activate(map);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			feature.getGeometry().setCoordinates([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 0], [0, 0]]]);
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
-			expect(classUnderTest._isFinishOnFirstPoint).toBeTrue();
 		});
 
 		it('did NOT add the drawn feature to select after drawabort', () => {

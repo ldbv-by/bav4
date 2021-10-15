@@ -1092,6 +1092,7 @@ describe('OlDrawHandler', () => {
 		it('change drawState, when sketch is changing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
+			classUnderTest._sketchPropertyHandler = { pointCount: 0 };
 			const map = setupMap();
 			const drawStateSpy = jasmine.createSpy();
 			classUnderTest.activate(map);
