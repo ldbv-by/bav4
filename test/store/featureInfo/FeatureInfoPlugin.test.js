@@ -30,6 +30,20 @@ describe('FeatureInfoPlugin', () => {
 
 	describe('when pointer click property changes', () => {
 
+		it('clears all previous existing featureInfo items', async () => {
+			const store = setup({
+				featureInfo: {
+					current: [{ title: 'foo0', content: 'bar0' }, { title: 'foo1', content: 'bar1' }]
+				}
+			});
+			const instanceUnderTest = new FeatureInfoPlugin();
+			await instanceUnderTest.register(store);
+
+			setClick({ coordinate: [11, 22], screenCoordinate: [33, 44] });
+
+			expect(store.getState().featureInfo.current.length).toBe(1);
+		});
+
 		describe('and mainMenu is initially open', () => {
 
 			it('adds a FeatureInfo item and changes the mainMenu state', async () => {
