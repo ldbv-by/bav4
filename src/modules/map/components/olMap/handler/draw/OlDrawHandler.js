@@ -23,7 +23,7 @@ import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { isEmptyLayer } from '../../olMapUtils';
-import { OlSketchPropertyHandler } from '../OlSketchPropertyHandler';
+import { OlSketchHandler } from '../OlSketchHandler';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -66,10 +66,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._snap = null;
 		this._select = null;
 		this._dragPan = null;
-		this._activeSketch = null;
+
 
 		this._storedContent = null;
-		this._sketchPropertyHandler = null;
+		this._sketchHandler = new OlSketchHandler();
 		this._listeners = [];
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
@@ -311,18 +311,15 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 
 			this._draw.on('drawstart', event => {
-				this._activeSketch = event.feature;
-				this._activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
+				this._sketchHandler.activeSketch = event.feature;
+				this._sketchHandler.activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
-				const styles = styleFunction(this._activeSketch);
-				this._activeSketch.setStyle(styles);
-				this._sketchPropertyHandler = new OlSketchPropertyHandler(event.feature);
-				//listener = event.feature.on('change', onFeatureChange);
+				const styles = styleFunction(this._sketchHandler.activeSketch);
+				this._sketchHandler.activeSketch.setStyle(styles);
 			});
 			this._draw.on('drawend', event => {
 				this._activateModify(event.feature);
-				this._sketchPropertyHandler.release();
-				// unByKey(listener);
+				this._sketchHandler.resetActiveSketch();
 			});
 
 			this._map.addInteraction(this._draw);
@@ -355,7 +352,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_finish() {
-		if (this._activeSketch) {
+		if (this._sketchHandler.activeSketch) {
 			this._draw.finishDrawing();
 		}
 		else {
@@ -460,7 +457,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._modifyActivated = true;
 
 		this._setSelected(feature);
-		this._activeSketch = null;
 	}
 
 	_getStyleOption() {
@@ -494,7 +490,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_updateDrawState(coordinate, pixel, dragging) {
-		const pointCount = this._sketchPropertyHandler ? this._sketchPropertyHandler.pointCount : 0;
+		const pointCount = this._sketchHandler.pointCount;
 		const drawState = {
 			type: null,
 			snap: null,
@@ -506,15 +502,13 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._draw) {
 			drawState.type = InteractionStateType.ACTIVE;
-
-			if (this._activeSketch) {
-				this._activeSketch.getGeometry();
+			if (this._sketchHandler.activeSketch) {
 				drawState.type = InteractionStateType.DRAW;
 
-				if (this._sketchPropertyHandler.isFinishOnFirstPoint) {
+				if (this._sketchHandler.isFinishOnFirstPoint) {
 					drawState.snap = InteractionSnapType.FIRSTPOINT;
 				}
-				else if (this._sketchPropertyHandler.isSnapOnLastPoint) {
+				else if (this._sketchHandler.isSnapOnLastPoint) {
 					drawState.snap = InteractionSnapType.LASTPOINT;
 				}
 			}
@@ -555,10 +549,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
-			if (this._activeSketch) {
-				const styleFunction = this._getStyleFunctionFrom(this._activeSketch);
-				const newStyles = styleFunction(this._activeSketch);
-				this._activeSketch.setStyle(newStyles);
+			if (this._sketchHandler.activeSketch) {
+				const styleFunction = this._getStyleFunctionFrom(this._sketchHandler.activeSketch);
+				const newStyles = styleFunction(this._sketchHandler.activeSketch);
+				this._sketchHandler.activeSketch.setStyle(newStyles);
 			}
 		}
 
@@ -568,29 +562,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 	}
-
-	// todo: extract with _pointCount, _isFinishOnFirstPoint, _isSnapOnLastPoint to OlSketchPropertyHandler
-	// _monitorSketchProperties(feature) {
-	// 	const getLineCoordinates = (geometry) => {
-	// 		return (geometry instanceof Polygon) ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates();
-	// 	};
-	// 	const lineCoordinates = getLineCoordinates(feature.getGeometry());
-
-	// 	if (this._pointCount !== lineCoordinates.length) {
-	// 		// a point is added or removed
-	// 		this._pointCount = lineCoordinates.length;
-	// 	}
-	// 	else if (lineCoordinates.length > 1) {
-	// 		const firstPoint = lineCoordinates[0];
-	// 		const lastPoint = lineCoordinates[lineCoordinates.length - 1];
-	// 		const lastPoint2 = lineCoordinates[lineCoordinates.length - 2];
-
-	// 		const isSnapOnFirstPoint = (lastPoint[0] === firstPoint[0] && lastPoint[1] === firstPoint[1]);
-	// 		this._isFinishOnFirstPoint = (!this._isSnapOnLastPoint && isSnapOnFirstPoint);
-
-	// 		this._isSnapOnLastPoint = (lastPoint[0] === lastPoint2[0] && lastPoint[1] === lastPoint2[1]);
-	// 	}
-	// }
 
 	_setSelected(feature) {
 		if (feature) {

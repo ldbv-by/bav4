@@ -1,44 +1,42 @@
 import { Feature } from 'ol';
 import { LineString, Point, Polygon } from 'ol/geom';
-import { OlSketchPropertyHandler } from '../../../../../../src/modules/map/components/olMap/handler/OlSketchPropertyHandler';
+import { OlSketchHandler } from '../../../../../../src/modules/map/components/olMap/handler/OlSketchHandler';
 
 describe('OlSketchPropertyHandler', () => {
 
 	describe('when initialized', () => {
+
+		it('have default properties', () => {
+			const classUnderTest = new OlSketchHandler();
+
+			expect(classUnderTest).toBeTruthy();
+			expect(classUnderTest.activeSketch).toBeNull();
+			expect(classUnderTest.pointCount).toBe(0);
+			expect(classUnderTest.isFinishOnFirstPoint).toBe(false);
+			expect(classUnderTest.isSnapOnLastPoint).toBe(false);
+		});
+	});
+
+
+	describe('when set a activeSketch', () => {
+
 		it('registers a listener for feature change', () => {
 			const featureMock = { on: () => { }, getGeometry: () => new Point([0, 0]) };
 			const listenerSpy = spyOn(featureMock, 'on');
-			const classUnderTest = new OlSketchPropertyHandler(featureMock);
+
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = featureMock;
 
 			expect(classUnderTest).toBeTruthy();
 			expect(listenerSpy).toHaveBeenCalledWith('change', jasmine.any(Function));
 		});
 
-		it('throws a TypeError , when feature is falsy', () => {
-
-			expect(() => new OlSketchPropertyHandler(null)).toThrowError(TypeError, 'sketchFeature must be defined');
-
-		});
-
-
-
-		it('have default properties', () => {
-			const featureMock = {
-				on: () => { },
-				getGeometry: () => new Point([0, 0])
-			};
-
-			const classUnderTest = new OlSketchPropertyHandler(featureMock);
-
-			expect(classUnderTest).toBeTruthy();
-			expect(classUnderTest.pointCount).toBe(1);
-			expect(classUnderTest.isFinishOnFirstPoint).toBe(false);
-			expect(classUnderTest.isSnapOnLastPoint).toBe(false);
-		});
 
 		it('monitors feature changes', () => {
 			const feature = new Feature(new Point([0, 0]));
-			const classUnderTest = new OlSketchPropertyHandler(feature);
+
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = feature;
 
 			expect(classUnderTest.pointCount).toBe(1);
 
@@ -49,23 +47,20 @@ describe('OlSketchPropertyHandler', () => {
 		});
 
 		it('detects finishOnFirstPoint for polyline', () => {
-
 			const feature = new Feature(new LineString([[0, 0], [1, 1], [2, 2]]));
-			const classUnderTest = new OlSketchPropertyHandler(feature);
-
-
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = feature;
 
 			feature.setGeometry(new LineString([[0, 0], [1, 1], [2, 2], [0, 0]]));
 			feature.dispatchEvent('change');
-
 
 			expect(classUnderTest.isFinishOnFirstPoint).toBe(true);
 		});
 
 		it('detects finishOnFirstPoint for polygon', () => {
-
 			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
-			const classUnderTest = new OlSketchPropertyHandler(feature);
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = feature;
 
 			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [0, 0], [0, 0]]]));
 			feature.dispatchEvent('change');
@@ -74,9 +69,9 @@ describe('OlSketchPropertyHandler', () => {
 		});
 
 		it('detects isSnapOnLastPoint for polygon', () => {
-
 			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
-			const classUnderTest = new OlSketchPropertyHandler(feature);
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = feature;
 
 			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2], [0, 0]]]));
 			feature.dispatchEvent('change');
@@ -86,9 +81,10 @@ describe('OlSketchPropertyHandler', () => {
 
 		it('deregisters listener on release', () => {
 			const feature = new Feature(new Point([0, 0]));
-			const classUnderTest = new OlSketchPropertyHandler(feature);
+			const classUnderTest = new OlSketchHandler();
+			classUnderTest.activeSketch = feature;
 			const empty = {};
-			classUnderTest.release();
+			classUnderTest.resetActiveSketch();
 
 			expect(classUnderTest._listener).toEqual(empty);
 		});

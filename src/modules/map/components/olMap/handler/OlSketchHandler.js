@@ -2,27 +2,18 @@ import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 
 /**
- * SketchPropertyHandler monitors feature changes for geometry based interactions and
- * handles related properties of the sketch-properties
+ * OlSketchHandler monitors changes for geometry based interactions of sketch-features and
+ * handles sketch-related properties
  * @class
  * @author thiloSchlemmer
  */
-export class OlSketchPropertyHandler {
+export class OlSketchHandler {
 
-	constructor(sketchFeature) {
-		if (!sketchFeature) {
-			throw new TypeError('sketchFeature must be defined');
-		}
-
-		const onFeatureChange = (event) => {
-			this._monitorProperties(event.target);
-		};
-		this._sketchFeature = sketchFeature;
-
-		this._listener = this._sketchFeature.on('change', onFeatureChange);
-		this._pointCount = 1;
+	constructor() {
+		this._pointCount = 0;
 		this._isSnapOnLastPoint = false;
 		this._isFinishOnFirstPoint = false;
+		this._activeSketch = null;
 	}
 
 	_getLineCoordinates(geometry) {
@@ -49,8 +40,27 @@ export class OlSketchPropertyHandler {
 		}
 	}
 
-	release() {
+	resetActiveSketch() {
 		unByKey(this._listener);
+		this.activeSketch = null;
+		this._pointCount = 0;
+	}
+
+	get activeSketch() {
+		return this._activeSketch;
+	}
+
+	set activeSketch(value) {
+		if (value !== this._activeSketch) {
+			if (value) {
+				const onFeatureChange = (event) => {
+					this._monitorProperties(event.target);
+				};
+				this._listener = value.on('change', onFeatureChange);
+			}
+			this._pointCount = 1;
+			this._activeSketch = value;
+		}
 	}
 
 	get isSnapOnLastPoint() {
