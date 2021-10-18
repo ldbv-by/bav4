@@ -5,6 +5,7 @@ import { FeatureInfoPanel } from '../../../../src/modules/featureInfo/components
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { add } from '../../../../src/store/featureInfo/featureInfo.action.js';
+import { html } from 'lit-html';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -55,7 +56,8 @@ describe('FeatureInfoPanel', () => {
 
 				const element = await setup({
 					featureInfo: {
-						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]
+						//content may be a String or a TempateResult
+						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
 					}
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
@@ -65,6 +67,10 @@ describe('FeatureInfoPanel', () => {
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(2);
+				expect(items.item(0).textContent).toContain('content0');
+				expect(items.item(0).childNodes.item(0).textContent).toBe('title0');
+				expect(items.item(1).textContent).toContain('content1');
+				expect(items.item(1).childNodes.item(0).textContent).toBe('title1');
 			});
 		});
 	});
@@ -92,7 +98,7 @@ describe('FeatureInfoPanel', () => {
 
 				const element = await setup({
 					featureInfo: {
-						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]
+						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
 					}
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
@@ -126,7 +132,7 @@ describe('FeatureInfoPanel', () => {
 
 			const element = await setup({
 				featureInfo: {
-					current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]
+					current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
 				}
 			});
 			const iconButton = element.shadowRoot.querySelector('ba-icon');

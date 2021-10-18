@@ -1,4 +1,5 @@
-import { html } from 'lit-html';
+import { html, TemplateResult } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../../../injection';
 import { clear } from '../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -41,6 +42,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		const { featureInfoData } = model;
 		const translate = (key) => this._translationService.translate(key);
 
+		const getContent = content => {
+			return content instanceof TemplateResult ? content : html`${unsafeHTML(content)}`;
+		};
+
 		return html`
         <style>${css}</style>
 		<div>
@@ -48,7 +53,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			<div class="container">
 			${featureInfoData.map((item) => html`
 			<li class="item"><h3>${item.title}</h3>
-			${item.content}
+			${getContent(item.content)}
 			</li>`)}
 			<div>
 		</div>
