@@ -1,9 +1,9 @@
-import { drawReducer } from '../../../../src/modules/map/store/draw.reducer';
-import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription } from '../../../../src/modules/map/store/draw.action';
-import { TestUtils } from '../../../test-utils.js';
-import { EventLike } from '../../../../src/utils/storeUtils';
-import { StyleTypes } from '../../../../src/modules/map/components/olMap/services/StyleService';
-import { StyleSizeTypes } from '../../../../src/services/domain/styles';
+import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription } from '../../../src/store/draw/draw.action';
+import { TestUtils } from '../../test-utils.js';
+import { EventLike } from '../../../src/utils/storeUtils';
+import { StyleTypes } from '../../../src/modules/map/components/olMap/services/StyleService';
+import { StyleSizeTypes } from '../../../src/services/domain/styles';
+import { drawReducer } from '../../../src/store/draw/draw.reducer';
 
 
 

@@ -3,8 +3,8 @@
  * @module map/action
  */
 import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED } from './draw.reducer';
-import { $injector } from '../../../injection';
-import { EventLike } from '../../../utils/storeUtils';
+import { $injector } from '../../injection';
+import { EventLike } from '../../utils/storeUtils';
 
 
 /**

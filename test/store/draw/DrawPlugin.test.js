@@ -1,9 +1,8 @@
-import { drawReducer } from '../../../../src/modules/map/store/draw.reducer';
-import { DrawPlugin, DRAW_LAYER_ID } from '../../../../src/modules/map/store/DrawPlugin';
-
-import { activate, deactivate } from '../../../../src/modules/map/store/draw.action';
-import { TestUtils } from '../../../test-utils.js';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { TestUtils } from '../../test-utils.js';
+import { layersReducer } from '../../../src/store/layers/layers.reducer';
+import { DrawPlugin, DRAW_LAYER_ID } from '../../../src/store/draw/DrawPlugin.js';
+import { activate, deactivate } from '../../../src/store/draw/draw.action.js';
+import { drawReducer } from '../../../src/store/draw/draw.reducer.js';
 
 
 

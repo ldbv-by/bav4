@@ -22,6 +22,7 @@ import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
+import { DrawPlugin } from '../store/draw/DrawPlugin';
 
 
 $injector
@@ -41,6 +42,8 @@ $injector
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
+
+	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
 	.registerSingleton('LayersPlugin', new LayersPlugin())
 	.registerSingleton('PositionPlugin', new PositionPlugin())

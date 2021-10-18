@@ -1,4 +1,4 @@
-import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../store/DrawPlugin';
+import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../../../store/draw/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType } from '../../../../store/draw.action';
+import { setSelectedStyle, setStyle, setType } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';

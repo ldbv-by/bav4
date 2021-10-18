@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
-import { DRAW_LAYER_ID } from '../../../../../../../src/modules/map/store/DrawPlugin';
-import { drawReducer } from '../../../../../../../src/modules/map/store/draw.reducer';
+import { DRAW_LAYER_ID } from '../../../../../../../src/store/draw/DrawPlugin';
+import { drawReducer } from '../../../../../../../src/store/draw/draw.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
@@ -12,7 +12,7 @@ import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
 import { DragPan, Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle } from '../../../../../../../src/modules/map/store/draw.action';
+import { finish, reset, remove, setType, setStyle } from '../../../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';

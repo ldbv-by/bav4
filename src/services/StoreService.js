@@ -14,11 +14,11 @@ import { searchReducer } from '../store/search/search.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
-import { drawReducer } from '../modules/map/store/draw.reducer';
 import { topicsContentPanelReducer } from '../store/topics/topicsContentPanel.reducer';
 import { modalReducer } from '../store/modal/modal.reducer';
 import { toolContainerReducer } from '../store/toolbox/toolContainer.reducer';
 import { toolBarReducer } from '../store/toolbox/toolBar.reducer';
+import { drawReducer } from '../store/draw/draw.reducer';
 
 
 /**
