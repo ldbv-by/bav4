@@ -1,5 +1,5 @@
-import { closeToolBar, openToolBar, toggleToolBar } from '../../../src/store/toolbox/toolBar.action';
-import { toolBarReducer } from '../../../src/store/toolbox/toolBar.reducer';
+import { closeToolBar, openToolBar, toggleToolBar } from '../../../src/store/toolBar/toolBar.action';
+import { toolBarReducer } from '../../../src/store/toolBar/toolBar.reducer';
 import { TestUtils } from '../../test-utils';
 
 
