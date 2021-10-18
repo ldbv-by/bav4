@@ -3,7 +3,7 @@ import { $injector } from '../../../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from '../../../store/geolocation/geolocation.action';
 import { changeCenter, setFit } from '../../../store/position/position.action';
 import { addLayer, removeLayer } from '../../../store/layers/layers.action';
-import { BaPlugin } from '../../../store/BaPlugin';
+import { BaPlugin } from '../../../plugins/BaPlugin';
 
 /**
  * Id of the layer used for geolocation visualization

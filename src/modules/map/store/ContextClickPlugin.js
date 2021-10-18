@@ -1,5 +1,5 @@
 import { observe } from '../../../utils/storeUtils';
-import { BaPlugin } from '../../../store/BaPlugin';
+import { BaPlugin } from '../../../plugins/BaPlugin';
 import { html } from 'lit-html';
 import { close, open } from '../../../store/mapContextMenu/mapContextMenu.action';
 

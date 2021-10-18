@@ -1,6 +1,6 @@
 import { observe } from '../../utils/storeUtils';
 import { addLayer, removeLayer } from '../layers/layers.action';
-import { BaPlugin } from '../BaPlugin';
+import { BaPlugin } from '../../plugins/BaPlugin';
 
 /**
  * Id of the layer used for draw interaction.

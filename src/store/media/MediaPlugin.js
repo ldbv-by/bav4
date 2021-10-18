@@ -1,5 +1,5 @@
 import { $injector } from '../../injection';
-import { BaPlugin } from '../BaPlugin';
+import { BaPlugin } from '../../plugins/BaPlugin';
 import { setIsDarkSchema, setIsMinWidth, setIsPortrait } from './media.action';
 import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from './media.reducer';
 

@@ -1,6 +1,6 @@
 import { $injector } from '../../injection';
 import { QueryParameters } from '../../services/domain/queryParameters';
-import { BaPlugin } from '../BaPlugin';
+import { BaPlugin } from '../../plugins/BaPlugin';
 import { changeZoomCenterAndRotation, setFit } from './position.action';
 
 /**
