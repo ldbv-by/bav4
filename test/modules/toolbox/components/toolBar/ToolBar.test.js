@@ -6,7 +6,7 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
-import { toolContainerReducer } from '../../../../../src/store/toolbox/toolContainer.reducer';
+import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
 import { toolBarReducer } from '../../../../../src/store/toolBar/toolBar.reducer';
 import { toggleToolBar } from '../../../../../src/store/toolBar/toolBar.action';
 

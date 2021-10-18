@@ -7,8 +7,8 @@ import { DrawToolContent } from '../../../../../src/modules/toolbox/components/d
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { toolContainerReducer } from '../../../../../src/store/toolbox/toolContainer.reducer';
-import { setContainerContent, toggleToolContainer } from '../../../../../src/store/toolbox/toolContainer.action';
+import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
+import { setContainerContent, toggleToolContainer } from '../../../../../src/store/toolContainer/toolContainer.action';
 import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';

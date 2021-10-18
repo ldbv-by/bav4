@@ -7,7 +7,7 @@ import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { activate as activateDraw, deactivate as deactivateDraw } from '../../../../store/draw/draw.action';
 import css from './toolContainer.css';
-import { closeToolContainer } from '../../../../store/toolbox/toolContainer.action';
+import { closeToolContainer } from '../../../../store/toolContainer/toolContainer.action';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
