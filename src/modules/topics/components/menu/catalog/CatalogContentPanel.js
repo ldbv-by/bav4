@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
 import { $injector } from '../../../../../injection';
-import { setIndex } from '../../../../../store/topics/topicsContentPanel.action';
+import { setIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
 import css from './catalogContentPanel.css';

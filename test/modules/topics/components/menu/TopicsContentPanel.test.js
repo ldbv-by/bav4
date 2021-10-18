@@ -5,7 +5,7 @@ import { TopicsContentPanel, TopicsContentPanelIndex } from '../../../../../src/
 import { Topic } from '../../../../../src/services/domain/topic';
 import { setCurrent } from '../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
-import { topicsContentPanelReducer } from '../../../../../src/store/topics/topicsContentPanel.reducer';
+import { topicsContentPanelReducer } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 import { TestUtils } from '../../../../test-utils.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);

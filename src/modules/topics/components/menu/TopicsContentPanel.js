@@ -5,7 +5,7 @@ import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
-import { setIndex } from '../../../../store/topics/topicsContentPanel.action';
+import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 
 
 

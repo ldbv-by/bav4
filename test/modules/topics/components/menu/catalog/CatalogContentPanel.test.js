@@ -9,7 +9,7 @@ import { TestUtils } from '../../../../../test-utils.js';
 import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { Topic } from '../../../../../../src/services/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
-import { topicsContentPanelReducer } from '../../../../../../src/store/topics/topicsContentPanel.reducer';
+import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
