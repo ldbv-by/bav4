@@ -307,10 +307,10 @@ export const getIconUrl = (iconId, color = [255, 255, 255]) => {
 };
 
 /**
-	 * Converts an array of numeric RGB-values to a the hexadecimal String-Represenation or null.
-	 * @param {Array<Number>} rgb
-	 * @returns {String|null}
-	 */
+ * Converts an array of numeric RGB-values to a the hexadecimal String-Represenation or null.
+ * @param {Array<Number>} rgb
+ * @returns {String|null}
+ */
 export const rgbToHex = (rgb) => {
 	const rgb_min = 0;
 	const rgb_max = 255;
@@ -333,11 +333,11 @@ export const rgbToHex = (rgb) => {
 };
 
 /**
-	 * Converts the hexadecimal String-Represenation of a color to an array of numeric RGB-values or null.
-	 * based on from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-	 * @param {string} rgb
-	 * @returns {Array<Number>|null}
-	 */
+ * Converts the hexadecimal String-Represenation of a color to an array of numeric RGB-values or null.
+ * based on from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+ * @param {string} rgb
+ * @returns {Array<Number>|null}
+ */
 export const hexToRgb = (hex) => {
 	if (hex == null) {
 		return null;
@@ -354,11 +354,11 @@ export const hexToRgb = (hex) => {
 };
 
 /**
-	 * Converts a color from RGB- to HSV-colorspace
-	 * based on accepted answer from https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620
-	 * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
-	 * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
-	 */
+ * Converts a color from RGB- to HSV-colorspace
+ * based on accepted answer from https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620
+ * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
+ * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
+ */
 export const rgbToHsv = (rgb) => {
 	if (rgb == null) {
 		return null;
@@ -376,11 +376,11 @@ export const rgbToHsv = (rgb) => {
 };
 
 /**
-	 * Converts a color from HSV- to RGB-colorspace
-	 * based on accepted answer from https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
-	 * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
-	 * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
-	 */
+ * Converts a color from HSV- to RGB-colorspace
+ * based on accepted answer from https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
+ * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
+ * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
+ */
 export const hsvToRgb = (hsv) => {
 	if (hsv == null) {
 		return null;
@@ -424,10 +424,10 @@ export const hsvToRgb = (hsv) => {
 };
 
 /**
-	 * extracts the color-value (as hex representation) or null from a feature
-	 * @param {Feature} feature the feature with or without a style
-	 * @returns {string|null} the color-value
-	 */
+ * extracts the color-value (as hex representation) or null from a feature
+ * @param {Feature} feature the feature with or without a style
+ * @returns {string|null} the color-value
+ */
 export const getColorFrom = (feature) => {
 	if (feature == null) {
 		return null;
@@ -454,10 +454,10 @@ export const getColorFrom = (feature) => {
 };
 
 /**
-	 * creates a ligther or darker version of the specified basecolor
-	 * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
-	 * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
-	 */
+ * creates a ligther or darker version of the specified basecolor
+ * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
+ * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
+ */
 export const getContrastColorFrom = (baseColor) => {
 	const HSV_Brightness_Limit = .7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
@@ -473,11 +473,11 @@ export const getContrastColorFrom = (baseColor) => {
 };
 
 /**
-	 * creates the complementary color for the specified color
-	 * from https://www.tutorialspoint.com/javascript-complementary-colors-builder
-	 * @param {string} color the color as hex-string
-	 * @returns {string} the complementary color as hex string
-	 */
+ * creates the complementary color for the specified color
+ * from https://www.tutorialspoint.com/javascript-complementary-colors-builder
+ * @param {string} color the color as hex-string
+ * @returns {string} the complementary color as hex string
+ */
 export const getComplementaryColor = (color = '') => {
 	const colorPart = color.slice(1);
 	const ind = parseInt(colorPart, 16);
@@ -486,4 +486,26 @@ export const getComplementaryColor = (color = '') => {
 		iter = '0' + iter;
 	}
 	return '#' + iter;
+};
+
+/***
+ * Returns the drawingtype of a feature. If the featue is created with the application itself,
+ * the drawingType is part of the featureId and follows the convention id(feature)-> [measure|draw]_[drawingType]_[creationTime]
+ * if the feature is not created with this application and the id follows not the before mentioned convention, NULL is returning.
+ * @param {Feature} feature the feature
+ * @returns {string|null}
+ */
+export const getDrawingTypeFrom = (feature) => {
+	if (feature) {
+		const featureId = feature.getId();
+		const type_index = 1;
+		const seperator = '_';
+		const parts = featureId.split(seperator);
+
+		if (parts.length <= type_index + 1) {
+			return null;
+		}
+		return parts[type_index];
+	}
+	return null;
 };

@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -612,4 +612,20 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(undefined)).toBeNull();
 	});
 
+});
+
+describe('getDrawingTypeFrom', () => {
+	it('get the DrawingType from valid feature', () => {
+		const feature = new Feature({ geometry: new Point([0, 0]) });
+
+		expect(getDrawingTypeFrom(null)).toBeNull();
+		feature.setId('draw_marker_1234');
+		expect(getDrawingTypeFrom(feature)).toBe('marker');
+		feature.setId('draw_Foo_1234');
+		expect(getDrawingTypeFrom(feature)).toBe('Foo');
+		feature.setId('draw_1234');
+		expect(getDrawingTypeFrom(feature)).toBe(null);
+		feature.setId('foo_bar_baz_000');
+		expect(getDrawingTypeFrom(feature)).toBe('bar');
+	});
 });

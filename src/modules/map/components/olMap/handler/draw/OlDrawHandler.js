@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -469,17 +469,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		return currentStyleOptions;
 	}
 
-	/**
-	  * todo: util-function, extracted to olStyleUtils
-	  */
 	_getStyleFunctionFrom(feature) {
-		const type = this._getDrawingTypeFrom(feature);
+		const type = getDrawingTypeFrom(feature);
 		return type != null ? this._getStyleFunctionByDrawType(type, this._getStyleOption()) : null;
 	}
 
-	/**
-	  * todo: util-function, extracted to olStyleUtils
-	  */
 	_getStyleFunctionByDrawType(drawType, styleOption) {
 		const drawTypes = [StyleTypes.MARKER, StyleTypes.TEXT, StyleTypes.LINE, StyleTypes.POLYGON];
 		if (drawTypes.includes(drawType)) {
@@ -545,7 +539,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
-			setSelectedStyle({ type: this._getDrawingTypeFrom(feature), style: this._getStyleOption() });
+			setSelectedStyle({ type: getDrawingTypeFrom(feature), style: this._getStyleOption() });
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
@@ -574,31 +568,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			const featureColor = getColorFrom(feature);
 			const color = featureColor ? featureColor : currentStyleOption.color;
 			const style = { ...currentStyleOption, color: color };
-			const selectedStyle = { type: this._getDrawingTypeFrom(feature), style: style };
+			const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 			setSelectedStyle(selectedStyle);
 		}
 	}
 
 	/**
-	  * todo: util-function, extracted to olStyleUtils
-	  */
-	_getDrawingTypeFrom(feature) {
-		if (feature) {
-			const featureId = feature.getId();
-			const type_index = 1;
-			const seperator = '_';
-			const parts = featureId.split(seperator);
-
-			if (parts.length <= type_index + 1) {
-				return null;
-			}
-			return parts[type_index];
-		}
-		return null;
-	}
-
-	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of _storageHandler
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
@@ -608,7 +584,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	/**
 	 *
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of _storageHandler
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);

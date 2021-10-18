@@ -525,7 +525,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 
 	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of _storageHandler
+	 * todo: redundant with OlDrawHandler, possible responsibility of a statefull _storageHandler
 	 */
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
@@ -537,7 +537,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of _storageHandler
+	 * todo: redundant with OlDrawHandler, possible responsibility of a statefull _storageHandler
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);

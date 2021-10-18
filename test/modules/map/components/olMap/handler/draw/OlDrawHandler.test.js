@@ -1435,23 +1435,6 @@ describe('OlDrawHandler', () => {
 		});
 	});
 
-	describe('_getDrawingTypeFrom', () => {
-		it('get the DrawingType from valid feature', () => {
-
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const feature = new Feature({ geometry: new Point([0, 0]) });
-
-			expect(classUnderTest._getDrawingTypeFrom(null)).toBeNull();
-			feature.setId('draw_marker_1234');
-			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('marker');
-			feature.setId('draw_Foo_1234');
-			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe('Foo');
-			feature.setId('draw_1234');
-			expect(classUnderTest._getDrawingTypeFrom(feature)).toBe(null);
-		});
-	});
-
 	describe('_setDrawState', () => {
 		it('left the current drawState as it is, when value not changes', () => {
 			setup();
