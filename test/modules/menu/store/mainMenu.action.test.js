@@ -1,5 +1,5 @@
 import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { TabIndex } from '../../../../src/modules/menu/store/mainMenu.action';
+import { TabIndex } from '../../../../src/store/mainMenu/mainMenu.action';
 
 describe('mainMenuAction', () => {
 

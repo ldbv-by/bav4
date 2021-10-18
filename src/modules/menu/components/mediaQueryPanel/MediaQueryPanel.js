@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import cssmain from '../../../../main.css';
 import css from './mediaQueryPanel.css';
 import { $injector } from '../../../../injection';
-import { close } from '../../store/mainMenu.action';
+import { close } from '../../../../store/mainMenu/mainMenu.action';
 
 
 /**

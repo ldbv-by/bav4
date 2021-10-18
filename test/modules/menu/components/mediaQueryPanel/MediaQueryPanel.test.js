@@ -2,7 +2,7 @@
 
 import { $injector } from '../../../../../src/injection';
 import { MediaQueryPanel } from '../../../../../src/modules/menu/components/mediaQueryPanel/MediaQueryPanel';
-import { createNoInitialStateMainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MediaQueryPanel.tag, MediaQueryPanel);

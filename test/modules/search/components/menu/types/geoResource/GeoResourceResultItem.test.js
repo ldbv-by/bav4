@@ -1,10 +1,10 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/modules/menu/store/mainMenu.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
-import { TabIndex } from '../../../../../../../src/modules/menu/store/mainMenu.action';
+import { TabIndex } from '../../../../../../../src/store/mainMenu/mainMenu.action';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 

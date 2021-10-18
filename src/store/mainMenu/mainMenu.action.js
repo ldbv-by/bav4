@@ -3,7 +3,7 @@
  * @module menu/action
  */
 import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

@@ -1,6 +1,5 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
-import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
@@ -19,6 +18,7 @@ import { mapReducer } from '../store/map/map.reducer';
 import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
+import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 
 
 /**
