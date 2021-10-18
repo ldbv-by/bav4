@@ -1,8 +1,8 @@
-import { TestUtils } from '../../test-utils.js';
-import { layersReducer } from '../../../src/store/layers/layers.reducer';
-import { DrawPlugin, DRAW_LAYER_ID } from '../../../src/store/draw/DrawPlugin.js';
-import { activate, deactivate } from '../../../src/store/draw/draw.action.js';
-import { drawReducer } from '../../../src/store/draw/draw.reducer.js';
+import { TestUtils } from '../test-utils.js';
+import { layersReducer } from '../../src/store/layers/layers.reducer';
+import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
+import { activate, deactivate } from '../../src/store/draw/draw.action.js';
+import { drawReducer } from '../../src/store/draw/draw.reducer.js';
 
 
 

@@ -22,7 +22,7 @@ import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
-import { DrawPlugin } from '../store/draw/DrawPlugin';
+import { DrawPlugin } from '../plugins/DrawPlugin';
 import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
 import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
