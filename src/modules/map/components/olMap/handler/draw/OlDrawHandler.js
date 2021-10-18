@@ -311,15 +311,15 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 
 			this._draw.on('drawstart', event => {
-				this._sketchHandler.activeSketch = event.feature;
-				this._sketchHandler.activeSketch.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
+				this._sketchHandler.activate(event.feature);
+				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
-				const styles = styleFunction(this._sketchHandler.activeSketch);
-				this._sketchHandler.activeSketch.setStyle(styles);
+				const styles = styleFunction(this._sketchHandler.active);
+				this._sketchHandler.active.setStyle(styles);
 			});
 			this._draw.on('drawend', event => {
 				this._activateModify(event.feature);
-				this._sketchHandler.resetActiveSketch();
+				this._sketchHandler.deactivate();
 			});
 
 			this._map.addInteraction(this._draw);
@@ -352,7 +352,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_finish() {
-		if (this._sketchHandler.activeSketch) {
+		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
 		}
 		else {
@@ -502,7 +502,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._draw) {
 			drawState.type = InteractionStateType.ACTIVE;
-			if (this._sketchHandler.activeSketch) {
+			if (this._sketchHandler.isActive) {
 				drawState.type = InteractionStateType.DRAW;
 
 				if (this._sketchHandler.isFinishOnFirstPoint) {
@@ -549,10 +549,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
-			if (this._sketchHandler.activeSketch) {
-				const styleFunction = this._getStyleFunctionFrom(this._sketchHandler.activeSketch);
-				const newStyles = styleFunction(this._sketchHandler.activeSketch);
-				this._sketchHandler.activeSketch.setStyle(newStyles);
+			if (this._sketchHandler.isActive) {
+				const styleFunction = this._getStyleFunctionFrom(this._sketchHandler.active);
+				const newStyles = styleFunction(this._sketchHandler.active);
+				this._sketchHandler.active.setStyle(newStyles);
 			}
 		}
 

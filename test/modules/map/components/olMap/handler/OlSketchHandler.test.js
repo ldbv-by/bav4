@@ -10,7 +10,8 @@ describe('OlSketchPropertyHandler', () => {
 			const classUnderTest = new OlSketchHandler();
 
 			expect(classUnderTest).toBeTruthy();
-			expect(classUnderTest.activeSketch).toBeNull();
+			expect(classUnderTest.active).toBeNull();
+			expect(classUnderTest.isActive).toBeFalse();
 			expect(classUnderTest.pointCount).toBe(0);
 			expect(classUnderTest.isFinishOnFirstPoint).toBe(false);
 			expect(classUnderTest.isSnapOnLastPoint).toBe(false);
@@ -25,7 +26,7 @@ describe('OlSketchPropertyHandler', () => {
 			const listenerSpy = spyOn(featureMock, 'on');
 
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = featureMock;
+			classUnderTest.activate(featureMock);
 
 			expect(classUnderTest).toBeTruthy();
 			expect(listenerSpy).toHaveBeenCalledWith('change', jasmine.any(Function));
@@ -36,7 +37,7 @@ describe('OlSketchPropertyHandler', () => {
 			const feature = new Feature(new Point([0, 0]));
 
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = feature;
+			classUnderTest.activate(feature);
 
 			expect(classUnderTest.pointCount).toBe(1);
 
@@ -49,7 +50,7 @@ describe('OlSketchPropertyHandler', () => {
 		it('detects finishOnFirstPoint for polyline', () => {
 			const feature = new Feature(new LineString([[0, 0], [1, 1], [2, 2]]));
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = feature;
+			classUnderTest.activate(feature);
 
 			feature.setGeometry(new LineString([[0, 0], [1, 1], [2, 2], [0, 0]]));
 			feature.dispatchEvent('change');
@@ -60,7 +61,7 @@ describe('OlSketchPropertyHandler', () => {
 		it('detects finishOnFirstPoint for polygon', () => {
 			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = feature;
+			classUnderTest.activate(feature);
 
 			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [0, 0], [0, 0]]]));
 			feature.dispatchEvent('change');
@@ -71,7 +72,7 @@ describe('OlSketchPropertyHandler', () => {
 		it('detects isSnapOnLastPoint for polygon', () => {
 			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = feature;
+			classUnderTest.activate(feature);
 
 			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2], [0, 0]]]));
 			feature.dispatchEvent('change');
@@ -82,9 +83,9 @@ describe('OlSketchPropertyHandler', () => {
 		it('deregisters listener on release', () => {
 			const feature = new Feature(new Point([0, 0]));
 			const classUnderTest = new OlSketchHandler();
-			classUnderTest.activeSketch = feature;
+			classUnderTest.activate(feature);
 			const empty = {};
-			classUnderTest.resetActiveSketch();
+			classUnderTest.deactivate();
 
 			expect(classUnderTest._listener).toEqual(empty);
 		});

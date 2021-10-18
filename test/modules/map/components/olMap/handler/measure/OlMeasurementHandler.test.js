@@ -604,7 +604,7 @@ describe('OlMeasurementHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
-			classUnderTest._sketchHandler.activeSketch = feature;
+			classUnderTest._sketchHandler.activate(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 
@@ -1016,7 +1016,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
-			classUnderTest._sketchHandler.activeSketch = new Feature({ geometry: new LineString([[0, 0], [1, 0]]) });
+			classUnderTest._sketchHandler.activate(new Feature({ geometry: new LineString([[0, 0], [1, 0]]) }));
 			simulateMapMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 1, dragging: jasmine.any(Boolean) });
 		});
@@ -1167,7 +1167,6 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			const spy = spyOn(classUnderTest._draw, 'finishDrawing').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			classUnderTest._activeSketch = feature;
 			feature.getGeometry().dispatchEvent('change');
 
 			finish();
@@ -1184,7 +1183,6 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 			const spy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			classUnderTest._activeSketch = feature;
 			feature.getGeometry().dispatchEvent('change');
 
 			reset();

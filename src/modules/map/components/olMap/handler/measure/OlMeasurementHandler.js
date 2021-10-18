@@ -309,7 +309,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_finish() {
 		if (this._draw.getActive()) {
-			if (this._sketchHandler.activeSketch) {
+			if (this._sketchHandler.isActive) {
 				this._draw.finishDrawing();
 				this._simulateClickEvent();
 			}
@@ -351,7 +351,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				const lineCoordinates = geometry.getCoordinates()[0].slice(0, -1);
 				event.feature.setGeometry(new LineString(lineCoordinates));
 			}
-			this._sketchHandler.resetActiveSketch();
+			this._sketchHandler.deactivate();
 			unByKey(listener);
 			unByKey(zoomListener);
 		};
@@ -364,13 +364,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			};
 
 			const onResolutionChange = () => {
-				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.activeSketch, true);
-				this._overlayService.update(this._sketchHandler.activeSketch, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
+				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active, true);
+				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activeSketch = event.feature;
-			this._sketchHandler.activeSketch.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
-			this._overlayService.add(this._sketchHandler.activeSketch, this._map, StyleTypes.MEASURE);
+			this._sketchHandler.activate(event.feature);
+			this._sketchHandler.active.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
+			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
 
@@ -487,7 +487,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw.getActive()) {
 			measureState.type = InteractionStateType.ACTIVE;
 
-			if (this._sketchHandler.activeSketch) {
+			if (this._sketchHandler.isActive) {
 				measureState.type = InteractionStateType.DRAW;
 
 				if (this._sketchHandler.isFinishOnFirstPoint) {

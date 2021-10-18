@@ -13,7 +13,7 @@ export class OlSketchHandler {
 		this._pointCount = 0;
 		this._isSnapOnLastPoint = false;
 		this._isFinishOnFirstPoint = false;
-		this._activeSketch = null;
+		this._sketch = null;
 	}
 
 	_getLineCoordinates(geometry) {
@@ -40,27 +40,33 @@ export class OlSketchHandler {
 		}
 	}
 
-	resetActiveSketch() {
-		unByKey(this._listener);
-		this.activeSketch = null;
-		this._pointCount = 0;
-	}
-
-	get activeSketch() {
-		return this._activeSketch;
-	}
-
-	set activeSketch(value) {
-		if (value !== this._activeSketch) {
-			if (value) {
+	activate(sketchFeature) {
+		if (sketchFeature !== this._sketch) {
+			if (sketchFeature) {
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
-				this._listener = value.on('change', onFeatureChange);
+				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;
-			this._activeSketch = value;
+			this._sketch = sketchFeature;
 		}
+	}
+
+	deactivate() {
+		unByKey(this._listener);
+		this._sketch = null;
+		this._isFinishOnFirstPoint = false;
+		this._isSnapOnLastPoint = false;
+		this._pointCount = 0;
+	}
+
+	get active() {
+		return this._sketch;
+	}
+
+	get isActive() {
+		return this._sketch !== null;
 	}
 
 	get isSnapOnLastPoint() {
