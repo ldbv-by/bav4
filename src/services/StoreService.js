@@ -4,7 +4,6 @@ import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
 import { measurementReducer } from '../modules/map/store/measurement.reducer';
-import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
 import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
@@ -19,6 +18,7 @@ import { modalReducer } from '../store/modal/modal.reducer';
 import { toolContainerReducer } from '../store/toolbox/toolContainer.reducer';
 import { toolBarReducer } from '../store/toolbox/toolBar.reducer';
 import { drawReducer } from '../store/draw/draw.reducer';
+import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
 
 
 /**

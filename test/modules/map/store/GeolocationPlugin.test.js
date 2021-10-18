@@ -1,12 +1,12 @@
 import { GeolocationPlugin, GEOLOCATION_LAYER_ID } from '../../../../src/modules/map/store/GeolocationPlugin';
-import { activate, deactivate, setTracking } from '../../../../src/modules/map/store/geolocation.action';
+import { activate, deactivate, setTracking } from '../../../../src/store/geolocation/geolocation.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { geolocationReducer } from '../../../../src/modules/map/store/geolocation.reducer';
 import { $injector } from '../../../../src/injection';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
 import { setBeingDragged } from '../../../../src/modules/map/store/pointer.action';
+import { geolocationReducer } from '../../../../src/store/geolocation/geolocation.reducer';
 
 
 describe('GeolocationPlugin', () => {

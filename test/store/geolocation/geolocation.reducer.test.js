@@ -1,6 +1,6 @@
-import { geolocationReducer } from '../../../../src/modules/map/store/geolocation.reducer';
-import { activate, deactivate, setAccuracy, setDenied, setPosition, setTracking } from '../../../../src/modules/map/store/geolocation.action';
-import { TestUtils } from '../../../test-utils.js';
+import { activate, deactivate, setAccuracy, setDenied, setPosition, setTracking } from '../../../src/store/geolocation/geolocation.action';
+import { geolocationReducer } from '../../../src/store/geolocation/geolocation.reducer';
+import { TestUtils } from '../../test-utils.js';
 
 
 describe('geolocationReducer', () => {

@@ -1,6 +1,5 @@
 import { OlGeolocationHandler } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/OlGeolocationHandler';
-import { geolocationReducer } from '../../../../../../../src/modules/map/store/geolocation.reducer';
-import { activate as activateGeolocation, setAccuracy, setPosition } from '../../../../../../../src/modules/map/store/geolocation.action';
+import { activate as activateGeolocation, setAccuracy, setPosition } from '../../../../../../../src/store/geolocation/geolocation.action';
 import { setBeingDragged } from '../../../../../../../src/modules/map/store/pointer.action';
 import { TestUtils } from '../../../../../../test-utils';
 import Map from 'ol/Map';
@@ -10,6 +9,7 @@ import View from 'ol/View';
 
 import { OSM, TileDebug } from 'ol/source';
 import { pointerReducer } from '../../../../../../../src/modules/map/store/pointer.reducer';
+import { geolocationReducer } from '../../../../../../../src/store/geolocation/geolocation.reducer';
 
 describe('OlGeolocationHandler', () => {
 
