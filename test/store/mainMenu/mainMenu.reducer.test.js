@@ -1,6 +1,6 @@
-import { TestUtils } from '../../../test-utils.js';
-import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTabIndex, TabIndex } from '../../../../src/store/mainMenu/mainMenu.action';
+import { TestUtils } from '../../test-utils.js';
+import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
+import { open, close, toggle, setTabIndex, TabIndex } from '../../../src/store/mainMenu/mainMenu.action';
 
 
 describe('mainMenuReducer', () => {
