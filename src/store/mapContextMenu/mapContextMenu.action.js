@@ -3,7 +3,7 @@
  * @module contextMenu/action
  */
 import { MAP_CONTEXT_MENU_CLICKED } from './mapContextMenu.reducer';
-import { $injector } from '../../../injection';
+import { $injector } from '../../injection';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
