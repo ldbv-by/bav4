@@ -25,7 +25,7 @@ describe('Button', () => {
 			const element = await TestUtils.render(MvuTopicItem.tag);
 
 			//model
-			expect(element.label).toBe('intilal_label');
+			expect(element.label).toBe('initial_label');
 		});
 
 		it('should update the label property with signal', async () => {
@@ -45,6 +45,16 @@ describe('Button', () => {
 			const span = element.shadowRoot.querySelector('.ba-topic-label');
 
 			expect(span.innerText).toBe('ba');
+		});
+
+		it('should call the click event of the button element', async () => {
+
+			const element = await TestUtils.render(MvuTopicItem.tag);
+
+			const button = element.shadowRoot.querySelector('button');
+			button.dispatchEvent(new MouseEvent('click'));
+
+			expect(element.label).toBe('initial_label');
 		});
 	});
 });

@@ -53,7 +53,7 @@ export class MvuCounterList extends MvuElement {
 			<ul>
 				${model.topics.map((topic) => html`
 				<li>
-				<ba-mvu-topic-item .label=${topic} @click=${() => this.signal(TOPIC_REMOVE, topic, model)}></ba-mvu-topic-item>
+				<ba-mvu-topic-item .label=${topic} @remove=${() => this.signal(TOPIC_REMOVE, topic, model)}></ba-mvu-topic-item>
 				</li>
 				`)}
 			</ul>

@@ -82,7 +82,7 @@ describe('MvuCounterList', () => {
 		setCurrent('ba');
 
 		const topicItem = element.shadowRoot.querySelector('ba-mvu-topic-item');
-		topicItem.dispatchEvent(new MouseEvent('click'));
+		topicItem.dispatchEvent(new MouseEvent('remove'));
 
 		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
 		const span = topicItems[0].shadowRoot.querySelector('span');
@@ -98,6 +98,17 @@ describe('MvuCounterList', () => {
 		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
 
 		expect(topicItems[0].label).toBe('topic3');
+		expect(topicItems.length).toBe(4);
+	});
+
+	it('should call the click event of child component topicitem button', async () => {
+
+		const element = await setup(state);
+		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
+		const topic = topicItems[0].shadowRoot.querySelector('button');
+
+		topic.dispatchEvent(new MouseEvent('click'));
+
 		expect(topicItems.length).toBe(4);
 	});
 });

@@ -7,7 +7,7 @@ export class MvuTopicItem extends MvuElement {
 
 	constructor() {
 		super({
-			label: 'intilal_label'
+			label: 'initial_label'
 		});
 	}
 
@@ -22,9 +22,17 @@ export class MvuTopicItem extends MvuElement {
 	createView(model) {
 		const { label } = model;
 
+		// we want to disable the default HTML 'onClick' event in order to use the custom event 'remove'
+		const fireEvent = (evt) => {
+			evt.preventDefault();
+			evt.stopPropagation();
+
+			this.dispatchEvent(new CustomEvent('remove', { detail: this.label }));
+		};
+
 		return html`
 			<span class='ba-topic-label'>${label}</span>
-			<button class='ba-topic-button'>remove</button>
+			<button class='ba-topic-button' @click=${fireEvent}>remove</button>
 			`;
 	}
 
