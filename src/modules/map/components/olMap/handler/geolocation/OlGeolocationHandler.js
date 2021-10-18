@@ -1,6 +1,5 @@
 import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
-import { GEOLOCATION_LAYER_ID } from '../../../../store/GeolocationPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
@@ -9,6 +8,7 @@ import Feature from 'ol/Feature';
 
 import { unByKey } from 'ol/Observable';
 import { Point, Circle } from 'ol/geom';
+import { GEOLOCATION_LAYER_ID } from '../../../../../../plugins/GeolocationPlugin';
 
 
 

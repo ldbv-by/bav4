@@ -1,7 +1,7 @@
-import { observe } from '../../../utils/storeUtils';
-import { BaPlugin } from '../../../plugins/BaPlugin';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
 import { html } from 'lit-html';
-import { close, open } from '../../../store/mapContextMenu/mapContextMenu.action';
+import { close, open } from '../store/mapContextMenu/mapContextMenu.action';
 
 
 /**

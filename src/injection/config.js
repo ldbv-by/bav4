@@ -23,6 +23,9 @@ import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
 import { DrawPlugin } from '../store/draw/DrawPlugin';
+import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
+import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
+import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 
 
 $injector
@@ -49,6 +52,9 @@ $injector
 	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerSingleton('MediaPlugin', new MediaPlugin())
+	.registerSingleton('MeasurementPlugin', new MeasurementPlugin())
+	.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
+	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
