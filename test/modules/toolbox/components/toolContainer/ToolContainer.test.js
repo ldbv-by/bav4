@@ -11,6 +11,7 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
+import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
@@ -36,6 +37,9 @@ describe('ToolContainer', () => {
 			toolContainer: {
 				open: false,
 				contentId: false
+			},
+			notifications: {
+				notification: null
 			},
 			media: {
 				portrait: false,
@@ -72,6 +76,7 @@ describe('ToolContainer', () => {
 			toolContainer: toolContainerReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
+			notifications: notificationReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 
@@ -146,30 +151,54 @@ describe('ToolContainer', () => {
 			expect(store.getState().measurement.active).toBeFalse();
 		});
 
-		it('deactivates measurement, when tool-content is switching from measure-tool-content', async () => {
+		it('deactivates measurement, when contentTool is closing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-measure-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
+			expect(store.getState().measurement.active).toBeTrue();
+
+			const closeButton = element.shadowRoot.querySelector('.tool-container__close-button');
+
+			closeButton.click();
+
+			expect(store.getState().measurement.active).toBeFalse();
+		});
+
+
+		it('deactivates draw, when contentTool is closing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeFalsy();
+			setContainerContent('ba-tool-draw-content');
+			toggleToolContainer();
+			expect(element.shadowRoot.querySelector('.tool-container__content.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
+			expect(store.getState().draw.active).toBeTrue();
+
+			const closeButton = element.shadowRoot.querySelector('.tool-container__close-button');
+
+			closeButton.click();
+
+			expect(store.getState().draw.active).toBeFalse();
+		});
+
+		it('prevent switching from one tool to other, if toolcontent is open', async () => {
 			const element = await setup();
 
 			setContainerContent('ba-tool-measure-content');
-			toggleToolContainer();
+			toggleToolContainer();// now is open
 			expect(store.getState().measurement.active).toBeTrue();
 			setContainerContent('ba-tool-draw-content');
 
-			expect(store.getState().measurement.active).toBeFalse();
-			expect(element.shadowRoot.querySelector(DrawToolContent.tag)).toBeTruthy();
-		});
-
-		it('deactivates draw, when tool-content is switching from draw-tool-content', async () => {
-			const element = await setup();
-
-			setContainerContent('ba-tool-draw-content');
-			toggleToolContainer();
-			expect(store.getState().draw.active).toBeTrue();
-			setContainerContent('ba-tool-measure-content');
-
-			expect(store.getState().draw.active).toBeFalse();
+			expect(store.getState().measurement.active).toBeTrue();
+			expect(store.getState().notifications.notification.payload.message).toBe('toolbox_prevent_switching_tool');
+			expect(store.getState().notifications.notification.payload.level).toBe(LevelTypes.WARN);
 			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
 		});
-
 
 		it('renders nothing when contentId is false', async () => {
 			const element = await setup();
