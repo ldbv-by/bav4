@@ -10,7 +10,7 @@ import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../sto
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
 import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../store/pointer.action';
-import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 

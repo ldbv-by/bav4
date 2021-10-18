@@ -14,7 +14,7 @@ import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
-import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import { mapReducer } from '../../../../../src/store/map/map.reducer';
 import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
 import { Group as LayerGroup } from 'ol/layer';

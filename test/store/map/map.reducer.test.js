@@ -1,6 +1,6 @@
-import { mapReducer } from '../../../../src/modules/map/store/map.reducer';
-import { setMoveStart, setMoveEnd, setBeingMoved } from '../../../../src/modules/map/store/map.action';
-import { TestUtils } from '../../../test-utils.js';
+import { setMoveStart, setMoveEnd, setBeingMoved } from '../../../src/store/map/map.action';
+import { mapReducer } from '../../../src/store/map/map.reducer';
+import { TestUtils } from '../../test-utils.js';
 
 
 describe('mapReducer', () => {
