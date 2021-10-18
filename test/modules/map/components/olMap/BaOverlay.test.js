@@ -32,7 +32,7 @@ describe('BaOverlay', () => {
 
 			expect(element.type).toBe(BaOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('');
+			expect(element.value).toBe(null);
 		});
 
 		it('renders the help view', async () => {
@@ -70,7 +70,7 @@ describe('BaOverlay', () => {
 
 			expect(element.type).toBe(BaOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('');
+			expect(element.value).toBe(null);
 
 			element.type = BaOverlayTypes.HELP;
 

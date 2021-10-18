@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../../../injection';
 import css from './measure.css';
@@ -44,7 +44,6 @@ export class MeasurementOverlay extends BaOverlay {
 		super();
 		const { UnitsService } = $injector.inject('UnitsService');
 		this._unitsService = UnitsService;
-		this._value = '';
 		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = false;
@@ -70,7 +69,7 @@ export class MeasurementOverlay extends BaOverlay {
 		return html`
 			<style>${css}</style>
 			<div class='ba-overlay ${classMap(classes)}'>
-				${unsafeHTML(content)}
+				${content ? unsafeHTML(content) : nothing}
 			</div>
 		`;
 	}

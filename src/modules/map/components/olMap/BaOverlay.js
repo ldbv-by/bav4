@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../BaElement';
 import css from './baOverlay.css';
@@ -36,12 +36,11 @@ export class BaOverlay extends BaElement {
 
 	constructor() {
 		super();
-		this._value = '';
+		this._value = null;
 		this._static = false;
 		this._type = BaOverlayTypes.TEXT;
 		this._projectionHints = false;
 		this._isDraggable = false;
-		this._contentFunction = () => '';
 	}
 
 	/**
@@ -60,7 +59,7 @@ export class BaOverlay extends BaElement {
 		return html`
 			<style>${css}</style>
 			<div class='ba-overlay ${classMap(classes)}'>
-				${unsafeHTML(content)}
+			${content ? unsafeHTML(content) : nothing}
 			</div>
 		`;
 	}
