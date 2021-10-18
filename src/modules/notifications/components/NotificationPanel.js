@@ -3,80 +3,73 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
 import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
 import css from './notificationPanel.css';
-import { BaElement } from '../../BaElement';
+import { MvuElement } from '../../MvuElement';
 
 
 const Notification_Autoclose_Time = 10000;
+const Update_Notifications = 'update_notifications';
+const Update_Remove_Notification = 'update_remove_notification';
+
+
 /**
  * Container for notifications.
  * @class
  * @author thiloSchlemmer
  */
-export class NotificationPanel extends BaElement {
-
+export class NotificationPanel extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			notifications: [],
+			lastNotification: null
+		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._notifications = [];
-		this._lastNotification = null;
-		this._notification_autoclose_time = Notification_Autoclose_Time;
+	}
+
+	onInitialize() {
+		this.observe(state => state.notifications.notification, (notification) => this.signal(Update_Notifications, notification));
+	}
+
+	update(type, data, model) {
+		const hasNotification = (candidate) => model.notifications.find(old => old.id === candidate.id);
+		switch (type) {
+			case Update_Notifications:
+				if (data && !hasNotification(data)) {
+					if (model.lastNotification !== data) {
+						return {
+							...model,
+							notifications: [{ ...data.payload, id: data.id }].concat(model.notifications),
+							lastNotification: data
+						};
+					}
+				}
+				return model;
+			case Update_Remove_Notification:
+				return { ...model, notifications: model.notifications.filter(n => n.id !== data.id) };
+		}
 	}
 
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { notifications } = model;
+		const createItem = (notification, index) => {
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : Notification_Autoclose_Time };
+			return html`<ba-notification-item .content=${item} .onClose=${(event) => this.signal(Update_Remove_Notification, event)}></ba-notification-item>`;
+		};
 
 		return html`
         <style>${css}</style>
 		<div class="notification-panel">
-		${this._notifications.length > 0 ? repeat(
-		this._notifications,
-		(notification) => notification.id,
-		(notification, index) => {
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : this._notification_autoclose_time };
-			return html`<ba-notification-item .content=${item} .onClose=${(event) => this._remove(event)}></ba-notification-item>`;
-		})
-		: html.nothing}  
+		${notifications.length > 0 ? repeat(notifications, (notification) => notification.id, createItem) : html.nothing}  
 		</div>
         `;
 	}
 
-	/**
-	  * @override
-	  * @param {Object} globalState
-	  */
-	extractState(globalState) {
-		const { notifications: { notification } } = globalState;
-		const hasNotification = (candidate) => this._notifications.find(old => old.id === candidate.id);
-
-		if (notification && !hasNotification(notification)) {
-			this._add(notification);
-			return { notification };
-		}
-	}
-
 	static get tag() {
 		return 'ba-notification-panel';
-	}
-
-	_add(notification) {
-		// We must save the last notification, to decide, wheter a notification should be stored in the currently empty notification queue or not.
-		// If the notification IS the last notification and the queue is empty, then this notification was successfull closed/removed behorehand.
-		if (this._lastNotification !== notification) {
-			this._lastNotification = notification;
-
-			// adding in LIFO-manner
-			this._notifications = [{ ...notification.payload, id: notification.id }].concat(this._notifications);
-		}
-
-	}
-
-	_remove(notification) {
-		this._notifications = this._notifications.filter(n => n.id !== notification.id);
-		this.render();
 	}
 }
