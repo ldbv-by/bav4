@@ -4,9 +4,9 @@ import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { $injector } from '../../../../src/injection';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
-import { setBeingDragged } from '../../../../src/modules/map/store/pointer.action';
 import { geolocationReducer } from '../../../../src/store/geolocation/geolocation.reducer';
+import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
+import { setBeingDragged } from '../../../../src/store/pointer/pointer.action';
 
 
 describe('GeolocationPlugin', () => {

@@ -3,7 +3,6 @@ import { positionReducer } from '../store/position/position.reducer';
 import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
 import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
-import { pointerReducer } from '../modules/map/store/pointer.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
@@ -19,6 +18,7 @@ import { drawReducer } from '../store/draw/draw.reducer';
 import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
 import { mapReducer } from '../store/map/map.reducer';
 import { measurementReducer } from '../store/measurement/measurement.reducer';
+import { pointerReducer } from '../store/pointer/pointer.reducer';
 
 
 /**

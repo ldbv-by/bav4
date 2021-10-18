@@ -1,6 +1,6 @@
-import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
-import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../../../../src/modules/map/store/pointer.action';
-import { TestUtils } from '../../../test-utils.js';
+import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../../../src/store/pointer/pointer.action';
+import { pointerReducer } from '../../../src/store/pointer/pointer.reducer';
+import { TestUtils } from '../../test-utils.js';
 
 
 describe('pointerReducer', () => {
