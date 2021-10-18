@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 import { ToolContainer } from '../../../../../src/modules/toolbox/components/toolContainer/ToolContainer';
-import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
@@ -12,6 +11,7 @@ import { toolContainerReducer } from '../../../../../src/store/toolbox/toolConta
 import { setContainerContent, toggleToolContainer } from '../../../../../src/store/toolbox/toolContainer.action';
 import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
+import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);

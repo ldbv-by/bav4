@@ -1,7 +1,7 @@
-import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
-import { activate, deactivate, setStatistic, reset, remove, setFileSaveResult } from '../../../../src/modules/map/store/measurement.action';
-import { TestUtils } from '../../../test-utils.js';
-import { EventLike } from '../../../../src/utils/storeUtils';
+import { activate, deactivate, setStatistic, reset, remove, setFileSaveResult } from '../../../src/store/measurement/measurement.action';
+import { TestUtils } from '../../test-utils.js';
+import { EventLike } from '../../../src/utils/storeUtils';
+import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
 
 
 

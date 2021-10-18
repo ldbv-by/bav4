@@ -1,9 +1,9 @@
-import { measurementReducer } from '../../../../src/modules/map/store/measurement.reducer';
 import { MeasurementPlugin, MEASUREMENT_LAYER_ID } from '../../../../src/modules/map/store/MeasurementPlugin';
 
-import { activate, deactivate } from '../../../../src/modules/map/store/measurement.action';
+import { activate, deactivate } from '../../../../src/store/measurement/measurement.action';
 import { TestUtils } from '../../../test-utils.js';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 
 
 

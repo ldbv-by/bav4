@@ -19,11 +19,11 @@ import { FileStorageServiceDataTypes } from '../../../../../../services/FileStor
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
-import { setMode } from '../../../../store/measurement.action';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
+import { setMode } from '../../../../../../store/measurement/measurement.action';
 
 
 export const MAX_SELECTION_SIZE = 1;

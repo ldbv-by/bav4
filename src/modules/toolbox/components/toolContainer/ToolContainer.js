@@ -4,7 +4,7 @@ import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { activate as activateDraw, deactivate as deactivateDraw } from '../../../../store/draw/draw.action';
 import css from './toolContainer.css';
 import { closeToolContainer } from '../../../../store/toolbox/toolContainer.action';

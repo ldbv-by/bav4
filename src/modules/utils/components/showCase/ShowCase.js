@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../map/store/measurement.action';
+import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
