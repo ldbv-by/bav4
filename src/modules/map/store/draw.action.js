@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the drwa tool
  * @module map/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED } from './draw.reducer';
+import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED } from './draw.reducer';
 import { $injector } from '../../../injection';
 import { EventLike } from '../../../utils/storeUtils';
 
@@ -14,6 +14,21 @@ import { EventLike } from '../../../utils/storeUtils';
  * @property {string} fileId The fileId of the succesfully saved drawing
  */
 
+/**
+ * The Options of a Style-Request
+ * @typedef {Object} DrawingStyleOption
+ * @property {string} symbolSrc the source of a vector graphic, used by a symbol-drawing
+ * @property {small|medium|big} scale the scale-factor of a drawing; used by symbol- and text-drawing
+ * @property {string} color the hex-string representation of a RGB-Color; used by Symbol-, Text-, Line- and Polygon-drawing
+ * @property {string} text the text-content of a Text-drawing
+ */
+
+/**
+ * The style-options for a selected drawing
+ * @typedef SelectedDrawingStyleOption
+ * @property {string} type the type of the selected drawing
+ * @property {DrawingStyleOption} style the styleOptions of the selected drawing
+ */
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -44,7 +59,7 @@ export const deactivate = () => {
 
 
 /**
- * set the mode of a drawing.
+ * Set the mode of a drawing.
  * @function
  */
 export const setMode = (mode) => {
@@ -55,7 +70,7 @@ export const setMode = (mode) => {
 };
 
 /**
- * set the type of a drawing.
+ * Set the type of a drawing.
  * @function
  */
 export const setType = (type) => {
@@ -65,9 +80,45 @@ export const setType = (type) => {
 	});
 };
 
+/**
+ * Set the style of a drawing.
+ * @function
+ */
+export const setStyle = (style) => {
+	getStore().dispatch({
+		type: STYLE_CHANGED,
+		payload: style
+	});
+};
 
 /**
- * set the {@link FileSaveResult}
+ * Set the style of a drawing.
+ * @function
+ * @param {SelectedDrawingStyleOption} selectedStyle the styleOptions of the selected drawing
+ */
+export const setSelectedStyle = (selectedSyle) => {
+	getStore().dispatch({
+		type: SELECTED_STYLE_CHANGED,
+		payload: selectedSyle
+	});
+};
+
+
+/**
+ * Set the description of a drawing.
+ * @function
+ * @param {string} description the description of a drawing
+ */
+export const setDescription = (description) => {
+	getStore().dispatch({
+		type: DESCRIPTION_CHANGED,
+		payload: description
+	});
+};
+
+
+/**
+ * Set the {@link FileSaveResult}
  * @function
  * @param {DrawFileSaveResult} fileSaveResult the fileSaveResult of the stored drawing-data
  */
@@ -81,7 +132,7 @@ export const setFileSaveResult = (fileSaveResult) => {
 
 
 /**
- * set the reset request.
+ * Set the reset request.
  * @function
  */
 export const reset = () => {
@@ -93,7 +144,7 @@ export const reset = () => {
 
 
 /**
- * set the reset request.
+ * Set the reset request.
  * @function
  */
 export const finish = () => {
@@ -105,7 +156,7 @@ export const finish = () => {
 
 
 /**
- * set the delete request.
+ * Set the delete request.
  * @function
  */
 export const remove = () => {
