@@ -16,6 +16,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
+		expect(map.toolbox_drawTool_style_size).toBe('Größe');
+		expect(map.toolbox_drawTool_style_size_small).toBe('klein');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('mittel');
+		expect(map.toolbox_drawTool_style_size_large).toBe('groß');
+		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
@@ -43,6 +49,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share_link_edit).toBe('Link zum Editieren Ihrer Zeichnung');
 		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
+		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
+		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
+		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
+		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 	});
 
 	it('provides translation for en', () => {
@@ -58,6 +68,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
+		expect(map.toolbox_drawTool_style_color).toBe('Color');
+		expect(map.toolbox_drawTool_style_size).toBe('Size');
+		expect(map.toolbox_drawTool_style_size_small).toBe('small');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('medium');
+		expect(map.toolbox_drawTool_style_size_large).toBe('large');
+		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
@@ -85,10 +101,14 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_share_link_edit).toBe('Link to editable share your measurement');
 		expect(map.toolbox_measureTool_share_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
+		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
+		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
+		expect(map.toolbox_toolbar_share_button).toBe('Share');
+		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 36;
+		const expectedSize = 46;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

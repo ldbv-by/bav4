@@ -1,17 +1,17 @@
 /* eslint-disable no-undef */
 import { Header } from '../../../../src/modules/header/components/Header';
-import { createNoInitialStateMainMenuReducer } from '../../../../src/modules/menu/store/mainMenu.reducer';
-import { modalReducer } from '../../../../src/modules/modal/store/modal.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
+import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
-import { MainMenuTabIndex } from '../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { TabIndex } from '../../../../src/store/mainMenu/mainMenu.action';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(Header.tag, Header);
 
@@ -33,7 +33,7 @@ describe('Header', () => {
 				pendingRequests: 0
 			},
 			layers: {
-				active: ['test']
+				active: [createDefaultLayer('test')]
 			},
 			search: {
 				query: new EventLike(null)
@@ -196,15 +196,18 @@ describe('Header', () => {
 		});
 
 
-		it('with 3 active Layers', async () => {
+		it('displays 2 active Layers', async () => {
+			//we add one hidden layer
+			const hiddenLayer = createDefaultLayer('test2');
+			hiddenLayer.constraints.hidden = true;
 			const state = {
 				layers: {
-					active: ['test', 'test', 'test']
+					active: [createDefaultLayer('test0'), createDefaultLayer('test1'), hiddenLayer]
 				}
 			};
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('3');
+			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('2');
 		});
 
 	});
@@ -268,11 +271,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.TOPICS.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MAPS.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.MORE.id);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MORE);
 		});
 
 	});
@@ -484,7 +487,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(MainMenuTabIndex.SEARCH.id);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {
@@ -519,10 +522,10 @@ describe('Header', () => {
 					expect(window.getComputedStyle(container).opacity).toBe('0');
 					jasmine.clock().tick(800);
 					/**
-					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-					 * --> So we have to test for 'style' here
-					 */
+				 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+				 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+				 * --> So we have to test for 'style' here
+				 */
 					expect(container.style.opacity).toBe('1');
 				});
 			});
@@ -559,10 +562,10 @@ describe('Header', () => {
 					expect(window.getComputedStyle(container).opacity).toBe('0');
 					jasmine.clock().tick(800);
 					/**
-					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-					 * --> So we have to test for 'style' here
-					 */
+				 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+				 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+				 * --> So we have to test for 'style' here
+				 */
 					expect(container.style.opacity).toBe('1');
 				});
 			});

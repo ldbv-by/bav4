@@ -1,12 +1,12 @@
 import { html, nothing } from 'lit-html';
 import { BaElement, renderTagOf } from '../../../BaElement';
 import css from './mainMenu.css';
-import { toggle } from '../../store/mainMenu.action';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 import { clearHighlightFeatures } from '../../../../store/highlight/highlight.action';
+import { toggle } from '../../../../store/mainMenu/mainMenu.action';
 
 /**
  * @enum

@@ -1,26 +1,24 @@
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
-import { sidePanelReducer } from '../modules/menu/store/sidePanel.reducer';
-import { createMainMenuReducer } from '../modules/menu/store/mainMenu.reducer';
-import { toolBarReducer } from '../modules/menu/store/toolBar.reducer';
-import { toolContainerReducer } from '../modules/toolbox/store/toolContainer.reducer';
-import { modalReducer } from '../modules/modal/store/modal.reducer';
-import { contextMenueReducer } from '../modules/contextMenue/store/contextMenue.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';
-import { mapContextMenuReducer } from '../modules/map/store/mapContextMenu.reducer';
-import { measurementReducer } from '../modules/map/store/measurement.reducer';
-import { geolocationReducer } from '../modules/map/store/geolocation.reducer';
-import { pointerReducer } from '../modules/map/store/pointer.reducer';
-import { mapReducer } from '../modules/map/store/map.reducer';
 import { $injector } from '../injection';
 import { topicsReducer } from '../store/topics/topics.reducer';
 import { networkReducer } from '../store/network/network.reducer';
 import { searchReducer } from '../store/search/search.reducer';
-import { topicsContentPanelReducer } from '../modules/topics/store/topicsContentPanel.reducer';
 import { highlightReducer } from '../store/highlight/highlight.reducer';
 import { notificationReducer } from '../store/notifications/notifications.reducer';
 import { createMediaReducer } from '../store/media/media.reducer';
-import { drawReducer } from '../modules/map/store/draw.reducer';
+import { topicsContentPanelReducer } from '../store/topicsContentPanel/topicsContentPanel.reducer';
+import { modalReducer } from '../store/modal/modal.reducer';
+import { toolContainerReducer } from '../store/toolContainer/toolContainer.reducer';
+import { toolBarReducer } from '../store/toolBar/toolBar.reducer';
+import { drawReducer } from '../store/draw/draw.reducer';
+import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
+import { mapReducer } from '../store/map/map.reducer';
+import { measurementReducer } from '../store/measurement/measurement.reducer';
+import { pointerReducer } from '../store/pointer/pointer.reducer';
+import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
+import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 
 
 /**
@@ -40,11 +38,9 @@ export class StoreService {
 			map: mapReducer,
 			pointer: pointerReducer,
 			position: positionReducer,
-			sidePanel: sidePanelReducer,
 			mainMenu: createMainMenuReducer(),
 			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
-			contextMenue: contextMenueReducer,
 			modal: modalReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,

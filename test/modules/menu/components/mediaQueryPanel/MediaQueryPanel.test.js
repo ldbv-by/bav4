@@ -2,7 +2,7 @@
 
 import { $injector } from '../../../../../src/injection';
 import { MediaQueryPanel } from '../../../../../src/modules/menu/components/mediaQueryPanel/MediaQueryPanel';
-import { sidePanelReducer } from '../../../../../src/modules/menu/store/sidePanel.reducer';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MediaQueryPanel.tag, MediaQueryPanel);
@@ -16,7 +16,7 @@ describe('MediaQueryPanel', () => {
 
 	const setup = async (state) => {
 
-		TestUtils.setupStoreAndDi(state, { sidePanel: sidePanelReducer });
+		TestUtils.setupStoreAndDi(state, { mainMenu: createNoInitialStateMainMenuReducer });
 		$injector
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
 

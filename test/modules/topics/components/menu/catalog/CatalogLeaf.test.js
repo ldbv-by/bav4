@@ -4,7 +4,7 @@ import { TestUtils } from '../../../../../test-utils.js';
 import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { layersReducer } from '../../../../../../src/store/layers/layers.reducer';
-import { defaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
+import { createDefaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
 import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 
@@ -21,7 +21,7 @@ describe('CatalogLeaf', () => {
 
 	let store;
 
-	const layer = { ...defaultLayerProperties, id: 'atkis_sw' };
+	const layer = { ...createDefaultLayerProperties(), id: 'atkis_sw' };
 
 	const setup = (topics = 'foo', layers = [layer], ready = true) => {
 
@@ -87,7 +87,7 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.info')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 			});
 
 			it('renders a checkbox unchecked', async () => {

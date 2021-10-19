@@ -1,6 +1,6 @@
 import { BaseLayerInfo } from '../../../../../src/modules/footer/components/baseLayerInfo/BaseLayerInfo';
 import { TestUtils } from '../../../../test-utils.js';
-import { layersReducer, defaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
+import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
@@ -29,7 +29,7 @@ describe('BaseLayerInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders BaseLayerInfo component', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -51,7 +51,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders BaseLayerInfo component with georesource.getAttribution', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -94,7 +94,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders nothing when geo resource could not be fetched', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -112,7 +112,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders fallback content if label is undefined', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -134,8 +134,8 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('updates BaseLayerInfo component', async () => {
-			const layer = { ...defaultLayerProperties, id: 'id0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...defaultLayerProperties, id: 'id1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]

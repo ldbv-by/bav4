@@ -9,8 +9,8 @@ import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
-import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../store/pointer.action';
-import { setBeingMoved, setMoveEnd, setMoveStart } from '../../store/map.action';
+import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../../store/pointer/pointer.action';
+import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 

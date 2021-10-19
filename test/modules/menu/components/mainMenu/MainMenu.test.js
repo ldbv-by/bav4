@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 
 import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
-import { createNoInitialStateMainMenuReducer } from '../../../../../src/modules/menu/store/mainMenu.reducer';
-import { toggle } from '../../../../../src/modules/menu/store/mainMenu.action';
+import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
+import { TabIndex, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { setTabIndex } from '../../../../../src/modules/menu/store/mainMenu.action';
+import { setTabIndex } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
@@ -232,22 +232,22 @@ describe('MainMenu', () => {
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
-			setTabIndex(MainMenuTabIndex.MAPS);
+			setTabIndex(TabIndex.MAPS);
 			check(MainMenuTabIndex.MAPS, contentPanels);
 
-			setTabIndex(MainMenuTabIndex.MORE);
+			setTabIndex(TabIndex.MORE);
 			check(MainMenuTabIndex.MORE, contentPanels);
 
-			setTabIndex(MainMenuTabIndex.ROUTING);
+			setTabIndex(TabIndex.ROUTING);
 			check(MainMenuTabIndex.ROUTING, contentPanels);
 
-			setTabIndex(MainMenuTabIndex.SEARCH);
+			setTabIndex(TabIndex.SEARCH);
 			check(MainMenuTabIndex.SEARCH, contentPanels);
 
-			setTabIndex(MainMenuTabIndex.FEATUREINFO);
+			setTabIndex(TabIndex.FEATUREINFO);
 			check(MainMenuTabIndex.FEATUREINFO, contentPanels);
 
-			setTabIndex(MainMenuTabIndex.TOPICS);
+			setTabIndex(TabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
 		});
 
@@ -259,11 +259,11 @@ describe('MainMenu', () => {
 
 			expect(store.getState().highlight.feature).toEqual(highlightFeature);
 
-			setTabIndex(MainMenuTabIndex.SEARCH);
+			setTabIndex(TabIndex.SEARCH);
 
 			expect(store.getState().highlight.feature).toEqual(highlightFeature);
 
-			setTabIndex(MainMenuTabIndex.MAPS);
+			setTabIndex(TabIndex.MAPS);
 
 			expect(store.getState().highlight.feature).toBeNull();
 		});

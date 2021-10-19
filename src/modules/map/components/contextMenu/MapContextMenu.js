@@ -3,7 +3,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
-import { close as closeContextMenu } from '../../store/mapContextMenu.action';
+import { close as closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
 
 const Update = 'update';

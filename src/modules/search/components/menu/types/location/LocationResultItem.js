@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../../../../BaElement';
 import itemCss from '../item.css';
 import css from './locationResultItem.css';
-import { close as closeMainMenu } from '../../../../../menu/store/mainMenu.action';
+import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
 import { HightlightFeatureTypes, removeHighlightFeature, removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../store/highlight/highlight.action';
 

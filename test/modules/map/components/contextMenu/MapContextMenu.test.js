@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 import { MapContextMenu } from '../../../../../src/modules/map/components/contextMenu/MapContextMenu';
-import { initialState, mapContextMenuReducer } from '../../../../../src/modules/map/store/mapContextMenu.reducer';
 import { TestUtils } from '../../../../test-utils.js';
-import { close, open } from '../../../../../src/modules/map/store/mapContextMenu.action';
 import { $injector } from '../../../../../src/injection';
 import { html } from 'lit-html';
+import { mapContextMenuReducer, initialState } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
+import { close, open } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {

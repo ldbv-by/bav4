@@ -50,10 +50,10 @@ export const sort = (list) => {
  * @returns a layer with default properties
  */
 export const createDefaultLayer = (id) => {
-	return { id: id, geoResourceId: id, ...defaultLayerProperties };
+	return { id: id, geoResourceId: id, ...createDefaultLayerProperties() };
 };
 
-export const defaultLayerProperties = Object.freeze({
+export const createDefaultLayerProperties = () => ({
 	label: '',
 	visible: true,
 	zIndex: -1,
@@ -72,7 +72,7 @@ const addLayer = (state, payload) => {
 	}
 
 	const layer = {
-		...defaultLayerProperties,
+		...createDefaultLayerProperties(),
 		geoResourceId: id,
 		...properties,
 		id: id

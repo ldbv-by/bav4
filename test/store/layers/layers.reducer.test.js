@@ -1,4 +1,4 @@
-import { layersReducer, index, sort, defaultLayerProperties, createDefaultLayer } from '../../../src/store/layers/layers.reducer';
+import { layersReducer, index, sort, createDefaultLayerProperties, createDefaultLayer } from '../../../src/store/layers/layers.reducer';
 import { addLayer, removeLayer, modifyLayer, setReady } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 
@@ -6,7 +6,7 @@ describe('defaultLayerProperties', () => {
 
 	it('returns a object containing default layer properties', () => {
 
-		expect(Object.isFrozen(defaultLayerProperties)).toBeTrue();
+		const defaultLayerProperties = createDefaultLayerProperties();
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.label).toBe('');
 		expect(defaultLayerProperties.opacity).toBe(1);
@@ -60,9 +60,9 @@ describe('layersReducer', () => {
 	});
 
 	it('sorts an array based on the the \'zIndex\' property', () => {
-		const layer0 = { ...defaultLayerProperties, label: 'label0', zIndex: 2 };
-		const layer1 = { ...defaultLayerProperties, label: 'label1', zIndex: 0 };
-		const layer2 = { ...defaultLayerProperties, label: 'label2', zIndex: 1 };
+		const layer0 = { ...createDefaultLayerProperties(), label: 'label0', zIndex: 2 };
+		const layer1 = { ...createDefaultLayerProperties(), label: 'label1', zIndex: 0 };
+		const layer2 = { ...createDefaultLayerProperties(), label: 'label2', zIndex: 1 };
 
 		const array = sort([layer0, layer1, layer2]);
 
@@ -72,9 +72,9 @@ describe('layersReducer', () => {
 	});
 
 	it('sorts an array based on the the \'zIndex\' property and the \'alwaysTop\' constraint', () => {
-		const layer0 = { ...defaultLayerProperties, label: 'label0', zIndex: 2 };
-		const layer1 = { ...defaultLayerProperties, label: 'label1', zIndex: 0, constraints: { alwaysTop: true } };
-		const layer2 = { ...defaultLayerProperties, label: 'label2', zIndex: 1 };
+		const layer0 = { ...createDefaultLayerProperties(), label: 'label0', zIndex: 2 };
+		const layer1 = { ...createDefaultLayerProperties(), label: 'label1', zIndex: 0, constraints: { alwaysTop: true } };
+		const layer2 = { ...createDefaultLayerProperties(), label: 'label2', zIndex: 1 };
 
 		const array = sort([layer0, layer1, layer2]);
 
@@ -84,9 +84,9 @@ describe('layersReducer', () => {
 	});
 
 	it('sorts an array based on the \'alwaysTop\' constraint', () => {
-		const layer0 = { ...defaultLayerProperties, label: 'label0', constraints: { alwaysTop: true } };
-		const layer1 = { ...defaultLayerProperties, label: 'label1', constraints: { alwaysTop: true } };
-		const layer2 = { ...defaultLayerProperties, label: 'label2', constraints: { alwaysTop: true } };
+		const layer0 = { ...createDefaultLayerProperties(), label: 'label0', constraints: { alwaysTop: true } };
+		const layer1 = { ...createDefaultLayerProperties(), label: 'label1', constraints: { alwaysTop: true } };
+		const layer2 = { ...createDefaultLayerProperties(), label: 'label2', constraints: { alwaysTop: true } };
 
 		const array = sort([layer0, layer1, layer2]);
 
@@ -245,7 +245,7 @@ describe('layersReducer', () => {
 	});
 
 	it('modifies the \'label\' property of a layer', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true };
 		const store = setup({
 			layers: {
 				active: index([layer0])
@@ -260,7 +260,7 @@ describe('layersReducer', () => {
 	});
 
 	it('modifies the \'visible\' property of a layer', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true };
 		const store = setup({
 			layers: {
 				active: index([layer0])
@@ -275,9 +275,9 @@ describe('layersReducer', () => {
 	});
 
 	it('modifies the \'zIndex\' property of a layer', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
-		const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'label1' };
-		const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'label2' };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+		const layer1 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1' };
+		const layer2 = { ...createDefaultLayerProperties(), id: 'id2', label: 'label2' };
 		const store = setup({
 			layers: {
 				active: index([layer0, layer1, layer2])
@@ -292,9 +292,9 @@ describe('layersReducer', () => {
 	});
 
 	it('modifies the \'zIndex\' property of a layer, to become lowermost', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
-		const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'label1' };
-		const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'label2' };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+		const layer1 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1' };
+		const layer2 = { ...createDefaultLayerProperties(), id: 'id2', label: 'label2' };
 		const store = setup({
 			layers: {
 				active: index([layer0, layer1, layer2])
@@ -309,9 +309,9 @@ describe('layersReducer', () => {
 	});
 
 	it('modifies the \'zIndex\' property of a layer regarding the \'alwaysTop\' constraint', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0' };
-		const layer1 = { ...defaultLayerProperties, id: 'id1', label: 'label1', constraints: { alwaysTop: true } };
-		const layer2 = { ...defaultLayerProperties, id: 'id2', label: 'label2' };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+		const layer1 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', constraints: { alwaysTop: true } };
+		const layer2 = { ...createDefaultLayerProperties(), id: 'id2', label: 'label2' };
 		const store = setup({
 			layers: {
 				active: sort(index([layer0, layer1, layer2]))
@@ -326,7 +326,7 @@ describe('layersReducer', () => {
 	});
 
 	it('does nothing when modified layer is not present', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true };
 		const store = setup({
 			layers: {
 				active: index([layer0])
@@ -342,7 +342,7 @@ describe('layersReducer', () => {
 	});
 
 	it('does nothing when LayerProperties are empty', () => {
-		const layer0 = { ...defaultLayerProperties, id: 'id0', label: 'label0', visible: true };
+		const layer0 = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true };
 		const store = setup({
 			layers: {
 				active: index([layer0])
