@@ -18,7 +18,7 @@ import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../plugins/LayersPlugin';
 import { PositionPlugin } from '../plugins/PositionPlugin';
-import { TopicsPlugin } from '../store/topics/TopicsPlugin';
+import { TopicsPlugin } from '../plugins/TopicsPlugin';
 import { HighlightPlugin } from '../plugins/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../plugins/MediaPlugin';
