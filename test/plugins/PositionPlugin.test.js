@@ -1,8 +1,8 @@
-import { PositionPlugin } from '../../../src/store/position/PositionPlugin';
-import { TestUtils } from '../../test-utils.js';
-import { positionReducer } from '../../../src/store/position/position.reducer';
-import { $injector } from '../../../src/injection';
-import { QueryParameters } from '../../../src/services/domain/queryParameters';
+import { PositionPlugin } from '../../src/plugins/PositionPlugin';
+import { TestUtils } from '../test-utils.js';
+import { positionReducer } from '../../src/store/position/position.reducer';
+import { $injector } from '../../src/injection';
+import { QueryParameters } from '../../src/services/domain/queryParameters';
 
 
 describe('PositionPlugin', () => {

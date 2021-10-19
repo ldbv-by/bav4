@@ -15,7 +15,7 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import proj4 from 'proj4';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { register } from 'ol/proj/proj4';
-import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
+import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { finish, remove, reset } from '../../../../../../../src/store/measurement/measurement.action';

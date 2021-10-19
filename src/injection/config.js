@@ -16,13 +16,16 @@ import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
-import { LayersPlugin } from '../store/layers/LayersPlugin';
-import { PositionPlugin } from '../store/position/PositionPlugin';
-import { TopicsPlugin } from '../store/topics/TopicsPlugin';
-import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
+import { LayersPlugin } from '../plugins/LayersPlugin';
+import { PositionPlugin } from '../plugins/PositionPlugin';
+import { TopicsPlugin } from '../plugins/TopicsPlugin';
+import { HighlightPlugin } from '../plugins/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
-import { MediaPlugin } from '../store/media/MediaPlugin';
-import { DrawPlugin } from '../store/draw/DrawPlugin';
+import { MediaPlugin } from '../plugins/MediaPlugin';
+import { DrawPlugin } from '../plugins/DrawPlugin';
+import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
+import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
+import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 
 
 $injector
@@ -49,6 +52,9 @@ $injector
 	.registerSingleton('PositionPlugin', new PositionPlugin())
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerSingleton('MediaPlugin', new MediaPlugin())
+	.registerSingleton('MeasurementPlugin', new MeasurementPlugin())
+	.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
+	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

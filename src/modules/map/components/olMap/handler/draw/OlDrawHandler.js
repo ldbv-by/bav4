@@ -1,4 +1,4 @@
-import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../../../store/draw/DrawPlugin';
+import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../../../plugins/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';

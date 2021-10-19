@@ -1,8 +1,8 @@
-import { HighlightPlugin, HIGHLIGHT_LAYER_ID } from '../../../src/store/highlight/HighlightPlugin';
-import { TestUtils } from '../../test-utils.js';
-import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, setHighlightFeature } from '../../../src/store/highlight/highlight.action';
-import { layersReducer } from '../../../src/store/layers/layers.reducer';
+import { HighlightPlugin, HIGHLIGHT_LAYER_ID } from '../../src/plugins/HighlightPlugin';
+import { TestUtils } from '../test-utils.js';
+import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
+import { clearHighlightFeatures, setHighlightFeature } from '../../src/store/highlight/highlight.action';
+import { layersReducer } from '../../src/store/layers/layers.reducer';
 
 
 describe('HighlightPlugin', () => {

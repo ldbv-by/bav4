@@ -1,14 +1,14 @@
-import { LayersPlugin } from '../../../src/store/layers/LayersPlugin';
-import { TestUtils } from '../../test-utils.js';
-import { layersReducer } from '../../../src/store/layers/layers.reducer';
-import { $injector } from '../../../src/injection';
-import { GeoResourceTypes, VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../../src/services/domain/geoResources';
-import { QueryParameters } from '../../../src/services/domain/queryParameters';
-import { Topic } from '../../../src/services/domain/topic';
-import { setCurrent } from '../../../src/store/topics/topics.action';
-import { topicsReducer } from '../../../src/store/topics/topics.reducer';
-import { FileStorageServiceDataTypes } from '../../../src/services/FileStorageService';
-import { addLayer } from '../../../src/store/layers/layers.action';
+import { LayersPlugin } from '../../src/plugins/LayersPlugin';
+import { TestUtils } from '../test-utils.js';
+import { layersReducer } from '../../src/store/layers/layers.reducer';
+import { $injector } from '../../src/injection';
+import { GeoResourceTypes, VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { QueryParameters } from '../../src/services/domain/queryParameters';
+import { Topic } from '../../src/services/domain/topic';
+import { setCurrent } from '../../src/store/topics/topics.action';
+import { topicsReducer } from '../../src/store/topics/topics.reducer';
+import { FileStorageServiceDataTypes } from '../../src/services/FileStorageService';
+import { addLayer } from '../../src/store/layers/layers.action';
 
 
 describe('LayersPlugin', () => {

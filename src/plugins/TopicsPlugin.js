@@ -1,7 +1,7 @@
-import { $injector } from '../../injection';
-import { QueryParameters } from '../../services/domain/queryParameters';
-import { BaPlugin } from '../BaPlugin';
-import { setCurrent, setReady } from './topics.action';
+import { $injector } from '../injection';
+import { QueryParameters } from '../services/domain/queryParameters';
+import { BaPlugin } from './BaPlugin';
+import { setCurrent, setReady } from '../store/topics/topics.action';
 
 
 /**

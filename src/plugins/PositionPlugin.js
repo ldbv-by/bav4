@@ -1,7 +1,7 @@
-import { $injector } from '../../injection';
-import { QueryParameters } from '../../services/domain/queryParameters';
-import { BaPlugin } from '../BaPlugin';
-import { changeZoomCenterAndRotation, setFit } from './position.action';
+import { $injector } from '../injection';
+import { QueryParameters } from '../services/domain/queryParameters';
+import { BaPlugin } from './BaPlugin';
+import { changeZoomCenterAndRotation, setFit } from '../store/position/position.action';
 
 /**
  * @class
