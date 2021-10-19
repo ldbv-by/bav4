@@ -30,23 +30,25 @@ export class NotificationPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.notifications.latest, (notification) => this.signal(Update_Notifications, notification));
+		const { notifications, lastNotification } = this.getModel();
+		const hasNotification = (candidate) => notifications.find(old => old.id === candidate.id);
+
+		const onLatestChanged = (notification) => {
+			if (notification && !hasNotification(notification) && lastNotification !== notification) {
+				this.signal(Update_Notifications, notification);
+			}
+		};
+		this.observe(state => state.notifications.latest, onLatestChanged);
 	}
 
 	update(type, data, model) {
-		const hasNotification = (candidate) => model.notifications.find(old => old.id === candidate.id);
 		switch (type) {
 			case Update_Notifications:
-				if (data && !hasNotification(data)) {
-					if (model.lastNotification !== data) {
-						return {
-							...model,
-							notifications: [{ ...data.payload, id: data.id }].concat(model.notifications),
-							lastNotification: data
-						};
-					}
-				}
-				return model;
+				return {
+					...model,
+					notifications: [{ ...data.payload, id: data.id }].concat(model.notifications),
+					lastNotification: data
+				};
 			case Update_Remove_Notification:
 				return { ...model, notifications: model.notifications.filter(n => n.id !== data.id) };
 			case Update_Autoclose_Time:
