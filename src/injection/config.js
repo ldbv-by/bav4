@@ -19,7 +19,7 @@ import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../store/layers/LayersPlugin';
 import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
-import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
+import { HighlightPlugin } from '../plugins/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
 import { DrawPlugin } from '../plugins/DrawPlugin';

@@ -1,6 +1,6 @@
-import { observe } from '../../utils/storeUtils';
-import { BaPlugin } from '../../plugins/BaPlugin';
-import { addLayer, removeLayer } from '../layers/layers.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from './BaPlugin';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
 
 
 /**

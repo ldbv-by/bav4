@@ -1,7 +1,7 @@
 import { OlLayerHandler } from '../OlLayerHandler';
 import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
-import { HIGHLIGHT_LAYER_ID } from '../../../../../../store/highlight/HighlightPlugin';
+import { HIGHLIGHT_LAYER_ID } from '../../../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
 import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './StyleUtils';
 import { Vector as VectorSource } from 'ol/source';
