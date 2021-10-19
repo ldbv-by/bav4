@@ -3,6 +3,9 @@ import { $injector } from '../../../injection';
 import { clear } from '../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './featureInfoPanel.css';
+import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
+import shareIcon from '../assets/share.svg';
+import printerIcon from '../assets/printer.svg';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 
@@ -44,12 +47,38 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		return html`
         <style>${css}</style>
 		<div>
-			<ba-icon .title=${translate('featureInfo_close_button')} .type=${'primary'} @click=${clear}></ba-icon>
 			<div class="container">
-			${featureInfoData.map((item) => html`
-			<li class="item"><h3>${item.title}</h3>
-			${item.content}
-			</li>`)}
+			<ul class="ba-list">	
+				<li class="ba-list-item  ba-list-inline ba-list-item__header">			
+					<span class="ba-list-item__pre" style='position:relative;left:-1em;'>													
+							<ba-icon  .icon='${arrowLeftShortIcon}' .size=${4} .title=${translate('featureInfo_close_button')}  @click=${clear}></ba-icon>	 											
+					</span>
+					<span class="ba-list-item__text vertical-center">
+						<span class="ba-list-item__main-text" style='position:relative;left:-1em;'>	
+							Punkt-Info
+						</span>					
+					</span>
+					<span class="ba-icon-button ba-list-item__after vertical-center separator" style='padding-right: 1.5em;'>											
+						<ba-icon .icon='${shareIcon}' .size=${1.3} ></ba-icon>												
+					</span>
+					<span class="ba-icon-button ba-list-item__after vertical-center separator">														
+						<ba-icon .icon='${printerIcon}' .size=${1.5} ></ba-icon>												
+					</span>
+				</li>	
+				${featureInfoData.map((item) => html`
+					<li class="ba-section ">
+						<button class="ba-list-item ba-list-item__header">
+							<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
+							<span class="ba-list-item__after">
+								<i class="icon icon-rotate-90 chevron iconexpand"></i>
+							</span>
+						</button>					
+						<div class="ba-list-item collapse-content">	
+							${item.content}
+						</div>	
+					</li>
+					`)}
+					</ul>	
 			<div>
 		</div>
         `;
