@@ -8,4 +8,5 @@
     left: 1em;
     right: 1em;
     z-index:var(--z-notification);
+    pointer-events:none;
     }

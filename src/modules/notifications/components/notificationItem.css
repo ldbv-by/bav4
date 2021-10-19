@@ -13,6 +13,11 @@
    width: min-content;
    min-width:25em;
 }
+
+.notification_content{
+  pointer-events: all;
+}
+
 .notification_info {
   border-left: .2em solid var(--info-color);
 }
