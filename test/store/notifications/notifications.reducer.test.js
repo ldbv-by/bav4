@@ -12,7 +12,7 @@ describe('notificationReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().notifications.notification).toBeNull();
+		expect(store.getState().notifications.latest).toBeNull();
 	});
 
 	it('sets the \'notification\' property', () => {
@@ -24,6 +24,6 @@ describe('notificationReducer', () => {
 		};
 
 		emitNotification('foo', LevelTypes.INFO, false);
-		expect(store.getState().notifications.notification.payload).toEqual(notification);
+		expect(store.getState().notifications.latest.payload).toEqual(notification);
 	});
 });

@@ -195,8 +195,8 @@ describe('ToolContainer', () => {
 			setContainerContent('ba-tool-draw-content');
 
 			expect(store.getState().measurement.active).toBeTrue();
-			expect(store.getState().notifications.notification.payload.content).toBe('toolbox_prevent_switching_tool');
-			expect(store.getState().notifications.notification.payload.level).toBe(LevelTypes.WARN);
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_prevent_switching_tool');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 			expect(element.shadowRoot.querySelector(MeasureToolContent.tag)).toBeTruthy();
 		});
 

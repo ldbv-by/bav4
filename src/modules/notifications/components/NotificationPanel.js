@@ -30,7 +30,7 @@ export class NotificationPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.notifications.notification, (notification) => this.signal(Update_Notifications, notification));
+		this.observe(state => state.notifications.latest, (notification) => this.signal(Update_Notifications, notification));
 	}
 
 	update(type, data, model) {

@@ -17,7 +17,7 @@ export const initialState = {
 	/**
     * @type {EventLike<Notification>}
      */
-	notification: null
+	latest: null
 };
 
 export const notificationReducer = (state = initialState, action) => {
@@ -25,7 +25,7 @@ export const notificationReducer = (state = initialState, action) => {
 	switch (type) {
 		case NOTIFICATION_ADDED: {
 			return {
-				...state, notification: payload
+				...state, latest: payload
 			};
 
 		}
