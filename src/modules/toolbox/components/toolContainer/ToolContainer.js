@@ -71,7 +71,6 @@ export class ToolContainer extends BaElement {
 		const nextActiveContentId = getNextActiveContent();
 		if (nextActiveContentId === this._lastContentId) {
 			emitNotification(translate('toolbox_prevent_switching_tool'), LevelTypes.WARN);
-
 		}
 		else {
 			if (nextActiveContentId) {
