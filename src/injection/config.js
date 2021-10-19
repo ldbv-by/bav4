@@ -22,7 +22,7 @@ import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../store/highlight/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../store/media/MediaPlugin';
-import { FeatureInfoPlugin } from '../store/featureInfo/FeatureInfoPlugin';
+import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 
 
 $injector

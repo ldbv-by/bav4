@@ -1,8 +1,7 @@
-import { observe } from '../../utils/storeUtils';
-import { BaPlugin } from '../../store/BaPlugin';
-import { add, clear, updateCoordinate } from './featureInfo.action';
-import { html } from 'lit-html';
-import { close, open, setTabIndex, TabIndex } from '../../modules/menu/store/mainMenu.action';
+import { observe } from '../utils/storeUtils';
+import { BaPlugin } from '../store/BaPlugin';
+import { add, clear, updateCoordinate } from '../store/featureInfo/featureInfo.action';
+import { close, open, setTabIndex, TabIndex } from '../modules/menu/store/mainMenu.action';
 
 
 /**
@@ -24,7 +23,8 @@ export class FeatureInfoPlugin extends BaPlugin {
 			clear();
 			updateCoordinate(coordinate);
 			//we simulate a FeatureInfo item here. Later we will call the FeatureInfoService.
-			add({ title: 'title', content: html`<div>myFeatureInfo</div>` });
+			add({ title: 'title', content: '<div>myFeatureInfo</div>' });
+			//Todo: check if we are in portrait mode. Of true we first show a notification
 			setTabIndex(TabIndex.FEATUREINFO);
 			open();
 		};
