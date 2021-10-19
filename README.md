@@ -1,4 +1,4 @@
-# BAv4
+# BA v4
 
 [![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js%20CI/badge.svg)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
@@ -148,7 +148,7 @@ Components hold local state within their model.
 
 `BaPlugins` implementations are a second important place for structuring code and logic.  
 In contrast to components, they often act as a Controller on a higher abstraction level
-managing global state being consumed by different components afterward.  
+managing global state being consumed by components afterward.  
 For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app. 
 
 ### Best practices
