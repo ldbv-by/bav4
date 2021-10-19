@@ -96,18 +96,20 @@ Modules meet the following conventions:
 2. Each module must be registered within the `main.js`.
 
 3. Each module may contain further directories:
-   - `/components` : Components and all of their dependencies like CSS, assets, ...
+   - `/components` : Components and all of their dependencies like CSS, assets (see [Components](#components))
    - `/services` : service, provider and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
 
-4. Outside their package, modules are only allowed to use global services, actions from the global store and components from other modules for composition.
+4. Outside their package, modules are only allowed to use global services, actions and components from other modules for composition.
 
+### `src/plugins`
+Contains all plugins (see [Plugins](#plugins)).
 
 ### `src/services`
 All global services like the `HttpService`, providers and domain classes are located here.
 
 ### `src/store`
-All redux related files like reducers, actions and plugins.
+All redux related files like reducers and actions.
 
 ### `src/utils`
 Contains global utilities.
@@ -123,7 +125,8 @@ Here's an overview of what project folder structure looks like:
     |    + -- modules
     |    |    + -- moduleName
     |    |    |    + -- index.js
-    |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
+    |    |    |    # other moduleName related files such as a components folder or a services folder
+    |    + -- plugins
     |    + -- services
     |    + -- store
     |    + -- utils
