@@ -1,7 +1,7 @@
-import { TestUtils } from '../../test-utils.js';
-import { MediaPlugin } from '../../../src/store/media/MediaPlugin';
-import { createMediaReducer, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from '../../../src/store/media/media.reducer.js';
-import { $injector } from '../../../src/injection/index.js';
+import { TestUtils } from '../test-utils.js';
+import { MediaPlugin } from '../../src/plugins/MediaPlugin';
+import { createMediaReducer, MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from '../../src/store/media/media.reducer.js';
+import { $injector } from '../../src/injection/index.js';
 
 
 describe('MediaPlugin', () => {

@@ -21,7 +21,7 @@ import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../plugins/HighlightPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
-import { MediaPlugin } from '../store/media/MediaPlugin';
+import { MediaPlugin } from '../plugins/MediaPlugin';
 import { DrawPlugin } from '../plugins/DrawPlugin';
 import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
 import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
