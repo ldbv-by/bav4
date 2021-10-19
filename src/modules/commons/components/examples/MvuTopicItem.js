@@ -1,5 +1,7 @@
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
+import topicItemCss from './mvuTopicItem.css';
+import css from '../button/button.css';
 
 const Update_Label = 'Update_Label';
 
@@ -31,8 +33,11 @@ export class MvuTopicItem extends MvuElement {
 		};
 
 		return html`
+			<style>${css}</style> 
+			<style>${topicItemCss}</style> 
 			<span class='ba-topic-label'>${label}</span>
-			<button class='ba-topic-button' @click=${fireEvent}>remove</button>
+			<button class='ba-topic-button topicItemBbutton' @click=${fireEvent}>remove</button>
+			<ba-button id="topic-item-button" class="button" .label="remove" @click=${fireEvent}></ba-button>
 			`;
 	}
 
