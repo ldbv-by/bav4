@@ -9,6 +9,7 @@ import { MvuElement } from '../../MvuElement';
 const Notification_Autoclose_Time = 10000;
 const Update_Notifications = 'update_notifications';
 const Update_Remove_Notification = 'update_remove_notification';
+const Update_Autoclose_Time = 'update_autoclose_time';
 
 
 /**
@@ -21,6 +22,7 @@ export class NotificationPanel extends MvuElement {
 	constructor() {
 		super({
 			notifications: [],
+			autocloseTime: Notification_Autoclose_Time,
 			lastNotification: null
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -47,6 +49,8 @@ export class NotificationPanel extends MvuElement {
 				return model;
 			case Update_Remove_Notification:
 				return { ...model, notifications: model.notifications.filter(n => n.id !== data.id) };
+			case Update_Autoclose_Time:
+				return { ...model, autocloseTime: data };
 		}
 	}
 
@@ -55,9 +59,9 @@ export class NotificationPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { notifications } = model;
+		const { notifications, autocloseTime } = model;
 		const createItem = (notification, index) => {
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : Notification_Autoclose_Time };
+			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : autocloseTime };
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this.signal(Update_Remove_Notification, event)}></ba-notification-item>`;
 		};
 		return html`
