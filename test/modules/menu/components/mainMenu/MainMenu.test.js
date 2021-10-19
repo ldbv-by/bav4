@@ -179,7 +179,7 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].style.display).toBe(i === 0 ? 'block' : 'none');
+				expect(contentPanels[i].classList.contains('is-active')).toBe(i === 0);
 			}
 		});
 
@@ -196,7 +196,7 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].style.display).toBe(i === activeTabIndex ? 'block' : 'none');
+				expect(contentPanels[i].classList.contains('is-active')).toBe(i === activeTabIndex);
 			}
 		});
 
@@ -225,7 +225,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].style.display).toBe(i === index.id ? 'block' : 'none');
+				expect(panels[i].classList.contains('is-active')).toBe(i === index.id);
 			}
 		};
 
