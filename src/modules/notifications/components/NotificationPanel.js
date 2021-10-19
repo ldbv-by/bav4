@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
 import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
@@ -60,11 +60,10 @@ export class NotificationPanel extends MvuElement {
 			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : Notification_Autoclose_Time };
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this.signal(Update_Remove_Notification, event)}></ba-notification-item>`;
 		};
-
 		return html`
         <style>${css}</style>
 		<div class="notification-panel">
-		${notifications.length > 0 ? repeat(notifications, (notification) => notification.id, createItem) : html.nothing}  
+		${notifications.length > 0 ? repeat(notifications, (notification) => notification.id, createItem) : nothing}  
 		</div>
         `;
 	}
