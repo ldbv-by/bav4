@@ -12,10 +12,15 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_click_new_point: 'Click, to add point<br/> Click then drag to move the point',
 				map_olMap_handler_measure_modify_click_or_drag: 'Click to delete the point.<br/> Click then drag to move the point',
 				map_olMap_handler_measure_modify_click_drag_overlay: 'Click then drag to move the label',
-				map_olMap_handler_measure_modify_key_for_delete: 'Press DEL to delete the drawing',
+				map_olMap_handler_measure_modify_key_for_delete: 'Press DEL to delete the measurement',
 				map_olMap_handler_delete_last_point: 'Press DEL to remove the last point drawn',
 				map_olMap_handler_measure_select: 'Select existing or start new measurement',
-				map_olMap_handler_measure_layer_label: 'Measurement'
+				map_olMap_handler_measure_layer_label: 'Measurement',
+				map_olMap_handler_draw_start: 'Click to start drawing',
+				map_olMap_handler_draw_layer_label: 'Drawing',
+				map_olMap_handler_draw_continue_line: 'Click to continue drawing the line (double-click to finish)',
+				map_olMap_handler_draw_select: 'Select existing or start new drawing',
+				map_olMap_handler_storage_offline: 'Offline: Could not store layer-data. The data will get lost after this session.'
 			};
 
 		case 'de':
@@ -29,10 +34,15 @@ export const provide = (lang) => {
 				map_olMap_handler_measure_modify_click_new_point: 'Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen',
 				map_olMap_handler_measure_modify_click_or_drag: 'Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen',
 				map_olMap_handler_measure_modify_click_drag_overlay: 'Klicke und ziehen um die Beschriftung zu verschieben',
-				map_olMap_handler_measure_modify_key_for_delete: 'Zeichnung löschen: ENTF Taste',
+				map_olMap_handler_measure_modify_key_for_delete: 'Messung löschen: ENTF Taste',
 				map_olMap_handler_delete_last_point: 'Letzter Punkt löschen: ENTF Taste',
 				map_olMap_handler_measure_select: 'bestehende Messung auswählen oder neue Messung beginnen',
-				map_olMap_handler_measure_layer_label: 'Messung'
+				map_olMap_handler_measure_layer_label: 'Messung',
+				map_olMap_handler_draw_start: 'Klicken, um die Zeichnung zu beginnen',
+				map_olMap_handler_draw_layer_label: 'Zeichnung',
+				map_olMap_handler_draw_continue_line: 'Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)',
+				map_olMap_handler_draw_select: 'bestehende Zeichnung auswählen oder neue Zeichnung beginnen',
+				map_olMap_handler_storage_offline: 'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.'
 			};
 
 		default:
