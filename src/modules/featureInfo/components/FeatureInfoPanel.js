@@ -71,7 +71,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					</span>
 				</li>	
 				${featureInfoData.map((item) => html`
-					<li class="ba-section ">
+					<li class="ba-section">
 						<button class="ba-list-item ba-list-item__header">
 							<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
 							<span class="ba-list-item__after">
