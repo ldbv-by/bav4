@@ -23,10 +23,10 @@ export class FeatureInfoPlugin extends BaPlugin {
 			clear();
 			updateCoordinate(coordinate);
 			//we simulate a FeatureInfo item here. Later we will call the FeatureInfoService.
-			add({ title: 'title', content: '<div>myFeatureInfo</div>' });
-			//Todo: check if we are in portrait mode. Of true we first show a notification
-			setTabIndex(TabIndex.FEATUREINFO);
-			open();
+			// add({ title: 'title', content: '<div>myFeatureInfo</div>' });
+			//Todo: check if we are in portrait mode. If true we first show a notification
+			// setTabIndex(TabIndex.FEATUREINFO);
+			// open();
 		};
 
 		const onFeatureInfoChanged = current => {
@@ -35,6 +35,10 @@ export class FeatureInfoPlugin extends BaPlugin {
 					close();
 				}
 				setTabIndex(previousTabIndex);
+			}
+			else {
+				setTabIndex(TabIndex.FEATUREINFO);
+				open();
 			}
 		};
 

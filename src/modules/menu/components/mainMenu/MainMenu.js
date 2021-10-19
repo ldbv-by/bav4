@@ -41,7 +41,7 @@ export class MainMenu extends BaElement {
 
 	_activateTab(index) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.style.display = 'block' : tabcontent.style.display = 'none');
+		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
 	}
 
 	/**
