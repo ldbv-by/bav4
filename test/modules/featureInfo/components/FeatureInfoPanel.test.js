@@ -42,7 +42,7 @@ describe('FeatureInfoPanel', () => {
 				const element = await setup();
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
-				const items = element.shadowRoot.querySelectorAll('.item');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
@@ -62,15 +62,15 @@ describe('FeatureInfoPanel', () => {
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
-				const items = element.shadowRoot.querySelectorAll('.item');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(2);
-				expect(items.item(0).textContent).toContain('content0');
-				expect(items.item(0).childNodes.item(0).textContent).toBe('title0');
-				expect(items.item(1).textContent).toContain('content1');
-				expect(items.item(1).childNodes.item(0).textContent).toBe('title1');
+				expect(items.item(0).querySelector('.ba-list-item__text').textContent).toBe('title0');
+				expect(items.item(0).querySelector('.collapse-content').textContent).toContain('content0');
+				expect(items.item(1).querySelector('.ba-list-item__text').textContent).toBe('title1');
+				expect(items.item(1).querySelector('.collapse-content').textContent).toContain('content1');
 			});
 		});
 	});
@@ -84,7 +84,7 @@ describe('FeatureInfoPanel', () => {
 				const element = await setup();
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
-				const items = element.shadowRoot.querySelectorAll('.item');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
@@ -103,7 +103,7 @@ describe('FeatureInfoPanel', () => {
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
-				const items = element.shadowRoot.querySelectorAll('.item');
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
 
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
@@ -121,7 +121,7 @@ describe('FeatureInfoPanel', () => {
 			add({ title: 'title0', content: 'content0' });
 			add({ title: 'title1', content: 'content1' });
 
-			const items = element.shadowRoot.querySelectorAll('.item');
+			const items = element.shadowRoot.querySelectorAll('.ba-section');
 			expect(items).toHaveSize(2);
 		});
 	});
