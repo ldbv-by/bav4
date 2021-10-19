@@ -1,8 +1,8 @@
 import { CoordinateSelect } from '../../../../../src/modules/footer/components/coordinateSelect/CoordinateSelect';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils.js';
-import { setPointerMove } from '../../../../../src/modules/map/store/pointer.action';
-import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
+import { setPointerMove } from '../../../../../src/store/pointer/pointer.action';
+import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
 
 window.customElements.define(CoordinateSelect.tag, CoordinateSelect);
 

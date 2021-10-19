@@ -6,12 +6,11 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode } from '../../../../store/measurement.action';
+import { setStatistic, setMode } from '../../../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { getGeometryLength, getArea } from '../../olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../store/MeasurementPlugin';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
@@ -27,6 +26,7 @@ import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification } from '../../../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { OlSketchHandler } from '../OlSketchHandler';
+import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
 
 const Debounce_Delay = 1000;
 

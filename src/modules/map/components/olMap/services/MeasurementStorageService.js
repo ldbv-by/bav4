@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { setFileSaveResult } from '../../../store/measurement.action';
+import { setFileSaveResult } from '../../../../../store/measurement/measurement.action';
 
 
 /**
