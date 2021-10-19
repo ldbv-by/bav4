@@ -16,7 +16,7 @@ import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
-import { LayersPlugin } from '../store/layers/LayersPlugin';
+import { LayersPlugin } from '../plugins/LayersPlugin';
 import { PositionPlugin } from '../store/position/PositionPlugin';
 import { TopicsPlugin } from '../store/topics/TopicsPlugin';
 import { HighlightPlugin } from '../plugins/HighlightPlugin';
