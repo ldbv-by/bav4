@@ -6,7 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode } from '../../../../store/measurement.action';
+import { setStatistic, setMode } from '../../../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { getGeometryLength, getArea } from '../../olGeometryUtils';

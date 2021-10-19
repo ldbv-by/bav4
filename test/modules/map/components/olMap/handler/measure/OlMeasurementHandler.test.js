@@ -17,14 +17,14 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/se
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../../../src/modules/map/store/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';
-import { measurementReducer } from '../../../../../../../src/modules/map/store/measurement.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
-import { finish, remove, reset } from '../../../../../../../src/modules/map/store/measurement.action';
+import { finish, remove, reset } from '../../../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import VectorSource from 'ol/source/Vector';
+import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);

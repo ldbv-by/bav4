@@ -2,7 +2,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { close as closeMainMenu, setTabIndex, TabIndex } from '../../../../../menu/store/mainMenu.action';
+import { close as closeMainMenu, setTabIndex, TabIndex } from '../../../../../../store/mainMenu/mainMenu.action';
 import itemCss from '../item.css';
 import css from './geoResourceResultItem.css';
 

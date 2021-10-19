@@ -1,9 +1,9 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { drawReducer } from '../../../../../src/modules/map/store/draw.reducer';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
-import { setStyle, setType } from '../../../../../src/modules/map/store/draw.action';
+import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
+import { setStyle, setType } from '../../../../../src/store/draw/draw.action';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 

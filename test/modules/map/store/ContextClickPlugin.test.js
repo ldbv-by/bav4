@@ -1,11 +1,11 @@
 import { TestUtils } from '../../../test-utils.js';
-import { pointerReducer } from '../../../../src/modules/map/store/pointer.reducer';
-import { mapReducer } from '../../../../src/modules/map/store/map.reducer';
-import { setClick, setContextClick } from '../../../../src/modules/map/store/pointer.action';
-import { setMoveStart } from '../../../../src/modules/map/store/map.action';
-import { mapContextMenuReducer } from '../../../../src/modules/map/store/mapContextMenu.reducer';
+import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
+import { setClick, setContextClick } from '../../../../src/store/pointer/pointer.action';
 import { ContextClickPlugin } from '../../../../src/modules/map/store/ContextClickPlugin.js';
 import { TemplateResult } from 'lit-html';
+import { mapReducer } from '../../../../src/store/map/map.reducer.js';
+import { setMoveStart } from '../../../../src/store/map/map.action.js';
+import { mapContextMenuReducer } from '../../../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 
 
 

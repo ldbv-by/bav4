@@ -1,8 +1,8 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
-import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);

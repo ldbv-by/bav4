@@ -8,19 +8,19 @@ Next-generation web-map viewer based on web standards.
 
 #### Table of Contents
 1. [Concept](#concept)
-2. [Structure](#structure)
-3. [Setup](#setup)
-4. [Best Practices](#best-practices)
-5. [Pending Questions](#pending-questions)
+2. [Setup](#setup)
+3. [Structure](#structure)
+4. [Details](#details)
+5. [Best Practices](#best-practices)
 6. [Links](#links)
 
 
 ## Concept
 
 - Use of web standards as far as possible
-- Modern Js (ES9), no transpiler
-- Vanilla CSS 
-- Components based on the Model–View–Update pattern
+  - Modern Js (ES9), no transpiler
+  - Web Components
+  - Vanilla CSS 
 - Built-in dependency injection
 - Map state decoupled from map implementation
 - Tools
@@ -30,66 +30,6 @@ Next-generation web-map viewer based on web standards.
   - [webpack](https://webpack.js.org): Bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
   - [playwright](https://playwright.dev/) E2E Tests
-
-## Structure
-
-The project's source code is located under `src`, unit, component and e2e tests under `test`.
-
-The source code is distributed among the following directories:
-
-###  `src/injection`
-
-Contains the built-in dependency injection. The central configuration is done in `config.js`.
-
-The common types of injection are service classes.
-Service classes may retrieve data from an external source by using a provider function. Such provider functions are also interchangeable. 
-Services and provider functions whose names start with 'BVV' are focusing on the LDBV context and infrastructure.
-
-### `src/modules`
-
-Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
-
-Modules meet the following conventions: 
-
-1. Each module must have an `index.js`  as an entry point, which states all of its dependencies.
-
-2. Each module must be registered within the `main.js`.
-
-3. Each module may contain further directories:
-   - `/components` : Components and all of their dependencies like CSS, assets, ...
-   - `/store` : Redux related files like reducers, actions and plugins
-   - `/services` : service, provider and domain classes of the module
-   - `/i18n` : i18n provider and loader for this module
-
-4. Outside their package, modules are only allowed to use global services, actions from the global store, and BaElement components from other modules for composition.
-
-
-### `src/services`
-All global services like the `HttpService`, providers and domain classes are located here.
-
-### `src/store`
-Global redux related files like reducers, actions and plugins.
-
-### `src/utils`
-Contains global utilities.
-
-### Overview
-Here's an overview of what project folder structure looks like:
-```
-    .
-    + -- src # source code
-    |    + -- index.html # here's where you should declare your top-level web components
-    |    + -- main.js # here's where you should import your modules  to the app
-    |    + -- injection
-    |    + -- modules
-    |    |    + -- moduleName
-    |    |    |    + -- index.js
-    |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
-    |    + -- services
-    |    + -- store
-    |    + -- utils
-    + -- test # test code
-```
 
 ## Setup
 
@@ -130,18 +70,94 @@ Here's an overview of what project folder structure looks like:
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
-## Best Practices
 
-### State
+## Structure
+
+The project's source code is located under `src`, unit, component and e2e tests under `test`.
+
+The source code is distributed among the following directories:
+
+###  `src/injection`
+
+Contains the built-in dependency injection. The central configuration is done in `config.js`.
+
+The common types of injection are service classes.
+Service classes may retrieve data from an external source by using a provider function. Such provider functions are also interchangeable. 
+Services and provider functions whose names start with 'BVV' are focusing on the LDBV context and infrastructure.
+
+### `src/modules`
+
+Modules are each as much as possible independent units of code. They have a concrete context and/or focus on one or more similar use cases of the application (single responsibility, high cohesion).
+
+Modules meet the following conventions: 
+
+1. Each module must have an `index.js`  as an entry point, which states all of its dependencies.
+
+2. Each module must be registered within the `main.js`.
+
+3. Each module may contain further directories:
+   - `/components` : Components and all of their dependencies like CSS, assets, ...
+   - `/services` : service, provider and domain classes of the module
+   - `/i18n` : i18n provider and loader for this module
+
+4. Outside their package, modules are only allowed to use global services, actions from the global store and components from other modules for composition.
+
+
+### `src/services`
+All global services like the `HttpService`, providers and domain classes are located here.
+
+### `src/store`
+All redux related files like reducers, actions and plugins.
+
+### `src/utils`
+Contains global utilities.
+
+### Overview
+Here's an overview of what project folder structure looks like:
+```
+    .
+    + -- src # source code
+    |    + -- index.html # here's where you should declare your top-level web components
+    |    + -- main.js # here's where you should import your modules  to the app
+    |    + -- injection
+    |    + -- modules
+    |    |    + -- moduleName
+    |    |    |    + -- index.js
+    |    |    |    # other moduleName related files such as a components folder, a store folder or a services folder
+    |    + -- services
+    |    + -- store
+    |    + -- utils
+    + -- test # test code
+```
+
+## Details
+
+### Global State
+
+Global state and its management is realized by Redux (reducers and actions).
+
+### Components
+
+Components are based on `MvuElement`. This class inherits from HTMLElement and provides the Model-View-Update pattern and a well-defined component lifecycle as the programming model. For more information have a look at the `MvuElement` docs.
+Components hold local state within their model.
+
+### Plugins
+
+`BaPlugins` implementations are a second important place for structuring code and logic.  
+In contrast to components, they often act as a Controller on a higher abstraction level
+managing global state being consumed by different components afterward.  
+For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app. 
+
+### Best practices
 
 - Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
 ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
-- Common places for mutating state are:
-  - `BaElement` components
+- Common places for updating global state are:
+  - `MvuElement` based components
   - `BaPlugin` implementations
 
-- If a mutation of the global state has an event-like character, it should be wrapped in another object. This makes it possible to track mutation and avoids a second dispatching in order to "reset" the state. For this purpose it's recommended to use `EventLike` in storeUtils.js.
+- If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
 
 ## Links
 
