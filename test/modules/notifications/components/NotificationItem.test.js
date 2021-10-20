@@ -50,6 +50,16 @@ describe('NotificationItem', () => {
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
 		});
 
+		it('displays the notification as fixed', async () => {
+			const template = (str) => html`${str}`;
+
+			const element = await setup({ ...notificationTemplate, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
+			element.fixed = true;
+
+			expect(element.shadowRoot.querySelector('.notification_fixed')).toBeTruthy();
+		});
+
+
 		it('starts hiding with autoclose after 1 sec.', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;

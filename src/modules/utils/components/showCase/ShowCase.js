@@ -118,10 +118,10 @@ export class ShowCase extends BaElement {
 						</div>`;
 				}
 				return html`<div>
-							<h3>Wait...</h3>
-							<div style="color: white;background-color: var(--warning-color);">This is something </div>
-							<div style="color: white;background-color: var(--error-color);">completly different!</div>
-							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
+							<h3>Fixed Notifications autoclose with...</h3>
+							<div style="color: white;background-color: var(--warning-color);">click... </div>
+							<div style="color: white;background-color: var(--error-color);">contextClick or...</div>
+							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>dragging map</span></ba-checkbox></div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);

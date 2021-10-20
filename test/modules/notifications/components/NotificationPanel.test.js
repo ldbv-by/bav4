@@ -59,6 +59,44 @@ describe('NotificationPanel', () => {
 		expect(notificationElements.length).toBe(2);
 	});
 
+	it('adds a fixed NotificationItem, when a notification is emitted', async () => {
+		const element = await setup();
+
+		expect(element).toBeTruthy();
+		expect(element._model.notifications.length).toBe(0);
+
+		emitNotification('fooBar', LevelTypes.INFO);
+		emitNotification('fooBar', LevelTypes.CUSTOM);
+
+		expect(element._model.notifications.length).toBe(1);
+		expect(element._model.fixedNotification).toBeTruthy();
+
+		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
+		expect(notificationElements.length).toBe(2);
+	});
+
+
+	it('adds and replace a fixed NotificationItem, when a notification is emitted', async () => {
+		const element = await setup();
+
+		expect(element).toBeTruthy();
+		expect(element._model.notifications.length).toBe(0);
+
+		emitNotification('fooBar', LevelTypes.INFO);
+		emitNotification('fooBar', LevelTypes.CUSTOM);
+
+		expect(element._model.notifications.length).toBe(1);
+		expect(element._model.fixedNotification).toBeTruthy();
+
+		emitNotification('fooBarBaz', LevelTypes.CUSTOM);
+
+		expect(element._model.notifications.length).toBe(1);
+		expect(element._model.fixedNotification).toBeTruthy();
+
+		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
+		expect(notificationElements.length).toBe(2);
+	});
+
 	it('adds a NotificationItem only once, when panel is rerendered', async () => {
 		const element = await setup();
 
