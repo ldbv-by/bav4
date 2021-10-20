@@ -105,7 +105,8 @@ export class ToolContainer extends BaElement {
 				<div class="tool-container__content ${getOverlayClass()}">    
 				<div class="tool-container__tools-nav">                        
                         <button @click=${closeToolContainer} class="tool-container__close-button">
-                            x
+							<span class="close-icon">        							
+							</span>
                         </button>                             
                 </div>		
 					${content}    				               				 				           					 				               				               				 				            				               				               				 				           

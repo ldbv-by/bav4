@@ -16,13 +16,14 @@
 }
 .tool-container__close-button{
     margin: 0;
-    background-color: var(--secondary-bg-color);   
     padding: 0;
-    width: 2.5em;
+    width: 3em;
     height: 2.5em;
     border: 0;
-    opacity: .8;
+    opacity: 1;
     font-weight: bold;
+    cursor: pointer;
+    opacity:.9;
 }
 .tool-container__close-button:hover{
     opacity: 1;
@@ -44,3 +45,27 @@
  .is-open {
     display: block;
 }
+
+.close-icon{
+    display: inline-block;
+    position: relative;
+    top: -1em;
+
+  }
+  
+  .close-icon::before{
+    position: absolute;
+    content:'';
+    width:2px;
+    height:1.4em;
+    background: var(--text2);
+    transform: rotate(45deg);
+  }
+  .close-icon::after{
+    position: absolute;
+    content:'';
+    width:2px;
+    height:1.4em;
+    background: var(--text2);
+    transform: rotate(315deg);
+  }
