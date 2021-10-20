@@ -78,7 +78,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 								<i class="icon icon-rotate-90 chevron iconexpand"></i>
 							</span>
 						</button>					
-						<div class="ba-list-item collapse-content">	
+						<div class="collapse-content divider">	
 							${getContent(item.content)}
 						</div>	
 					</li>

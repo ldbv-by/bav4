@@ -18,3 +18,7 @@
     background: var(--primary-bg-color);
     border-radius:2em;
 }
+
+.collapse-content{
+    padding: .8em 1em; 
+}
