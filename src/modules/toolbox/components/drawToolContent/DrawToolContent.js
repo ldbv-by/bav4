@@ -202,36 +202,29 @@ export class DrawToolContent extends AbstractToolContent {
 		};
 		return html`
         <style>${css}</style>
-            <div class="container">
+            <div class="ba-tool-container">
                 <div class="ba-tool-container__item ba-tool-menu__draw">
-                <div>
-                    <span class="tool-container__header">
-                    ${translate('toolbox_drawTool_header')}
-                    </span>
-                </div>      
-                <div class="tool-container__buttons">                                    
-                ${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
-                </div>	
+					<div class="ba-tool-container__title">
+						${translate('toolbox_drawTool_header')}                    
+					</div>      
+					<div class="ba-tool-container__content">                						     				
+						<div class="tool-container__buttons">                                    
+                			${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
+                		</div>	
+                	</div>	
 				<div class="tool-container__form">
 				${getStyleTemplate(drawingType, drawingStyle)}
-				</div>				
-                <div class="tool-container__buttons-secondary">                         
-                    <button>                                 
-                    ${translate('toolbox_drawTool_delete')}
-                    </button>
-                    <button>                            
-                    ${translate('toolbox_drawTool_share')}
-                    </button>
-                    <button>                          
-                    ${translate('toolbox_drawTool_save')}
-                    </button>                                             
-                </div>                
-			
-				<div class="tool-container__info">
-				<span>
-					${translate('toolbox_drawTool_info')}
-				</span>
-                </div >
+				</div>				            			
+				<div class="tool-container__info sub-text">
+					<span>
+						${translate('toolbox_drawTool_info')}
+					</span>
+                </div>
+				<div class="ba-tool-container__actions">                         				
+					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_delete')}></ba-button>
+					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_share')}></ba-button>
+					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_save')}></ba-button>
+				</div> 
             </div >	  
         </div >
 			`;
