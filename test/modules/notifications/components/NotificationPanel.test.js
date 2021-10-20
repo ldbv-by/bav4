@@ -4,13 +4,14 @@ import { LevelTypes, notificationReducer } from '../../../../src/store/notificat
 import { emitNotification } from '../../../../src/store/notifications/notifications.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
 
 window.customElements.define(NotificationPanel.tag, NotificationPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
 describe('NotificationPanel', () => {
 	const setup = async (state = { notifications: { notification: null } }) => {
-		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
+		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, pointer: pointerReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		const element = await TestUtils.render(NotificationPanel.tag);
 

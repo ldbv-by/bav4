@@ -18,6 +18,10 @@
   pointer-events: all;
 }
 
+.notification_fixed {
+  border: .2em solid var(--primary-color);
+}
+
 .notification_info {
   border-left: .2em solid var(--info-color);
 }

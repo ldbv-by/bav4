@@ -9,10 +9,12 @@ export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 
 
 const Update_Notification = 'update_notification';
+const Update_Is_Fixed = 'update_is_fixed';
 export class NotificationItem extends MvuElement {
 	constructor() {
 		super({
 			notification: { content: null, level: null, autocloseTime: NOTIFICATION_AUTOCLOSE_TIME_NEVER },
+			isFixed: false,
 			autocloseTimeoutId: null
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -24,9 +26,13 @@ export class NotificationItem extends MvuElement {
 		const getHideTimeout = () => setTimeout(() => this._hide(), data.autocloseTime);
 		switch (type) {
 			case Update_Notification:
-				return { ...model,
+				return {
+					...model,
 					notification: data,
-					autocloseTimeoutId: data.autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER ? getHideTimeout() : null };
+					autocloseTimeoutId: data.autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER ? getHideTimeout() : null
+				};
+			case Update_Is_Fixed:
+				return { ...model, isFixed: data };
 		}
 	}
 
@@ -34,14 +40,14 @@ export class NotificationItem extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { notification } = model;
+		const { notification, isFixed } = model;
 		const translate = (key) => this._translationService.translate(key);
-
 		const levelClass = {
 			notification_info: notification.level === LevelTypes.INFO,
 			notification_warn: notification.level === LevelTypes.WARN,
 			notification_error: notification.level === LevelTypes.ERROR,
-			notification_custom: notification.level === LevelTypes.CUSTOM
+			notification_custom: notification.level === LevelTypes.CUSTOM,
+			notification_fixed: isFixed
 		};
 		const getLevelText = (level) => {
 			switch (level) {
@@ -85,6 +91,10 @@ export class NotificationItem extends MvuElement {
 
 	set content(value) {
 		this.signal(Update_Notification, value);
+	}
+
+	set fixed(value) {
+		this.signal(Update_Is_Fixed, value);
 	}
 
 	set onClose(callback) {

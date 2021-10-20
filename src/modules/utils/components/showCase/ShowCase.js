@@ -105,14 +105,27 @@ export class ShowCase extends BaElement {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
 		};
 
+		let firstVersion = false;
 		const onClickEmitCustom = () => {
-			const content = html`<div>
-				<h3>Wait...</h3>
-				<div style="color: white;background-color: var(--warning-color);">This is something </div>
-				<div style="color: white;background-color: var(--error-color);">completly different!</div>
-				<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
-			</div>`;
-			emitNotification(content, LevelTypes.CUSTOM);
+			const toggleVersion = () => firstVersion = !firstVersion;
+			const getContent = () => {
+				if (firstVersion) {
+					return html`<div>
+							<h3>Feature-Info</h3>
+							<div style="color: white;background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
+							<div style="color: white;background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
+							<div style="display:flex"><ba-button .label=${'start routing here'}></ba-button><ba-button .label=${'finish routing here'}></ba-button></div>
+						</div>`;
+				}
+				return html`<div>
+							<h3>Wait...</h3>
+							<div style="color: white;background-color: var(--warning-color);">This is something </div>
+							<div style="color: white;background-color: var(--error-color);">completly different!</div>
+							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox></div>
+						</div>`;
+			};
+			emitNotification(getContent(), LevelTypes.CUSTOM);
+			toggleVersion();
 		};
 
 		return html`<div>
@@ -175,10 +188,10 @@ export class ShowCase extends BaElement {
 			<hr>
 			<p>Notifications</p>
 			<div class='buttons'>
-						<ba-button id='notification0' label='Info Notification' type="primary" @click=${onClickEmitInfo}></ba-button>
-						<ba-button id='notification1' label='Warn Notification' type="primary" @click=${onClickEmitWarn}></ba-button>
-						<ba-button id='notification2' label='Error Notification' type="primary" @click=${onClickEmitError} ></ba-button>
-						<ba-button id='notification2' label='Custom Notification' type="primary" @click=${onClickEmitCustom} ></ba-button>
+						<ba-button id='notification0' .label=${'Info Notification'} type="primary" @click=${onClickEmitInfo}></ba-button>
+						<ba-button id='notification1' .label=${'Warn Notification'} type="primary" @click=${onClickEmitWarn}></ba-button>
+						<ba-button id='notification2' .label=${'Error Notification'} type="primary" @click=${onClickEmitError}></ba-button>
+						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
 			</div>
 		</div>`;
 	}
