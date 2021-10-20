@@ -1,6 +1,6 @@
-import { MvuCounterList } from './MvuCounterList';
-import { MvuCounter } from './MvuCounter';
-import { MvuTopicItem } from './MvuTopicItem';
+import { MvuCounterList } from './components/MvuCounterList';
+import { MvuCounter } from './components/MvuCounter';
+import { MvuTopicItem } from './components/MvuTopicItem';
 if (!window.customElements.get(MvuCounter.tag)) {
 	window.customElements.define(MvuCounter.tag, MvuCounter);
 }

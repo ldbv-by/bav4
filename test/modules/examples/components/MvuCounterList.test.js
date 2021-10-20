@@ -1,8 +1,8 @@
-import { MvuCounterList } from '../../../../../src/modules/commons/components/examples/MvuCounterList.js';
-import { MvuTopicItem } from '../../../../../src/modules/commons/components/examples/MvuTopicItem.js';
-import { setCurrent } from '../../../../../src/store/topics/topics.action.js';
-import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
-import { TestUtils } from '../../../../test-utils.js';
+import { MvuCounterList } from '../../../../src/modules/examples/components//MvuCounterList.js';
+import { MvuTopicItem } from '../../../../src/modules/examples/components/MvuTopicItem.js';
+import { setCurrent } from '../../../..//src/store/topics/topics.action.js';
+import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
+import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
 window.customElements.define(MvuCounterList.tag, MvuCounterList);

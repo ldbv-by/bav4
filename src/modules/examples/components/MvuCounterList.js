@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
+import { MvuElement } from '../../MvuElement';
 
 const TOPIC_SORT = 'TOPIC_SORT';
 const TOPIC_REVERSE = 'TOPIC_REVERSE';

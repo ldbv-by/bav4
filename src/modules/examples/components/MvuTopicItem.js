@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
+import { MvuElement } from '../../MvuElement';
 import topicItemCss from './mvuTopicItem.css';
-import css from '../button/button.css';
+import css from '../../commons/components/button/button.css';
 
 const Update_Label = 'Update_Label';
 

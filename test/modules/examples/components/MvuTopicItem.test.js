@@ -1,5 +1,5 @@
-import { TestUtils } from '../../../../test-utils.js';
-import { MvuTopicItem } from '../../../../../src/modules/commons/components/examples/MvuTopicItem.js';
+import { TestUtils } from '../../../test-utils.js';
+import { MvuTopicItem } from '../../../../src/modules/examples/components/MvuTopicItem.js';
 
 window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
 
