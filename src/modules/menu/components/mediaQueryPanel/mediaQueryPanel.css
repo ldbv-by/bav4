@@ -66,11 +66,9 @@
     border-color: transparent  transparent var(--text2) transparent;
 }
 
-
 .is-portrait .is-open {
     transform: translate(0, 75vh);
 }
-
 
     
 .only-greater-600 {
