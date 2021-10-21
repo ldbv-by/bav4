@@ -13,6 +13,20 @@ describe('DrawToolContent', () => {
 		matchMedia() { }
 	};
 
+	const shareServiceMock = {
+		copyToClipboard() {
+			return Promise.resolve();
+		},
+		encodeState() {
+			return 'http://this.is.a.url?forTestCase';
+		}
+	};
+	const urlServiceMock = {
+		shorten() {
+			return Promise.resolve('http://foo');
+		}
+	};
+
 	const drawDefaultState = {
 		active: false,
 		style: null,
@@ -41,9 +55,12 @@ describe('DrawToolContent', () => {
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => false,
+				isTouch: () => false,
 				getWindow: () => windowMock
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('UrlService', urlServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
 

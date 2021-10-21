@@ -15,6 +15,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_delete).toBe('Löschen');
 		expect(map.toolbox_drawTool_share).toBe('Teilen');
 		expect(map.toolbox_drawTool_save).toBe('Speichern');
+		expect(map.toolbox_drawTool_cancel).toBe('Abbrechen');
+		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
+		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
 		expect(map.toolbox_drawTool_style_size).toBe('Größe');
@@ -67,6 +70,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_delete).toBe('Delete');
 		expect(map.toolbox_drawTool_share).toBe('Share');
 		expect(map.toolbox_drawTool_save).toBe('Save');
+		expect(map.toolbox_drawTool_cancel).toBe('Cancel');
+		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
+		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
@@ -108,7 +114,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 46;
+		const expectedSize = 49;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
