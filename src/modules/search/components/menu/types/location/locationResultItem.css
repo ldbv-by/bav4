@@ -1,7 +1,4 @@
-
-
-
- .ba-list-item{
+.ba-list-item{
      display: flex;
      cursor: pointer;
      list-style:none;

@@ -1,4 +1,3 @@
-
 .ba-list-item__text:focus{
     box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
   }

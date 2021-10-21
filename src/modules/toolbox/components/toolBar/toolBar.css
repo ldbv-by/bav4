@@ -1,5 +1,4 @@
-
- .tool-bar{    
+.tool-bar{    
     position: fixed;
     z-index: var(--z-toolbox);
     bottom: .5em;
