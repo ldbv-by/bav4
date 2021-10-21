@@ -2,6 +2,7 @@
   "extends": "stylelint-config-recommended",
   "defaultSeverity": "warning",
   "rules": {
-    "no-missing-end-of-source-newline": true
+    "no-missing-end-of-source-newline": true,
+    "no-empty-first-line": true
   }
 }
