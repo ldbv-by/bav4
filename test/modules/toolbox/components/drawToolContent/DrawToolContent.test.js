@@ -199,7 +199,7 @@ describe('DrawToolContent', () => {
 
 		it('sets the style, after scale changes in scale-input', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
-			const newScale = 'big';
+			const newScale = 'large';
 			const element = await setup({ ...drawDefaultState, style });
 
 			setType('marker');
