@@ -188,16 +188,16 @@ export class DrawToolContent extends AbstractToolContent {
 		if (this._environmentService.isTouch()) {
 			switch (mode) {
 				case 'active':
-					subTextMessage = translate('toolbox_measureTool_measure_active');
+					subTextMessage = translate('toolbox_drawTool_draw_active');
 					break;
 				case 'draw':
-					subTextMessage = translate('toolbox_measureTool_measure_draw');
+					subTextMessage = translate('toolbox_drawTool_draw_draw');
 					break;
 				case 'modify':
-					subTextMessage = translate('toolbox_measureTool_measure_modify');
+					subTextMessage = translate('toolbox_drawTool_draw_modify');
 					break;
 				case 'select':
-					subTextMessage = translate('toolbox_measureTool_measure_select');
+					subTextMessage = translate('toolbox_drawTool_draw_select');
 			}
 		}
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;

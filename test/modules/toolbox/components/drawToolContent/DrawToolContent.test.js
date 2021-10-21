@@ -430,36 +430,36 @@ describe('DrawToolContent', () => {
 				isTouch: true
 			};
 
-			it('shows the measurement sub-text for mode:active', async () => {
+			it('shows the drawing sub-text for mode:active', async () => {
 				const element = await setup({ ...drawDefaultState, mode: 'active' }, touchConfig);
 				const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 				expect(subTextElement).toBeTruthy();
-				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_active');
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_active');
 			});
 
-			it('shows the measurement sub-text for mode:draw', async () => {
+			it('shows the drawing sub-text for mode:draw', async () => {
 				const element = await setup({ ...drawDefaultState, mode: 'draw' }, touchConfig);
 				const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 				expect(subTextElement).toBeTruthy();
-				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_draw');
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_draw');
 			});
 
-			it('shows the measurement sub-text for mode:modify', async () => {
+			it('shows the drawing sub-text for mode:modify', async () => {
 				const element = await setup({ ...drawDefaultState, mode: 'modify' }, touchConfig);
 				const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 				expect(subTextElement).toBeTruthy();
-				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_modify');
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_modify');
 			});
 
-			it('shows the measurement sub-text for mode:select', async () => {
+			it('shows the drawing sub-text for mode:select', async () => {
 				const element = await setup({ ...drawDefaultState, mode: 'select' }, touchConfig);
 				const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 				expect(subTextElement).toBeTruthy();
-				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_select');
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_select');
 			});
 		});
 	});

@@ -25,6 +25,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_style_size_medium).toBe('mittel');
 		expect(map.toolbox_drawTool_style_size_large).toBe('groß');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
+		expect(map.toolbox_drawTool_draw_active).toBe('In die Karte tippen, um die Zeichnung zu beginnen');
+		expect(map.toolbox_drawTool_draw_draw).toBe('In die Karte tippen, um die Linie zu zeichnen (Doppelt tippen zum Beenden)');
+		expect(map.toolbox_drawTool_draw_modify).toBe('Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
+		expect(map.toolbox_drawTool_draw_select).toBe('Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
 		expect(map.toolbox_measureTool_stats_length).toBe('Länge');
@@ -80,6 +84,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_style_size_medium).toBe('medium');
 		expect(map.toolbox_drawTool_style_size_large).toBe('large');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
+		expect(map.toolbox_drawTool_draw_active).toBe('Tap on the map to start drawing');
+		expect(map.toolbox_drawTool_draw_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
+		expect(map.toolbox_drawTool_draw_modify).toBe('To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
+		expect(map.toolbox_drawTool_draw_select).toBe('Select an existing drawing or start a new one');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
 		expect(map.toolbox_measureTool_stats_length).toBe('Length');
@@ -114,7 +122,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 49;
+		const expectedSize = 53;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
