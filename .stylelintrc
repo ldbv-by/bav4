@@ -8,6 +8,7 @@
     "indentation": "tab",
     "block-opening-brace-newline-after": "always",
     "block-opening-brace-space-before" : "always",
-    "declaration-bang-space-before": "always"
+    "declaration-bang-space-before": "always",
+    "declaration-colon-space-after": "always"
   }
 }
