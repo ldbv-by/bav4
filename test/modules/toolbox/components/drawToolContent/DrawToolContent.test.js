@@ -4,6 +4,8 @@ import { DrawToolContent } from '../../../../../src/modules/toolbox/components/d
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { EventLike } from '../../../../../src/utils/storeUtils';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
@@ -46,17 +48,19 @@ describe('DrawToolContent', () => {
 		height: 10,
 		text: ''
 	};
-	const setup = async (drawState = drawDefaultState) => {
+	const setup = async (drawState = drawDefaultState, config = {}) => {
 		const state = {
 			draw: drawState
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer });
+		const { embed = false, isTouch = false } = config;
+
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => false,
-				isTouch: () => false,
-				getWindow: () => windowMock
+				isEmbedded: () => embed,
+				getWindow: () => windowMock,
+				isTouch: () => isTouch
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
@@ -264,6 +268,199 @@ describe('DrawToolContent', () => {
 			setType('polygon');
 
 			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+		});
+
+		it('hides the style-inputs', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('polygon');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+
+			setType(null);
+			expect(element.shadowRoot.querySelector('.tool-container__form').childElementCount).toBe(0);
+		});
+
+		it('hides the style-inputs on invalid drawType', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('polygon');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+
+			setType('foo');
+			expect(element.shadowRoot.querySelector('.tool-container__form').childElementCount).toBe(0);
+		});
+
+		it('displays the finish-button for polygon', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
+		});
+
+		it('displays the finish-button for line', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
+		});
+
+		it('displays NOT the finish-button for marker', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#cancel').label).toBe('toolbox_drawTool_cancel');
+		});
+
+		it('displays NOT the finish-button for text', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#cancel').label).toBe('toolbox_drawTool_cancel');
+		});
+
+		it('finishes the drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+			const finishButton = element.shadowRoot.querySelector('#finish');
+
+			finishButton.click();
+
+			expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
+		});
+
+		it('resets the measurement', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+			const resetButton = element.shadowRoot.querySelector('#cancel');
+
+			resetButton.click();
+			expect(resetButton.label).toBe('toolbox_drawTool_cancel');
+			expect(store.getState().draw.reset).toBeInstanceOf(EventLike);
+		});
+
+		it('removes the selected drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'modify', type: 'line' });
+			const removeButton = element.shadowRoot.querySelector('#remove');
+
+			removeButton.click();
+			expect(removeButton.label).toBe('toolbox_drawTool_delete_drawing');
+			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('deletes the last drawn point of drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+			const removeButton = element.shadowRoot.querySelector('#remove');
+
+			removeButton.click();
+			expect(removeButton.label).toBe('toolbox_drawTool_delete_point');
+			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('shows the drawing sub-text', async () => {
+			const element = await setup(drawDefaultState);
+			const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+			expect(subTextElement).toBeTruthy();
+			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+		});
+
+		it('shows the drawing share-button', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeTruthy();
+		});
+
+		it('shows NOT the drawing share-container when fileSaveResult is null', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: null });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeFalsy();
+		});
+
+		it('shows NOT the drawing share-container for invalid fileSaveResult', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: null } });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeFalsy();
+		});
+
+		it('opens the modal with shortened share-urls on click', async (done) => {
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+
+			const shareButton = element.shadowRoot.querySelector('#share');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(store.getState().modal.data.title).toBe('toolbox_drawTool_share');
+				done();
+			});
+
+		});
+
+		it('logs a warning, when shortener fails', async (done) => {
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+
+			const shareButton = element.shadowRoot.querySelector('#share');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
+				done();
+			});
+
+		});
+		describe('with touch-device', () => {
+			const touchConfig = {
+				embed: false,
+				isTouch: true
+			};
+
+			it('shows the measurement sub-text for mode:active', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'active' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_active');
+			});
+
+			it('shows the measurement sub-text for mode:draw', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'draw' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_draw');
+			});
+
+			it('shows the measurement sub-text for mode:modify', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'modify' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_modify');
+			});
+
+			it('shows the measurement sub-text for mode:select', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'select' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_select');
+			});
 		});
 	});
 });

@@ -105,17 +105,18 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const finishAllowed = ['polygon', 'line'].includes(activeToolName);
 		if (mode === 'draw') {
-			let id = 'startnew';
-			let title = translate('toolbox_drawTool_cancel');
-			let onClick = () => reset();
-			// alternate Finish-Button
-			if (finishAllowed) {
-				id = 'finish';
-				title = translate('toolbox_drawTool_finish');
-				onClick = () => finish();
-			}
+			const getButtonOptions = () => {
+				if (finishAllowed) {
+					// alternate Finish-Button
+					return { id: 'finish', title: translate('toolbox_drawTool_finish'),	onClick: () => finish() };
+				}
+				return { id: 'cancel',
+					title: translate('toolbox_drawTool_cancel'),
+					onClick: () => reset() };
+			};
+			const options = getButtonOptions();
 
-			buttons.push(getButton(id, title, onClick));
+			buttons.push(getButton(options.id, options.title, options.onClick));
 		}
 		// Remove-Button
 		const removeAllowed = ['draw', 'modify'].includes(mode);
@@ -165,7 +166,7 @@ export class DrawToolContent extends AbstractToolContent {
 		};
 		if (isValidForSharing(fileSaveResult)) {
 
-			const title = translate('toolbox_measureTool_share');
+			const title = translate('toolbox_drawTool_share');
 			const onClick = () => {
 				generateShareUrls().then(shareUrls => {
 					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
@@ -177,7 +178,7 @@ export class DrawToolContent extends AbstractToolContent {
 			@click=${onClick}></ba-button>`;
 
 		}
-		return html.nothing;
+		return nothing;
 	}
 
 	_getSubText(state) {
@@ -201,13 +202,6 @@ export class DrawToolContent extends AbstractToolContent {
 		}
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
 	}
-
-	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
-			console.warn('Clipboard API not available');
-		});
-	}
-
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
