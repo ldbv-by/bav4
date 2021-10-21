@@ -1,15 +1,15 @@
-.share_item{
+.share_item {
 	min-width:25em;
 }
-.share_label{
+.share_label {
 	padding:.8em 0;
 }
-.link{
+.link {
 	display: flex;
 }
-.share_url{
+.share_url {
 	flex-grow: 1;
 }
-.share_api , .share_copy{
+.share_api , .share_copy {
 	margin-left: 1em;
 }

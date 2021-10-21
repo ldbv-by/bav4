@@ -11,7 +11,7 @@
 	background-color: rgba(0,0,0,.2); /* Black w/ opacity */
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 }
-.modal__container{
+.modal__container {
 	display:flex;
 	justify-content:center;
 	align-items: center;
@@ -20,18 +20,18 @@
 	width:100%;
 	padding:0 1em;
 }
-.modal {  
+.modal {
 	--upside:-5%;
 	background-color: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	z-index: calc(var(--z-modal) + 10);
 }
-.modal__title{
+.modal__title {
 	padding: .8em 1.5em;
 	font-weight: bold;
 	border-bottom: 1px solid var(--header-background-color);
 }
-.modal__content{
+.modal__content {
 	padding: .8em 1.5em;
 	max-height: 60vh;
 	overflow-y: auto;
@@ -43,7 +43,7 @@
 	display:flex;
 	justify-content: flex-end;
 }
-.modal_hide .modal, .modal_hide + div{
+.modal_hide .modal, .modal_hide + div {
 	animation-name: animateOut;
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-large-close);
@@ -55,7 +55,7 @@
 	animation-duration: var(--animation-duration-large-open);
 	animation-timing-function: var(--animation-easing-open);
 }
-@keyframes animateIn{
+@keyframes animateIn {
 	0% {
 		opacity: 0;
 		transform:  translateY(var(--upside));
@@ -64,7 +64,7 @@
 		opacity: 1;
 	}
 }
-@keyframes animateOut{
+@keyframes animateOut {
 	0% {
 		opacity: 1;
 	}

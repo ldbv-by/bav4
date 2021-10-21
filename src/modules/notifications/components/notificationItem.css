@@ -16,28 +16,28 @@
 .notification_info {
 	border-left: .2em solid var(--info-color);
 }
-.notification_warn{
+.notification_warn {
 	border-left: .2em solid var(--warning-color);
 }
-.notification_error{
+.notification_error {
 	border-left: .2em solid var(--error-color);
 }
-.notification_info .notification_level{
+.notification_info .notification_level {
 	color:var(--info-color);
 }
-.notification_warn .notification_level{
+.notification_warn .notification_level {
 	color:var(--warning-color);
 }
-.notification_error .notification_level{
+.notification_error .notification_level {
 	color:var(--error-color);
 }
-.notification_item_hide{
+.notification_item_hide {
 	animation-name: animateOut;
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-medium-close);
 	animation-timing-function: var(--animation-easing-close);
 }
-@keyframes animateIn{
+@keyframes animateIn {
 	0% {
 		opacity:0;
 		transform: translateY(200%);
@@ -46,11 +46,11 @@
 		}
 	}
 }
-@keyframes animateOut{
+@keyframes animateOut {
 	0% {
 		opacity:1;   
 	}
-	100% {       
+	100% {
 		opacity:0;      
 		transform: translateY(200%);
 	}

@@ -1,21 +1,21 @@
-.georesource-label{
+.georesource-label {
 	display: flex;
 }
-.georesource-label:hover .georesource-label__text{
+.georesource-label:hover .georesource-label__text {
 	color:var(--primary-color);
 	cursor: pointer;
 }
-.georesource-label__text{
+.georesource-label__text {
 	font-weight: bold;
 	padding: .8em 1.5em;
 	flex-grow: 1;
 }
-.georesource-items{
+.georesource-items {
 	max-height: 100em;
 	overflow:hidden;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
 }
-.georesource-label__collapse{
+.georesource-label__collapse {
 	padding: .8em 1.5em;
 }
 .icon {
@@ -36,10 +36,10 @@
 	-webkit-mask-image: url('../../assets/chevron-right.svg');
 	mask-image:  url('../../assets/chevron-right.svg');
 }
-.isdisabled{
+.isdisabled {
 	background: var(--secondary-bg-color);
 }
-.georesource-label__collapse:hover .icon{
+.georesource-label__collapse:hover .icon {
 	filter: brightness(.8);
 }
 .iconexpand {
@@ -47,22 +47,22 @@
 	-webkit-transform:rotate(270deg);
 	transform:rotate(270deg);
 }
-.iscollaps{
+.iscollaps {
 	max-height: 0;    
 	display:none;
 }
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-.show-all{
+.show-all {
 	padding: .8em 1.5em;
 	cursor: pointer;
 	background: var(--primary-bg-color);
 	width:100%;
 }
-.show-all.hidden{
+.show-all.hidden {
 	display:none;
 }
-.show-all:hover{
+.show-all:hover {
 	color:var(--primary-color);
 }

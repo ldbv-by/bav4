@@ -1,5 +1,5 @@
 /* CSS classes for all ContentPanel implementations */
-.ba-list-item{
+.ba-list-item {
 	display: flex;
 	cursor: pointer;
 	text-decoration: none;
@@ -9,37 +9,37 @@
 	width:100%;
 	text-align: left;
 }
-.ba-list-item:focus{
+.ba-list-item:focus {
 	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
 }
-.ba-list-item:hover{
+.ba-list-item:hover {
 	background: var(--header-background-color);
 } 
-.ba-list-item span{
+.ba-list-item span {
 	overflow-wrap: break-word;
 }
-.ba-list-item > *{
+.ba-list-item > * {
 	padding-top: .8em;
 	padding-bottom: .8em;
 }
-.ba-list-item > *:first-child{
+.ba-list-item > *:first-child {
 	padding-left: 1.5em;
 }
-.ba-list-item > *:last-child{
+.ba-list-item > *:last-child {
 	padding-right: 1.5em;
 }
-.ba-list-item__pre{
+.ba-list-item__pre {
 	display: flex;
 	margin: 0 1em 0 0;
 }
-.ba-list-item__after{
+.ba-list-item__after {
 	display: flex;
 	padding-left:1.5em;
 	position: relative;
 	background: transparent;
 	border: 0;
 }
-.ba-list-item__image{
+.ba-list-item__image {
 	height: 4em;
 	width: 8em;
 	min-width: 8em;
@@ -48,7 +48,7 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 }
-.ba-list-item__icon{
+.ba-list-item__icon {
 	height: 3em;
 	width: 3em;
 	border-radius: 2em;
@@ -57,18 +57,18 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 }
-.ba-list-item__text{
+.ba-list-item__text {
 	flex-grow: 1;
 }
-.ba-list-item__main-text{
+.ba-list-item__main-text {
 	font-size:1.7rem;
 }
-.ba-list-item__primary-text{  
+.ba-list-item__primary-text {
 	display:block;           
 	font-size: 1rem;
 	font-weight: bold;
 }
-.ba-list-item__secondary-text{
+.ba-list-item__secondary-text {
 	font-size: .9rem;
 	color: var(--text2);
 }
@@ -81,7 +81,7 @@
 	height: 1em;
 	width: .625em;
 }
-.icon-rotate-90{
+.icon-rotate-90 {
 	-moz-transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 	transform:rotate(90deg);
@@ -92,10 +92,10 @@
 	-webkit-transform:rotate(270deg);
 	transform:rotate(270deg);
 }
-.icon-primary{
+.icon-primary {
 	background: var(--primary-color);
 }
-.icon-secondary{
+.icon-secondary {
 	background: var(--text2);
 }
 .chevron {
@@ -121,7 +121,7 @@
 	background: var(--primary-color);
 }
 
-.ba-icon-button{
+.ba-icon-button {
 	background: transparent;
 	border: none;
 }
@@ -132,18 +132,18 @@
 .ba-icon-button:hover .icon {
 	background: #fff;
 }
-.ba-icon-button:hover .icon-background{
+.ba-icon-button:hover .icon-background {
 	height: 2em;
 	width: 2em;
 	background-color: var(--primary-color);
 }
-.ba-icon-button:focus .icon-background{
+.ba-icon-button:focus .icon-background {
 	height: 2em;
 	width: 2em;
 	background-color: var(--primary-color);
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
-.icon-background{
+.icon-background {
 	height: 0;
 	width: 0;
 	left: 1.7em;
@@ -164,55 +164,55 @@
 	opacity: .2;
 	margin: auto;
 }
-.arrow-right{
+.arrow-right {
 	border-color: transparent transparent transparent var(--text2);
 	margin-right: -50%;
 }
-.arrow-left{
+.arrow-left {
 	border-color: transparent var(--text2) transparent transparent ;
 }
 /* header  */
-.ba-list-item__header:hover{
+.ba-list-item__header:hover {
 	background: none;
 	color: var(--primary-color);
 }
-.ba-list-item__sub-header{
+.ba-list-item__sub-header {
 	opacity:.8;
 	margin-left:1.5em;
 }
-.ba-list-item__sub-header .ba-list-item__text{
+.ba-list-item__sub-header .ba-list-item__text {
 	padding-left:0;
 	font-size:.9rem;
 }
-.ba-list-item__sub-header:hover{
+.ba-list-item__sub-header:hover {
 	background: none;
 }
 /* section */
-.ba-section{
+.ba-section {
 	border-left: .3em solid var(--primary-bg-color); 
 }
-.ba-section .ba-list-item > *:first-child{
+.ba-section .ba-list-item > *:first-child {
 	padding-left: 1.2em;
 }
-.ba-section:hover .ba-list-item__header .ba-list-item__text{			
+.ba-section:hover .ba-list-item__header .ba-list-item__text {
 	color: var(--secondary-color);
 }
-.ba-section:hover{			
+.ba-section:hover {
 	border-left: .3em solid var(--secondary-color);
 }
 /* collapse */
-.collapse-content{                    
+.collapse-content {
 	max-height: auto;
 	visibility: visibility;     
 }
-.iscollapse{
+.iscollapse {
 	max-height: 0; 
 	overflow: hidden;   
 	visibility: hidden;
 }
 
 /* helper */
-.vertical-center{
+.vertical-center {
 	margin: auto;
 }
 .divider {

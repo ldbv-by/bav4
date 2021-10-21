@@ -1,4 +1,4 @@
-.ba-overlay, .help, .static, .distance,.area, .floating{
+.ba-overlay, .help, .static, .distance,.area, .floating {
 	background-color: rgba(140,140,140,0.9);
 	border-radius: 0.25em; 
 	color:var(--text3);
@@ -10,7 +10,7 @@
 	user-select: none; 
 }
 
-.ba-overlay:after,.static:after, .floating:after{
+.ba-overlay:after,.static:after, .floating:after {
 	position: absolute;
 	left:50%;
 	bottom: -0.375em; 
@@ -25,7 +25,7 @@
 	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;    
 }
 
-.partition:after{
+.partition:after {
 	bottom: -14px;
 	width:8px;
 	height: 8px;
@@ -35,12 +35,12 @@
 	border: none;
 }
 
-.static,.distance, .area{
+.static,.distance, .area {
 	background-color: rgba(255,0,0,0.9);
 	/* cursor: move; */
 }
 
-.static:after{
+.static:after {
 	border-top: 6px solid #f00; /* border-bottom/left/top/right:  use px*/
 }
 

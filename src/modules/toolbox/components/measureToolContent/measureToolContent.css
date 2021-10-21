@@ -1,19 +1,19 @@
-.tool-container__text-item{
+.tool-container__text-item {
 	display: flex;
 	align-items: flex-end;
 	margin: 0 0 1em 0;
 }
-.copy{
+.copy {
 	width:3em;
 }
-.prime-text-value{
+.prime-text-value {
 	font-size: 2.2em;
 	flex-grow: 1;
 	text-align: right;
 	margin-right: .5em;
 	line-height:.9;
 }
-.prime-text-unit{
+.prime-text-unit {
 	font-size: 2.2em;
 	text-align: left;
 	width: 2.1em;

@@ -2,7 +2,7 @@
 	mask: url("./assets/circleFill.svg");
 	-webkit-mask-image: url("./assets/circleFill.svg");
 }
-.icon { 
+.icon {
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	cursor: pointer;

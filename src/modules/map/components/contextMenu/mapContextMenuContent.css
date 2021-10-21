@@ -16,14 +16,14 @@
 	align-items: baseline;
 }
 
-.content li .label{
+.content li .label {
 	min-width: 90px;
 }
 
-.content li .coordinate{
+.content li .coordinate {
 	flex-grow: 4
 }
 
-.content li .icon{
+.content li .icon {
 	padding-left: 20px
 }

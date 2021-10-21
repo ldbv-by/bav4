@@ -1,4 +1,4 @@
-.map-buttons-container{
+.map-buttons-container {
 	position: fixed;
 	z-index:var(--z-mapbuttons);
 	bottom: 5.7em;
@@ -7,6 +7,6 @@
 	display: flex;
 	flex-direction: column;
 }
-.map-buttons-container > *{
+.map-buttons-container > * {
 	margin:  .2em 0; 
 }

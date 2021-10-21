@@ -1,4 +1,4 @@
-.ba-overlay, .help, .static, .floating{
+.ba-overlay, .help, .static, .floating {
 	background-color: rgba(140,140,140,0.9);
 	border-radius: 0.25em; 
 	color:var(--text3);
@@ -10,7 +10,7 @@
 	user-select: none; 
 }
 
-.ba-overlay:after,.static:after, .floating:after{
+.ba-overlay:after,.static:after, .floating:after {
 	position: absolute;
 	left:50%;
 	bottom: -0.375em; 

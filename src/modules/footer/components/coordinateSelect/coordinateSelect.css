@@ -6,7 +6,7 @@
 	padding: 0 1em;
 }
 
-@media (max-width: 600px){
+@media (max-width: 600px) {
 	.coordinate-container {
 		display: none;
 	}
@@ -37,6 +37,6 @@
 	bottom:.3em;
 } 
 
-.select-coordinate-option{    
+.select-coordinate-option {
 	font-weight: bold;
 }

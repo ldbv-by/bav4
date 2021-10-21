@@ -67,7 +67,7 @@
 
 }
 
-@media (min-width:135em){
+@media (min-width:135em) {
 	:root {
 		font-size: 1em;
 	}
@@ -107,7 +107,7 @@
 
 *,
 ::before,
-::after{
+::after {
 	box-sizing: border-box; 
 	margin: 0;
 	padding: 0;

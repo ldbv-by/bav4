@@ -1,4 +1,4 @@
-.content-panel {    
+.content-panel {
 	position: fixed;    
 	background-color: var(--primary-bg-color);
 	padding: 7em 0em 0em;
@@ -12,7 +12,7 @@
 	overflow-y: auto;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);    
 }
-.content-panel__close-button {           
+.content-panel__close-button {
 	position: absolute;
 	background-color: var(--secondary-bg-color);
 	top: 4.5em;
@@ -39,7 +39,7 @@
 }
 
 /* @media (orientation: portrait){ */
-.is-portrait .content-panel {   
+.is-portrait .content-panel {
 	top:-75vh;
 	height:75vh;
 	left: 0;
@@ -47,7 +47,7 @@
 	width: auto;
 	overflow: auto;
 }
-.is-portrait .content-panel__close-button {              
+.is-portrait .content-panel__close-button {
 	position: absolute;
 	top: unset;
 	left: unset;

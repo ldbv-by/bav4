@@ -11,7 +11,7 @@
 	left:1em;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-linea);   
 }
-.content{
+.content {
 	margin-left:25em;
 	font-size: .8rem;
 	padding: 0;    
@@ -20,10 +20,10 @@
 .is-open {
 	transform: translate(28em, 0);
 }
-.is-portrait .content{
+.is-portrait .content {
 	display: none;
 }
-ba-attribution-info{
+ba-attribution-info {
 	bottom:0;
 	left:0;
 	position: absolute;

@@ -1,4 +1,4 @@
-.layermanager {    
+.layermanager {
 	padding: 0 0 2em 0;
    
 }
@@ -19,7 +19,7 @@ li {
     
 }
 
-.overflow-container{
+.overflow-container {
 	overflow:auto;
 }
 
@@ -40,7 +40,7 @@ li {
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
 	transition: all .5s ease;
 }
-.over {    
+.over {
 	background-color:var(--primary-color);
 }
 
@@ -48,6 +48,6 @@ li {
 	opacity: 0.5;
 }
 
-.isdragged{
+.isdragged {
 	background: var(--header-background-color);
 }

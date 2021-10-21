@@ -1,36 +1,36 @@
-.ba-list-item{
+.ba-list-item {
 	display: flex;
 	cursor: pointer;
 	list-style:none;
 }
 
-.ba-list-item b{
+.ba-list-item b {
 	color: var(--primary-color);
 }
-.ba-list-item:hover{
+.ba-list-item:hover {
 	background: var(--header-background-color);
 }
-.ba-list-item > *{
+.ba-list-item > * {
 	padding-top: .8em;
 	padding-bottom: .8em;
 }
-.ba-list-item > *:first-child{
+.ba-list-item > *:first-child {
 	padding-left: 1.5em;
 }
-.ba-list-item > *:last-child{
+.ba-list-item > *:last-child {
 	padding-right: 1.5em;
 }
 
-.ba-list-item__pre{
+.ba-list-item__pre {
 	display: flex;
 	margin: 0 1em 0 0;
 }
-.ba-list-item__after{
+.ba-list-item__after {
 	display: flex;
 	margin: 0 0 0 1em;
 }
 
-.ba-list-item__icon-info{
+.ba-list-item__icon-info {
 	background-repeat: no-repeat;
 	background-image:  url('../../assets/subtract.svg');
 	color: red;
@@ -40,6 +40,6 @@
 	background-position: .5em;
 	font-size: 1rem;
 }
-.ba-list-item__text{
+.ba-list-item__text {
 	flex-grow: 1;
 }

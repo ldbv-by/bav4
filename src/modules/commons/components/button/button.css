@@ -16,10 +16,10 @@
 	background-color: var(--primary-bg-color);
 	color: var(--primary-color);
 }
-.primary.button:hover:enabled, .primary.button:focus{
+.primary.button:hover:enabled, .primary.button:focus {
 	opacity: 1;
 }
-.secondary.button:hover:enabled, .secondary.button:focus{
+.secondary.button:hover:enabled, .secondary.button:focus {
 	background:  var(--primary-color);
 	color:  var(--text3);
 }

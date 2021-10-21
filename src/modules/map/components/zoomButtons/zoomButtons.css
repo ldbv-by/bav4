@@ -3,11 +3,11 @@
 	flex-direction: column;
 }
 
-.zoom-buttons :first-child{
+.zoom-buttons :first-child {
 	margin:0 0 .4em 0;  
 }
 
-.zoom-in {  
+.zoom-in {
 	mask: url('assets/plus-circle-fill.svg');
 	-webkit-mask-image: url('assets/plus-circle-fill.svg');
 }

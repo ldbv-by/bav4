@@ -17,7 +17,7 @@
 	box-sizing: border-box;
 }
 
-.active div{
+.active div {
 	background: var(--secondary-color);
 }
 

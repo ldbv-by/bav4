@@ -1,7 +1,7 @@
 /* default style for all BaElements */
 *,
 ::before,
-::after{
+::after {
 	font-size: 1em;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -14,10 +14,10 @@
 	letter-spacing: 0.01em;
 }  
 
-*,*:focus,*:hover{
+*,*:focus,*:hover {
 	outline:none;
 }
-*:focus{
+*:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
@@ -30,7 +30,7 @@
 	background: var(--secondary-bg-color);
 }
 
-input[type=text]{
+input[type=text] {
 	background: var(--primary-bg-color);
 	border: 1px solid var(--text1);    
 	border-radius: var(--border-radius-button);
@@ -41,10 +41,10 @@ input[type=text]{
 	background: var(--primary-bg-color);
 	color: var(--text1);
 }
-input[type=text]:focus{
+input[type=text]:focus {
 	border: 1px solid var(--primary-color);   
 }
-input[readonly]{
+input[readonly] {
 	border: 1px solid var(--secondary-bg-color);    
 	background: var(--secondary-bg-color);
 }

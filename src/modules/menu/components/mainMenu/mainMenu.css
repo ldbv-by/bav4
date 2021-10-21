@@ -1,4 +1,4 @@
-.main-menu {    
+.main-menu {
 	position: fixed;    
 	z-index: var(--z-mainmenu);
 	background-color: var(--primary-bg-color);
@@ -12,7 +12,7 @@
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function:var(--animation-easing-linea);   
 }
-.main-menu__container{
+.main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
 	top: 13.5em;
@@ -22,7 +22,7 @@
 	width: 100%;
 }
 
-.main-menu__close-button {           
+.main-menu__close-button {
 	position: absolute;
 	z-index: calc(var(--z-mainmenu) + 10);
 	background-color: var(--secondary-bg-color);
@@ -50,7 +50,7 @@
 	transition-timing-function:var(--animation-easing-linea);  
 
 }
-.is-open .main-menu__close-button {           
+.is-open .main-menu__close-button {
 	left: -15em;
 	transition-delay: 0s;
 	transition-duration: 0s;
@@ -66,13 +66,13 @@
 	border-color: transparent transparent transparent var(--text2);
 	opacity: .8;
 }
-.main-menu__close-button:hover .arrow{
+.main-menu__close-button:hover .arrow {
 	opacity: 1;
 }
-.main-menu__close-button-text{
+.main-menu__close-button-text {
 	display:block;
 }
-.is-open .arrow {    
+.is-open .arrow {
 	left: 0;       
 	transform: rotate(180deg);
 }
@@ -82,15 +82,15 @@
 }
 
 /*tablet*/
-.is-tablet .main-menu__container{
+.is-tablet .main-menu__container {
 	top: 8.5em;
 }
-.is-tablet .main-menu__close-button {              
+.is-tablet .main-menu__close-button {
 	top: 5em;
 }
 
 /*portrait */
-.is-portrait .main-menu {   
+.is-portrait .main-menu {
 	top:-65vh;
 	height: calc(65vh + 6.6em);
 	left: 0;
@@ -99,7 +99,7 @@
 	overflow: auto;
 	padding: 3em 0;
 }
-.is-portrait .main-menu__close-button {              
+.is-portrait .main-menu__close-button {
 	position: absolute;
 	top: unset;
 	left: 50%;
@@ -110,7 +110,7 @@
 	margin-left: -2em;
 	height: 2.5em;
 }
-.is-portrait .main-menu__close-button-text{
+.is-portrait .main-menu__close-button-text {
 	display:none;
 }
 .is-portrait .arrow {
@@ -127,7 +127,7 @@
 	transform: translate(0, 65vh);
 	height: calc(65vh + 6.6em);
 }
-.is-portrait .main-menu__container{
+.is-portrait .main-menu__container {
 	overflow-y: auto;
 	top: 8.5em;
 	bottom: 0;
@@ -136,7 +136,7 @@
 	width: 100%;
 	padding: 0 0 3em 0;
 }
-.is-portrait .main-menu__container *{
+.is-portrait .main-menu__container * {
 	font-size: 1.2rem;
 }
 
@@ -151,58 +151,58 @@
 .ba-list{
 
 }
-.ba-list-inline{
+.ba-list-inline {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
 }
-.ba-list-inline{
+.ba-list-inline {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
 }
-.ba-list-inline li{
+.ba-list-inline li {
 	border-left: 1px var(--secondary-bg-color) solid;
 	text-align: center;
 }
-.ba-list-inline li:first-child{
+.ba-list-inline li:first-child {
 	border-left: 0;
 	text-align: center;
 }
-.ba-list-item{
+.ba-list-item {
 	display: flex;
 	cursor: pointer;
 }
-.ba-list-item:hover{
+.ba-list-item:hover {
 	background: var(--header-background-color);
 }
-.ba-list-item > *{
+.ba-list-item > * {
 	padding-top: .8em;
 	padding-bottom: .8em;
 }
-.ba-list-item > *:first-child{
+.ba-list-item > *:first-child {
 	padding-left: 1.5em;
 }
-.ba-list-item > *:last-child{
+.ba-list-item > *:last-child {
 	padding-right: 1.5em;
 }
 
-.ba-list-item__header{
+.ba-list-item__header {
 	font-weight: bold;
 }
-.ba-list-item__header:hover{
+.ba-list-item__header:hover {
 	background: none;
 }
 
-.ba-list-item__pre{
+.ba-list-item__pre {
 	display: flex;
 	margin: 0 1em 0 0;
 }
-.ba-list-item__after{
+.ba-list-item__after {
 	display: flex;
 	margin: 0 0 0 1em;
 }
-.ba-list-item__image{
+.ba-list-item__image {
 	height: 4em;
 	width: 8em;
 	min-width: 8em;
@@ -211,7 +211,7 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 }
-.ba-list-item__icon{
+.ba-list-item__icon {
 	height: 3em;
 	width: 3em;
 	border-radius: 2em;
@@ -221,7 +221,7 @@
 	background-size: cover;
 }
 
-.ba-list-item__icon-info{
+.ba-list-item__icon-info {
 	background-repeat: no-repeat;
 	background-image:  url('assets/info.svg');
 	margin: auto;
@@ -230,18 +230,18 @@
 	background-position: .5em;
 	font-size: 1rem;
 }
-.ba-list-item__text{
+.ba-list-item__text {
 	flex-grow: 1;
 }
-.vertical-center{
+.vertical-center {
 	margin: auto;
 }
 
-.ba-list-item__primary-text{    
+.ba-list-item__primary-text {
 	display:block;           
 	font-size: 1rem;
 }
-.ba-list-item__secondary-text{
+.ba-list-item__secondary-text {
 	font-size: .95rem;
 	color: var(--text2);
 

@@ -1,4 +1,4 @@
-.tool-container{               
+.tool-container {
 	top: 0;
 	right: 0;           
 	position: fixed;    
@@ -7,13 +7,13 @@
 	max-width: 27em;
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);   
 }
-.tool-container__tools-nav{
+.tool-container__tools-nav {
 	position: absolute;
 	top: 0;   
 	right: 0;
 	padding:0
 }
-.tool-container__close-button{
+.tool-container__close-button {
 	margin: 0;
 	padding: 0;
 	width: 3em;
@@ -24,14 +24,14 @@
 	cursor: pointer;
 	opacity:.9;
 }
-.tool-container__close-button:hover{
+.tool-container__close-button:hover {
 	opacity: 1;
 }
-.tool-container__content{
+.tool-container__content {
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);  
 	display: none;
 }
-.is-portrait .tool-container{               
+.is-portrait .tool-container {
 	bottom: 0;
 	right: 0;           
 	left: 0;           
@@ -45,14 +45,14 @@
 	display: block;
 }
 
-.close-icon{
+.close-icon {
 	display: inline-block;
 	position: relative;
 	top: -1em;
 
 }
   
-.close-icon::before{
+.close-icon::before {
 	position: absolute;
 	content:'';
 	width:2px;
@@ -60,7 +60,7 @@
 	background: var(--text2);
 	transform: rotate(45deg);
 }
-.close-icon::after{
+.close-icon::after {
 	position: absolute;
 	content:'';
 	width:2px;
