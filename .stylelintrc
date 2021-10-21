@@ -4,6 +4,7 @@
   "rules": {
     "no-missing-end-of-source-newline": true,
     "no-empty-first-line": true,
-    "max-empty-lines": 1
+    "max-empty-lines": 1,
+    "indentation": "tab"
   }
 }
