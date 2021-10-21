@@ -14,7 +14,7 @@
 }
 .secondary {
     background-color: var(--primary-bg-color);
-    color: ar(--primary-color);
+    color: var(--primary-color);
 }
 .primary.button:hover:enabled, .primary.button:focus{
     opacity: 1;
