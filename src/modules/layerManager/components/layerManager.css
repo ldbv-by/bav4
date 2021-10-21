@@ -1,54 +1,53 @@
-.layermanager {    
-    padding: 0 0 2em 0;
+.layermanager {
+	padding: 0 0 2em 0;
    
 }
 
 .title {
-    font-weight: bold;
-    padding:.8em 1.5em;
+	font-weight: bold;
+	padding: .8em 1.5em;
 }
 
 ul {
-    display: flex;
-    flex-direction: column-reverse;
-    list-style:none;    
+	display: flex;
+	flex-direction: column-reverse;
+	list-style: none;    
 }
 
 li {
-    flex: 0 0 auto;
+	flex: 0 0 auto;
     
 }
 
-
-.overflow-container{
-    overflow:auto;
+.overflow-container {
+	overflow: auto;
 }
 
 .placeholder {
-    height: 0;
-    overflow: hidden;
-    background:var(--secondary-bg-color);
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.3);
-   font-size: 3rem;
-   font-weight: bold;
-   opacity: .5;
-   padding: 0 .5em;
+	height: 0;
+	overflow: hidden;
+	background: var(--secondary-bg-color);
+	font-weight: bold;
+	color: rgba(0, 0, 0, 0.3);
+	font-size: 3rem;
+	font-weight: bold;
+	opacity: .5;
+	padding: 0 .5em;
 }
 
 .placeholder-active {
-height: 1.2em;
-   box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
-   transition: all .5s ease;
+	height: 1.2em;
+	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+	transition: all .5s ease;
 }
-.over {    
-    background-color:var(--primary-color);
+.over {
+	background-color: var(--primary-color);
 }
 
 .dragged {
-    opacity: 0.5;
+	opacity: 0.5;
 }
 
-.isdragged{
-    background: var(--header-background-color);
+.isdragged {
+	background: var(--header-background-color);
 }
