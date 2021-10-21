@@ -1,38 +1,38 @@
 .geolocation-icon {
-  mask: url("./assets/circleFill.svg");
-  -webkit-mask-image: url("./assets/circleFill.svg");
+	mask: url("./assets/circleFill.svg");
+	-webkit-mask-image: url("./assets/circleFill.svg");
 }
 .icon { 
-  mask-size: cover;
-  -webkit-mask-size: cover;
-  cursor: pointer;
-  display: inline-block;
-  height: 1.5em;
-  width: 1.5em;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.5em;
+	width: 1.5em;
 }
 .inactive {
-  background: var(--text3);
+	background: var(--text3);
 }
 .active {
-  background: var(--warning-color);
+	background: var(--warning-color);
 }
 .denied {
-  background: var(--secondary-bg-color)
+	background: var(--secondary-bg-color)
 }
 .geolocation-button {
-  background-color: var(--primary-color);
-  display: inline-block;
-  height: 2.5em;
-  width: 2.5em;
-  border-radius: 50%;
-  border: none;
-  outline: none;
-  padding-top: 0.25em;
+	background-color: var(--primary-color);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	border: none;
+	outline: none;
+	padding-top: 0.25em;
 }
 .geolocation-button:hover {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 .geolocation-button:active {
-  transform: scale(1.15);
-  border: none;
+	transform: scale(1.15);
+	border: none;
 }

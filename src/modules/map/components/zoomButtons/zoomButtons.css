@@ -1,45 +1,45 @@
 .zoom-buttons {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 .zoom-buttons :first-child{
-  margin:0 0 .4em 0;  
+	margin:0 0 .4em 0;  
 }
 
 .zoom-in {  
-  mask: url('assets/plus-circle-fill.svg');
-  -webkit-mask-image: url('assets/plus-circle-fill.svg');
+	mask: url('assets/plus-circle-fill.svg');
+	-webkit-mask-image: url('assets/plus-circle-fill.svg');
 }
 
 .zoom-out {
-  mask: url('assets/dash-circle-fill.svg');
-  -webkit-mask-image: url('assets/dash-circle-fill.svg');
+	mask: url('assets/dash-circle-fill.svg');
+	-webkit-mask-image: url('assets/dash-circle-fill.svg');
 }
 
 .icon {
-  background: var(--primary-color);
-  mask-size: cover;
-  -webkit-mask-size: cover;
-  cursor: pointer;
-  display: inline-block;
-  height: 2.5em;
-  width: 2.5em;
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
 }
 
 .icon:hover {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 .icon:active {
-  transform: scale(1.15);
+	transform: scale(1.15);
 }
 
 .zoom-buttons .button {
-  background-color: var(--text3);
-  display: inline-block;
-  height: 2.5em;
-  width: 2.5em;
-  border-radius: 50%;
-  border:0;
+	background-color: var(--text3);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	border:0;
 }

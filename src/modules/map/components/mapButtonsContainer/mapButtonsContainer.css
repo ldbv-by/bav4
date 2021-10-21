@@ -1,12 +1,12 @@
 .map-buttons-container{
-    position: fixed;
-    z-index:var(--z-mapbuttons);
-    bottom: 5.7em;
-    right: .4em;
-    margin: 0 1.25em;
-    display: flex;
-    flex-direction: column;
+	position: fixed;
+	z-index:var(--z-mapbuttons);
+	bottom: 5.7em;
+	right: .4em;
+	margin: 0 1.25em;
+	display: flex;
+	flex-direction: column;
 }
 .map-buttons-container > *{
-    margin:  .2em 0; 
+	margin:  .2em 0; 
 }

@@ -2,49 +2,49 @@
 *,
 ::before,
 ::after{
-    font-size: 1em;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    color: var(--text1); 
-    font-family: var(--font-family);
-    line-height: 1.2;
-    letter-spacing: 0.01em;
+	font-size: 1em;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	color: var(--text1); 
+	font-family: var(--font-family);
+	line-height: 1.2;
+	letter-spacing: 0.01em;
 }  
 
 *,*:focus,*:hover{
-    outline:none;
+	outline:none;
 }
 *:focus{
-    box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
 /* not working in Firefox */
 ::-webkit-scrollbar {
-    width: .4em;
+	width: .4em;
 }
 ::-webkit-scrollbar-thumb {
-    border-radius:.9em;
-    background: var(--secondary-bg-color);
+	border-radius:.9em;
+	background: var(--secondary-bg-color);
 }
 
 input[type=text]{
-    background: var(--primary-bg-color);
-    border: 1px solid var(--text1);    
-    border-radius: var(--border-radius-button);
-    overflow: hidden;
-    font-size: 1.25rem;
-    padding: 0.25em .6em;
-    width: var(--width);
-    background: var(--primary-bg-color);
-    color: var(--text1);
+	background: var(--primary-bg-color);
+	border: 1px solid var(--text1);    
+	border-radius: var(--border-radius-button);
+	overflow: hidden;
+	font-size: 1.25rem;
+	padding: 0.25em .6em;
+	width: var(--width);
+	background: var(--primary-bg-color);
+	color: var(--text1);
 }
 input[type=text]:focus{
-    border: 1px solid var(--primary-color);   
+	border: 1px solid var(--primary-color);   
 }
 input[readonly]{
-    border: 1px solid var(--secondary-bg-color);    
-    background: var(--secondary-bg-color);
+	border: 1px solid var(--secondary-bg-color);    
+	background: var(--secondary-bg-color);
 }

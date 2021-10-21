@@ -1,29 +1,29 @@
 .icon {   
-  mask-size: cover;
-  -webkit-mask-size: cover;
-  cursor: pointer;
-  display: inline-block;
-  height: var(--size);
-  width: var(--size);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: var(--size);
+	width: var(--size);
 }
 
 .icon.disabled {
-    filter: brightness(0.8) ;
-    cursor: not-allowed;   
+	filter: brightness(0.8) ;
+	cursor: not-allowed;   
 }
 
 .icon:active {
-    transform: scale(1.15);
+	transform: scale(1.15);
 }
 
 .icon.disabled:hover {
-    transform: none;
+	transform: none;
 }
   
 .icon.disabled:active {
-    transform: none;
+	transform: none;
 }
 
 .anchor {
-    display: inline-block;
+	display: inline-block;
 }

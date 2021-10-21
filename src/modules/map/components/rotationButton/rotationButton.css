@@ -1,38 +1,38 @@
 .rotation-icon {
-  mask: url("./assets/bi-forward-rotated.svg");
-  -webkit-mask-image: url("./assets/bi-forward-rotated.svg");
+	mask: url("./assets/bi-forward-rotated.svg");
+	-webkit-mask-image: url("./assets/bi-forward-rotated.svg");
 }
 
 .icon {
-  background: var(--text3);
-  mask-size: cover;
-  -webkit-mask-size: cover;
-  cursor: pointer;
-  display: inline-block;
-  height: 1.5em;
-  width: 1.5em;
+	background: var(--text3);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.5em;
+	width: 1.5em;
 }
 
 .rotation-button {
-  background-color: var(--primary-color);
-  display: inline-block;
-  height: 2.5em;
-  width: 2.5em;
-  border-radius: 50%;
-  border: none;
-  outline: none;
-  padding-top: 0.25em;
+	background-color: var(--primary-color);
+	display: inline-block;
+	height: 2.5em;
+	width: 2.5em;
+	border-radius: 50%;
+	border: none;
+	outline: none;
+	padding-top: 0.25em;
 }
 
 .hidden{
-  display:none;
+	display:none;
 }
 
 .rotation-button:hover {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 .rotation-button:active {
-  transform: scale(1.15);
-  border: none;
+	transform: scale(1.15);
+	border: none;
 }
