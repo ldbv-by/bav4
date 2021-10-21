@@ -1,12 +1,11 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTabIndex, TabIndex } from '../../menu/store/mainMenu.action';
-import { openModal } from '../../modal/store/modal.action';
+import { open as openMainMenu, setTabIndex, TabIndex, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
-import { toggle } from '../../menu/store/mainMenu.action';
 import { MvuElement } from '../../MvuElement';
+import { openModal } from '../../../store/modal/modal.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';

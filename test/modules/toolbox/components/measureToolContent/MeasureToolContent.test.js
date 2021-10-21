@@ -1,12 +1,12 @@
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
-import { modalReducer } from '../../../../../src/modules/modal/store/modal.reducer';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);

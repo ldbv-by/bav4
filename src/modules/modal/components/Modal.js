@@ -1,8 +1,8 @@
 import { html, nothing } from 'lit-html';
 import { BaElement } from '../../BaElement';
-import { closeModal } from '../store/modal.action';
 import css from './modal.css';
 import { $injector } from '../../../injection';
+import { closeModal } from '../../../store/modal/modal.action';
 
 /**
  * Modal dialog container.
