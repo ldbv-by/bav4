@@ -23,7 +23,7 @@ import { emitNotification } from '../../../../../../store/notifications/notifica
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
-import { setMode } from '../../../../../../store/measurement/measurement.action';
+import { setMode } from '../../../../../../store/draw/draw.action';
 
 
 export const MAX_SELECTION_SIZE = 1;

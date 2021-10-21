@@ -5,7 +5,10 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
-import { setStyle, setType } from '../../../../store/draw/draw.action';
+import { finish, remove, reset, setStyle, setType } from '../../../../store/draw/draw.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { openModal } from '../../../../store/modal/modal.action';
+import { QueryParameters } from '../../../../services/domain/queryParameters';
 
 
 /**
@@ -17,8 +20,11 @@ export class DrawToolContent extends AbstractToolContent {
 	constructor() {
 		super();
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
+		this._environmentService = environmentService;
+		this._shareService = shareService;
+		this._urlService = urlService;
 		this._tools = this._buildTools();
 	}
 
@@ -60,6 +66,10 @@ export class DrawToolContent extends AbstractToolContent {
 		this._showActive();
 	}
 
+	_getActiveTool() {
+		return this._tools.find(tool => tool.active);
+	}
+
 	_showActive() {
 		this._tools.forEach(tool => {
 			const id = tool.name;
@@ -74,6 +84,130 @@ export class DrawToolContent extends AbstractToolContent {
 			}
 		});
 	}
+
+	_getButtons(state) {
+		const buttons = [];
+		const translate = (key) => this._translationService.translate(key);
+		const { mode } = state;
+
+
+
+		const getButton = (id, title, onClick) => {
+			return html`<ba-button id=${id} 
+								class="tool-container__button" 
+								.label=${title}
+								@click=${onClick}></ba-button>`;
+		};
+
+		const activeTool = this._getActiveTool();
+		const activeToolName = activeTool ? activeTool.name : 'noTool';
+		// Cancel-Button
+
+		const finishAllowed = ['polygon', 'line'].includes(activeToolName);
+		if (mode === 'draw') {
+			let id = 'startnew';
+			let title = translate('toolbox_drawTool_cancel');
+			let onClick = () => reset();
+			// alternate Finish-Button
+			if (finishAllowed) {
+				id = 'finish';
+				title = translate('toolbox_drawTool_finish');
+				onClick = () => finish();
+			}
+
+			buttons.push(getButton(id, title, onClick));
+		}
+		// Remove-Button
+		const removeAllowed = ['draw', 'modify'].includes(mode);
+		if (removeAllowed) {
+			const id = 'remove';
+			const title = mode === 'draw' && ['polygon', 'line'].includes(activeToolName) ? translate('toolbox_drawTool_delete_point') : translate('toolbox_drawTool_delete_drawing');
+			const onClick = () => remove();
+			buttons.push(getButton(id, title, onClick));
+		}
+
+		buttons.push(this._getShareButton(state));
+
+		return buttons;
+	}
+
+	_getShareButton(state) {
+		const { fileSaveResult } = state;
+		const translate = (key) => this._translationService.translate(key);
+		const isValidForSharing = (fileSaveResult) => {
+			if (!fileSaveResult) {
+				return false;
+			}
+			if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
+				return false;
+			}
+			return true;
+		};
+		const buildShareUrl = async (id) => {
+			const extraParams = { [QueryParameters.LAYER]: id };
+			const url = this._shareService.encodeState(extraParams);
+			try {
+				const shortUrl = await this._urlService.shorten(url);
+				return shortUrl;
+			}
+			catch (error) {
+				console.warn('Could shortener-service is not working:', error);
+				return url;
+			}
+
+
+		};
+		const generateShareUrls = async () => {
+			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
+			const forFileId = await buildShareUrl(fileSaveResult.fileId);
+			return { adminId: forAdminId, fileId: forFileId };
+
+		};
+		if (isValidForSharing(fileSaveResult)) {
+
+			const title = translate('toolbox_measureTool_share');
+			const onClick = () => {
+				generateShareUrls().then(shareUrls => {
+					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
+				});
+			};
+			return html`<ba-button id='share' 
+			class="tool-container__button" 
+			.label=${title}
+			@click=${onClick}></ba-button>`;
+
+		}
+		return html.nothing;
+	}
+
+	_getSubText(state) {
+		const { mode } = state;
+		const translate = (key) => this._translationService.translate(key);
+		let subTextMessage = translate('toolbox_drawTool_info');
+		if (this._environmentService.isTouch()) {
+			switch (mode) {
+				case 'active':
+					subTextMessage = translate('toolbox_measureTool_measure_active');
+					break;
+				case 'draw':
+					subTextMessage = translate('toolbox_measureTool_measure_draw');
+					break;
+				case 'modify':
+					subTextMessage = translate('toolbox_measureTool_measure_modify');
+					break;
+				case 'select':
+					subTextMessage = translate('toolbox_measureTool_measure_select');
+			}
+		}
+		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+	}
+
+	async _copyValueToClipboard(value) {
+		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+			console.warn('Clipboard API not available');
+		});
+	}
+
 
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
@@ -200,6 +334,10 @@ export class DrawToolContent extends AbstractToolContent {
 			return nothing;
 
 		};
+
+		const buttons = this._getButtons(state);
+		const subText = this._getSubText(state);
+
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -215,15 +353,9 @@ export class DrawToolContent extends AbstractToolContent {
 				<div class="tool-container__form">
 				${getStyleTemplate(drawingType, drawingStyle)}
 				</div>				            			
-				<div class="tool-container__info sub-text">
-					<span>
-						${translate('toolbox_drawTool_info')}
-					</span>
-                </div>
+				<div class='sub-text'>${subText}</div>
 				<div class="ba-tool-container__actions">                         				
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_delete')}></ba-button>
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_share')}></ba-button>
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_save')}></ba-button>
+				${buttons}
 				</div> 
             </div >	  
         </div >
