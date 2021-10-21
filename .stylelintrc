@@ -5,6 +5,9 @@
     "no-missing-end-of-source-newline": true,
     "no-empty-first-line": true,
     "max-empty-lines": 1,
-    "indentation": "tab"
+    "indentation": "tab",
+    "block-opening-brace-newline-after": "always",
+    "block-opening-brace-space-before" : "always",
+    "declaration-bang-space-before": "always"
   }
 }
