@@ -3,6 +3,7 @@
   "defaultSeverity": "warning",
   "rules": {
     "no-missing-end-of-source-newline": true,
-    "no-empty-first-line": true
+    "no-empty-first-line": true,
+    "max-empty-lines": 1
   }
 }
