@@ -4,20 +4,20 @@
 	margin: 0 0 1em 0;
 }
 .copy {
-	width:3em;
+	width: 3em;
 }
 .prime-text-value {
 	font-size: 2.2em;
 	flex-grow: 1;
 	text-align: right;
 	margin-right: .5em;
-	line-height:.9;
+	line-height: .9;
 }
 .prime-text-unit {
 	font-size: 2.2em;
 	text-align: left;
 	width: 2.1em;
-	line-height:.9;
+	line-height: .9;
 }
 .area {
 	opacity: 0;

@@ -1,7 +1,7 @@
 .ba-list-item {
 	display: flex;
 	cursor: pointer;
-	list-style:none;
+	list-style: none;
 }
 
 .ba-list-item b {
@@ -32,7 +32,7 @@
 
 .ba-list-item__icon-info {
 	background-repeat: no-repeat;
-	background-image:  url('../../assets/subtract.svg');
+	background-image: url('../../assets/subtract.svg');
 	color: red;
 	margin: auto;
 	height: 100%;

@@ -22,7 +22,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	vertical-align: middle;
 	border: 1px solid var(--text2);
 	transition: all 0.2s ease;
-	margin:auto 0;
+	margin: auto 0;
 }
 .ba-checkbox span:first-child svg {
 	position: absolute;
@@ -44,7 +44,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 .ba-checkbox span:first-child:before {
 	content: "";
 	width: 100%;
-	min-width:1.5em;
+	min-width: 1.5em;
 	height: 100%;
 	background: var(--primary-color);
 	display: block;
@@ -72,7 +72,7 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	border-color: var(--primary-color);
 }
 .input:focus + .ba-checkbox span:first-child {
-	background:red;
+	background: red;
 
 }
 .input:checked + .ba-checkbox span:first-child {

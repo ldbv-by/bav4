@@ -15,7 +15,7 @@
 }  
 
 *,*:focus,*:hover {
-	outline:none;
+	outline: none;
 }
 *:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
@@ -26,7 +26,7 @@
 	width: .4em;
 }
 ::-webkit-scrollbar-thumb {
-	border-radius:.9em;
+	border-radius: .9em;
 	background: var(--secondary-bg-color);
 }
 

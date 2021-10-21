@@ -8,23 +8,23 @@
 	width: 100%; 
 	max-width: 100%; 
 	visibility: hidden;
-	height:0;
-	overflow:hidden;
+	height: 0;
+	overflow: hidden;
 }
 .topics-content-panel  > *:first-child {
 	visibility: visible;
-	height:auto;
+	height: auto;
 }
 .invisible {
 	transform: translate(-50%); 
 }
 .invisible  > *:last-child {
 	visibility: visible;   
-	height:auto;
+	height: auto;
 }
 .invisible  > *:first-child {
 	visibility: hidden; 
-	height:0  
+	height: 0  
 }
 .topic .ba-list-item__icon {
 	padding: 0.3em;

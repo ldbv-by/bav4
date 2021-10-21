@@ -7,7 +7,7 @@
 }
 .ba-tool-container__actions {
 	display: flex;
-	justify-content:space-between;
+	justify-content: space-between;
 	justify-content: flex-start;
 	min-height: 2.8em;
 }
@@ -20,6 +20,6 @@
 }
 .sub-text {
 	text-align: center;
-	font-size:.8em;
-	opacity:.8;
+	font-size: .8em;
+	opacity: .8;
 }

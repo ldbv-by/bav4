@@ -5,13 +5,13 @@
 
 .title {
 	font-weight: bold;
-	padding:.8em 1.5em;
+	padding: .8em 1.5em;
 }
 
 ul {
 	display: flex;
 	flex-direction: column-reverse;
-	list-style:none;    
+	list-style: none;    
 }
 
 li {
@@ -20,13 +20,13 @@ li {
 }
 
 .overflow-container {
-	overflow:auto;
+	overflow: auto;
 }
 
 .placeholder {
 	height: 0;
 	overflow: hidden;
-	background:var(--secondary-bg-color);
+	background: var(--secondary-bg-color);
 	font-weight: bold;
 	color: rgba(0, 0, 0, 0.3);
 	font-size: 3rem;
@@ -41,7 +41,7 @@ li {
 	transition: all .5s ease;
 }
 .over {
-	background-color:var(--primary-color);
+	background-color: var(--primary-color);
 }
 
 .dragged {

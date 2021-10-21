@@ -4,7 +4,7 @@
 }
 
 .zoom-buttons :first-child {
-	margin:0 0 .4em 0;  
+	margin: 0 0 .4em 0;  
 }
 
 .zoom-in {
@@ -41,5 +41,5 @@
 	height: 2.5em;
 	width: 2.5em;
 	border-radius: 50%;
-	border:0;
+	border: 0;
 }

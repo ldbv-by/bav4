@@ -1,10 +1,10 @@
 .ba-overlay, .help, .static, .floating {
 	background-color: rgba(140,140,140,0.9);
 	border-radius: 0.25em; 
-	color:var(--text3);
+	color: var(--text3);
 	padding: 0.125em 0.5em;
 	font-size: 0.75rem;
-	cursor:default;
+	cursor: default;
 	-webkit-user-select: none; 
 	-ms-user-select: none; 
 	user-select: none; 
@@ -12,10 +12,10 @@
 
 .ba-overlay:after,.static:after, .floating:after {
 	position: absolute;
-	left:50%;
+	left: 50%;
 	bottom: -0.375em; 
 	margin-left: -0.25em; 
-	content:"";
+	content: "";
 	border-top: 6px solid rgba(140,140,140,0.9); 
     
 }

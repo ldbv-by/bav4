@@ -43,13 +43,13 @@
 	padding: .4em 1em;
 }
 .isopen .attribution {
-	display:block;
+	display: block;
 	margin: .5em;
 }
 .isopen .icon {
-	-moz-transform:rotate(90deg);
-	-webkit-transform:rotate(90deg);
-	transform:rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 .isopen .collapse-button {
 	padding: 0.5em 1em;

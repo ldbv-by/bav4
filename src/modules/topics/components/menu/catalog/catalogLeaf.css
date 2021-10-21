@@ -17,10 +17,10 @@ ba-icon {
 	margin: 0 .3em;
 }
 ba-icon:hover {
-	background:var(--primary-color);
+	background: var(--primary-color);
 
 }
 ba-icon:focus {
-	background:var(--primary-color);
+	background: var(--primary-color);
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }

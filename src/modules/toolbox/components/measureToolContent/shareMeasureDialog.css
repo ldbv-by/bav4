@@ -1,8 +1,8 @@
 .share_item {
-	min-width:25em;
+	min-width: 25em;
 }
 .share_label {
-	padding:.8em 0;
+	padding: .8em 0;
 }
 .link {
 	display: flex;

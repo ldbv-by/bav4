@@ -1,6 +1,6 @@
 /* Modal Content */
 .modal__background {
-	--upside:0%;
+	--upside: 0%;
 	position: fixed;
 	z-index: var( --z-modal);
 	top: 0;
@@ -12,16 +12,16 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 }
 .modal__container {
-	display:flex;
-	justify-content:center;
+	display: flex;
+	justify-content: center;
 	align-items: center;
 	position: absolute;
-	height:100%;
-	width:100%;
-	padding:0 1em;
+	height: 100%;
+	width: 100%;
+	padding: 0 1em;
 }
 .modal {
-	--upside:-5%;
+	--upside: -5%;
 	background-color: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	z-index: calc(var(--z-modal) + 10);
@@ -40,7 +40,7 @@
 	padding: .8em 1.5em;
 	font-weight: bold;
 	border-top: 1px solid var(--header-background-color);  
-	display:flex;
+	display: flex;
 	justify-content: flex-end;
 }
 .modal_hide .modal, .modal_hide + div {
@@ -58,7 +58,7 @@
 @keyframes animateIn {
 	0% {
 		opacity: 0;
-		transform:  translateY(var(--upside));
+		transform: translateY(var(--upside));
 	}    
 	100% {
 		opacity: 1;
@@ -70,6 +70,6 @@
 	}
 	100% {
 		opacity: 0;
-		transform:  translateY(var(--upside));
+		transform: translateY(var(--upside));
 	}
 }

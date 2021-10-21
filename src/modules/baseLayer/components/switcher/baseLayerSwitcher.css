@@ -1,20 +1,20 @@
 .title {
 	font-weight: bold;
-	padding:.8em 1.5em;
+	padding: .8em 1.5em;
 }
 .baselayer__container {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	padding:.8em 1.5em;
+	padding: .8em 1.5em;
     
 }
 .baselayer__button[type="primary"] {
 	transform: scale(1.1);
-	z-index:1;
+	z-index: 1;
 }
 .baselayer__button {
-	border-radius:0em;
+	border-radius: 0em;
 	transform: scale(1);
 	flex-grow: 1;   
 	width: auto;
@@ -27,12 +27,12 @@
 	background-position: center center;
 	cursor: pointer;
 	user-select: none;
-	border:0;
+	border: 0;
 }
 .baselayer__button:hover, .baselayer__button:focus {
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-close);      
 	transform: scale(1.2);
-	z-index:2;
+	z-index: 2;
 }
 .baselayer__label {
 	display: none;
@@ -46,7 +46,7 @@
 	text-align: center;
 	min-width: 100%;
 	bottom: 0em;
-	user-select:0;
+	user-select: 0;
 }
 .baselayer__button:hover .baselayer__label, .baselayer__button:focus .baselayer__label {
 	display: block;
@@ -67,7 +67,7 @@
 	border-style: solid;
 	border-color: transparent transparent var(--primary-bg-color-05) transparent;
 	left: 50%;
-	margin-left:-.8em;
+	margin-left: -.8em;
 	top: -1.4em;
 }
 .fallback {

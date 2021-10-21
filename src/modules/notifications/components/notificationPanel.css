@@ -3,10 +3,10 @@
 	display: flex; 
 	position: fixed;
 	justify-content: center; 
-	flex-direction:column;
+	flex-direction: column;
 	bottom: 0.625em;
 	left: 1em;
 	right: 1em;
-	z-index:var(--z-notification);
+	z-index: var(--z-notification);
 	pointer-events: none; 
 }

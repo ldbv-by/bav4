@@ -20,14 +20,14 @@
 	opacity: 1;
 }
 .secondary.button:hover:enabled, .secondary.button:focus {
-	background:  var(--primary-color);
-	color:  var(--text3);
+	background: var(--primary-color);
+	color: var(--text3);
 }
 .primary.disabled {
 	opacity: 0.7;
 	cursor: not-allowed;
 	color: var(--text1);
-	background:var(--secondary-bg-color)
+	background: var(--secondary-bg-color)
 }
 .secondary.disabled {
 	opacity: 0.7;

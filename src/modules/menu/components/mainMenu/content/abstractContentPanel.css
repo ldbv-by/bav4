@@ -5,8 +5,8 @@
 	text-decoration: none;
 	overflow-wrap: break-word;
 	background: transparent;
-	border:0;
-	width:100%;
+	border: 0;
+	width: 100%;
 	text-align: left;
 }
 .ba-list-item:focus {
@@ -34,7 +34,7 @@
 }
 .ba-list-item__after {
 	display: flex;
-	padding-left:1.5em;
+	padding-left: 1.5em;
 	position: relative;
 	background: transparent;
 	border: 0;
@@ -61,10 +61,10 @@
 	flex-grow: 1;
 }
 .ba-list-item__main-text {
-	font-size:1.7rem;
+	font-size: 1.7rem;
 }
 .ba-list-item__primary-text {
-	display:block;           
+	display: block;           
 	font-size: 1rem;
 	font-weight: bold;
 }
@@ -82,15 +82,15 @@
 	width: .625em;
 }
 .icon-rotate-90 {
-	-moz-transform:rotate(90deg);
-	-webkit-transform:rotate(90deg);
-	transform:rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
 	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
 }
 .iconexpand {
-	-moz-transform:rotate(270deg);
-	-webkit-transform:rotate(270deg);
-	transform:rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
 }
 .icon-primary {
 	background: var(--primary-color);
@@ -102,20 +102,20 @@
 	position: relative;
 	mask: url('../assets/chevron-right.svg');
 	-webkit-mask-image: url('../assets/chevron-right.svg');
-	mask-image:  url('../assets/chevron-right.svg');
+	mask-image: url('../assets/chevron-right.svg');
 }
 .close {
 	position: relative;
 	mask: url('../assets/close-lg.svg');
 	-webkit-mask-image: url('../assets/close-lg.svg');
-	mask-image:  url('../assets/close-lg.svg');
-	width:1em;
+	mask-image: url('../assets/close-lg.svg');
+	width: 1em;
 }
 .info {
 	position: relative;
 	mask: url('../assets/info-lg.svg');
 	-webkit-mask-image: url('../assets/info-lg.svg');
-	mask-image:  url('../assets/info-lg.svg');
+	mask-image: url('../assets/info-lg.svg');
 	transition: all var(--animation-duration-small-open) var(--animation-easing-linea);  
 	margin-right: .2em;
 	background: var(--primary-color);
@@ -177,12 +177,12 @@
 	color: var(--primary-color);
 }
 .ba-list-item__sub-header {
-	opacity:.8;
-	margin-left:1.5em;
+	opacity: .8;
+	margin-left: 1.5em;
 }
 .ba-list-item__sub-header .ba-list-item__text {
-	padding-left:0;
-	font-size:.9rem;
+	padding-left: 0;
+	font-size: .9rem;
 }
 .ba-list-item__sub-header:hover {
 	background: none;

@@ -11,7 +11,7 @@
 	position: absolute;
 	top: 0;   
 	right: 0;
-	padding:0
+	padding: 0
 }
 .tool-container__close-button {
 	margin: 0;
@@ -22,7 +22,7 @@
 	opacity: 1;
 	font-weight: bold;
 	cursor: pointer;
-	opacity:.9;
+	opacity: .9;
 }
 .tool-container__close-button:hover {
 	opacity: 1;
@@ -35,7 +35,7 @@
 	bottom: 0;
 	right: 0;           
 	left: 0;           
-	width:100%;
+	width: 100%;
 	top: unset;
 	position: fixed;    
 	background-color: var(--primary-bg-color);
@@ -54,17 +54,17 @@
   
 .close-icon::before {
 	position: absolute;
-	content:'';
-	width:2px;
-	height:1.4em;
+	content: '';
+	width: 2px;
+	height: 1.4em;
 	background: var(--text2);
 	transform: rotate(45deg);
 }
 .close-icon::after {
 	position: absolute;
-	content:'';
-	width:2px;
-	height:1.4em;
+	content: '';
+	width: 2px;
+	height: 1.4em;
 	background: var(--text2);
 	transform: rotate(315deg);
 }

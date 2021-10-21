@@ -40,8 +40,8 @@
 
 /* @media (orientation: portrait){ */
 .is-portrait .content-panel {
-	top:-75vh;
-	height:75vh;
+	top: -75vh;
+	height: 75vh;
 	left: 0;
 	right: 0em;
 	width: auto;
