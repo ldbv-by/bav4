@@ -112,7 +112,7 @@ export class ShowCase extends BaElement {
 				if (firstVersion) {
 					return html`<div>
 							<h3>Feature-Info</h3>
-							<div style="color: white;background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
+							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
 							<div style="color: white;background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
 							<div style="display:flex"><ba-button .label=${'start routing here'}></ba-button><ba-button .label=${'finish routing here'}></ba-button></div>
 						</div>`;
