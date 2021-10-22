@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
-import { isEmptyLayer, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { getLayerById, isEmptyLayer, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
 
@@ -190,6 +190,18 @@ describe('olMapUtils', () => {
 			expect(isEmptyLayer(filledLayerMock)).toBeFalse();
 			expect(isEmptyLayer(null)).toBeTrue();
 			expect(isEmptyLayer(undefined)).toBeTrue();
+		});
+	});
+
+	describe('getLayerById', () => {
+
+		it('returns the desired layer', () => {
+			const map = new Map();
+			const olLayer = new BaseLayer({ properties: { id: 'foo' } });
+			map.addLayer(olLayer);
+
+			expect(getLayerById(map, 'foo')).toEqual(olLayer);
+			expect(getLayerById(map, 'bar')).toBeUndefined();
 		});
 	});
 });
