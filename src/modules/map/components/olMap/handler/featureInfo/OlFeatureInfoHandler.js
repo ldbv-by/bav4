@@ -1,7 +1,7 @@
-import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../../../injection';
 import { add } from '../../../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../../../utils/storeUtils';
+import { getLayerById } from '../../olMapUtils';
 import { OlMapEventHandler } from '../OlMapEventHandler';
 
 /**
@@ -17,27 +17,35 @@ export class OlFeatureInfoHandler extends OlMapEventHandler {
 
 		this._map = null;
 
-		observe(storeService.getStore(), state => state.featureInfo.coordinate, coordinate => {
+		observe(storeService.getStore(), state => state.featureInfo.coordinate, (coordinate, state) => {
 
-			//contains always one FeatureInfo currently
-			const featureInfos = this._findVectorFeature(this._map, this._map.getPixelFromCoordinate(coordinate.payload))
-				.map(feature => ({ title: feature.get('name') || null, content: feature.get('description') || null }));
-			add(featureInfos);
+			const featureInfoItems = [...state.layers.active]
+				.reverse()
+				.filter(this._getLayerFilter())
+				.map(layer => getLayerById(this._map, layer.geoResourceId))
+				.map(olLayer => this._findOlFeature(this._map, this._map.getPixelFromCoordinate(coordinate.payload), olLayer))
+				.filter(olFeature => !!olFeature)
+				.map(olFeature => ({ title: olFeature.get('name') || null, content: olFeature.get('description') || null }));
+			add(featureInfoItems);
 		});
+	}
+
+	_getLayerFilter() {
+		return layer => layer.visible && !layer.constraints.hidden;
 	}
 
 	/**
 	 * Find the closest feature from pixel in a vector layer
 	 */
-	_findVectorFeature(map, pixel) {
+	_findOlFeature(map, pixel, layer) {
 		const feature = map.forEachFeatureAtPixel(pixel, feature => {
 			//we stop detection by returning first suitable feature
 			if (feature.get('name') || feature.get('description')) {
 				return feature;
 			}
 
-		}, { layerFilter: layer => layer.getSource() instanceof VectorSource });
-		return feature ? [feature] : [];
+		}, { layerFilter: l => l === layer });
+		return feature || null;
 	}
 
 	/**
