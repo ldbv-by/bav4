@@ -41,9 +41,10 @@ export class OlMap extends MvuElement {
 			OlMeasurementHandler: measurementHandler,
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
-			OlHighlightLayerHandler: olHighlightLayerHandler
+			OlHighlightLayerHandler: olHighlightLayerHandler,
+			OlFeatureInfoHandler: olFeatureInfoHandler
 		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService',
-			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler');
+			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
@@ -51,7 +52,7 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
-		this._eventHandler = new Map();
+		this._eventHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 
 	/**
