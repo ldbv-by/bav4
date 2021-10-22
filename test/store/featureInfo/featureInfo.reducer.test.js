@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
-import { add, clear, updateCoordinate } from '../../../src/store/featureInfo/featureInfo.action.js';
+import { addFeatureInfoItems, clearFeatureInfoItems, setFeatureInfoItems, updateCoordinate } from '../../../src/store/featureInfo/featureInfo.action.js';
 
 
 describe('featureInfoReducer', () => {
@@ -17,39 +17,52 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.coordinate).toBeNull();
 	});
 
-	it('updates the \'current}\' property with object as argument', () => {
+	it('add FeatureInfo items object as argument', () => {
 		const store = setup();
 
-		add({ title: 'title0', content: 'content0' });
-		add({ title: 'title1', content: 'content1' });
+		addFeatureInfoItems({ title: 'title0', content: 'content0' });
+		addFeatureInfoItems({ title: 'title1', content: 'content1' });
 
 		expect(store.getState().featureInfo.current).toEqual([{ title: 'title1', content: 'content1' }, { title: 'title0', content: 'content0' }]);
 
-		clear();
+		clearFeatureInfoItems();
 
 		expect(store.getState().featureInfo.current).toEqual([]);
 	});
 
-	it('updates the \'current}\' property with array as argument', () => {
+	it('add FeatureInfo items array as argument', () => {
 		const store = setup();
 
-		add([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+		addFeatureInfoItems([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
 		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
-		clear();
+		clearFeatureInfoItems();
 
 		expect(store.getState().featureInfo.current).toEqual([]);
 	});
 
-	it('updates the \'current}\' property with empty array as argument', () => {
+	it('sets FeatureInfo items with object as argument', () => {
 		const store = setup();
 
-		add([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+		setFeatureInfoItems({ title: 'title0', content: 'content0' });
+		setFeatureInfoItems({ title: 'title1', content: 'content1' });
+
+		expect(store.getState().featureInfo.current).toEqual([{ title: 'title1', content: 'content1' }]);
+
+		clearFeatureInfoItems();
+
+		expect(store.getState().featureInfo.current).toEqual([]);
+	});
+
+	it('sets FeatureInfo items with array as argument', () => {
+		const store = setup();
+
+		setFeatureInfoItems([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
 		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
-		add([]);
+		setFeatureInfoItems([]);
 
 		expect(store.getState().featureInfo.current).toEqual([]);
 	});

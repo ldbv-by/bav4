@@ -2,7 +2,7 @@
  * Action creators to change/update the properties of featureInfo state.
  * @module featureInfo/action
  */
-import { COORDINATE_UPDATED, FEATURE_INFO_ADDED, FEATURE_INFO_CLEARED } from './featureInfo.reducer';
+import { COORDINATE_UPDATED, FEATURE_INFO_ADDED, FEATURE_INFO_CLEARED, FEATURE_INFO_SET } from './featureInfo.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -21,10 +21,10 @@ const getStore = () => {
 
 
 /**
-  * Adds a single or an array of {@link FeatureInfo} items
+  * Adds (appends) a single or an array of {@link FeatureInfo} items
   * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
   */
-export const add = (featureInfo) => {
+export const addFeatureInfoItems = (featureInfo) => {
 
 	const featureInfoAsArray = Array.isArray(featureInfo) ? [...featureInfo] : [featureInfo];
 
@@ -35,10 +35,24 @@ export const add = (featureInfo) => {
 };
 
 /**
+  * Sets a single or an array of {@link FeatureInfo} items
+  * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
+  */
+export const setFeatureInfoItems = (featureInfo) => {
+
+	const featureInfoAsArray = Array.isArray(featureInfo) ? [...featureInfo] : [featureInfo];
+
+	getStore().dispatch({
+		type: FEATURE_INFO_SET,
+		payload: featureInfoAsArray
+	});
+};
+
+/**
   * Removes all  {@link FeatureInfo} items
   * @param {FeatureInfo} featureInfo
   */
-export const clear = () => {
+export const clearFeatureInfoItems = () => {
 
 	getStore().dispatch({
 		type: FEATURE_INFO_CLEARED
