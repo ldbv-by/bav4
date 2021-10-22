@@ -8,7 +8,7 @@ import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
 import { $injector } from '../../../../injection';
-import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener } from './olMapUtils';
+import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener, getLayerById } from './olMapUtils';
 import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../../store/pointer/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
@@ -207,10 +207,6 @@ export class OlMap extends MvuElement {
 		//nothing to do here
 	}
 
-	_getOlLayerById(id) {
-		return this._map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
-	}
-
 	_syncStore() {
 		changeZoomCenterAndRotation({
 			zoom: this._view.getZoom(),
@@ -255,7 +251,7 @@ export class OlMap extends MvuElement {
 		};
 
 		toBeRemoved.forEach(id => {
-			const olLayer = this._getOlLayerById(id);
+			const olLayer = getLayerById(this._map, id);
 			if (olLayer) {
 				this._map.removeLayer(olLayer);
 				if (this._layerHandler.has(id)) {
@@ -288,7 +284,7 @@ export class OlMap extends MvuElement {
 
 		toBeUpdated.forEach(id => {
 			const layer = layers.find(layer => layer.geoResourceId === id);
-			const olLayer = this._getOlLayerById(id);
+			const olLayer = getLayerById(this._map, id);
 			updateOlLayer(olLayer, layer);
 			this._map.getLayers().remove(olLayer);
 			this._map.getLayers().insertAt(layer.zIndex, olLayer);
