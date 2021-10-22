@@ -35,20 +35,6 @@ export const addFeatureInfoItems = (featureInfo) => {
 };
 
 /**
-  * Sets a single or an array of {@link FeatureInfo} items
-  * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
-  */
-export const setFeatureInfoItems = (featureInfo) => {
-
-	const featureInfoAsArray = Array.isArray(featureInfo) ? [...featureInfo] : [featureInfo];
-
-	getStore().dispatch({
-		type: FEATURE_INFO_SET,
-		payload: featureInfoAsArray
-	});
-};
-
-/**
   * Removes all  {@link FeatureInfo} items
   * @param {FeatureInfo} featureInfo
   */
