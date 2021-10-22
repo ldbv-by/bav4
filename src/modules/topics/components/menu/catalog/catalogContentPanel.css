@@ -1,13 +1,13 @@
-.topic .ba-list-item__icon{
-    padding: 0.3em;
-    background: var(--primary-bg-color);
-    border: .2em solid var(--secondary-color);
+.topic .ba-list-item__icon {
+	padding: 0.3em;
+	background: var(--primary-bg-color);
+	border: .2em solid var(--secondary-color);
 }
-.topic{
-    --secondary-color: var(--topic-theme, var(--secondary-color-theme));			  		  
+.topic {
+	--secondary-color: var(--topic-theme, var(--secondary-color-theme));			  		  
 }	
-svg{
-    fill: var(--text1);
-    height: 2em;
-    width: 2em;
- }
+svg {
+	fill: var(--text1);
+	height: 2em;
+	width: 2em;
+}

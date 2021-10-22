@@ -12,12 +12,12 @@ import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/lay
 import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
-import { measurementReducer } from '../../../../../src/modules/map/store/measurement.reducer';
-import { pointerReducer } from '../../../../../src/modules/map/store/pointer.reducer';
-import { mapReducer } from '../../../../../src/modules/map/store/map.reducer';
+import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
+import { mapReducer } from '../../../../../src/store/map/map.reducer';
 import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
 import { Group as LayerGroup } from 'ol/layer';
+import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 

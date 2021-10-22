@@ -1,27 +1,26 @@
-
-.ba-list-item__text:focus{
-    box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
-  }
-  .ba-list-item ba-checkbox{ 
-    --primary-color: var(--topic-theme, var(--secondary-color));
-  }
-
-  .ba-icon-button{
-    padding: .6em !important;
-  }
-
-  ba-icon{
-    border-radius: 2em;
-    width: 2em;
-    height: 2em;
-    display: block;
-    margin: 0 .3em;
+.ba-list-item__text:focus {
+	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
 }
- ba-icon:hover{
-    background:var(--primary-color);
+.ba-list-item ba-checkbox {
+	--primary-color: var(--topic-theme, var(--secondary-color));
+}
+
+.ba-icon-button {
+	padding: .6em !important;
+}
+
+ba-icon {
+	border-radius: 2em;
+	width: 2em;
+	height: 2em;
+	display: block;
+	margin: 0 .3em;
+}
+ba-icon:hover {
+	background: var(--primary-color);
 
 }
-ba-icon:focus{
-  background:var(--primary-color);
-  box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+ba-icon:focus {
+	background: var(--primary-color);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }

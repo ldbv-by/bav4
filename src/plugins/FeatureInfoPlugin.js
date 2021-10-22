@@ -1,7 +1,7 @@
 import { observe } from '../utils/storeUtils';
-import { BaPlugin } from '../store/BaPlugin';
+import { BaPlugin } from '../plugins/BaPlugin';
 import { add, clear, updateCoordinate } from '../store/featureInfo/featureInfo.action';
-import { close, open, setTabIndex, TabIndex } from '../modules/menu/store/mainMenu.action';
+import { close, open, setTabIndex, TabIndex } from '../store/mainMenu/mainMenu.action';
 
 
 /**

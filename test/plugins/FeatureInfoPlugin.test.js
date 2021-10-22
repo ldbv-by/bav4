@@ -1,11 +1,11 @@
 import { TestUtils } from '../test-utils.js';
-import { createNoInitialStateMainMenuReducer } from '../../src/modules/menu/store/mainMenu.reducer';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { pointerReducer } from '../../src/modules/map/store/pointer.reducer';
-import { setClick } from '../../src/modules/map/store/pointer.action';
-import { setTabIndex, TabIndex } from '../../src/modules/menu/store/mainMenu.action';
+import { setClick } from '../../src/store/pointer/pointer.action';
+import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
 import { clear } from '../../src/store/featureInfo/featureInfo.action.js';
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
+import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
 
 
 describe('FeatureInfoPlugin', () => {

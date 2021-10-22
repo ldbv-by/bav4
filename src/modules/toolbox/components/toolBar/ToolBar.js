@@ -4,9 +4,9 @@ import css from './toolBar.css';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
-import { toggleToolBar } from '../../store/toolBar.action';
-import { toggleToolContainer, setContainerContent, openToolContainer } from '../../store/toolContainer.action';
 import { $injector } from '../../../../injection';
+import { openToolContainer, setContainerContent, toggleToolContainer } from '../../../../store/toolContainer/toolContainer.action';
+import { toggleToolBar } from '../../../../store/toolBar/toolBar.action';
 
 
 /**

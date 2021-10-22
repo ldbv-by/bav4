@@ -11,14 +11,16 @@ describe('MeasurementOverlay', () => {
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
-		// eslint-disable-next-line no-unused-vars
-		$injector.registerSingleton('UnitsService', { formatDistance(distance, decimals) {
-			return 'THE DISTANCE IN m';
-		},
-		// eslint-disable-next-line no-unused-vars
-		formatArea(area, decimals) {
-			return 'THE AREA IN m²';
-		} });
+		$injector.registerSingleton('UnitsService', {
+			// eslint-disable-next-line no-unused-vars
+			formatDistance(distance, decimals) {
+				return 'THE DISTANCE IN m';
+			},
+			// eslint-disable-next-line no-unused-vars
+			formatArea(area, decimals) {
+				return 'THE AREA IN m²';
+			}
+		});
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});
@@ -43,7 +45,7 @@ describe('MeasurementOverlay', () => {
 
 			expect(element.type).toBe(MeasurementOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('');
+			expect(element.value).toBe(null);
 		});
 
 		it('renders the help view', async () => {
@@ -74,9 +76,11 @@ describe('MeasurementOverlay', () => {
 
 		it('renders the area view', async () => {
 			const geodeticGeometry = new Polygon([[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]);
-			const properties = { type: MeasurementOverlayTypes.AREA,
+			const properties = {
+				type: MeasurementOverlayTypes.AREA,
 				geometry: geodeticGeometry,
-				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
+				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+			};
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
 
@@ -149,7 +153,7 @@ describe('MeasurementOverlay', () => {
 
 			expect(element.type).toBe(MeasurementOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
-			expect(element.value).toBe('');
+			expect(element.value).toBe(null);
 
 			element.type = MeasurementOverlayTypes.DISTANCE;
 

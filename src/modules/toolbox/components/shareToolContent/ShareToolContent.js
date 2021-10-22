@@ -3,8 +3,8 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
-import { openModal } from '../../../modal/store/modal.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { openModal } from '../../../../store/modal/modal.action';
 
 
 /**
