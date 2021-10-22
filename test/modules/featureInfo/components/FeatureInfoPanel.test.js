@@ -4,8 +4,8 @@ import { $injector } from '../../../../src/injection';
 import { FeatureInfoPanel } from '../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
-import { add } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { html } from 'lit-html';
+import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -118,8 +118,8 @@ describe('FeatureInfoPanel', () => {
 
 			const element = await setup();
 
-			add({ title: 'title0', content: 'content0' });
-			add({ title: 'title1', content: 'content1' });
+			addFeatureInfoItems({ title: 'title0', content: 'content0' });
+			addFeatureInfoItems({ title: 'title1', content: 'content1' });
 
 			const items = element.shadowRoot.querySelectorAll('.ba-section');
 			expect(items).toHaveSize(2);

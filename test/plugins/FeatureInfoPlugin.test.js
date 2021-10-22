@@ -2,7 +2,7 @@ import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
-import { clear } from '../../src/store/featureInfo/featureInfo.action.js';
+import { clearFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action.js';
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
@@ -58,7 +58,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
 				expect(store.getState().mainMenu.open).toBeTrue();
 
-				clear();
+				clearFeatureInfoItems();
 
 				expect(store.getState().mainMenu.tabIndex).toBe(2);
 				expect(store.getState().mainMenu.open).toBeTrue();
@@ -84,7 +84,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
 				expect(store.getState().mainMenu.open).toBeTrue();
 
-				clear();
+				clearFeatureInfoItems();
 
 				expect(store.getState().mainMenu.tabIndex).toBe(2);
 				expect(store.getState().mainMenu.open).toBeFalse();
