@@ -42,6 +42,18 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.current).toEqual([]);
 	});
 
+	it('updates the \'current}\' property with empty array as argument', () => {
+		const store = setup();
+
+		add([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+
+		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+
+		add([]);
+
+		expect(store.getState().featureInfo.current).toEqual([]);
+	});
+
 	it('updates the \'coordinate}\' property', () => {
 		const store = setup();
 

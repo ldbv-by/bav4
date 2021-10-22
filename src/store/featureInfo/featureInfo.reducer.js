@@ -21,7 +21,7 @@ export const featureInfoReducer = (state = initialState, action) => {
 		case FEATURE_INFO_ADDED:
 			return {
 				...state,
-				current: [...payload, ...state.current]
+				current: payload.length > 0 ? [...payload, ...state.current] : []
 			};
 		case FEATURE_INFO_CLEARED:
 			return {
