@@ -2,13 +2,13 @@ import { $injector } from '../../../../../../injection';
 import { add } from '../../../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../../../utils/storeUtils';
 import { getLayerById } from '../../olMapUtils';
-import { OlMapEventHandler } from '../OlMapEventHandler';
+import { OlMapHandler } from '../OlMapHandler';
 
 /**
  * @class
  * @author taulinger
  */
-export class OlFeatureInfoHandler extends OlMapEventHandler {
+export class OlFeatureInfoHandler extends OlMapHandler {
 
 	constructor() {
 		super('Feature_Info_Handler');

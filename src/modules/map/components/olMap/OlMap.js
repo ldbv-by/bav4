@@ -52,7 +52,7 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
-		this._eventHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
+		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 
 	/**
@@ -171,7 +171,7 @@ export class OlMap extends MvuElement {
 			setBeingDragged(true);
 		});
 
-		this._eventHandler.forEach(handler => {
+		this._mapHandler.forEach(handler => {
 			handler.register(this._map);
 		});
 

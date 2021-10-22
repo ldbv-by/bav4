@@ -698,7 +698,7 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._eventHandler.get('featureInfoHandlerMockId')).toEqual(featureInfoHandlerMock);
+			expect(element._mapHandler.get('featureInfoHandlerMockId')).toEqual(featureInfoHandlerMock);
 		});
 	});
 });
