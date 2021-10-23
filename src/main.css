@@ -18,7 +18,7 @@
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue)  calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / .9));
 	--brand-dark-lighter: hsl( var(--brand-hue) calc(var(--brand-saturation) / 1.2) calc(var(--brand-lightness) / 1.6));
-	--brand-secondary-dark: hsl( var(--brand-hue) calc(var(--brand-saturation) /0.3) 30%);
+	--brand-secondary-dark: hsl( var(--brand-hue) calc(var(--brand-saturation) / 0.3) 30%);
 	--text1-dark: hsl(var(--brand-hue) 15% 95%);
 	--text2-dark: hsl(var(--brand-hue) 10% 80%);
 	--text3-dark: hsl(var(--brand-hue) 0% 100%);
