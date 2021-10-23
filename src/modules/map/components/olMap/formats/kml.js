@@ -14,12 +14,14 @@ const tryRectifyingLineString = (polygonCandidate) => {
 };
 
 const sanitizeStyle = (styles) => {
+	const style = styles[0] ? styles[0] : styles;
+
 	const kmlStyleProperties = {
-		fill: styles[0].getFill(),
-		stroke: styles[0].getStroke(),
-		text: styles[0].getText(),
-		image: styles[0].getImage(),
-		zIndex: styles[0].getZIndex()
+		fill: style.getFill ? style.getFill() : null,
+		stroke: style.getStroke ? style.getStroke() : null,
+		text: style.getText ? style.getText() : null,
+		image: style.getImage ? style.getImage() : null,
+		zIndex: style.getZIndex ? style.getZIndex() : null
 	};
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
@@ -52,7 +54,6 @@ export const create = (layer, projection) => {
 			let styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
 				styles = styles(clone);
-
 				const kmlStyle = sanitizeStyle(styles);
 				clone.setStyle(kmlStyle);
 			}

@@ -1,16 +1,21 @@
 import { $injector } from '../../../../../injection';
-import { baseStyleFunction, measureStyleFunction } from '../olStyleUtils';
-
-
-
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex } from '../olStyleUtils';
 
 /**
  * @enum
  */
 export const StyleTypes = Object.freeze({
+	NULL: 'null',
 	MEASURE: 'measure',
-	DRAW: 'draw'
+	HIGHLIGHT: 'highlight',
+	HIGHLIGHT_TEMP: 'highlight_temp',
+	DRAW: 'draw',
+	MARKER: 'marker',
+	TEXT: 'text',
+	LINE: 'line',
+	POLYGON: 'polygon'
 });
+
 
 /**
  * Adds or removes styles and overlays to ol.feature.
@@ -34,6 +39,16 @@ export class StyleService {
 				break;
 			case StyleTypes.DRAW:
 				this._addBaseStyle(olFeature);
+				break;
+			case StyleTypes.TEXT:
+				this._addTextStyle(olFeature);
+				break;
+			case StyleTypes.MARKER:
+				this._addMarkerStyle(olFeature);
+				break;
+			case StyleTypes.POLYGON:
+			case StyleTypes.LINE:
+				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -64,7 +79,10 @@ export class StyleService {
 	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
-		overlayService.update(olFeature, olMap, usingStyleType, properties);
+		if (usingStyleType === StyleTypes.MEASURE) {
+			overlayService.update(olFeature, olMap, usingStyleType, properties);
+		}
+
 	}
 
 
@@ -85,10 +103,24 @@ export class StyleService {
 	 */
 	getStyleFunction(styleType) {
 		switch (styleType) {
+			case StyleTypes.NULL:
+				return nullStyleFunction;
 			case StyleTypes.MEASURE:
 				return measureStyleFunction;
+			case StyleTypes.HIGHLIGHT:
+				return highlightStyleFunction;
+			case StyleTypes.HIGHLIGHT_TEMP:
+				return highlightTemporaryStyleFunction;
+			case StyleTypes.LINE:
+				return lineStyleFunction;
+			case StyleTypes.POLYGON:
+				return polygonStyleFunction;
+			case StyleTypes.MARKER:
+				return markerStyleFunction;
+			case StyleTypes.TEXT:
+				return textStyleFunction;
 			case StyleTypes.DRAW:
-				return baseStyleFunction;
+				return nullStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -120,12 +152,55 @@ export class StyleService {
 			olMap.getView().once('change:resolution', () => olMap.once('moveend', (e) => overlayService.update(olFeature, e.map, StyleTypes.MEASURE)));
 		}
 
-		olFeature.setStyle(measureStyleFunction(olFeature));
+		olFeature.setStyle(measureStyleFunction);
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
 	}
 
+	_addTextStyle(olFeature) {
+		const styles = olFeature.getStyle();
+		const getStyleOption = () => {
+			if (typeof (styles) === 'function') {
+				const currentStyle = styles(olFeature);
+				const currentColor = currentStyle.getText().getFill().getColor();
+				const currentText = currentStyle.getText().getText();
+				const currentScale = currentStyle.getText().getScale();
+				return { color: rgbToHex(currentColor), scale: currentScale, text: currentText };
+			}
+			const currentStyle = styles[0];
+			const currentColor = currentStyle.getText().getFill().getColor();
+			const currentText = currentStyle.getText().getText();
+			const currentScale = currentStyle.getText().getScale();
+			return { color: currentColor, scale: currentScale, text: currentText };
+		};
+
+		const newStyle = textStyleFunction(getStyleOption());
+
+		olFeature.setStyle(() => newStyle);
+	}
+
+	_addMarkerStyle(olFeature) {
+
+		const getStyle = (styles) => {
+			if (typeof (styles) === 'function') {
+				return styles(olFeature)[0];
+			}
+			return styles[0];
+		};
+		const getStyleOption = (styles) => {
+			const style = getStyle(styles);
+			const color = style.getImage().getColor();
+			const symbolSrc = style.getImage().getSrc();
+			const scale = style.getImage().getScale();
+			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale };
+		};
+
+		const newStyle = markerStyleFunction(getStyleOption(olFeature.getStyle()));
+
+		olFeature.setStyle(() => newStyle);
+	}
+
 	_addBaseStyle(olFeature) {
-		olFeature.setStyle(baseStyleFunction);
+		olFeature.setStyle(nullStyleFunction);
 	}
 
 	_detectStyleType(olFeature) {
@@ -133,14 +208,27 @@ export class StyleService {
 			const regex = new RegExp('^' + type + '_');
 			return (regex.test(candidate));
 		};
-		let key;
+		const isDrawingStyleType = (type, candidate) => {
+			const regex = new RegExp('^draw_' + type + '_');
+			return (regex.test(candidate));
+		};
+
+		const getStyleTypeFromId = (id) => {
+			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
+			if (drawingType) {
+				return StyleTypes[drawingType];
+			}
+			const otherType = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+			if (otherType) {
+				return StyleTypes[otherType];
+			}
+			return null;
+		};
+
 		if (olFeature) {
 			const id = olFeature.getId();
-			key = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
-		}
 
-		if (key) {
-			return StyleTypes[key];
+			return getStyleTypeFromId(id);
 		}
 		return null;
 	}

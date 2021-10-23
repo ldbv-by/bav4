@@ -3,6 +3,7 @@ import { AbstractContentPanel } from '../../../../menu/components/mainMenu/conte
 import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';
 import { addLayer, removeLayer } from '../../../../../store/layers/layers.action';
+import infoSvg from '../assets/info.svg';
 
 
 /**
@@ -57,11 +58,9 @@ export class CatalogLeaf extends AbstractContentPanel {
 			</style>
 			<span class="ba-list-item" >		
 					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  .disabled=${!geoR} .checked=${checked} tabindex='0' .title=${title}><span>${label}</span></ba-checkbox>						
-					<button class="ba-icon-button ba-list-item__after vertical-center separator">						
-						<span  class='icon-background'>
-						 </span>
-						<i class='icon icon-secondary info'></i>
-					</button>
+					<div class="ba-icon-button ba-list-item__after vertical-center separator">									                                                                                          
+						<ba-icon .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2} .title=${translate('layerManager_move_up')} ></ba-icon>                    							 
+					</div>
 				</span>
         	`;
 		}

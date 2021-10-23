@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the properties concerning the zoom level and center of a map.
- * @module map/action
+ * @module position/action
  */
 import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED } from './position.reducer';
 import { $injector } from '../../injection';

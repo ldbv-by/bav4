@@ -1,19 +1,19 @@
 .content {
-    display: flex;
-    justify-content: normal;
-    width: 100%;
-    align-items: center;
-    padding: 0.4em 0;
+	display: flex;
+	justify-content: normal;
+	width: 100%;
+	align-items: center;
+	padding: 0.4em 0;
 }  
 
 .coordinates {
-    display: block;
+	display: block;
 }
 
 .base-layer-info {
-    display: block;
-    max-width: 30em;
-    max-height: 3em;
-    border-left: 1px dotted var(--text1);
-    padding: 0 1em;
+	display: block;
+	max-width: 30em;
+	max-height: 3em;
+	border-left: 1px dotted var(--text1);
+	padding: 0 1em;
 } 

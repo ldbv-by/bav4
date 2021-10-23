@@ -2,8 +2,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { MainMenuTabIndex } from '../../../../../menu/components/mainMenu/MainMenu';
-import { close as closeMainMenu, setTabIndex } from '../../../../../menu/store/mainMenu.action';
+import { close as closeMainMenu, setTabIndex, TabIndex } from '../../../../../../store/mainMenu/mainMenu.action';
 import itemCss from '../item.css';
 import css from './geoResourceResultItem.css';
 
@@ -71,7 +70,7 @@ export class GeoResourceResultItem extends BaElement {
 			}
 			else {
 				//switch to "maps" tab in main menu
-				setTabIndex(MainMenuTabIndex.MAPS);
+				setTabIndex(TabIndex.MAPS);
 			}
 		};
 

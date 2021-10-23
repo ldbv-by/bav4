@@ -1,7 +1,7 @@
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { GeolocationButton } from '../../../../../src/modules/map/components/geolocationButton/GeolocationButton';
-import { geolocationReducer } from '../../../../../src/modules/map/store/geolocation.reducer';
+import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer.js';
 window.customElements.define(GeolocationButton.tag, GeolocationButton);
 
 

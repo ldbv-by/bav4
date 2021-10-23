@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { setFileSaveResult } from '../../../store/measurement.action';
+import { setFileSaveResult } from '../../../../../store/measurement/measurement.action';
 
 
 /**
@@ -49,10 +49,10 @@ export class MeasurementStorageService {
 	}
 
 	/**
- 	 * Tests, whether or not the instance have a valid storage state. A valid storage state is reached
- 	 * if one or more successful FileSaveResults are received from the FileStorageService
- 	 * @returns {boolean}
- 	 */
+	   * Tests, whether or not the instance have a valid storage state. A valid storage state is reached
+	   * if one or more successful FileSaveResults are received from the FileStorageService
+	   * @returns {boolean}
+	   */
 	isValid() {
 		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
@@ -97,6 +97,7 @@ export class MeasurementStorageService {
 				}
 				catch (error) {
 					console.warn('Could not store content initially:', error);
+					setFileSaveResult(null);
 				}
 			}
 		}
