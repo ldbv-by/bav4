@@ -15,7 +15,7 @@ describe('FeatureInfoPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: 2
+				tabIndex: TabIndex.MAPS
 			},
 			...state
 		};
@@ -48,7 +48,7 @@ describe('FeatureInfoPlugin', () => {
 
 		describe('and mainMenu is initially open', () => {
 
-			it('the mainMenu state', async () => {
+			it('opens the FeatureInfo panel state', async () => {
 				const store = setup();
 				const instanceUnderTest = new FeatureInfoPlugin();
 				await instanceUnderTest.register(store);
@@ -60,17 +60,18 @@ describe('FeatureInfoPlugin', () => {
 
 				clearFeatureInfoItems();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(2);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 		});
 
 		describe('and mainMenu initially closed', () => {
 
-			it('changes the mainMenu state', async () => {
+			it('restores the previous panel', async () => {
+				const tabIndex = TabIndex.MAPS;
 				const store = setup({
 					mainMenu: {
-						tabIndex: 2,
+						tabIndex: tabIndex,
 						open: false
 					}
 				});
@@ -79,13 +80,9 @@ describe('FeatureInfoPlugin', () => {
 				addFeatureInfoItems({ title: 'title', content: 'content' });
 
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-				expect(store.getState().mainMenu.open).toBeTrue();
-
 				clearFeatureInfoItems();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(2);
+				expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
 				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});
@@ -97,7 +94,7 @@ describe('FeatureInfoPlugin', () => {
 		it('clears all previous existing featureInfo items (also initially)', async () => {
 			const store = setup({
 				mainMenu: {
-					tabIndex: 2,
+					tabIndex: TabIndex.MAPS,
 					open: false
 				},
 				featureInfo: {
