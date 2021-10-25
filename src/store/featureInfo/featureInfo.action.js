@@ -2,7 +2,7 @@
  * Action creators to change/update the properties of featureInfo state.
  * @module featureInfo/action
  */
-import { COORDINATE_UPDATED, FEATURE_INFO_ADDED, FEATURE_INFO_CLEARED, FEATURE_INFO_SET } from './featureInfo.reducer';
+import { COORDINATE_UPDATED, FEATURE_INFO_ADDED, FEATURE_INFO_CLEARED } from './featureInfo.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
