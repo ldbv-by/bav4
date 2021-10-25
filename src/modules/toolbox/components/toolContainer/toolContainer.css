@@ -18,8 +18,9 @@
     margin: 0;
     padding: 0;
     width: 3em;
-    height: 2.5em;
+    height: 2.5em;    
     border: 0;
+    background:var(--secondary-bg-color);
     opacity: 1;
     font-weight: bold;
     cursor: pointer;
