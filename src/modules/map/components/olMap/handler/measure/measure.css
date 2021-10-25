@@ -1,49 +1,49 @@
-.ba-overlay, .help, .static, .distance,.area, .floating{
-    background-color: rgba(140,140,140,0.9);
-    border-radius: 0.25em; 
-    color:var(--text3);
-    padding: 0.125em 0.5em;
-    font-size: 0.75rem;
-    cursor:default;
-    -webkit-user-select: none; 
-    -ms-user-select: none; 
-    user-select: none; 
+.ba-overlay, .help, .static, .distance,.area, .floating {
+	background-color: rgba(140,140,140,0.9);
+	border-radius: 0.25em; 
+	color: var(--text3);
+	padding: 0.125em 0.5em;
+	font-size: 0.75rem;
+	cursor: default;
+	-webkit-user-select: none; 
+	-ms-user-select: none; 
+	user-select: none; 
 }
 
-.ba-overlay:after,.static:after, .floating:after{
-    position: absolute;
-    left:50%;
-    bottom: -0.375em; 
-    margin-left: -0.25em; 
-    content:"";
-    border-top: 6px solid rgba(140,140,140,0.9); 
+.ba-overlay:after,.static:after, .floating:after {
+	position: absolute;
+	left: 50%;
+	bottom: -0.375em; 
+	margin-left: -0.25em; 
+	content: "";
+	border-top: 6px solid rgba(140,140,140,0.9); 
     
 }
 
 .partition {
-    background-color: transparent;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;    
+	background-color: transparent;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;    
 }
 
-.partition:after{
-    bottom: -14px;
-    width:8px;
-    height: 8px;
-    border-radius: 4px;
-    background-color: red;
-    margin-left: -4px;
-    border: none;
+.partition:after {
+	bottom: -14px;
+	width: 8px;
+	height: 8px;
+	border-radius: 4px;
+	background-color: red;
+	margin-left: -4px;
+	border: none;
 }
 
-.static,.distance, .area{
-    background-color: rgba(255,0,0,0.9);
-    /* cursor: move; */
+.static,.distance, .area {
+	background-color: rgba(255,0,0,0.9);
+	/* cursor: move; */
 }
 
-.static:after{
-    border-top: 6px solid #f00; /* border-bottom/left/top/right:  use px*/
+.static:after {
+	border-top: 6px solid #f00; /* border-bottom/left/top/right:  use px*/
 }
 
 .draggable {
-    cursor: move;
+	cursor: move;
 }

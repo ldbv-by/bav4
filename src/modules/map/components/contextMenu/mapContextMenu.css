@@ -1,14 +1,14 @@
 .context-menu {
-  --mouse-x: 0;
-  --mouse-y: 0;
-  display: none;
-  position: fixed;
-  margin: 0;
-  left: 0;
-  top: 0;
-  background-color: var(--primary-bg-color);
-  border: 3px solid var(--primary-color);
-  display: block;
+	--mouse-x: 0;
+	--mouse-y: 0;
+	display: none;
+	position: fixed;
+	margin: 0;
+	left: 0;
+	top: 0;
+	background-color: var(--primary-bg-color);
+	border: 3px solid var(--primary-color);
+	display: block;
 }
 
 /* sector: */
@@ -17,66 +17,66 @@
 /* 100% when used inside a translate, yields the current element width !!*/
 
 .sector-0 {
-  transform: translateX(calc(var(--mouse-x))) translateY(calc(var(--mouse-y)));
+	transform: translateX(calc(var(--mouse-x))) translateY(calc(var(--mouse-y)));
 }
 
 .sector-0:after {
-  content: '';
-  position: absolute;
-  border-top: 20px solid transparent;
-  border-left: 20px solid var(--primary-color);
-  top: -23px;
-  left: -3px;
+	content: '';
+	position: absolute;
+	border-top: 20px solid transparent;
+	border-left: 20px solid var(--primary-color);
+	top: -23px;
+	left: -3px;
 }
 
 .sector-1 {
-  transform: translateX(calc(var(--mouse-x) - 100%)) translateY(calc(var(--mouse-y)));
+	transform: translateX(calc(var(--mouse-x) - 100%)) translateY(calc(var(--mouse-y)));
 }
 
 .sector-1:after {
-  content: '';
-  position: absolute;
-  border-top: 20px solid transparent;
-  border-right: 20px solid var(--primary-color);
-  top: -23px;
-  right: -3px;
+	content: '';
+	position: absolute;
+	border-top: 20px solid transparent;
+	border-right: 20px solid var(--primary-color);
+	top: -23px;
+	right: -3px;
 }
 
 .sector-2 {
-  transform: translateX(calc(var(--mouse-x) - 100%)) translateY(calc(var(--mouse-y) - 100%));
+	transform: translateX(calc(var(--mouse-x) - 100%)) translateY(calc(var(--mouse-y) - 100%));
 }
 
 .sector-2:after {
-  content: '';
-  position: absolute;
-  border-bottom: 20px solid transparent;
-  border-right: 20px solid var(--primary-color);
-  bottom: -23px;
-  right: -3px;
+	content: '';
+	position: absolute;
+	border-bottom: 20px solid transparent;
+	border-right: 20px solid var(--primary-color);
+	bottom: -23px;
+	right: -3px;
 }
 
 .sector-3 {
-  transform: translateX(calc(var(--mouse-x))) translateY(calc(var(--mouse-y) - 100%));
+	transform: translateX(calc(var(--mouse-x))) translateY(calc(var(--mouse-y) - 100%));
 }
 
 .sector-3:after {
-  content: '';
-  position: absolute;
-  border-bottom: 20px solid transparent;
-  border-left: 20px solid var(--primary-color);
-  bottom: -23px;
-  left: -3px;
+	content: '';
+	position: absolute;
+	border-bottom: 20px solid transparent;
+	border-left: 20px solid var(--primary-color);
+	bottom: -23px;
+	left: -3px;
 }
 
 .header {
-  background-color: var(--primary-color);
-  color: var(--text3);
-  text-align: center;
-  font-size: 0.95em;
-  padding: 2px;
-  padding-bottom: 6px;
+	background-color: var(--primary-color);
+	color: var(--text3);
+	text-align: center;
+	font-size: 0.95em;
+	padding: 2px;
+	padding-bottom: 6px;
 }
 
 .close {
-  float: right;
+	float: right;
 }

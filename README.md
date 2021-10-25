@@ -65,7 +65,7 @@ Next-generation web-map viewer based on web standards.
 
 | Other | |
 |----|----|
-| `npm run lint` | Lints and fixes files |
+| `npm run lint` | Lints and fixes js and css files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
 | `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
