@@ -1,51 +1,24 @@
 import { $injector } from '../../../../../../injection';
-import { add } from '../../../../../../store/featureInfo/featureInfo.action';
+import { addFeatureInfoItems } from '../../../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../../../utils/storeUtils';
 import { getLayerById } from '../../olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
+import { getBvvFeatureInfo } from './featureInfoItem.provider';
 
 /**
+ * MapHandler that publishes FeatureInfo items from ol vector sources.
  * @class
  * @author taulinger
  */
 export class OlFeatureInfoHandler extends OlMapHandler {
 
-	constructor() {
+	constructor(featureInfoProvider = getBvvFeatureInfo) {
 		super('Feature_Info_Handler');
+
 		const { StoreService: storeService }
 			= $injector.inject('StoreService');
-
-		this._map = null;
-
-		observe(storeService.getStore(), state => state.featureInfo.coordinate, (coordinate, state) => {
-
-			const featureInfoItems = [...state.layers.active]
-				.reverse()
-				.filter(this._getLayerFilter())
-				.map(layer => getLayerById(this._map, layer.geoResourceId))
-				.map(olLayer => this._findOlFeature(this._map, this._map.getPixelFromCoordinate(coordinate.payload), olLayer))
-				.filter(olFeature => !!olFeature)
-				.map(olFeature => ({ title: olFeature.get('name') || null, content: olFeature.get('description') || null }));
-			add(featureInfoItems);
-		});
-	}
-
-	_getLayerFilter() {
-		return layer => layer.visible && !layer.constraints.hidden;
-	}
-
-	/**
-	 * Find the closest feature from pixel in a vector layer
-	 */
-	_findOlFeature(map, pixel, layer) {
-		const feature = map.forEachFeatureAtPixel(pixel, feature => {
-			//we stop detection by returning first suitable feature
-			if (feature.get('name') || feature.get('description')) {
-				return feature;
-			}
-
-		}, { layerFilter: l => l === layer });
-		return feature || null;
+		this._featureInfoProvider = featureInfoProvider;
+		this._storeService = storeService;
 	}
 
 	/**
@@ -53,6 +26,37 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	 * @override
 	 */
 	register(map) {
-		this._map = map;
+
+		//find ONE closest feature per layer
+		const findOlFeature = (map, pixel, layer) => {
+			return map.forEachFeatureAtPixel(pixel, feature => feature, { layerFilter: l => l === layer }) || null;
+		};
+
+		//use only visible and unhidden layers
+		const layerFilter = layer => layer.visible && !layer.constraints.hidden;
+
+		observe(this._storeService.getStore(), state => state.featureInfo.coordinate, (coordinate, state) => {
+
+			const featureInfoItems = [...state.layers.active]
+				.filter(layerFilter)
+				//map layer to olLayer (wrapper)
+				.map(layer => {
+					return { olLayer: getLayerById(map, layer.geoResourceId), layer: layer };
+				})
+				//map olLayer to olFeature (wrapper)
+				.map(olLayerContainer => {
+					const { layer, olLayer } = olLayerContainer;
+					return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layer: layer };
+				})
+				.filter(olFeatureContainer => !!olFeatureContainer.olFeature)
+				//map olFeature to FeatureInfo item
+				.map(olFeatureContainer => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layer))
+				.filter(featureInfo => !!featureInfo)
+				//display FeatureInfo items in the same order as layers
+				.reverse();
+
+			//Publish FeatureInfo items
+			addFeatureInfoItems(featureInfoItems);
+		});
 	}
 }

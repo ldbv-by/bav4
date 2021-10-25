@@ -5,17 +5,26 @@ import VectorSource from 'ol/source/Vector';
 import { OlFeatureInfoHandler } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../../../test-utils';
-import { updateCoordinate } from '../../../../../../../src/store/featureInfo/featureInfo.action';
+import { clearFeatureInfoItems, updateCoordinate } from '../../../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
+import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
+import { modifyLayer } from '../../../../../../../src/store/layers/layers.action';
 
 describe('OlFeatureInfoHandler', () => {
 
+	const mockFeatureInfoProvider = (olfeature, layer) => {
+		return { title: `${olfeature.get('name')}-${layer.id}`, content: `${olfeature.get('description')}` };
+	};
+	const mockNullFeatureInfoProvider = () => null;
+
 	const matchingCoordinate = fromLonLat([11, 48]);
 	const notMatchingCoordinate = fromLonLat([5, 12]);
+	let store;
 
-	const setup = (state = {}) => {
-		return TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer });
+	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
+		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer });
+		return new OlFeatureInfoHandler(featureInfoProvider);
 	};
 
 	const setupMap = () => {
@@ -33,6 +42,32 @@ describe('OlFeatureInfoHandler', () => {
 		});
 
 	};
+
+	const delay = (fn) => {
+		/**
+		 * Although tests on map are wrapped within a map.once('postrender'), we still have flaky tests.
+		 * Therefore we have to delay them a bit (100ms seems to be enough)
+		 */
+		return () => setTimeout(() => {
+			fn();
+		}, 100);
+	};
+
+	describe('constructor', () => {
+
+		it('initializes the service with custom provider', async () => {
+			setup();
+			const customProvider = async () => { };
+			const instanceUnderTest = new OlFeatureInfoHandler(customProvider);
+			expect(instanceUnderTest._featureInfoProvider).toEqual(customProvider);
+		});
+
+		it('initializes the service with default provider', async () => {
+			const instanceUnderTest = setup();
+			expect(instanceUnderTest._featureInfoProvider).toEqual(getBvvFeatureInfo);
+		});
+	});
+
 
 	it('instantiates the handler', () => {
 		setup();
@@ -54,15 +89,14 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer1 = new VectorLayer({ properties: { id: layerId1 } });
 		});
 
-		it('adds exactly one FeatureInfo per layer', () => {
-			const store = setup({
+		it('adds exactly one FeatureInfo per layer', (done) => {
+			const handler = setup({
 				layers: {
 					active: [
 						createDefaultLayer(layerId0)
 					]
 				}
-			});
-			const handler = new OlFeatureInfoHandler();
+			}, mockFeatureInfoProvider);
 			const olVectorSource = new VectorSource();
 			const geometry = new Point(matchingCoordinate);
 			const feature0 = new Feature({ geometry: geometry });
@@ -79,28 +113,29 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', () => {
+			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 
+				clearFeatureInfoItems();
 				updateCoordinate(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-			});
+				done();
+			}));
 		});
 
-		it('adds one FeatureInfo from each layer', () => {
-			const store = setup({
+		it('adds one FeatureInfo from each suitable layer', (done) => {
+			const handler = setup({
 				layers: {
 					active: [
 						createDefaultLayer(layerId0),
 						createDefaultLayer(layerId1)
 					]
 				}
-			});
-			const handler = new OlFeatureInfoHandler();
+			}, mockFeatureInfoProvider);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
@@ -121,31 +156,51 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', () => {
+			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
-				//ensure correct order of LayerInfo items, must correspond to layers.active
-				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'name1', content: 'description1' });
-				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0', content: 'description0' });
+				// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
+				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'name1-layerId1', content: 'description1' });
+				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0-layerId0', content: 'description0' });
 
+				//we update with non matching coordinates
+				clearFeatureInfoItems();
 				updateCoordinate(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-			});
+
+				updateCoordinate(matchingCoordinate);
+
+				expect(store.getState().featureInfo.current).toHaveSize(2);
+
+				// we modify the first layer so that it is not queryable anymore
+				modifyLayer(layerId0, { visible: false });
+				clearFeatureInfoItems();
+				updateCoordinate(matchingCoordinate);
+
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+
+				//we modify the second layer so that it is not queryable anymore
+				modifyLayer(layerId1, { constraints: { hidden: true } });
+				clearFeatureInfoItems();
+				updateCoordinate(matchingCoordinate);
+
+				expect(store.getState().featureInfo.current).toHaveSize(0);
+				done();
+			}));
 		});
 
-		it('adds NO FeatureInfo when properties are missing', () => {
-			const store = setup({
+		it('adds NO FeatureInfo when FeatureInfoProvider returns null', (done) => {
+			const handler = setup({
 				layers: {
 					active: [
 						createDefaultLayer(layerId0),
 						createDefaultLayer(layerId1)
 					]
 				}
-			});
-			const handler = new OlFeatureInfoHandler();
+			}, mockNullFeatureInfoProvider);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
@@ -164,55 +219,13 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', () => {
+			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-			});
-		});
-
-		it('adds FeatureInfo when feature contains a name  or a description property only', () => {
-			const store = setup({
-				layers: {
-					active: [
-						createDefaultLayer(layerId0),
-						createDefaultLayer(layerId1)
-					]
-				}
-			});
-			const handler = new OlFeatureInfoHandler();
-			const map = setupMap();
-			const geometry = new Point(matchingCoordinate);
-			const olVectorSource0 = new VectorSource();
-			const feature0 = new Feature({ geometry: geometry });
-			feature0.set('name', 'name0');
-			olVectorSource0.addFeature(feature0);
-			vectorLayer0.setSource(olVectorSource0);
-			map.addLayer(vectorLayer0);
-
-			const olVectorSource1 = new VectorSource();
-			const feature1 = new Feature({ geometry: geometry });
-			feature1.set('description', 'description1');
-			olVectorSource1.addFeature(feature1);
-			vectorLayer1.setSource(olVectorSource1);
-			map.addLayer(vectorLayer1);
-
-			handler.register(map);
-
-			map.once('postrender', () => {
-				// safe to call map.getPixelFromCoordinate from now on
-				updateCoordinate(matchingCoordinate);
-
-				expect(store.getState().featureInfo.current).toHaveSize(2);
-				//ensure correct order of LayerInfo items, must correspond to layers.active
-				expect(store.getState().featureInfo.current[0]).toEqual({ title: null, content: 'description1' });
-				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0', content: null });
-
-				updateCoordinate(notMatchingCoordinate);
-
-				expect(store.getState().featureInfo.current).toHaveSize(0);
-			});
+				done();
+			}));
 		});
 	});
 });
