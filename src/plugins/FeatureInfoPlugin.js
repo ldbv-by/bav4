@@ -1,6 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { addFeatureInfoItems, clearFeatureInfoItems, updateCoordinate } from '../store/featureInfo/featureInfo.action';
+import { clearFeatureInfoItems, updateCoordinate } from '../store/featureInfo/featureInfo.action';
 import { close, open, setTabIndex, TabIndex } from '../store/mainMenu/mainMenu.action';
 
 
@@ -22,8 +22,6 @@ export class FeatureInfoPlugin extends BaPlugin {
 			const { payload: { coordinate } } = evt;
 			clearFeatureInfoItems();
 			updateCoordinate(coordinate);
-			//Fixme: we simulate a FeatureInfo item here. Later we will call the FeatureInfoService.
-			addFeatureInfoItems({ title: 'title', content: '<p><b>Gasthaus Schloss Blumenthal</b></p>Wirtshaus, bewirtschaftete Alm<br/>Blumenthal 1 <br/>86551 Aichach a d Paar<br/><br/><b>Weitere Informationen finden Sie unter:</b><br/><a href="https://www.schloss-blumenthal.de/gasthaus-biergarten/#!/gh_main" target="_blank">Gasthaus Schloss Blumenthal</a>"' });
 		};
 
 		const onFeatureInfoChanged = current => {
