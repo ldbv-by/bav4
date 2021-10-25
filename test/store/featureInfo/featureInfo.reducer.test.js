@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, clearFeatureInfoItems, setFeatureInfoItems, updateCoordinate } from '../../../src/store/featureInfo/featureInfo.action.js';
+import { addFeatureInfoItems, clearFeatureInfoItems, updateCoordinate } from '../../../src/store/featureInfo/featureInfo.action.js';
 
 
 describe('featureInfoReducer', () => {
@@ -38,31 +38,6 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
 
 		clearFeatureInfoItems();
-
-		expect(store.getState().featureInfo.current).toEqual([]);
-	});
-
-	it('sets FeatureInfo items with object as argument', () => {
-		const store = setup();
-
-		setFeatureInfoItems({ title: 'title0', content: 'content0' });
-		setFeatureInfoItems({ title: 'title1', content: 'content1' });
-
-		expect(store.getState().featureInfo.current).toEqual([{ title: 'title1', content: 'content1' }]);
-
-		clearFeatureInfoItems();
-
-		expect(store.getState().featureInfo.current).toEqual([]);
-	});
-
-	it('sets FeatureInfo items with array as argument', () => {
-		const store = setup();
-
-		setFeatureInfoItems([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
-
-		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
-
-		setFeatureInfoItems([]);
 
 		expect(store.getState().featureInfo.current).toEqual([]);
 	});
