@@ -1,17 +1,17 @@
 .notification_item {
-  animation-name: animateIn;
-  animation-fill-mode: both;
-  animation-duration: var(--animation-duration-medium-open);
-  animation-timing-function: var(--animation-easing-open);
-  background-color: var(--primary-bg-color);   
-  box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
-  display: flex;
-  flex-direction: column;
-   margin:  .1em auto;
-   padding: 0.8em 1.5em;
-   width: -moz-min-content;
-   width: min-content;
-   min-width:25em;
+	animation-name: animateIn;
+	animation-fill-mode: both;
+	animation-duration: var(--animation-duration-medium-open);
+	animation-timing-function: var(--animation-easing-open);
+	background-color: var(--primary-bg-color);   
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+	display: flex;
+	flex-direction: column;
+	margin: .1em auto;
+	padding: 0.8em 1.5em;
+	width: -moz-min-content;
+	width: min-content;
+	min-width: 25em;
 }
 
 .notification_content{
