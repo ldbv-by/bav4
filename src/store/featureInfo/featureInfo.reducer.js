@@ -1,5 +1,4 @@
 export const FEATURE_INFO_ADDED = 'featureInfo/added';
-export const FEATURE_INFO_SET = 'featureInfo/set';
 export const FEATURE_INFO_CLEARED = 'featureInfo/cleared';
 export const COORDINATE_UPDATED = 'featureInfo/coordinate/updated';
 
@@ -23,11 +22,6 @@ export const featureInfoReducer = (state = initialState, action) => {
 			return {
 				...state,
 				current: [...payload, ...state.current]
-			};
-		case FEATURE_INFO_SET:
-			return {
-				...state,
-				current: [...payload]
 			};
 		case FEATURE_INFO_CLEARED:
 			return {
