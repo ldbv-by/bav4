@@ -28,7 +28,7 @@ describe('FeatureInfoPlugin', () => {
 		return store;
 	};
 
-	describe('when pointer click property changes', () => {
+	describe('when pointer.click property changes', () => {
 
 		it('clears all previous existing featureInfo items and updates the coordinate property', async () => {
 			const coordinate = [11, 22];
@@ -44,9 +44,9 @@ describe('FeatureInfoPlugin', () => {
 		});
 	});
 
-	describe('when featureInfo current property changes', () => {
+	describe('when featureInfo.current property changes', () => {
 
-		describe('and mainMenu is initially open', () => {
+		describe('and MainMenu is initially open', () => {
 
 			it('opens the FeatureInfo panel state', async () => {
 				const store = setup();
@@ -65,7 +65,7 @@ describe('FeatureInfoPlugin', () => {
 			});
 		});
 
-		describe('and mainMenu initially closed', () => {
+		describe('and MainMenu is initially closed', () => {
 
 			it('restores the previous panel', async () => {
 				const tabIndex = TabIndex.MAPS;
@@ -89,7 +89,7 @@ describe('FeatureInfoPlugin', () => {
 	});
 
 
-	describe('when tabIndex changes', () => {
+	describe('when mainMenu.tabIndex changes', () => {
 
 		it('clears all previous existing featureInfo items (also initially)', async () => {
 			const store = setup({
