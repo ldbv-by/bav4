@@ -5,6 +5,7 @@ import { setIndex } from '../../../../../store/topicsContentPanel/topicsContentP
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { TopicsContentPanelIndex } from '../TopicsContentPanel';
 import css from './catalogContentPanel.css';
+import arrowLeftShort from '../assets/arrowLeftShort.svg';
 
 
 /**
@@ -134,18 +135,13 @@ export class CatalogContentPanel extends AbstractContentPanel {
 			${css}
 			</style>
 			<div class="catalog-content-panel">
-			<button class="ba-list-item" @click=${changeIndex}>
-				<span class="ba-list-item__text">${translate('topics_catalog_panel_change_topic')}</span>			
-				<span class="ba-list-item__after">
-				<span class="arrow arrow-left"></span>
-				</span>
-			</button>
-			<span class="topic ba-list-item ba-list-inline ba-list-item__header">
-				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon">						
-					${renderTopicIcon(topic)}
-					</span>				
-				</span>
+			<span @click=${changeIndex} .title=${translate('topics_catalog_panel_change_topic')} class="topic ba-list-item ba-list-inline ba-list-item__header">
+				<span class="ba-list-item__pre back-icon">
+					<ba-icon  .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
+				</span>				
+				<span class="ba-list-item__icon topic-icon">						
+						${renderTopicIcon(topic)}
+				</span>												
 				<span class="ba-list-item__text vertical-center">
 					<span class="ba-list-item__main-text">${label}</span>					
 				</span>
