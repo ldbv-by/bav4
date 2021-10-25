@@ -12,13 +12,13 @@ import { BaPlugin } from './BaPlugin';
  */
 export class NotificationPlugin extends BaPlugin {
 
-    /**
+	/**
      * @override
      * @param {Store} store
      */
-    async register(store) {
-        observe(store, state => state.pointer.beingDragged, () => emitFixedNotification(null));
-        observe(store, state => state.pointer.contextClick, () => emitFixedNotification(null));
-        observe(store, state => state.pointer.click, () => emitFixedNotification(null));
-    }
+	async register(store) {
+		observe(store, state => state.pointer.beingDragged, () => emitFixedNotification(null));
+		observe(store, state => state.pointer.contextClick, () => emitFixedNotification(null));
+		observe(store, state => state.pointer.click, () => emitFixedNotification(null));
+	}
 }
