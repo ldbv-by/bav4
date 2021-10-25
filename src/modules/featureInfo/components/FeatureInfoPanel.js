@@ -60,7 +60,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">
 						<span class="ba-list-item__main-text" style='position:relative;left:-1em;'>	
-							Punkt-Info
+							${translate('featureInfo_header')}
 						</span>					
 					</span>
 					<span class="ba-icon-button ba-list-item__after vertical-center separator" style='padding-right: 1.5em;'>											

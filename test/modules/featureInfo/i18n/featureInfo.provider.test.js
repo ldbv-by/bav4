@@ -8,6 +8,7 @@ describe('i18n for featureInfo module', () => {
 		const map = provide('de');
 
 		expect(map.featureInfo_close_button).toBe('Schließen');
+		expect(map.featureInfo_header).toBe('Objekt-Info');
 	});
 
 	it('provides translation for en', () => {
@@ -15,10 +16,11 @@ describe('i18n for featureInfo module', () => {
 		const map = provide('en');
 
 		expect(map.featureInfo_close_button).toBe('Close');
+		expect(map.featureInfo_header).toBe('Object Information');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

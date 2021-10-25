@@ -63,14 +63,16 @@ describe('FeatureInfoPanel', () => {
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
 				const items = element.shadowRoot.querySelectorAll('.ba-section');
+				const header = element.shadowRoot.querySelector('.ba-list-item__main-text');
 
 				expect(button.title).toBe('featureInfo_close_button');
 				expect(container).toHaveSize(1);
 				expect(items).toHaveSize(2);
-				expect(items.item(0).querySelector('.ba-list-item__text').textContent).toBe('title0');
-				expect(items.item(0).querySelector('.collapse-content').textContent).toContain('content0');
-				expect(items.item(1).querySelector('.ba-list-item__text').textContent).toBe('title1');
-				expect(items.item(1).querySelector('.collapse-content').textContent).toContain('content1');
+				expect(items.item(0).querySelector('.ba-list-item__text').innerText).toBe('title0');
+				expect(items.item(0).querySelector('.collapse-content').innerText).toBe('content0');
+				expect(items.item(1).querySelector('.ba-list-item__text').innerText).toBe('title1');
+				expect(items.item(1).querySelector('.collapse-content').innerText).toBe('content1');
+				expect(header.innerText).toBe('featureInfo_header');
 			});
 		});
 	});
