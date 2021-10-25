@@ -2,8 +2,9 @@
 import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);

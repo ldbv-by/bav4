@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
-import { LevelTypes } from '../../../store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../store/notifications/notifications.action';
 import css from './notificationItem.css';
 import { MvuElement } from '../../MvuElement';
 
@@ -10,6 +10,11 @@ export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 
 const Update_Notification = 'update_notification';
 const Update_Is_Fixed = 'update_is_fixed';
+/**
+ * Element to display a notification
+ * @class
+ * @author thiloSchlemmer
+ */
 export class NotificationItem extends MvuElement {
 	constructor() {
 		super({

@@ -1,7 +1,7 @@
 import { NotificationPanel } from '../../../../src/modules/notifications/components/NotificationPanel';
 import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../../src/modules/notifications/components/NotificationItem';
-import { LevelTypes, notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { emitNotification } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';

@@ -7,8 +7,7 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
-import { emitNotification } from '../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 
 /**

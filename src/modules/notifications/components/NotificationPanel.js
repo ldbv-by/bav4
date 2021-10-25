@@ -4,7 +4,7 @@ import { $injector } from '../../../injection';
 import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
 import css from './notificationPanel.css';
 import { MvuElement } from '../../MvuElement';
-import { LevelTypes } from '../../../store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../store/notifications/notifications.action';
 
 
 const Notification_Autoclose_Time = 10000;

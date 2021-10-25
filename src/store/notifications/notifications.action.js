@@ -2,6 +2,18 @@ import { NOTIFICATION_ADDED } from './notifications.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
+/**
+ * Enum for notification levels.
+ * @readonly
+ * @enum {string}
+ */
+export const LevelTypes = Object.freeze({
+	INFO: Symbol.for('info'),
+	WARN: Symbol.for('warn'),
+	ERROR: Symbol.for('error'),
+	CUSTOM: Symbol.for('custom')
+});
+
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
 	return StoreService.getStore();

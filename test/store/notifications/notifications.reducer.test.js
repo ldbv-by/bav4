@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils';
-import { LevelTypes, notificationReducer } from '../../../src/store/notifications/notifications.reducer';
-import { emitNotification } from '../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../src/store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../src/store/notifications/notifications.action';
 
 
 describe('notificationReducer', () => {

@@ -1,8 +1,9 @@
 import { NotificationItem } from '../../../../src/modules/notifications/components/NotificationItem';
-import { LevelTypes, notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { html } from 'lit-html';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
