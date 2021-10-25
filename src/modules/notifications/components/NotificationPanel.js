@@ -49,12 +49,8 @@ export class NotificationPanel extends MvuElement {
 			}
 
 		};
-		const empty = { payload: null, id: 0 };
 
 		this.observe(state => state.notifications.latest, onLatestChanged);
-		this.observe(state => state.pointer.beingDragged, () => this.signal(Update_Fixed_Notification, empty));
-		this.observe(state => state.pointer.contextClick, () => this.signal(Update_Fixed_Notification, empty));
-		this.observe(state => state.pointer.click, () => this.signal(Update_Fixed_Notification, empty));
 	}
 
 	update(type, data, model) {

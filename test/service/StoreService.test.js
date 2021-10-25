@@ -14,6 +14,11 @@ describe('StoreService', () => {
 		const measurementPluginMock = {
 			register: () => { }
 		};
+
+		const notificationPluginMock = {
+			register: () => { }
+		};
+
 		const drawPluginMock = {
 			register: () => { }
 		};
@@ -50,6 +55,7 @@ describe('StoreService', () => {
 				.registerSingleton('TopicsService', topicsServiceMock)
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
+				.registerSingleton('NotificationPlugin', notificationPluginMock)
 				.registerSingleton('DrawPlugin', drawPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
