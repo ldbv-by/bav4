@@ -1,5 +1,4 @@
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { MapBrowserEvent } from 'ol';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
