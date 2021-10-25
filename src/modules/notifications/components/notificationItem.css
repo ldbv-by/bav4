@@ -14,53 +14,53 @@
 	min-width: 25em;
 }
 
-.notification_content{
-  pointer-events: all;
+.notification_content {
+	pointer-events: all;
 }
 
 .notification_fixed {
-  border: .2em solid var(--primary-color);
+	border: .2em solid var(--primary-color);
 }
 
 .notification_info {
-  border-left: .2em solid var(--info-color);
+	border-left: .2em solid var(--info-color);
 }
-.notification_warn{
-  border-left: .2em solid var(--warning-color);
+.notification_warn {
+	border-left: .2em solid var(--warning-color);
 }
-.notification_error{
-  border-left: .2em solid var(--error-color);
+.notification_error {
+	border-left: .2em solid var(--error-color);
 }
-.notification_info .notification_level{
-  color:var(--info-color);
+.notification_info .notification_level {
+	color: var(--info-color);
 }
-.notification_warn .notification_level{
-  color:var(--warning-color);
+.notification_warn .notification_level {
+	color: var(--warning-color);
 }
-.notification_error .notification_level{
-  color:var(--error-color);
+.notification_error .notification_level {
+	color: var(--error-color);
 }
-.notification_item_hide{
-    animation-name: animateOut;
-    animation-fill-mode: both;
-    animation-duration: var(--animation-duration-medium-close);
-    animation-timing-function: var(--animation-easing-close);
+.notification_item_hide {
+	animation-name: animateOut;
+	animation-fill-mode: both;
+	animation-duration: var(--animation-duration-medium-close);
+	animation-timing-function: var(--animation-easing-close);
 }
-@keyframes animateIn{
-    0% {
-      opacity:0;
-      transform: translateY(200%);
-    }
-    100% {
-        opacity:1;   
-      }
-   }
-  @keyframes animateOut{
-    0% {
-      opacity:1;   
-    }
-    100% {       
-      opacity:0;      
-      transform: translateY(200%);
-    }
-  }
+@keyframes animateIn {
+	0% {
+		opacity: 0;
+		transform: translateY(200%);
+	}
+	100% {
+		opacity: 1;   
+	}
+}
+@keyframes animateOut {
+	0% {
+		opacity: 1;   
+	}
+	100% {
+		opacity: 0;      
+		transform: translateY(200%);
+	}
+}
