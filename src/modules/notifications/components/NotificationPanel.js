@@ -33,9 +33,6 @@ export class NotificationPanel extends MvuElement {
 	}
 
 	onInitialize() {
-		const { notifications, lastNotification } = this.getModel();
-		const hasNotification = (candidate) => notifications.find(old => old.id === candidate.id);
-
 		const onLatestChanged = (notification) => {
 			if (notification) {
 				const level = notification.payload.level;
@@ -46,9 +43,7 @@ export class NotificationPanel extends MvuElement {
 					case LevelTypes.INFO:
 					case LevelTypes.WARN:
 					case LevelTypes.ERROR:
-						if (!hasNotification(notification) && lastNotification !== notification) {
-							this.signal(Update_Notifications, notification);
-						}
+						this.signal(Update_Notifications, notification);
 						break;
 				}
 			}

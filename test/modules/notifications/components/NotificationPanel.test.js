@@ -1,7 +1,7 @@
 import { NotificationPanel } from '../../../../src/modules/notifications/components/NotificationPanel';
 import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../../src/modules/notifications/components/NotificationItem';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { emitFixedNotification, emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -42,7 +42,6 @@ describe('NotificationPanel', () => {
 		const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 		expect(notificationElement).toBeTruthy();
 	});
-
 
 	it('adds another NotificationItem, when a notification is emitted', async () => {
 		const element = await setup();
@@ -116,13 +115,13 @@ describe('NotificationPanel', () => {
 		expect(notificationElements.length).toBe(1);
 	});
 
-	it('uses the default constant, when a permanent notification is emitted', async () => {
+	it('uses the default constant, when a fixed notification is emitted', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
 		expect(element._model.notifications.length).toBe(0);
 
-		emitNotification('fooBar', LevelTypes.INFO, true);
+		emitFixedNotification('fooBar');
 
 		const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 		expect(notificationElement).toBeTruthy();
