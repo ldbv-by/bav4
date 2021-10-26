@@ -78,7 +78,7 @@ export class NotificationPanel extends MvuElement {
 		const { notifications, fixedNotification, autocloseTime } = model;
 
 		const createNotificationItem = (notification, index) => {
-			const item = { ...notification, index: index, autocloseTime: notification.permanent ? NOTIFICATION_AUTOCLOSE_TIME_NEVER : autocloseTime };
+			const item = { ...notification, index: index, autocloseTime: autocloseTime };
 			return html`<ba-notification-item .content=${item} .onClose=${(event) => this.signal(Update_Remove_Notification, event)}></ba-notification-item>`;
 		};
 

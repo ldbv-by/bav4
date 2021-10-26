@@ -42,8 +42,9 @@ export const emitNotification = (content, level) => {
 
 /**
  * Emits a new fixed notification to the system
- * @param {TemplateResult} content The notification content as a lit-html TemplateResult.
-  */
+ * @param {TemplateResult|null} content The notification content as a lit-html TemplateResult.
+ * content === null signals to close the existing fixedNotification
+*/
 export const emitFixedNotification = (content) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
