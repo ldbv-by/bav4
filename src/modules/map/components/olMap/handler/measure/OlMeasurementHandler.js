@@ -224,6 +224,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._dragPan);
 
 			this._storedContent = null;
+			if (this._environmentService.isTouch()) {
+				this._simulateClickEvent();
+			}
 		}
 		return this._vectorLayer;
 	}

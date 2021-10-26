@@ -222,6 +222,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
+		if (this._environmentService.isTouch()) {
+			this._simulateClickEvent();
+		}
 
 		return this._vectorLayer;
 	}
@@ -325,6 +328,9 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
+			if (this._environmentService.isTouch()) {
+				this._simulateClickEvent();
+			}
 		}
 
 	}
