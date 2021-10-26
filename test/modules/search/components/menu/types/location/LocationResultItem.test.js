@@ -1,7 +1,7 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HightlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
@@ -73,7 +73,7 @@ describe('LocationResultItem', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.temporaryFeature.data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.temporaryFeature.type).toBe(HightlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.temporaryFeature.type).toBe(HighlightFeatureTypes.DEFAULT);
 			});
 		});
 
@@ -135,7 +135,7 @@ describe('LocationResultItem', () => {
 
 					expect(store.getState().highlight.temporaryFeature).toBeNull();
 					expect(store.getState().highlight.feature.data.coordinate).toEqual(coordinate);
-					expect(store.getState().highlight.feature.type).toBe(HightlightFeatureTypes.DEFAULT);
+					expect(store.getState().highlight.feature.type).toBe(HighlightFeatureTypes.DEFAULT);
 				});
 
 				it('fits the map by a coordinate', async () => {

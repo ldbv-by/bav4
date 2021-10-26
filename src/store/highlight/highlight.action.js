@@ -8,35 +8,35 @@ import { $injector } from '../../injection';
 
 /**
  * Contains information for highlighting a position or an area in a map.
- * @typedef {Object} HightlightFeature
- * @property {HightlightFeatureTypes} type  The type of this feature.
- * @property {HightlightCoordinate|HightlightGeometry} data The data which can be a coordinate or a geometry
+ * @typedef {Object} HighlightFeature
+ * @property {HighlightFeatureTypes} type  The type of this feature.
+ * @property {HighlightCoordinate|HighlightGeometry} data The data which can be a coordinate or a geometry
  * @property {string} [label] Optional text
  *
  */
 
 /**
- * Coordinate data for a {@link HightlightFeature}
- * @typedef {Object} HightlightCoordinate
+ * Coordinate data for a {@link HighlightFeature}
+ * @typedef {Object} HighlightCoordinate
  * @property {Coordinate} coordinate
  */
 
 /**
- * Geometry data for a {@link HightlightFeature}
- * @typedef {Object} HightlightGeometry
+ * Geometry data for a {@link HighlightFeature}
+ * @typedef {Object} HighlightGeometry
  * @property {object|string} geometry Geometry (e.g. geoJson, WKT)
- * @property {HightlightFeatureGeometryTypes} geometryType the type of the geometry
+ * @property {HighlightFeatureGeometryTypes} geometryType the type of the geometry
  */
 
-export const HightlightFeatureTypes = Object.freeze({
+export const HighlightFeatureTypes = Object.freeze({
 	DEFAULT: 0
 });
 
 /**
- * Type of a {@link HightlightGeometry}
+ * Type of a {@link HighlightGeometry}
  * @enum
  */
-export const HightlightGeometryTypes = Object.freeze({
+export const HighlightGeometryTypes = Object.freeze({
 	WKT: 0
 });
 
@@ -48,8 +48,8 @@ const getStore = () => {
 };
 
 /**
- * Sets the {@link HightlightFeature}.
- * @param {HightlightFeature} feature
+ * Sets the {@link HighlightFeature}.
+ * @param {HighlightFeature} feature
  * @function
  */
 export const setHighlightFeature = (feature) => {
@@ -59,7 +59,7 @@ export const setHighlightFeature = (feature) => {
 	});
 };
 /**
- * Removes the {@link HightlightFeature}
+ * Removes the {@link HighlightFeature}
  * @function
  */
 export const removeHighlightFeature = () => {
@@ -70,8 +70,8 @@ export const removeHighlightFeature = () => {
 };
 
 /**
- * Sets the secondary {@link HightlightFeature}.
- * @param {HightlightFeature} feature
+ * Sets the secondary {@link HighlightFeature}.
+ * @param {HighlightFeature} feature
  * @function
  */
 export const setTemporaryHighlightFeature = (feature) => {
@@ -82,7 +82,7 @@ export const setTemporaryHighlightFeature = (feature) => {
 };
 
 /**
- * Removes the secondary {@link HightlightFeature}.
+ * Removes the secondary {@link HighlightFeature}.
  * @function
  */
 export const removeTemporaryHighlightFeature = () => {
@@ -93,7 +93,7 @@ export const removeTemporaryHighlightFeature = () => {
 };
 
 /**
- * Removes both the permanent and the secondary {@link HightlightFeature}
+ * Removes both the permanent and the secondary {@link HighlightFeature}
  * @function
  */
 export const clearHighlightFeatures = () => {

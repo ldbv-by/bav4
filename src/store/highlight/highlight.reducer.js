@@ -5,11 +5,11 @@ export const CLEAR_FEATURES = 'highlight/clear';
 export const initialState = {
 
 	/**
-	 * @property {HightlightFeature|null}
+	 * @property {HighlightFeature|null}
 	 */
 	feature: null,
 	/**
-	 * @property {HightlightFeature|null}
+	 * @property {HighlightFeature|null}
 	 */
 	temporaryFeature: null,
 	/**

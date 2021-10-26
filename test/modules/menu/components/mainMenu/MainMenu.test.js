@@ -10,7 +10,7 @@ import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/Dev
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HightlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureTypes, setHighlightFeature } from '../../../../../src/store/highlight/highlight.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 
@@ -253,7 +253,7 @@ describe('MainMenu', () => {
 
 		it('clears highlight features', async () => {
 			await setup();
-			const highlightFeature = { type: HightlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+			const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
 
 			setHighlightFeature(highlightFeature);
 
