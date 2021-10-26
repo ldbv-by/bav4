@@ -7,11 +7,11 @@ export const initialState = {
 	/**
 	 * @property {HighlightFeature|null}
 	 */
-	feature: null,
+	features: [],
 	/**
 	 * @property {HighlightFeature|null}
 	 */
-	temporaryFeature: null,
+	temporaryFeatures: [],
 	/**
 	 * @property {boolean}
 	 */
@@ -24,21 +24,21 @@ export const highlightReducer = (state = initialState, action) => {
 	switch (type) {
 		case FEATURE_CHANGED: {
 
-			const active = !!payload || !!state.temporaryFeature;
+			const active = (!!payload.length || !!state.temporaryFeatures.length);
 
 			return {
 				...state,
-				feature: payload,
+				features: [...payload],
 				active: active
 			};
 		}
 		case SECONDARY_FEATURE_CHANGED: {
 
-			const active = !!payload || !!state.feature;
+			const active = (!!payload.length || !!state.features.length);
 
 			return {
 				...state,
-				temporaryFeature: payload,
+				temporaryFeatures: [...payload],
 				active: active
 			};
 		}
@@ -46,8 +46,8 @@ export const highlightReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				feature: null,
-				temporaryFeature: null,
+				features: [],
+				temporaryFeatures: [],
 				active: false
 			};
 		}

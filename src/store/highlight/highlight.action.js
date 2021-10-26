@@ -48,14 +48,15 @@ const getStore = () => {
 };
 
 /**
- * Sets the {@link HighlightFeature}.
- * @param {HighlightFeature} feature
- * @function
- */
+* Sets a single or an array of {@link HighlightFeature}.
+* @param {Array.<HighlightFeature>|HighlightFeature} features
+* @function
+*/
 export const setHighlightFeature = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
 		type: FEATURE_CHANGED,
-		payload: feature
+		payload: featureAsArray
 	});
 };
 /**
@@ -65,19 +66,20 @@ export const setHighlightFeature = (feature) => {
 export const removeHighlightFeature = () => {
 	getStore().dispatch({
 		type: FEATURE_CHANGED,
-		payload: null
+		payload: []
 	});
 };
 
 /**
- * Sets the secondary {@link HighlightFeature}.
+ * Sets a single or an array of secondary {@link HighlightFeature}.
  * @param {HighlightFeature} feature
  * @function
  */
 export const setTemporaryHighlightFeature = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
 		type: SECONDARY_FEATURE_CHANGED,
-		payload: feature
+		payload: featureAsArray
 	});
 };
 
@@ -88,7 +90,7 @@ export const setTemporaryHighlightFeature = (feature) => {
 export const removeTemporaryHighlightFeature = () => {
 	getStore().dispatch({
 		type: SECONDARY_FEATURE_CHANGED,
-		payload: null
+		payload: []
 	});
 };
 
