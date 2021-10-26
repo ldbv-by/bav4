@@ -67,6 +67,7 @@ export class StoreService {
 				TopicsPlugin: topicsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
+				NotificationPlugin: notificationPlugin,
 				DrawPlugin: drawPlugin,
 				PositionPlugin: positionPlugin,
 				ContextClickPlugin: contextClickPlugin,
@@ -80,6 +81,7 @@ export class StoreService {
 					'LayersPlugin',
 					'GeolocationPlugin',
 					'MeasurementPlugin',
+					'NotificationPlugin',
 					'DrawPlugin',
 					'PositionPlugin',
 					'ContextClickPlugin',
@@ -96,6 +98,7 @@ export class StoreService {
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
+				await notificationPlugin.register(this._store);
 				await drawPlugin.register(this._store);
 				await geolocationPlugin.register(this._store);
 				await contextClickPlugin.register(this._store);

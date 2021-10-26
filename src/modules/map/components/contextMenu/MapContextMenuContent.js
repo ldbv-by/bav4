@@ -3,8 +3,7 @@ import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import { MvuElement } from '../../../MvuElement';
-import { emitNotification } from '../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Coordinate = 'update_coordinate';
 const Update_Altitude = 'update_altitude';

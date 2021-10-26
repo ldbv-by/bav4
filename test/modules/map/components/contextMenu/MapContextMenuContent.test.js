@@ -2,8 +2,9 @@
 import { MapContextMenuContent } from '../../../../../src/modules/map/components/contextMenu/MapContextMenuContent';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { LevelTypes, notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
@@ -117,8 +118,8 @@ describe('OlMapContextMenuContent', () => {
 			expect(copyToClipboardMock).toHaveBeenCalledWith(stringifiedCoord);
 			setTimeout(() => {
 				//check notification
-				expect(store.getState().notifications.notification.payload.message).toBe(`"${stringifiedCoord}" map_contextMenuContent_clipboard_success`);
-				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.INFO);
+				expect(store.getState().notifications.latest.payload.content).toBe(`"${stringifiedCoord}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				done();
 			});
 		});
@@ -140,8 +141,8 @@ describe('OlMapContextMenuContent', () => {
 			copyIcon.click();
 
 			setTimeout(() => {
-				expect(store.getState().notifications.notification.payload.message).toBe('map_contextMenuContent_clipboard_error');
-				expect(store.getState().notifications.notification.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 				done();
 			});
