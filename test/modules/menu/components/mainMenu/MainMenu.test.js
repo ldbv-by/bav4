@@ -257,15 +257,15 @@ describe('MainMenu', () => {
 
 			setHighlightFeature(highlightFeature);
 
-			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+			expect(store.getState().highlight.features).toEqual([highlightFeature]);
 
 			setTabIndex(TabIndex.SEARCH);
 
-			expect(store.getState().highlight.feature).toEqual(highlightFeature);
+			expect(store.getState().highlight.features).toEqual([highlightFeature]);
 
 			setTabIndex(TabIndex.MAPS);
 
-			expect(store.getState().highlight.feature).toBeNull();
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 

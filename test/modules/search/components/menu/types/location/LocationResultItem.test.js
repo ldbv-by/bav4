@@ -72,8 +72,8 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.temporaryFeature.data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.temporaryFeature.type).toBe(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.temporaryFeatures[0].data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.temporaryFeatures[0].type).toBe(HighlightFeatureTypes.DEFAULT);
 			});
 		});
 
@@ -85,7 +85,8 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
 				const element = await setup({
 					highlight: {
-						temporaryFeature: { data: coordinate }
+						temporaryFeatures: [{ data: coordinate }],
+						features: []
 					}
 				});
 				element.data = data;
@@ -94,7 +95,7 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.temporaryFeature).toBeNull();
+				expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
 			});
 		});
 
@@ -110,8 +111,8 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate, extent);
 				const element = await setup({
 					highlight: {
-						feature: { data: coordinate },
-						temporaryFeature: { data: previousCoordinate }
+						features: [{ data: coordinate }],
+						temporaryFeatures: [{ data: previousCoordinate }]
 					},
 					mainMenu: {
 						open: true
@@ -133,9 +134,9 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeature).toBeNull();
-					expect(store.getState().highlight.feature.data.coordinate).toEqual(coordinate);
-					expect(store.getState().highlight.feature.type).toBe(HighlightFeatureTypes.DEFAULT);
+					expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
+					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
 				});
 
 				it('fits the map by a coordinate', async () => {
@@ -159,8 +160,8 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeature).toBeNull();
-					expect(store.getState().highlight.feature).toBeNull();
+					expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
+					expect(store.getState().highlight.features).toHaveSize(0);
 				});
 
 				it('fits the map by an extent', async () => {

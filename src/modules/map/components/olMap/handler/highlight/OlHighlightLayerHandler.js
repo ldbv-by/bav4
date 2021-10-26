@@ -12,6 +12,8 @@ import { nullStyleFunction } from '../highlight/StyleUtils';
 
 /**
  * Handler for displaying highlighted features
+ * @author thiloSchlemmer
+ * @author taulinger
  */
 export class OlHighlightLayerHandler extends OlLayerHandler {
 
@@ -38,14 +40,14 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 		const { highlight } = this._storeService.getStore().getState();
 
-		if (highlight.feature) {
-			const featureCoords = highlight.feature.data.coordinate;
+		if (highlight.features.length) {
+			const featureCoords = highlight.features[0].data.coordinate;
 			this._feature.setStyle(highlightFeatureStyleFunction);
 			this._feature.setGeometry(new Point(featureCoords));
 		}
 
-		if (highlight.temporaryFeature) {
-			const temporaryFeatureCoords = highlight.temporaryFeature.data.coordinate;
+		if (highlight.temporaryFeatures.length) {
+			const temporaryFeatureCoords = highlight.temporaryFeatures[0].data.coordinate;
 			this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
 		}
@@ -83,22 +85,22 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				return false;
 			}
 
-			return highlight.feature || highlight.temporaryFeature;
+			return !!highlight.features.length || !!highlight.temporaryFeatures.length;
 		};
 
 		const onChange = (changedState, stateSnapshot) => {
 			if (isValidHighlight(changedState)) {
 
-				if (changedState.feature) {
-					const coord = changedState.feature.data.coordinate;
+				if (changedState.features.length) {
+					const coord = changedState.features[0].data.coordinate;
 					this._feature.setStyle(highlightFeatureStyleFunction);
 					this._feature.setGeometry(new Point(coord));
 				}
 				else {
 					this._feature.setStyle(nullStyleFunction);
 				}
-				if (changedState.temporaryFeature) {
-					const coord = changedState.temporaryFeature.data.coordinate;
+				if (changedState.temporaryFeatures.length) {
+					const coord = changedState.temporaryFeatures[0].data.coordinate;
 					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 					this._temporaryFeature.setGeometry(new Point(coord));
 				}

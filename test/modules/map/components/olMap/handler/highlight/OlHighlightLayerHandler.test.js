@@ -12,8 +12,8 @@ describe('OlHighlightLayerHandler', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialState = {
 		active: false,
-		feature: null,
-		temporaryFeature: null
+		features: [],
+		temporaryFeatures: []
 	};
 
 	const setup = (state = initialState) => {
@@ -68,7 +68,7 @@ describe('OlHighlightLayerHandler', () => {
 
 		it('sets highlight feature', () => {
 			const highlightFeature = { data: { coordinate: [1, 0] } };
-			const state = { ...initialState, active: true, feature: highlightFeature };
+			const state = { ...initialState, active: true, features: [highlightFeature] };
 			const map = setupMap();
 			setup(state);
 
@@ -82,7 +82,7 @@ describe('OlHighlightLayerHandler', () => {
 
 		it('sets temporary highlight feature', () => {
 			const temporaryFeature = { data: { coordinate: [1, 0] } };
-			const state = { ...initialState, active: true, temporaryFeature: temporaryFeature };
+			const state = { ...initialState, active: true, temporaryFeatures: [temporaryFeature] };
 			const map = setupMap();
 			setup(state);
 
@@ -120,7 +120,7 @@ describe('OlHighlightLayerHandler', () => {
 			it('remove styles of highlight-features', () => {
 				const highlightFeature = { data: { coordinate: [1, 0] } };
 				const temporaryFeature = { data: { coordinate: [0, 1] } };
-				const state = { ...initialState, active: true, feature: highlightFeature, temporaryFeature: temporaryFeature };
+				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [temporaryFeature] };
 				const map = setupMap();
 				setup(state);
 
