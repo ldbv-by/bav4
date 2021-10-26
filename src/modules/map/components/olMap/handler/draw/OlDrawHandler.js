@@ -24,6 +24,7 @@ import { LevelTypes } from '../../../../../../store/notifications/notifications.
 import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
+import { simulateMapEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -338,7 +339,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw && this._draw.getActive()) {
 
 			this._draw.removeLastPoint();
-			if (this._pointCount === 1) {
+			if (this._sketchHandler.pointCount === 1) {
 				this._startNew();
 			}
 			if (this._lastPointerMoveEvent) {
@@ -354,6 +355,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_finish() {
 		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
+			this._simulateClickEvent();
 		}
 		else {
 			this._activateModify(null);
@@ -367,8 +369,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			setSelectedStyle(null);
 
+			this._helpTooltip.deactivate();
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
+			this._helpTooltip.activate(this._map);
+			this._simulateClickEvent();
 		}
 
 	}
@@ -622,5 +627,19 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
+	}
+
+	/**
+	 * Workaround for touch-devices to refresh measure-state and
+	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without
+	 * any further detected pointer-moves and -clicks
+	 */
+	_simulateClickEvent() {
+		const view = this._map.getView();
+		if (view) {
+			const x = view.getCenter()[0];
+			const y = view.getCenter()[1];
+			simulateMapEvent(this._map, MapBrowserEventType.CLICK, x, y);
+		}
 	}
 }
