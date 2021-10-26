@@ -13,6 +13,15 @@
 	width: min-content;
 	min-width: 25em;
 }
+
+.notification_content {
+	pointer-events: all;
+}
+
+.notification_fixed {
+	border: .2em solid var(--primary-color);
+}
+
 .notification_info {
 	border-left: .2em solid var(--info-color);
 }
@@ -41,9 +50,9 @@
 	0% {
 		opacity: 0;
 		transform: translateY(200%);
-		100% {
-			opacity: 1;   
-		}
+	}
+	100% {
+		opacity: 1;   
 	}
 }
 @keyframes animateOut {
