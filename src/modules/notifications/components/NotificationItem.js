@@ -1,60 +1,83 @@
-import { BaElement } from '../../BaElement';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
-import { LevelTypes } from '../../../store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../store/notifications/notifications.action';
 import css from './notificationItem.css';
+import { MvuElement } from '../../MvuElement';
 
 export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
-export class NotificationItem extends BaElement {
+
+
+const Update_Notification = 'update_notification';
+const Update_Is_Fixed = 'update_is_fixed';
+/**
+ * Element to display a notification
+ * @class
+ * @author thiloSchlemmer
+ */
+export class NotificationItem extends MvuElement {
 	constructor() {
-		super();
+		super({
+			notification: { content: null, level: null, autocloseTime: NOTIFICATION_AUTOCLOSE_TIME_NEVER },
+			isFixed: false,
+			autocloseTimeoutId: null
+		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._content = { message: null, level: null };
-		this._autocloseTime = NOTIFICATION_AUTOCLOSE_TIME_NEVER;
-		this._autocloseTimeoutId = null;
 		this._onClose = () => { };
 	}
 
+	update(type, data, model) {
+		const getHideTimeout = () => setTimeout(() => this._hide(), data.autocloseTime);
+		switch (type) {
+			case Update_Notification:
+				return {
+					...model,
+					notification: data,
+					autocloseTimeoutId: data.autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER ? getHideTimeout() : null
+				};
+			case Update_Is_Fixed:
+				return { ...model, isFixed: data };
+		}
+	}
 
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
+		const { notification, isFixed } = model;
 		const translate = (key) => this._translationService.translate(key);
-
 		const levelClass = {
-			notification_info: this._content.level === LevelTypes.INFO,
-			notification_warn: this._content.level === LevelTypes.WARN,
-			notification_error: this._content.level === LevelTypes.ERROR
+			notification_info: notification.level === LevelTypes.INFO,
+			notification_warn: notification.level === LevelTypes.WARN,
+			notification_error: notification.level === LevelTypes.ERROR,
+			notification_custom: notification.level === LevelTypes.CUSTOM,
+			notification_fixed: isFixed
 		};
-		const levelText = () => {
-			switch (this._content.level) {
+		const getLevelText = (level) => {
+			switch (level) {
 				case LevelTypes.INFO:
-					return 'notifications_item_info';
+					return html`<div class='notification_level'>${translate('notifications_item_info')}</div>`;
 				case LevelTypes.WARN:
-					return 'notifications_item_warn';
+					return html`<div class='notification_level'>${translate('notifications_item_warn')}</div>`;
 				case LevelTypes.ERROR:
-					return 'notifications_item_error';
+					return html`<div class='notification_level'>${translate('notifications_item_error')}</div>`;
+				default:
+					return html.nothing;
 			}
 		};
-		if (this._autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER) {
-			this._autocloseTimeoutId = setTimeout(() => {
-				this._hide();
-			}, this._autocloseTime);
-		}
 
-		const message = this._content.message ? this._content.message : html.nothing;
+		const content = notification.content ? notification.content : nothing;
 		return html`
 		<style>${css}</style>
 		<div class='notification_item ${classMap(levelClass)}'>
-        	<span class='notification_level'>${translate(levelText())}</span>
-        	<span class='notification_content'>${message}</span>			
+        	${getLevelText(notification.level)}
+        	<div class='notification_content'>${content}</div>			
 		</div>`;
 	}
 
 	_hide() {
+		const { notification, autocloseTimeoutId } = this.getModel();
 		const element = this.shadowRoot.querySelector('.notification_item');
 
 		// If the notification-item is not yet closed
@@ -62,8 +85,8 @@ export class NotificationItem extends BaElement {
 
 		element.addEventListener('animationend', () => {
 			// If the notification-item is not yet closed
-			this.onClose(this._content);
-			clearTimeout(this._autocloseTimeoutId);
+			this.onClose(notification);
+			clearTimeout(autocloseTimeoutId);
 		});
 	}
 
@@ -72,9 +95,11 @@ export class NotificationItem extends BaElement {
 	}
 
 	set content(value) {
-		this._content = value;
-		this._autocloseTime = value.autocloseTime;
-		this.render();
+		this.signal(Update_Notification, value);
+	}
+
+	set fixed(value) {
+		this.signal(Update_Is_Fixed, value);
 	}
 
 	set onClose(callback) {
