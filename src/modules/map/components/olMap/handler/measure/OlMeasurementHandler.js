@@ -26,7 +26,7 @@ import { emitNotification } from '../../../../../../store/notifications/notifica
 import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
-import { simulateMapEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
+import { simulateMouseEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
 
 const Debounce_Delay = 1000;
 
@@ -590,7 +590,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (view) {
 			const x = view.getCenter()[0];
 			const y = view.getCenter()[1];
-			simulateMapEvent(this._map, MapBrowserEventType.CLICK, x, y);
+			simulateMouseEvent(this._map, MapBrowserEventType.CLICK, x, y);
 		}
 	}
 

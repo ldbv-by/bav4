@@ -24,7 +24,7 @@ import { LevelTypes } from '../../../../../../store/notifications/notifications.
 import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
-import { simulateMapEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
+import { simulateMouseEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -639,7 +639,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (view) {
 			const x = view.getCenter()[0];
 			const y = view.getCenter()[1];
-			simulateMapEvent(this._map, MapBrowserEventType.CLICK, x, y);
+			simulateMouseEvent(this._map, MapBrowserEventType.CLICK, x, y);
 		}
 	}
 }
