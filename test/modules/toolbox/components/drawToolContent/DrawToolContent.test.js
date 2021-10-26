@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
-import { setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
@@ -178,6 +178,15 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#style_marker')).toBeNull();
 			setType(drawType);
 			setStyle(style);
+			expect(element.shadowRoot.querySelector('#style_marker')).toBeTruthy();
+		});
+
+		it('displays style form, when selectedStyle is available', async () => {
+			const selectedStyle = { type: 'marker', style: { ...StyleOptionTemplate, color: '#f00ba3' } };
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#style_marker')).toBeNull();
+			setSelectedStyle(selectedStyle);
 			expect(element.shadowRoot.querySelector('#style_marker')).toBeTruthy();
 		});
 
