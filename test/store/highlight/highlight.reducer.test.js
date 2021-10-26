@@ -52,7 +52,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.active).toBeFalse();
 	});
 
-	it('resets the both feature properties', () => {
+	it('resets both feature properties', () => {
 		const store = setup();
 		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
 		const secondaryHighlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 2] } };
