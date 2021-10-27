@@ -1089,6 +1089,34 @@ describe('OlDrawHandler', () => {
 			expect(environmentSpy).toHaveBeenCalled();
 		});
 
+		it('_requestMapFocus links to _simulateClickEvent for touch-devices', () => {
+			setup();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+			const classUnderTest = new OlDrawHandler();
+			const simulateClickEventSpy = spyOn(classUnderTest, '_simulateClickEvent').and.callThrough();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			classUnderTest._requestMapFocus();
+
+			expect(simulateClickEventSpy).toHaveBeenCalled();
+			expect(environmentSpy).toHaveBeenCalled();
+		});
+
+		it('_requestMapFocus links NOT to _simulateClickEvent', () => {
+			setup();
+			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+			const classUnderTest = new OlDrawHandler();
+			const simulateClickEventSpy = spyOn(classUnderTest, '_simulateClickEvent');
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			classUnderTest._requestMapFocus();
+
+			expect(simulateClickEventSpy).not.toHaveBeenCalled();
+			expect(environmentSpy).toHaveBeenCalled();
+		});
+
 		it('change drawState, when sketch is changing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();

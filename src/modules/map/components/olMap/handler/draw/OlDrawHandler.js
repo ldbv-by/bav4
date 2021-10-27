@@ -84,6 +84,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			dragging: false
 		};
 
+		this._requestMapFocus = this._environmentService.isTouch() ? () => this._simulateClickEvent() : () => { };
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
@@ -225,9 +226,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		if (this._environmentService.isTouch()) {
-			this._simulateClickEvent();
-		}
+		this._requestMapFocus();
 
 		return this._vectorLayer;
 	}
@@ -337,9 +336,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
-			if (this._environmentService.isTouch()) {
-				this._simulateClickEvent();
-			}
+			this._requestMapFocus();
 		}
 
 	}
@@ -364,7 +361,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			else {
 				this._draw.removeLastPoint();
-				this._simulateClickEvent();
+				this._requestMapFocus();
 			}
 
 			if (this._lastPointerMoveEvent) {
@@ -374,7 +371,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
-			this._simulateClickEvent();
+			this._requestMapFocus();
 		}
 
 	}
@@ -382,7 +379,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_finish() {
 		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
-			this._simulateClickEvent();
+			this._requestMapFocus();
 		}
 		else {
 			this._activateModify(null);
@@ -400,11 +397,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
 			this._helpTooltip.activate(this._map);
-
 		}
-		if (this._environmentService.isTouch()) {
-			this._simulateClickEvent();
-		}
+		this._requestMapFocus();
 	}
 
 	_reset() {
@@ -417,7 +411,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
-		this._simulateClickEvent();
+		this._requestMapFocus();
 	}
 
 	_createDrawByType(type, styleOption) {
