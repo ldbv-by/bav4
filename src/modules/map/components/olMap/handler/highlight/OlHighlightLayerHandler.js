@@ -60,29 +60,23 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	_register(store) {
 
 		const onChange = (highlight) => {
-			const { active } = highlight;
-			if (active) {
 
-				if (highlight.features.length) {
-					const coord = highlight.features[0].data.coordinate;
-					this._feature.setStyle(highlightFeatureStyleFunction);
-					this._feature.setGeometry(new Point(coord));
-				}
-				else {
-					this._feature.setStyle(nullStyleFunction);
-				}
-				if (highlight.temporaryFeatures.length) {
-					const coord = highlight.temporaryFeatures[0].data.coordinate;
-					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-					this._temporaryFeature.setGeometry(new Point(coord));
-				}
-				else {
-					this._temporaryFeature.setStyle(nullStyleFunction);
-				}
-				this._map.renderSync();
+			const { features, temporaryFeatures } = highlight;
+
+			if (features.length) {
+				const coord = features[0].data.coordinate;
+				this._feature.setStyle(highlightFeatureStyleFunction);
+				this._feature.setGeometry(new Point(coord));
 			}
 			else {
 				this._feature.setStyle(nullStyleFunction);
+			}
+			if (temporaryFeatures.length) {
+				const coord = temporaryFeatures[0].data.coordinate;
+				this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+				this._temporaryFeature.setGeometry(new Point(coord));
+			}
+			else {
 				this._temporaryFeature.setStyle(nullStyleFunction);
 			}
 		};
