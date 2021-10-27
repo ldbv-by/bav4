@@ -7,6 +7,9 @@ import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction }
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
+import { HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
+import WKT from 'ol/format/WKT';
+import GeoJSON from 'ol/format/GeoJSON';
 
 
 /**
@@ -48,26 +51,46 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		});
 	}
 
+	_toOlFeature(feature) {
+		const { data } = feature;
+
+		if (data.coordinate) {
+			return new Feature(new Point(data.coordinate));
+		}
+
+		switch (data.geometryType) {
+
+			case HighlightGeometryTypes.WKT:
+				return new WKT().readFeature(data.geometry);
+			case HighlightGeometryTypes.GEOJSON:
+				return new GeoJSON().readFeature(data.geometry);
+		}
+		return null;
+	}
+
 	_register(store, olSource) {
 
-		const onChange = (highlight) => {
-
-			const { features, temporaryFeatures } = highlight;
+		const onChange = ({ features, temporaryFeatures }) => {
 
 			olSource.clear();
 
-			if (features.length) {
-				const coord = features[0].data.coordinate;
-				const olFeature = new Feature(new Point(coord));
-				olFeature.setStyle(highlightFeatureStyleFunction);
-				olSource.addFeature(olFeature);
-			}
-			if (temporaryFeatures.length) {
-				const coord = temporaryFeatures[0].data.coordinate;
-				const olTempFeature = new Feature(new Point(coord));
-				olTempFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-				olSource.addFeature(olTempFeature);
-			}
+			olSource.addFeatures(
+				features
+					.map(this._toOlFeature)
+					.filter(olFeature => !!olFeature)
+					.map(olFeature => {
+						olFeature.setStyle(highlightFeatureStyleFunction);
+						return olFeature;
+					}));
+
+			olSource.addFeatures(
+				temporaryFeatures
+					.map(this._toOlFeature)
+					.filter(olFeature => !!olFeature)
+					.map(olFeature => {
+						olFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+						return olFeature;
+					}));
 		};
 
 		return observe(store, state => state.highlight, onChange, false);
