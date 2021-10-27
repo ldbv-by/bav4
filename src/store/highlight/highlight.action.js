@@ -37,7 +37,8 @@ export const HighlightFeatureTypes = Object.freeze({
  * @enum
  */
 export const HighlightGeometryTypes = Object.freeze({
-	WKT: 0
+	WKT: 0,
+	GEOJSON: 1
 });
 
 
