@@ -36,25 +36,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._highlightLayer = this._createLayer();
 		this._map = olMap;
-
-
-		const { highlight } = this._storeService.getStore().getState();
-
-		if (highlight.features.length) {
-			const featureCoords = highlight.features[0].data.coordinate;
-			this._feature.setStyle(highlightFeatureStyleFunction);
-			this._feature.setGeometry(new Point(featureCoords));
-		}
-
-		if (highlight.temporaryFeatures.length) {
-			const temporaryFeatureCoords = highlight.temporaryFeatures[0].data.coordinate;
-			this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
-		}
-		this._map.renderSync();
-
 		this._unregister = this._register(this._storeService.getStore());
-
 		return this._highlightLayer;
 	}
 
@@ -76,31 +58,21 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
-		const extract = (state) => {
-			return state.highlight;
-		};
 
-		const isValidHighlight = (highlight) => {
-			if (!highlight.active) {
-				return false;
-			}
+		const onChange = (highlight) => {
+			const { active } = highlight;
+			if (active) {
 
-			return !!highlight.features.length || !!highlight.temporaryFeatures.length;
-		};
-
-		const onChange = (changedState, stateSnapshot) => {
-			if (isValidHighlight(changedState)) {
-
-				if (changedState.features.length) {
-					const coord = changedState.features[0].data.coordinate;
+				if (highlight.features.length) {
+					const coord = highlight.features[0].data.coordinate;
 					this._feature.setStyle(highlightFeatureStyleFunction);
 					this._feature.setGeometry(new Point(coord));
 				}
 				else {
 					this._feature.setStyle(nullStyleFunction);
 				}
-				if (changedState.temporaryFeatures.length) {
-					const coord = changedState.temporaryFeatures[0].data.coordinate;
+				if (highlight.temporaryFeatures.length) {
+					const coord = highlight.temporaryFeatures[0].data.coordinate;
 					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
 					this._temporaryFeature.setGeometry(new Point(coord));
 				}
@@ -115,7 +87,6 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 			}
 		};
 
-		return observe(store, extract, onChange);
+		return observe(store, state => state.highlight, onChange, false);
 	}
-
 }
