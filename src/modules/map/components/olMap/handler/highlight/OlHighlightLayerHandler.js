@@ -7,7 +7,6 @@ import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction }
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { nullStyleFunction } from '../highlight/StyleUtils';
 
 
 /**
@@ -21,10 +20,6 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		super(HIGHLIGHT_LAYER_ID);
 		const { StoreService } = $injector.inject('StoreService');
 		this._storeService = StoreService;
-		this._highlightLayer = null;
-		this._feature = new Feature();
-		this._temporaryFeature = new Feature();
-		this._map = null;
 		this._unregister = () => { };
 	}
 
@@ -33,11 +28,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 * Activates the Handler.
 		 * @override
 		 */
-	onActivate(olMap) {
-		this._highlightLayer = this._createLayer();
-		this._map = olMap;
-		this._unregister = this._register(this._storeService.getStore());
-		return this._highlightLayer;
+	onActivate(/*eslint-disable no-unused-vars */olMap) {
+		const olLayer = this._createLayer();
+		this._unregister = this._register(this._storeService.getStore(), olLayer.getSource());
+		return olLayer;
 	}
 
 	/**
@@ -45,39 +39,34 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 *  @param {Map} olMap
 		 */
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
-		this._map = null;
-		this._highlightLayer = null;
 		this._unregister();
 	}
 
 	_createLayer() {
-		const source = new VectorSource({ wrapX: false, features: [this._feature, this._temporaryFeature] });
 		return new VectorLayer({
-			source: source
+			source: new VectorSource()
 		});
 	}
 
-	_register(store) {
+	_register(store, olSource) {
 
 		const onChange = (highlight) => {
 
 			const { features, temporaryFeatures } = highlight;
 
+			olSource.clear();
+
 			if (features.length) {
 				const coord = features[0].data.coordinate;
-				this._feature.setStyle(highlightFeatureStyleFunction);
-				this._feature.setGeometry(new Point(coord));
-			}
-			else {
-				this._feature.setStyle(nullStyleFunction);
+				const olFeature = new Feature(new Point(coord));
+				olFeature.setStyle(highlightFeatureStyleFunction);
+				olSource.addFeature(olFeature);
 			}
 			if (temporaryFeatures.length) {
 				const coord = temporaryFeatures[0].data.coordinate;
-				this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-				this._temporaryFeature.setGeometry(new Point(coord));
-			}
-			else {
-				this._temporaryFeature.setStyle(nullStyleFunction);
+				const olTempFeature = new Feature(new Point(coord));
+				olTempFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+				olSource.addFeature(olTempFeature);
 			}
 		};
 

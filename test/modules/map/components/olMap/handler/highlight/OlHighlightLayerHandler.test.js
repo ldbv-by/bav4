@@ -2,13 +2,13 @@ import { TestUtils } from '../../../../../../test-utils';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { removeHighlightFeature, removeTemporaryHighlightFeature, setHighlightFeature, setTemporaryHighlightFeature } from '../../../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
-
-import { OSM, TileDebug } from 'ol/source';
 import { OlHighlightLayerHandler } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/OlHighlightLayerHandler';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/StyleUtils';
+
 describe('OlHighlightLayerHandler', () => {
+
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialState = {
 		active: false,
@@ -26,20 +26,13 @@ describe('OlHighlightLayerHandler', () => {
 	const setupMap = () => {
 		const container = document.createElement('div');
 		return new Map({
-			layers: [
-				new TileLayer({
-					source: new OSM()
-				}),
-				new TileLayer({
-					source: new TileDebug()
-				})],
+			layers: [],
 			target: container,
 			view: new View({
 				center: initialCenter,
 				zoom: 1
 			})
 		});
-
 	};
 
 	it('instantiates the handler', () => {
@@ -52,98 +45,83 @@ describe('OlHighlightLayerHandler', () => {
 		expect(handler._unregister).toBeDefined();
 	});
 
-	describe('when activate', () => {
+	describe('when handler is activated', () => {
 
+		describe('and NO highlight features are available', () => {
 
-		it('registers observer', () => {
-			const map = setupMap();
-			setup();
-
-			const handler = new OlHighlightLayerHandler();
-			const actualLayer = handler.activate(map);
-
-			expect(actualLayer).toBeTruthy();
-			expect(handler._unregister).toBeDefined();
-		});
-
-		it('sets highlight feature', () => {
-			const highlightFeature = { data: { coordinate: [1, 0] } };
-			const state = { ...initialState, active: true, features: [highlightFeature] };
-			const map = setupMap();
-			setup(state);
-
-			const handler = new OlHighlightLayerHandler();
-			const actualLayer = handler.activate(map);
-
-			expect(actualLayer).toBeTruthy();
-			expect(handler._feature.getGeometry().getCoordinates()).toEqual([1, 0]);
-
-		});
-
-		it('sets temporary highlight feature', () => {
-			const temporaryFeature = { data: { coordinate: [1, 0] } };
-			const state = { ...initialState, active: true, temporaryFeatures: [temporaryFeature] };
-			const map = setupMap();
-			setup(state);
-
-			const handler = new OlHighlightLayerHandler();
-			const actualLayer = handler.activate(map);
-
-			expect(actualLayer).toBeTruthy();
-			expect(handler._temporaryFeature.getGeometry().getCoordinates()).toEqual([1, 0]);
-
-		});
-
-		describe('when highlight-state changed', () => {
-			const getStyles = (feature) => {
-				const styleFunction = feature.getStyle();
-				return styleFunction(feature);
-			};
-
-			it('positions highlight-features on position', () => {
+			it('adds NO ol features', () => {
 				const map = setupMap();
 				setup();
-
 				const handler = new OlHighlightLayerHandler();
-				handler.activate(map);
+
+				const olLayer = handler.activate(map);
+
+				const olFeatures = olLayer.getSource().getFeatures();
+				expect(olFeatures).toHaveSize(0);
+			});
+		});
+
+		describe('and highlight features are available', () => {
+
+			it('adds ol features', () => {
+				const highlightFeature = { data: { coordinate: [1, 0] } };
+				const temporaryFeature = { data: { coordinate: [3, 4] } };
+				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [temporaryFeature] };
+				const map = setupMap();
+				setup(state);
+				const handler = new OlHighlightLayerHandler();
+
+				const olLayer = handler.activate(map);
+
+				const olFeatures = olLayer.getSource().getFeatures();
+				expect(olFeatures).toHaveSize(2);
+				expect(olFeatures[0].getGeometry().getCoordinates()).toEqual([1, 0]);
+				expect(olFeatures[0].getStyle()()).toEqual(highlightFeatureStyleFunction());
+				expect(olFeatures[1].getGeometry().getCoordinates()).toEqual([3, 4]);
+				expect(olFeatures[1].getStyle()()).toEqual(highlightTemporaryFeatureStyleFunction());
+			});
+		});
+
+		describe('and highlight features are added', () => {
+
+			it('add ol features', () => {
+				const map = setupMap();
+				setup();
+				const handler = new OlHighlightLayerHandler();
+				const olLayer = handler.activate(map);
 
 				setHighlightFeature({ data: { coordinate: [38, 57] } });
 				setTemporaryHighlightFeature({ data: { coordinate: [57, 38] } });
 
-
-				expect(handler._feature).toBeDefined();
-				expect(handler._temporaryFeature).toBeDefined();
-				expect(handler._feature.getGeometry().getCoordinates()).toEqual([38, 57]);
-				expect(handler._temporaryFeature.getGeometry().getCoordinates()).toEqual([57, 38]);
+				const olFeatures = olLayer.getSource().getFeatures();
+				expect(olFeatures).toHaveSize(2);
+				expect(olFeatures[0].getGeometry().getCoordinates()).toEqual([38, 57]);
+				expect(olFeatures[0].getStyle()()).toEqual(highlightFeatureStyleFunction());
+				expect(olFeatures[1].getGeometry().getCoordinates()).toEqual([57, 38]);
+				expect(olFeatures[1].getStyle()()).toEqual(highlightTemporaryFeatureStyleFunction());
 			});
+		});
 
-			it('remove styles of highlight-features', () => {
+		describe('and highlight features are removed', () => {
+
+			it('removes ol features', () => {
 				const highlightFeature = { data: { coordinate: [1, 0] } };
-				const temporaryFeature = { data: { coordinate: [0, 1] } };
+				const temporaryFeature = { data: { coordinate: [3, 4] } };
 				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [temporaryFeature] };
 				const map = setupMap();
 				setup(state);
-
 				const handler = new OlHighlightLayerHandler();
-				handler.activate(map);
-
-				expect(handler._feature).toBeDefined();
-				expect(handler._temporaryFeature).toBeDefined();
-				expect(handler._feature.getGeometry().getCoordinates()).toEqual([1, 0]);
-				expect(handler._temporaryFeature.getGeometry().getCoordinates()).toEqual([0, 1]);
+				const olLayer = handler.activate(map);
 
 				removeHighlightFeature();
+
+				let olFeatures = olLayer.getSource().getFeatures();
+				expect(olFeatures).toHaveSize(1);
+
 				removeTemporaryHighlightFeature();
 
-				const featureStyle = getStyles(handler._feature)[0];
-				const temporaryFeatureStyle = getStyles(handler._temporaryFeature)[0];
-
-				expect(featureStyle.getFill()).toBeFalsy();
-				expect(featureStyle.getStroke()).toBeFalsy();
-				expect(featureStyle.getImage()).toBeFalsy();
-				expect(temporaryFeatureStyle.getFill()).toBeFalsy();
-				expect(temporaryFeatureStyle.getStroke()).toBeFalsy();
-				expect(temporaryFeatureStyle.getImage()).toBeFalsy();
+				olFeatures = olLayer.getSource().getFeatures();
+				expect(olFeatures).toHaveSize(0);
 			});
 		});
 	});
@@ -152,7 +130,6 @@ describe('OlHighlightLayerHandler', () => {
 		it('unregisters observer', () => {
 			const map = setupMap();
 			setup();
-
 			const handler = new OlHighlightLayerHandler();
 			handler.activate(map);
 			const spyOnUnregister = spyOn(handler, '_unregister');
@@ -161,7 +138,5 @@ describe('OlHighlightLayerHandler', () => {
 
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
-
-
 	});
 });
