@@ -5,7 +5,7 @@ import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import { OlHighlightLayerHandler } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/OlHighlightLayerHandler';
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/StyleUtils';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 
 describe('OlHighlightLayerHandler', () => {
 

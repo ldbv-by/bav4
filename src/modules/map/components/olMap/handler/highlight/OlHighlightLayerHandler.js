@@ -3,7 +3,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './StyleUtils';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
