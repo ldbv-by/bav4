@@ -339,11 +339,11 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
-				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+				const resetSpy = spyOn(classUnderTest, '_reset').and.callThrough();
 
 				classUnderTest.activate(map);
 				reset();
-				expect(startNewSpy).toHaveBeenCalled();
+				expect(resetSpy).toHaveBeenCalled();
 			});
 
 

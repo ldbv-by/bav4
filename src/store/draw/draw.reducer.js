@@ -1,6 +1,7 @@
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
+export const VALID_GEOMETRY_CHANGED = 'draw/validGeometry';
 export const STYLE_CHANGED = 'draw/style';
 export const SELECTED_STYLE_CHANGED = 'draw/selectedStyle';
 export const DESCRIPTION_CHANGED = 'draw/description';
@@ -23,6 +24,10 @@ export const initialState = {
 	 * @type {String}
 	 */
 	type: null,
+	/**
+	* @type {boolean}
+	*/
+	validGeometry: false,
 	/**
 	 * @type {Object}
 	 */
@@ -78,6 +83,14 @@ export const drawReducer = (state = initialState, action) => {
 			return {
 				...state,
 				type: payload
+
+			};
+		}
+		case VALID_GEOMETRY_CHANGED: {
+
+			return {
+				...state,
+				validGeometry: payload
 
 			};
 		}

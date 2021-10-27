@@ -304,7 +304,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('displays the finish-button for polygon', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon' });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 
 			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
@@ -312,7 +312,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('displays the finish-button for line', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 
 			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
@@ -336,7 +336,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('finishes the drawing', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 			const finishButton = element.shadowRoot.querySelector('#finish');
 
 			finishButton.click();
@@ -363,7 +363,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('deletes the last drawn point of drawing', async () => {
-			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line' });
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 			const removeButton = element.shadowRoot.querySelector('#remove');
 
 			removeButton.click();

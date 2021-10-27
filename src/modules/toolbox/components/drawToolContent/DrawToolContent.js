@@ -88,9 +88,7 @@ export class DrawToolContent extends AbstractToolContent {
 	_getButtons(state) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { mode } = state;
-
-
+		const { mode, validGeometry } = state;
 
 		const getButton = (id, title, onClick) => {
 			return html`<ba-button id=${id} 
@@ -103,16 +101,17 @@ export class DrawToolContent extends AbstractToolContent {
 		const activeToolName = activeTool ? activeTool.name : 'noTool';
 		// Cancel-Button
 
-		const finishAllowed = ['polygon', 'line'].includes(activeToolName);
 		if (mode === 'draw') {
 			const getButtonOptions = () => {
-				if (finishAllowed) {
+				if (validGeometry) {
 					// alternate Finish-Button
-					return { id: 'finish', title: translate('toolbox_drawTool_finish'),	onClick: () => finish() };
+					return { id: 'finish', title: translate('toolbox_drawTool_finish'), onClick: () => finish() };
 				}
-				return { id: 'cancel',
+				return {
+					id: 'cancel',
 					title: translate('toolbox_drawTool_cancel'),
-					onClick: () => reset() };
+					onClick: () => reset()
+				};
 			};
 			const options = getButtonOptions();
 
@@ -122,7 +121,7 @@ export class DrawToolContent extends AbstractToolContent {
 		const removeAllowed = ['draw', 'modify'].includes(mode);
 		if (removeAllowed) {
 			const id = 'remove';
-			const title = mode === 'draw' && ['polygon', 'line'].includes(activeToolName) ? translate('toolbox_drawTool_delete_point') : translate('toolbox_drawTool_delete_drawing');
+			const title = mode === 'draw' && ['polygon', 'line'].includes(activeToolName) && validGeometry ? translate('toolbox_drawTool_delete_point') : translate('toolbox_drawTool_delete_drawing');
 			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
@@ -206,6 +205,7 @@ export class DrawToolContent extends AbstractToolContent {
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
 		const { type: preselectedType, style: preselectedStyle, selectedStyle } = state;
+
 		this._setActiveToolByType(preselectedType);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
