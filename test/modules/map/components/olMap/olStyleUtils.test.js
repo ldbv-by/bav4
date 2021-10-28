@@ -206,8 +206,8 @@ describe('markerStyleFunction', () => {
 		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
-	it('should return a style specified by styleOption; big image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'big' };
+	it('should return a style specified by styleOption; large image', () => {
+		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'large' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -252,8 +252,8 @@ describe('textStyleFunction', () => {
 		expect(styles[0].getText().getText()).toBe('New Text');
 	});
 
-	it('should return a style specified by styleOption; big text', () => {
-		const styleOption = { color: '#BEDA55', scale: 'big', text: 'Foo' };
+	it('should return a style specified by styleOption; large text', () => {
+		const styleOption = { color: '#BEDA55', scale: 'large', text: 'Foo' };
 		const styles = textStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();

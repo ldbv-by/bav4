@@ -23,8 +23,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { isEmptyLayer } from '../../olMapUtils';
-import { emitNotification } from '../../../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
 

@@ -60,7 +60,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			return sizeKeyword;
 		}
 		switch (sizeKeyword) {
-			case 'big':
+			case 'large':
 				return 1;
 			case 'medium':
 				return 0.75;
@@ -105,7 +105,7 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 		}
 		switch (sizeKeyword) {
 
-			case 'big':
+			case 'large':
 				return 2;
 			case 'medium':
 				return 1.5;

@@ -19,8 +19,7 @@ import { FileStorageServiceDataTypes } from '../../../../../../services/FileStor
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
-import { emitNotification } from '../../../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/measurement/measurement.action';
