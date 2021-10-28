@@ -53,7 +53,7 @@ const getStore = () => {
 * @param {Array.<HighlightFeature>|HighlightFeature} features
 * @function
 */
-export const setHighlightFeature = (feature) => {
+export const setHighlightFeatures = (feature) => {
 	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
 		type: FEATURE_CHANGED,
@@ -64,7 +64,7 @@ export const setHighlightFeature = (feature) => {
  * Removes the {@link HighlightFeature}
  * @function
  */
-export const removeHighlightFeature = () => {
+export const removeHighlightFeatures = () => {
 	getStore().dispatch({
 		type: FEATURE_CHANGED,
 		payload: []
@@ -76,7 +76,7 @@ export const removeHighlightFeature = () => {
  * @param {HighlightFeature} feature
  * @function
  */
-export const setTemporaryHighlightFeature = (feature) => {
+export const setTemporaryHighlightFeatures = (feature) => {
 	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
 		type: SECONDARY_FEATURE_CHANGED,
@@ -88,7 +88,7 @@ export const setTemporaryHighlightFeature = (feature) => {
  * Removes the secondary {@link HighlightFeature}.
  * @function
  */
-export const removeTemporaryHighlightFeature = () => {
+export const removeTemporaryHighlightFeatures = () => {
 	getStore().dispatch({
 		type: SECONDARY_FEATURE_CHANGED,
 		payload: []
