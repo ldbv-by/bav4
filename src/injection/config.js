@@ -26,6 +26,7 @@ import { DrawPlugin } from '../plugins/DrawPlugin';
 import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
 import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
+import { LayerInfoService } from '../modules/layerInfo/services/LayerInfoService';
 
 
 $injector
@@ -45,6 +46,7 @@ $injector
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
+	.registerSingleton('LayerInfoService', new LayerInfoService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
