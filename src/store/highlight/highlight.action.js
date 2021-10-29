@@ -61,7 +61,7 @@ export const setHighlightFeatures = (feature) => {
 	});
 };
 /**
- * Removes the {@link HighlightFeature}
+ * Removes all {@link HighlightFeature}s.
  * @function
  */
 export const removeHighlightFeatures = () => {
@@ -85,7 +85,7 @@ export const setTemporaryHighlightFeatures = (feature) => {
 };
 
 /**
- * Removes the secondary {@link HighlightFeature}.
+ * Removes all secondary {@link HighlightFeature}s.
  * @function
  */
 export const removeTemporaryHighlightFeatures = () => {
@@ -96,7 +96,7 @@ export const removeTemporaryHighlightFeatures = () => {
 };
 
 /**
- * Removes both the permanent and the secondary {@link HighlightFeature}
+ * Removes both all permanent and secondary {@link HighlightFeature}s.
  * @function
  */
 export const clearHighlightFeatures = () => {
