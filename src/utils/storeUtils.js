@@ -1,3 +1,5 @@
+import { createUniqueId } from './numberUtils';
+
 /**
  * Registers an observer for state changes of the store.
  * @function
@@ -50,7 +52,7 @@ export class EventLike {
 
 	constructor(payload) {
 		this._paylod = payload;
-		this._id = Date.now() + Math.random();
+		this._id = createUniqueId();
 	}
 
 	get payload() {
