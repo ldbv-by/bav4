@@ -2,7 +2,7 @@
  * Action creators for highlighting a feature.
  * @module map/action
  */
-import { CLEAR_FEATURES, FEATURE_CHANGED, SECONDARY_FEATURE_CHANGED } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 
@@ -56,7 +56,20 @@ const getStore = () => {
 export const setHighlightFeatures = (feature) => {
 	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
-		type: FEATURE_CHANGED,
+		type: FEATURE_SET,
+		payload: featureAsArray
+	});
+};
+
+/**
+* Adds (appends) a single or an array of {@link HighlightFeature}.
+* @param {Array.<HighlightFeature>|HighlightFeature} features
+* @function
+*/
+export const addHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
+	getStore().dispatch({
+		type: FEATURE_ADD,
 		payload: featureAsArray
 	});
 };
@@ -66,7 +79,7 @@ export const setHighlightFeatures = (feature) => {
  */
 export const removeHighlightFeatures = () => {
 	getStore().dispatch({
-		type: FEATURE_CHANGED,
+		type: FEATURE_SET,
 		payload: []
 	});
 };
@@ -79,7 +92,20 @@ export const removeHighlightFeatures = () => {
 export const setTemporaryHighlightFeatures = (feature) => {
 	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
-		type: SECONDARY_FEATURE_CHANGED,
+		type: TEMPORARY_FEATURE_SET,
+		payload: featureAsArray
+	});
+};
+
+/**
+ * Adds (appends) a single or an array of secondary {@link HighlightFeature}.
+ * @param {HighlightFeature} feature
+ * @function
+ */
+export const addTemporaryHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
+	getStore().dispatch({
+		type: TEMPORARY_FEATURE_ADD,
 		payload: featureAsArray
 	});
 };
@@ -90,7 +116,7 @@ export const setTemporaryHighlightFeatures = (feature) => {
  */
 export const removeTemporaryHighlightFeatures = () => {
 	getStore().dispatch({
-		type: SECONDARY_FEATURE_CHANGED,
+		type: TEMPORARY_FEATURE_SET,
 		payload: []
 	});
 };

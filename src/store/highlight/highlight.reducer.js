@@ -1,5 +1,7 @@
-export const FEATURE_CHANGED = 'highlight/feature';
-export const SECONDARY_FEATURE_CHANGED = 'highlight/secondary_feature';
+export const FEATURE_SET = 'highlight/feature/set';
+export const FEATURE_ADD = 'highlight/feature/add';
+export const TEMPORARY_FEATURE_SET = 'highlight/temporary_feature/set';
+export const TEMPORARY_FEATURE_ADD = 'highlight/temporary_feature/add';
 export const CLEAR_FEATURES = 'highlight/clear';
 
 export const initialState = {
@@ -22,7 +24,7 @@ export const highlightReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
 	switch (type) {
-		case FEATURE_CHANGED: {
+		case FEATURE_SET: {
 
 			const active = (!!payload.length || !!state.temporaryFeatures.length);
 
@@ -32,13 +34,33 @@ export const highlightReducer = (state = initialState, action) => {
 				active: active
 			};
 		}
-		case SECONDARY_FEATURE_CHANGED: {
+		case FEATURE_ADD: {
+
+			const active = (!!payload.length || !!state.temporaryFeatures.length);
+
+			return {
+				...state,
+				features: [...state.features, ...payload],
+				active: active
+			};
+		}
+		case TEMPORARY_FEATURE_SET: {
 
 			const active = (!!payload.length || !!state.features.length);
 
 			return {
 				...state,
 				temporaryFeatures: [...payload],
+				active: active
+			};
+		}
+		case TEMPORARY_FEATURE_ADD: {
+
+			const active = (!!payload.length || !!state.features.length);
+
+			return {
+				...state,
+				temporaryFeatures: [...state.temporaryFeatures, ...payload],
 				active: active
 			};
 		}
