@@ -48,6 +48,7 @@ describe('OlHighlightLayerHandler', () => {
 
 		expect(handler).toBeTruthy();
 		expect(handler.id).toBe('highlight_layer');
+		expect(handler.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		expect(handler._storeService.getStore()).toBeDefined();
 		expect(handler._unregister).toBeDefined();
 	});

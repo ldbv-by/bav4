@@ -16,7 +16,7 @@ import { nullStyleFunction } from '../highlight/StyleUtils';
 export class OlHighlightLayerHandler extends OlLayerHandler {
 
 	constructor() {
-		super(HIGHLIGHT_LAYER_ID);
+		super(HIGHLIGHT_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		const { StoreService } = $injector.inject('StoreService');
 		this._storeService = StoreService;
 		this._highlightLayer = null;
