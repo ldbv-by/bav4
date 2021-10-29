@@ -1,6 +1,6 @@
 
 /**
-* Optional configuration for a layer handler
+* Configuration for a layer handler
 * @typedef {Object} LayerHandlerOptions
 * @property {boolean} [preventDefaultClickHandling=true]  `true` if default click event handling on map should be disabled
 * @property {boolean} [preventDefaultContextClickHandling=true]  `true` if default context click event handling on map should be disabled
