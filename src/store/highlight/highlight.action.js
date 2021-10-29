@@ -2,7 +2,7 @@
  * Action creators for highlighting a feature.
  * @module map/action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, REMOVE_FEATURE_BY_ID, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 
@@ -11,8 +11,8 @@ import { $injector } from '../../injection';
  * @typedef {Object} HighlightFeature
  * @property {HighlightFeatureTypes} type  The type of this feature.
  * @property {HighlightCoordinate|HighlightGeometry} data The data which can be a coordinate or a geometry
+ * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
- *
  */
 
 /**
@@ -85,7 +85,7 @@ export const removeHighlightFeatures = () => {
 };
 
 /**
- * Sets a single or an array of secondary {@link HighlightFeature}.
+ * Sets a single or an array of temporary {@link HighlightFeature}.
  * @param {HighlightFeature} feature
  * @function
  */
@@ -98,7 +98,7 @@ export const setTemporaryHighlightFeatures = (feature) => {
 };
 
 /**
- * Adds (appends) a single or an array of secondary {@link HighlightFeature}.
+ * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
  * @param {HighlightFeature} feature
  * @function
  */
@@ -111,7 +111,7 @@ export const addTemporaryHighlightFeatures = (feature) => {
 };
 
 /**
- * Removes all secondary {@link HighlightFeature}s.
+ * Removes all temporary {@link HighlightFeature}s.
  * @function
  */
 export const removeTemporaryHighlightFeatures = () => {
@@ -122,7 +122,7 @@ export const removeTemporaryHighlightFeatures = () => {
 };
 
 /**
- * Removes both all permanent and secondary {@link HighlightFeature}s.
+ * Removes both all permanent and temporary {@link HighlightFeature}s.
  * @function
  */
 export const clearHighlightFeatures = () => {
@@ -130,3 +130,15 @@ export const clearHighlightFeatures = () => {
 		type: CLEAR_FEATURES
 	});
 };
+
+/**
+ * Removes a  (permanent or temporary) feature by its id.
+ * @function
+ */
+export const removeHighlightFeatureById = (id) => {
+	getStore().dispatch({
+		type: REMOVE_FEATURE_BY_ID,
+		payload: id
+	});
+};
+

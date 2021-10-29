@@ -1,8 +1,11 @@
+import { createUniqueId } from '../../utils/numberUtils';
+
 export const FEATURE_SET = 'highlight/feature/set';
 export const FEATURE_ADD = 'highlight/feature/add';
 export const TEMPORARY_FEATURE_SET = 'highlight/temporary_feature/set';
 export const TEMPORARY_FEATURE_ADD = 'highlight/temporary_feature/add';
 export const CLEAR_FEATURES = 'highlight/clear';
+export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
 
 export const initialState = {
 
@@ -22,6 +25,13 @@ export const initialState = {
 
 export const highlightReducer = (state = initialState, action) => {
 
+	const createIdIfMissing = features => features.map(f => {
+		if (!f.id) {
+			f.id = createUniqueId();
+		}
+		return f;
+	});
+
 	const { type, payload } = action;
 	switch (type) {
 		case FEATURE_SET: {
@@ -30,17 +40,18 @@ export const highlightReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				features: [...payload],
+				features: createIdIfMissing(payload),
 				active: active
 			};
 		}
 		case FEATURE_ADD: {
 
-			const active = (!!payload.length || !!state.temporaryFeatures.length);
+			const features = [...state.features, ...createIdIfMissing(payload)];
+			const active = !!state.temporaryFeatures.length || !!features.length;
 
 			return {
 				...state,
-				features: [...state.features, ...payload],
+				features: features,
 				active: active
 			};
 		}
@@ -50,17 +61,18 @@ export const highlightReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				temporaryFeatures: [...payload],
+				temporaryFeatures: createIdIfMissing(payload),
 				active: active
 			};
 		}
 		case TEMPORARY_FEATURE_ADD: {
 
-			const active = (!!payload.length || !!state.features.length);
+			const temporaryFeatures = [...state.temporaryFeatures, ...createIdIfMissing(payload)];
+			const active = !!state.features.length || !!temporaryFeatures.length;
 
 			return {
 				...state,
-				temporaryFeatures: [...state.temporaryFeatures, ...payload],
+				temporaryFeatures: temporaryFeatures,
 				active: active
 			};
 		}
@@ -71,6 +83,20 @@ export const highlightReducer = (state = initialState, action) => {
 				features: [],
 				temporaryFeatures: [],
 				active: false
+			};
+		}
+		case REMOVE_FEATURE_BY_ID: {
+
+			const test = f => f.id !== payload;
+			const features = state.features.filter(test);
+			const temporaryFeatures = state.temporaryFeatures.filter(test);
+			const active = !!features.length || !!temporaryFeatures.length;
+
+			return {
+				...state,
+				features: features,
+				temporaryFeatures: temporaryFeatures,
+				active: active
 			};
 		}
 	}
