@@ -1,15 +1,28 @@
+
+/**
+* Optional configuration for a layer handler
+* @typedef {Object} LayerHandlerOptions
+* @property {boolean} [preventDefaultClickHandling=true]  `true` if default click event handling on map should be disabled
+* @property {boolean} [preventDefaultContextClickHandling=true]  `true` if default context click event handling on map should be disabled
+*/
+
+
+export const getDefaultLayerOptions = () => ({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: true });
+
 /**
  * LayerHandler create an ol layer and can interact with the ol map (e.g. register interactions)
  * @class
  * @abstract
+ * @author taulinger
  */
 export class OlLayerHandler {
 
 	/**
 	 *
 	 * @param {string} id Id for this handler, which will be also the id of the layer created by this handler
+	 * @param {LayerHandlerOptions} [options] Optional configuration for this handler
 	 */
-	constructor(id) {
+	constructor(id, options = {}) {
 		if (this.constructor === OlLayerHandler) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
@@ -19,6 +32,7 @@ export class OlLayerHandler {
 		}
 		this._id = id;
 		this._active = false;
+		this._options = { ...getDefaultLayerOptions(), ...options };
 	}
 
 	get id() {
@@ -27,6 +41,10 @@ export class OlLayerHandler {
 
 	get active() {
 		return this._active;
+	}
+
+	get options() {
+		return this._options;
 	}
 
 	/**
@@ -71,4 +89,5 @@ export class OlLayerHandler {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.');
 	}
+
 }
