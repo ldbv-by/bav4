@@ -204,9 +204,9 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 };
 
 /**
- *
- * @param {Geometry} geometry
- * @returns
+ * Checks whether or not the geometry is valid for mapping purposes
+ * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
+ * @returns {boolean}
  */
 export const isValidGeometry = (geometry) => {
 	if (geometry == null) {
