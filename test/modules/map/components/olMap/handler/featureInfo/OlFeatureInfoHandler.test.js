@@ -10,6 +10,11 @@ import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../../../src/store/layers/layers.action';
+import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
+import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import GeoJSON from 'ol/format/GeoJSON';
+import { $injector } from '../../../../../../../src/injection';
+
 
 describe('OlFeatureInfoHandler', () => {
 
@@ -23,7 +28,9 @@ describe('OlFeatureInfoHandler', () => {
 	let store;
 
 	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
-		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return new OlFeatureInfoHandler(featureInfoProvider);
 	};
 
@@ -89,7 +96,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer1 = new VectorLayer({ properties: { id: layerId1 } });
 		});
 
-		it('adds exactly one FeatureInfo per layer', (done) => {
+		it('adds exactly one FeatureInfo and HighlightFeature per layer', (done) => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -118,16 +125,18 @@ describe('OlFeatureInfoHandler', () => {
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().highlight.features).toHaveSize(1);
 
 				clearFeatureInfoItems();
 				updateCoordinate(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveSize(0);
 				done();
 			}));
 		});
 
-		it('adds one FeatureInfo from each suitable layer', (done) => {
+		it('adds one FeatureInfo and HighlightFeature from each suitable layer', (done) => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -164,16 +173,21 @@ describe('OlFeatureInfoHandler', () => {
 				// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
 				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'name1-layerId1', content: 'description1' });
 				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0-layerId0', content: 'description0' });
+				expect(store.getState().highlight.features).toHaveSize(2);
+				expect(store.getState().highlight.features[0]).toEqual({ id: jasmine.anything(), type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
+				expect(store.getState().highlight.features[1]).toEqual({ id: jasmine.anything(), type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
 
 				//we update with non matching coordinates
 				clearFeatureInfoItems();
 				updateCoordinate(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveSize(0);
 
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
+				expect(store.getState().highlight.features).toHaveSize(2);
 
 				// we modify the first layer so that it is not queryable anymore
 				modifyLayer(layerId0, { visible: false });
@@ -181,6 +195,8 @@ describe('OlFeatureInfoHandler', () => {
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().highlight.features).toHaveSize(1);
+
 
 				//we modify the second layer so that it is not queryable anymore
 				modifyLayer(layerId1, { constraints: { hidden: true } });
@@ -188,11 +204,13 @@ describe('OlFeatureInfoHandler', () => {
 				updateCoordinate(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveSize(0);
+
 				done();
 			}));
 		});
 
-		it('adds NO FeatureInfo when FeatureInfoProvider returns null', (done) => {
+		it('adds \'Not_Available\' FeatureInfo items and HighlightFeatures when FeatureInfoProvider returns null', (done) => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -223,7 +241,11 @@ describe('OlFeatureInfoHandler', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				updateCoordinate(matchingCoordinate);
 
-				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().featureInfo.current).toHaveSize(2);
+				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
+				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
+				expect(store.getState().highlight.features).toHaveSize(2);
+
 				done();
 			}));
 		});
