@@ -20,10 +20,9 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
-import { isEmptyLayer } from '../../olMapUtils';
+import { isEmptyLayer, requestMapFocus } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
-import { simulateMouseEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
 import { isValidGeometry } from '../../olGeometryUtils';
 
 
@@ -84,7 +83,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			dragging: false
 		};
 
-		this._requestMapFocus = this._environmentService.isTouch() ? () => this._simulateClickEvent() : () => { };
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
@@ -226,7 +224,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		this._requestMapFocus();
+		requestMapFocus(this._map);
 
 		return this._vectorLayer;
 	}
@@ -336,7 +334,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
-			this._requestMapFocus();
+			requestMapFocus(this._map);
 		}
 
 	}
@@ -361,7 +359,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			else {
 				this._draw.removeLastPoint();
-				this._requestMapFocus();
+				requestMapFocus(this._map);
 			}
 
 			if (this._lastPointerMoveEvent) {
@@ -371,7 +369,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
-			this._requestMapFocus();
+			requestMapFocus(this._map);
 		}
 
 	}
@@ -379,7 +377,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_finish() {
 		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
-			this._requestMapFocus();
+			requestMapFocus(this._map);
 		}
 		else {
 			this._activateModify(null);
@@ -398,7 +396,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._init(currenType);
 			this._helpTooltip.activate(this._map);
 		}
-		this._requestMapFocus();
+		requestMapFocus(this._map);
 	}
 
 	_reset() {
@@ -411,7 +409,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
-		this._requestMapFocus();
+		requestMapFocus(this._map);
 	}
 
 	_createDrawByType(type, styleOption) {
@@ -663,19 +661,5 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-	}
-
-	/**
-	 * Workaround for touch-devices to refresh measure-state and
-	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without
-	 * any further detected pointer-moves and -clicks
-	 */
-	_simulateClickEvent() {
-		const view = this._map.getView();
-		if (view) {
-			const x = view.getCenter()[0];
-			const y = view.getCenter()[1];
-			simulateMouseEvent(this._map, MapBrowserEventType.CLICK, x, y);
-		}
 	}
 }

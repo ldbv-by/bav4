@@ -1,3 +1,6 @@
+import { simulateMouseEvent } from '../../../../../test/modules/map/components/olMap/mapTestUtils';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+
 export const updateOlLayer = (olLayer, layer) => {
 
 	olLayer.setVisible(layer.visible);
@@ -41,9 +44,30 @@ export const registerLongPressListener = (map, callback, delay = 300) => {
 	});
 };
 
+
+/**
+ * Checks whether a layer contains features or not.
+ * @param {Layer} layer
+ * @returns {boolean}
+ */
 export const isEmptyLayer = (layer) => {
 	if (layer) {
 		return !layer.getSource().getFeatures().length > 0;
 	}
 	return true;
+};
+
+
+/**
+ * Method to set the focus back on the current map without any further pointer
+ * moves or clicks from real devices
+ * @param {Map} map the map to focus on
+ */
+export const requestMapFocus = (map) => {
+	const view = map.getView();
+	if (map && view) {
+		const x = view.getCenter()[0];
+		const y = view.getCenter()[1];
+		simulateMouseEvent(map, MapBrowserEventType.CLICK, x, y);
+	}
 };

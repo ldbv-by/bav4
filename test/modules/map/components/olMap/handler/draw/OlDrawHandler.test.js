@@ -149,8 +149,14 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
-		const container = document.createElement('div');
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
+
+		const getTarget = () => {
+			const target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			return target;
+		};
 
 		const setupMap = () => {
 			return new Map({
@@ -161,7 +167,7 @@ describe('OlDrawHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: container,
+				target: getTarget(),
 				view: new View({
 					center: initialCenter,
 					zoom: 1
@@ -573,10 +579,10 @@ describe('OlDrawHandler', () => {
 					type: InteractionStateType.MODIFY
 				};
 				classUnderTest.activate(map);
-				classUnderTest._drawState = drawStateFake;
+
 				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
 				setType('marker');
-
+				classUnderTest._drawState = drawStateFake;
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
 
@@ -602,7 +608,7 @@ describe('OlDrawHandler', () => {
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
 				setStyle(style);
 
-				expect(styleSpy).toHaveBeenCalledWith([]);
+				expect(styleSpy).not.toHaveBeenCalled();
 			});
 		});
 
@@ -703,6 +709,8 @@ describe('OlDrawHandler', () => {
 				const styleFunctionMock = () => { };
 				setup();
 				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				classUnderTest.activate(map);
 				const featureMock = { getId: () => 'foo_bar_12345' };
 				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType').and.callFake(() => styleFunctionMock);
 
@@ -749,6 +757,12 @@ describe('OlDrawHandler', () => {
 	describe('when deactivated over olMap', () => {
 
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
+		const getTarget = () => {
+			const target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			return target;
+		};
 
 		const setupMap = () => {
 			return new Map({
@@ -759,7 +773,7 @@ describe('OlDrawHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: 'map',
+				target: getTarget(),
 				view: new View({
 					center: initialCenter,
 					zoom: 1
@@ -875,9 +889,15 @@ describe('OlDrawHandler', () => {
 
 	describe('when draw a line', () => {
 		const initialCenter = fromLonLat([42, 42]);
-		let target;
+		const getTarget = () => {
+			const target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			return target;
+		};
+
+
 		const setupMap = (zoom = 10) => {
-			target = document.createElement('div');
 			return new Map({
 				layers: [
 					new TileLayer({
@@ -886,7 +906,7 @@ describe('OlDrawHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: target,
+				target: getTarget(),
 				view: new View({
 					center: initialCenter,
 					zoom: zoom
@@ -1022,11 +1042,14 @@ describe('OlDrawHandler', () => {
 	};
 
 	describe('when pointer move', () => {
-		let target;
-		const setupMap = () => {
-			target = document.createElement('div');
+		const getTarget = () => {
+			const target = document.createElement('div');
 			target.style.height = '100px';
 			target.style.width = '100px';
+			return target;
+		};
+
+		const setupMap = () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
@@ -1035,7 +1058,7 @@ describe('OlDrawHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: target,
+				target: getTarget(),
 				view: new View({
 					center: [42, 42],
 					zoom: 1
@@ -1089,33 +1112,6 @@ describe('OlDrawHandler', () => {
 			expect(environmentSpy).toHaveBeenCalled();
 		});
 
-		it('_requestMapFocus links to _simulateClickEvent for touch-devices', () => {
-			setup();
-			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
-			const classUnderTest = new OlDrawHandler();
-			const simulateClickEventSpy = spyOn(classUnderTest, '_simulateClickEvent').and.callThrough();
-			const map = setupMap();
-
-			classUnderTest.activate(map);
-			classUnderTest._requestMapFocus();
-
-			expect(simulateClickEventSpy).toHaveBeenCalled();
-			expect(environmentSpy).toHaveBeenCalled();
-		});
-
-		it('_requestMapFocus links NOT to _simulateClickEvent', () => {
-			setup();
-			const environmentSpy = spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
-			const classUnderTest = new OlDrawHandler();
-			const simulateClickEventSpy = spyOn(classUnderTest, '_simulateClickEvent');
-			const map = setupMap();
-
-			classUnderTest.activate(map);
-			classUnderTest._requestMapFocus();
-
-			expect(simulateClickEventSpy).not.toHaveBeenCalled();
-			expect(environmentSpy).toHaveBeenCalled();
-		});
 
 		it('change drawState, when sketch is changing', () => {
 			setup();
@@ -1312,11 +1308,13 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when pointer click', () => {
-		let target;
-		const setupMap = () => {
-			target = document.createElement('div');
+		const getTarget = () => {
+			const target = document.createElement('div');
 			target.style.height = '100px';
 			target.style.width = '100px';
+			return target;
+		};
+		const setupMap = () => {
 			const map = new Map({
 				layers: [
 					new TileLayer({
@@ -1325,7 +1323,7 @@ describe('OlDrawHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: target,
+				target: getTarget(),
 				view: new View({
 					center: [0, 0],
 					zoom: 1
