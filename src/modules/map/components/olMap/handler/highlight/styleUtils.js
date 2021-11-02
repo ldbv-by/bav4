@@ -4,7 +4,6 @@ import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
 
 
-export const nullStyleFunction = () => [new Style({})];
 
 export const highlightFeatureStyleFunction = () => [new Style({
 	image: new Icon({

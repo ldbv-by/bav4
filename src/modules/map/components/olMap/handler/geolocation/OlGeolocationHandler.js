@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './StyleUtils';
+import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import Feature from 'ol/Feature';

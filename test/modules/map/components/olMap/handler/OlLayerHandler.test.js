@@ -1,4 +1,12 @@
-import { OlLayerHandler } from '../../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
+import { getDefaultLayerOptions, OlLayerHandler } from '../../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
+
+
+describe('getDefaultLayerConfig', () => {
+
+	it('returns thr default configuration for a layer handler', () => {
+		expect(getDefaultLayerOptions()).toEqual({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: true });
+	});
+});
 
 describe('LayerHandler', () => {
 
@@ -13,14 +21,15 @@ describe('LayerHandler', () => {
 	}
 	class OlLayerHandlerImpl2 extends OlLayerHandler {
 
-		constructor() {
-			super('some');
+		constructor(id, options) {
+			super(id, options);
 		}
 
 		onActivate() { }
 
 		onDeactivate() { }
 	}
+
 
 	describe('expected errors', () => {
 
@@ -47,11 +56,21 @@ describe('LayerHandler', () => {
 	describe('implementation', () => {
 
 		describe('constructor', () => {
-			it('initializes fields', () => {
-				const instanceUnderTest = new OlLayerHandlerImpl2();
+			it('initializes fields with default config', () => {
+				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
 
-				expect(instanceUnderTest.id).toBe('some');
+				expect(instanceUnderTest.id).toBe('foo');
 				expect(instanceUnderTest.active).toBeFalse();
+				expect(instanceUnderTest.options).toEqual(getDefaultLayerOptions());
+			});
+
+			it('initializes fields with custom config', () => {
+				const options = { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false };
+				const instanceUnderTest = new OlLayerHandlerImpl2('foo', options);
+
+				expect(instanceUnderTest.id).toBe('foo');
+				expect(instanceUnderTest.active).toBeFalse();
+				expect(instanceUnderTest.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 			});
 		});
 
@@ -59,7 +78,7 @@ describe('LayerHandler', () => {
 			it('activates/deactivates the handler', () => {
 				const map = {};
 				const layer = {};
-				const instanceUnderTest = new OlLayerHandlerImpl2();
+				const instanceUnderTest = new OlLayerHandlerImpl2('foo');
 				const onActivateSpy = spyOn(instanceUnderTest, 'onActivate').and.returnValue(layer);
 				const onDeactivateSpy = spyOn(instanceUnderTest, 'onDeactivate');
 
