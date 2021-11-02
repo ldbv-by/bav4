@@ -3,15 +3,19 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './StyleUtils';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { nullStyleFunction } from '../highlight/StyleUtils';
+import { HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
+import WKT from 'ol/format/WKT';
+import GeoJSON from 'ol/format/GeoJSON';
 
 
 /**
  * Handler for displaying highlighted features
+ * @author thiloSchlemmer
+ * @author taulinger
  */
 export class OlHighlightLayerHandler extends OlLayerHandler {
 
@@ -19,10 +23,6 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		super(HIGHLIGHT_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		const { StoreService } = $injector.inject('StoreService');
 		this._storeService = StoreService;
-		this._highlightLayer = null;
-		this._feature = new Feature();
-		this._temporaryFeature = new Feature();
-		this._map = null;
 		this._unregister = () => { };
 	}
 
@@ -31,29 +31,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 * Activates the Handler.
 		 * @override
 		 */
-	onActivate(olMap) {
-		this._highlightLayer = this._createLayer();
-		this._map = olMap;
-
-
-		const { highlight } = this._storeService.getStore().getState();
-
-		if (highlight.feature) {
-			const featureCoords = highlight.feature.data.coordinate;
-			this._feature.setStyle(highlightFeatureStyleFunction);
-			this._feature.setGeometry(new Point(featureCoords));
-		}
-
-		if (highlight.temporaryFeature) {
-			const temporaryFeatureCoords = highlight.temporaryFeature.data.coordinate;
-			this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-			this._temporaryFeature.setGeometry(new Point(temporaryFeatureCoords));
-		}
-		this._map.renderSync();
-
-		this._unregister = this._register(this._storeService.getStore());
-
-		return this._highlightLayer;
+	onActivate(/*eslint-disable no-unused-vars */olMap) {
+		const olLayer = this._createLayer();
+		this._unregister = this._register(this._storeService.getStore(), olLayer.getSource());
+		return olLayer;
 	}
 
 	/**
@@ -61,59 +42,57 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 *  @param {Map} olMap
 		 */
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
-		this._map = null;
-		this._highlightLayer = null;
 		this._unregister();
 	}
 
 	_createLayer() {
-		const source = new VectorSource({ wrapX: false, features: [this._feature, this._temporaryFeature] });
 		return new VectorLayer({
-			source: source
+			source: new VectorSource()
 		});
 	}
 
-	_register(store) {
-		const extract = (state) => {
-			return state.highlight;
-		};
+	_toOlFeature(feature) {
+		const { data } = feature;
 
-		const isValidHighlight = (highlight) => {
-			if (!highlight.active) {
-				return false;
-			}
+		if (data.coordinate) {
+			return new Feature(new Point(data.coordinate));
+		}
 
-			return highlight.feature || highlight.temporaryFeature;
-		};
+		switch (data.geometryType) {
 
-		const onChange = (changedState, stateSnapshot) => {
-			if (isValidHighlight(changedState)) {
-
-				if (changedState.feature) {
-					const coord = changedState.feature.data.coordinate;
-					this._feature.setStyle(highlightFeatureStyleFunction);
-					this._feature.setGeometry(new Point(coord));
-				}
-				else {
-					this._feature.setStyle(nullStyleFunction);
-				}
-				if (changedState.temporaryFeature) {
-					const coord = changedState.temporaryFeature.data.coordinate;
-					this._temporaryFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-					this._temporaryFeature.setGeometry(new Point(coord));
-				}
-				else {
-					this._temporaryFeature.setStyle(nullStyleFunction);
-				}
-				this._map.renderSync();
-			}
-			else {
-				this._feature.setStyle(nullStyleFunction);
-				this._temporaryFeature.setStyle(nullStyleFunction);
-			}
-		};
-
-		return observe(store, extract, onChange);
+			case HighlightGeometryTypes.WKT:
+				return new WKT().readFeature(data.geometry);
+			case HighlightGeometryTypes.GEOJSON:
+				return new GeoJSON().readFeature(data.geometry);
+		}
+		return null;
 	}
 
+	_register(store, olSource) {
+
+		const onChange = ({ features, temporaryFeatures }) => {
+
+			olSource.clear();
+
+			olSource.addFeatures(
+				features
+					.map(this._toOlFeature)
+					.filter(olFeature => !!olFeature)
+					.map(olFeature => {
+						olFeature.setStyle(highlightFeatureStyleFunction);
+						return olFeature;
+					}));
+
+			olSource.addFeatures(
+				temporaryFeatures
+					.map(this._toOlFeature)
+					.filter(olFeature => !!olFeature)
+					.map(olFeature => {
+						olFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+						return olFeature;
+					}));
+		};
+
+		return observe(store, state => state.highlight, onChange, false);
+	}
 }

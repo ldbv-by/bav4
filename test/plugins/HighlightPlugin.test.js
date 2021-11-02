@@ -1,7 +1,7 @@
 import { HighlightPlugin, HIGHLIGHT_LAYER_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, setHighlightFeature } from '../../src/store/highlight/highlight.action';
+import { clearHighlightFeatures, setHighlightFeatures } from '../../src/store/highlight/highlight.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 
 
@@ -23,7 +23,7 @@ describe('HighlightPlugin', () => {
 
 		await instanceUnderTest.register(store);
 
-		setHighlightFeature(highlightFeature);
+		setHighlightFeatures(highlightFeature);
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].id).toBe(HIGHLIGHT_LAYER_ID);
