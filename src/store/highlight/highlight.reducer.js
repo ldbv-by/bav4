@@ -1,17 +1,22 @@
-export const FEATURE_CHANGED = 'highlight/feature';
-export const SECONDARY_FEATURE_CHANGED = 'highlight/secondary_feature';
+import { createUniqueId } from '../../utils/numberUtils';
+
+export const FEATURE_SET = 'highlight/feature/set';
+export const FEATURE_ADD = 'highlight/feature/add';
+export const TEMPORARY_FEATURE_SET = 'highlight/temporary_feature/set';
+export const TEMPORARY_FEATURE_ADD = 'highlight/temporary_feature/add';
 export const CLEAR_FEATURES = 'highlight/clear';
+export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
 
 export const initialState = {
 
 	/**
-	 * @property {HightlightFeature|null}
+	 * @property {HighlightFeature|null}
 	 */
-	feature: null,
+	features: [],
 	/**
-	 * @property {HightlightFeature|null}
+	 * @property {HighlightFeature|null}
 	 */
-	temporaryFeature: null,
+	temporaryFeatures: [],
 	/**
 	 * @property {boolean}
 	 */
@@ -20,25 +25,54 @@ export const initialState = {
 
 export const highlightReducer = (state = initialState, action) => {
 
+	const createIdIfMissing = features => features.map(f => {
+		if (!f.id) {
+			f.id = createUniqueId();
+		}
+		return f;
+	});
+
 	const { type, payload } = action;
 	switch (type) {
-		case FEATURE_CHANGED: {
+		case FEATURE_SET: {
 
-			const active = !!payload || !!state.temporaryFeature;
+			const active = (!!payload.length || !!state.temporaryFeatures.length);
 
 			return {
 				...state,
-				feature: payload,
+				features: createIdIfMissing(payload),
 				active: active
 			};
 		}
-		case SECONDARY_FEATURE_CHANGED: {
+		case FEATURE_ADD: {
 
-			const active = !!payload || !!state.feature;
+			const features = [...state.features, ...createIdIfMissing(payload)];
+			const active = !!state.temporaryFeatures.length || !!features.length;
 
 			return {
 				...state,
-				temporaryFeature: payload,
+				features: features,
+				active: active
+			};
+		}
+		case TEMPORARY_FEATURE_SET: {
+
+			const active = (!!payload.length || !!state.features.length);
+
+			return {
+				...state,
+				temporaryFeatures: createIdIfMissing(payload),
+				active: active
+			};
+		}
+		case TEMPORARY_FEATURE_ADD: {
+
+			const temporaryFeatures = [...state.temporaryFeatures, ...createIdIfMissing(payload)];
+			const active = !!state.features.length || !!temporaryFeatures.length;
+
+			return {
+				...state,
+				temporaryFeatures: temporaryFeatures,
 				active: active
 			};
 		}
@@ -46,9 +80,23 @@ export const highlightReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				feature: null,
-				temporaryFeature: null,
+				features: [],
+				temporaryFeatures: [],
 				active: false
+			};
+		}
+		case REMOVE_FEATURE_BY_ID: {
+
+			const test = f => f.id !== payload;
+			const features = state.features.filter(test);
+			const temporaryFeatures = state.temporaryFeatures.filter(test);
+			const active = !!features.length || !!temporaryFeatures.length;
+
+			return {
+				...state,
+				features: features,
+				temporaryFeatures: temporaryFeatures,
+				active: active
 			};
 		}
 	}

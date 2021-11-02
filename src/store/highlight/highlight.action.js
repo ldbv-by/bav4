@@ -2,42 +2,43 @@
  * Action creators for highlighting a feature.
  * @module map/action
  */
-import { CLEAR_FEATURES, FEATURE_CHANGED, SECONDARY_FEATURE_CHANGED } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, REMOVE_FEATURE_BY_ID, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 
 /**
  * Contains information for highlighting a position or an area in a map.
- * @typedef {Object} HightlightFeature
- * @property {HightlightFeatureTypes} type  The type of this feature.
- * @property {HightlightCoordinate|HightlightGeometry} data The data which can be a coordinate or a geometry
+ * @typedef {Object} HighlightFeature
+ * @property {HighlightFeatureTypes} type  The type of this feature.
+ * @property {HighlightCoordinate|HighlightGeometry} data The data which can be a coordinate or a geometry
+ * @property {string} [id] Optional id. If not present, the reducer will create one.
  * @property {string} [label] Optional text
- *
  */
 
 /**
- * Coordinate data for a {@link HightlightFeature}
- * @typedef {Object} HightlightCoordinate
+ * Coordinate data for a {@link HighlightFeature}
+ * @typedef {Object} HighlightCoordinate
  * @property {Coordinate} coordinate
  */
 
 /**
- * Geometry data for a {@link HightlightFeature}
- * @typedef {Object} HightlightGeometry
+ * Geometry data for a {@link HighlightFeature}
+ * @typedef {Object} HighlightGeometry
  * @property {object|string} geometry Geometry (e.g. geoJson, WKT)
- * @property {HightlightFeatureGeometryTypes} geometryType the type of the geometry
+ * @property {HighlightFeatureGeometryTypes} geometryType the type of the geometry
  */
 
-export const HightlightFeatureTypes = Object.freeze({
+export const HighlightFeatureTypes = Object.freeze({
 	DEFAULT: 0
 });
 
 /**
- * Type of a {@link HightlightGeometry}
+ * Type of a {@link HighlightGeometry}
  * @enum
  */
-export const HightlightGeometryTypes = Object.freeze({
-	WKT: 0
+export const HighlightGeometryTypes = Object.freeze({
+	WKT: 0,
+	GEOJSON: 1
 });
 
 
@@ -48,52 +49,80 @@ const getStore = () => {
 };
 
 /**
- * Sets the {@link HightlightFeature}.
- * @param {HightlightFeature} feature
- * @function
- */
-export const setHighlightFeature = (feature) => {
+* Sets a single or an array of {@link HighlightFeature}.
+* @param {Array.<HighlightFeature>|HighlightFeature} features
+* @function
+*/
+export const setHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
-		type: FEATURE_CHANGED,
-		payload: feature
-	});
-};
-/**
- * Removes the {@link HightlightFeature}
- * @function
- */
-export const removeHighlightFeature = () => {
-	getStore().dispatch({
-		type: FEATURE_CHANGED,
-		payload: null
+		type: FEATURE_SET,
+		payload: featureAsArray
 	});
 };
 
 /**
- * Sets the secondary {@link HightlightFeature}.
- * @param {HightlightFeature} feature
+* Adds (appends) a single or an array of {@link HighlightFeature}.
+* @param {Array.<HighlightFeature>|HighlightFeature} features
+* @function
+*/
+export const addHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
+	getStore().dispatch({
+		type: FEATURE_ADD,
+		payload: featureAsArray
+	});
+};
+/**
+ * Removes all {@link HighlightFeature}s.
  * @function
  */
-export const setTemporaryHighlightFeature = (feature) => {
+export const removeHighlightFeatures = () => {
 	getStore().dispatch({
-		type: SECONDARY_FEATURE_CHANGED,
-		payload: feature
+		type: FEATURE_SET,
+		payload: []
 	});
 };
 
 /**
- * Removes the secondary {@link HightlightFeature}.
+ * Sets a single or an array of temporary {@link HighlightFeature}.
+ * @param {HighlightFeature} feature
  * @function
  */
-export const removeTemporaryHighlightFeature = () => {
+export const setTemporaryHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
-		type: SECONDARY_FEATURE_CHANGED,
-		payload: null
+		type: TEMPORARY_FEATURE_SET,
+		payload: featureAsArray
 	});
 };
 
 /**
- * Removes both the permanent and the secondary {@link HightlightFeature}
+ * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
+ * @param {HighlightFeature} feature
+ * @function
+ */
+export const addTemporaryHighlightFeatures = (feature) => {
+	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
+	getStore().dispatch({
+		type: TEMPORARY_FEATURE_ADD,
+		payload: featureAsArray
+	});
+};
+
+/**
+ * Removes all temporary {@link HighlightFeature}s.
+ * @function
+ */
+export const removeTemporaryHighlightFeatures = () => {
+	getStore().dispatch({
+		type: TEMPORARY_FEATURE_SET,
+		payload: []
+	});
+};
+
+/**
+ * Removes both all permanent and temporary {@link HighlightFeature}s.
  * @function
  */
 export const clearHighlightFeatures = () => {
@@ -101,3 +130,15 @@ export const clearHighlightFeatures = () => {
 		type: CLEAR_FEATURES
 	});
 };
+
+/**
+ * Removes a  (permanent or temporary) feature by its id.
+ * @function
+ */
+export const removeHighlightFeatureById = (id) => {
+	getStore().dispatch({
+		type: REMOVE_FEATURE_BY_ID,
+		payload: id
+	});
+};
+

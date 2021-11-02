@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { round } from '../../src/utils/numberUtils.js';
+import { createUniqueId, round } from '../../src/utils/numberUtils.js';
 
 
 describe('Unit test functions from numberUtils.js', () => {
@@ -41,4 +41,11 @@ describe('Unit test functions from numberUtils.js', () => {
 		});
 	});
 
+	describe('createUniqueId', () => {
+
+		it('creates a (pseudo) unique id', () => {
+			expect(createUniqueId()).toBeInstanceOf(Number);
+			expect(createUniqueId()).not.toBe(createUniqueId());
+		});
+	});
 });

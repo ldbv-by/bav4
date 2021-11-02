@@ -1,5 +1,5 @@
 
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction, nullStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/StyleUtils';
+import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 
@@ -31,22 +31,4 @@ describe('highlightStyleFunction', () => {
 		expect(highlightStyle.getImage()).toBeTruthy();
 	});
 
-});
-
-
-describe('nullStyleFunction', () => {
-	it('should create a empty style', () => {
-		const geometry = new Point([0, 0]);
-		const feature = new Feature({ geometry: geometry });
-
-		const styles = nullStyleFunction(feature);
-
-		expect(styles).toBeTruthy();
-		expect(styles.length).toBe(1);
-
-		const nullStyle = styles[0];
-		expect(nullStyle.getFill()).toBeFalsy();
-		expect(nullStyle.getStroke()).toBeFalsy();
-		expect(nullStyle.getImage()).toBeFalsy();
-	});
 });

@@ -9,7 +9,7 @@ import { activate as activateDraw, deactivate as deactivateDraw } from '../../..
 import css from './toolContainer.css';
 import { closeToolContainer } from '../../../../store/toolContainer/toolContainer.action';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
 /**
@@ -71,7 +71,6 @@ export class ToolContainer extends BaElement {
 		const nextActiveContentId = getNextActiveContent();
 		if (nextActiveContentId === this._lastContentId) {
 			emitNotification(translate('toolbox_prevent_switching_tool'), LevelTypes.WARN);
-
 		}
 		else {
 			if (nextActiveContentId) {
@@ -106,7 +105,8 @@ export class ToolContainer extends BaElement {
 				<div class="tool-container__content ${getOverlayClass()}">    
 				<div class="tool-container__tools-nav">                        
                         <button @click=${closeToolContainer} class="tool-container__close-button">
-                            x
+							<span class="close-icon">        							
+							</span>
                         </button>                             
                 </div>		
 					${content}    				               				 				           					 				               				               				 				            				               				               				 				           
