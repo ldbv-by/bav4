@@ -24,6 +24,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
+		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
 	});
 
 	it('provides translation for en', () => {
@@ -47,10 +48,11 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.map_olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
+		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Object Information not available');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 17;
+		const expectedSize = 18;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
