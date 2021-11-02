@@ -199,7 +199,7 @@ describe('getArea', () => {
 		const calculationHints = { fromProjection: 'EPSG:4326', toProjection: 'EPSG:25832' };
 		const area = getArea(polygon, calculationHints);
 
-		expect(area).toBe(12575513411.866539);
+		expect(area).toBeCloseTo(12575513411.866, 2);
 	});
 
 	it('returns 0 for a non-area-like geometry', () => {
