@@ -10,17 +10,17 @@ export class LayerInfoService {
 	/**
 	* Returns the corresponding  {@link LayerInfo} for an id.
 	* @public
-	* @param {string} id Id of the desired {@link LayerInfo}
+	* @param {string} geoResourceId Id of the desired {@link LayerInfo}
 	* @returns {LayerInfo | null }
+	* @throws Will throw an error if the provider result is wrong and pass it to the view.
 	*/
-	async byId(id) {
+	async byId(geoResourceId) {
 		try {
-			const result = await this._provider(id);
+			const result = await this._provider(geoResourceId);
 			return new LayerInfo(result.content, null);
 		}
 		catch (e) {
-			console.warn(e.message);
+			throw new Error('Could not load layerinfo from provider: ' + e.message);
 		}
-		return null;
 	}
 }

@@ -16,7 +16,7 @@ describe('LayerInfoPanel', () => {
 
 	describe('when initialized', () => {
 
-		it('should render the nothing when geoResourceId is null by default', async () => {
+		it('should render the nothing when geoResourceId is null', async () => {
 
 			const element = await TestUtils.render(LayerInfoPanel.tag);
 
@@ -25,7 +25,7 @@ describe('LayerInfoPanel', () => {
 
 		it('should show a layerInfo on the panel', async () => {
 
-			const layerInfo = new LayerInfo('<b>content</b>', null);
+			const layerInfo = new LayerInfo('<b>content</b>');
 			spyOn(layerInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(layerInfo);
 
 			const element = await TestUtils.render(LayerInfoPanel.tag);
@@ -38,15 +38,20 @@ describe('LayerInfoPanel', () => {
 			expect(divs[0].innerText).toBe('content');
 		});
 
-		it('should show the nothing when no layerinfo found', async () => {
+		it('should log a warn statement when Altitude Service is not available', async (done) => {
 
-			spyOn(layerInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(Promise.reject(new Error('something got wrong')));
+			spyOn(layerInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(Promise.reject(new Error('LayerInfo Error')));
+			const warnSpy = spyOn(console, 'warn');
 
 			const element = await TestUtils.render(LayerInfoPanel.tag);
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 			element.signal('UPDATE_LAYERINFO', null);
 
-			expect(element.shadowRoot.children.length).toBe(0);
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('LayerInfo Error');
+				expect(element.shadowRoot.children.length).toBe(0);
+				done();
+			});
 		});
 	});
 });

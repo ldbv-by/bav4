@@ -8,14 +8,15 @@ import { $injector } from '../../injection';
 export const loadBvvLayerInfo = async (geoResourceId) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-
 	const url = `${configService.getValueAsPath('BACKEND_URL')}layerinfo/${geoResourceId}`;
 
 	const result = await httpService.get(url);
 
 	if (result.ok) {
 		const htmlContent = await result.text();
-		return { content: htmlContent };
+		if (htmlContent && htmlContent.length > 0) {
+			return { content: htmlContent };
+		}
 	}
 	throw new Error(`LayerInfo for '${geoResourceId}' could not be loaded`);
 };
