@@ -51,7 +51,7 @@ export const equals = (value0, value1) => {
 export class EventLike {
 
 	constructor(payload) {
-		this._paylod = payload;
+		this._payload = payload;
 		this._id = createUniqueId();
 	}
 
