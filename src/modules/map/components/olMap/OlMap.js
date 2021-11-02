@@ -117,8 +117,8 @@ export class OlMap extends MvuElement {
 		});
 
 		const singleClickHandler = (evt) => {
-			//when no layer handler is currently active
-			if ([...this._layerHandler.values()].filter(lh => lh.active).length === 0) {
+			//when no layer handler is currently active or active handler does not prevent click handling
+			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultClickHandling).length === 0) {
 				evt.preventDefault();
 				const coord = this._map.getEventCoordinate(evt.originalEvent);
 				setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
@@ -142,8 +142,8 @@ export class OlMap extends MvuElement {
 		});
 
 		const contextHandler = (evt) => {
-			//when no layer handler is currently active
-			if ([...this._layerHandler.values()].filter(lh => lh.active).length === 0) {
+			//when no layer handler is currently active or active handler does not prevent context click handling
+			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultContextClickHandling).length === 0) {
 				evt.preventDefault();
 				const coord = this._map.getEventCoordinate(evt.originalEvent);
 				setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
