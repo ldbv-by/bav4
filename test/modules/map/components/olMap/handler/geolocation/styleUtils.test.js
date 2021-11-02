@@ -1,5 +1,5 @@
 
-import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/StyleUtils';
+import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '../../../../../../../src/modules/map/components/olMap/handler/geolocation/styleUtils';
 import { Point, Circle } from 'ol/geom';
 import Map from 'ol/Map';
 import { Vector as VectorLayer } from 'ol/layer';
