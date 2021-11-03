@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../../../test-utils';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, removeHighlightFeatures } from '../../../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -113,7 +113,7 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				const olLayer = handler.activate(map);
 
-				removeHighlightFeatures();
+				clearHighlightFeatures();
 
 				const olFeatures = olLayer.getSource().getFeatures();
 				expect(olFeatures).toHaveSize(0);
