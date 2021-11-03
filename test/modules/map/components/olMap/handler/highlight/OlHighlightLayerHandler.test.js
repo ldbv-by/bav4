@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../../../test-utils';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { HighlightGeometryTypes, removeHighlightFeatures, removeTemporaryHighlightFeatures, setHighlightFeatures, setTemporaryHighlightFeatures } from '../../../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightGeometryTypes, removeHighlightFeatures, removeTemporaryHighlightFeatures, setHighlightFeatures, setTemporaryHighlightFeatures } from '../../../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -93,7 +93,7 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				const olLayer = handler.activate(map);
 
-				setHighlightFeatures([{ data: { coordinate: [21, 42] } }, { data: { coordinate: [38, 57] } }]);
+				addHighlightFeatures([{ data: { coordinate: [21, 42] } }, { data: { coordinate: [38, 57] } }]);
 				setTemporaryHighlightFeatures({ data: { coordinate: [57, 38] } });
 
 				const olFeatures = olLayer.getSource().getFeatures();
