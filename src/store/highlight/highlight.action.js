@@ -49,19 +49,6 @@ const getStore = () => {
 };
 
 /**
-* Sets a single or an array of {@link HighlightFeature}.
-* @param {Array.<HighlightFeature>|HighlightFeature} features
-* @function
-*/
-export const setHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: FEATURE_SET,
-		payload: featureAsArray
-	});
-};
-
-/**
 * Adds (appends) a single or an array of {@link HighlightFeature}.
 * @param {Array.<HighlightFeature>|HighlightFeature} features
 * @function
