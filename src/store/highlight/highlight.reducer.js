@@ -1,6 +1,5 @@
 import { createUniqueId } from '../../utils/numberUtils';
 
-export const FEATURE_SET = 'highlight/feature/set';
 export const FEATURE_ADD = 'highlight/feature/add';
 export const CLEAR_FEATURES = 'highlight/clear';
 export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
@@ -28,16 +27,6 @@ export const highlightReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
 	switch (type) {
-		case FEATURE_SET: {
-
-			const active = !!payload.length;
-
-			return {
-				...state,
-				features: createIdIfMissing(payload),
-				active: active
-			};
-		}
 		case FEATURE_ADD: {
 
 			const features = [...state.features, ...createIdIfMissing(payload)];

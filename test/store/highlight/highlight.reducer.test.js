@@ -1,5 +1,5 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { removeHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
+import { clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -14,7 +14,6 @@ describe('highlightReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
 	});
 
 	it('changes the \'features\' and \'active\' property by adding features', () => {
@@ -24,17 +23,14 @@ describe('highlightReducer', () => {
 		addHighlightFeatures([]);
 
 		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
 
 		addHighlightFeatures(highlightFeature);
 
 		expect(store.getState().highlight.features).toEqual([highlightFeature]);
-		expect(store.getState().highlight.active).toBeTrue();
 
-		removeHighlightFeatures();
+		clearHighlightFeatures();
 
 		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
 
 		addHighlightFeatures(highlightFeature);
 		addHighlightFeatures(highlightFeature);
@@ -42,13 +38,13 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.features).toHaveSize(2);
 		expect(store.getState().highlight.active).toBeTrue();
 
-		removeHighlightFeatures();
+		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature]);
 
 		expect(store.getState().highlight.features).toEqual([highlightFeature]);
 		expect(store.getState().highlight.active).toBeTrue();
 
-		removeHighlightFeatures();
+		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature, highlightFeature]);
 
 		expect(store.getState().highlight.features).toHaveSize(2);
