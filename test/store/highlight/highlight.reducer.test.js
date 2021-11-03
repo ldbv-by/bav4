@@ -14,7 +14,6 @@ describe('highlightReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
 		expect(store.getState().highlight.active).toBeFalse();
 	});
 
