@@ -75,7 +75,7 @@ describe('LocationResultItem', () => {
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
 		});
