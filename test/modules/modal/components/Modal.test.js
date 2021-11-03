@@ -4,6 +4,7 @@ import { TestUtils } from '../../../test-utils';
 import { html, TemplateResult } from 'lit-html';
 import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 
 window.customElements.define(Modal.tag, Modal);
@@ -15,7 +16,18 @@ describe('Modal', () => {
 
 	const setup = (state = {}) => {
 
-		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer });
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			modal: modalReducer,
+			media: createNoInitialStateMediaReducer()
+		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(Modal.tag);
@@ -33,20 +45,33 @@ describe('Modal', () => {
 	describe('when modal state changed', () => {
 
 		it('adds content to modal from a string', async () => {
-			const element = await setup();
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
 
 			openModal('title', 'content');
 
 			expect(store.getState().modal.data.title).toBe('title');
 			expect(store.getState().modal.data.content).toBe('content');
 			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('title');
+			expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 			//Note: Webkit appends a line break to the 'content' in this case
 			expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
 		});
 
 		it('adds content to modal from a lit-html TemplateResult', async () => {
-			const element = await setup();
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
 
 			const template = (str) => html`${str}`;
 
@@ -55,13 +80,19 @@ describe('Modal', () => {
 			expect(store.getState().modal.data.title).toBe('title');
 			expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
 			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toBe('title');
+			expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 			//Note: Webkit appends a line break to the 'content' in this case
 			expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
 		});
 
 		it('closes the modal', async () => {
-			const element = await setup();
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
 			openModal('title', 'content');
 
 			closeModal();
@@ -72,7 +103,13 @@ describe('Modal', () => {
 		describe('when close button clicked', () => {
 
 			it('closes the modal', async () => {
-				const element = await setup();
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
 				openModal('title', 'content');
 
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
@@ -88,7 +125,13 @@ describe('Modal', () => {
 		describe('when background clicked', () => {
 
 			it('closes the modal', async () => {
-				const element = await setup();
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
 				openModal('title', 'content');
 
 				const background = element.shadowRoot.querySelector('.modal__background');

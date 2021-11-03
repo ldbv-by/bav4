@@ -3,6 +3,7 @@ import { BaElement } from '../../BaElement';
 import css from './modal.css';
 import { $injector } from '../../../injection';
 import { closeModal } from '../../../store/modal/modal.action';
+import arrowLeftShort from '../assets/arrowLeftShort.svg';
 
 /**
  * Modal dialog container.
@@ -23,7 +24,7 @@ export class Modal extends BaElement {
 	 * @override
 	 */
 	createView(state) {
-		const { active } = state;
+		const { active, portrait } = state;
 		const translate = (key) => this._translationService.translate(key);
 
 		const hide = () => {
@@ -35,13 +36,22 @@ export class Modal extends BaElement {
 			});
 		};
 
+		const getOrientationClass = () => {
+			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		if (active) {
 			const { data: { title, content } } = state;
 			return html`
         		<style>${css}</style>
-				<div class='modal__container modal_show'>
+				<div class='modal__container modal_show ${getOrientationClass()}'>
 					<div class='modal '>
-						<div class='modal__title'>${title}</div>
+						<div class='modal__title' @click="${hide}">
+							<span class="ba-list-item__pre back-icon" >
+								<ba-icon  .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
+							</span>	
+							<span class='modal__title-text'>${title}</span>
+						</div>
 						<div class='modal__content'>${content}</div>
 						<div class='modal__actions'>
 							<ba-button .label=${translate('modal_close_button')} @click=${hide}></ba-button>
@@ -60,8 +70,8 @@ export class Modal extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { modal: { data, active } } = globalState;
-		return { data, active };
+		const { modal: { data, active }, media: { portrait } } = globalState;
+		return { data, active, portrait };
 	}
 
 	static get tag() {
