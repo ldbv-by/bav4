@@ -43,6 +43,9 @@ describe('StoreService', () => {
 		const featureInfoPluginMock = {
 			register() { }
 		};
+		const mainMenuPluginMock = {
+			register() { }
+		};
 		const mediaPluginMock = {
 			register() { }
 		};
@@ -67,6 +70,7 @@ describe('StoreService', () => {
 				.registerSingleton('ContextClickPlugin', contextClickPluginMock)
 				.registerSingleton('HighlightPlugin', highlightPluginMock)
 				.registerSingleton('FeatureInfoPlugin', featureInfoPluginMock)
+				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 
@@ -116,6 +120,7 @@ describe('StoreService', () => {
 			const contextClickPluginSpy = spyOn(contextClickPluginMock, 'register');
 			const highlightPluginSpy = spyOn(highlightPluginMock, 'register');
 			const featureInfoPluginSpy = spyOn(featureInfoPluginMock, 'register');
+			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -136,6 +141,7 @@ describe('StoreService', () => {
 					expect(contextClickPluginSpy).toHaveBeenCalledWith(store);
 					expect(highlightPluginSpy).toHaveBeenCalledWith(store);
 					expect(featureInfoPluginSpy).toHaveBeenCalledWith(store);
+					expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
 					expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 					done();
 				});

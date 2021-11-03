@@ -74,6 +74,7 @@ export class StoreService {
 				HighlightPlugin: highlightPlugin,
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
+				MainMenuPlugin: mainMenuPlugin,
 				EnvironmentService: environmentService
 			}
 				= $injector.inject(
@@ -88,7 +89,8 @@ export class StoreService {
 					'HighlightPlugin',
 					'MediaPlugin',
 					'EnvironmentService',
-					'FeatureInfoPlugin'
+					'FeatureInfoPlugin',
+					'MainMenuPlugin'
 				);
 
 			setTimeout(async () => {
@@ -104,6 +106,7 @@ export class StoreService {
 				await contextClickPlugin.register(this._store);
 				await highlightPlugin.register(this._store);
 				await featureInfoPlugin.register(this._store);
+				await mainMenuPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});
