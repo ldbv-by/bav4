@@ -14,6 +14,7 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../../../src/injection';
+import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 
 
 describe('OlFeatureInfoHandler', () => {
@@ -136,6 +137,30 @@ describe('OlFeatureInfoHandler', () => {
 			}));
 		});
 
+		it('removes outdated HighlightFeature items', (done) => {
+			const handler = setup({
+				highlight: {
+					features: [
+						{ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: [21, 42] },
+						{ id: 'foo', type: HighlightFeatureTypes.DEFAULT, data: [5, 55] }
+					],
+					temporaryFeatures: []
+				}
+			}, mockFeatureInfoProvider);
+			const map = setupMap();
+			handler.register(map);
+
+			map.once('postrender', delay(() => {
+				// safe to call map.getPixelFromCoordinate from now on
+				updateCoordinate(notMatchingCoordinate);
+
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].id).toBe('foo');
+
+				done();
+			}));
+		});
+
 		it('adds one FeatureInfo and HighlightFeature from each suitable layer', (done) => {
 			const handler = setup({
 				layers: {
@@ -174,8 +199,8 @@ describe('OlFeatureInfoHandler', () => {
 				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'name1-layerId1', content: 'description1' });
 				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0-layerId0', content: 'description0' });
 				expect(store.getState().highlight.features).toHaveSize(2);
-				expect(store.getState().highlight.features[0]).toEqual({ id: jasmine.anything(), type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
-				expect(store.getState().highlight.features[1]).toEqual({ id: jasmine.anything(), type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
+				expect(store.getState().highlight.features[0]).toEqual({ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
+				expect(store.getState().highlight.features[1]).toEqual({ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
 
 				//we update with non matching coordinates
 				clearFeatureInfoItems();
