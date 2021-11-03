@@ -7,7 +7,7 @@ import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction }
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
+import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 
@@ -54,43 +54,50 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	_toOlFeature(feature) {
 		const { data } = feature;
 
+		//we have a HighlightCoordinate
 		if (data.coordinate) {
-			return new Feature(new Point(data.coordinate));
+			return this._appendStyle(feature, new Feature(new Point(data.coordinate)));
 		}
 
+		//we have a HighlightGeometry
 		switch (data.geometryType) {
 
 			case HighlightGeometryTypes.WKT:
-				return new WKT().readFeature(data.geometry);
+				return this._appendStyle(feature, new WKT().readFeature(data.geometry));
 			case HighlightGeometryTypes.GEOJSON:
-				return new GeoJSON().readFeature(data.geometry);
+				return this._appendStyle(feature, new GeoJSON().readFeature(data.geometry));
 		}
 		return null;
 	}
 
+	_appendStyle(feature, olFeature) {
+		const { data } = feature;
+		//we have a HighlightCoordinate
+		if (data.coordinate) {
+
+			switch (feature.type) {
+
+				case HighlightFeatureTypes.DEFAULT:
+					olFeature.setStyle(highlightFeatureStyleFunction);
+					break;
+				case HighlightFeatureTypes.TEMPORARY:
+					olFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+					break;
+			}
+		}
+		return olFeature;
+	}
+
 	_register(store, olSource) {
 
-		const onChange = ({ features, temporaryFeatures }) => {
+		const onChange = ({ features }) => {
 
 			olSource.clear();
 
 			olSource.addFeatures(
 				features
-					.map(this._toOlFeature)
-					.filter(olFeature => !!olFeature)
-					.map(olFeature => {
-						olFeature.setStyle(highlightFeatureStyleFunction);
-						return olFeature;
-					}));
-
-			olSource.addFeatures(
-				temporaryFeatures
-					.map(this._toOlFeature)
-					.filter(olFeature => !!olFeature)
-					.map(olFeature => {
-						olFeature.setStyle(highlightTemporaryFeatureStyleFunction);
-						return olFeature;
-					}));
+					.map(this._toOlFeature, this)
+					.filter(olFeature => !!olFeature));
 		};
 
 		return observe(store, state => state.highlight, onChange, false);
