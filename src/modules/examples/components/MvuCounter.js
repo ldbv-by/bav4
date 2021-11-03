@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
-import { setCurrent } from '../../../../store/topics/topics.action';
-import { MvuElement } from '../../../MvuElement';
+import { setCurrent } from './../../../store/topics/topics.action';
+import { MvuElement } from './../../MvuElement';
 
 const Update_Counter = 'update_counter';
 const Update_Topic = 'update_topic';
