@@ -143,8 +143,7 @@ describe('OlFeatureInfoHandler', () => {
 					features: [
 						{ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: [21, 42] },
 						{ id: 'foo', type: HighlightFeatureTypes.DEFAULT, data: [5, 55] }
-					],
-					temporaryFeatures: []
+					]
 				}
 			}, mockFeatureInfoProvider);
 			const map = setupMap();
