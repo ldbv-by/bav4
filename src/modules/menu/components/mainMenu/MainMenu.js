@@ -51,15 +51,6 @@ export class MainMenu extends BaElement {
 		this._activateTab(this._activeTabIndex);
 	}
 
-	initialize() {
-
-		this.observe('tabIndex', tabIndex => {
-			if (tabIndex !== MainMenuTabIndex.SEARCH.id) {
-				clearHighlightFeatures();
-			}
-		});
-	}
-
 	/**
 	 * @override
 	 */

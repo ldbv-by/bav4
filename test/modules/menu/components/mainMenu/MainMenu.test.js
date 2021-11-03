@@ -9,8 +9,6 @@ import { setTabIndex } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureTypes, setHighlightFeatures } from '../../../../../src/store/highlight/highlight.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
@@ -35,7 +33,6 @@ describe('MainMenuTabIndex', () => {
 
 describe('MainMenu', () => {
 
-	let store;
 
 	const setup = (state = {}, config = {}) => {
 
@@ -54,9 +51,8 @@ describe('MainMenu', () => {
 			...state
 
 		};
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
@@ -250,23 +246,6 @@ describe('MainMenu', () => {
 
 			setTabIndex(TabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
-		});
-
-		it('clears highlight features', async () => {
-			await setup();
-			const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
-
-			setHighlightFeatures(highlightFeature);
-
-			expect(store.getState().highlight.features).toEqual([highlightFeature]);
-
-			setTabIndex(TabIndex.SEARCH);
-
-			expect(store.getState().highlight.features).toEqual([highlightFeature]);
-
-			setTabIndex(TabIndex.MAPS);
-
-			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 
