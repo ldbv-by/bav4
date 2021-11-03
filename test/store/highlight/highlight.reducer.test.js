@@ -1,5 +1,5 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { removeHighlightFeatures, addTemporaryHighlightFeatures, removeTemporaryHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
+import { removeHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -56,67 +56,18 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.active).toBeTrue();
 	});
 
-	it('changes the \'temporaryFeatures\' and \'active\' property by setting and adding features', () => {
-		const store = setup();
-		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'id' };
-
-		addTemporaryHighlightFeatures([]);
-
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
-
-		clearHighlightFeatures();
-		addTemporaryHighlightFeatures(highlightFeature);
-
-		expect(store.getState().highlight.temporaryFeatures).toEqual([highlightFeature]);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeTrue();
-
-		removeTemporaryHighlightFeatures();
-
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
-
-		addTemporaryHighlightFeatures(highlightFeature);
-		addTemporaryHighlightFeatures(highlightFeature);
-
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(2);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeTrue();
-
-		removeTemporaryHighlightFeatures();
-		addTemporaryHighlightFeatures([highlightFeature]);
-
-		expect(store.getState().highlight.temporaryFeatures).toEqual([highlightFeature]);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeTrue();
-
-		removeTemporaryHighlightFeatures();
-		addTemporaryHighlightFeatures([highlightFeature, highlightFeature]);
-
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(2);
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeTrue();
-	});
-
-	it('changes the \'features\', \'temporaryFeatures\' and \'active\' property by clearing all features', () => {
+	it('changes the \'features\' and \'active\' property by clearing all features', () => {
 		const store = setup();
 		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
-		const secondaryHighlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 2] } };
 
 		addHighlightFeatures(highlightFeature);
-		addTemporaryHighlightFeatures(secondaryHighlightFeature);
 
 		expect(store.getState().highlight.features).toEqual([highlightFeature]);
-		expect(store.getState().highlight.temporaryFeatures).toEqual([secondaryHighlightFeature]);
 		expect(store.getState().highlight.active).toBeTrue();
 
 		clearHighlightFeatures();
 
 		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
 		expect(store.getState().highlight.active).toBeFalse();
 	});
 
@@ -133,21 +84,9 @@ describe('highlightReducer', () => {
 		addHighlightFeatures(highlightFeature);
 
 		expect(store.getState().highlight.features[0].id).toBeInstanceOf(Number);
-
-		clearHighlightFeatures();
-
-		addTemporaryHighlightFeatures(highlightFeature);
-
-		expect(store.getState().highlight.temporaryFeatures[0].id).toBeInstanceOf(Number);
-
-		clearHighlightFeatures();
-
-		addTemporaryHighlightFeatures(highlightFeature);
-
-		expect(store.getState().highlight.temporaryFeatures[0].id).toBeInstanceOf(Number);
 	});
 
-	it('changes the \'features\', \'temporaryFeatures\' and \'active\' property by removing a features by id', () => {
+	it('changes the \'features\' and \'active\' property by removing a features by id', () => {
 		const id = 'foo';
 		const store = setup();
 		const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: id };
@@ -155,13 +94,6 @@ describe('highlightReducer', () => {
 		const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [44, 55] }, id: id };
 
 		addHighlightFeatures(highlightFeature0);
-
-		removeHighlightFeaturesById(id);
-
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
-
-		addTemporaryHighlightFeatures(highlightFeature0);
 
 		removeHighlightFeaturesById(id);
 
@@ -184,14 +116,5 @@ describe('highlightReducer', () => {
 		removeHighlightFeaturesById([id, 'bar']);
 
 		expect(store.getState().highlight.features).toHaveSize(0);
-
-		addTemporaryHighlightFeatures([highlightFeature0, highlightFeature1]);
-		addTemporaryHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } });
-
-		removeHighlightFeaturesById(id);
-
-		expect(store.getState().highlight.temporaryFeatures).toHaveSize(1);
-		expect(store.getState().highlight.temporaryFeatures[0].id).not.toBe(id);
-		expect(store.getState().highlight.active).toBeTrue();
 	});
 });
