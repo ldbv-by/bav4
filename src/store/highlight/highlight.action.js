@@ -132,10 +132,11 @@ export const clearHighlightFeatures = () => {
 };
 
 /**
- * Removes a  (permanent or temporary) feature by its id.
+ * Removes a (permanent or temporary) feature by its id.
+ * If two or more feature have the same id, all of them are removed.
  * @function
  */
-export const removeHighlightFeatureById = (id) => {
+export const removeHighlightFeaturesById = (id) => {
 	getStore().dispatch({
 		type: REMOVE_FEATURE_BY_ID,
 		payload: id

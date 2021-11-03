@@ -1,5 +1,5 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { setHighlightFeatures, removeHighlightFeatures, setTemporaryHighlightFeatures, removeTemporaryHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, addTemporaryHighlightFeatures, removeHighlightFeatureById } from '../../../src/store/highlight/highlight.action';
+import { setHighlightFeatures, removeHighlightFeatures, setTemporaryHighlightFeatures, removeTemporaryHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, addTemporaryHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -155,36 +155,40 @@ describe('highlightReducer', () => {
 	it('changes the \'features\', \'temporaryFeatures\' and \'active\' property by removing a features by id', () => {
 		const id = 'foo';
 		const store = setup();
-		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: id };
+		const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: id };
+		//a second feature with the same id
+		const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [44, 55] }, id: id };
 
-		setHighlightFeatures(highlightFeature);
+		setHighlightFeatures(highlightFeature0);
 
-		removeHighlightFeatureById(id);
-
-		expect(store.getState().highlight.features).toHaveSize(0);
-		expect(store.getState().highlight.active).toBeFalse();
-
-		setTemporaryHighlightFeatures(highlightFeature);
-
-		removeHighlightFeatureById(id);
+		removeHighlightFeaturesById(id);
 
 		expect(store.getState().highlight.features).toHaveSize(0);
 		expect(store.getState().highlight.active).toBeFalse();
 
-		addHighlightFeatures(highlightFeature);
+		setTemporaryHighlightFeatures(highlightFeature0);
+
+		removeHighlightFeaturesById(id);
+
+		expect(store.getState().highlight.features).toHaveSize(0);
+		expect(store.getState().highlight.active).toBeFalse();
+
+		addHighlightFeatures([highlightFeature0, highlightFeature1]);
 		addHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } });
 
-		removeHighlightFeatureById(id);
+		removeHighlightFeaturesById(id);
 
 		expect(store.getState().highlight.features).toHaveSize(1);
+		expect(store.getState().highlight.features[0].id).not.toBe(id);
 		expect(store.getState().highlight.active).toBeTrue();
 
-		addTemporaryHighlightFeatures(highlightFeature);
+		addTemporaryHighlightFeatures([highlightFeature0, highlightFeature1]);
 		addTemporaryHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } });
 
-		removeHighlightFeatureById(id);
+		removeHighlightFeaturesById(id);
 
 		expect(store.getState().highlight.temporaryFeatures).toHaveSize(1);
+		expect(store.getState().highlight.temporaryFeatures[0].id).not.toBe(id);
 		expect(store.getState().highlight.active).toBeTrue();
 	});
 });
