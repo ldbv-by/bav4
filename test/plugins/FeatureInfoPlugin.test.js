@@ -2,7 +2,7 @@ import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
-import { addFeatureInfoItems, clearFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action.js';
+import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action.js';
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
@@ -44,57 +44,12 @@ describe('FeatureInfoPlugin', () => {
 		});
 	});
 
-	describe('when featureInfo.current property changes', () => {
-
-		describe('and MainMenu is initially open', () => {
-
-			it('opens the FeatureInfo panel state', async () => {
-				const store = setup();
-				const instanceUnderTest = new FeatureInfoPlugin();
-				await instanceUnderTest.register(store);
-				addFeatureInfoItems({ title: 'title', content: 'content' });
-
-				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-				expect(store.getState().mainMenu.open).toBeTrue();
-
-				clearFeatureInfoItems();
-
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue();
-			});
-		});
-
-		describe('and MainMenu is initially closed', () => {
-
-			it('restores the previous panel', async () => {
-				const tabIndex = TabIndex.MAPS;
-				const store = setup({
-					mainMenu: {
-						tabIndex: tabIndex,
-						open: false
-					}
-				});
-				const instanceUnderTest = new FeatureInfoPlugin();
-				await instanceUnderTest.register(store);
-				addFeatureInfoItems({ title: 'title', content: 'content' });
-
-
-				clearFeatureInfoItems();
-
-				expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
-				expect(store.getState().mainMenu.open).toBeFalse();
-			});
-		});
-	});
-
-
 	describe('when mainMenu.tabIndex changes', () => {
 
 		it('clears all previous existing featureInfo items (also initially)', async () => {
 			const store = setup({
 				mainMenu: {
-					tabIndex: TabIndex.MAPS,
+					tabIndex: TabIndex.TOPICS,
 					open: false
 				},
 				featureInfo: {
