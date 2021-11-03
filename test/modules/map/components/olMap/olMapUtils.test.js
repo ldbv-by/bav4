@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
-import { isEmptyLayer, registerLongPressListener, requestMapFocus, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { isEmptyLayer, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
 
@@ -190,23 +190,6 @@ describe('olMapUtils', () => {
 			expect(isEmptyLayer(filledLayerMock)).toBeFalse();
 			expect(isEmptyLayer(null)).toBeTrue();
 			expect(isEmptyLayer(undefined)).toBeTrue();
-		});
-	});
-
-	describe('requestMapFocus', () => {
-		it('simulates a ClickEvent to the map', () => {
-			const viewMock = { getCenter: () => [0, 0] };
-			const mapMock = { getView: () => viewMock,
-				getViewport: () => {
-					const viewPort = { firstChild: true };
-					return viewPort;
-				},
-				dispatchEvent: () => {} };
-
-			const mapMouseEventSpy = spyOn(mapMock, 'dispatchEvent');
-			requestMapFocus(mapMock);
-
-			expect(mapMouseEventSpy).toHaveBeenCalledWith(jasmine.objectContaining({ coordinate: [0, 0] }));
 		});
 	});
 });
