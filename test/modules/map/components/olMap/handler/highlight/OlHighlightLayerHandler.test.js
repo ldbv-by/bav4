@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../../../test-utils';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, HighlightGeometryTypes, removeHighlightFeatures, removeTemporaryHighlightFeatures, setHighlightFeatures, setTemporaryHighlightFeatures } from '../../../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightGeometryTypes, removeHighlightFeatures, removeTemporaryHighlightFeatures, setTemporaryHighlightFeatures } from '../../../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
