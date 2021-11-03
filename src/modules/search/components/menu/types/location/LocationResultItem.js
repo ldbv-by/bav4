@@ -5,7 +5,8 @@ import itemCss from '../item.css';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
-import { HighlightFeatureTypes, removeHighlightFeatures, removeTemporaryHighlightFeatures, setHighlightFeatures, setTemporaryHighlightFeatures } from '../../../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
+import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 
 
 
@@ -52,21 +53,21 @@ export class LocationResultItem extends BaElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			setTemporaryHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+			addHighlightFeatures({ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 		};
 		const onMouseLeave = () => {
-			removeTemporaryHighlightFeatures();
+			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 		};
 		const onClick = (result) => {
 
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeTemporaryHighlightFeatures();
+			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
-				setHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+				addHighlightFeatures({ id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
 			}
 			else {
-				removeHighlightFeatures();
+				removeHighlightFeaturesById(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
 			}
 
 			if (portrait) {

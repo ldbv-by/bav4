@@ -6,6 +6,7 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
+import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 
@@ -72,8 +73,10 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.temporaryFeatures[0].data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.temporaryFeatures[0].type).toBe(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
 		});
 
@@ -85,8 +88,8 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
 				const element = await setup({
 					highlight: {
-						temporaryFeatures: [{ data: coordinate }],
-						features: []
+						features: [{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }],
+						temporaryFeatures: []
 					}
 				});
 				element.data = data;
@@ -111,8 +114,10 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate, extent);
 				const element = await setup({
 					highlight: {
-						features: [{ data: coordinate }],
-						temporaryFeatures: [{ data: previousCoordinate }]
+						features: [
+							{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+						],
+						temporaryFeatures: []
 					},
 					mainMenu: {
 						open: true
@@ -134,7 +139,8 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
 					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
 				});
@@ -160,7 +166,6 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
 					expect(store.getState().highlight.features).toHaveSize(0);
 				});
 
