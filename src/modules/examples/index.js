@@ -1,13 +1,13 @@
-import { MvuCounterList } from './components/MvuCounterList';
+import { MvuList } from './components/MvuList';
 import { MvuCounter } from './components/MvuCounter';
-import { MvuTopicItem } from './components/MvuTopicItem';
+import { MvuListItem } from './components/MvuListItem';
 if (!window.customElements.get(MvuCounter.tag)) {
 	window.customElements.define(MvuCounter.tag, MvuCounter);
 }
-if (!window.customElements.get(MvuTopicItem.tag)) {
-	window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
+if (!window.customElements.get(MvuListItem.tag)) {
+	window.customElements.define(MvuListItem.tag, MvuListItem);
 }
-if (!window.customElements.get(MvuCounterList.tag)) {
-	window.customElements.define(MvuCounterList.tag, MvuCounterList);
+if (!window.customElements.get(MvuList.tag)) {
+	window.customElements.define(MvuList.tag, MvuList);
 }
 

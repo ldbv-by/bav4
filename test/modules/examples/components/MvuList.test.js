@@ -1,11 +1,11 @@
-import { MvuCounterList } from '../../../../src/modules/examples/components//MvuCounterList.js';
-import { MvuTopicItem } from '../../../../src/modules/examples/components/MvuTopicItem.js';
-import { setCurrent } from '../../../..//src/store/topics/topics.action.js';
+import { MvuList as MvuList } from '../../../../src/modules/examples/components/MvuList.js';
+import { MvuListItem } from '../../../../src/modules/examples/components/MvuListItem.js';
+import { setCurrent } from '../../../../src/store/topics/topics.action.js';
 import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
 import { TestUtils } from '../../../test-utils.js';
 
-window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
-window.customElements.define(MvuCounterList.tag, MvuCounterList);
+window.customElements.define(MvuListItem.tag, MvuListItem);
+window.customElements.define(MvuList.tag, MvuList);
 
 const state = {
 	topics: {
@@ -17,12 +17,12 @@ const setup = (state) => {
 	TestUtils.setupStoreAndDi(state, {
 		topics: topicsReducer
 	});
-	return TestUtils.render(MvuCounterList.tag);
+	return TestUtils.render(MvuList.tag);
 };
 
 const TOPIC_UPDATE = 'TOPIC_UPDATE';
 
-describe('MvuCounterList', () => {
+describe('MvuList', () => {
 
 	it('should render Title of the component', async () => {
 

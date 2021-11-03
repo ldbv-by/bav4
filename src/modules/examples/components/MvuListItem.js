@@ -1,11 +1,17 @@
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
-import topicItemCss from './mvuTopicItem.css';
+import topicItemCss from './mvuListItem.css';
 import css from '../../commons/components/button/button.css';
 
 const Update_Label = 'Update_Label';
 
-export class MvuTopicItem extends MvuElement {
+/**
+ * Example of an item element.
+ *
+ * @class
+ * @author costa_gi
+ */
+export class MvuListItem extends MvuElement {
 
 	constructor() {
 		super({
@@ -36,7 +42,7 @@ export class MvuTopicItem extends MvuElement {
 			<style>${css}</style> 
 			<style>${topicItemCss}</style> 
 			<span class='ba-topic-label'>${label}</span>
-			<button class='ba-topic-button topicItemBbutton' @click=${fireEvent}>remove</button>
+			<button class='ba-topic-button listItemBbutton' @click=${fireEvent}>remove</button>
 			<ba-button id="topic-item-button" class="button" .label="remove" @click=${fireEvent}></ba-button>
 			`;
 	}

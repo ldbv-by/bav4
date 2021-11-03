@@ -6,7 +6,13 @@ const TOPIC_REVERSE = 'TOPIC_REVERSE';
 const TOPIC_UPDATE = 'TOPIC_UPDATE';
 const TOPIC_REMOVE = 'TOPIC_REMOVE';
 
-export class MvuCounterList extends MvuElement {
+/**
+ * Example of a list element.
+ *
+ * @class
+ * @author costa_gi
+ */
+export class MvuList extends MvuElement {
 
 	constructor() {
 		super({ topics: ['topic3', 'topic2', 'topic5', 'topic4'] });
@@ -64,6 +70,6 @@ export class MvuCounterList extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-mvu-counter-list';
+		return 'ba-mvu-list';
 	}
 }

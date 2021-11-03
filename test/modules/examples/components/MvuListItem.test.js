@@ -1,7 +1,7 @@
 import { TestUtils } from '../../../test-utils.js';
-import { MvuTopicItem } from '../../../../src/modules/examples/components/MvuTopicItem.js';
+import { MvuListItem } from '../../../../src/modules/examples/components/MvuListItem.js';
 
-window.customElements.define(MvuTopicItem.tag, MvuTopicItem);
+window.customElements.define(MvuListItem.tag, MvuListItem);
 
 describe('Button', () => {
 
@@ -9,11 +9,11 @@ describe('Button', () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
-	describe('MvuTopicItem', () => {
+	describe('MvuListItem', () => {
 
 		it('should render the view', async () => {
 
-			const element = await TestUtils.render(MvuTopicItem.tag);
+			const element = await TestUtils.render(MvuListItem.tag);
 
 			//view
 			const button = element.shadowRoot.querySelector('button');
@@ -22,7 +22,7 @@ describe('Button', () => {
 
 		it('should contain default values in the model', async () => {
 
-			const element = await TestUtils.render(MvuTopicItem.tag);
+			const element = await TestUtils.render(MvuListItem.tag);
 
 			//model
 			expect(element.label).toBe('initial_label');
@@ -30,7 +30,7 @@ describe('Button', () => {
 
 		it('should update the label property with signal', async () => {
 
-			const element = await TestUtils.render(MvuTopicItem.tag);
+			const element = await TestUtils.render(MvuListItem.tag);
 
 			element.signal('Update_Label', 'ba');
 
@@ -39,7 +39,7 @@ describe('Button', () => {
 
 		it('should update the label property with set', async () => {
 
-			const element = await TestUtils.render(MvuTopicItem.tag);
+			const element = await TestUtils.render(MvuListItem.tag);
 
 			element.label = 'ba';
 			const span = element.shadowRoot.querySelector('.ba-topic-label');
@@ -49,7 +49,7 @@ describe('Button', () => {
 
 		it('should call the click event of the button element', async () => {
 
-			const element = await TestUtils.render(MvuTopicItem.tag);
+			const element = await TestUtils.render(MvuListItem.tag);
 
 			const button = element.shadowRoot.querySelector('button');
 			button.dispatchEvent(new MouseEvent('click'));
