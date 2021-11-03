@@ -59,8 +59,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				highlight: {
-					features: [highlightFeature0, highlightFeature1],
-					temporaryFeatures: []
+					features: [highlightFeature0, highlightFeature1]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();
@@ -84,8 +83,7 @@ describe('HighlightPlugin', () => {
 					open: false
 				},
 				highlight: {
-					features: [highlightFeature0, highlightFeature1],
-					temporaryFeatures: []
+					features: [highlightFeature0, highlightFeature1]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();
@@ -124,8 +122,7 @@ describe('HighlightPlugin', () => {
 					open: false
 				},
 				highlight: {
-					features: [highlightFeature0, highlightFeature1, highlightFeature2],
-					temporaryFeatures: []
+					features: [highlightFeature0, highlightFeature1, highlightFeature2]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();

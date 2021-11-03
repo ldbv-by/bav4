@@ -88,8 +88,7 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
 				const element = await setup({
 					highlight: {
-						features: [{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }],
-						temporaryFeatures: []
+						features: [{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
 					}
 				});
 				element.data = data;
@@ -98,7 +97,7 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.temporaryFeatures).toHaveSize(0);
+				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 		});
 
@@ -116,8 +115,7 @@ describe('LocationResultItem', () => {
 					highlight: {
 						features: [
 							{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
-						],
-						temporaryFeatures: []
+						]
 					},
 					mainMenu: {
 						open: true
