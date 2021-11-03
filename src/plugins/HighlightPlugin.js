@@ -11,9 +11,17 @@ import { TabIndex } from '../store/mainMenu/mainMenu.action';
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
 /**
- *ID for FeatureInfo related  highlight features
+ *ID for FeatureInfo related highlight features
  */
 export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId';
+/**
+ *ID for SearchResult related highlight features
+ */
+export const SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureId';
+/**
+ *ID for SearchResult related temporary highlight features
+ */
+export const SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
 /**
  * @class
  * @author taulinger
@@ -43,6 +51,9 @@ export class HighlightPlugin extends BaPlugin {
 		const onTabIndexChanged = (tabIndex) => {
 			if (tabIndex !== TabIndex.FEATUREINFO) {
 				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+			}
+			if (tabIndex !== TabIndex.SEARCH) {
+				removeHighlightFeaturesById([SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
 

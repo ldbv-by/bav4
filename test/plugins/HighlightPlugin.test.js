@@ -1,4 +1,4 @@
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID } from '../../src/plugins/HighlightPlugin';
+import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { clearHighlightFeatures, HighlightFeatureTypes, setHighlightFeatures } from '../../src/store/highlight/highlight.action';
@@ -110,6 +110,44 @@ describe('HighlightPlugin', () => {
 			setTabIndex(TabIndex.FEATUREINFO);
 
 			expect(store.getState().highlight.features).toHaveSize(2);
+		});
+
+		it('clears all searchResult related highlight items (also initially)', async () => {
+			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature2 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
+			const store = setup({
+				mainMenu: {
+					tabIndex: TabIndex.TOPICS,
+					open: false
+				},
+				highlight: {
+					features: [highlightFeature0, highlightFeature1, highlightFeature2],
+					temporaryFeatures: []
+				}
+			});
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+
+			//should be cleared also initially
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).toBe('foo');
+
+			setHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+
+			//we change the tab index
+			setTabIndex(TabIndex.MAPS);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).toBe('foo');
+
+			setHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+
+			// //we change the tab index to the FeatureInfo tab
+			setTabIndex(TabIndex.SEARCH);
+
+			expect(store.getState().highlight.features).toHaveSize(3);
 		});
 	});
 });
