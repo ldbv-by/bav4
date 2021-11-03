@@ -1,7 +1,7 @@
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, HighlightFeatureTypes, setHighlightFeatures } from '../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes } from '../../src/store/highlight/highlight.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
@@ -38,7 +38,7 @@ describe('HighlightPlugin', () => {
 
 			await instanceUnderTest.register(store);
 
-			setHighlightFeatures(highlightFeature);
+			addHighlightFeatures(highlightFeature);
 
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe(HIGHLIGHT_LAYER_ID);
@@ -96,7 +96,8 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
-			setHighlightFeatures([highlightFeature0, highlightFeature1]);
+			clearHighlightFeatures();
+			addHighlightFeatures([highlightFeature0, highlightFeature1]);
 
 			//we change the tab index
 			setTabIndex(TabIndex.MAPS);
@@ -104,7 +105,8 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
-			setHighlightFeatures([highlightFeature0, highlightFeature1]);
+			clearHighlightFeatures();
+			addHighlightFeatures([highlightFeature0, highlightFeature1]);
 
 			//we change the tab index to the FeatureInfo tab
 			setTabIndex(TabIndex.FEATUREINFO);
@@ -134,7 +136,8 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
-			setHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+			clearHighlightFeatures();
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index
 			setTabIndex(TabIndex.MAPS);
@@ -142,7 +145,8 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
-			setHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
+			clearHighlightFeatures();
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			// //we change the tab index to the FeatureInfo tab
 			setTabIndex(TabIndex.SEARCH);
