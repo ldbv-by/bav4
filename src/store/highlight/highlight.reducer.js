@@ -87,7 +87,7 @@ export const highlightReducer = (state = initialState, action) => {
 		}
 		case REMOVE_FEATURE_BY_ID: {
 
-			const test = f => f.id !== payload;
+			const test = f => !payload.includes(f.id);
 			const features = state.features.filter(test);
 			const temporaryFeatures = state.temporaryFeatures.filter(test);
 			const active = !!features.length || !!temporaryFeatures.length;

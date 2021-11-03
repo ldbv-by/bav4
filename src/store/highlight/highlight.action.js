@@ -86,7 +86,7 @@ export const removeHighlightFeatures = () => {
 
 /**
  * Sets a single or an array of temporary {@link HighlightFeature}.
- * @param {HighlightFeature} feature
+ * @param {Array.<HighlightFeature>|HighlightFeature} feature
  * @function
  */
 export const setTemporaryHighlightFeatures = (feature) => {
@@ -99,7 +99,7 @@ export const setTemporaryHighlightFeatures = (feature) => {
 
 /**
  * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
- * @param {HighlightFeature} feature
+ * @param {Array.<HighlightFeature>|HighlightFeature} feature
  * @function
  */
 export const addTemporaryHighlightFeatures = (feature) => {
@@ -134,12 +134,14 @@ export const clearHighlightFeatures = () => {
 /**
  * Removes a (permanent or temporary) feature by its id.
  * If two or more feature have the same id, all of them are removed.
+ * @param {Array.<String>|String} id HighlightFeature id
  * @function
  */
 export const removeHighlightFeaturesById = (id) => {
+	const idsAsArray = Array.isArray(id) ? [...id] : [id];
 	getStore().dispatch({
 		type: REMOVE_FEATURE_BY_ID,
-		payload: id
+		payload: idsAsArray
 	});
 };
 
