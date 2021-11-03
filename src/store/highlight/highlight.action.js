@@ -70,20 +70,6 @@ export const removeHighlightFeatures = () => {
 		payload: []
 	});
 };
-
-/**
- * Sets a single or an array of temporary {@link HighlightFeature}.
- * @param {Array.<HighlightFeature>|HighlightFeature} feature
- * @function
- */
-export const setTemporaryHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_SET,
-		payload: featureAsArray
-	});
-};
-
 /**
  * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
  * @param {Array.<HighlightFeature>|HighlightFeature} feature
