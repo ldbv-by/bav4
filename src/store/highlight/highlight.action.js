@@ -2,7 +2,7 @@
  * Action creators for highlighting a feature.
  * @module map/action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, REMOVE_FEATURE_BY_ID, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 
@@ -67,29 +67,6 @@ export const addHighlightFeatures = (feature) => {
 export const removeHighlightFeatures = () => {
 	getStore().dispatch({
 		type: FEATURE_SET,
-		payload: []
-	});
-};
-/**
- * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
- * @param {Array.<HighlightFeature>|HighlightFeature} feature
- * @function
- */
-export const addTemporaryHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_ADD,
-		payload: featureAsArray
-	});
-};
-
-/**
- * Removes all temporary {@link HighlightFeature}s.
- * @function
- */
-export const removeTemporaryHighlightFeatures = () => {
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_SET,
 		payload: []
 	});
 };
