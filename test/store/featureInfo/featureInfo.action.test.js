@@ -3,8 +3,7 @@ import { FeatureInfoGeometryTypes } from '../../../src/store/featureInfo/feature
 describe('featureInfoAction', () => {
 
 	it('exports a enum for FeatureInfoGeometryTypes', () => {
-		expect(Object.keys(FeatureInfoGeometryTypes).length).toBe(2);
-		expect(FeatureInfoGeometryTypes.WKT).toBe(0);
-		expect(FeatureInfoGeometryTypes.GEOJSON).toBe(1);
+		expect(Object.keys(FeatureInfoGeometryTypes).length).toBe(1);
+		expect(FeatureInfoGeometryTypes.GEOJSON).toBe(0);
 	});
 });

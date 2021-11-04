@@ -32,8 +32,7 @@ const getStore = () => {
  * @enum
  */
 export const FeatureInfoGeometryTypes = Object.freeze({
-	WKT: 0,
-	GEOJSON: 1
+	GEOJSON: 0
 });
 
 
