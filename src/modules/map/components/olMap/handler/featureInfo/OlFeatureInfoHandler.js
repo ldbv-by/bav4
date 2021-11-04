@@ -4,7 +4,6 @@ import { observe } from '../../../../../../utils/storeUtils';
 import { getLayerById } from '../../olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
-import GeoJSON from 'ol/format/GeoJSON';
 import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 
@@ -45,7 +44,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 			//remove previous HighlightFeature items
 			removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
 
-			const olFeatureContainers = [...state.layers.active]
+			const featureInfoItems = [...state.layers.active]
 				.filter(layerFilter)
 				//map layer to olLayer (wrapper)
 				.map(layer => {
@@ -56,9 +55,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					const { layer, olLayer } = olLayerContainer;
 					return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layer: layer };
 				})
-				.filter(olFeatureContainer => !!olFeatureContainer.olFeature);
-
-			const featureInfoItems = olFeatureContainers
+				.filter(olFeatureContainer => !!olFeatureContainer.olFeature)
 				//map olFeature to FeatureInfo item
 				.map(olFeatureContainer => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layer))
 				// .filter(featureInfo => !!featureInfo)
@@ -69,11 +66,12 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 			//publish FeatureInfo items
 			addFeatureInfoItems(featureInfoItems);
 
-			const highlightFeatures = olFeatureContainers
-				.map(olFeatureContainer => ({
+			const highlightFeatures = featureInfoItems
+				.filter(featureInfo => featureInfo.geometry)
+				.map(featureInfo => ({
 					id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureTypes.DEFAULT,
-					data: { geometry: new GeoJSON().writeGeometry(olFeatureContainer.olFeature.getGeometry()), geometryType: HighlightGeometryTypes.GEOJSON }
+					data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryTypes.GEOJSON }
 				}));
 
 			//publish current HighlightFeature items

@@ -5,7 +5,7 @@ import VectorSource from 'ol/source/Vector';
 import { OlFeatureInfoHandler } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../../../test-utils';
-import { clearFeatureInfoItems, updateCoordinate } from '../../../../../../../src/store/featureInfo/featureInfo.action';
+import { clearFeatureInfoItems, FeatureInfoGeometryTypes, updateCoordinate } from '../../../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
@@ -19,8 +19,9 @@ import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plug
 
 describe('OlFeatureInfoHandler', () => {
 
-	const mockFeatureInfoProvider = (olfeature, layer) => {
-		return { title: `${olfeature.get('name')}-${layer.id}`, content: `${olfeature.get('description')}` };
+	const mockFeatureInfoProvider = (olFeature, layer) => {
+		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+		return { title: `${olFeature.get('name')}-${layer.id}`, content: `${olFeature.get('description')}`, geometry: geometry };
 	};
 	const mockNullFeatureInfoProvider = () => null;
 
@@ -171,6 +172,8 @@ describe('OlFeatureInfoHandler', () => {
 			}, mockFeatureInfoProvider);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
+			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+			const expectedHighlightFeatureGeometry = { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON };
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
 			feature0.set('name', 'name0');
@@ -195,11 +198,27 @@ describe('OlFeatureInfoHandler', () => {
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
-				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'name1-layerId1', content: 'description1' });
-				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'name0-layerId0', content: 'description0' });
+				expect(store.getState().featureInfo.current[0]).toEqual({
+					title: 'name1-layerId1',
+					content: 'description1',
+					geometry: expectedFeatureInfoGeometry
+				});
+				expect(store.getState().featureInfo.current[1]).toEqual({
+					title: 'name0-layerId0',
+					content: 'description0',
+					geometry: expectedFeatureInfoGeometry
+				});
 				expect(store.getState().highlight.features).toHaveSize(2);
-				expect(store.getState().highlight.features[0]).toEqual({ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
-				expect(store.getState().highlight.features[1]).toEqual({ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { geometry: new GeoJSON().writeGeometry(geometry), geometryType: HighlightGeometryTypes.GEOJSON } });
+				expect(store.getState().highlight.features[0]).toEqual({
+					id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureTypes.DEFAULT,
+					data: expectedHighlightFeatureGeometry
+				});
+				expect(store.getState().highlight.features[1]).toEqual({
+					id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureTypes.DEFAULT,
+					data: expectedHighlightFeatureGeometry
+				});
 
 				//we update with non matching coordinates
 				clearFeatureInfoItems();
@@ -234,7 +253,7 @@ describe('OlFeatureInfoHandler', () => {
 			}));
 		});
 
-		it('adds \'Not_Available\' FeatureInfo items and HighlightFeatures when FeatureInfoProvider returns null', (done) => {
+		it('adds \'Not_Available\' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null', (done) => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -268,7 +287,7 @@ describe('OlFeatureInfoHandler', () => {
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
 				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
-				expect(store.getState().highlight.features).toHaveSize(2);
+				expect(store.getState().highlight.features).toHaveSize(0);
 
 				done();
 			}));
