@@ -50,4 +50,28 @@ export const highlightGeometryFeatureStyleFunction = () => {
 	return [selectStyle];
 };
 
+export const highlightTemporaryGeometryFeatureStyleFunction = () => {
+
+	const hlStroke = new Stroke({
+		color: [255, 128, 0, 1],
+		width: 6
+	});
+
+	const hlFill = new Fill({
+		color: [255, 128, 0, 1]
+	});
+
+	const hlStyle = new Style({
+		fill: hlFill,
+		stroke: hlStroke,
+		image: new CircleStyle({
+			radius: 10,
+			fill: hlFill,
+			stroke: hlStroke
+		})
+	});
+
+	return [hlStyle];
+};
+
 

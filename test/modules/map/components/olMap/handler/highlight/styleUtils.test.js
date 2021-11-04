@@ -1,5 +1,5 @@
 
-import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
+import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight/assets/location.svg';
@@ -68,6 +68,35 @@ describe('styleUtils', () => {
 			const styles = highlightGeometryFeatureStyleFunction();
 
 			expect(styles).toEqual([selectStyle]);
+		});
+	});
+
+	describe('highlightTemporaryGeometryFeatureStyleFunction', () => {
+
+		it('should return a style function', () => {
+
+			const hlStroke = new Stroke({
+				color: [255, 128, 0, 1],
+				width: 6
+			});
+
+			const hlFill = new Fill({
+				color: [255, 128, 0, 1]
+			});
+
+			const hlStyle = new Style({
+				fill: hlFill,
+				stroke: hlStroke,
+				image: new CircleStyle({
+					radius: 10,
+					fill: hlFill,
+					stroke: hlStroke
+				})
+			});
+
+			const styles = highlightTemporaryGeometryFeatureStyleFunction();
+
+			expect(styles).toEqual([hlStyle]);
 		});
 	});
 });
