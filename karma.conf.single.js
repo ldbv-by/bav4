@@ -1,7 +1,6 @@
 const baseConfig = require('./karma.conf.js');
 const fs = require('fs');
 const path = require('path');
-const { ConsoleReporter } = require('jasmine');
 
 function findInDir(dir, filter, fileList = []) {
 	const files = fs.readdirSync(dir);
