@@ -120,7 +120,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						});
 					})
 						.then(() => removeLayer(oldLayer.get('id')))
-						.then(() => this._finish());
+						.then(() => this._finish())
+						.then(() => this._updateMeasureState());
 				}
 			}
 		};
@@ -302,6 +303,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._modify && this._modify.getActive()) {
 			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
+			this._select.getFeatures().clear();
+			this._updateStatistics();
+			this._updateMeasureState();
 		}
 	}
 
@@ -521,8 +525,14 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		measureState.dragging = dragging;
-		if (coordinate == null && pixel == null && this._measureState.type === InteractionStateType.MODIFY) {
-			measureState.type = InteractionStateType.SELECT;
+		if (coordinate == null && pixel == null) {
+			if (this._measureState.type === InteractionStateType.MODIFY) {
+				measureState.type = InteractionStateType.SELECT;
+			}
+			if (this._measureState.type == null) {
+				const hasFeature = this._vectorLayer.getSource().getFeatures().length > 0;
+				measureState.type = hasFeature ? InteractionStateType.SELECT : measureState.type;
+			}
 		}
 		this._setMeasureState(measureState);
 	}
