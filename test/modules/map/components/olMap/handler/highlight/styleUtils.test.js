@@ -1,7 +1,5 @@
 
 import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
-import { Point } from 'ol/geom';
-import { Feature } from 'ol';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight/assets/location.svg';
