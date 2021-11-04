@@ -446,14 +446,16 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateStatistics() {
-		let length = 0;
-		let area = 0;
+		const startStatistic = { length: 0, area: 0 };
+		const sumStatistic = (before, feature) => {
+			return {
+				length: before.length + getGeometryLength(feature.getGeometry(), this._projectionHints),
+				area: before.area + getArea(feature.getGeometry(), this._projectionHints)
+			};
+		};
 		if (this._select) {
-			this._select.getFeatures().forEach(f => {
-				length = length + getGeometryLength(f.getGeometry(), this._projectionHints);
-				area = area + getArea(f.getGeometry(), this._projectionHints);
-			});
-			setStatistic({ length: length, area: area });
+			const features = this._select.getFeatures().getArray();
+			setStatistic(features.reduce(sumStatistic, startStatistic));
 		}
 	}
 
@@ -465,7 +467,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
-
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
 
