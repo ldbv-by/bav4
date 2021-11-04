@@ -155,12 +155,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
 			const pixel = event.pixel;
-			this._updateDrawState(coordinate, pixel, dragging);
+
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
 				setSelectedStyle(null);
-				this._setDrawState({ ...this._drawState, type: InteractionStateType.SELECT, snap: null });
 			}
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
@@ -171,7 +170,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					}
 				});
 			}
-			this._modifyActivated = false;
+			this._updateDrawState(coordinate, pixel, dragging);
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -495,8 +494,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		}
 		this._modify.setActive(true);
-		this._modifyActivated = true;
-
 		this._setSelected(feature);
 	}
 
