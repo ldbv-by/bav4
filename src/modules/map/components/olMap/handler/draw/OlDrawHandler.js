@@ -224,7 +224,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
-		this._requestMapFocus();
+		this._updateDrawState();
 
 		return this._vectorLayer;
 	}
@@ -334,7 +334,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
-			this._requestMapFocus();
+			this._updateDrawState();
 		}
 
 	}
@@ -359,8 +359,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			}
 			else {
 				this._draw.removeLastPoint();
-				// requestMapFocus(this._map);
-				this._requestMapFocus();
+				this._updateDrawState();
 			}
 
 			if (this._lastPointerMoveEvent) {
@@ -372,7 +371,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
 			this._select.getFeatures().clear();
 			setSelectedStyle(null);
-			this._requestMapFocus();
+			this._updateDrawState();
 		}
 
 	}
@@ -380,8 +379,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_finish() {
 		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
-			// requestMapFocus(this._map);
-			this._requestMapFocus();
+			this._updateDrawState();
 		}
 		else {
 			this._activateModify(null);
@@ -400,8 +398,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._init(currenType);
 			this._helpTooltip.activate(this._map);
 		}
-		// requestMapFocus(this._map);
-		this._requestMapFocus();
+		this._updateDrawState();
 	}
 
 	_reset() {
@@ -414,8 +411,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._helpTooltip.deactivate();
 			setType(null);
 		}
-		// requestMapFocus(this._map);
-		this._requestMapFocus();
+		this._updateDrawState();
 	}
 
 	_createDrawByType(type, styleOption) {
@@ -559,6 +555,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		drawState.dragging = dragging;
+		if (coordinate == null && pixel == null && this._drawState.type === InteractionStateType.MODIFY) {
+			drawState.type = InteractionStateType.SELECT;
+		}
 		this._setDrawState(drawState);
 	}
 
@@ -668,12 +667,5 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label });
-	}
-
-	_requestMapFocus() {
-		this._updateDrawState();
-		if (this._drawState.type === InteractionStateType.MODIFY) {
-			this._setDrawState({ ...this._drawState, type: InteractionStateType.SELECT, snap: null });
-		}
 	}
 }
