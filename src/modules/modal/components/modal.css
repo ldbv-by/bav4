@@ -24,13 +24,12 @@
 	position: absolute;
 }
 
-
 .is-landscape .modal {
 	--upside: -5%;
 	background-color: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	z-index: calc(var(--z-modal) + 10);
-	min-width:38.2vw;
+	min-width: 38.2vw;
 	margin: auto;
 }
 
@@ -39,8 +38,8 @@
 	background-color: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	z-index: calc(var(--z-modal) + 10);
-	min-width:100vw;
-	min-height:100vh;
+	min-width: 100vw;
+	min-height: 100vh;
 }
 
 .modal__title {
@@ -52,11 +51,10 @@
 	background-color: var(--primary-bg-color); 
 	border-bottom: 1px solid var(--header-background-color);
 }
-.modal__title-text{
+.modal__title-text {
 	font-size: 1.7rem;
-	margin:  auto .5em;
+	margin: auto .5em;
 }
-
 
 .modal__content {
 	padding: .8em 1.5em;
