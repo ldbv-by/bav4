@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the drwa tool
  * @module map/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, VALID_GEOMETRY_CHANGED } from './draw.reducer';
+import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED } from './draw.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -84,9 +84,9 @@ export const setType = (type) => {
  * Set whether the geometry of a drawing is valid or not.
  * @function
  */
-export const setValidGeometry = (isValid) => {
+export const setGeometryIsValid = (isValid) => {
 	getStore().dispatch({
-		type: VALID_GEOMETRY_CHANGED,
+		type: GEOMETRY_IS_VALID_CHANGED,
 		payload: isValid
 	});
 };

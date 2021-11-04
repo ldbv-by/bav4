@@ -1,7 +1,7 @@
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
-export const VALID_GEOMETRY_CHANGED = 'draw/validGeometry';
+export const GEOMETRY_IS_VALID_CHANGED = 'draw/geometryIsValid';
 export const STYLE_CHANGED = 'draw/style';
 export const SELECTED_STYLE_CHANGED = 'draw/selectedStyle';
 export const DESCRIPTION_CHANGED = 'draw/description';
@@ -27,7 +27,7 @@ export const initialState = {
 	/**
 	* @type {boolean}
 	*/
-	validGeometry: false,
+	geometryIsValid: false,
 	/**
 	 * @type {Object}
 	 */
@@ -86,7 +86,7 @@ export const drawReducer = (state = initialState, action) => {
 
 			};
 		}
-		case VALID_GEOMETRY_CHANGED: {
+		case GEOMETRY_IS_VALID_CHANGED: {
 
 			return {
 				...state,

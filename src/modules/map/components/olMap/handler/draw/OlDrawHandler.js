@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setValidGeometry } from '../../../../../../store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType, setGeometryIsValid } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
@@ -121,7 +121,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
 							const geometry = event.target.getGeometry();
-							setValidGeometry(isValidGeometry(geometry));
+							setGeometryIsValid(isValidGeometry(geometry));
 							this._styleService.updateStyle(event.target, olMap);
 						};
 
@@ -316,7 +316,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._draw.on('drawstart', event => {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
-					setValidGeometry(isValidGeometry(geometry));
+					setGeometryIsValid(isValidGeometry(geometry));
 				};
 				this._sketchHandler.activate(event.feature);
 				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
