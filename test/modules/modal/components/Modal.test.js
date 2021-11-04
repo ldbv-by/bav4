@@ -5,6 +5,7 @@ import { html, TemplateResult } from 'lit-html';
 import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { setIsPortrait } from '../../../../src/store/media/media.action';
 
 
 window.customElements.define(Modal.tag, Modal);
@@ -36,6 +37,7 @@ describe('Modal', () => {
 	describe('constructor', () => {
 
 		it('sets a default model', async () => {
+			setup();
 			const element = new Modal();
 
 			expect(element.getModel()).toEqual({
@@ -55,62 +57,93 @@ describe('Modal', () => {
 		});
 	});
 
-	describe('when modal state changed', () => {
+	describe('when modal changes', () => {
 
-		it('adds content to modal from a string', async () => {
+		describe('modal.portrait', () => {
 
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+			it('adds the corresponding css class', async () => {
 
-			const element = await setup(state);
+				const state = {
+					media: {
+						portrait: false,
+						observeResponsiveParameter: true
+					}
+				};
 
-			openModal('title', 'content');
+				const element = await setup(state);
 
-			expect(store.getState().modal.data.title).toBe('title');
-			expect(store.getState().modal.data.content).toBe('content');
-			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
-			//Note: Webkit appends a line break to the 'content' in this case
-			expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+				openModal('title', 'content');
+
+				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-landscape');
+				expect(element.shadowRoot.querySelector('.modal__container').classList).not.toContain('is-portrait');
+
+				setIsPortrait(true);
+
+				expect(element.shadowRoot.querySelector('.modal__container').classList).not.toContain('is-landscape');
+				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-portrait');
+			});
 		});
 
-		it('adds content to modal from a lit-html TemplateResult', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+		describe('modal.data', () => {
 
-			const element = await setup(state);
+			it('adds content from a string', async () => {
 
-			const template = (str) => html`${str}`;
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
 
-			openModal('title', template('content'));
+				const element = await setup(state);
 
-			expect(store.getState().modal.data.title).toBe('title');
-			expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
-			expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
-			//Note: Webkit appends a line break to the 'content' in this case
-			expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+				openModal('title', 'content');
+
+				expect(store.getState().modal.data.title).toBe('title');
+				expect(store.getState().modal.data.content).toBe('content');
+				expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
+				//Note: Webkit appends a line break to the 'content' in this case
+				expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+			});
+
+			it('adds content from a lit-html TemplateResult', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
+
+				const template = (str) => html`${str}`;
+
+				openModal('title', template('content'));
+
+				expect(store.getState().modal.data.title).toBe('title');
+				expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
+				expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
+				//Note: Webkit appends a line break to the 'content' in this case
+				expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+			});
 		});
 
-		it('closes the modal', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+		describe('modal.active', () => {
 
-			const element = await setup(state);
-			openModal('title', 'content');
+			it('closes the modal', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
 
-			closeModal();
+				const element = await setup(state);
+				openModal('title', 'content');
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+				closeModal();
+
+				expect(element.shadowRoot.childElementCount).toBe(0);
+			});
 		});
 
 		describe('when close button clicked', () => {
