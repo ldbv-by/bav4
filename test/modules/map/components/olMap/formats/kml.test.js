@@ -159,21 +159,6 @@ describe('kml', () => {
 			expect(containsDummyIcon).toBeFalse();
 		});
 
-		it('did not add pseudo-feature, when more than one feature exists', () => {
-			const features = [aPointFeature, aPolygonFeature];
-			const layer = createLayerMock(features);
-
-			const actual = create(layer, projection);
-
-			const containsIconStyle = actual.includes('<IconStyle>');
-			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>') ;
-			expect(containsIconStyle).toBeTrue();
-			expect(containsDummyIcon).toBeFalse();
-		});
-
-
-
-
 		it('reads and converts none-style-properties from feature', () => {
 			aPointFeature.setStyle(getANoneStyleFunction());
 			const features = [aPointFeature];
