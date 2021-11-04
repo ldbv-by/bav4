@@ -1,11 +1,13 @@
 /* eslint-disable no-undef */
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { FeatureInfoPanel } from '../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
-import { addFeatureInfoItems } from '../../../../src/store/featureInfo/featureInfo.action.js';
+import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
+import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../src/store/highlight/highlight.action.js';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -17,7 +19,7 @@ describe('FeatureInfoPanel', () => {
 
 	const setup = (state) => {
 
-		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer });
+		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, highlight: highlightReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureInfoPanel.tag);
@@ -128,20 +130,88 @@ describe('FeatureInfoPanel', () => {
 		});
 	});
 
-	describe('when clear button clicked', () => {
+	describe('events', () => {
 
-		it('clear the featureInfo in store', async () => {
+		describe('on mouse enter', () => {
 
-			const element = await setup({
-				featureInfo: {
-					current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
-				}
+			it('sets a temporary highlight feature', async () => {
+				const geoJson = { 'type': 'Point', 'coordinates': [21, 42, 0] };
+				const element = await setup({
+					featureInfo: {
+						current: [{
+							title: 'title0',
+							content: 'content0',
+							geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+						}]
+					}
+				});
+
+				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
+				target.dispatchEvent(new Event('mouseenter'));
+
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
+				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryTypes.GEOJSON);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.TEMPORARY);
+				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 			});
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
 
-			iconButton.click();
+			it('does nothing when featureInfo contains no geometry', async () => {
+				const element = await setup({
+					featureInfo: {
+						current: [{
+							title: 'title0',
+							content: 'content0'
+						}]
+					}
+				});
 
-			expect(store.getState().featureInfo.current).toEqual([]);
+				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
+				target.dispatchEvent(new Event('mouseenter'));
+
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+
+		describe('on mouse leave', () => {
+
+			it('removes a temporary highlight feature', async () => {
+				const geoJson = { 'type': 'Point', 'coordinates': [21, 42, 0] };
+				const element = await setup({
+					featureInfo: {
+						current: [{
+							title: 'title0',
+							content: 'content0',
+							geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+						}]
+					},
+					highlight: {
+						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryTypes.GEOJSON } }]
+					}
+				});
+
+				const target = element.shadowRoot.querySelector('button.ba-list-item__header');
+				target.dispatchEvent(new Event('mouseleave'));
+
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+
+		describe('when clear button clicked', () => {
+
+			it('clear the featureInfo in store', async () => {
+
+				const element = await setup({
+					featureInfo: {
+						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
+					}
+				});
+				const iconButton = element.shadowRoot.querySelector('ba-icon');
+
+				iconButton.click();
+
+				expect(store.getState().featureInfo.current).toEqual([]);
+			});
 		});
 	});
 });

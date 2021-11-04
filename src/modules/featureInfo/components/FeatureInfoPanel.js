@@ -7,12 +7,17 @@ import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
+import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import { createUniqueId } from '../../../utils/numberUtils';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
+export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
+
 
 /**
  * @class
  * @author taulinger
+ * @author alsturm
  */
 export class FeatureInfoPanel extends AbstractMvuContentPanel {
 
@@ -49,6 +54,23 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			return content instanceof TemplateResult ? content : html`${unsafeHTML(content)}`;
 		};
 
+		/**
+		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
+		 * These events are not fired on touch devices, so there's no extra handling needed.
+		 */
+		const onMouseEnter = (featureInfoGeometry) => {
+			if (featureInfoGeometry) {
+				addHighlightFeatures({
+					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
+					type: HighlightFeatureTypes.TEMPORARY,
+					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryTypes.GEOJSON }
+				});
+			}
+		};
+		const onMouseLeave = () => {
+			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+		};
+
 		return html`
         <style>${css}</style>
 		<div>
@@ -72,7 +94,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				</li>	
 				${featureInfoData.map((item) => html`
 					<li class="ba-section">
-						<button class="ba-list-item ba-list-item__header">
+						<button class="ba-list-item ba-list-item__header" @mouseenter=${() => onMouseEnter(item.geometry)} @mouseleave=${() => onMouseLeave(item.geometry)}>
 							<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
 							<span class="ba-list-item__after">
 								<i class="icon icon-rotate-90 chevron iconexpand"></i>
