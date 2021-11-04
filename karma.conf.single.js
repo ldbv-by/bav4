@@ -1,6 +1,7 @@
 const baseConfig = require('./karma.conf.js');
 const fs = require('fs');
 const path = require('path');
+const { ConsoleReporter } = require('jasmine');
 
 function findInDir(dir, filter, fileList = []) {
 	const files = fs.readdirSync(dir);
@@ -22,15 +23,15 @@ function findInDir(dir, filter, fileList = []) {
 
 const files = findInDir('./test', /\.test.js$/).filter(file => {
 	// eslint-disable-next-line no-undef
-	return file.split('/').pop() === process.env.KARMA_SPEC;
+	return file.endsWith(process.env.KARMA_SPEC);
 });
 if (files.length < 1) {
 	// eslint-disable-next-line no-undef
-	throw new Error('Designated test file "' + process.env.KARMA_SPEC + '" not found');
+	throw new Error(`Designated test file ${process.env.KARMA_SPEC} not found`);
 }
 else if (files.length > 1) {
 	// eslint-disable-next-line no-undef
-	throw new Error('More than one test file found for "' + process.env.KARMA_SPEC + '"');
+	throw new Error(`More than one test file found for ${process.env.KARMA_SPEC}. Try specifying the desired test file by prepending (a part of) the path. For example: highlight/styleUtils.test.js.`);
 }
 
 const browser = process.env.KARMA_BROWSER || 'FirefoxHeadless';
