@@ -448,7 +448,12 @@ describe('OlMeasurementHandler', () => {
 	describe('when deactivated over olMap', () => {
 
 		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
+		const getTarget = () => {
+			const target = document.createElement('div');
+			target.style.height = '100px';
+			target.style.width = '100px';
+			return target;
+		};
 		const setupMap = () => {
 			return new Map({
 				layers: [
@@ -458,7 +463,7 @@ describe('OlMeasurementHandler', () => {
 					new TileLayer({
 						source: new TileDebug()
 					})],
-				target: 'map',
+				target: getTarget(),
 				view: new View({
 					center: initialCenter,
 					zoom: 1

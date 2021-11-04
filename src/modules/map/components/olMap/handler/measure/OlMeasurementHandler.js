@@ -25,7 +25,6 @@ import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
-import { simulateMouseEvent } from '../../../../../../../test/modules/map/components/olMap/mapTestUtils';
 
 const Debounce_Delay = 1000;
 
@@ -149,12 +148,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
 			const pixel = event.pixel;
-			this._updateMeasureState(coordinate, pixel, dragging);
+
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
 				setStatistic({ length: 0, area: 0 });
-				this._setMeasureState({ ...this._measureState, type: InteractionStateType.SELECT, snap: null });
 			}
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
@@ -165,7 +163,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				});
 			}
-			this._modifyActivated = false;
+			this._updateMeasureState(coordinate, pixel, dragging);
 		};
 
 		const pointerUpHandler = () => {
@@ -223,10 +221,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			olMap.addInteraction(this._dragPan);
 
 			this._storedContent = null;
-			if (this._environmentService.isTouch()) {
-				this._simulateClickEvent();
-			}
 		}
+		this._updateMeasureState();
 		return this._vectorLayer;
 	}
 
@@ -313,7 +309,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._draw.getActive()) {
 			if (this._sketchHandler.isActive) {
 				this._draw.finishDrawing();
-				this._simulateClickEvent();
+				this._updateMeasureState();
 			}
 			else {
 				this._activateModify(null);
@@ -330,7 +326,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
-		this._simulateClickEvent();
+		this._updateMeasureState();
 	}
 
 	_createDraw(source) {
@@ -485,7 +481,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			pointCount: this._sketchHandler.pointCount
 		};
 
-		measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
+		if (pixel) {
+			measureState.snap = getSnapState(this._map, this._vectorLayer, pixel);
+		}
+
 		if (this._draw.getActive()) {
 			measureState.type = InteractionStateType.ACTIVE;
 
@@ -522,6 +521,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 
 		measureState.dragging = dragging;
+		if (coordinate == null && pixel == null && this._measureState.type === InteractionStateType.MODIFY) {
+			measureState.type = InteractionStateType.SELECT;
+		}
 		this._setMeasureState(measureState);
 	}
 
@@ -579,21 +581,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	static get Debounce_Delay() {
 		return Debounce_Delay;
-	}
-
-
-	/**
-	 * Workaround for touch-devices to refresh measure-state and
-	 * measure-mode, after the user calls measurement-actions (reset/remove/finish) without
-	 * any further detected pointer-moves and -clicks
-	 */
-	_simulateClickEvent() {
-		const view = this._map.getView();
-		if (view) {
-			const x = view.getCenter()[0];
-			const y = view.getCenter()[1];
-			simulateMouseEvent(this._map, MapBrowserEventType.CLICK, x, y);
-		}
 	}
 
 }
