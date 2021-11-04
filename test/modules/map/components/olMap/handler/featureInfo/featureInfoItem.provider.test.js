@@ -3,6 +3,8 @@ import { Point } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
 import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../../../src/store/layers/layers.reducer';
+import GeoJSON from 'ol/format/GeoJSON';
+import { FeatureInfoGeometryTypes } from '../../../../../../../src/store/featureInfo/featureInfo.action';
 
 describe('FeatureInfo provider', () => {
 
@@ -27,15 +29,20 @@ describe('FeatureInfo provider', () => {
 		});
 		describe('and suitable properties are available', () => {
 
-			it('return a LayerInfo item', () => {
+			it('returns a LayerInfo item', () => {
 
 				const layer = { ...createDefaultLayerProperties(), label: 'foo' };
-				let feature = new Feature({ geometry: new Point(coordinate) });
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
 				feature.set('name', 'name');
+				const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 
 				let featureInfo = getBvvFeatureInfo(feature, layer);
 
-				expect(featureInfo).toEqual({ title: 'name - foo', content: null });
+				expect(featureInfo).toEqual({
+					title: 'name - foo', content: null,
+					geometry: expectedFeatureInfoGeometry
+				});
 
 				//no name property, but description property
 				feature = new Feature({ geometry: new Point(coordinate) });
@@ -43,7 +50,10 @@ describe('FeatureInfo provider', () => {
 
 				featureInfo = getBvvFeatureInfo(feature, layer);
 
-				expect(featureInfo).toEqual({ title: 'foo', content: 'description' });
+				expect(featureInfo).toEqual({
+					title: 'foo', content: 'description',
+					geometry: expectedFeatureInfoGeometry
+				});
 
 				//no name property, but desc property
 				feature = new Feature({ geometry: new Point(coordinate) });
@@ -51,7 +61,10 @@ describe('FeatureInfo provider', () => {
 
 				featureInfo = getBvvFeatureInfo(feature, layer);
 
-				expect(featureInfo).toEqual({ title: 'foo', content: 'desc' });
+				expect(featureInfo).toEqual({
+					title: 'foo', content: 'desc',
+					geometry: expectedFeatureInfoGeometry
+				});
 			});
 		});
 	});
