@@ -1,9 +1,12 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../BaElement';
 import css from './modal.css';
 import { $injector } from '../../../injection';
 import { closeModal } from '../../../store/modal/modal.action';
 import arrowLeftShort from '../assets/arrowLeftShort.svg';
+import { MvuElement } from '../../MvuElement';
+
+const Update_Modal_Data = 'update_modal_data';
+const Update_IsPortrait_Value = 'update_isportrait_value';
 
 /**
  * Modal dialog container.
@@ -12,19 +15,39 @@ import arrowLeftShort from '../assets/arrowLeftShort.svg';
  * @author alsturm
  * @author taulinger
  */
-export class Modal extends BaElement {
+export class Modal extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			data: null,
+			active: false,
+			portrait: true
+		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+	}
+
+	onInitialize() {
+		this.observe(state => state.modal, modal => this.signal(Update_Modal_Data, modal));
+		// this.observe(state => state.modal.active, active => this.signal(Update_IsPortrait, active));
+		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+	}
+
+	update(type, data, model) {
+
+		switch (type) {
+			case Update_Modal_Data:
+				return { ...model, data: data.data, active: data.active };
+			case Update_IsPortrait_Value:
+				return { ...model, portrait: data };
+		}
 	}
 
 	/**
 	 * @override
 	 */
-	createView(state) {
-		const { active, portrait } = state;
+	createView(model) {
+		const { active, portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const hide = () => {
@@ -41,7 +64,7 @@ export class Modal extends BaElement {
 		};
 
 		if (active) {
-			const { data: { title, content } } = state;
+			const { data: { title, content } } = model;
 			return html`
         		<style>${css}</style>
 				<div class='modal__container modal_show ${getOrientationClass()}'>
@@ -63,15 +86,6 @@ export class Modal extends BaElement {
 				`;
 		}
 		return nothing;
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { modal: { data, active }, media: { portrait } } = globalState;
-		return { data, active, portrait };
 	}
 
 	static get tag() {

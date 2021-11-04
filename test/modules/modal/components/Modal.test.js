@@ -33,6 +33,19 @@ describe('Modal', () => {
 		return TestUtils.render(Modal.tag);
 	};
 
+	describe('constructor', () => {
+
+		it('sets a default model', async () => {
+			const element = new Modal();
+
+			expect(element.getModel()).toEqual({
+				data: null,
+				active: false,
+				portrait: true
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 
 		it('renders no content', async () => {
