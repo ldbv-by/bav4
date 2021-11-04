@@ -5,7 +5,7 @@ import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import { OlHighlightLayerHandler } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/OlHighlightLayerHandler';
-import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
+import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
@@ -184,11 +184,20 @@ describe('OlHighlightLayerHandler', () => {
 			const olPoint = new Point([5, 10]);
 			setup();
 			const handler = new OlHighlightLayerHandler();
-			const highlightGeometryGeoJsonFeature = { data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON } };
+			const highlightGeometryGeoJsonFeature0 = {
+				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON },
+				type: HighlightFeatureTypes.DEFAULT
+			};
+			const highlightGeometryGeoJsonFeature1 = {
+				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON },
+				type: HighlightFeatureTypes.TEMPORARY
+			};
 
-			const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature, new Feature(olPoint));
+			const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
+			const styledFeature1 = handler._appendStyle(highlightGeometryGeoJsonFeature1, new Feature(olPoint));
 
 			expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
+			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
 		});
 
 		it('sets NO style when feature type is missing', () => {
