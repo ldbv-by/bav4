@@ -29,7 +29,6 @@ export class Modal extends MvuElement {
 
 	onInitialize() {
 		this.observe(state => state.modal, modal => this.signal(Update_Modal_Data, modal));
-		// this.observe(state => state.modal.active, active => this.signal(Update_IsPortrait, active));
 		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
 	}
 
