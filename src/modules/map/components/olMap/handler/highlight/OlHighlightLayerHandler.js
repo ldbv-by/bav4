@@ -3,7 +3,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from './styleUtils';
+import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
@@ -78,12 +78,15 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 			switch (feature.type) {
 
 				case HighlightFeatureTypes.DEFAULT:
-					olFeature.setStyle(highlightFeatureStyleFunction);
+					olFeature.setStyle(highlightCoordinateFeatureStyleFunction);
 					break;
 				case HighlightFeatureTypes.TEMPORARY:
-					olFeature.setStyle(highlightTemporaryFeatureStyleFunction);
+					olFeature.setStyle(highlightTemporaryCoordinateFeatureStyleFunction);
 					break;
 			}
+		}
+		else {
+			olFeature.setStyle(highlightGeometryFeatureStyleFunction);
 		}
 		return olFeature;
 	}

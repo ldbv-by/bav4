@@ -5,7 +5,7 @@ import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import { OlHighlightLayerHandler } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/OlHighlightLayerHandler';
-import { highlightFeatureStyleFunction, highlightTemporaryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
+import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
@@ -47,7 +47,7 @@ describe('OlHighlightLayerHandler', () => {
 		expect(handler.id).toBe('highlight_layer');
 		expect(handler.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		expect(handler._storeService.getStore()).toBeDefined();
-		expect(handler._unregister).toBeDefined();
+		expect(handler._unregister()).toEqual((() => { })());
 	});
 
 	describe('when handler is activated', () => {
@@ -80,9 +80,6 @@ describe('OlHighlightLayerHandler', () => {
 
 				const olFeatures = olLayer.getSource().getFeatures();
 				expect(olFeatures).toHaveSize(3);
-				// expect(olFeatures[0].getStyle()()).toEqual(highlightFeatureStyleFunction());
-				// expect(olFeatures[1].getStyle()()).toEqual(highlightFeatureStyleFunction());
-				// expect(olFeatures[2].getStyle()()).toEqual(highlightTemporaryFeatureStyleFunction());
 			});
 		});
 
@@ -98,8 +95,6 @@ describe('OlHighlightLayerHandler', () => {
 
 				const olFeatures = olLayer.getSource().getFeatures();
 				expect(olFeatures).toHaveSize(2);
-				// expect(olFeatures[0].getStyle()()).toEqual(highlightFeatureStyleFunction());
-				// expect(olFeatures[1].getStyle()()).toEqual(highlightFeatureStyleFunction());
 			});
 		});
 
@@ -172,7 +167,7 @@ describe('OlHighlightLayerHandler', () => {
 
 	describe('_appendStyle', () => {
 
-		it('sets the correct style features containing data as HighlightCoordinate', () => {
+		it('sets the correct style features containing a HighlightCoordinate', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.DEFAULT };
@@ -181,8 +176,19 @@ describe('OlHighlightLayerHandler', () => {
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
 
-			expect(styledFeature0.getStyle()()).toEqual(highlightFeatureStyleFunction());
-			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryFeatureStyleFunction());
+			expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
+			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
+		});
+
+		it('sets the correct style features containing a HighlightGeometry', () => {
+			const olPoint = new Point([5, 10]);
+			setup();
+			const handler = new OlHighlightLayerHandler();
+			const highlightGeometryGeoJsonFeature = { data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON } };
+
+			const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature, new Feature(olPoint));
+
+			expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
 		});
 
 		it('sets NO style when feature type is missing', () => {
