@@ -123,8 +123,8 @@ export class OlDrawHandler extends OlLayerHandler {
 							const geometry = event.target.getGeometry();
 							setValidGeometry(isValidGeometry(geometry));
 							this._styleService.updateStyle(event.target, olMap);
-
 						};
+
 						oldFeatures.forEach(f => {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
