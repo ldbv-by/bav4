@@ -11,9 +11,8 @@ describe('kml', () => {
 	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
 
 
-	const createLayerMock = (features) => {
-		return {
-			label: 'Foo',
+	const createLayerMock = (features, withLabel = true) => {
+		const layerMock = {
 			getSource() {
 				return {
 					getFeatures: () => features
@@ -23,6 +22,7 @@ describe('kml', () => {
 				return null;
 			} };
 
+		return withLabel ? { ...layerMock, label: 'Foo' } : layerMock;
 	};
 
 	const getAStyleFunction = () => {
@@ -68,7 +68,20 @@ describe('kml', () => {
 		});
 		return () => [style];
 	};
+
+	const getANoneStyleFunction = () => {
+		return () => [];
+	};
+
+	const getASingleEmptyStyleFunction = () => {
+		return () => new Style();
+	};
 	describe('create', () => {
+		beforeEach(() => {
+			aPointFeature.setStyle(null);
+			aPolygonFeature.setStyle(null);
+			aLineStringAsPolygonFeature.setStyle(null);
+		});
 
 		it('creates a kml with Document- and name-tag', () => {
 			const features = [aPolygonFeature];
@@ -80,6 +93,18 @@ describe('kml', () => {
 			const containsNameTag = actual.includes('<name>Foo</name>') ;
 			expect(containsDocumentTag).toBeTrue();
 			expect(containsNameTag).toBeTrue();
+		});
+
+		it('creates a kml with Document-tag only', () => {
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features, false);
+
+			const actual = create(layer, projection);
+
+			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
+			const containsNameTag = actual.includes('<name>Foo</name>') ;
+			expect(containsDocumentTag).toBeTrue();
+			expect(containsNameTag).toBeFalse();
 		});
 
 		it('rectifies polygon to linestring before export', () => {
@@ -134,5 +159,25 @@ describe('kml', () => {
 			expect(containsDummyIcon).toBeFalse();
 		});
 
+		it('reads and converts none-style-properties from feature', () => {
+			aPointFeature.setStyle(getANoneStyleFunction());
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsNoSpecificStyle = actual.includes('<Style/>');
+			expect(containsNoSpecificStyle).toBeTrue();
+		});
+
+		it('reads a single style and converts style-properties from feature', () => {
+			aPolygonFeature.setStyle(getASingleEmptyStyleFunction());
+			const features = [aPolygonFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsIconStyle = actual.includes('PolyStyle') ;
+			expect(containsIconStyle).toBeTrue();
+		});
 	});
 });

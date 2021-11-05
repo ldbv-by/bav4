@@ -151,7 +151,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	const minLengthResolution = 20;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
-		return partitionResolution > minLengthResolution && length > partition ;
+		return partitionResolution > minLengthResolution && length > partition;
 	};
 
 	const stepFactor = 10;
@@ -201,4 +201,28 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 
 	const result = coordinates.find(c => c[0] === vertexCoordinate[0] && c[1] === vertexCoordinate[1]);
 	return result ? true : false;
+};
+
+/**
+ * Checks whether or not the geometry is valid for mapping purposes
+ * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
+ * @returns {boolean}
+ */
+export const isValidGeometry = (geometry) => {
+	if (geometry == null) {
+		return false;
+	}
+
+	if (geometry instanceof Point) {
+		return true;
+	}
+
+	if (geometry instanceof LineString) {
+		return geometry.getLength() > 0;
+	}
+
+	if (geometry instanceof Polygon) {
+		return geometry.getArea() > 0;
+	}
+	return false;
 };
