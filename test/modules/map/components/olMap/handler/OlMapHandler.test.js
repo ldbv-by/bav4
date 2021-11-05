@@ -15,17 +15,17 @@ describe('OlMapHandler', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new OlMapHandler()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 
-			it('throws excepetion when instantiated without an ID', () => {
+			it('throws exception when instantiated without an ID', () => {
 				expect(() => new OlMapHandlerImplNoId()).toThrowError(TypeError, 'Id of this handler must be defined.');
 			});
 		});
 
 		describe('methods', () => {
-			it('throws excepetion when abstract #register is called without overriding', () => {
+			it('throws exception when abstract #register is called without overriding', () => {
 				expect(() => new OlMapHandlerImpl().register()).toThrowError(TypeError, 'Please implement abstract method #register or do not call super.activate from child.');
 			});
 
