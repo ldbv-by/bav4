@@ -49,7 +49,6 @@ describe('OlFeatureInfoHandler', () => {
 				zoom: 1
 			})
 		});
-
 	};
 
 	const delay = (fn) => {

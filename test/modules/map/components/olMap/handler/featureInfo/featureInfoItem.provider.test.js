@@ -18,15 +18,13 @@ describe('FeatureInfo provider', () => {
 
 				const layer = createDefaultLayer('foo');
 				const feature = new Feature({ geometry: new Point(coordinate) });
-				// feature0.set('name', 'name0');
-				// feature0.set('description', 'description0');
-
 
 				const featureInfo = getBvvFeatureInfo(feature, layer);
 
 				expect(featureInfo).toBeNull();
 			});
 		});
+
 		describe('and suitable properties are available', () => {
 
 			it('returns a LayerInfo item', () => {

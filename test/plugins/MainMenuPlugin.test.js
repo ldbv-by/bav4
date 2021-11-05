@@ -25,8 +25,6 @@ describe('MainMenuPlugin', () => {
 		return store;
 	};
 
-
-
 	describe('when featureInfo.current property changes', () => {
 
 		describe('and MainMenu is initially open', () => {

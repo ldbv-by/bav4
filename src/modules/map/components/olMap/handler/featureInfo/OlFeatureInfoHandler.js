@@ -8,7 +8,7 @@ import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, re
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 
 /**
- * MapHandler that publishes FeatureInfo items from ol vector sources.
+ * MapHandler that publishes FeatureInfo and HighlightFeature items from ol vector sources.
  * @class
  * @author taulinger
  */

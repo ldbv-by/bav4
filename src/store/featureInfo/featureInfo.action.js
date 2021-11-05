@@ -13,7 +13,6 @@ const getStore = () => {
 
 
 /**
- * FeatureInfo
  * @typedef {Object} FeatureInfo
  * @property {string} title The Title of this FeatureInfo
  * @property {string|TemplateResult} content The content of this FeatureInfo

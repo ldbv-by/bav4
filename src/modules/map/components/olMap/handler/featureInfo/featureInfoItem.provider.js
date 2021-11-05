@@ -2,7 +2,7 @@ import { FeatureInfoGeometryTypes } from '../../../../../../store/featureInfo/fe
 import GeoJSON from 'ol/format/GeoJSON';
 
 /**
- * BVV strategy to extract a FeatureInfo item from an olFeature.
+ * BVV strategy for mapping an olFeature to a FeatureInfo item.
  * @function
  * @param {coordinate} coordinate3857
  * @returns {number} altitude loaded from backend
