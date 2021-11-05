@@ -132,7 +132,7 @@ export class LayerItem extends AbstractContentPanel {
 
 		const openLayerInfoPanel = async () => {
 			const content = html`<ba-layerinfo-panel .geoResourceId=${this._layer.id}></ba-layerinfo-panel>`;
-			openModal('layerInfoPanel', content);
+			openModal(this._layer.label, content);
 		};
 
 

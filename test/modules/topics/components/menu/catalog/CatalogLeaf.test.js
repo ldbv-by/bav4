@@ -173,7 +173,7 @@ describe('CatalogLeaf', () => {
 
 					icon.click();
 
-					expect(store.getState().modal.data.title).toBe('layerInfoPanel');
+					expect(store.getState().modal.data.title).toBe('someLabel');
 				});
 			});
 		});

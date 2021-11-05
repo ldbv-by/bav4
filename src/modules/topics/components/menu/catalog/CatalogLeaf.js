@@ -55,7 +55,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 
 			const openLayerInfoPanel = async () => {
 				const content = html`<ba-layerinfo-panel .geoResourceId=${geoResourceId}></ba-layerinfo-panel>`;
-				openModal('layerInfoPanel', content);
+				openModal(label, content);
 			};
 
 			return html`
