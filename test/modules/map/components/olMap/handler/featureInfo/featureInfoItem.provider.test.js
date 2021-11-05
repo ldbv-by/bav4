@@ -29,13 +29,13 @@ describe('FeatureInfo provider', () => {
 
 			it('returns a LayerInfo item', () => {
 
-				const layer = { ...createDefaultLayerProperties(), label: 'foo' };
+				const layerProperties = { ...createDefaultLayerProperties(), label: 'foo' };
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
 				feature.set('name', 'name');
 				const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 
-				let featureInfo = getBvvFeatureInfo(feature, layer);
+				let featureInfo = getBvvFeatureInfo(feature, layerProperties);
 
 				expect(featureInfo).toEqual({
 					title: 'name - foo', content: null,
@@ -46,7 +46,7 @@ describe('FeatureInfo provider', () => {
 				feature = new Feature({ geometry: new Point(coordinate) });
 				feature.set('description', 'description');
 
-				featureInfo = getBvvFeatureInfo(feature, layer);
+				featureInfo = getBvvFeatureInfo(feature, layerProperties);
 
 				expect(featureInfo).toEqual({
 					title: 'foo', content: 'description',
@@ -57,7 +57,7 @@ describe('FeatureInfo provider', () => {
 				feature = new Feature({ geometry: new Point(coordinate) });
 				feature.set('desc', 'desc');
 
-				featureInfo = getBvvFeatureInfo(feature, layer);
+				featureInfo = getBvvFeatureInfo(feature, layerProperties);
 
 				expect(featureInfo).toEqual({
 					title: 'foo', content: 'desc',

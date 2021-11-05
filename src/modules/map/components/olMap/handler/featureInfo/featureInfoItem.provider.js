@@ -4,15 +4,16 @@ import GeoJSON from 'ol/format/GeoJSON';
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
  * @function
- * @param {coordinate} coordinate3857
- * @returns {number} altitude loaded from backend
+ * @param {Feature} olFeature ol feature
+ * @param {LayerProperties} layerProperties global layer object
+ * @returns {FeatureInfo} featureInfo
  */
-export const getBvvFeatureInfo = (olFeature, layer) => {
+export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc')) {
 		return null;
 	}
 
-	const name = olFeature.get('name') ? `${olFeature.get('name')} - ${layer.label}` : `${layer.label}`;
+	const name = olFeature.get('name') ? `${olFeature.get('name')} - ${layerProperties.label}` : `${layerProperties.label}`;
 	const content = olFeature.get('description') || olFeature.get('desc');
 	const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 	return { title: name, content: content || null, geometry: geometry };
