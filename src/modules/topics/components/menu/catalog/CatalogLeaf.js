@@ -4,12 +4,13 @@ import css from './catalogLeaf.css';
 import { $injector } from '../../../../../injection';
 import { addLayer, removeLayer } from '../../../../../store/layers/layers.action';
 import infoSvg from '../assets/info.svg';
-
+import { openModal } from '../../../../../store/modal/modal.action';
 
 /**
  * @class
  * @author taulinger
  * @author alsturm
+ * @author costa_gi
  */
 export class CatalogLeaf extends AbstractContentPanel {
 
@@ -52,6 +53,11 @@ export class CatalogLeaf extends AbstractContentPanel {
 				}
 			};
 
+			const openLayerInfoPanel = async () => {
+				const content = html`<ba-layerinfo-panel .geoResourceId=${geoResourceId}></ba-layerinfo-panel>`;
+				openModal('layerInfoPanel', content);
+			};
+
 			return html`
 			<style>
 			${css}		
@@ -59,7 +65,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 			<span class="ba-list-item" >		
 					<ba-checkbox class="ba-list-item__text" @toggle=${onToggle}  .disabled=${!geoR} .checked=${checked} tabindex='0' .title=${title}><span>${label}</span></ba-checkbox>						
 					<div class="ba-icon-button ba-list-item__after vertical-center separator">									                                                                                          
-						<ba-icon .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2} .title=${translate('layerManager_move_up')} ></ba-icon>                    							 
+						<ba-icon .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2} .title=${translate('layerManager_move_up')} @click=${openLayerInfoPanel}></ba-icon>                    							 
 					</div>
 				</span>
         	`;
