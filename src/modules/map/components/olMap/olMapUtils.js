@@ -41,16 +41,3 @@ export const registerLongPressListener = (map, callback, delay = 300) => {
 	});
 };
 
-
-/**
- * Checks whether a layer contains features or not.
- * @param {Layer} layer
- * @returns {boolean}
- */
-export const isEmptyLayer = (layer) => {
-	if (layer) {
-		return !layer.getSource().getFeatures().length > 0;
-	}
-	return true;
-};
-

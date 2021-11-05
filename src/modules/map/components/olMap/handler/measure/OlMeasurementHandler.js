@@ -21,7 +21,6 @@ import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
-import { isEmptyLayer } from '../../olMapUtils';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
@@ -558,7 +557,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 
-		if (isEmptyLayer(this._vectorLayer)) {
+		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
+		if (isEmpty) {
 			console.warn('Cannot store empty layer');
 			return;
 		}

@@ -20,7 +20,6 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
-import { isEmptyLayer } from '../../olMapUtils';
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
@@ -632,7 +631,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 
-		if (isEmptyLayer(this._vectorLayer)) {
+		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
+		if (isEmpty) {
 			console.warn('Cannot store empty layer');
 			return;
 		}
