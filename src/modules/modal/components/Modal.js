@@ -1,8 +1,12 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../BaElement';
 import css from './modal.css';
 import { $injector } from '../../../injection';
 import { closeModal } from '../../../store/modal/modal.action';
+import arrowLeftShort from '../assets/arrowLeftShort.svg';
+import { MvuElement } from '../../MvuElement';
+
+const Update_Modal_Data = 'update_modal_data';
+const Update_IsPortrait_Value = 'update_isportrait_value';
 
 /**
  * Modal dialog container.
@@ -11,19 +15,38 @@ import { closeModal } from '../../../store/modal/modal.action';
  * @author alsturm
  * @author taulinger
  */
-export class Modal extends BaElement {
+export class Modal extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			data: null,
+			active: false,
+			portrait: true
+		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+	}
+
+	onInitialize() {
+		this.observe(state => state.modal, modal => this.signal(Update_Modal_Data, modal));
+		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+	}
+
+	update(type, data, model) {
+
+		switch (type) {
+			case Update_Modal_Data:
+				return { ...model, data: data.data, active: data.active };
+			case Update_IsPortrait_Value:
+				return { ...model, portrait: data };
+		}
 	}
 
 	/**
 	 * @override
 	 */
-	createView(state) {
-		const { active } = state;
+	createView(model) {
+		const { active, portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const hide = () => {
@@ -35,13 +58,22 @@ export class Modal extends BaElement {
 			});
 		};
 
+		const getOrientationClass = () => {
+			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		if (active) {
-			const { data: { title, content } } = state;
+			const { data: { title, content } } = model;
 			return html`
         		<style>${css}</style>
-				<div class='modal__container modal_show'>
+				<div class='modal__container modal_show ${getOrientationClass()}'>
 					<div class='modal '>
-						<div class='modal__title'>${title}</div>
+						<div class='modal__title' @click="${hide}">
+							<span class="ba-list-item__pre back-icon" >
+								<ba-icon  .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
+							</span>	
+							<span class='modal__title-text'>${title}</span>
+						</div>
 						<div class='modal__content'>${content}</div>
 						<div class='modal__actions'>
 							<ba-button .label=${translate('modal_close_button')} @click=${hide}></ba-button>
@@ -53,15 +85,6 @@ export class Modal extends BaElement {
 				`;
 		}
 		return nothing;
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { modal: { data, active } } = globalState;
-		return { data, active };
 	}
 
 	static get tag() {
