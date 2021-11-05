@@ -32,12 +32,12 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 
 		const translate = (key) => this._translationService.translate(key);
 		//find ONE closest feature per layer
-		const findOlFeature = (map, pixel, layer) => {
-			return map.forEachFeatureAtPixel(pixel, feature => feature, { layerFilter: l => l === layer }) || null;
+		const findOlFeature = (map, pixel, olLayer) => {
+			return map.forEachFeatureAtPixel(pixel, feature => feature, { layerFilter: l => l === olLayer }) || null;
 		};
 
 		//use only visible and unhidden layers
-		const layerFilter = layer => layer.visible && !layer.constraints.hidden;
+		const layerFilter = layerProperties => layerProperties.visible && !layerProperties.constraints.hidden;
 
 		observe(this._storeService.getStore(), state => state.featureInfo.coordinate, (coordinate, state) => {
 
@@ -46,18 +46,18 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 
 			const featureInfoItems = [...state.layers.active]
 				.filter(layerFilter)
-				//map layer to olLayer (wrapper)
-				.map(layer => {
-					return { olLayer: getLayerById(map, layer.geoResourceId), layer: layer };
+				//map layerProperties to olLayer (wrapper)
+				.map(layerProperties => {
+					return { olLayer: getLayerById(map, layerProperties.geoResourceId), layerProperties: layerProperties };
 				})
 				//map olLayer to olFeature (wrapper)
 				.map(olLayerContainer => {
-					const { layer, olLayer } = olLayerContainer;
-					return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layer: layer };
+					const { layerProperties: layerProperties, olLayer } = olLayerContainer;
+					return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layerProperties: layerProperties };
 				})
 				.filter(olFeatureContainer => !!olFeatureContainer.olFeature)
 				//map olFeature to FeatureInfo item
-				.map(olFeatureContainer => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layer))
+				.map(olFeatureContainer => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layerProperties))
 				// .filter(featureInfo => !!featureInfo)
 				.map(featureInfo => featureInfo ? featureInfo : { title: translate('map_olMap_handler_featureInfo_not_available'), content: '' })
 				//display FeatureInfo items in the same order as layers

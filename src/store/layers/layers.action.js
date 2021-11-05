@@ -7,7 +7,7 @@ import { $injector } from '../../injection';
 
 
 /**
-  * @typedef {Object} LayerProperties
+  * @typedef {Object} Layer
   * @property {string} id Id of this layer
   * @property {string} label Label of this layer
   * @property {string} geoResourceId  Id of the linked geoResource. If not set, it will take the Id of this layer as value

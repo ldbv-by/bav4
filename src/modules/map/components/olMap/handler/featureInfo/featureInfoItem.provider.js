@@ -5,7 +5,7 @@ import GeoJSON from 'ol/format/GeoJSON';
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
  * @function
  * @param {Feature} olFeature ol feature
- * @param {LayerProperties} layerProperties global layer object
+ * @param {LayerProperties} layerProperties layerProperties
  * @returns {FeatureInfo} featureInfo
  */
 export const getBvvFeatureInfo = (olFeature, layerProperties) => {
