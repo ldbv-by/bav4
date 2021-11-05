@@ -51,10 +51,9 @@ export const create = (layer, projection) => {
 				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
 			}
 
-			let styles = clone.getStyleFunction() || layer.getStyleFunction();
+			const styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
-				styles = styles(clone);
-				const kmlStyle = sanitizeStyle(styles);
+				const kmlStyle = sanitizeStyle(styles(clone));
 				clone.setStyle(kmlStyle);
 			}
 

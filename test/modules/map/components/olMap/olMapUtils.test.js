@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
-import { isEmptyLayer, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
+import { registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMouseEvent } from './mapTestUtils';
 
@@ -162,34 +162,6 @@ describe('olMapUtils', () => {
 			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalled();
-		});
-	});
-
-	describe('isEmptyLayer', () => {
-		it('evaluates the layer-object', () => {
-			const emptyLayerMock = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [];
-						}
-					};
-				}
-			};
-
-			const filledLayerMock = {
-				getSource() {
-					return {
-						getFeatures() {
-							return [{}, {}];
-						}
-					};
-				}
-			};
-			expect(isEmptyLayer(emptyLayerMock)).toBeTrue();
-			expect(isEmptyLayer(filledLayerMock)).toBeFalse();
-			expect(isEmptyLayer(null)).toBeTrue();
-			expect(isEmptyLayer(undefined)).toBeTrue();
 		});
 	});
 });

@@ -1,6 +1,6 @@
-import { MvuCounter } from '../../../../../src/modules/commons/components/examples/MvuCounter.js';
-import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
-import { TestUtils } from '../../../../test-utils.js';
+import { MvuCounter } from '../../../../src/modules/examples/components//MvuCounter.js';
+import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
+import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(MvuCounter.tag, MvuCounter);
 

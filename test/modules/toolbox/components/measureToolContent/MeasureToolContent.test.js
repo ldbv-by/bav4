@@ -273,7 +273,7 @@ describe('MeasureToolContent', () => {
 			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
 		});
 
-		it('shows the measurement button', async () => {
+		it('shows the measurement share-button', async () => {
 			const state = {
 				measurement: {
 					active: true,

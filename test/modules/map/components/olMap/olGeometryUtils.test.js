@@ -1,6 +1,10 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta } from '../../../../../src/modules/map/components/olMap/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry } from '../../../../../src/modules/map/components/olMap/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
 
+proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+register(proj4);
 
 describe('getGeometryLength', () => {
 	it('calculates length of LineString', () => {
@@ -28,6 +32,12 @@ describe('getGeometryLength', () => {
 	it('calculates not length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
 		const length = getGeometryLength(circle);
+
+		expect(length).toBe(0);
+	});
+
+	it('calculates not length of null', () => {
+		const length = getGeometryLength(null);
 
 		expect(length).toBe(0);
 	});
@@ -184,6 +194,14 @@ describe('getArea', () => {
 		expect(area).toBe(1);
 	});
 
+	it('calculates the area for a projected Polygon', () => {
+		const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+		const calculationHints = { fromProjection: 'EPSG:4326', toProjection: 'EPSG:25832' };
+		const area = getArea(polygon, calculationHints);
+
+		expect(area).toBeCloseTo(12575513411.866, 2);
+	});
+
 	it('returns 0 for a non-area-like geometry', () => {
 		const point = new Point([0, 0]);
 		const lineString = new LineString([[0, 0], [2, 0]]);
@@ -334,3 +352,17 @@ describe('getPartitionDelta', () => {
 		expect(delta).toBe(0.02);
 	});
 });
+
+describe('isValidGeometry', () => {
+
+	it('validates Geometries', () => {
+		expect(isValidGeometry(new Point([0, 0]))).toBeTrue();
+		expect(isValidGeometry(new LineString([[0, 0], [15, 0]]))).toBeTrue();
+		expect(isValidGeometry(new Polygon([[[0, 0], [15, 0], [15, 15]]]))).toBeTrue();
+
+		expect(isValidGeometry(null)).toBeFalse();
+		expect(isValidGeometry(new Circle([0, 0], 10))).toBeFalse();
+	});
+});
+
+
