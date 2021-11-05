@@ -1,6 +1,6 @@
 import { OlMapHandler } from '../../../../../../src/modules/map/components/olMap/handler/OlMapHandler';
 
-describe('MapEventHandler', () => {
+describe('OlMapHandler', () => {
 
 	class OlMapHandlerImpl extends OlMapHandler {
 		constructor() {
