@@ -32,18 +32,18 @@ describe('GeoResource', () => {
 		}
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new GeoResource()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 
-			it('throws excepetion when instantiated without id', () => {
+			it('throws exception when instantiated without id', () => {
 				expect(() => new GeoResourceNoImpl()).toThrowError(TypeError, 'id must not be undefined');
 			});
 		});
 
 		describe('methods', () => {
 
-			it('throws excepetion when abstract #getType is called without overriding', () => {
+			it('throws exception when abstract #getType is called without overriding', () => {
 				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
 			});
 

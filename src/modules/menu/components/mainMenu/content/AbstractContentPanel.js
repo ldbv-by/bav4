@@ -8,6 +8,7 @@ import contentPanelCss from './abstractContentPanel.css';
  * @class
  * @author taulinger
  * @abstract
+ * @deprecated
  */
 export class AbstractContentPanel extends BaElement {
 
