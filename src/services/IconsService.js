@@ -12,8 +12,8 @@ export class IconsService {
 	}
 
 
-	async init() {
-		if (!this._icons) {
+	async _load() {
+		if (this._icons === null) {
 			try {
 				this._icons = await this._provider();
 			}
@@ -25,10 +25,9 @@ export class IconsService {
 		return this._icons;
 	}
 
-	all() {
-		if (!this._icons) {
-			console.warn('IconsService not yet initialized');
-			return [];
+	async all() {
+		if (this._icons === null) {
+			return await this._load();
 		}
 		return this._icons;
 	}

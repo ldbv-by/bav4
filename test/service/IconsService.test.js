@@ -27,13 +27,13 @@ describe('IconsService', () => {
 		return new IconsService(provider);
 	};
 
-	describe('init', () => {
+	describe('initialization', () => {
 
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup();
 			expect(instanceUnderTest._icons).toBeNull();
 
-			const icons = await instanceUnderTest.init();
+			const icons = await instanceUnderTest.all();
 
 			expect(icons.length).toBe(2);
 		});
@@ -48,7 +48,7 @@ describe('IconsService', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._icons = [iconTemplate1];
 
-			const icons = await instanceUnderTest.init();
+			const icons = await instanceUnderTest.all();
 
 			expect(icons.length).toBe(1);
 		});
@@ -63,7 +63,7 @@ describe('IconsService', () => {
 				const errorSpy = spyOn(console, 'error');
 
 
-				const icons = await instanceUnderTest.init();
+				const icons = await instanceUnderTest.all();
 
 				expect(icons).toEqual([]);
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
@@ -73,21 +73,25 @@ describe('IconsService', () => {
 
 	describe('all', () => {
 
-		it('provides all icons', () => {
+		it('provides all icons', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._icons = [iconTemplate1];
 
-			const icons = instanceUnderTest.all();
+			const icons = await instanceUnderTest.all();
 
 			expect(icons.length).toBe(1);
 		});
 
-		it('logs a warn statement when service hat not been initialized', () => {
-			const instanceUnderTest = setup();
-			const warnSpy = spyOn(console, 'warn');
+		it('fetches the icons when service hat not been initialized', async () => {
+			const instanceUnderTest = setup(async () => {
+				return Promise.resolve([iconTemplate1]);
+			});
+			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
 
-			expect(instanceUnderTest.all()).toEqual([]);
-			expect(warnSpy).toHaveBeenCalledWith('IconsService not yet initialized');
+			const icons = await instanceUnderTest.all();
+			expect(loadSpy).toHaveBeenCalled();
+			expect(icons).toEqual([iconTemplate1]);
+
 		});
 	});
 });
