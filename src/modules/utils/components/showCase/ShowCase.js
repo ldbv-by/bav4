@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { until } from 'lit-html/directives/until.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
@@ -9,6 +10,8 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
+
+
 
 /**
  * Displays a showcase of common and reusable components or
@@ -21,8 +24,8 @@ export class ShowCase extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, ShareService, UrlService, GeoResourceService, FileStorageService }
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'GeoResourceService', 'FileStorageService');
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, GeoResourceService, FileStorageService, IconsService }
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'GeoResourceService', 'FileStorageService', 'IconsService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._geoResourceService = GeoResourceService;
@@ -31,6 +34,7 @@ export class ShowCase extends BaElement {
 		this._url = '';
 		this._shortUrl = '';
 		this._fileStorageService = FileStorageService;
+		this._iconsService = IconsService;
 	}
 
 	/**
@@ -127,6 +131,17 @@ export class ShowCase extends BaElement {
 			toggleVersion();
 		};
 
+
+		const loadIcons = async () => {
+			const images = [];
+			const iconSrcTemplates = await this._iconsService.all();
+			iconSrcTemplates.forEach(srcTemplate => {
+				const iconSrc = srcTemplate();
+				images.push(html`<img src=${iconSrc} >`);
+			});
+			return html`${images}`;
+		};
+
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -191,6 +206,10 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification1' .label=${'Warn Notification'} type="primary" @click=${onClickEmitWarn}></ba-button>
 						<ba-button id='notification2' .label=${'Error Notification'} type="primary" @click=${onClickEmitError}></ba-button>
 						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
+			</div>
+			<p>Icons</>
+			<div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;width: 50rem;">
+				${until(loadIcons(), html`<span>loading Icons...</span>`)}
 			</div>
 		</div>`;
 	}

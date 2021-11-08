@@ -14,6 +14,7 @@ import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
+import { IconsService } from '../services/IconsService';
 import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../plugins/LayersPlugin';
@@ -41,6 +42,7 @@ $injector
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
 	.registerSingleton('TopicsService', new TopicsService())
+	.registerSingleton('IconsService', new IconsService())
 	.registerSingleton('AltitudeService', new AltitudeService())
 	.registerSingleton('SearchResultService', new SearchResultService())
 	.registerSingleton('ShareService', new ShareService())
