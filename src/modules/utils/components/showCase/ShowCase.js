@@ -1,5 +1,4 @@
 import { html } from 'lit-html';
-import { until } from 'lit-html/directives/until.js';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
@@ -31,6 +30,7 @@ export class ShowCase extends BaElement {
 		this._geoResourceService = GeoResourceService;
 		this._urlService = UrlService;
 		this._shareService = ShareService;
+		this._icons = [];
 		this._url = '';
 		this._shortUrl = '';
 		this._fileStorageService = FileStorageService;
@@ -131,16 +131,24 @@ export class ShowCase extends BaElement {
 			toggleVersion();
 		};
 
-
 		const loadIcons = async () => {
-			const images = [];
 			const iconSrcTemplates = await this._iconsService.all();
-			iconSrcTemplates.forEach(srcTemplate => {
-				const iconSrc = srcTemplate();
+			iconSrcTemplates.forEach(srcTemplate => this._icons.push(srcTemplate()));
+			this.render();
+		};
+
+		const getIcons = () => {
+			const images = [];
+			if (!this._icons.length) {
+				loadIcons();
+			}
+			this._icons.forEach(iconSrc => {
 				images.push(html`<img src=${iconSrc} >`);
 			});
 			return html`${images}`;
 		};
+
+
 
 		return html`<div>
 			<p>Here we present components in random order that:</p>
@@ -207,11 +215,12 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification2' .label=${'Error Notification'} type="primary" @click=${onClickEmitError}></ba-button>
 						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
 			</div>
+			<hr>
 			<p>Icons</>
-			<div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;width: 50rem;">
-				${until(loadIcons(), html`<span>loading Icons...</span>`)}
+			<div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;max-width:80rem">
+				${getIcons()}
 			</div>
-		</div>`;
+		</div > `;
 	}
 
 	static get tag() {
