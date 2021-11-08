@@ -31,7 +31,7 @@ describe('AbstractContentPanel', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new AbstractContentPanel()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 		});

@@ -33,7 +33,7 @@ describe('AbstractToolContent', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new AbstractToolContent()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 		});

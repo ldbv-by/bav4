@@ -132,21 +132,21 @@ describe('BaElement', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new BaElement()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 		});
 
 		describe('methods', () => {
-			it('throws excepetion when abstract #createView is called without overriding', () => {
+			it('throws exception when abstract #createView is called without overriding', () => {
 				expect(() => new BaElementNoImpl().createView()).toThrowError(TypeError, 'Please implement abstract method #createView or do not call super.createView from child.');
 			});
 
-			it('throws excepetion when abstract static method #tag is called directly', () => {
+			it('throws exception when abstract static method #tag is called directly', () => {
 				expect(() => BaElement.tag).toThrowError(TypeError, 'Can not call static abstract method #tag.');
 			});
 
-			it('throws excepetion when abstract static method #tag is called without overriding', () => {
+			it('throws exception when abstract static method #tag is called without overriding', () => {
 				expect(() => BaElementNoImpl.tag).toThrowError(TypeError, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 			});
 		});

@@ -9,10 +9,9 @@ import { setTabIndex } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
-import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureTypes, setHighlightFeatures } from '../../../../../src/store/highlight/highlight.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
+import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -27,14 +26,13 @@ describe('MainMenuTabIndex', () => {
 		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
 		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
 		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchResultsPanel });
-		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: null });
+		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: FeatureInfoPanel });
 	});
 });
 
 
 describe('MainMenu', () => {
 
-	let store;
 
 	const setup = (state = {}, config = {}) => {
 
@@ -53,9 +51,8 @@ describe('MainMenu', () => {
 			...state
 
 		};
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
@@ -178,7 +175,7 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].style.display).toBe(i === 0 ? 'block' : 'none');
+				expect(contentPanels[i].classList.contains('is-active')).toBe(i === 0);
 			}
 		});
 
@@ -195,7 +192,7 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].style.display).toBe(i === activeTabIndex ? 'block' : 'none');
+				expect(contentPanels[i].classList.contains('is-active')).toBe(i === activeTabIndex);
 			}
 		});
 
@@ -224,7 +221,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].style.display).toBe(i === index.id ? 'block' : 'none');
+				expect(panels[i].classList.contains('is-active')).toBe(i === index.id);
 			}
 		};
 
@@ -249,23 +246,6 @@ describe('MainMenu', () => {
 
 			setTabIndex(TabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
-		});
-
-		it('clears highlight features', async () => {
-			await setup();
-			const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
-
-			setHighlightFeatures(highlightFeature);
-
-			expect(store.getState().highlight.features).toEqual([highlightFeature]);
-
-			setTabIndex(TabIndex.SEARCH);
-
-			expect(store.getState().highlight.features).toEqual([highlightFeature]);
-
-			setTabIndex(TabIndex.MAPS);
-
-			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 

@@ -34,20 +34,20 @@ describe('LayerHandler', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
-			it('throws excepetion when instantiated without inheritance', () => {
+			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new OlLayerHandler()).toThrowError(TypeError, 'Can not construct abstract class.');
 			});
 
-			it('throws excepetion when instantiated without an ID', () => {
+			it('throws exception when instantiated without an ID', () => {
 				expect(() => new OlLayerHandleNoId()).toThrowError(TypeError, 'Id of this handler must be defined.');
 			});
 		});
 
 		describe('methods', () => {
-			it('throws excepetion when abstract #activate is called without overriding', () => {
+			it('throws exception when abstract #activate is called without overriding', () => {
 				expect(() => new OlLayerHandlerImpl().activate()).toThrowError(TypeError, 'Please implement abstract method #onActivate or do not call super.onActivate from child.');
 			});
-			it('throws excepetion when abstract #activate is called without overriding', () => {
+			it('throws exception when abstract #activate is called without overriding', () => {
 				expect(() => new OlLayerHandlerImpl().deactivate()).toThrowError(TypeError, 'Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.');
 			});
 		});

@@ -89,7 +89,7 @@ describe('OlMap', () => {
 		}
 	};
 	const highlightLayerHandlerMock = {
-		activate() { },
+
 		deactivate() { },
 		get id() {
 			return 'highlightLayerHandlerMockId';
@@ -99,6 +99,12 @@ describe('OlMap', () => {
 		},
 		get options() {
 			return getDefaultLayerOptions();
+		}
+	};
+	const featureInfoHandlerMock = {
+		register() { },
+		get id() {
+			return 'featureInfoHandlerMockId';
 		}
 	};
 
@@ -140,6 +146,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
+			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('VectorImportService', vectorImportServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
@@ -760,6 +767,14 @@ describe('OlMap', () => {
 			removeLayer(geolocationLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('featureInfo handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._mapHandler.get('featureInfoHandlerMockId')).toEqual(featureInfoHandlerMock);
 		});
 	});
 });
