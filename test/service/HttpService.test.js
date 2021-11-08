@@ -1,4 +1,4 @@
-import { HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
+import { MediaType, HttpService, NetworkStateSyncHttpService } from '../../src/services/HttpService';
 import { networkReducer } from '../../src/store/network/network.reducer';
 import { TestUtils } from '../test-utils';
 
@@ -232,7 +232,7 @@ describe('NetworkStateSyncHttpService', () => {
 		it('regards pending responses', async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
-			spyOn(window, 'fetch').and.callFake(async () => {});
+			spyOn(window, 'fetch').and.callFake(async () => { });
 
 			instanceUnderTest.fetch('first');
 			instanceUnderTest.fetch('second');
@@ -277,5 +277,17 @@ describe('NetworkStateSyncHttpService', () => {
 				done();
 			});
 		});
+	});
+});
+
+describe('MediaType', () => {
+
+	it('is an enum representing common media types', () => {
+
+		expect(Object.entries(MediaType).length).toBe(3);
+		expect(Object.isFrozen(MediaType)).toBeTrue();
+		expect(MediaType.JSON).toEqual('application/json');
+		expect(MediaType.TEXT_HTML).toEqual('text/html');
+		expect(MediaType.TEXT_PLAIN).toEqual('text/plain');
 	});
 });
