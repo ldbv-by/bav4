@@ -20,9 +20,7 @@ export const calc3857MapResolution = (latitude, zoom, tileSize) => {
      * Calculates width and height of the map in pixels at a specific zoom level from -180 degrees to 180 degrees.
      */
 	const mapSize = (zoom, tileSize) => Math.ceil(tileSize * Math.pow(2, zoom));
-	/**
-     * Calculates the resolution at a specific degree of latitude in meters per pixel.
-     */
+
 	latitude = clip(latitude, minLatitude, maxLatitude);
 	return Math.cos(latitude * Math.PI / 180) * 2 * Math.PI * earthRadius / mapSize(zoom, tileSize);
 };
