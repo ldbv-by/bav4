@@ -1,9 +1,10 @@
 import { $injector } from '../../injection';
+import { LayerInfoResult } from '../../modules/layerInfo/services/LayerInfoService';
 
 /**
- * Uses the BVV endpoint to load layerinfo.
+ * Uses the BVV endpoint to load layerinfoResult.
  * @function
- * @returns {Promise<Object>}
+ * @returns {Promise<LayerInfoResult>}
  */
 export const loadBvvLayerInfo = async (geoResourceId) => {
 
@@ -15,8 +16,8 @@ export const loadBvvLayerInfo = async (geoResourceId) => {
 	if (result.ok) {
 		const htmlContent = await result.text();
 		if (htmlContent && htmlContent.length > 0) {
-			return { content: htmlContent };
+			return new LayerInfoResult(htmlContent, null);
 		}
 	}
-	throw new Error(`LayerInfo for '${geoResourceId}' could not be loaded`);
+	throw new Error(`LayerInfoResult for '${geoResourceId}' could not be loaded`);
 };

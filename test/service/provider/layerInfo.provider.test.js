@@ -44,7 +44,7 @@ describe('LayerInfo provider', () => {
 			new Response(JSON.stringify(), { status: 200 })
 		));
 
-		const errorMessage = 'LayerInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
+		const errorMessage = 'LayerInfoResult for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
 
 		try {
 			await loadBvvLayerInfo('914c9263-5312-453e-b3eb-5104db1bf788');
@@ -67,7 +67,7 @@ describe('LayerInfo provider', () => {
 			new Response(null, { status: 404 })
 		));
 
-		const errorMessage = 'LayerInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
+		const errorMessage = 'LayerInfoResult for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
 
 		try {
 			await loadBvvLayerInfo('914c9263-5312-453e-b3eb-5104db1bf788');

@@ -33,7 +33,8 @@ export class LayerInfoPanel extends MvuElement {
 
 		if (layerInfo) {
 			return html`
-			<div>${unsafeHTML(`${layerInfo.content}`)} ${layerInfo.title}</div>
+			<div>${layerInfo.title}</div>
+			<div>${unsafeHTML(`${layerInfo.content}`)}</div>
 			`;
 		}
 		return nothing;

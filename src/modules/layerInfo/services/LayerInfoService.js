@@ -1,5 +1,4 @@
 import { loadBvvLayerInfo } from '../../../services/provider/layerInfo.provider';
-import { LayerInfo } from './layerInfo';
 
 export class LayerInfoService {
 
@@ -8,19 +7,45 @@ export class LayerInfoService {
 	}
 
 	/**
-	* Returns the corresponding  {@link LayerInfo} for an id.
+	* Returns the corresponding  {@link LayerInfoResult} for an id.
 	* @public
-	* @param {string} geoResourceId Id of the desired {@link LayerInfo}
-	* @returns {LayerInfo | null }
+	* @param {string} geoResourceId Id of the desired {@link LayerInfoResult}
+	* @returns {LayerInfoResult | null }
 	* @throws Will throw an error if the provider result is wrong and pass it to the view.
 	*/
 	async byId(geoResourceId) {
 		try {
-			const result = await this._provider(geoResourceId);
-			return new LayerInfo(result.content, null);
+			return await this._provider(geoResourceId);
 		}
 		catch (e) {
-			throw new Error('Could not load layerinfo from provider: ' + e.message);
+			throw new Error('Could not load layerinfoResult from provider: ' + e.message);
 		}
 	}
 }
+
+/**
+* @class
+* @author costa_gi
+*/
+export class LayerInfoResult {
+
+	/**
+	 *
+	 * @param {string} content of this LayerInfoResult
+	 * @param {string} [title=null] optional title of this LayerInfoResult
+	 */
+	constructor(content, title = null) {
+
+		this._content = content;
+		this._title = title;
+	}
+
+	get content() {
+		return this._content;
+	}
+
+	get title() {
+		return this._title;
+	}
+}
+

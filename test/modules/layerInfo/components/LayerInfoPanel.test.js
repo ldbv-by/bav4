@@ -1,7 +1,7 @@
 import { LayerInfoPanel } from '../../../../src/modules/layerInfo/components/LayerInfoPanel';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
-import { LayerInfo } from '../../../../src/modules/layerInfo/services/layerInfo';
+import { LayerInfoResult } from '../../../../src/modules/layerInfo/services/LayerInfoService';
 
 window.customElements.define(LayerInfoPanel.tag, LayerInfoPanel);
 
@@ -25,7 +25,7 @@ describe('LayerInfoPanel', () => {
 
 		it('should show a layerInfo on the panel', async () => {
 
-			const layerInfo = new LayerInfo('<b>content</b>');
+			const layerInfo = new LayerInfoResult('<b>content</b>');
 			spyOn(layerInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(layerInfo);
 
 			const element = await TestUtils.render(LayerInfoPanel.tag);
@@ -34,8 +34,8 @@ describe('LayerInfoPanel', () => {
 			element.signal('UPDATE_LAYERINFO', layerInfo);
 			const divs = element.shadowRoot.querySelectorAll('div');
 
-			expect(divs.length).toBe(1);
-			expect(divs[0].innerText).toBe('content');
+			expect(divs.length).toBe(2);
+			expect(divs[1].innerText).toBe('content');
 		});
 
 		it('should log a warn statement when Altitude Service is not available', async (done) => {

@@ -5,6 +5,7 @@ import { layersReducer, createDefaultLayerProperties } from '../../../../src/sto
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TemplateResult } from 'lit-html';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -191,6 +192,7 @@ describe('LayerItem', () => {
 			infoButton.click();
 
 			expect(store.getState().modal.data.title).toBe('label0');
+			expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
 		});
 	});
 

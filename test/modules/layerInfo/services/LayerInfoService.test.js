@@ -1,5 +1,4 @@
-import { LayerInfo } from '../../../../src/modules/layerInfo/services/layerInfo';
-import { LayerInfoService } from '../../../../src/modules/layerInfo/services/LayerInfoService';
+import { LayerInfoService, LayerInfoResult } from '../../../../src/modules/layerInfo/services/LayerInfoService';
 import { loadBvvLayerInfo } from '../../../../src/services/provider/layerInfo.provider';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
@@ -21,7 +20,7 @@ describe('LayerInfoService', () => {
 		const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
 
 		const result = await layerInfoSerice.byId(geoResourceId);
-		const layerInfo = new LayerInfo(result.content);
+		const layerInfo = new LayerInfoResult(result.content);
 
 		expect(layerInfo.content).toBe('<b>content</b>');
 		expect(layerInfo.title).toBeNull();
@@ -40,7 +39,24 @@ describe('LayerInfoService', () => {
 			throw new Error('Promise should not be resolved');
 		}
 		catch (err) {
-			expect(err.message).toBe('Could not load layerinfo from provider: ' + providerErrMsg);
+			expect(err.message).toBe('Could not load layerinfoResult from provider: ' + providerErrMsg);
 		}
+	});
+
+	describe('LayerInfoResult', () => {
+
+		it('provides getter for properties', () => {
+			const layerInfoResult = new LayerInfoResult('<b>content</b>', 'title');
+
+			expect(layerInfoResult.content).toBe('<b>content</b>');
+			expect(layerInfoResult.title).toBe('title');
+		});
+
+		it('provides default properties', () => {
+			const layerInfoResult = new LayerInfoResult('<b>content</b>');
+
+			expect(layerInfoResult.content).toBe('<b>content</b>');
+			expect(layerInfoResult.title).toBeNull();
+		});
 	});
 });
