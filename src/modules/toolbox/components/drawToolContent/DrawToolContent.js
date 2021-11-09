@@ -10,6 +10,8 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
 
+const Update = 'update';
+const Update_Tools = 'update_tools';
 
 /**
  * @class
@@ -18,14 +20,40 @@ import { QueryParameters } from '../../../../services/domain/queryParameters';
  */
 export class DrawToolContent extends AbstractToolContent {
 	constructor() {
-		super();
+		super({ type: null, style: null, selectedStyle: null, mode: null, fileSaveResult: { adminId: 'init', fileId: 'init' }, validGeometry: null, tools: null });
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
 		this._urlService = urlService;
-		this._tools = this._buildTools();
+		this.signal(Update_Tools, this._buildTools());
+	}
+
+	onInitialize() {
+		this.observe(state => state.draw, data => this.signal(Update, data));
+	}
+
+	update(type, data, model) {
+		const setActiveToolByType = (tools, type) => {
+			return tools.map(tool => {
+				return { ...tool, active: tool.name === type };
+			});
+		};
+
+		switch (type) {
+			case Update:
+				return { ...model,
+					type: data.type,
+					style: data.style,
+					selectedStyle: data.selectedStyle,
+					mode: data.mode,
+					validGeometry: data.validGeometry,
+					fileSaveResult: data.fileSaveResult,
+					tools: setActiveToolByType(model.tools, data.type) };
+			case Update_Tools:
+				return { ...model, tools: data };
+		}
 	}
 
 	_buildTools() {
@@ -61,17 +89,12 @@ export class DrawToolContent extends AbstractToolContent {
 		}];
 	}
 
-	_setActiveToolByType(type) {
-		this._tools.forEach(tool => tool.active = tool.name === type);
-		this._showActive();
+	_getActiveTool(model) {
+		return model.tools.find(tool => tool.active);
 	}
 
-	_getActiveTool() {
-		return this._tools.find(tool => tool.active);
-	}
-
-	_showActive() {
-		this._tools.forEach(tool => {
+	_showActive(tools) {
+		tools.forEach(tool => {
 			const id = tool.name;
 			const element = this._root.querySelector('#' + id);
 			if (element) {
@@ -85,10 +108,10 @@ export class DrawToolContent extends AbstractToolContent {
 		});
 	}
 
-	_getButtons(state) {
+	_getButtons(model) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { mode, validGeometry } = state;
+		const { mode, validGeometry } = model;
 
 		const getButton = (id, title, onClick) => {
 			return html`<ba-button id=${id} 
@@ -97,7 +120,7 @@ export class DrawToolContent extends AbstractToolContent {
 								@click=${onClick}></ba-button>`;
 		};
 
-		const activeTool = this._getActiveTool();
+		const activeTool = this._getActiveTool(model);
 		const activeToolName = activeTool ? activeTool.name : 'noTool';
 		// Cancel-Button
 
@@ -126,13 +149,13 @@ export class DrawToolContent extends AbstractToolContent {
 			buttons.push(getButton(id, title, onClick));
 		}
 
-		buttons.push(this._getShareButton(state));
+		buttons.push(this._getShareButton(model));
 
 		return buttons;
 	}
 
-	_getShareButton(state) {
-		const { fileSaveResult } = state;
+	_getShareButton(model) {
+		const { fileSaveResult } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const isValidForSharing = (fileSaveResult) => {
 			if (!fileSaveResult) {
@@ -180,8 +203,8 @@ export class DrawToolContent extends AbstractToolContent {
 		return nothing;
 	}
 
-	_getSubText(state) {
-		const { mode } = state;
+	_getSubText(model) {
+		const { mode } = model;
 		const translate = (key) => this._translationService.translate(key);
 		let subTextMessage = translate('toolbox_drawTool_info');
 		if (this._environmentService.isTouch()) {
@@ -202,22 +225,20 @@ export class DrawToolContent extends AbstractToolContent {
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
 	}
 
-	createView(state) {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle, selectedStyle } = state;
+		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools } = model;
 
-		this._setActiveToolByType(preselectedType);
+		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
 			const toggle = () => {
-				tool.active = !tool.active;
 				if (tool.active) {
-					tool.activate();
-				}
-				else {
 					setType(null);
 				}
-				this._showActive();
+				else {
+					tool.activate();
+				}
 			};
 
 			return html`
@@ -329,8 +350,8 @@ export class DrawToolContent extends AbstractToolContent {
 
 		};
 
-		const buttons = this._getButtons(state);
-		const subText = this._getSubText(state);
+		const buttons = this._getButtons(model);
+		const subText = this._getSubText(model);
 
 		return html`
         <style>${css}</style>
@@ -341,7 +362,7 @@ export class DrawToolContent extends AbstractToolContent {
 					</div>      
 					<div class="ba-tool-container__content">                						     				
 						<div class="tool-container__buttons">                                    
-                			${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
+                			${repeat(tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
                 		</div>	
                 	</div>	
 				<div class="tool-container__form">
@@ -355,15 +376,6 @@ export class DrawToolContent extends AbstractToolContent {
         </div >
 			`;
 
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { draw } = globalState;
-		return draw;
 	}
 
 	static get tag() {

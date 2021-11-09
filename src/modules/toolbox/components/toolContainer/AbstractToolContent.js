@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import toolContentCss from './abstractToolContent.css';
 
 /**
@@ -9,7 +9,7 @@ import toolContentCss from './abstractToolContent.css';
  * @author taulinger
  * @abstract
  */
-export class AbstractToolContent extends BaElement {
+export class AbstractToolContent extends MvuElement {
 
 	constructor() {
 		super();
