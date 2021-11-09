@@ -65,7 +65,7 @@ export class MapService {
 	 * @param {number}  srid
 	 * @returns {Extent} extent
 	 */
-	getDefaultMapExtent(srid = 3857) {
+	getDefaultMapExtent(srid = this.getSrid()) {
 		switch (srid) {
 			case 3857:
 				return this._definitions.defaultExtent;
