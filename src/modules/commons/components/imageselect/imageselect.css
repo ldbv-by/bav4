@@ -1,0 +1,22 @@
+.ba_catalog_container{
+	display: flex;
+	justify-content: flex-start; 
+	flex-wrap: wrap;
+	border-width: 1px;
+	border-color: black;
+	border-style: inset;
+}
+
+.ba_catalog_item:hover{
+	background-color: burlywood;
+}
+
+.isselected{
+	border-width: 1px;
+	border-color: blueviolet;	
+	border-style: outset;
+}
+
+.iscollapsed {
+	display: none;
+}

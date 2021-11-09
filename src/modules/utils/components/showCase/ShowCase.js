@@ -153,6 +153,23 @@ export class ShowCase extends BaElement {
 			return html`${images}`;
 		};
 
+		const getImages = () => {
+			// const imageUrls = [];
+			// if (!this._icons.length) {
+			// 	loadIcons();
+			// 	return ['http://maps.google.com/mapfiles/kml/shapes/airports.png',
+			// 		'http://maps.google.com/mapfiles/kml/shapes/cabs.png',
+			// 		'http://maps.google.com/mapfiles/kml/shapes/ferry.png'];
+			// }
+			// this._icons.forEach(iconSrc => {
+			// 	imageUrls.push(iconSrc);
+			// });
+			return ['http://maps.google.com/mapfiles/kml/shapes/airports.png',
+				'http://maps.google.com/mapfiles/kml/shapes/cabs.png',
+				'http://maps.google.com/mapfiles/kml/shapes/ferry.png'];
+			//return imageUrls;
+		};
+
 
 
 		return html`<div>
@@ -222,10 +239,12 @@ export class ShowCase extends BaElement {
 			</div>
 			<hr>
 			<p>Icons</>
-			<div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;max-width:80rem">
-				${getIcons()}
-			</div>
+			<ba-imageselect .images=${getImages()} .title=${'select'} .value=${getImages()[0]} ></ba-imageselect>
 		</div > `;
+
+		// <div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;max-width:80rem">
+		//${getIcons()}
+		//	</div>
 	}
 
 	static get tag() {
