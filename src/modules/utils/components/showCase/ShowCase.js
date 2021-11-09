@@ -132,15 +132,20 @@ export class ShowCase extends BaElement {
 		};
 
 		const loadIcons = async () => {
+
 			const iconSrcTemplates = await this._iconsService.all();
-			iconSrcTemplates.forEach(srcTemplate => this._icons.push(srcTemplate()));
-			this.render();
+			if (iconSrcTemplates.length) {
+				iconSrcTemplates.forEach(srcTemplate => this._icons.push(srcTemplate()));
+				this.render();
+			}
+			console.warn('No Icons available.');
 		};
 
 		const getIcons = () => {
 			const images = [];
 			if (!this._icons.length) {
 				loadIcons();
+				return html`<span>No Icons available</span>`;
 			}
 			this._icons.forEach(iconSrc => {
 				images.push(html`<img src=${iconSrc} >`);
