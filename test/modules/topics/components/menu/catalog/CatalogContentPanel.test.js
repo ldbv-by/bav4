@@ -10,6 +10,7 @@ import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/co
 import { Topic } from '../../../../../../src/services/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { AbstractContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
@@ -36,6 +37,16 @@ describe('TopicsContentPanel', () => {
 
 		return TestUtils.render(CatalogContentPanel.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractContentPanel', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractContentPanel).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 

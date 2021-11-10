@@ -1,6 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { TabIndex } from '../store/mainMenu/mainMenu.action';
 
 
 /**
@@ -8,6 +10,18 @@ import { addLayer, removeLayer } from '../store/layers/layers.action';
  */
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
+/**
+ *ID for FeatureInfo related highlight features
+ */
+export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId';
+/**
+ *ID for SearchResult related highlight features
+ */
+export const SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureId';
+/**
+ *ID for SearchResult related temporary highlight features
+ */
+export const SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
 /**
  * @class
  * @author taulinger
@@ -30,6 +44,21 @@ export class HighlightPlugin extends BaPlugin {
 			}
 		};
 
+		const onPointerClick = () => {
+			removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+		};
+
+		const onTabIndexChanged = (tabIndex) => {
+			if (tabIndex !== TabIndex.FEATUREINFO) {
+				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+			}
+			if (tabIndex !== TabIndex.SEARCH) {
+				removeHighlightFeaturesById([SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
+			}
+		};
+
 		observe(store, state => state.highlight.active, onChange);
+		observe(store, state => state.pointer.click, onPointerClick);
+		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}
 }

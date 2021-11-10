@@ -19,6 +19,7 @@ import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
+import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 
 
 /**
@@ -53,6 +54,7 @@ export class StoreService {
 			topicsContentPanel: topicsContentPanelReducer,
 			highlight: highlightReducer,
 			notifications: notificationReducer,
+			featureInfo: featureInfoReducer,
 			media: createMediaReducer()
 		});
 
@@ -71,6 +73,8 @@ export class StoreService {
 				ContextClickPlugin: contextClickPlugin,
 				HighlightPlugin: highlightPlugin,
 				MediaPlugin: mediaPlugin,
+				FeatureInfoPlugin: featureInfoPlugin,
+				MainMenuPlugin: mainMenuPlugin,
 				EnvironmentService: environmentService
 			}
 				= $injector.inject(
@@ -84,7 +88,9 @@ export class StoreService {
 					'ContextClickPlugin',
 					'HighlightPlugin',
 					'MediaPlugin',
-					'EnvironmentService'
+					'EnvironmentService',
+					'FeatureInfoPlugin',
+					'MainMenuPlugin'
 				);
 
 			setTimeout(async () => {
@@ -99,6 +105,8 @@ export class StoreService {
 				await geolocationPlugin.register(this._store);
 				await contextClickPlugin.register(this._store);
 				await highlightPlugin.register(this._store);
+				await featureInfoPlugin.register(this._store);
+				await mainMenuPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
 			});

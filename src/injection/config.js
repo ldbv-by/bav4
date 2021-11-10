@@ -27,6 +27,8 @@ import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
 import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 import { NotificationPlugin } from '../plugins/NotificationPlugin';
+import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
+import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { LayerInfoService } from '../modules/layerInfo/services/LayerInfoService';
 
 $injector
@@ -58,6 +60,8 @@ $injector
 	.registerSingleton('NotificationPlugin', new NotificationPlugin())
 	.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
+	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
+	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

@@ -3,10 +3,10 @@
  * @class
  * @abstract
  */
-export class OlMapEventHandler {
+export class OlMapHandler {
 
 	constructor(id) {
-		if (this.constructor === OlMapEventHandler) {
+		if (this.constructor === OlMapHandler) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
 		}

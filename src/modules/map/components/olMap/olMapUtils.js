@@ -41,3 +41,12 @@ export const registerLongPressListener = (map, callback, delay = 300) => {
 	});
 };
 
+/**
+ *
+ * @param {*} map olMap
+ * @param {string} id id of the desired layer
+ * @returns olLayer or `undefined`
+ */
+export const getLayerById = (map, id) => {
+	return map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
+};

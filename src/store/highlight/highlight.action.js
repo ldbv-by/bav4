@@ -2,7 +2,7 @@
  * Action creators for highlighting a feature.
  * @module map/action
  */
-import { CLEAR_FEATURES, FEATURE_ADD, FEATURE_SET, REMOVE_FEATURE_BY_ID, TEMPORARY_FEATURE_ADD, TEMPORARY_FEATURE_SET } from './highlight.reducer';
+import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 import { $injector } from '../../injection';
 
 
@@ -29,7 +29,8 @@ import { $injector } from '../../injection';
  */
 
 export const HighlightFeatureTypes = Object.freeze({
-	DEFAULT: 0
+	DEFAULT: 0,
+	TEMPORARY: 1
 });
 
 /**
@@ -37,8 +38,8 @@ export const HighlightFeatureTypes = Object.freeze({
  * @enum
  */
 export const HighlightGeometryTypes = Object.freeze({
-	WKT: 0,
-	GEOJSON: 1
+	GEOJSON: 0,
+	WKT: 1
 });
 
 
@@ -46,19 +47,6 @@ export const HighlightGeometryTypes = Object.freeze({
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
-};
-
-/**
-* Sets a single or an array of {@link HighlightFeature}.
-* @param {Array.<HighlightFeature>|HighlightFeature} features
-* @function
-*/
-export const setHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: FEATURE_SET,
-		payload: featureAsArray
-	});
 };
 
 /**
@@ -73,56 +61,9 @@ export const addHighlightFeatures = (feature) => {
 		payload: featureAsArray
 	});
 };
+
 /**
  * Removes all {@link HighlightFeature}s.
- * @function
- */
-export const removeHighlightFeatures = () => {
-	getStore().dispatch({
-		type: FEATURE_SET,
-		payload: []
-	});
-};
-
-/**
- * Sets a single or an array of temporary {@link HighlightFeature}.
- * @param {HighlightFeature} feature
- * @function
- */
-export const setTemporaryHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_SET,
-		payload: featureAsArray
-	});
-};
-
-/**
- * Adds (appends) a single or an array of temporary {@link HighlightFeature}s.
- * @param {HighlightFeature} feature
- * @function
- */
-export const addTemporaryHighlightFeatures = (feature) => {
-	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_ADD,
-		payload: featureAsArray
-	});
-};
-
-/**
- * Removes all temporary {@link HighlightFeature}s.
- * @function
- */
-export const removeTemporaryHighlightFeatures = () => {
-	getStore().dispatch({
-		type: TEMPORARY_FEATURE_SET,
-		payload: []
-	});
-};
-
-/**
- * Removes both all permanent and temporary {@link HighlightFeature}s.
  * @function
  */
 export const clearHighlightFeatures = () => {
@@ -132,13 +73,16 @@ export const clearHighlightFeatures = () => {
 };
 
 /**
- * Removes a  (permanent or temporary) feature by its id.
+ * Removes a (permanent or temporary) feature by its id.
+ * If two or more feature have the same id, all of them are removed.
+ * @param {Array.<String>|String} id HighlightFeature id
  * @function
  */
-export const removeHighlightFeatureById = (id) => {
+export const removeHighlightFeaturesById = (id) => {
+	const idsAsArray = Array.isArray(id) ? [...id] : [id];
 	getStore().dispatch({
 		type: REMOVE_FEATURE_BY_ID,
-		payload: id
+		payload: idsAsArray
 	});
 };
 
