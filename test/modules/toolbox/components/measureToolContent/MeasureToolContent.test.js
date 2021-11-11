@@ -85,10 +85,6 @@ describe('MeasureToolContent', () => {
 
 	describe('when initialized', () => {
 
-		it('builds the tool', async () => {
-			const element = await setup();
-			expect(element._tool).toBeTruthy();
-		});
 
 		it('displays the finish-button', async () => {
 			const state = {
@@ -103,7 +99,6 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 
-			expect(element._tool).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
 		});
@@ -131,7 +126,6 @@ describe('MeasureToolContent', () => {
 		it('resets the measurement', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					mode: 'draw',
 					statistic: { length: 42, area: 0 },
 					reset: null,
@@ -149,7 +143,6 @@ describe('MeasureToolContent', () => {
 		it('removes the selected measurement', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					reset: null,
 					remove: null,
@@ -167,7 +160,6 @@ describe('MeasureToolContent', () => {
 		it('deletes the last drawn point of measurement', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 3 },
 					mode: 'draw',
 					reset: null,
@@ -185,7 +177,6 @@ describe('MeasureToolContent', () => {
 		it('shows the measurement statistics', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					reset: null,
 					remove: null
@@ -204,7 +195,6 @@ describe('MeasureToolContent', () => {
 		it('copies the measurement values to the clipboard', async (done) => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 2 },
 					reset: null,
 					remove: null
@@ -233,7 +223,6 @@ describe('MeasureToolContent', () => {
 		it('logs a warning when copyToClipboard fails', async (done) => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 2 },
 					reset: null,
 					remove: null
@@ -259,7 +248,6 @@ describe('MeasureToolContent', () => {
 		it('shows the measurement sub-text', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					reset: null,
 					remove: null
@@ -276,7 +264,6 @@ describe('MeasureToolContent', () => {
 		it('shows the measurement share-button', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
@@ -292,7 +279,6 @@ describe('MeasureToolContent', () => {
 		it('shows NOT the measurement share-container for invalid fileSaveResult', async () => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: null },
 					reset: null,
@@ -308,7 +294,6 @@ describe('MeasureToolContent', () => {
 		it('opens the modal with shortened share-urls on click', async (done) => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
@@ -333,7 +318,6 @@ describe('MeasureToolContent', () => {
 		it('logs a warning, when shortener fails', async (done) => {
 			const state = {
 				measurement: {
-					active: true,
 					statistic: { length: 42, area: 0 },
 					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
 					reset: null,
@@ -363,7 +347,6 @@ describe('MeasureToolContent', () => {
 				isTouch: true
 			};
 			const defaultMeasurementState = {
-				active: true,
 				mode: null,
 				statistic: { length: 42, area: 0 },
 				reset: null,
