@@ -78,6 +78,7 @@ export class ImageSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
+		// alternative variant without extra button
 		// return html`
 		// <style>${css}</style>
 		// <div class='catalog_header'>
@@ -90,14 +91,14 @@ export class ImageSelect extends MvuElement {
 
 
 		return html`
-        <style>${css}</style>
-        <div class='catalog_header'>
+		<style>${css}</style>
+		<div class='catalog_header'>
 		<img src=${model.value ? model.value : image}>
 		<ba-button id='open_catalog' .label=${model.title} .type=${'primary'} .disabled=${imagesAvailable}  @click=${onClick}></ba-button>
-        </div>
+		</div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
-            ${getImages()}
-        </div>
+		    ${getImages()}
+		</div>
 		`;
 	}
 
