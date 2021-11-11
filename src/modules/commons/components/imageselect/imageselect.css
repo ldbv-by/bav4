@@ -2,19 +2,23 @@
 	display: flex;
 	justify-content: flex-start; 
 	flex-wrap: wrap;
-	border-width: 1px;
-	border-color: black;
-	border-style: inset;
+	background-color: var(--tertiary-bg-color);
+	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);	
+	padding: 0.3em;
+	max-width: 80vw;
+}
+
+.ba_catalog_item{
+	margin: 0.3em;
 }
 
 .ba_catalog_item:hover{
-	background-color: burlywood;
+	background: var(--primary-color);
 }
 
 .isselected{
-	border-width: 1px;
-	border-color: blueviolet;	
-	border-style: outset;
+	background: var(--primary-color);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
 .iscollapsed {

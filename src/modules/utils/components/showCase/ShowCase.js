@@ -9,6 +9,11 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
+import iconRed from './assets/icon_red.svg';
+import iconGreen from './assets/icon_green.svg';
+import iconBlue from './assets/icon_blue.svg';
+
+
 
 
 
@@ -141,33 +146,21 @@ export class ShowCase extends BaElement {
 			console.warn('No Icons available.');
 		};
 
-		const getIcons = () => {
-			const images = [];
+		const getImages = () => {
+			const imageUrls = [];
 			if (!this._icons.length) {
 				loadIcons();
-				return html`<span>No Icons available</span>`;
 			}
 			this._icons.forEach(iconSrc => {
-				images.push(html`<img src=${iconSrc} >`);
+				imageUrls.push(iconSrc);
 			});
-			return html`${images}`;
+			return imageUrls;
 		};
 
-		const getImages = () => {
-			// const imageUrls = [];
-			// if (!this._icons.length) {
-			// 	loadIcons();
-			// 	return ['http://maps.google.com/mapfiles/kml/shapes/airports.png',
-			// 		'http://maps.google.com/mapfiles/kml/shapes/cabs.png',
-			// 		'http://maps.google.com/mapfiles/kml/shapes/ferry.png'];
-			// }
-			// this._icons.forEach(iconSrc => {
-			// 	imageUrls.push(iconSrc);
-			// });
-			return ['http://maps.google.com/mapfiles/kml/shapes/airports.png',
-				'http://maps.google.com/mapfiles/kml/shapes/cabs.png',
-				'http://maps.google.com/mapfiles/kml/shapes/ferry.png'];
-			//return imageUrls;
+		const getStaticImages = () => {
+			return [iconBlue,
+				iconGreen,
+				iconRed];
 		};
 
 
@@ -238,13 +231,12 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
 			</div>
 			<hr>
-			<p>Icons</>
-			<ba-imageselect .images=${getImages()} .title=${'select'} .value=${getImages()[0]} ></ba-imageselect>
-		</div > `;
+			<p>Icons (static)</>
+			<ba-imageselect .images=${getStaticImages()} .title=${'select Icon'} ></ba-imageselect>
 
-		// <div class='icons' style="display: flex;justify-content: flex-start; flex-wrap: wrap;max-width:80rem">
-		//${getIcons()}
-		//	</div>
+			<p>Icons (from backend)</>
+			<ba-imageselect  .images=${getImages()} .title=${'select Icon'} ></ba-imageselect>
+		</div > `;
 	}
 
 	static get tag() {

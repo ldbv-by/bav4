@@ -2,6 +2,7 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map';
 import { MvuElement } from '../../../MvuElement';
 import css from './imageselect.css';
+import image from './assets/image.svg';
 
 const Update_Title = 'update_title';
 const Update_Images = 'update_images';
@@ -29,15 +30,6 @@ export class ImageSelect extends MvuElement {
 			isCollapsed: true });
 	}
 
-
-	/**
-	 * @override
-	 */
-	onInitialize() {
-
-	}
-
-
 	update(type, data, model) {
 
 		switch (type) {
@@ -57,8 +49,10 @@ export class ImageSelect extends MvuElement {
      * @override
      */
 	createView(model) {
+
+		const imagesAvailable = !model.images.length;
 		const getImages = () => {
-			if (!model.images.length) {
+			if (imagesAvailable) {
 				return nothing;
 			}
 			const images = [];
@@ -84,11 +78,22 @@ export class ImageSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
+		// return html`
+		// <style>${css}</style>
+		// <div class='catalog_header'>
+		// 	<ba-icon .icon=${model.value ? model.value : image} .title=${model.title} .disabled=${imagesAvailable} @click=${onClick}></ba-icon>
+		// </div>
+		// <div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
+		//     ${getImages()}
+		// </div>
+		// `;
+
+
 		return html`
         <style>${css}</style>
         <div class='catalog_header'>
-            <img src=${model.value}>
-		    <ba-button id='open_catalog' .label=${model.title} .type=${'primary'} @click=${onClick}></ba-button>
+		<img src=${model.value ? model.value : image}>
+		<ba-button id='open_catalog' .label=${model.title} .type=${'primary'} .disabled=${imagesAvailable}  @click=${onClick}></ba-button>
         </div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
             ${getImages()}
