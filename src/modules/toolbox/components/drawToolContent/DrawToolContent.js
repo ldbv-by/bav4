@@ -20,7 +20,14 @@ const Update_Tools = 'update_tools';
  */
 export class DrawToolContent extends AbstractToolContent {
 	constructor() {
-		super({ type: null, style: null, selectedStyle: null, mode: null, fileSaveResult: { adminId: 'init', fileId: 'init' }, validGeometry: null, tools: null });
+		super({
+			type: null,
+			style: null,
+			selectedStyle: null,
+			mode: null,
+			fileSaveResult: { adminId: 'init', fileId: 'init' },
+			validGeometry: null, tools: null
+		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
