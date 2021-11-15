@@ -83,8 +83,8 @@ describe('DrawToolContent', () => {
 		it('builds list of tools', async () => {
 			const element = await setup();
 
-			expect(element._tools).toBeTruthy();
-			expect(element._tools.length).toBe(4);
+			expect(element._model.tools).toBeTruthy();
+			expect(element._model.tools.length).toBe(4);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
@@ -92,12 +92,10 @@ describe('DrawToolContent', () => {
 		it('activates the Line draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('line');
 		});
@@ -105,12 +103,10 @@ describe('DrawToolContent', () => {
 		it('activates the marker draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#marker');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('marker');
 		});
@@ -118,12 +114,10 @@ describe('DrawToolContent', () => {
 		it('activates the Text draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#text');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('text');
 		});
@@ -131,12 +125,10 @@ describe('DrawToolContent', () => {
 		it('activates the Polygon draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#polygon');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('polygon');
 		});
@@ -156,17 +148,14 @@ describe('DrawToolContent', () => {
 
 		it('toggles a tool', async () => {
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
-
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalledTimes(2);
 			expect(toolButton.classList.contains('is-active')).toBeFalse();
 		});
 
