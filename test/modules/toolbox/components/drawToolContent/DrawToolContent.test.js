@@ -64,6 +64,7 @@ describe('DrawToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('IconsService', { all: () => [] })
 			.registerSingleton('UrlService', urlServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};

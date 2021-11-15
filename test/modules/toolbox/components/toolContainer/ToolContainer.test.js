@@ -91,6 +91,7 @@ describe('ToolContainer', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock)
+			.registerSingleton('IconsService', { all: () => [] })
 			.register('UnitsService', MockClass);
 		return TestUtils.render(ToolContainer.tag);
 	};
