@@ -111,7 +111,7 @@ ba-checkbox:focus {
 .tool-container__form label {
 	min-width: 7em;
 }
-.tool-container__style_color, .tool-container__style_heigth, .tool-container__style_text, .tool-container__style_size {
+.tool-container__style_color, .tool-container__style_heigth, .tool-container__style_text, .tool-container__style_size, .tool-container__style_symbol {
 	padding: .3em 0;
 	display: flex;
 }

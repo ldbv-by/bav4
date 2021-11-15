@@ -49,9 +49,9 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
 	// todo: reactivate usage of environmentService, when backend is ready with icon-functions
-	// const { EnvironmentService } = $injector.inject('EnvironmentService');
-	// const environmentService = EnvironmentService;
-	const isOfflineModus = true; // environmentService.isStandalone()
+	const { EnvironmentService } = $injector.inject('EnvironmentService');
+	const environmentService = EnvironmentService;
+	const isOfflineModus = environmentService.isStandalone();
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 
@@ -450,6 +450,28 @@ export const getColorFrom = (feature) => {
 		}
 	}
 
+	return null;
+};
+
+
+/**
+ * extracts the symbolSrc-value or null from a feature
+ * @param {Feature} feature the feature with or without a style
+ * @returns {string|null} the symbolSrc-Value or null
+ */
+export const getSymbolFrom = (feature) => {
+	if (feature == null) {
+		return null;
+	}
+	const styles = feature.getStyle();
+	if (styles) {
+		const style = styles[0];
+		const image = style.getImage();
+
+		if (image) {
+			return image.getSrc();
+		}
+	}
 	return null;
 };
 
