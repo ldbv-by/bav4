@@ -18,7 +18,7 @@ const Default_Symbol = 'marker';
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {
-		if (symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
+		if (symbolSrc.startsWith('data:image/svg+xml;base64') || symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
 			return symbolSrc;
 		}
 		return getIconUrl(symbolSrc, hexToRgb(symbolColor));
@@ -85,6 +85,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			anchorXUnits: 'fraction',
 			anchorYUnits: 'fraction',
 			src: getMarkerSrc(styleOption.symbolSrc, markerColor),
+			color: markerColor,
 			scale: getMarkerScale(styleOption.scale)
 		};
 	};

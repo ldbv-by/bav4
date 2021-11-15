@@ -1,6 +1,6 @@
-import { IconsService } from '../../src/services/IconsService';
-import { loadBvvIcons } from '../../src/services/provider/icons.provider';
-import { $injector } from '../../src/injection';
+import { IconService } from '../../../../src/modules/iconSelect/services/IconService';
+import { loadBvvIcons } from '../../../../src/modules/iconSelect/services//provider/icons.provider';
+import { $injector } from '../../../../src/injection';
 
 
 describe('IconsService', () => {
@@ -24,7 +24,7 @@ describe('IconsService', () => {
 	};
 
 	const setup = (provider = loadMockIcons) => {
-		return new IconsService(provider);
+		return new IconService(provider);
 	};
 
 	describe('initialization', () => {
@@ -39,7 +39,7 @@ describe('IconsService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
-			const instanceUnderTest = new IconsService();
+			const instanceUnderTest = new IconService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvIcons);
 		});
 

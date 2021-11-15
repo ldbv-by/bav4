@@ -9,7 +9,6 @@ import { finish, remove, reset, setStyle, setType } from '../../../../store/draw
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
-import { hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -35,12 +34,11 @@ export class DrawToolContent extends AbstractToolContent {
 			selectedSymbolTemplateIndex: null
 		});
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService, IconsService: iconsService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService', 'IconsService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
 		this._urlService = urlService;
-		this._iconsService = iconsService;
 		this.signal(Update_Tools, this._buildTools());
 	}
 
@@ -247,7 +245,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools, symbolTemplates, selectedSymbolTemplateIndex } = model;
+		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools } = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
@@ -273,34 +271,13 @@ export class DrawToolContent extends AbstractToolContent {
             `;
 		};
 
-		const getSymbols = (symbolTemplates, style) => {
-			const map = new Map();
-			if (!symbolTemplates || !symbolTemplates.length) {
-				this._loadIcons();
-			}
-			if (symbolTemplates) {
-				const rgb = style ? hexToRgb(style.color) : [0, 0, 0];
-				symbolTemplates.forEach(symbolTemplate => map.set(symbolTemplate(rgb[0], rgb[1], rgb[2]), symbolTemplate));
-			}
-			return map;
-		};
-
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
 
-		const symbolMap = getSymbols(symbolTemplates, drawingStyle);
-		const getDefaultImage = () => {
-			return drawingStyle.symbolSrc === 'marker' ? null : drawingStyle.symbolSrc;
-		};
-		const getColoredSymbol = (color) => {
-			const rgb = hexToRgb(color);
-			return selectedSymbolTemplateIndex ? model.symbolTemplates[selectedSymbolTemplateIndex](rgb[0], rgb[1], rgb[2]) : null;
-		};
-
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
-				const changedSymbolSrc = getColoredSymbol(e.target.value);
-				const changedStyle = { ...style, color: e.target.value, symbolSrc: changedSymbolSrc ? changedSymbolSrc : style.symbolSrc };
+				//const changedSymbolSrc = getColoredSymbol(e.target.value);
+				const changedStyle = { ...style, color: e.target.value };
 				setStyle(changedStyle);
 			};
 			const onChangeScale = (e) => {
@@ -313,9 +290,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const selectedSymbolTemplate = symbolMap.get(e.target.value);
-				this.signal(Update_Selected_Symbol_Template_Index, model.symbolTemplates.indexOf(selectedSymbolTemplate));
-				const changedStyle = { ...style, symbolSrc: e.target.value };
+				const changedStyle = { ...style, symbolSrc: e.detail.selected.svg };
 				setStyle(changedStyle);
 			};
 
@@ -343,7 +318,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>
 							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
 								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
-								<ba-imageselect  id="style_symbol" .images=${[...symbolMap.keys()]} .value=${getDefaultImage()} .title="${translate('toolbox_drawTool_style_symbol_select')}" @select=${onChangeSymbol} ></ba-imageselect>																
+								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" @select=${onChangeSymbol} ></ba-iconselect>																
 							</div>
 						</div>
 						`;
@@ -426,13 +401,6 @@ export class DrawToolContent extends AbstractToolContent {
         </div >
 			`;
 
-	}
-
-	async _loadIcons() {
-		const iconSrcTemplates = await this._iconsService.all();
-		if (iconSrcTemplates.length) {
-			this.signal(Update_Symbol_Templates, iconSrcTemplates);
-		}
 	}
 
 	static get tag() {
