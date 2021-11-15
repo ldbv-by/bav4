@@ -37,6 +37,12 @@ describe('GeoResourceService', () => {
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 		});
 
+		it('initializes the service with custom provider', async () => {
+			const customProvider = async () => { };
+			const instanceUnderTest = setup(customProvider);
+			expect(instanceUnderTest._provider).toBeDefined();
+			expect(instanceUnderTest._provider).toEqual(customProvider);
+		});
 
 		it('just provides GeoResources when already initialized', async () => {
 			const instanceUnderTest = setup();
