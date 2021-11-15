@@ -24,7 +24,7 @@ export class LayerItem extends AbstractContentPanel {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._layer = { id: '', label: '', visible: true, collapsed: true, opacity: 1 };
+		this._layer = { id: '', label: '', visible: true, collapsed: true, opacity: 1, geoResourceId: '' };
 	}
 
 
@@ -132,7 +132,7 @@ export class LayerItem extends AbstractContentPanel {
 
 		const openLayerInfoPanel = async () => {
 			const content = html`<ba-layerinfo-panel .geoResourceId=${this._layer.id}></ba-layerinfo-panel>`;
-			openModal(this._layer.label, content);
+			openModal(this._layer.geoResourceId, content);
 		};
 
 
