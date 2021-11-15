@@ -1,4 +1,4 @@
-import { IconService } from '../../../../src/modules/iconSelect/services/IconService';
+import { IconResult, IconService } from '../../../../src/modules/iconSelect/services/IconService';
 import { loadBvvIcons } from '../../../../src/modules/iconSelect/services//provider/icons.provider';
 import { $injector } from '../../../../src/injection';
 
@@ -14,12 +14,12 @@ describe('IconsService', () => {
 			.registerSingleton('ConfigService', configService);
 	});
 
-	const iconTemplate1 = (r, g, b) => `foo_${r}-${g}-${b}`;
-	const iconTemplate2 = (r, g, b) => `bar_${r}-${g}-${b}`;
+	const iconResult1 = new IconResult('foo1', 'bar1');
+	const iconResult2 = new IconResult('foo2', 'bar2');
 	const loadMockIcons = async () => {
 		return [
-			iconTemplate1,
-			iconTemplate2
+			iconResult1,
+			iconResult2
 		];
 	};
 
@@ -46,7 +46,7 @@ describe('IconsService', () => {
 
 		it('just provides the icons when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._icons = [iconTemplate1];
+			instanceUnderTest._icons = [iconResult1];
 
 			const icons = await instanceUnderTest.all();
 
@@ -60,12 +60,12 @@ describe('IconsService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Icons could not be loaded');
 				});
-				const errorSpy = spyOn(console, 'error');
+				const errorSpy = spyOn(console, 'warn');
 
 
 				const icons = await instanceUnderTest.all();
 
-				expect(icons).toEqual([]);
+				expect(icons.length).toBe(5);
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
 			});
 		});
@@ -75,7 +75,7 @@ describe('IconsService', () => {
 
 		it('provides all icons', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._icons = [iconTemplate1];
+			instanceUnderTest._icons = [iconResult1];
 
 			const icons = await instanceUnderTest.all();
 
@@ -84,13 +84,13 @@ describe('IconsService', () => {
 
 		it('fetches the icons when service hat not been initialized', async () => {
 			const instanceUnderTest = setup(async () => {
-				return Promise.resolve([iconTemplate1]);
+				return Promise.resolve([iconResult1]);
 			});
 			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
 
 			const icons = await instanceUnderTest.all();
 			expect(loadSpy).toHaveBeenCalled();
-			expect(icons).toEqual([iconTemplate1]);
+			expect(icons).toEqual([iconResult1]);
 
 		});
 	});

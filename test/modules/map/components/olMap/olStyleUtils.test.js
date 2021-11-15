@@ -166,6 +166,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style with a default Image', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small' };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -175,7 +176,6 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
@@ -188,8 +188,6 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
-		// expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; medium image', () => {
@@ -202,8 +200,6 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		// expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; large image', () => {
@@ -216,8 +212,6 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
-		// expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; scale value as number', () => {
@@ -230,8 +224,6 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		// expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 });
