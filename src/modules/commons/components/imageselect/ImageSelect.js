@@ -24,10 +24,14 @@ const Update_IsCollapsed = 'update_is_collapsed';
 export class ImageSelect extends MvuElement {
 
 	constructor() {
-		super({ title: '',
+		super({
+			title: '',
 			images: [],
 			value: null,
-			isCollapsed: true });
+			isCollapsed: true
+		});
+
+		this._onSelect = () => { };
 	}
 
 	update(type, data, model) {
@@ -45,9 +49,9 @@ export class ImageSelect extends MvuElement {
 	}
 
 	/**
-     *
-     * @override
-     */
+	 *
+	 * @override
+	 */
 	createView(model) {
 
 		const imagesAvailable = !model.images.length;
@@ -57,11 +61,14 @@ export class ImageSelect extends MvuElement {
 			}
 			const images = [];
 
-
 			const onClick = (event) => {
-				const selectedImage = event.path[0];
-				this.signal(Update_Value, selectedImage.src);
+				this.signal(Update_Value, event.target.src);
+				this.dispatchEvent(new CustomEvent('select', {
+					detail: { selected: event.target.src }
+				}));
+				this._onSelect(event);
 			};
+
 			model.images.forEach(iconSrc => {
 				const isSelectedClass = {
 					isselected: model.value === iconSrc
@@ -79,22 +86,10 @@ export class ImageSelect extends MvuElement {
 		};
 
 		// alternative variant without extra button
-		// return html`
-		// <style>${css}</style>
-		// <div class='catalog_header'>
-		// 	<ba-icon .icon=${model.value ? model.value : image} .title=${model.title} .disabled=${imagesAvailable} @click=${onClick}></ba-icon>
-		// </div>
-		// <div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
-		//     ${getImages()}
-		// </div>
-		// `;
-
-
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>
-		<img src=${model.value ? model.value : image}>
-		<ba-button id='open_catalog' .label=${model.title} .type=${'primary'} .disabled=${imagesAvailable}  @click=${onClick}></ba-button>
+			<ba-icon .icon=${model.value ? model.value : image} .title=${model.title} .disabled=${imagesAvailable} @click=${onClick}></ba-icon>
 		</div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
 		    ${getImages()}
@@ -131,5 +126,13 @@ export class ImageSelect extends MvuElement {
 
 	get value() {
 		return this.getModel().value;
+	}
+
+	set onSelect(callback) {
+		this._onSelect = callback;
+	}
+
+	get onSelect() {
+		return this._onSelect;
 	}
 }
