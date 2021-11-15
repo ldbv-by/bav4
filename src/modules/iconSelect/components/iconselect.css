@@ -1,4 +1,4 @@
-.ba_catalog_container{
+.ba_catalog_container {
 	display: flex;
 	justify-content: flex-start; 
 	flex-wrap: wrap;
@@ -10,15 +10,15 @@
 	overflow: auto;
 }
 
-.ba_catalog_item{
+.ba_catalog_item {
 	margin: 0.3em;
 }
 
-.ba_catalog_item:hover{
+.ba_catalog_item:hover {
 	background: var(--primary-color);
 }
 
-.isselected{
+.isselected {
 	background: var(--primary-color);
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
