@@ -185,13 +185,13 @@ describe('LayerItem', () => {
 		it('click on info icon show layerinfo panel as modal', async () => {
 			const store = setup();
 			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = { ...layer, geoResourceId: 'atkis' };
+			element.layer = { ...layer };
 
 			const infoButton = element.shadowRoot.querySelector('#info');
 
 			infoButton.click();
 
-			expect(store.getState().modal.data.title).toBe('atkis');
+			expect(store.getState().modal.data.title).toBe('label0');
 			expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
 		});
 	});
