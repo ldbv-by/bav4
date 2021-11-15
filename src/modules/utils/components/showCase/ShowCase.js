@@ -9,9 +9,6 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
-import iconRed from './assets/icon_red.svg';
-import iconGreen from './assets/icon_green.svg';
-import iconBlue from './assets/icon_blue.svg';
 
 
 
@@ -28,8 +25,8 @@ export class ShowCase extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, ShareService, UrlService, GeoResourceService, FileStorageService, IconsService }
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'GeoResourceService', 'FileStorageService', 'IconsService');
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, GeoResourceService, FileStorageService }
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'GeoResourceService', 'FileStorageService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
 		this._geoResourceService = GeoResourceService;
@@ -39,7 +36,6 @@ export class ShowCase extends BaElement {
 		this._url = '';
 		this._shortUrl = '';
 		this._fileStorageService = FileStorageService;
-		this._iconsService = IconsService;
 	}
 
 	/**
@@ -136,35 +132,6 @@ export class ShowCase extends BaElement {
 			toggleVersion();
 		};
 
-		const loadIcons = async () => {
-
-			const iconSrcTemplates = await this._iconsService.all();
-			if (iconSrcTemplates.length) {
-				iconSrcTemplates.forEach(srcTemplate => this._icons.push(srcTemplate()));
-				this.render();
-			}
-			console.warn('No Icons available.');
-		};
-
-		const getImages = () => {
-			const imageUrls = [];
-			if (!this._icons.length) {
-				loadIcons();
-			}
-			this._icons.forEach(iconSrc => {
-				imageUrls.push(iconSrc);
-			});
-			return imageUrls;
-		};
-
-		const getStaticImages = () => {
-			return [iconBlue,
-				iconGreen,
-				iconRed];
-		};
-
-
-
 		return html`<div>
 			<p>Here we present components in random order that:</p>
 			<ul>
@@ -229,13 +196,7 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification1' .label=${'Warn Notification'} type="primary" @click=${onClickEmitWarn}></ba-button>
 						<ba-button id='notification2' .label=${'Error Notification'} type="primary" @click=${onClickEmitError}></ba-button>
 						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
-			</div>
-			<hr>
-			<p>Icons (static)</>
-			<ba-imageselect .images=${getStaticImages()} .title=${'select Icon'} ></ba-imageselect>
-
-			<p>Icons (from backend)</>
-			<ba-imageselect  .images=${getImages()} .title=${'select Icon'} ></ba-imageselect>
+			</div>		
 		</div > `;
 	}
 
