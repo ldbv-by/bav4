@@ -91,7 +91,7 @@ describe('MapService', () => {
 		expect(instanceUnderTest.getMinimalRotation()).toBe(.05);
 	});
 
-	describe('getResolution', () => {
+	describe('calcResolution', () => {
 
 		it('calculates the resolution using default arguments', () => {
 			const expectedResolution = 3273.3667254226675;
@@ -103,7 +103,7 @@ describe('MapService', () => {
 			spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
 			spyOn(coordinateServiceMock, 'toLonLat').withArgs([0, 1]).and.returnValue(mock4326Coordinate);
 
-			expect(instanceUnderTest.getResolution(zoomLevel, mock3857Coordinate)).toBeCloseTo(expectedResolution, 3);
+			expect(instanceUnderTest.calcResolution(zoomLevel, mock3857Coordinate)).toBeCloseTo(expectedResolution, 3);
 		});
 
 		it('calculates the resolution', () => {
@@ -116,7 +116,7 @@ describe('MapService', () => {
 			const instanceUnderTest = setup();
 			spyOn(coordinateServiceMock, 'toLonLat').withArgs([0, 1]).and.returnValue(mock4326Coordinate);
 
-			expect(instanceUnderTest.getResolution(zoomLevel, mock3857Coordinate, srid, tileSize)).toBeCloseTo(expectedResolution, 3);
+			expect(instanceUnderTest.calcResolution(zoomLevel, mock3857Coordinate, srid, tileSize)).toBeCloseTo(expectedResolution, 3);
 		});
 
 		describe('and 3857 coordinate is missing', () => {
@@ -126,7 +126,7 @@ describe('MapService', () => {
 				const srid = 3857;
 				const instanceUnderTest = setup();
 
-				expect(() => instanceUnderTest.getResolution(zoomLevel)).toThrowError(`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`);
+				expect(() => instanceUnderTest.calcResolution(zoomLevel)).toThrowError(`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`);
 			});
 		});
 
@@ -138,7 +138,7 @@ describe('MapService', () => {
 				const instanceUnderTest = setup();
 				spyOn(instanceUnderTest, 'getSrid').and.returnValue(srid);
 
-				expect(() => instanceUnderTest.getResolution(zoomLevel)).toThrowError(`Unsupported SRID ${srid}`);
+				expect(() => instanceUnderTest.calcResolution(zoomLevel)).toThrowError(`Unsupported SRID ${srid}`);
 			});
 		});
 	});

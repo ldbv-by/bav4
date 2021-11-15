@@ -91,7 +91,7 @@ export class MapService {
 	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
 	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
 	 */
-	getResolution(zoom, coordinateInMapProjection = null, srid = this.getSrid(), tileSize = 256) {
+	calcResolution(zoom, coordinateInMapProjection = null, srid = this.getSrid(), tileSize = 256) {
 		switch (srid) {
 			case 3857:
 				if (!coordinateInMapProjection) {
