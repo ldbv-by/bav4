@@ -106,7 +106,7 @@ export class IconSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
-		const currentIcon = model.value ? (typeof(model.value) === IconResult ? model.value.toBase64() : model.value) : image;
+		const currentIcon = model.value ? (model.value instanceof IconResult ? model.value.toBase64() : model.value) : image;
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>		
