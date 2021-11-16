@@ -29,6 +29,7 @@ import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
 import { NotificationPlugin } from '../plugins/NotificationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
+import { FeatureInfoService } from '../services/FeatureInfoService';
 
 
 $injector
@@ -48,6 +49,7 @@ $injector
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('AdministrationService', new AdministrationService())
+	.register('FeatureInfoService', FeatureInfoService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
