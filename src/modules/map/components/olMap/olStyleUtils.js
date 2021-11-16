@@ -49,10 +49,7 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 })];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
-	const isValidSource = (src) => src && src.startsWith('data:image/svg+xml;base64');
-
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
-
 
 	const getMarkerScale = (sizeKeyword) => {
 		if (typeof (sizeKeyword) === 'number') {
@@ -69,27 +66,14 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		}
 	};
 
-	const fallbackIconOptions = {
+	const iconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
-		src: markerIcon,
-		scale: getMarkerScale(styleOption.scale),
-		color: markerColor
+		src: styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon,
+		color: markerColor,
+		scale: getMarkerScale(styleOption.scale)
 	};
-
-	const getDefaultIconOptions = () => {
-		return {
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: styleOption.symbolSrc,
-			color: markerColor,
-			scale: getMarkerScale(styleOption.scale)
-		};
-	};
-
-	const iconOptions = !isValidSource(styleOption.symbolSrc) ? fallbackIconOptions : getDefaultIconOptions();
 
 	return [new Style({
 		image: new Icon(iconOptions)
