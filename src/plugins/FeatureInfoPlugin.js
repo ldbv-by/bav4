@@ -40,7 +40,7 @@ export class FeatureInfoPlugin extends BaPlugin {
 					try {
 						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
 						if (featureInfoResult) {
-							const title = featureInfoResult.title ?? layerProperties.label;
+							const title = featureInfoResult.title || layerProperties.label;
 							addFeatureInfoItems({ title: title, content: featureInfoResult.content });
 						}
 					}
