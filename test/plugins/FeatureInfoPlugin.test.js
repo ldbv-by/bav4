@@ -168,7 +168,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
-			it('emits a notification and logs a warning when service throws exception', async () => {
+			it('emits a notification and logs a warning when service throws exception', async (done) => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';
 				const coordinate = [11, 22];
@@ -185,7 +185,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 				const instanceUnderTest = new FeatureInfoPlugin();
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
-				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.rejectWith({ message: errorMessage });
+				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
 				const warnSpy = spyOn(console, 'warn');
 				await instanceUnderTest.register(store);
 
@@ -196,6 +196,7 @@ describe('FeatureInfoPlugin', () => {
 					expect(store.getState().notifications.latest.payload.content).toBe(`${layerLabel0}: featureInfoPlugin_featureInfoService_exception`);
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 					expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+					done();
 				});
 			});
 		});
