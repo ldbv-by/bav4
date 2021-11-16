@@ -3,6 +3,7 @@ import { WmsGeoResource } from './domain/geoResources';
 import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
 
 /**
+ * Provides a FeatureInfo query for Raster Data -based GeoResources.
  * @class
  * @author taulinger
  */
