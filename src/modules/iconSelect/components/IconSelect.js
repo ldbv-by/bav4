@@ -1,17 +1,18 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css';
 import image from './assets/image.svg';
 import { $injector } from '../../../injection';
+import { IconResult } from '../services/IconService';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
 const Update_Value = 'update_value';
+const Update_Color = 'update_color';
 const Update_IsCollapsed = 'update_is_collapsed';
 
-
-const SVG_ENCODING_B64_FLAG = 'data:image/svg+xml;base64,';
 /**
  * Events:
  * - onSelect()
@@ -34,8 +35,9 @@ export class IconSelect extends MvuElement {
 			value: null,
 			isCollapsed: true
 		});
-		const { IconService: iconService } = $injector.inject('IconService');
+		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
+		this._translationService = translationService;
 		this._onSelect = () => { };
 	}
 
@@ -44,18 +46,6 @@ export class IconSelect extends MvuElement {
 		if (icons.length) {
 			this.signal(Update_Icons, icons);
 		}
-	}
-
-	_b64EncodeUnicode(unicodeString) {
-		return btoa(encodeURIComponent(unicodeString).replace(/%([0-9A-F]{2})/g, (match, p1) => {
-			return String.fromCharCode(parseInt(p1, 16));
-		}));
-	}
-
-	_b64DecodeUnicode(b64String) {
-		return decodeURIComponent(Array.prototype.map.call(atob(b64String), (c) => {
-			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-		}).join(''));
 	}
 
 	update(type, data, model) {
@@ -67,6 +57,8 @@ export class IconSelect extends MvuElement {
 				return { ...model, icons: data };
 			case Update_Value:
 				return { ...model, value: data };
+			case Update_Color:
+				return { ...model, color: data };
 			case Update_IsCollapsed:
 				return { ...model, isCollapsed: data };
 		}
@@ -77,39 +69,34 @@ export class IconSelect extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-
+		const translate = (key) => this._translationService.translate(key);
 		const iconsAvailable = model.icons.length > 0;
-		const getSvgAsBase64Src = (svgSrc) => {
-			return SVG_ENCODING_B64_FLAG + this._b64EncodeUnicode(svgSrc);
-		};
 
 		const getIcons = () => {
 			if (!iconsAvailable) {
 				this._loadIcons();
 			}
-			const icons = [];
 
 			const onClick = (event) => {
-				this.signal(Update_Value, event.target.src);
+				const selectedIconResult = model.icons.find(iconResult => event.currentTarget.id === 'svg_' + iconResult.name);
+				this.signal(Update_Value, selectedIconResult);
 				this.dispatchEvent(new CustomEvent('select', {
 					detail: {
-						selected: {
-							name: event.target.id,
-							svg: event.target.src
-						}
+						selected: selectedIconResult
 					}
 				}));
-				this._onSelect(event);
+				this._onSelect(selectedIconResult);
 			};
 
-			model.icons.forEach(iconResult => {
+			const getIcon = (iconResult) => {
 				const isSelectedClass = {
-					isselected: model.value === iconResult.name
+					isselected: model.value === iconResult.toBase64()
 				};
-				const src = getSvgAsBase64Src(iconResult.svg);
-				icons.push(html`<img id=${iconResult.name} class='ba_catalog_item ${classMap(isSelectedClass)}'  @click=${onClick} src=${src} >`);
-			});
-			return html`${icons}`;
+				return html`<style>svg{fill:${model.color}}</style>
+				<div id=svg_${iconResult.name} class='ba_catalog_item ${classMap(isSelectedClass)}' @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
+			};
+
+			return html`${model.icons.map(iconResult => getIcon(iconResult))}`;
 		};
 		const onClick = () => {
 			this.signal(Update_IsCollapsed, !model.isCollapsed);
@@ -119,11 +106,12 @@ export class IconSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
-		// alternative variant without extra button
+		const currentIcon = model.value ? (typeof(model.value) === IconResult ? model.value.toBase64() : model.value) : image;
 		return html`
 		<style>${css}</style>
-		<div class='catalog_header'>
-			<ba-icon .icon=${model.value ? model.value : image} .title=${model.title} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>
+		<div class='catalog_header'>		
+			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>
+			${model.value ? nothing : html`<span class='icon_hint'>${translate('iconSelect_icon_hint')}</span>`}
 		</div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
 		    ${getIcons()}
@@ -152,6 +140,14 @@ export class IconSelect extends MvuElement {
 
 	get images() {
 		return this.getModel().images;
+	}
+
+	set color(value) {
+		this.signal(Update_Color, value);
+	}
+
+	get color() {
+		return this.getModel().color;
 	}
 
 	set value(value) {

@@ -26,3 +26,8 @@
 .iscollapsed {
 	display: none;
 }
+.icon_hint{
+	font-style: oblique;
+	color: var(--warning-color);
+	vertical-align: super;
+}

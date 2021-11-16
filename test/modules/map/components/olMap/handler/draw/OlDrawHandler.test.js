@@ -309,10 +309,10 @@ describe('OlDrawHandler', () => {
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 
 				classUnderTest.activate(map);
-				setType('marker');
+				setType('line');
 
 				expect(classUnderTest._draw).toBeTruthy();
-				expect(initSpy).toHaveBeenCalledWith('marker');
+				expect(initSpy).toHaveBeenCalledWith('line');
 			});
 
 			it('register observer for style-changes', () => {
@@ -367,7 +367,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('starts with a preselected drawType', () => {
-				const state = { ...initialState, type: 'marker' };
+				const state = { ...initialState, type: 'marker', style: { symbolSrc: 'something' } };
 				setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
@@ -432,6 +432,7 @@ describe('OlDrawHandler', () => {
 				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
 
 				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
 				setType('marker');
 				const abortSpy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
 				expect(classUnderTest._draw.getActive()).toBeTrue();
@@ -450,6 +451,7 @@ describe('OlDrawHandler', () => {
 				const warnSpy = spyOn(console, 'warn');
 
 				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
 				setType('marker');
 				const draw = classUnderTest._draw;
 				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
@@ -604,6 +606,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
 				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
+				setStyle({ symbolSrc: 'something' });
 				setType('marker');
 
 				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
@@ -711,7 +714,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('_createDrawByType', () => {
-			const defaultStyleOption = { symbolSrc: null, color: '#FFDAFF', scale: 0.5 };
+			const defaultStyleOption = { symbolSrc: 'something', color: '#FFDAFF', scale: 0.5 };
 			it('returns a draw-interaction for \'Symbol\'', async () => {
 
 				setup();
@@ -1132,7 +1135,7 @@ describe('OlDrawHandler', () => {
 
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
-
+			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 
 			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
@@ -1392,6 +1395,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 
 			const geometry = new Point([550, 550]);
@@ -1416,6 +1420,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
@@ -1448,6 +1453,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 
 			classUnderTest.activate(map);
+			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 			const geometry = new Point([50, 50]);
 			const feature1 = new Feature({ geometry: new Point([0, 0]) });

@@ -12,8 +12,6 @@ import { QueryParameters } from '../../../../services/domain/queryParameters';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
-const Update_Symbol_Templates = 'update_symbol_templates';
-const Update_Selected_Symbol_Template_Index = 'update_selected_symbol_template_index';
 
 /**
  * @class
@@ -29,9 +27,7 @@ export class DrawToolContent extends AbstractToolContent {
 			mode: null,
 			fileSaveResult: { adminId: 'init', fileId: 'init' },
 			validGeometry: null,
-			tools: null,
-			symbolTemplates: [],
-			selectedSymbolTemplateIndex: null
+			tools: null
 		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
@@ -67,10 +63,6 @@ export class DrawToolContent extends AbstractToolContent {
 				};
 			case Update_Tools:
 				return { ...model, tools: data };
-			case Update_Symbol_Templates:
-				return { ...model, symbolTemplates: [...data] };
-			case Update_Selected_Symbol_Template_Index:
-				return { ...model, selectedSymbolTemplateIndex: data };
 		}
 	}
 
@@ -276,7 +268,6 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
-				//const changedSymbolSrc = getColoredSymbol(e.target.value);
 				const changedStyle = { ...style, color: e.target.value };
 				setStyle(changedStyle);
 			};
@@ -290,7 +281,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const changedStyle = { ...style, symbolSrc: e.detail.selected.svg };
+				const changedStyle = { ...style, symbolSrc: e.detail.selected.toBase64() };
 				setStyle(changedStyle);
 			};
 
@@ -305,7 +296,7 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 						<div id='style_marker'
 							class="tool-container__style" 
-							title='Symbol'>
+							title='Symbol'>							
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
@@ -315,11 +306,11 @@ export class DrawToolContent extends AbstractToolContent {
 								<select id="style_size" @change=${onChangeScale}>
 									${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
 								</select>								
-							</div>
+							</div>			
 							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
 								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
-								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" @select=${onChangeSymbol} ></ba-iconselect>																
-							</div>
+								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>																
+							</div>				
 						</div>
 						`;
 					case 'text':

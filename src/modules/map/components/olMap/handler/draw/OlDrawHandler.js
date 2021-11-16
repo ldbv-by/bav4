@@ -25,6 +25,7 @@ import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
 
 
+
 export const MAX_SELECTION_SIZE = 1;
 
 const Debounce_Delay = 1000;
@@ -33,7 +34,7 @@ const Temp_Session_Id = 'temp_measure_id';
 
 
 const defaultStyleOption = {
-	symbolSrc: 'marker', // used by: Symbol
+	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
 	text: '' // used by Text
@@ -414,6 +415,10 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_createDrawByType(type, styleOption) {
 		if (type == null) {
+			return null;
+		}
+
+		if (type === StyleTypes.MARKER && !styleOption.symbolSrc) {
 			return null;
 		}
 

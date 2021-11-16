@@ -1,5 +1,7 @@
 import { loadBvvIcons } from './provider/icons.provider';
 
+const SVG_ENCODING_B64_FLAG = 'data:image/svg+xml;base64,';
+
 /**
  * Service for managing icons
  * @author thiloSchlemmer
@@ -31,6 +33,26 @@ export class IconService {
 		}
 		return this._icons;
 	}
+
+	/**
+	 *
+ 	 * @param {string} name
+ 	 * @param {string} encodedString
+ 	 * @returns {IconResult|null} the IconResult
+ 	*/
+	fromBase64(name, encodedString) {
+		if (encodedString.startsWith(SVG_ENCODING_B64_FLAG)) {
+			const b64DecodeUnicode = (str) => {
+				return decodeURIComponent(atob(str).split('').map(function (c) {
+					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+				}).join(''));
+			};
+
+			return new IconResult(name, b64DecodeUnicode(encodedString.replace(SVG_ENCODING_B64_FLAG, '')));
+		}
+		return null;
+	}
+
 }
 
 
@@ -51,6 +73,22 @@ export class IconResult {
 		this._svg = svg;
 	}
 
+	/**
+	 * creates a base64-encoded Version of the svg for embedding-purposes
+ 	 * @param {IconResult} iconResult
+ 	 * @returns {string} the encoded (base64) string
+ 	*/
+	toBase64() {
+		const b64EncodeUnicode = (str) => {
+			return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+				function toSolidBytes(match, p1) {
+					return String.fromCharCode('0x' + p1);
+				}));
+		};
+
+		return SVG_ENCODING_B64_FLAG + b64EncodeUnicode(this._svg);
+	}
+
 	get name() {
 		return this._name;
 	}
@@ -58,6 +96,7 @@ export class IconResult {
 	get svg() {
 		return this._svg;
 	}
+
 }
 
 

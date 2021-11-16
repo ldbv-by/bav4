@@ -21,6 +21,7 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 		if (symbolSrc.startsWith('data:image/svg+xml;base64') || symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
 			return symbolSrc;
 		}
+		console.warn('not recognized as valid src:', symbolSrc);
 		return getIconUrl(symbolSrc, hexToRgb(symbolColor));
 	}
 	return getIconUrl(Default_Symbol);
@@ -48,10 +49,8 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 })];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
-	// todo: reactivate usage of environmentService, when backend is ready with icon-functions
-	const { EnvironmentService } = $injector.inject('EnvironmentService');
-	const environmentService = EnvironmentService;
-	const isOfflineModus = environmentService.isStandalone();
+	const isValidSource = (src) => src && src.startsWith('data:image/svg+xml;base64');
+
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 
@@ -84,13 +83,14 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 			anchor: [0.5, 1],
 			anchorXUnits: 'fraction',
 			anchorYUnits: 'fraction',
-			src: getMarkerSrc(styleOption.symbolSrc, markerColor),
+			src: styleOption.symbolSrc,
 			color: markerColor,
 			scale: getMarkerScale(styleOption.scale)
 		};
 	};
 
-	const iconOptions = isOfflineModus ? fallbackIconOptions : getDefaultIconOptions();
+	const iconOptions = !isValidSource(styleOption.symbolSrc) ? fallbackIconOptions : getDefaultIconOptions();
+
 	return [new Style({
 		image: new Icon(iconOptions)
 	})];

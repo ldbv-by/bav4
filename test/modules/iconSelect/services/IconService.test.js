@@ -94,4 +94,20 @@ describe('IconsService', () => {
 
 		});
 	});
+
+	describe('IconResult', () => {
+
+		it('creates a base64-encoded string and back', () => {
+			const instanceUnderTest = setup();
+			const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
+
+			const firstIconResult = new IconResult('foo', svg);
+			const base64String = firstIconResult.toBase64();
+
+			const secondIconResult = instanceUnderTest.fromBase64('bar', base64String);
+			expect(base64String).toBeTruthy();
+			expect(secondIconResult.svg).toEqual(firstIconResult.svg);
+		});
+	});
 });
+
