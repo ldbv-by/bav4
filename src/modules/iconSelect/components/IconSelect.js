@@ -134,12 +134,12 @@ export class IconSelect extends MvuElement {
 		return this.getModel().title;
 	}
 
-	set images(value) {
+	set icons(value) {
 		this.signal(Update_Icons, value);
 	}
 
-	get images() {
-		return this.getModel().images;
+	get icons() {
+		return this.getModel().icons;
 	}
 
 	set color(value) {
