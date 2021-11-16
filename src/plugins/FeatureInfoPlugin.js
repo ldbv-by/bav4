@@ -45,7 +45,7 @@ export class FeatureInfoPlugin extends BaPlugin {
 						}
 					}
 					catch (error) {
-						console.warn(error.message);
+						console.warn(error);
 						emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
 					}
 				});
