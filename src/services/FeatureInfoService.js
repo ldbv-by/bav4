@@ -34,7 +34,7 @@ export class FeatureInfoService {
 				return await this._featureInfoProvider(geoResourceId, coordinate, mapResolution);
 			}
 			catch (e) {
-				throw new Error(`Could not load a FeatureInfoResult from provider: ${e.message}`);
+				throw new Error(`Could not load a FeatureInfoResult from provider: ${e}`);
 			}
 		}
 		return null;

@@ -73,8 +73,8 @@ describe('FeatureInfoService', () => {
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
-			const errorMessage = 'oops';
-			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.rejectWith({ message: errorMessage });
+			const errorMessage = 'something got wrong';
+			const providerSpy = jasmine.createSpy().withArgs(geoResourceId, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
 			const instanceUnderTest = setup(providerSpy);
 			const isQueryableSpy = spyOn(instanceUnderTest, 'isQueryable').withArgs(geoResourceId).and.returnValue(true);
 
