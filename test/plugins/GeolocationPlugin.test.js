@@ -23,7 +23,6 @@ describe('GeolocationPlugin', () => {
 		getSrid() { }
 	};
 
-
 	const translationService = {
 		register() { },
 		translate: (key) => key
