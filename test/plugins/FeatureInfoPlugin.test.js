@@ -6,9 +6,29 @@ import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.act
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer.js';
+import { $injector } from '../../src/injection/index.js';
+import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
+import { positionReducer } from '../../src/store/position/position.reducer.js';
+import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
+import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
+import { provide } from '../../src/plugins/i18n/featureInfoPlugin.provider.js';
+import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 
 
 describe('FeatureInfoPlugin', () => {
+
+	const featureInfoService = {
+		async get() { }
+	};
+
+	const mapService = {
+		calcResolution() { }
+	};
+
+	const translationService = {
+		register() { },
+		translate: (key) => key
+	};
 
 	const setup = (state) => {
 
@@ -23,14 +43,33 @@ describe('FeatureInfoPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			featureInfo: featureInfoReducer,
-			pointer: pointerReducer
+			pointer: pointerReducer,
+			layers: layersReducer,
+			position: positionReducer,
+			notifications: notificationReducer
 		});
+		$injector
+			.registerSingleton('FeatureInfoService', featureInfoService)
+			.registerSingleton('MapService', mapService)
+			.registerSingleton('TranslationService', translationService);
 		return store;
 	};
 
+	describe('constructor', () => {
+
+		it('registers an i18n provider', async () => {
+			const translationServiceSpy = spyOn(translationService, 'register');
+			setup();
+
+			new FeatureInfoPlugin();
+
+			expect(translationServiceSpy).toHaveBeenCalledWith('featureInfoPluginProvider', provide);
+		});
+	});
+
 	describe('when pointer.click property changes', () => {
 
-		it('clears all previous existing featureInfo items and updates the coordinate property', async () => {
+		it('clears all previous existing FeatureInfo items and updates the coordinate property', async () => {
 			const coordinate = [11, 22];
 			const store = setup();
 			const instanceUnderTest = new FeatureInfoPlugin();
@@ -42,11 +81,129 @@ describe('FeatureInfoPlugin', () => {
 			expect(store.getState().featureInfo.current).toHaveSize(0);
 			expect(store.getState().featureInfo.coordinate.payload).toBe(coordinate);
 		});
+
+		describe('calls the FeatureInfoService', () => {
+
+			it('adds FeatureInfo items ', async () => {
+				const layerId0 = 'id0';
+				const coordinate = [11, 22];
+				const zoom = 5;
+				const resolution = 25;
+				const store = setup({
+					layers: {
+						active: [createDefaultLayer(layerId0)]
+					},
+					position: {
+						zoom: zoom
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+
+				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
+				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content', 'title'));
+				await instanceUnderTest.register(store);
+
+				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
+
+				setTimeout(() => {
+					expect(store.getState().featureInfo.current).toHaveSize(1);
+					expect(store.getState().featureInfo.current[0].content).toBe('content');
+					expect(store.getState().featureInfo.current[0].title).toBe('title');
+				});
+			});
+
+			it('adds FeatureInfo items taking layerPropeties\' label as title', async () => {
+				const layerId0 = 'id0';
+				const layerLabel0 = 'label0';
+				const coordinate = [11, 22];
+				const zoom = 5;
+				const resolution = 25;
+				const store = setup({
+					layers: {
+						active: [{ ...createDefaultLayer(layerId0), label: layerLabel0 }]
+					},
+					position: {
+						zoom: zoom
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+
+				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
+				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.resolveTo(new FeatureInfoResult('content'));
+				await instanceUnderTest.register(store);
+
+				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
+
+				setTimeout(() => {
+					expect(store.getState().featureInfo.current).toHaveSize(1);
+					expect(store.getState().featureInfo.current[0].content).toBe('content');
+					expect(store.getState().featureInfo.current[0].title).toBe(layerLabel0);
+				});
+			});
+
+			it('adds No FeatureInfo items when service returns no result', async () => {
+				const layerId0 = 'id0';
+				const layerLabel0 = 'label0';
+				const coordinate = [11, 22];
+				const zoom = 5;
+				const resolution = 25;
+				const store = setup({
+					layers: {
+						active: [{ ...createDefaultLayer(layerId0), label: layerLabel0 }]
+					},
+					position: {
+						zoom: zoom
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+
+				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
+				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.resolveTo(null);
+				await instanceUnderTest.register(store);
+
+				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
+
+				setTimeout(() => {
+					expect(store.getState().featureInfo.current).toHaveSize(0);
+				});
+			});
+
+			it('emits a notification and logs a warning when service throws exception', async () => {
+				const layerId0 = 'id0';
+				const layerLabel0 = 'label0';
+				const coordinate = [11, 22];
+				const zoom = 5;
+				const resolution = 25;
+				const errorMessage = 'something got wrong';
+				const store = setup({
+					layers: {
+						active: [{ ...createDefaultLayer(layerId0), label: layerLabel0 }]
+					},
+					position: {
+						zoom: zoom
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
+				spyOn(featureInfoService, 'get').withArgs(layerId0, coordinate, resolution).and.rejectWith({ message: errorMessage });
+				const warnSpy = spyOn(console, 'warn');
+				await instanceUnderTest.register(store);
+
+				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
+
+				setTimeout(() => {
+					expect(store.getState().featureInfo.current).toHaveSize(0);
+					expect(store.getState().notifications.latest.payload.content).toBe(`${layerLabel0}: featureInfoPlugin_featureInfoService_exception`);
+					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
+					expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+				});
+			});
+		});
 	});
 
 	describe('when mainMenu.tabIndex changes', () => {
 
-		it('clears all previous existing featureInfo items (also initially)', async () => {
+		it('clears all previous existing FeatureInfo items (also initially)', async () => {
 			const store = setup({
 				mainMenu: {
 					tabIndex: TabIndex.TOPICS,
