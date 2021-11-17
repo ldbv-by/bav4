@@ -1,6 +1,6 @@
-import { IconResult, IconService } from '../../../../src/modules/iconSelect/services/IconService';
-import { loadBvvIcons } from '../../../../src/modules/iconSelect/services//provider/icons.provider';
-import { $injector } from '../../../../src/injection';
+import { IconResult, IconService } from '../../src/services/IconService';
+import { loadBvvIcons } from '../../src/services/provider/icons.provider';
+import { $injector } from '../../src/injection';
 
 
 describe('IconsService', () => {
@@ -69,7 +69,7 @@ describe('IconsService', () => {
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.default();
 
-				expect(icons.length).toBe(5);
+				expect(icons.length).toBe(6);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
 			});

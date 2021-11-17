@@ -23,6 +23,7 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/se
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import VectorSource from 'ol/source/Vector';
 import { simulateMouseEvent } from '../../mapTestUtils';
+import { IconResult } from '../../../../../../../src/services/IconService';
 
 
 
@@ -112,6 +113,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
+			.registerSingleton('IconService', { default: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {

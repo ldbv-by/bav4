@@ -1,6 +1,6 @@
-import { $injector } from '../../../../../src/injection';
-import { IconResult } from '../../../../../src/modules/iconSelect/services/IconService';
-import { loadBvvIcons } from '../../../../../src/modules/iconSelect/services/provider/icons.provider';
+import { $injector } from '../../../src/injection';
+import { IconResult } from '../../../src/services/IconService';
+import { loadBvvIcons } from '../../../src/services/provider/icons.provider';
 
 describe('Icons provider', () => {
 

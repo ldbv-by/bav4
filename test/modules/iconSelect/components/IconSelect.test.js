@@ -23,7 +23,7 @@ describe('IconSelect', () => {
 			//model
 			expect(element.title).toBe('');
 			expect(element.icons).toEqual([]);
-			expect(element.value).toEqual(jasmine.any(IconResult));
+			expect(element.value).toBeNull();
 			expect(element.color).toBeNull();
 		});
 
