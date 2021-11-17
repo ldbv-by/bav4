@@ -3,7 +3,6 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css';
-import image from './assets/image.svg';
 import { $injector } from '../../../injection';
 import { IconResult } from '../services/IconService';
 
@@ -119,7 +118,7 @@ export class IconSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
-		const currentIcon = model.value ? (model.value instanceof IconResult ? model.value.toBase64() : model.value) : image;
+		const currentIcon = model.value instanceof IconResult ? model.value.toBase64() : model.value;
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>		
