@@ -7,14 +7,14 @@ describe('i18n for iconSelect module', () => {
 
 		const map = provide('de');
 
-		expect(map.iconSelect_icon_hint).toBe('Zuerst Symbol auswählen');
+		expect(map.iconSelect_icon_hint).toBe('Klicken um es als Symbol auswählen');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.iconSelect_icon_hint).toBe('Select a icon first');
+		expect(map.iconSelect_icon_hint).toBe('Click to select as icon');
 	});
 
 	it('have the expected amount of translations', () => {

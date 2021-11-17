@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map';
 import { MvuElement } from '../../MvuElement';
@@ -105,7 +105,7 @@ export class IconSelect extends MvuElement {
 					isselected: model.value === iconResult.toBase64()
 				};
 				return html`<style>svg{fill:${model.color}}</style>
-				<div id=svg_${iconResult.name} class='ba_catalog_item ${classMap(isSelectedClass)}' @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
+				<div id=svg_${iconResult.name} class='ba_catalog_item ${classMap(isSelectedClass)}' title=${translate('iconSelect_icon_hint')} @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
 			};
 
 			return html`${model.icons.map(iconResult => getIcon(iconResult))}`;
@@ -122,8 +122,7 @@ export class IconSelect extends MvuElement {
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>		
-			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>
-			${model.value ? nothing : html`<span class='icon_hint'>${translate('iconSelect_icon_hint')}</span>`}
+			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>			
 		</div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
 		    ${getIcons()}
