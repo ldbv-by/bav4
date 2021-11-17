@@ -10,11 +10,11 @@ import { UnitsService } from '../services/UnitsService';
 import { GeoResourceService } from '../services/GeoResourceService';
 import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
+import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
-import { iconSelectModule } from '../modules/iconSelect/injection';
 import { topicsModule } from '../modules/topics/injection';
 import { BvvFileStorageService } from '../services/FileStorageService';
 import { LayersPlugin } from '../plugins/LayersPlugin';
@@ -48,6 +48,7 @@ $injector
 	.register('UnitsService', UnitsService)
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
+	.registerSingleton('IconService', new IconService())
 	.registerSingleton('AdministrationService', new AdministrationService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
@@ -64,7 +65,6 @@ $injector
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
-	.registerModule(iconSelectModule)
 	.ready();
 
 

@@ -1,4 +1,4 @@
-import { $injector } from '../../../../injection';
+import { $injector } from '../../injection';
 import { IconResult } from '../IconService';
 
 /**

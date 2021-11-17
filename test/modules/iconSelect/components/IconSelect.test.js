@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { IconSelect } from '../../../../src/modules/iconSelect/components/IconSelect';
-import { IconResult } from '../../../../src/modules/iconSelect/services/IconService';
+import { IconResult } from '../../../../src/services/IconService';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(IconSelect.tag, IconSelect);

@@ -4,7 +4,8 @@ import { classMap } from 'lit-html/directives/class-map';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css';
 import { $injector } from '../../../injection';
-import { IconResult } from '../services/IconService';
+import { IconResult } from '../../../services/IconService';
+import { setStyleSymbol } from '../../../store/draw/draw.action';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
@@ -47,6 +48,10 @@ export class IconSelect extends MvuElement {
 		}
 	}
 
+	onInitialize() {
+		setStyleSymbol(this._iconService.default().toBase64());
+	}
+
 	update(type, data, model) {
 
 		switch (type) {
@@ -60,19 +65,6 @@ export class IconSelect extends MvuElement {
 				return { ...model, color: data };
 			case Update_IsCollapsed:
 				return { ...model, isCollapsed: data };
-		}
-	}
-
-	onInitialize() {
-		if (this.getModel().value === null) {
-			const icon = this._iconService.default();
-			this.signal(Update_Value, icon);
-			this.dispatchEvent(new CustomEvent('select', {
-				detail: {
-					selected: icon
-				}
-			}));
-			this._onSelect(icon);
 		}
 	}
 
@@ -119,6 +111,7 @@ export class IconSelect extends MvuElement {
 		};
 
 		const currentIcon = model.value instanceof IconResult ? model.value.toBase64() : model.value;
+
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>		
@@ -154,6 +147,7 @@ export class IconSelect extends MvuElement {
 	}
 
 	set color(value) {
+
 		this.signal(Update_Color, value);
 	}
 

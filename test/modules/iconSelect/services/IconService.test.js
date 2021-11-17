@@ -123,6 +123,16 @@ describe('IconsService', () => {
 		});
 	});
 
+	describe('fromBase64', () => {
+		it('creates nothing when input is invalid content', () => {
+			const invalidInput = 'something';
+
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.fromBase64('bar', invalidInput)).toBeNull();
+		});
+	});
+
 	describe('IconResult', () => {
 
 		it('creates a base64-encoded string and back', () => {

@@ -3,6 +3,7 @@ export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
 export const GEOMETRY_IS_VALID_CHANGED = 'draw/geometryIsValid';
 export const STYLE_CHANGED = 'draw/style';
+export const STYLE_SYMBOL_CHANGED = 'draw/styleSymbol';
 export const SELECTED_STYLE_CHANGED = 'draw/selectedStyle';
 export const DESCRIPTION_CHANGED = 'draw/description';
 export const FILE_SAVE_RESULT_CHANGED = 'draw/fileSaveResult';
@@ -100,6 +101,13 @@ export const drawReducer = (state = initialState, action) => {
 				...state,
 				style: payload
 
+			};
+		}
+		case STYLE_SYMBOL_CHANGED: {
+
+			return {
+				...state,
+				style: { ...state.style, symbolSrc: payload }
 			};
 		}
 		case SELECTED_STYLE_CHANGED: {

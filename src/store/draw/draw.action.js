@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the drwa tool
  * @module map/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED } from './draw.reducer';
+import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED, STYLE_SYMBOL_CHANGED } from './draw.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -99,6 +99,13 @@ export const setStyle = (style) => {
 	getStore().dispatch({
 		type: STYLE_CHANGED,
 		payload: style
+	});
+};
+
+export const setStyleSymbol = (symbol) => {
+	getStore().dispatch({
+		type: STYLE_SYMBOL_CHANGED,
+		payload: symbol
 	});
 };
 

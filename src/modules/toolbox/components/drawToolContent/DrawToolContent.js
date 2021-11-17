@@ -265,7 +265,6 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
-
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
 				const changedStyle = { ...style, color: e.target.value };
@@ -281,7 +280,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const changedStyle = { ...style, symbolSrc: e.detail.selected.toBase64() };
+				const changedStyle = { ...this.getModel().style, symbolSrc: e.detail.selected.toBase64() };
 				setStyle(changedStyle);
 			};
 
@@ -309,7 +308,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>			
 							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
 								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
-								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>																
+								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>													
 							</div>				
 						</div>
 						`;
