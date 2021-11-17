@@ -64,6 +64,19 @@ export class IconSelect extends MvuElement {
 		}
 	}
 
+	onInitialize() {
+		if (this.getModel().value === null) {
+			const icon = this._iconService.default();
+			this.signal(Update_Value, icon);
+			this.dispatchEvent(new CustomEvent('select', {
+				detail: {
+					selected: icon
+				}
+			}));
+			this._onSelect(icon);
+		}
+	}
+
 	/**
 	 *
 	 * @override

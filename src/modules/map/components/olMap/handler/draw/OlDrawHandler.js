@@ -290,14 +290,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
-		const styleOption = this._getStyleOption();
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
 			this._map.removeInteraction(this._draw);
 		}
-		this._draw = this._createDrawByType(type, styleOption);
+		this._draw = this._createDrawByType(type, this._getStyleOption());
 		this._select.getFeatures().clear();
 
 		// we deactivate the modify-interaction only,
@@ -320,7 +319,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				};
 				this._sketchHandler.activate(event.feature);
 				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
-				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
+				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
 				listener = event.feature.on('change', onFeatureChange);
@@ -502,13 +501,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
-		if (currentStyleOptions == null) {
+		if (this._storeService.getStore().getState().draw.style == null) {
 			setStyle(defaultStyleOption);
-			return defaultStyleOption;
 		}
-
-		return currentStyleOptions;
+		return this._storeService.getStore().getState().draw.style;
 	}
 
 	_getStyleFunctionFrom(feature) {

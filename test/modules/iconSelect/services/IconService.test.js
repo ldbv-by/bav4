@@ -16,6 +16,7 @@ describe('IconsService', () => {
 
 	const iconResult1 = new IconResult('foo1', 'bar1');
 	const iconResult2 = new IconResult('foo2', 'bar2');
+	const markerIconResult = new IconResult('marker', 'marker');
 	const loadMockIcons = async () => {
 		return [
 			iconResult1,
@@ -34,8 +35,10 @@ describe('IconsService', () => {
 			expect(instanceUnderTest._icons).toBeNull();
 
 			const icons = await instanceUnderTest.all();
+			const defaultIcon = instanceUnderTest.default();
 
-			expect(icons.length).toBe(2);
+			expect(icons.length).toBe(3);
+			expect(icons[0]).toEqual(defaultIcon);
 		});
 
 		it('initializes the service with default provider', async () => {
@@ -64,8 +67,10 @@ describe('IconsService', () => {
 
 
 				const icons = await instanceUnderTest.all();
+				const defaultIcon = instanceUnderTest.default();
 
 				expect(icons.length).toBe(5);
+				expect(icons[0]).toEqual(defaultIcon);
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
 			});
 		});
@@ -82,7 +87,7 @@ describe('IconsService', () => {
 			expect(icons.length).toBe(1);
 		});
 
-		it('fetches the icons when service hat not been initialized', async () => {
+		it('fetches the icons when service have not been initialized', async () => {
 			const instanceUnderTest = setup(async () => {
 				return Promise.resolve([iconResult1]);
 			});
@@ -90,8 +95,31 @@ describe('IconsService', () => {
 
 			const icons = await instanceUnderTest.all();
 			expect(loadSpy).toHaveBeenCalled();
-			expect(icons).toEqual([iconResult1]);
+			expect(icons.length).toBe(2);
 
+		});
+
+		it('arranges the icons with the default icon first', async () => {
+			const instanceUnderTest = setup(async () => {
+				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
+			});
+			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
+
+			const icons = await instanceUnderTest.all();
+			expect(loadSpy).toHaveBeenCalled();
+			expect(icons.length).toBe(3);
+			expect(icons[0]).toEqual(markerIconResult);
+		});
+	});
+
+	describe('default', () => {
+		it('provides a default icon', async () => {
+			const instanceUnderTest = setup();
+
+			const defaultIcon = instanceUnderTest.default();
+
+			expect(defaultIcon).toBeInstanceOf(IconResult);
+			expect(defaultIcon.name).toBe('marker');
 		});
 	});
 

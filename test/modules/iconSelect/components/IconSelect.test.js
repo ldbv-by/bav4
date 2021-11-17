@@ -7,7 +7,7 @@ window.customElements.define(IconSelect.tag, IconSelect);
 
 describe('IconSelect', () => {
 
-	const iconServiceMock = { all: () => [] };
+	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 		$injector
@@ -23,7 +23,7 @@ describe('IconSelect', () => {
 			//model
 			expect(element.title).toBe('');
 			expect(element.icons).toEqual([]);
-			expect(element.value).toBeNull();
+			expect(element.value).toEqual(jasmine.any(IconResult));
 			expect(element.color).toBeNull();
 		});
 
@@ -96,7 +96,7 @@ describe('IconSelect', () => {
 	});
 
 
-	describe('when property\'icon\' changes', () => {
+	describe('when property\'icons\' changes', () => {
 
 		it('updates the view', async (done) => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
