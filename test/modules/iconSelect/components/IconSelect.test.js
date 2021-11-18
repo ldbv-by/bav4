@@ -95,7 +95,6 @@ describe('IconSelect', () => {
 		});
 	});
 
-
 	describe('when property\'icons\' changes', () => {
 
 		it('updates the view', async (done) => {
@@ -107,6 +106,58 @@ describe('IconSelect', () => {
 				expect(element.icons.length).toBe(2);
 				done();
 			});
+		});
+	});
+
+	describe('when icon-button is clicked', () => {
+		it('expands and collapse the container', async () => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
+				new IconResult('bar', '42')]));
+			const element = await TestUtils.render(IconSelect.tag);
+
+			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
+
+			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
+			iconButton.click();
+			expect(iconContainer.classList.contains('iscollapsed')).toBeFalse();
+			iconButton.click();
+			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
+		});
+	});
+
+
+	describe('when icon is selected (event handling) ', () => {
+		it('calls the onSelect callback via property callback', async () => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
+				new IconResult('bar', '42')]));
+
+			const element = await TestUtils.render(IconSelect.tag);
+			const selectSpy = spyOn(element, 'onSelect');
+			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			iconButton.click();
+
+			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
+
+			selectableIcon.click();
+
+			expect(selectSpy).toHaveBeenCalledWith(jasmine.any(IconResult));
+		});
+
+		it('calls the onSelect callback via attribute callback', async () => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
+				new IconResult('bar', '42')]));
+
+			spyOn(window, 'alert');
+			const element = await TestUtils.render(IconSelect.tag, { onSelect: 'alert(\'called\')' });
+			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			iconButton.click();
+
+			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
+
+			selectableIcon.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
 		});
 	});
 });

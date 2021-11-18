@@ -18,9 +18,9 @@ const Update_IsCollapsed = 'update_is_collapsed';
  * - onSelect()
  *
  * Properties:
- * - `images`
  * - `value`
  * - `title`
+ * - `color
 
  * @class
  * @author thiloSchlemmer
@@ -136,10 +136,6 @@ export class IconSelect extends MvuElement {
 
 	get title() {
 		return this.getModel().title;
-	}
-
-	set icons(value) {
-		this.signal(Update_Icons, value);
 	}
 
 	get icons() {
