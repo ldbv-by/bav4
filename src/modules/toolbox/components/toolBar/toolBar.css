@@ -86,6 +86,19 @@
 .is-open {
 	transform: translate(-21em,0);
 }
+.action-button {
+	font-size: .8em;
+	position: fixed;
+	z-index: calc(var(--z-toolbox) + 10);
+	right: .6em;
+	bottom: .5em;
+	height: 6em;
+	width: 6em;
+	border-radius: 3.5em;
+	background-color: var(--primary-bg-color);
+	border: none
+}
+
 /* tablet */
 .is-tablet .tool-bar {
 
@@ -109,6 +122,7 @@
 }
 /* portrait */
 .is-portrait .tool-bar {
+	font-size: 1rem;
 	flex-direction: row ;
 	bottom: -20em;
 	left: 0;
@@ -126,21 +140,6 @@
 }
 .is-portrait .tool-container__item button {
 	margin: .8rem .8rem .3rem .8rem;
-}
-.is-portrait .tool-bar {
-	font-size: 1rem;
-}
-.action-button {
-	font-size: .8em;
-	position: fixed;
-	z-index: calc(var(--z-toolbox) + 10);
-	right: .6em;
-	bottom: .5em;
-	height: 6em;
-	width: 6em;
-	border-radius: 3.5em;
-	background-color: var(--primary-bg-color);
-	border: none
 }
 .action-button__border {
 	position: absolute;
