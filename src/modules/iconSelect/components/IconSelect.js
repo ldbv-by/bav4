@@ -5,7 +5,6 @@ import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css';
 import { $injector } from '../../../injection';
 import { IconResult } from '../../../services/IconService';
-import { setStyleSymbol } from '../../../store/draw/draw.action';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
@@ -48,9 +47,6 @@ export class IconSelect extends MvuElement {
 		}
 	}
 
-	onInitialize() {
-		setStyleSymbol(this._iconService.default().toBase64());
-	}
 
 	update(type, data, model) {
 

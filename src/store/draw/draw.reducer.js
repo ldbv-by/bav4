@@ -103,13 +103,6 @@ export const drawReducer = (state = initialState, action) => {
 
 			};
 		}
-		case STYLE_SYMBOL_CHANGED: {
-
-			return {
-				...state,
-				style: { ...state.style, symbolSrc: payload }
-			};
-		}
 		case SELECTED_STYLE_CHANGED: {
 
 			return {
