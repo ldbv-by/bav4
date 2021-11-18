@@ -6,8 +6,14 @@ import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { IconResult } from '../../../../../src/services/IconService';
+import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 
+window.customElements.define(Icon.tag, Icon);
+window.customElements.define(IconSelect.tag, IconSelect);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
+
 
 describe('DrawToolContent', () => {
 	let store;
@@ -28,6 +34,8 @@ describe('DrawToolContent', () => {
 			return Promise.resolve('http://foo');
 		}
 	};
+
+	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
 
 	const drawDefaultState = {
 		active: false,
@@ -64,7 +72,7 @@ describe('DrawToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('IconsService', { all: () => [] })
+			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
@@ -228,7 +236,29 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
+		it('sets the style, after symbol changes in iconSelect', async (done) => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
+				new IconResult('bar', '42')]));
+			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
+			const element = await setup({ ...drawDefaultState, style });
 
+			setType('marker');
+			const iconSelect = element.shadowRoot.querySelector('ba-iconselect');
+			expect(iconSelect).toBeTruthy();
+			// wait to get icons loaded....
+			setTimeout(() => {
+				// ..then perform ui-actions
+				const iconButton = iconSelect.shadowRoot.querySelector('ba-icon');
+				iconButton.click();
+
+				const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
+				selectableIcon.click();
+
+				expect(store.getState().draw.style.symbolSrc).toBeTruthy();
+				done();
+			});
+
+		});
 
 		it('sets the style-inputs for symbol-tool', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
