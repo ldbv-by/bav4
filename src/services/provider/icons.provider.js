@@ -7,7 +7,7 @@ import { IconResult } from '../IconService';
 export const loadBvvIcons = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + '/icons';
-	const result = await httpService.get(`${url}/svg`);
+	const result = await httpService.get(`${url}/available`);
 
 	if (result.ok) {
 		const icons = [];
@@ -18,4 +18,16 @@ export const loadBvvIcons = async () => {
 		return icons;
 	}
 	throw new Error('Icons could not be retrieved');
+};
+
+/**
+ *
+ * @param {string} id the id of a specific icon
+ * @returns {string} the url to the icon
+ */
+export const getBvvIconsUrl = async (id, color) => {
+	const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const url = configService.getValueAsPath('BACKEND_URL') + '/icons';
+
+	return `${url}/${color[0]},${color[1]},${color[2]}/${id}`;
 };

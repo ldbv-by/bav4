@@ -1,4 +1,4 @@
-import { loadBvvIcons } from './provider/icons.provider';
+import { loadBvvIcons, getBvvIconsUrl } from './provider/icons.provider';
 
 const SVG_ENCODING_B64_FLAG = 'data:image/svg+xml;base64,';
 const SVG_MARKER_NAME = 'marker';
@@ -6,14 +6,15 @@ const SVG_MARKER_CONTENT = '<svg xmlns="http://www.w3.org/2000/svg" width="32" h
 /**
  * Service for managing icons
  *
- * This service provides a default-icon as IconResult with iconResult.name==='marker' and a list of icons based on svg-graphics as IconResult.
+ * This service provides a default-icon as IconResult with iconResult.id==='marker' and a list of icons based on svg-graphics as IconResult.
  * This list always contains the default-icon or a 'marker'-Icon provided by the icons.provider as first element.
  * @author thiloSchlemmer
  */
 export class IconService {
 
-	constructor(provider = loadBvvIcons) {
-		this._provider = provider;
+	constructor(iconProvider = loadBvvIcons, urlProvider = getBvvIconsUrl) {
+		this._iconProvider = iconProvider;
+		this._iconUrlProvider = urlProvider;
 		this._icons = null;
 	}
 
@@ -23,8 +24,8 @@ export class IconService {
 
 	async _load() {
 		try {
-			const isMarkerIcon = (iconResult) => iconResult.name === SVG_MARKER_NAME;
-			const providerIcons = await this._provider();
+			const isMarkerIcon = (iconResult) => iconResult.id === SVG_MARKER_NAME;
+			const providerIcons = await this._iconProvider();
 			const indexOfMarkerIcon = providerIcons.findIndex(isMarkerIcon);
 			this._icons = indexOfMarkerIcon < 0 ? [this.default(), ...providerIcons] : [providerIcons[indexOfMarkerIcon], ...providerIcons.filter((i) => !isMarkerIcon(i))];
 		}
@@ -36,6 +37,10 @@ export class IconService {
 		return this._icons;
 	}
 
+	/**
+	 * Creates a list of all icons as IconResult
+	 * @returns {Array<IconResult>}
+	 */
 	async all() {
 		if (this._icons === null) {
 			return await this._load();
@@ -43,15 +48,36 @@ export class IconService {
 		return this._icons;
 	}
 
+
+	async getUrl(idOrBase64, color) {
+		const getUrlByBase64 = async (base64String) => {
+			const icons = await this.all();
+			const iconResult = icons.find(iconResult => iconResult.base64 === base64String);
+
+			return iconResult ? this._iconUrlProvider(iconResult.id, color) : null;
+		};
+
+		const getUrlByName = async (id) => {
+			return this._iconUrlProvider(id, color);
+		};
+
+		const getIconUrl = async () => {
+			return idOrBase64.startsWith(SVG_ENCODING_B64_FLAG) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
+		};
+		return await getIconUrl();
+	}
+
+
+
 	/**
 	 * creates a IconResult from a base64-encoded Version of an svg
 	 * based on this article:
 	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
- 	 * @param {string} name
+ 	 * @param {string} id
  	 * @param {string} encodedString
  	 * @returns {IconResult|null} the IconResult
  	*/
-	fromBase64(name, encodedString) {
+	fromBase64(id, encodedString) {
 		if (encodedString.startsWith(SVG_ENCODING_B64_FLAG)) {
 			const b64DecodeUnicode = (str) => {
 				return decodeURIComponent(window.atob(str).split('').map(function (c) {
@@ -59,7 +85,7 @@ export class IconService {
 				}).join(''));
 			};
 
-			return new IconResult(name, b64DecodeUnicode(encodedString.replace(SVG_ENCODING_B64_FLAG, '')));
+			return new IconResult(id, b64DecodeUnicode(encodedString.replace(SVG_ENCODING_B64_FLAG, '')));
 		}
 		return null;
 	}
@@ -75,12 +101,12 @@ export class IconResult {
 
 	/**
 	 *
-	 * @param {string} name the name of this IconResult
+	 * @param {string} id the id(name) of this IconResult
 	 * @param {string} svg the content of this Icon as SVG
 	 */
-	constructor(name, svg) {
+	constructor(id, svg) {
 
-		this._name = name;
+		this._id = id;
 		this._svg = svg;
 		this._base64 = this._toBase64(svg);
 	}
@@ -103,8 +129,8 @@ export class IconResult {
 		return SVG_ENCODING_B64_FLAG + b64EncodeUnicode(this._svg);
 	}
 
-	get name() {
-		return this._name;
+	get id() {
+		return this._id;
 	}
 
 	get svg() {

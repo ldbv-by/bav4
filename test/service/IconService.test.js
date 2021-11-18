@@ -24,8 +24,12 @@ describe('IconsService', () => {
 		];
 	};
 
-	const setup = (provider = loadMockIcons) => {
-		return new IconService(provider);
+	const getIconsUrlMock = (id, color) => {
+		return `backend.url/${color}/${id}`;
+	};
+
+	const setup = (iconProvider = loadMockIcons, iconUrlProvider = getIconsUrlMock) => {
+		return new IconService(iconProvider, iconUrlProvider);
 	};
 
 	describe('initialization', () => {
@@ -43,7 +47,7 @@ describe('IconsService', () => {
 
 		it('initializes the service with default provider', async () => {
 			const instanceUnderTest = new IconService();
-			expect(instanceUnderTest._provider).toEqual(loadBvvIcons);
+			expect(instanceUnderTest._iconProvider).toEqual(loadBvvIcons);
 		});
 
 
@@ -106,9 +110,33 @@ describe('IconsService', () => {
 			const loadSpy = spyOn(instanceUnderTest, '_load').and.callThrough();
 
 			const icons = await instanceUnderTest.all();
+
 			expect(loadSpy).toHaveBeenCalled();
 			expect(icons.length).toBe(3);
 			expect(icons[0]).toEqual(markerIconResult);
+		});
+	});
+
+	describe('getUrl', () => {
+		const color = [42, 12, 55];
+		it('provides a url for a icon-id and color', async () => {
+			const instanceUnderTest = setup();
+			const id = 'foo';
+
+			const url = await instanceUnderTest.getUrl(id, color);
+
+			expect(url).toBe('backend.url/42,12,55/foo');
+		});
+
+		it('provides a url for a base64String and color', async () => {
+			const instanceUnderTest = setup(async () => {
+				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
+			});
+			const base64String = iconResult2.base64;
+
+			const url = await instanceUnderTest.getUrl(base64String, color);
+
+			expect(url).toBe('backend.url/42,12,55/foo2');
 		});
 	});
 
@@ -119,7 +147,7 @@ describe('IconsService', () => {
 			const defaultIcon = instanceUnderTest.default();
 
 			expect(defaultIcon).toBeInstanceOf(IconResult);
-			expect(defaultIcon.name).toBe('marker');
+			expect(defaultIcon.id).toBe('marker');
 		});
 	});
 

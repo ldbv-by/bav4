@@ -78,7 +78,7 @@ export class IconSelect extends MvuElement {
 			}
 
 			const onClick = (event) => {
-				const selectedIconResult = model.icons.find(iconResult => event.currentTarget.id === 'svg_' + iconResult.name);
+				const selectedIconResult = model.icons.find(iconResult => event.currentTarget.id === 'svg_' + iconResult.id);
 				this.signal(Update_Value, selectedIconResult);
 				this.dispatchEvent(new CustomEvent('select', {
 					detail: {
@@ -93,7 +93,7 @@ export class IconSelect extends MvuElement {
 					isselected: model.value === iconResult.base64
 				};
 				return html`<style>svg{fill:${model.color}}</style>
-				<div id=svg_${iconResult.name} class='ba_catalog_item ${classMap(isSelectedClass)}' title=${translate('iconSelect_icon_hint')} @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
+				<div id=svg_${iconResult.id} class='ba_catalog_item ${classMap(isSelectedClass)}' title=${translate('iconSelect_icon_hint')} @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
 			};
 
 			return html`${model.icons.map(iconResult => getIcon(iconResult))}`;
