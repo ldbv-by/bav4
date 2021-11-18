@@ -414,7 +414,7 @@ describe('OlDrawHandler', () => {
 				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
 
 				classUnderTest.activate(map);
-
+				setStyle({ symbolSrc: 'something' });
 				setType('line');
 				const draw = classUnderTest._draw;
 				const abortSpy = spyOn(draw, 'abortDrawing').and.callThrough();
