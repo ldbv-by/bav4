@@ -280,7 +280,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const changedStyle = { ...this.getModel().style, symbolSrc: e.detail.selected.toBase64() };
+				const changedStyle = { ...this.getModel().style, symbolSrc: e.detail.selected.base64 };
 				setStyle(changedStyle);
 			};
 

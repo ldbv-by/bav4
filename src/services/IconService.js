@@ -41,7 +41,9 @@ export class IconService {
 	}
 
 	/**
-	 *
+	 * creates a IconResult from a base64-encoded Version of an svg
+	 * based on this article:
+	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
  	 * @param {string} name
  	 * @param {string} encodedString
  	 * @returns {IconResult|null} the IconResult
@@ -49,7 +51,7 @@ export class IconService {
 	fromBase64(name, encodedString) {
 		if (encodedString.startsWith(SVG_ENCODING_B64_FLAG)) {
 			const b64DecodeUnicode = (str) => {
-				return decodeURIComponent(atob(str).split('').map(function (c) {
+				return decodeURIComponent(window.atob(str).split('').map(function (c) {
 					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
 				}).join(''));
 			};
@@ -77,16 +79,19 @@ export class IconResult {
 
 		this._name = name;
 		this._svg = svg;
+		this._base64 = this._toBase64(svg);
 	}
 
 	/**
 	 * creates a base64-encoded Version of the svg for embedding-purposes
+	 * based on this article:
+	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
  	 * @param {IconResult} iconResult
  	 * @returns {string} the encoded (base64) string
  	*/
-	toBase64() {
+	_toBase64() {
 		const b64EncodeUnicode = (str) => {
-			return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
 				function toSolidBytes(match, p1) {
 					return String.fromCharCode('0x' + p1);
 				}));
@@ -101,6 +106,10 @@ export class IconResult {
 
 	get svg() {
 		return this._svg;
+	}
+
+	get base64() {
+		return this._base64;
 	}
 
 }

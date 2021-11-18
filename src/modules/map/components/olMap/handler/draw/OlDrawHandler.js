@@ -503,7 +503,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_getStyleOption() {
 		if (this._storeService.getStore().getState().draw.style == null) {
-			setStyle({ ...defaultStyleOption, symbolSrc: this._iconService.default().toBase64() });
+			setStyle({ ...defaultStyleOption, symbolSrc: this._iconService.default().base64 });
 		}
 		return this._storeService.getStore().getState().draw.style;
 	}
