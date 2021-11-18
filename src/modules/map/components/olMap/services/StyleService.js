@@ -76,7 +76,7 @@ export class StyleService {
 	 * implementation of the StyleService
 	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update
 	*/
-	updateStyle(olFeature, olMap, properties = {}, styleType = null) {
+	updateStyle(olFeature, olMap, properties, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		if (usingStyleType === StyleTypes.MEASURE) {
