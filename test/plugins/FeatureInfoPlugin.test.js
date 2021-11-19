@@ -141,6 +141,34 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
+			it('adds No FeatureInfo items when layer is invisible or hidden', async () => {
+				const layerId0 = 'id0';
+				const layerId1 = 'id1';
+				const coordinate = [11, 22];
+				const zoom = 5;
+				const resolution = 25;
+				const store = setup({
+					layers: {
+						active: [
+							{ ...createDefaultLayer(layerId0), constraints: { hidden: true } },
+							{ ...createDefaultLayer(layerId1), visible: false }
+						]
+					},
+					position: {
+						zoom: zoom
+					}
+				});
+				const instanceUnderTest = new FeatureInfoPlugin();
+
+				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
+				const featureInfoServiceSpy = spyOn(featureInfoService, 'get');
+				await instanceUnderTest.register(store);
+
+				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
+
+				expect(featureInfoServiceSpy).not.toHaveBeenCalled();
+			});
+
 			it('adds No FeatureInfo items when service returns no result', async () => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';

@@ -33,9 +33,12 @@ export class FeatureInfoPlugin extends BaPlugin {
 			clearFeatureInfoItems();
 			updateCoordinate(coordinate);
 			const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
+			//use only visible and unhidden layers
+			const layerFilter = layerProperties => layerProperties.visible && !layerProperties.constraints.hidden;
 
 			// call FeatureInfoService
 			[...state.layers.active]
+				.filter(layerFilter)
 				.forEach(async layerProperties => {
 					try {
 						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
