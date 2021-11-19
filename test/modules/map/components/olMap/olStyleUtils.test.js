@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
@@ -602,6 +602,47 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(featureWithoutStyle)).toBeNull();
 		expect(getColorFrom(null)).toBeNull();
 		expect(getColorFrom(undefined)).toBeNull();
+	});
+
+});
+
+describe('getSymbolFrom', () => {
+	const imageStyle = new Style({
+		image: new Icon({
+			src: markerIcon,
+			color: [255, 0, 0]
+		})
+	});
+
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+
+	it('should extract a image from feature style', () => {
+		const featureMock = { getStyle: () => [imageStyle] };
+
+		expect(getSymbolFrom(featureMock)).toBeTruthy();
+	});
+
+	it('should NOT extract a image from feature style (image)', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getSymbolFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
+		expect(getSymbolFrom(null)).toBeNull();
+		expect(getSymbolFrom(undefined)).toBeNull();
 	});
 
 });
