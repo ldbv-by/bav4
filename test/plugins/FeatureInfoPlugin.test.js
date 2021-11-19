@@ -112,7 +112,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
-			it('adds FeatureInfo items taking layerPropeties\' label as title', async () => {
+			it('adds FeatureInfo items taking layerProperties\' label as title', async () => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';
 				const coordinate = [11, 22];
