@@ -23,6 +23,7 @@ describe('GeoResourceService', () => {
 	describe('init', () => {
 
 		it('initializes the service', async () => {
+
 			const instanceUnderTest = setup();
 			expect(instanceUnderTest._georesources).toBeNull();
 
@@ -33,11 +34,13 @@ describe('GeoResourceService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
+
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 		});
 
 		it('initializes the service with custom provider', async () => {
+
 			const customProvider = async () => { };
 			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._provider).toBeDefined();
@@ -45,6 +48,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -95,6 +99,7 @@ describe('GeoResourceService', () => {
 	describe('all', () => {
 
 		it('provides all GeoResources', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -104,6 +109,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when service hat not been initialized', () => {
+
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -115,6 +121,7 @@ describe('GeoResourceService', () => {
 	describe('byId', () => {
 
 		it('provides a GeoResource by id', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -125,6 +132,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('provides null if for an unknown id', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -134,6 +142,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when when service hat not been initialized', () => {
+
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -145,6 +154,7 @@ describe('GeoResourceService', () => {
 	describe('addOrReplace', () => {
 
 		it('adds a GeoResource', async () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
@@ -155,6 +165,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('replaces a GeoResource', async () => {
+
 			const instanceUnderTest = setup();
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
