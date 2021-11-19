@@ -96,7 +96,7 @@ export class HttpService {
 /**
  * {@link HttpService} that updates the 'fetching' property of the network state.
  * @class
- * @author aul
+ * @author taulinger
  */
 export class NetworkStateSyncHttpService extends HttpService {
 
@@ -113,3 +113,12 @@ export class NetworkStateSyncHttpService extends HttpService {
 		}
 	}
 }
+
+/**
+ * Enum for common media types.
+ */
+export const MediaType = Object.freeze({
+	JSON: 'application/json',
+	TEXT_HTML: 'text/html',
+	TEXT_PLAIN: 'text/plain'
+});
