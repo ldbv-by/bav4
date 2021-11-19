@@ -18,6 +18,7 @@ describe('i18n for LayersPlugin', () => {
 	});
 
 	it('have the expected amount of translations', () => {
+
 		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');
