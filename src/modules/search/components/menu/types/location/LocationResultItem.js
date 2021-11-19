@@ -1,7 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { BaElement } from '../../../../../BaElement';
-import itemCss from '../item.css';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
@@ -79,7 +78,6 @@ export class LocationResultItem extends BaElement {
 		if (this._locationSearchResult) {
 
 			return html`
-				<style>${itemCss}</style>
 				<style>${css}</style>
                 <li class="ba-list-item"
 					@click=${() => onClick(this._locationSearchResult)} 

@@ -38,7 +38,6 @@ input[type=text] {
 	font-size: 1.25rem;
 	padding: 0.25em .6em;
 	width: var(--width);
-	background: var(--primary-bg-color);
 	color: var(--text1);
 }
 input[type=text]:focus {

@@ -10,8 +10,6 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 	color: rgba(255,255,255,.8);
 	padding: 0 1em;
-}
-.tool-container__buttons > div {
 	border-right: 1px dotted var(--header-background-color);
 }
 .tool-container__buttons > div:last-child {

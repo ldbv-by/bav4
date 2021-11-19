@@ -20,7 +20,6 @@
 	height: 2.5em;    
 	border: 0;
 	background: var(--secondary-bg-color);
-	opacity: 1;
 	font-weight: bold;
 	cursor: pointer;
 	opacity: .9;
