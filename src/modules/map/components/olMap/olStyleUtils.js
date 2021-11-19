@@ -479,22 +479,6 @@ export const getContrastColorFrom = (baseColor) => {
 	return hsvToRgb(contrastHsv);
 };
 
-/**
- * creates the complementary color for the specified color
- * from https://www.tutorialspoint.com/javascript-complementary-colors-builder
- * @param {string} color the color as hex-string
- * @returns {string} the complementary color as hex string
- */
-export const getComplementaryColor = (color = '') => {
-	const colorPart = color.slice(1);
-	const ind = parseInt(colorPart, 16);
-	let iter = ((1 << 4 * colorPart.length) - 1 - ind).toString(16);
-	while (iter.length < colorPart.length) {
-		iter = '0' + iter;
-	}
-	return '#' + iter;
-};
-
 /***
  * Returns the drawingtype of a feature. If the featue is created with the application itself,
  * the drawingType is part of the featureId and follows the convention id(feature)-> [measure|draw]_[drawingType]_[creationTime]

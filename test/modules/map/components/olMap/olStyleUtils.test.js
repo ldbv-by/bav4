@@ -515,14 +515,6 @@ describe('hsvToRgb', () => {
 	});
 });
 
-describe('getComplementaryColor', () => {
-
-	it('should find a color with maximum contrast', () => {
-
-		expect(getComplementaryColor(rgbToHex(Rgb_Red))).toEqual('#00ffff');
-
-	});
-});
 
 describe('getContrastColorFrom', () => {
 
