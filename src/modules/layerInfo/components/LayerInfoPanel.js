@@ -1,7 +1,9 @@
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
+import { LayerInfoResult } from '../services/LayerInfoService';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const UPDATE_LAYERINFO = 'UPDATE_LAYERINFO';
 
@@ -14,7 +16,9 @@ export class LayerInfoPanel extends MvuElement {
 
 	constructor() {
 		super({ layerInfo: null });
-		const { LayerInfoService: layerInfoService } = $injector.inject('LayerInfoService');
+		const { TranslationService: translationService, LayerInfoService: layerInfoService }
+		= $injector.inject('TranslationService', 'LayerInfoService');
+		this._translationService = translationService;
 		this._layerInfoService = layerInfoService;
 	}
 
@@ -37,7 +41,7 @@ export class LayerInfoPanel extends MvuElement {
 			<div>${unsafeHTML(`${layerInfo.content}`)}</div>
 			`;
 		}
-		return nothing;
+		return html`<ba-spinner></ba-spinner>`;
 	}
 
 	static get tag() {
@@ -57,11 +61,18 @@ export class LayerInfoPanel extends MvuElement {
 	async _getLayerInfo(geoResourceId) {
 
 		try {
-			const result = await this._layerInfoService.byId(geoResourceId);
+			let result = await this._layerInfoService.byId(geoResourceId);
+			if (result === null) {
+				const translate = (key) => this._translationService.translate(key);
+				const infoText = translate('layerinfo_empty_layerInfo');
+				result = new LayerInfoResult(infoText);
+			}
 			this.signal(UPDATE_LAYERINFO, result);
 		}
 		catch (e) {
-			console.warn(e.message);
+			const message = this._translationService.translate('layerinfo_layerInfo_response_error');
+			emitNotification(message, LevelTypes.WARN);
+			console.warn(e);
 			this.signal(UPDATE_LAYERINFO, null);
 		}
 	}

@@ -135,7 +135,6 @@ export class LayerItem extends AbstractContentPanel {
 			openModal(this._layer.label, content);
 		};
 
-
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>

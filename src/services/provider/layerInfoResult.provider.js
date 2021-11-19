@@ -13,11 +13,15 @@ export const loadBvvLayerInfo = async (geoResourceId) => {
 
 	const result = await httpService.get(url);
 
-	if (result.ok) {
-		const htmlContent = await result.text();
-		if (htmlContent && htmlContent.length > 0) {
-			return new LayerInfoResult(htmlContent, null);
+	switch (result.status) {
+		case 200: {
+			const htmlContent = await result.text();
+			return new LayerInfoResult(htmlContent);
+		}
+		case 404: {
+			return null;
 		}
 	}
+
 	throw new Error(`LayerInfoResult for '${geoResourceId}' could not be loaded`);
 };
