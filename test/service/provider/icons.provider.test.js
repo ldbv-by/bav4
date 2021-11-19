@@ -48,7 +48,7 @@ describe('Icons provider', () => {
 		const payload = JSON.stringify([
 			{ id: 'foo1', svg: '<foo>bar1</foo>' },
 			{ id: 'foo2', svg: 'bar2' },
-			{ id: 'foo3', svg: 'svg>bar3</svg>' }]
+			{ id: 'foo3', svg: 42 }]
 		);
 		const warnSpy = spyOn(console, 'warn');
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
