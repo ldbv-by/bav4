@@ -26,9 +26,9 @@ describe('LayersPlugin', () => {
 	};
 	const fileStorageServiceMock = {
 		get() { },
-		getFileId() {},
-		isFileId() {},
-		isAdminId() {}
+		getFileId() { },
+		isFileId() { },
+		isAdminId() { }
 	};
 	const windowMock = {
 		location: {
@@ -60,8 +60,6 @@ describe('LayersPlugin', () => {
 
 	describe('constructor', () => {
 
-
-
 		it('registers an i18n provider', async () => {
 			const translationServiceSpy = spyOn(translationService, 'register');
 			setup();
@@ -85,7 +83,6 @@ describe('LayersPlugin', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
-
 
 	describe('_init', () => {
 
