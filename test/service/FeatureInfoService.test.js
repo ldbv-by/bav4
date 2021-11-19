@@ -38,6 +38,7 @@ describe('FeatureInfoService', () => {
 	describe('get', () => {
 
 		it('provides a FeatureInfoResult', async () => {
+
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
@@ -54,6 +55,7 @@ describe('FeatureInfoService', () => {
 		});
 
 		it('returns Null when GeoResource is not queryable', async () => {
+
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
@@ -70,6 +72,7 @@ describe('FeatureInfoService', () => {
 		});
 
 		it('throws an exception when provider throws one', async () => {
+
 			const geoResourceId = 'id';
 			const coordinate = [21, 42];
 			const resolution = 5;
@@ -92,6 +95,7 @@ describe('FeatureInfoService', () => {
 		describe('isQueryable', () => {
 
 			it('tests if a GeoResource is queryable', async () => {
+
 				const geoResourceId = 'id';
 				const instanceUnderTest = setup();
 				const geoResourceServiceSpy = spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId));
@@ -108,6 +112,7 @@ describe('FeatureInfoService', () => {
 	describe('FeatureInfoResult', () => {
 
 		it('provides getter for properties', () => {
+
 			const layerInfoResult = new FeatureInfoResult('<b>content</b>', 'title');
 
 			expect(layerInfoResult.content).toBe('<b>content</b>');
@@ -115,6 +120,7 @@ describe('FeatureInfoService', () => {
 		});
 
 		it('provides default properties', () => {
+
 			const layerInfoResult = new FeatureInfoResult('<b>content</b>', undefined);
 
 			expect(layerInfoResult.content).toBe('<b>content</b>');
