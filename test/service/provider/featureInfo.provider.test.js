@@ -27,8 +27,7 @@ describe('FeatureInfoResult provider', () => {
 			const coordinate3857 = [38, 57];
 			const mapResolution = 5;
 			const content = 'content';
-			// Fixme: will be needed later
-			// const title = 'title';
+			const title = 'title';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
 				id: geoResourceId,
@@ -36,15 +35,12 @@ describe('FeatureInfoResult provider', () => {
 				srid: 3857,
 				resolution: mapResolution
 			});
-			// Fixme: will be needed later
-			// const featureInfoResultPayload = { title: 'title', content: 'content' };
+			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
 				new Response(
-					//Fixme: will be needed later
-					// JSON.stringify(
-					// 	featureInfoResultPayload
-					// )
-					content
+					JSON.stringify(
+						featureInfoResultPayload
+					)
 				)
 			);
 
@@ -53,8 +49,7 @@ describe('FeatureInfoResult provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(featureInfoResult.content).toBe(content);
-			// Fixme: will be needed later
-			// expect(featureInfoResult.title).toBe(title);
+			expect(featureInfoResult.title).toBe(title);
 		});
 
 		it('returns Null when no content is available', async () => {

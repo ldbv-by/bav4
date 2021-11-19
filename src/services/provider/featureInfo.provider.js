@@ -40,10 +40,8 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 	switch (result.status) {
 		case 200: {
-			// Fixme: will be needed later
-			// const {title, content} = await result.json();
-			// return new FeatureInfoResult(content, title);
-			return new FeatureInfoResult(await result.text());
+			const { title, content } = await result.json();
+			return new FeatureInfoResult(content, title);
 		}
 		case 204: {
 			return null;
