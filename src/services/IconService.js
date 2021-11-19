@@ -33,7 +33,6 @@ export class IconService {
 			this._icons = [this.default(), ...loadFallbackIcons()];
 			console.warn('Icons could not be fetched from backend.', e);
 		}
-
 		return this._icons;
 	}
 
@@ -73,10 +72,10 @@ export class IconService {
 	 * creates a IconResult from a base64-encoded Version of an svg
 	 * based on this article:
 	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
- 	 * @param {string} id
- 	 * @param {string} encodedString
- 	 * @returns {IconResult|null} the IconResult
- 	*/
+	   * @param {string} id
+	   * @param {string} encodedString
+	   * @returns {IconResult|null} the IconResult
+	  */
 	fromBase64(id, encodedString) {
 		if (encodedString.startsWith(SVG_ENCODING_B64_FLAG)) {
 			const b64DecodeUnicode = (str) => {
@@ -115,9 +114,9 @@ export class IconResult {
 	 * creates a base64-encoded Version of the svg for embedding-purposes
 	 * based on this article:
 	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
- 	 * @param {IconResult} iconResult
- 	 * @returns {string} the encoded (base64) string
- 	*/
+	   * @param {IconResult} iconResult
+	   * @returns {string} the encoded (base64) string
+	  */
 	_toBase64() {
 		const b64EncodeUnicode = (str) => {
 			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,

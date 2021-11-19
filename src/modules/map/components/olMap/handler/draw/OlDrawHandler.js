@@ -654,8 +654,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		// todo: enable full storage-functionality, after complete implementation of backend-functions to manage and store symbols
-		//const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
-		const id = createTempIdAndWarn();
+		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
 
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);

@@ -3,6 +3,7 @@ import { LineString, Polygon } from 'ol/geom';
 import { Icon, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
+import { $injector } from '../../../../../injection';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
@@ -11,6 +12,20 @@ const tryRectifyingLineString = (polygonCandidate) => {
 		return new LineString(polygonCandidate.getCoordinates()[0]);
 	}
 	return polygonCandidate;
+};
+
+const replaceIcon = (old) => {
+	const svgSrc = old.getSrc();
+	const { IconService: iconService } = $injector.inject('IconService');
+	const iconUrl = iconService.getUrl(svgSrc, old.getColor());
+	const iconOptions = {
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: iconUrl,
+		scale: old.getScale()
+	};
+	return new Icon(iconOptions);
 };
 
 const sanitizeStyle = (styles) => {
@@ -26,6 +41,10 @@ const sanitizeStyle = (styles) => {
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
 		kmlStyleProperties.image = null;
+	}
+
+	if (kmlStyleProperties.image instanceof Icon) {
+		kmlStyleProperties.image = replaceIcon(kmlStyleProperties.image);
 	}
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;

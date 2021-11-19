@@ -12,9 +12,22 @@ export const loadBvvIcons = async () => {
 	if (result.ok) {
 		const icons = [];
 		const payload = await result.json();
-		payload.forEach((id, svg) => {
-			icons.push(new IconResult(id, svg));
+		const isValidSvg = (svg) => {
+			if (typeof (svg) === 'string') {
+				return svg.startsWith('<svg>') && svg.endsWith('</svg>');
+			}
+			return false;
+		};
+		payload.forEach(bvvIcon => {
+			const { id, svg } = bvvIcon;
+			if (isValidSvg(svg)) {
+				icons.push(new IconResult(id, svg));
+			}
 		});
+
+		if (icons.length === 0) {
+			console.warn('The retrieved Icons are invalid');
+		}
 		return icons;
 	}
 	throw new Error('Icons could not be retrieved');

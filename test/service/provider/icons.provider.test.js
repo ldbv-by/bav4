@@ -21,16 +21,14 @@ describe('Icons provider', () => {
 	it('loads icons', async () => {
 
 		const backendUrl = 'https://backend.url';
-
+		const payload = JSON.stringify([
+			{ id: 'foo1', svg: '<svg>bar1</svg>' },
+			{ id: 'foo2', svg: '<svg>bar2</svg>' },
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
+		);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-			new Response(
-				JSON.stringify([
-					{ id: 'foo1', svg: 'bar1' },
-					{ id: 'foo2', svg: 'bar2' },
-					{ id: 'foo3', svg: 'bar3' }]
-				)
-			)));
+			new Response(payload)));
 
 		const icons = await loadBvvIcons();
 
