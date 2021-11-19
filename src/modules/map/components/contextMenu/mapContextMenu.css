@@ -1,7 +1,6 @@
 .context-menu {
 	--mouse-x: 0;
 	--mouse-y: 0;
-	display: none;
 	position: fixed;
 	margin: 0;
 	left: 0;

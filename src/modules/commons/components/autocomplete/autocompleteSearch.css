@@ -12,7 +12,6 @@ input {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	font-family: var(--font-family);
-	font-size: 14x;
 	width: 100%;
 }
 
@@ -26,7 +25,6 @@ input:focus {
 	top: 100%;
 	left: 0;
 	right: 0;
-	font-size: 14x;
 	overflow-x: hidden;
 	overflow-y: scoll;
 	max-height: 75vh;

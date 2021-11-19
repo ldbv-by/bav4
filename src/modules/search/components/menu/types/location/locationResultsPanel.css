@@ -1,14 +1,14 @@
 .location-label {
 	display: flex;
 }
-.location-label:hover .location-label__text {
-	color: var(--primary-color);
-	cursor: pointer;
-}
 .location-label__text {
 	font-weight: bold;
 	padding: .8em 1.5em;
 	flex-grow: 1;
+}
+.location-label:hover .location-label__text {
+	color: var(--primary-color);
+	cursor: pointer;
 }
 .location-items {
 	overflow: hidden;

@@ -132,17 +132,6 @@
 .ba-icon-button:hover .icon {
 	background: #fff;
 }
-.ba-icon-button:hover .icon-background {
-	height: 2em;
-	width: 2em;
-	background-color: var(--primary-color);
-}
-.ba-icon-button:focus .icon-background {
-	height: 2em;
-	width: 2em;
-	background-color: var(--primary-color);
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
-}
 .icon-background {
 	height: 0;
 	width: 0;
@@ -155,6 +144,17 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 	transform: translate(-50%, -50%);
 	display: inline-block;
+}
+.ba-icon-button:hover .icon-background {
+	height: 2em;
+	width: 2em;
+	background-color: var(--primary-color);
+}
+.ba-icon-button:focus .icon-background {
+	height: 2em;
+	width: 2em;
+	background-color: var(--primary-color);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 .arrow {
 	width: 0;
