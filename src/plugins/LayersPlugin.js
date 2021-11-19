@@ -4,12 +4,20 @@ import { QueryParameters } from '../services/domain/queryParameters';
 import { FileStorageServiceDataTypes } from '../services/FileStorageService';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, modifyLayer, setReady } from '../store/layers/layers.action';
+import { provide as provider } from './i18n/layersPlugin.provider';
 
 /**
  * @class
  * @author taulinger
  */
 export class LayersPlugin extends BaPlugin {
+
+	constructor() {
+		super();
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+		translationService.register('layersPluginProvider', provider);
+	}
 
 	_newLabelUpdateHandler(id) {
 		return {
@@ -64,7 +72,7 @@ export class LayersPlugin extends BaPlugin {
 		if (!geoResourceService.byId(id)) {
 
 			//no source type here, we let the loader decide which kind of source we are loading
-			const vgr = new VectorGeoResource(id, translationService.translate('map_store_layer_default_layer_name'), null)
+			const vgr = new VectorGeoResource(id, translationService.translate('layersPlugin_store_layer_default_layer_name'), null)
 				.setLoader(this._newVectorGeoResourceLoader(id));
 			/**
 			 * The definitive label value will be extracted later from the source.
