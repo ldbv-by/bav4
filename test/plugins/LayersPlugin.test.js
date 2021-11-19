@@ -9,6 +9,7 @@ import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { FileStorageServiceDataTypes } from '../../src/services/FileStorageService';
 import { addLayer } from '../../src/store/layers/layers.action';
+import { provide } from '../../src/plugins/i18n/layersPlugin.provider';
 
 
 describe('LayersPlugin', () => {
@@ -25,17 +26,20 @@ describe('LayersPlugin', () => {
 	};
 	const fileStorageServiceMock = {
 		get() { },
-		getFileId() {},
-		isFileId() {},
-		isAdminId() {}
+		getFileId() { },
+		isFileId() { },
+		isAdminId() { }
 	};
-
 	const windowMock = {
 		location: {
 			get search() {
 				return null;
 			}
 		}
+	};
+	const translationService = {
+		register() { },
+		translate: (key) => key
 	};
 
 	const setup = (state) => {
@@ -49,10 +53,22 @@ describe('LayersPlugin', () => {
 			.registerSingleton('TopicsService', topicsServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', translationService);
 
 		return store;
 	};
+
+	describe('constructor', () => {
+
+		it('registers an i18n provider', async () => {
+			const translationServiceSpy = spyOn(translationService, 'register');
+			setup();
+
+			new LayersPlugin();
+
+			expect(translationServiceSpy).toHaveBeenCalledWith('layersPluginProvider', provide);
+		});
+	});
 
 	describe('register', () => {
 
@@ -67,7 +83,6 @@ describe('LayersPlugin', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 	});
-
 
 	describe('_init', () => {
 
@@ -314,7 +329,7 @@ describe('LayersPlugin', () => {
 				expect(registeredGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
 				expect(registeredGeoResource.sourceType).toBeNull();
 				expect(registeredGeoResource._loader).not.toBeNull();
-				expect(registeredGeoResource.label).toBe('map_store_layer_default_layer_name');
+				expect(registeredGeoResource.label).toBe('layersPlugin_store_layer_default_layer_name');
 				expect(newLabelUpdateHandlerSpy).toHaveBeenCalledWith(id);
 				expect(byIdSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);

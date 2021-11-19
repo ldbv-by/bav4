@@ -1,4 +1,5 @@
 import { $injector } from '../injection';
+import { calc3857MapResolution } from '../utils/mapUtils';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
 /**
@@ -65,7 +66,7 @@ export class MapService {
 	 * @param {number}  srid
 	 * @returns {Extent} extent
 	 */
-	getDefaultMapExtent(srid = 3857) {
+	getDefaultMapExtent(srid = this.getSrid()) {
 		switch (srid) {
 			case 3857:
 				return this._definitions.defaultExtent;
@@ -83,4 +84,21 @@ export class MapService {
 		return .05;
 	}
 
+	/**
+	 * Calculates the resolution at a specific degree of latitude in meters per pixel.
+	 * @param {number} zoom  Zoom level to calculate resolution at
+	 * @param {Coordinate} [coordinate] Coordinate to calculate resolution at (required for non-geodetic map projections like `3857`)
+	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
+	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
+	 */
+	calcResolution(zoom, coordinateInMapProjection = null, srid = this.getSrid(), tileSize = 256) {
+		switch (srid) {
+			case 3857:
+				if (!coordinateInMapProjection) {
+					throw new Error(`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`);
+				}
+				return calc3857MapResolution(this._coordinateService.toLonLat(coordinateInMapProjection)[1], zoom, tileSize);
+		}
+		throw new Error(`Unsupported SRID ${srid}`);
+	}
 }

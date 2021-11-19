@@ -87,7 +87,7 @@ export class MapContextMenu extends MvuElement {
 		return html`
         <style>${css}</style>
 		<div class='context-menu ${sectorClass}' style=${styleMap(style)}>
-			<div class='header'>${translate('map_contextMenu_header')}<ba-icon class='close' .icon='${closeIcon}' .title=${translate('map_contextMenu_close_button')} .size=${1.5} .color=${'white'} .color_hover=${'white'} @click=${closeContextMenu}></ba-icon></div>
+			<div class='header'>${translate('map_contextMenu_header')}<ba-icon class='close' .icon='${closeIcon}' .title=${translate('map_contextMenu_close_button')} .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text1)'} @click=${closeContextMenu}></ba-icon></div>
 			${content}
         </div>`;
 	}

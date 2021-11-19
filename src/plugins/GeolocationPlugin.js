@@ -4,6 +4,8 @@ import { setPosition, setAccuracy, setDenied, setTracking } from '../store/geolo
 import { changeCenter, setFit } from '../store/position/position.action';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from '../plugins/BaPlugin';
+import { provide as provider } from './i18n/geolocationPlugin.provider';
+
 
 /**
  * Id of the layer used for geolocation visualization
@@ -18,18 +20,20 @@ export class GeolocationPlugin extends BaPlugin {
 		super();
 		this._firstTimeActivatingGeolocation = true;
 		this._geolocationWatcherId = null;
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+		translationService.register('geolocationPluginProvider', provider);
 	}
 
 	_handlePositionError(error) {
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		console.warn('Geolocation activation failed', error);
 		switch (error.code) {
 			case error.PERMISSION_DENIED:
 				setDenied(true);
-				alert(translationService.translate('map_store_geolocation_denied'));
+				alert(this._translationService.translate('geolocationPlugin_store_geolocation_denied'));
 				break;
 			default:
-				alert(translationService.translate('map_store_geolocation_not_available'));
+				alert(this._translationService.translate('geolocationPlugin_store_geolocation_not_available'));
 				break;
 		}
 	}
