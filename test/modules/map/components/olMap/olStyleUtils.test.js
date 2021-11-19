@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';

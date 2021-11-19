@@ -38,7 +38,7 @@ export const loadBvvIcons = async () => {
  * @param {string} id the id of a specific icon
  * @returns {string} the url to the icon
  */
-export const getBvvIconsUrl = async (id, color) => {
+export const getBvvIconsUrl = (id, color) => {
 	const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + '/icons';
 

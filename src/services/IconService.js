@@ -48,22 +48,26 @@ export class IconService {
 	}
 
 
-	async getUrl(idOrBase64, color) {
-		const getUrlByBase64 = async (base64String) => {
-			const icons = await this.all();
-			const iconResult = icons.find(iconResult => iconResult.base64 === base64String);
+	getUrl(idOrBase64, color) {
+		const getUrlByBase64 = (base64String) => {
+			if (this._icons === null) {
+				console.warn('icons not loaded yet');
+				return null;
+			}
+			const iconResult = this._icons.find(iconResult => iconResult.base64 === base64String);
 
 			return iconResult ? this._iconUrlProvider(iconResult.id, color) : null;
 		};
 
-		const getUrlByName = async (id) => {
+		const getUrlByName = (id) => {
 			return this._iconUrlProvider(id, color);
 		};
 
-		const getIconUrl = async () => {
+		const getIconUrl = () => {
 			return idOrBase64.startsWith(SVG_ENCODING_B64_FLAG) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
 		};
-		return await getIconUrl();
+
+		return getIconUrl();
 	}
 
 

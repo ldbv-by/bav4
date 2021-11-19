@@ -18,6 +18,7 @@ const replaceIcon = (old) => {
 	const svgSrc = old.getSrc();
 	const { IconService: iconService } = $injector.inject('IconService');
 	const iconUrl = iconService.getUrl(svgSrc, old.getColor());
+
 	const iconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',

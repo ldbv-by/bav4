@@ -133,10 +133,22 @@ describe('IconsService', () => {
 				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
 			});
 			const base64String = iconResult2.base64;
-
-			const url = await instanceUnderTest.getUrl(base64String, color);
+			await instanceUnderTest.all();
+			const url = instanceUnderTest.getUrl(base64String, color);
 
 			expect(url).toBe('backend.url/42,12,55/foo2');
+		});
+
+		it('provides NO url, when icons not loaded', async () => {
+			const instanceUnderTest = setup(async () => {
+				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
+			});
+			const base64String = iconResult2.base64;
+			const warnSpy = spyOn(console, 'warn');
+			const url = instanceUnderTest.getUrl(base64String, color);
+
+			expect(url).toBeNull();
+			expect(warnSpy).toHaveBeenCalledWith('icons not loaded yet');
 		});
 	});
 
