@@ -7,7 +7,7 @@ describe('i18n for FeatureInfoPlugin', () => {
 
 		const map = provide('en');
 
-		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo could not be retreived');
+		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
 	});
 
 	it('provides translation for de', () => {
