@@ -1,5 +1,5 @@
-import { $injector } from '../../../src/injection';
-import { loadBvvLayerInfo } from '../../../src/services/provider/layerInfoResult.provider';
+import { $injector } from '../../../../../src/injection';
+import { loadBvvLayerInfo } from '../../../../../src/modules/layerInfo/services/provider/layerInfoResult.provider';
 
 describe('LayerInfo provider', () => {
 

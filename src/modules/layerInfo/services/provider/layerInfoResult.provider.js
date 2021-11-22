@@ -1,5 +1,5 @@
-import { $injector } from '../../injection';
-import { LayerInfoResult } from '../../modules/layerInfo/services/LayerInfoService';
+import { $injector } from '../../../../injection';
+import { LayerInfoResult } from '../LayerInfoService';
 
 /**
  * Uses the BVV endpoint to load layerinfoResult.

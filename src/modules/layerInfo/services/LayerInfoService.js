@@ -1,4 +1,4 @@
-import { loadBvvLayerInfo } from '../../../services/provider/layerInfoResult.provider';
+import { loadBvvLayerInfo } from '../services/provider/layerInfoResult.provider';
 
 export class LayerInfoService {
 

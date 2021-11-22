@@ -1,5 +1,5 @@
 import { LayerInfoService, LayerInfoResult } from '../../../../src/modules/layerInfo/services/LayerInfoService';
-import { loadBvvLayerInfo } from '../../../../src/services/provider/layerInfoResult.provider';
+import { loadBvvLayerInfo } from '../../../../src/modules/layerInfo/services/provider/layerInfoResult.provider';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -11,6 +11,14 @@ describe('LayerInfoService', () => {
 
 		expect(layerInfoService._provider).toEqual(loadBvvLayerInfo);
 	});
+
+	it('initializes the service with custom provider', async () => {
+		const customProvider = async () => { };
+		const instanceUnderTest = new LayerInfoService(customProvider);
+		expect(instanceUnderTest._provider).toBeDefined();
+		expect(instanceUnderTest._provider).toEqual(customProvider);
+	});
+
 
 	it('should return a LayerInfoResult with html content', async () => {
 

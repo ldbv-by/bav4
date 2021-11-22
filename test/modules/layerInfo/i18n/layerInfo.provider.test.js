@@ -7,8 +7,8 @@ describe('i18n for layerinfo', () => {
 
 		const map = provide('en');
 
-		expect(map.layerinfo_empty_layerInfo).toBe('No information for the layer found');
-		expect(map.layerinfo_layerInfo_response_error).toBe('The layer-information could not be loaded');
+		expect(map.layerinfo_empty_layerInfo).toBe('No Layer Information available');
+		expect(map.layerinfo_layerInfo_response_error).toBe('The Layer Information could not be loaded');
 	});
 
 
@@ -16,7 +16,7 @@ describe('i18n for layerinfo', () => {
 
 		const map = provide('de');
 
-		expect(map.layerinfo_empty_layerInfo).toBe('Keine Informationen für die Ebene gefunden');
+		expect(map.layerinfo_empty_layerInfo).toBe('Kein Ebenen-Information verfügbar');
 		expect(map.layerinfo_layerInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
 	});
 
