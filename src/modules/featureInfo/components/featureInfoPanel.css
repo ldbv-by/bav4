@@ -21,3 +21,26 @@
 .collapse-content {
 	padding: .8em 1em; 
 }
+
+table , tr, td {
+	border: 0;
+	background: transparent;
+	display: flex;
+	flex-direction: column;
+}
+
+tr {
+	padding: 0 0 .8em 0;
+}
+
+td {
+	padding: .3em 0;
+
+}
+
+td:first-child {
+	opacity: .8;
+	font-size: .9rem;
+	font-weight: bold;
+	color: var(--text1);
+}

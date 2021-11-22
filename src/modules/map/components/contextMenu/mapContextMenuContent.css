@@ -10,7 +10,7 @@
 }
  
 .content li {
-    padding: .3em 1.5em;
+	padding: .3em 1.5em;
 	display: flex;
 	justify-content: flex-start;
 }
