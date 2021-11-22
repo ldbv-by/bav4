@@ -2,7 +2,7 @@
  * Action creators to change/update the properties of featureInfo state.
  * @module featureInfo/action
  */
-import { COORDINATE_UPDATED, FEATURE_INFO_ADDED, FEATURE_INFO_CLEARED } from './featureInfo.reducer';
+import { FEATURE_INFO_REQUEST_START, FEATURE_INFO_ADDED, QUERIED_GEORESOUCE_ADDED, QUERIED_GEORESOUCE_REMOVED, FEATURE_INFO_REQUEST_ABORT } from './featureInfo.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -50,24 +50,49 @@ export const addFeatureInfoItems = (featureInfo) => {
 };
 
 /**
-  * Removes all  {@link FeatureInfo} items
-  * @param {FeatureInfo} featureInfo
-  */
-export const clearFeatureInfoItems = () => {
+ * Starts a new FeatureInfo request.
+ * @param {coordinate} coordinate
+ */
+export const startRequest = (coordinate) => {
 
 	getStore().dispatch({
-		type: FEATURE_INFO_CLEARED
+		type: FEATURE_INFO_REQUEST_START,
+		payload: new EventLike(coordinate)
 	});
 };
 
 /**
- * Updates the coordinate.
+ * Aborts the current FeatureInfo request or resets the result.
  * @param {coordinate} coordinate
  */
-export const updateCoordinate = (coordinate) => {
+export const abortOrReset = () => {
 
 	getStore().dispatch({
-		type: COORDINATE_UPDATED,
-		payload: new EventLike(coordinate)
+		type: FEATURE_INFO_REQUEST_ABORT,
+		payload: new EventLike()
+	});
+};
+
+/**
+ * Registers a GeoResource ID as being currently queried
+ * @param {string} geoResourceId
+ */
+export const registerQueryFor = (geoResourceId) => {
+
+	getStore().dispatch({
+		type: QUERIED_GEORESOUCE_ADDED,
+		payload: geoResourceId
+	});
+};
+
+/**
+ * Unregisters a GeoResource ID for being currently queried
+ * @param {string} geoResourceId
+ */
+export const unregisterQueryFor = (geoResourceId) => {
+
+	getStore().dispatch({
+		type: QUERIED_GEORESOUCE_REMOVED,
+		payload: geoResourceId
 	});
 };
