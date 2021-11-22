@@ -11,7 +11,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				layerinfo_empty_layerInfo: 'Kein Ebenen-Information verfügbar',
+				layerinfo_empty_layerInfo: 'Keine Ebenen-Information verfügbar',
 				layerinfo_layerInfo_response_error: 'Die Ebenen-Information konnte nicht geladen werden'
 			};
 
