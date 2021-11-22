@@ -13,14 +13,15 @@ const Update_Color = 'update_color';
 const Update_IsCollapsed = 'update_is_collapsed';
 
 /**
+ * Component to select a Icon from a List of available Icons
+ *
  * Events:
  * - onSelect()
  *
  * Properties:
  * - `value`
  * - `title`
- * - `color
-
+ * - `color`
  * @class
  * @author thiloSchlemmer
  */

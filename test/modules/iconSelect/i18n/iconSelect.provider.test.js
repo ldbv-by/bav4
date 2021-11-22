@@ -7,7 +7,7 @@ describe('i18n for iconSelect module', () => {
 
 		const map = provide('de');
 
-		expect(map.iconSelect_icon_hint).toBe('Klicken um es als Symbol auswählen');
+		expect(map.iconSelect_icon_hint).toBe('Klicken, um es als Symbol auswählen');
 	});
 
 	it('provides translation for en', () => {

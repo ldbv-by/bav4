@@ -10,7 +10,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				iconSelect_icon_hint: 'Klicken um es als Symbol auswählen'
+				iconSelect_icon_hint: 'Klicken, um es als Symbol auswählen'
 			};
 
 		default:
