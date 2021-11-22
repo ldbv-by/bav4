@@ -25,6 +25,35 @@ describe('MainMenuPlugin', () => {
 		return store;
 	};
 
+	describe('constructor', () => {
+
+		it('setups local state', () => {
+			setup();
+			const instanceUnderTest = new MainMenuPlugin();
+
+			expect(instanceUnderTest._previousTabIndex).toBe(-1);
+			expect(instanceUnderTest._open).toBeNull();
+		});
+	});
+
+	describe('register', () => {
+
+		it('updates necessary fields', async () => {
+			const store = setup({
+				mainMenu: {
+					open: true,
+					tabIndex: TabIndex.MAPS
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+
+			await instanceUnderTest.register(store);
+
+			expect(instanceUnderTest._open).toBeTrue();
+			expect(instanceUnderTest._previousTabIndex).toBe(TabIndex.MAPS);
+		});
+	});
+
 	describe('when featureInfo.pending property changes', () => {
 
 		describe('and we have FeatureInfo items', () => {
@@ -69,12 +98,7 @@ describe('MainMenuPlugin', () => {
 						});
 						const instanceUnderTest = new MainMenuPlugin();
 						await instanceUnderTest.register(store);
-						//the following is also needed to arrange the correct setup
-						unregisterQueryFor(geoResourceId);
-						expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-						expect(store.getState().mainMenu.open).toBeTrue();
 
-						// our actual test starts here:
 						//first we have to register a geoResource to change the pending field
 						registerQueryFor(geoResourceId);
 						//then we reset the both the pending and actual field
@@ -102,12 +126,7 @@ describe('MainMenuPlugin', () => {
 						});
 						const instanceUnderTest = new MainMenuPlugin();
 						await instanceUnderTest.register(store);
-						//the following is also needed to arrange the correct setup
-						unregisterQueryFor(geoResourceId);
-						expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-						expect(store.getState().mainMenu.open).toBeTrue();
 
-						// our actual test starts here:
 						//first we have to register a geoResource to change the pending field
 						registerQueryFor(geoResourceId);
 						//then we reset the both the pending and actual field
@@ -140,10 +159,6 @@ describe('MainMenuPlugin', () => {
 				});
 				const instanceUnderTest = new MainMenuPlugin();
 				await instanceUnderTest.register(store);
-				//the following is also needed to arrange the correct setup
-				unregisterQueryFor(geoResourceId);
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-				expect(store.getState().mainMenu.open).toBeTrue();
 
 				abortOrReset();
 
@@ -169,10 +184,6 @@ describe('MainMenuPlugin', () => {
 				});
 				const instanceUnderTest = new MainMenuPlugin();
 				await instanceUnderTest.register(store);
-				//the following is also needed to arrange the correct setup
-				unregisterQueryFor(geoResourceId);
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
-				expect(store.getState().mainMenu.open).toBeTrue();
 
 				abortOrReset();
 
