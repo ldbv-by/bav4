@@ -18,17 +18,29 @@ export class MainMenuPlugin extends BaPlugin {
 		let previousTabIndex = 0;
 		let wasOpen = null;
 
-		const onFeatureInfoChanged = current => {
-			if (current.length === 0) {
-				if (!wasOpen) {
-					close();
+		const onFeatureInfoPendingChanged = (pending, state) => {
+			const { featureInfo: { current } } = state;
+			if (pending.length === 0) {
+
+				if (current.length === 0) {
+					if (!wasOpen) {
+						close();
+					}
+					setTabIndex(previousTabIndex);
 				}
-				setTabIndex(previousTabIndex);
+				else {
+					setTabIndex(TabIndex.FEATUREINFO);
+					open();
+				}
 			}
-			else {
-				setTabIndex(TabIndex.FEATUREINFO);
-				open();
+		};
+
+		const onFeatureInfoAbortedChanged = () => {
+
+			if (!wasOpen) {
+				close();
 			}
+			setTabIndex(previousTabIndex);
 		};
 
 		const onTabIndexChanged = (tabIndex, state) => {
@@ -40,7 +52,8 @@ export class MainMenuPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, state => state.featureInfo.current, onFeatureInfoChanged);
+		observe(store, state => state.featureInfo.pending, onFeatureInfoPendingChanged);
+		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}
 }
