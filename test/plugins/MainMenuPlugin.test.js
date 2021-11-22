@@ -74,7 +74,7 @@ describe('MainMenuPlugin', () => {
 						expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
 						expect(store.getState().mainMenu.open).toBeTrue();
 
-						// our actual test start here:
+						// our actual test starts here:
 						//first we have to register a geoResource to change the pending field
 						//then we reset the both the pending and actual field
 						registerQueryFor(geoResourceId);
@@ -107,7 +107,7 @@ describe('MainMenuPlugin', () => {
 						expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.FEATUREINFO);
 						expect(store.getState().mainMenu.open).toBeTrue();
 
-						// our actual test start here:
+						// our actual test starts here:
 						//first we have to register a geoResource to change the pending field
 						//then we reset the both the pending and actual field
 						registerQueryFor(geoResourceId);
