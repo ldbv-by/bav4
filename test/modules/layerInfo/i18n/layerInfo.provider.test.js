@@ -1,25 +1,27 @@
-import { provide } from '../../../src/plugins/i18n/featureInfoPlugin.provider';
+import { provide } from '../../../../src/modules/layerInfo/i18n/layerInfo.provider';
 
 
-describe('i18n for FeatureInfoPlugin', () => {
+describe('i18n for layerinfo', () => {
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
+		expect(map.layerinfo_empty_layerInfo).toBe('No Layer Information available');
+		expect(map.layerinfo_layerInfo_response_error).toBe('The Layer Information could not be loaded');
 	});
+
 
 	it('provides translation for de', () => {
 
 		const map = provide('de');
 
-		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
+		expect(map.layerinfo_empty_layerInfo).toBe('Keine Ebenen-Information verfügbar');
+		expect(map.layerinfo_layerInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
 	});
 
 	it('have the expected amount of translations', () => {
-
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

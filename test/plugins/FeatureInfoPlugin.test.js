@@ -112,7 +112,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
-			it('adds FeatureInfo items taking layerPropeties\' label as title', async () => {
+			it('adds FeatureInfo items taking layerProperties\' label as title', async () => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';
 				const coordinate = [11, 22];
@@ -141,7 +141,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
-			it('adds No FeatureInfo items when layer is invisible or hidden', async () => {
+			it('adds NO FeatureInfo items when layer is invisible or hidden', async () => {
 				const layerId0 = 'id0';
 				const layerId1 = 'id1';
 				const coordinate = [11, 22];
@@ -169,7 +169,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(featureInfoServiceSpy).not.toHaveBeenCalled();
 			});
 
-			it('adds No FeatureInfo items when service returns no result', async () => {
+			it('adds NO FeatureInfo items when service returns NO result', async () => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';
 				const coordinate = [11, 22];

@@ -30,6 +30,7 @@ import { NotificationPlugin } from '../plugins/NotificationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
+import { LayerInfoService } from '../modules/layerInfo/services/LayerInfoService';
 
 
 $injector
@@ -50,6 +51,7 @@ $injector
 	.register('UrlService', UrlService)
 	.register('AdministrationService', AdministrationService)
 	.register('FeatureInfoService', FeatureInfoService)
+	.register('LayerInfoService', LayerInfoService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
