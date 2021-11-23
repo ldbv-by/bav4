@@ -25,7 +25,6 @@ export const highlightTemporaryCoordinateFeatureStyleFunction = () => [new Style
 	})
 })];
 
-
 export const highlightGeometryFeatureStyleFunction = () => {
 
 	const selectStroke = new Stroke({
@@ -73,5 +72,31 @@ export const highlightTemporaryGeometryFeatureStyleFunction = () => {
 
 	return [hlStyle];
 };
+
+export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
+
+	const selectStroke = new Stroke({
+		color: [50, 128, 0, 1],
+		width: 3
+	});
+
+	const selectFill = new Fill({
+		color: [50, 255, 0, 0.3]
+	});
+
+	const selectStyle = new Style({
+		fill: selectFill,
+		stroke: selectStroke,
+		image: new CircleStyle({
+			radius: 10,
+			fill: selectFill,
+			stroke: selectStroke
+		})
+	});
+
+	return [selectStyle];
+};
+
+export const createAnimation = () => { };
 
 
