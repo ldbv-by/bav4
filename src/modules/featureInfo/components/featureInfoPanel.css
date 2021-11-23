@@ -22,6 +22,14 @@
 	padding: .8em 1em; 
 }
 
+.featureinfo-header {
+	position: sticky;
+	z-index: calc(var(--z-header) + 92);
+	top: 0;
+	background-color: var(--tertiary-bg-color);
+	border-bottom: 1px solid var(--header-background-color);
+}
+
 table , tr, td {
 	border: 0;
 	background: transparent;
