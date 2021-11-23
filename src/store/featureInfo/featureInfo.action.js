@@ -74,7 +74,7 @@ export const abortOrReset = () => {
 };
 
 /**
- * Registers a GeoResource ID as being currently queried
+ * Registers a GeoResource as being currently queried
  * @param {string} geoResourceId
  */
 export const registerQueryFor = (geoResourceId) => {
@@ -86,7 +86,7 @@ export const registerQueryFor = (geoResourceId) => {
 };
 
 /**
- * Unregisters a GeoResource ID for being currently queried
+ * Unregisters a GeoResource for being currently queried
  * @param {string} geoResourceId
  */
 export const unregisterQueryFor = (geoResourceId) => {
