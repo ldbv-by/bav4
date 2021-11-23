@@ -24,7 +24,8 @@ export const initialState = {
 	pending: [],
 
 	/**
-	 * Changes when current FeatureInfo request was aborted
+	 * Changes when current FeatureInfo request should be aborted and/or results should be reseted.
+	 * Contains no payload.
 	 * @property {EvenLike | null}
 	 */
 	aborted: null

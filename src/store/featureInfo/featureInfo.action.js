@@ -62,7 +62,7 @@ export const startRequest = (coordinate) => {
 };
 
 /**
- * Aborts the current FeatureInfo request or resets the result.
+ * Aborts the current FeatureInfo request and/or resets the result.
  * @param {coordinate} coordinate
  */
 export const abortOrReset = () => {
