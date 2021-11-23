@@ -7,6 +7,8 @@ import { layersReducer } from '../../../../../../src/store/layers/layers.reducer
 import { createDefaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
 import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
+import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
+import { TemplateResult } from 'lit-html';
 
 
 
@@ -34,7 +36,7 @@ describe('CatalogLeaf', () => {
 			}
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer });
+		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, layers: layersReducer, modal: modalReducer });
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -155,6 +157,25 @@ describe('CatalogLeaf', () => {
 					checkbox.click();
 
 					expect(store.getState().layers.active.length).toBe(0);
+				});
+			});
+
+			describe('icon info events', () => {
+
+				it('shows a layerinfo panel as modal', async () => {
+					const geoResourceLabel = 'someLabel';
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					//load leaf data
+					const leaf = (await loadExampleCatalog('foo')).pop();
+					const element = await setup('foo', []);
+					//assign data
+					element.data = leaf;
+					const icon = element.shadowRoot.querySelector('ba-icon');
+
+					icon.click();
+
+					expect(store.getState().modal.data.title).toBe('someLabel');
+					expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
 				});
 			});
 		});

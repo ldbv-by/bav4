@@ -4,6 +4,8 @@ import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
 import { layersReducer, createDefaultLayerProperties } from '../../../../src/store/layers/layers.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TemplateResult } from 'lit-html';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -138,7 +140,7 @@ describe('LayerItem', () => {
 					background: 'bg0'
 				}
 			};
-			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
+			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			return store;
 		};
@@ -178,6 +180,19 @@ describe('LayerItem', () => {
 			collapseButton.click();
 
 			expect(element._layer.collapsed).toBeFalse();
+		});
+
+		it('click on info icon show layerinfo panel as modal', async () => {
+			const store = setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+
+			infoButton.click();
+
+			expect(store.getState().modal.data.title).toBe('label0');
+			expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
 		});
 	});
 
