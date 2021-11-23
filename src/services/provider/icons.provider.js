@@ -13,23 +13,17 @@ import { IconResult } from '../IconService';
  */
 export const loadBvvIcons = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = configService.getValueAsPath('BACKEND_URL') + '/icons';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
 	const result = await httpService.get(`${url}/available`);
-
 	if (result.ok) {
 		const icons = [];
 		const payload = await result.json();
-		const isValidSvg = (svg) => {
-			if (typeof (svg) === 'string') {
-				return svg.startsWith('<svg>') && svg.endsWith('</svg>');
-			}
-			return false;
-		};
+
+
 		payload.forEach(bvvIcon => {
 			const { id, svg } = bvvIcon;
-			if (isValidSvg(svg)) {
-				icons.push(new IconResult(id, svg));
-			}
+			icons.push(new IconResult(id, svg));
+
 		});
 
 		if (icons.length === 0) {
@@ -48,7 +42,7 @@ export const loadBvvIcons = async () => {
  */
 export const getBvvIconsUrl = (id, color) => {
 	const { ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = configService.getValueAsPath('BACKEND_URL') + '/icons';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
 
 	return `${url}/${color[0]},${color[1]},${color[2]}/${id}`;
 };
