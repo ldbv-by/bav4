@@ -30,7 +30,8 @@ import { $injector } from '../../injection';
 
 export const HighlightFeatureTypes = Object.freeze({
 	DEFAULT: 0,
-	TEMPORARY: 1
+	TEMPORARY: 1,
+	ANIMATED: 2
 });
 
 /**
