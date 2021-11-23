@@ -48,9 +48,22 @@ describe('OlHighlightLayerHandler', () => {
 		expect(handler.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		expect(handler._storeService.getStore()).toBeDefined();
 		expect(handler._unregister()).toEqual((() => { })());
+		expect(handler._olMap).toBeNull();
+		expect(handler._olLayer).toBeNull();
 	});
 
 	describe('when handler is activated', () => {
+
+		it('updates olLayer and olMap fields', () => {
+			const map = setupMap();
+			setup();
+			const handler = new OlHighlightLayerHandler();
+
+			const olLayer = handler.activate(map);
+
+			expect(handler._olMap).toEqual(map);
+			expect(handler._olLayer).toEqual(olLayer);
+		});
 
 		describe('and NO highlight features are available', () => {
 
@@ -117,6 +130,19 @@ describe('OlHighlightLayerHandler', () => {
 	});
 
 	describe('when deactivate', () => {
+
+		it('updates olLayer and olMap fields', () => {
+			const map = setupMap();
+			setup();
+			const handler = new OlHighlightLayerHandler();
+			handler.activate(map);
+
+			handler.deactivate(map);
+
+			expect(handler._olMap).toBeNull();
+			expect(handler._olLayer).toBeNull();
+		});
+
 		it('unregisters observer', () => {
 			const map = setupMap();
 			setup();
@@ -169,15 +195,20 @@ describe('OlHighlightLayerHandler', () => {
 
 		it('sets the correct style features containing a HighlightCoordinate', () => {
 			setup();
+			const animatedFeature = new Feature(new Point([22, 44]));
 			const handler = new OlHighlightLayerHandler();
+			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
 			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.DEFAULT };
 			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.TEMPORARY };
+			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.ANIMATED };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
+			handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
 
 			expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
 			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
+			expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
 		});
 
 		it('sets the correct style features containing a HighlightGeometry', () => {
@@ -208,6 +239,21 @@ describe('OlHighlightLayerHandler', () => {
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 
 			expect(styledFeature0.getStyle()).toBeNull();
+		});
+	});
+
+	describe('_animatePointFeature', () => {
+
+		it('sets the correct style and setups the animation', () => {
+			const animatedFeature = new Feature(new Point([22, 44]));
+			const map = setupMap();
+			setup();
+			const handler = new OlHighlightLayerHandler();
+			handler.activate(map);
+
+			const id = handler._animatePointFeature(animatedFeature);
+
+			expect(id).toBeDefined();
 		});
 	});
 });
