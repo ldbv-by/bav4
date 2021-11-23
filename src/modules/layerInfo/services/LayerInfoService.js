@@ -1,9 +1,12 @@
 import { loadBvvLayerInfo } from '../services/provider/layerInfoResult.provider';
+import { $injector } from '../../../injection';
 
 export class LayerInfoService {
 
 	constructor(provider = loadBvvLayerInfo) {
 		this._provider = provider;
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
 	/**
@@ -18,7 +21,28 @@ export class LayerInfoService {
 			return await this._provider(geoResourceId);
 		}
 		catch (e) {
-			throw new Error('Could not load layerinfoResult from provider: ' + e.message);
+			if (this._environmentService.isStandalone()) {
+				console.warn('layerinfo could not be fetched from backend. Using fallback layerinfo');
+				return this._newFallbackLayerinfo(geoResourceId);
+			}
+			else {
+				throw new Error('Could not load layerinfoResult from provider: ' + e.message);
+			}
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	_newFallbackLayerinfo(geoRessourceId) {
+		//see fallback georesources in GeoResourceService
+		switch (geoRessourceId) {
+			case 'atkis': {
+				return new LayerInfoResult('This is a fallback layerinfo', 'atkis');
+			}
+			case 'atkis_sw': {
+				return new LayerInfoResult('This is a fallback layerinfo', 'atkis_sw');
+			}
 		}
 	}
 }
