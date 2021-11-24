@@ -2,11 +2,13 @@ import { $injector } from '../../../src/injection';
 import { bvvProxifyUrlProvider } from '../../../src/services/provider/proxifyUrl.provider';
 
 describe('proxyUrlTemplate', () => {
+	const proxyUrl = 'https://proxy.url';
+	const backendUrl = 'https://backend.url';
 
 	describe('bvv proxified url provider', () => {
 
 		const configService = {
-			getValueAsPath: () => 'https://proxy.url'
+			getValueAsPath: value => value === 'BACKEND_URL' ? backendUrl : proxyUrl
 		};
 
 		beforeAll(() => {
@@ -18,6 +20,18 @@ describe('proxyUrlTemplate', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider('https://some.one');
 
 			expect(proxifiedUrl).toBe('https://proxy.url?url=https%3A%2F%2Fsome.one');
+		});
+
+		it('does not proxy an already proxifiedUrl', () => {
+			const proxifiedUrl = bvvProxifyUrlProvider(`${proxyUrl}?url=https%3A%2F%2Fsome.one`);
+
+			expect(proxifiedUrl).toBe('https://proxy.url?url=https%3A%2F%2Fsome.one');
+		});
+
+		it('does not proxy a backendUrl', () => {
+			const proxifiedUrl = bvvProxifyUrlProvider(`${backendUrl}/foo`);
+
+			expect(proxifiedUrl).toBe('https://backend.url/foo');
 		});
 
 		describe('when config param PROXY_URL is not available', () => {
