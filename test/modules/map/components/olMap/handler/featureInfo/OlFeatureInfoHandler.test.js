@@ -5,7 +5,7 @@ import VectorSource from 'ol/source/Vector';
 import { OlFeatureInfoHandler } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../../../test-utils';
-import { clearFeatureInfoItems, FeatureInfoGeometryTypes, updateCoordinate } from '../../../../../../../src/store/featureInfo/featureInfo.action';
+import { abortOrReset, FeatureInfoGeometryTypes, startRequest } from '../../../../../../../src/store/featureInfo/featureInfo.action';
 import { fromLonLat } from 'ol/proj';
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
@@ -123,13 +123,13 @@ describe('OlFeatureInfoHandler', () => {
 
 			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
-				updateCoordinate(matchingCoordinate);
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 				expect(store.getState().highlight.features).toHaveSize(1);
 
-				clearFeatureInfoItems();
-				updateCoordinate(notMatchingCoordinate);
+				abortOrReset();
+				startRequest(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
 				expect(store.getState().highlight.features).toHaveSize(0);
@@ -151,7 +151,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
-				updateCoordinate(notMatchingCoordinate);
+				startRequest(notMatchingCoordinate);
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].id).toBe('foo');
@@ -193,7 +193,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
-				updateCoordinate(matchingCoordinate);
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
@@ -220,21 +220,21 @@ describe('OlFeatureInfoHandler', () => {
 				});
 
 				//we update with non matching coordinates
-				clearFeatureInfoItems();
-				updateCoordinate(notMatchingCoordinate);
+				abortOrReset();
+				startRequest(notMatchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
 				expect(store.getState().highlight.features).toHaveSize(0);
 
-				updateCoordinate(matchingCoordinate);
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				expect(store.getState().highlight.features).toHaveSize(2);
 
 				// we modify the first layer so that it is not queryable anymore
 				modifyLayer(layerId0, { visible: false });
-				clearFeatureInfoItems();
-				updateCoordinate(matchingCoordinate);
+				abortOrReset();
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 				expect(store.getState().highlight.features).toHaveSize(1);
@@ -242,8 +242,8 @@ describe('OlFeatureInfoHandler', () => {
 
 				//we modify the second layer so that it is not queryable anymore
 				modifyLayer(layerId1, { constraints: { hidden: true } });
-				clearFeatureInfoItems();
-				updateCoordinate(matchingCoordinate);
+				abortOrReset();
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
 				expect(store.getState().highlight.features).toHaveSize(0);
@@ -281,7 +281,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			map.once('postrender', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
-				updateCoordinate(matchingCoordinate);
+				startRequest(matchingCoordinate);
 
 				expect(store.getState().featureInfo.current).toHaveSize(2);
 				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });

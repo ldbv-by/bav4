@@ -1,7 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { addFeatureInfoItems, clearFeatureInfoItems, updateCoordinate } from '../store/featureInfo/featureInfo.action';
-import { TabIndex } from '../store/mainMenu/mainMenu.action';
+import { addFeatureInfoItems, registerQueryFor, unregisterQueryFor, startRequest } from '../store/featureInfo/featureInfo.action';
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { provide as provider } from './i18n/featureInfoPlugin.provider';
@@ -30,8 +29,8 @@ export class FeatureInfoPlugin extends BaPlugin {
 
 		const onPointerClick = async (evt, state) => {
 			const { payload: { coordinate } } = evt;
-			clearFeatureInfoItems();
-			updateCoordinate(coordinate);
+			// clearFeatureInfoItems();
+			startRequest(coordinate);
 			const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
 			//use only visible and unhidden layers
 			const layerFilter = layerProperties => layerProperties.visible && !layerProperties.constraints.hidden;
@@ -40,8 +39,10 @@ export class FeatureInfoPlugin extends BaPlugin {
 			[...state.layers.active]
 				.filter(layerFilter)
 				.forEach(async layerProperties => {
+					const geoResourceId = layerProperties.geoResourceId;
 					try {
-						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
+						registerQueryFor(geoResourceId);
+						const featureInfoResult = await this._featureInfoService.get(geoResourceId, coordinate, resolution);
 						if (featureInfoResult) {
 							const title = featureInfoResult.title || layerProperties.label;
 							addFeatureInfoItems({ title: title, content: featureInfoResult.content });
@@ -51,16 +52,13 @@ export class FeatureInfoPlugin extends BaPlugin {
 						console.warn(error);
 						emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
 					}
+					finally {
+						unregisterQueryFor(geoResourceId);
+					}
 				});
 		};
 
-		const onTabIndexChanged = (tabIndex) => {
-			if (tabIndex !== TabIndex.FEATUREINFO) {
-				clearFeatureInfoItems();
-			}
-		};
 
 		observe(store, state => state.pointer.click, onPointerClick);
-		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}
 }

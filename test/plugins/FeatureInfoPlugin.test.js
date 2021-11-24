@@ -1,7 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { setClick } from '../../src/store/pointer/pointer.action';
-import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
+import { TabIndex } from '../../src/store/mainMenu/mainMenu.action';
 import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action.js';
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
@@ -105,10 +105,12 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
+				expect(store.getState().featureInfo.pending).toEqual([layerId0]);
 				setTimeout(() => {
 					expect(store.getState().featureInfo.current).toHaveSize(1);
 					expect(store.getState().featureInfo.current[0].content).toBe('content');
 					expect(store.getState().featureInfo.current[0].title).toBe('title');
+					expect(store.getState().featureInfo.pending).toHaveSize(0);
 				});
 			});
 
@@ -191,8 +193,10 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
+				expect(store.getState().featureInfo.pending).toEqual([layerId0]);
 				setTimeout(() => {
 					expect(store.getState().featureInfo.current).toHaveSize(0);
+					expect(store.getState().featureInfo.pending).toHaveSize(0);
 				});
 			});
 
@@ -227,39 +231,6 @@ describe('FeatureInfoPlugin', () => {
 					done();
 				});
 			});
-		});
-	});
-
-	describe('when mainMenu.tabIndex changes', () => {
-
-		it('clears all previous existing FeatureInfo items (also initially)', async () => {
-			const store = setup({
-				mainMenu: {
-					tabIndex: TabIndex.TOPICS,
-					open: false
-				},
-				featureInfo: {
-					current: [{ title: 'foo0', content: 'bar0' }, { title: 'foo1', content: 'bar1' }]
-				}
-			});
-			const instanceUnderTest = new FeatureInfoPlugin();
-			await instanceUnderTest.register(store);
-
-
-			//should be cleared also initially
-			expect(store.getState().featureInfo.current).toHaveSize(0);
-
-			addFeatureInfoItems({ title: 'title', content: 'content' });
-
-			setTabIndex(TabIndex.MAPS);
-
-			expect(store.getState().featureInfo.current).toHaveSize(0);
-
-			addFeatureInfoItems({ title: 'title', content: 'content' });
-
-			setTabIndex(TabIndex.FEATUREINFO);
-
-			expect(store.getState().featureInfo.current).toHaveSize(1);
 		});
 	});
 });
