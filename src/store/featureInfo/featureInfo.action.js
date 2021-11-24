@@ -2,7 +2,7 @@
  * Action creators to change/update the properties of featureInfo state.
  * @module featureInfo/action
  */
-import { FEATURE_INFO_REQUEST_START, FEATURE_INFO_ADDED, QUERIED_GEORESOUCE_ADDED, QUERIED_GEORESOUCE_REMOVED, FEATURE_INFO_REQUEST_ABORT } from './featureInfo.reducer';
+import { FEATURE_INFO_REQUEST_START, FEATURE_INFO_ADDED, FEATURE_INFO_REQUEST_ABORT, QUERY_REGISTERED, QUERY_RESOLVED } from './featureInfo.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -74,25 +74,25 @@ export const abortOrReset = () => {
 };
 
 /**
- * Registers a GeoResource as being currently queried
- * @param {string} geoResourceId
+ * Registers an active FeatureInfo query
+ * @param {string} id id of that query
  */
-export const registerQueryFor = (geoResourceId) => {
+export const registerQuery = (id) => {
 
 	getStore().dispatch({
-		type: QUERIED_GEORESOUCE_ADDED,
-		payload: geoResourceId
+		type: QUERY_REGISTERED,
+		payload: id
 	});
 };
 
 /**
- * Unregisters a GeoResource for being currently queried
- * @param {string} geoResourceId
+ * Marks a FeatureInfo query as resolved.
+ * @param {string} id
  */
-export const unregisterQueryFor = (geoResourceId) => {
+export const resolveQuery = (id) => {
 
 	getStore().dispatch({
-		type: QUERIED_GEORESOUCE_REMOVED,
-		payload: geoResourceId
+		type: QUERY_RESOLVED,
+		payload: id
 	});
 };
