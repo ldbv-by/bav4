@@ -72,8 +72,12 @@ export class IconService {
 		const getIconUrl = () => {
 			return idOrBase64.startsWith(Svg_Encoding_B64_Flag) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
 		};
-
-		return getIconUrl();
+		try {
+			return getIconUrl();
+		}
+		catch (e) {
+			return null;
+		}
 	}
 
 	/**

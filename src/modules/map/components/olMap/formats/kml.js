@@ -41,7 +41,7 @@ const replaceIcon = (old) => {
 		src: iconUrl,
 		scale: getIconScale(svgScale)
 	};
-	return new Icon(iconOptions);
+	return iconUrl ? new Icon(iconOptions) : old;
 };
 
 const sanitizeStyle = (styles) => {
