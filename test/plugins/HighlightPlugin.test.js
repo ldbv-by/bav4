@@ -7,6 +7,8 @@ import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
 import { setClick } from '../../src/store/pointer/pointer.action';
+import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
+import { registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
 
 
 describe('HighlightPlugin', () => {
@@ -24,7 +26,8 @@ describe('HighlightPlugin', () => {
 			highlight: highlightReducer,
 			layers: layersReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			pointer: pointerReducer
+			pointer: pointerReducer,
+			featureInfo: featureInfoReducer
 		});
 		return store;
 	};
@@ -149,6 +152,28 @@ describe('HighlightPlugin', () => {
 			setTabIndex(TabIndex.SEARCH);
 
 			expect(store.getState().highlight.features).toHaveSize(3);
+		});
+	});
+
+	describe('whenfeatureInfo.querying property changes', () => {
+
+		it('adds and removes an animated highlight feature', async () => {
+			const coordinate = [21, 42];
+			const queryId = 'foo';
+			const store = setup();
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+			startRequest(coordinate);
+
+			registerQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.ANIMATED);
+
+			resolveQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 });
