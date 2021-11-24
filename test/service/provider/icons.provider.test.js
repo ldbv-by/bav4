@@ -42,29 +42,6 @@ describe('Icons provider', () => {
 
 	});
 
-	it('loads and rejects invalid icons', async () => {
-
-		const backendUrl = 'https://backend.url';
-		const payload = JSON.stringify([
-			{ id: 'foo1', svg: '<foo>bar1</foo>' },
-			{ id: 'foo2', svg: 'bar2' },
-			{ id: 'foo3', svg: 42 }]
-		);
-		const warnSpy = spyOn(console, 'warn');
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-			new Response(payload)));
-
-		const icons = await loadBvvIcons();
-
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(httpServiceSpy).toHaveBeenCalled();
-		expect(warnSpy).toHaveBeenCalledWith('The retrieved Icons are invalid');
-		expect(icons.length).toBe(0);
-
-
-	});
-
 	it('rejects when backend request cannot be fulfilled', (done) => {
 
 		const backendUrl = 'https://backend.url';
@@ -88,7 +65,7 @@ describe('Icons provider', () => {
 	it('returns a url for icon id and color', async () => {
 		const id = 'foo';
 		const color = [0, 0, 0];
-		const backendUrl = 'https://backend.url';
+		const backendUrl = 'https://backend.url/';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 
 		const iconUrl = await getBvvIconsUrl(id, color);

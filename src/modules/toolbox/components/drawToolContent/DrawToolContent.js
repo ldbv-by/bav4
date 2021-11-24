@@ -267,8 +267,23 @@ export class DrawToolContent extends AbstractToolContent {
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
-				const changedStyle = { ...style, color: e.target.value };
+				const decodeIconId = (iconUrl) => {
+					const fromEncodedUrl = iconUrl.splice(iconUrl.lastIndexOf(encodeURIComponent('/')) + iconUrl.lastIndexOf(encodeURIComponent('/')).length);
+					return fromEncodedUrl;
+				};
+				const getStyle = () => {
+					if (style.symbolSrc.startsWith('data:image/svg+xml;base64,')) {
+						return { ...style, color: e.target.value };
+					}
+					const { IconService: iconService } = $injector.inject('IconService');
+
+					const iconId = decodeIconId(style.symbolSrc);
+					return { ...style, symbolSrc: iconService.getUrl(iconId, e.target.value) };
+
+				};
+				const changedStyle = getStyle();
 				setStyle(changedStyle);
+
 			};
 			const onChangeScale = (e) => {
 				const changedStyle = { ...style, scale: e.target.value };

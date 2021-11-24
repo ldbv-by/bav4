@@ -1,8 +1,8 @@
 import { loadBvvIcons, getBvvIconsUrl } from './provider/icons.provider';
 
-const SVG_ENCODING_B64_FLAG = 'data:image/svg+xml;base64,';
-const SVG_MARKER_NAME = 'marker';
-const SVG_MARKER_CONTENT = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
+const Svg_Encoding_B64_Flag = 'data:image/svg+xml;base64,';
+const Svg_Marker_Name = 'marker';
+const Svg_Marker_Content = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
 /**
  * Service for managing icons
  *
@@ -19,12 +19,12 @@ export class IconService {
 	}
 
 	default() {
-		return new IconResult(SVG_MARKER_NAME, SVG_MARKER_CONTENT);
+		return new IconResult(Svg_Marker_Name, Svg_Marker_Content);
 	}
 
 	async _load() {
 		try {
-			const isMarkerIcon = (iconResult) => iconResult.id === SVG_MARKER_NAME;
+			const isMarkerIcon = (iconResult) => iconResult.id === Svg_Marker_Name;
 			const providerIcons = await this._iconProvider();
 			const indexOfMarkerIcon = providerIcons.findIndex(isMarkerIcon);
 			this._icons = indexOfMarkerIcon < 0 ? [this.default(), ...providerIcons] : [providerIcons[indexOfMarkerIcon], ...providerIcons.filter((i) => !isMarkerIcon(i))];
@@ -62,7 +62,7 @@ export class IconService {
 			}
 			const iconResult = this._icons.find(iconResult => iconResult.base64 === base64String);
 
-			return iconResult ? this._iconUrlProvider(iconResult.id, color) : null;
+			return iconResult ? this._iconUrlProvider(iconResult.id, color) : (this.default().base64 === base64String ? this._iconUrlProvider(this.default().id, color) : null);
 		};
 
 		const getUrlByName = (id) => {
@@ -70,13 +70,27 @@ export class IconService {
 		};
 
 		const getIconUrl = () => {
-			return idOrBase64.startsWith(SVG_ENCODING_B64_FLAG) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
+			return idOrBase64.startsWith(Svg_Encoding_B64_Flag) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
 		};
 
 		return getIconUrl();
 	}
 
-
+	/**
+	 *
+	   * @param {string} url
+	  */
+	decodeColor(url) {
+		const getIconUrl = (url) => {
+			if (url.includes('?url=')) {
+				return decodeURIComponent(url.slice(url.lastIndexOf('?url=') + 5));
+			}
+			return url;
+		};
+		const iconUrl = getIconUrl(url);
+		const components = iconUrl.split('/');
+		return components[components.length - 2].split(',').map(c => parseInt(c));
+	}
 
 	/**
 	 * creates a IconResult from a base64-encoded Version of an svg
@@ -87,14 +101,14 @@ export class IconService {
 	   * @returns {IconResult|null} the IconResult
 	  */
 	fromBase64(id, encodedString) {
-		if (encodedString.startsWith(SVG_ENCODING_B64_FLAG)) {
+		if (encodedString.startsWith(Svg_Encoding_B64_Flag)) {
 			const b64DecodeUnicode = (str) => {
 				return decodeURIComponent(window.atob(str).split('').map(function (c) {
 					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
 				}).join(''));
 			};
 
-			return new IconResult(id, b64DecodeUnicode(encodedString.replace(SVG_ENCODING_B64_FLAG, '')));
+			return new IconResult(id, b64DecodeUnicode(encodedString.replace(Svg_Encoding_B64_Flag, '')));
 		}
 		return null;
 	}
@@ -133,7 +147,7 @@ export class IconResult {
 				(match, p1) => String.fromCharCode('0x' + p1)));
 		};
 
-		return SVG_ENCODING_B64_FLAG + b64EncodeUnicode(this._svg);
+		return Svg_Encoding_B64_Flag + b64EncodeUnicode(this._svg);
 	}
 
 	get id() {

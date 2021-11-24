@@ -14,8 +14,23 @@ const tryRectifyingLineString = (polygonCandidate) => {
 	return polygonCandidate;
 };
 
+const getIconScale = (svgScale) => {
+	switch (svgScale) {
+		case 1:
+			return 0.5;
+		case 0.75:
+			return 0.4;
+		case 0.5:
+			return 0.25;
+		default:
+			return svgScale;
+	}
+
+};
+
 const replaceIcon = (old) => {
 	const svgSrc = old.getSrc();
+	const svgScale = old.getScale();
 	const { IconService: iconService } = $injector.inject('IconService');
 	const iconUrl = iconService.getUrl(svgSrc, old.getColor());
 
@@ -24,7 +39,7 @@ const replaceIcon = (old) => {
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: iconUrl,
-		scale: old.getScale()
+		scale: getIconScale(svgScale)
 	};
 	return new Icon(iconOptions);
 };
@@ -44,7 +59,7 @@ const sanitizeStyle = (styles) => {
 		kmlStyleProperties.image = null;
 	}
 
-	if (kmlStyleProperties.image instanceof Icon) {
+	if (kmlStyleProperties.image instanceof Icon && kmlStyleProperties.image.getSrc().startsWith('data:image/svg+xml;base64,')) {
 		kmlStyleProperties.image = replaceIcon(kmlStyleProperties.image);
 	}
 

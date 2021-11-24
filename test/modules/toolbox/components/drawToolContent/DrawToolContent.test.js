@@ -189,7 +189,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('sets the style, after color changes in color-input', async () => {
-			const style = { ...StyleOptionTemplate, color: '#f00ba3' };
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 			const newColor = '#ffffff';
 			const element = await setup({ ...drawDefaultState, style });
 
@@ -237,8 +237,7 @@ describe('DrawToolContent', () => {
 		});
 
 		it('sets the style, after symbol changes in iconSelect', async (done) => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-				new IconResult('bar', '42')]));
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
 			const element = await setup({ ...drawDefaultState, style });
 

@@ -29,11 +29,14 @@ const configService = {
 const environmentService = {
 	isStandalone: () => false
 };
+
+const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 beforeAll(() => {
 	TestUtils.setupStoreAndDi();
 	$injector
 		.registerSingleton('EnvironmentService', environmentService)
-		.registerSingleton('ConfigService', configService);
+		.registerSingleton('ConfigService', configService)
+		.registerSingleton('IconService', iconServiceMock);
 
 });
 
@@ -42,10 +45,10 @@ describe('getMarkerSrc', () => {
 		expect(getMarkerSrc()).toBe('http://backend.url/icons/255,255,255/marker');
 	});
 
-	it('returns a defined marker source', () => {
+	it('returns a defined marker source, when markersource is invalid', () => {
 		const symbolName = 'foo';
 		const color = '#ff0000';
-		expect(getMarkerSrc(symbolName, color)).toBe('http://backend.url/icons/255,0,0/foo');
+		expect(getMarkerSrc(symbolName, color)).toBe('http://backend.url/icons/255,0,0/marker');
 	});
 
 	it('does nothing when markerSrc is already a URL', () => {
@@ -179,7 +182,7 @@ describe('markerStyleFunction', () => {
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'small' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -191,7 +194,7 @@ describe('markerStyleFunction', () => {
 	});
 
 	it('should return a style specified by styleOption; medium image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'medium' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -203,7 +206,7 @@ describe('markerStyleFunction', () => {
 	});
 
 	it('should return a style specified by styleOption; large image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'large' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -215,7 +218,7 @@ describe('markerStyleFunction', () => {
 	});
 
 	it('should return a style specified by styleOption; scale value as number', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 0.75 };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.75 };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -576,10 +579,11 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(featureMock)).toBe('#ff0000');
 	});
 
-	it('should NOT extract a color from feature style (image), when tint color is not present', () => {
+	it('should extract a color from feature style (image), using iconService', () => {
 		const featureMock = { getStyle: () => [imageStyleWithoutTint] };
-
-		expect(getColorFrom(featureMock)).toBeNull();
+		const iconServiceSpy = spyOn(iconServiceMock, 'decodeColor').and.callFake(() => [42, 42, 42]);
+		expect(getColorFrom(featureMock)).toBe('#2a2a2a');
+		expect(iconServiceSpy).toHaveBeenCalled();
 	});
 
 	it('should extract a color from feature style (text)', () => {

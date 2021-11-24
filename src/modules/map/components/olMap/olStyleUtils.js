@@ -22,7 +22,7 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 			return symbolSrc;
 		}
 		console.warn('not recognized as valid src:', symbolSrc);
-		return getIconUrl(symbolSrc, hexToRgb(symbolColor));
+		return getIconUrl(Default_Symbol, hexToRgb(symbolColor));
 	}
 	return getIconUrl(Default_Symbol);
 };
@@ -51,6 +51,7 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
+
 	const getMarkerScale = (sizeKeyword) => {
 		if (typeof (sizeKeyword) === 'number') {
 			return sizeKeyword;
@@ -65,8 +66,15 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 				return 0.5;
 		}
 	};
+	const rasterIconOptions = {
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: styleOption.symbolSrc,
+		scale: getMarkerScale(styleOption.scale)
+	};
 
-	const iconOptions = {
+	const svgIconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
@@ -74,6 +82,8 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		color: markerColor,
 		scale: getMarkerScale(styleOption.scale)
 	};
+
+	const iconOptions = styleOption.symbolSrc ? (styleOption.symbolSrc.startsWith('data:image/svg+xml;base64,') ? svgIconOptions : rasterIconOptions) : svgIconOptions;
 
 	return [new Style({
 		image: new Icon(iconOptions)
@@ -427,8 +437,13 @@ export const getColorFrom = (feature) => {
 		if (stroke) {
 			return rgbToHex(stroke.getColor());
 		}
-		if (image && image.getColor()) {
-			return rgbToHex(image.getColor());
+		if (image) {
+			if (image.getColor()) {
+				return rgbToHex(image.getColor());
+			}
+			// try to get colorInformation from symbolSrc
+			const { IconService: iconService } = $injector.inject('IconService');
+			return rgbToHex(iconService.decodeColor(image.getSrc()));
 		}
 		if (text) {
 			return rgbToHex(text.getFill().getColor());
