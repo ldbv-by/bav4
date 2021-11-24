@@ -1,7 +1,7 @@
 import { html, TemplateResult } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { $injector } from '../../../injection';
-import { clearFeatureInfoItems } from '../../../store/featureInfo/featureInfo.action';
+import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
@@ -78,7 +78,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			<ul class="ba-list">	
 				<li class="ba-list-item  ba-list-inline ba-list-item__header">			
 					<span class="ba-list-item__pre" style='position:relative;left:-1em;'>													
-							<ba-icon  .icon='${arrowLeftShortIcon}' .size=${4} .title=${translate('featureInfo_close_button')}  @click=${clearFeatureInfoItems}></ba-icon>	 											
+							<ba-icon .icon='${arrowLeftShortIcon}' .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>	 											
 					</span>
 					<span class="ba-list-item__text vertical-center">
 						<span class="ba-list-item__main-text" style='position:relative;left:-1em;'>	
