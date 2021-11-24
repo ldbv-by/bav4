@@ -30,22 +30,35 @@
 	border-bottom: 1px solid var(--header-background-color);
 }
 
-table , tr, td {
-	border: 0;
-	background: transparent;
+/* GetFeat styl  */
+
+table , tr, td, th {
 	/* display: flex; */
 	flex-direction: column;
+	border: 0;
+	background: transparent;
+	width: 100%;
 }
 
 table {
 	margin-bottom: 3em;
+	position: relative;
+}
+
+table:not(:only-of-type):not(:last-child):after {
+	content: " ";
+	position: absolute;
+	left: -1em;
+	right: -1em;
+	bottom: -1.5em;
+	border-bottom: 1px dotted var(--header-background-color);
 }
 
 tr {
 	padding: 0 0 .8em 0;
 }
 
-td {
+th, td {
 	padding: .8em 1em;
 
 }
@@ -61,6 +74,22 @@ td:first-child {
 	vertical-align: top;
 }
 
+.collapse-content b {
+	font-size: .9rem;
+	opacity: .8;
+}
+
+caption {
+	text-align: left;
+	padding: .8em 1em;
+}
+
 .table-striped>tbody>tr:nth-of-type(odd) {
 	background: var(--header-background-color)
+}
+
+img {
+	width: 100%;
+	max-width: 25em;
+	height: auto;
 }
