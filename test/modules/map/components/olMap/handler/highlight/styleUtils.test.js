@@ -4,6 +4,12 @@ import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight/assets/location.svg';
 import tempLocationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight//assets/temporaryLocation.svg';
+import { fromLonLat, get as getProjection } from 'ol/proj';
+import { Feature, View, Map } from 'ol';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import RenderEvent from 'ol/render/Event';
+import Point from 'ol/geom/Point';
 
 
 describe('styleUtils', () => {
@@ -129,10 +135,103 @@ describe('styleUtils', () => {
 	});
 
 	describe('createAnimation', () => {
+		const initialCenter = fromLonLat([11.57245, 48.14021]);
+		const transform = [1, 0, 0, 1, 0, 0];
+		const projection = getProjection('EPSG:3857');
+		const viewState = {
+			projection: projection, resolution: 1, rotation: 0
+		};
+		const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { }, setStyle: () => {} };
+		const setupMap = () => {
+			return new Map({
+				target: 'map',
+				view: new View({
+					center: initialCenter,
+					zoom: 1
+				})
+			});
 
-		it('should return an animation function', () => {
+		};
+		const setupLayer = (map, feature) => {
+			const source = new VectorSource({
+				wrapX: false
+			});
+			const vector = new VectorLayer({
+				source: source
+			});
+			source.addFeature(feature);
+			map.addLayer(vector);
+			return vector;
+		};
 
-			expect(createAnimation()).toEqual((() => { })());
+		const setupFrameState = (time) => {
+			return {
+				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+			};
+		};
+
+		const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), contextStub);
+
+		const getFeature = () => {
+			const geometry = new Point([0, 0]);
+			return new Feature({ geometry: geometry });
+		};
+
+		it('should create animation function', () => {
+			const feature = getFeature();
+			const map = setupMap();
+			const endCallback = () => { };
+
+			const functionUnderTest = createAnimation(map, feature, endCallback);
+
+			expect(functionUnderTest).toBeDefined();
+		});
+
+		it('should avoid negative radius-values by edge-case framestate-times (framestate.time < start)', () => {
+			const feature = getFeature();
+			const map = setupMap();
+			const layer = setupLayer(map, feature);
+			const earlyEvent = getPostRenderEvent(Date.now() - 1000);
+			const endCallback = () => { };
+
+			const functionUnderTest = createAnimation(map, feature, endCallback);
+			layer.on('postrender', functionUnderTest);
+
+			expect(() => layer.dispatchEvent(earlyEvent)).not.toThrow();
+		});
+
+		it('when animation ends, should NOT call the endCallback', () => {
+			const feature = getFeature();
+			const map = setupMap();
+			const layer = setupLayer(map, feature);
+
+			const endCallback = jasmine.createSpy();
+
+			const functionUnderTest = createAnimation(map, feature, endCallback);
+			layer.on('postrender', functionUnderTest);
+			layer.dispatchEvent(getPostRenderEvent(Date.now()));
+
+			expect(functionUnderTest).toBeDefined();
+			expect(endCallback).not.toHaveBeenCalled();
+
+		});
+
+		it('when animation ends, should call the endCallback', () => {
+			const feature = getFeature();
+			const map = setupMap();
+			const layer = setupLayer(map, feature);
+
+			const endCallback = jasmine.createSpy();
+
+			const functionUnderTest = createAnimation(map, feature, endCallback);
+			layer.on('postrender', functionUnderTest);
+			layer.dispatchEvent(getPostRenderEvent(Date.now()));
+
+			expect(functionUnderTest).toBeDefined();
+
+			layer.dispatchEvent(getPostRenderEvent(Date.now() + 1600));
+			expect(endCallback).toHaveBeenCalled();
+
 		});
 	});
 });
