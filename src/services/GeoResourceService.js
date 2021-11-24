@@ -13,8 +13,8 @@ import { loadBvvGeoResources } from './provider/geoResource.provider';
 
 export const FALLBACK_GEORESOURCE_ID_ATKIS = 'atkis';
 export const FALLBACK_GEORESOURCE_ID_ATKIS_SW = 'atkis_sw';
-export const BASE_LAYER_1 = 'Base Layer 1';
-export const BASE_LAYER_2 = 'Base Layer 2';
+export const FALLBACK_GEORESOURCE_LABEL_BASE_LAYER_1 = 'Base Layer 1';
+export const FALLBACK_GEORESOURCE_LABEL_BASE_LAYER_2 = 'Base Layer 2';
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -113,8 +113,8 @@ export class GeoResourceService {
 	 */
 	_newFallbackGeoResources() {
 		return [
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_ATKIS, BASE_LAYER_1, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}'),
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_ATKIS_SW, BASE_LAYER_2, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}')
+			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_ATKIS, FALLBACK_GEORESOURCE_LABEL_BASE_LAYER_1, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}'),
+			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_ATKIS_SW, FALLBACK_GEORESOURCE_LABEL_BASE_LAYER_2, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}')
 		].map(gr => {
 			gr.attribution = 'Bayerische Vermessungsverwaltung';
 			return gr;
