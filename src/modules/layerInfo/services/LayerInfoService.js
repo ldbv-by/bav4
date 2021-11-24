@@ -1,5 +1,6 @@
 import { loadBvvLayerInfo } from '../services/provider/layerInfoResult.provider';
 import { $injector } from '../../../injection';
+import { FALLBACK_GEORESOURCE_ID_ATKIS, FALLBACK_GEORESOURCE_ID_ATKIS_SW } from '../../../services/GeoResourceService';
 
 export class LayerInfoService {
 
@@ -37,11 +38,11 @@ export class LayerInfoService {
 	_newFallbackLayerinfo(geoRessourceId) {
 		//see fallback georesources in GeoResourceService
 		switch (geoRessourceId) {
-			case 'atkis': {
-				return new LayerInfoResult('This is a fallback layerinfo', 'atkis');
+			case FALLBACK_GEORESOURCE_ID_ATKIS: {
+				return new LayerInfoResult('This is a fallback layerinfo', FALLBACK_GEORESOURCE_ID_ATKIS);
 			}
-			case 'atkis_sw': {
-				return new LayerInfoResult('This is a fallback layerinfo', 'atkis_sw');
+			case FALLBACK_GEORESOURCE_ID_ATKIS_SW: {
+				return new LayerInfoResult('This is a fallback layerinfo', FALLBACK_GEORESOURCE_ID_ATKIS_SW);
 			}
 		}
 	}
