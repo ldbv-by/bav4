@@ -9,38 +9,57 @@ import { close, open, setTabIndex, TabIndex } from '../store/mainMenu/mainMenu.a
  */
 export class MainMenuPlugin extends BaPlugin {
 
+	constructor() {
+		super();
+		this._previousTabIndex = -1;
+		this._open = null;
+	}
+
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
 
-		let previousTabIndex = 0;
-		let wasOpen = null;
+		this._open = store.getState().mainMenu.open;
+		this._previousTabIndex = store.getState().mainMenu.tabIndex;
 
-		const onFeatureInfoChanged = current => {
-			if (current.length === 0) {
-				if (!wasOpen) {
-					close();
+		const onFeatureInfoPendingChanged = (pending, state) => {
+			const { featureInfo: { current } } = state;
+			if (pending.length === 0) {
+
+				if (current.length === 0) {
+					if (!this._open) {
+						close();
+					}
+					setTabIndex(this._previousTabIndex);
 				}
-				setTabIndex(previousTabIndex);
+				else {
+					setTabIndex(TabIndex.FEATUREINFO);
+					open();
+				}
 			}
-			else {
-				setTabIndex(TabIndex.FEATUREINFO);
-				open();
+		};
+
+		const onFeatureInfoAbortedChanged = () => {
+
+			if (!this._open) {
+				close();
 			}
+			setTabIndex(this._previousTabIndex);
 		};
 
 		const onTabIndexChanged = (tabIndex, state) => {
 			if (tabIndex === TabIndex.FEATUREINFO) {
-				wasOpen = state.mainMenu.open;
+				this._open = state.mainMenu.open;
 			}
 			else {
-				previousTabIndex = tabIndex;
+				this._previousTabIndex = tabIndex;
 			}
 		};
 
-		observe(store, state => state.featureInfo.current, onFeatureInfoChanged);
+		observe(store, state => state.featureInfo.pending, onFeatureInfoPendingChanged);
+		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}
 }
