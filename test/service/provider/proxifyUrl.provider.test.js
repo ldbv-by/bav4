@@ -16,19 +16,19 @@ describe('proxyUrlTemplate', () => {
 				.registerSingleton('ConfigService', configService);
 		});
 
-		it('returns BVV specific proxifiedUrl', () => {
+		it('returns BVV specific proxified URL', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider('https://some.one');
 
 			expect(proxifiedUrl).toBe('https://proxy.url?url=https%3A%2F%2Fsome.one');
 		});
 
-		it('does not proxy an already proxifiedUrl', () => {
+		it('does not proxify an already proxified URL', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider(`${proxyUrl}?url=https%3A%2F%2Fsome.one`);
 
 			expect(proxifiedUrl).toBe('https://proxy.url?url=https%3A%2F%2Fsome.one');
 		});
 
-		it('does not proxy a backendUrl', () => {
+		it('does not proxify a backend URL', () => {
 			const proxifiedUrl = bvvProxifyUrlProvider(`${backendUrl}/foo`);
 
 			expect(proxifiedUrl).toBe('https://backend.url/foo');
@@ -36,7 +36,7 @@ describe('proxyUrlTemplate', () => {
 
 		describe('when config param PROXY_URL is not available', () => {
 
-			it('it returns the the unproxified url and logs a warn statement', () => {
+			it('it returns the the unproxified URL and logs a warn statement', () => {
 				const unproxifiedUrl = 'https://some.one';
 				const errorMessage = 'foo';
 				spyOn(configService, 'getValueAsPath').and.throwError(errorMessage);
