@@ -15,10 +15,28 @@ const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
+const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
+
+export const AssetSourceType = Object.freeze({
+	LOCAL: 'local',
+	REMOTE: 'remote',
+	UNKNOWN: 'unknown'
+});
+
+export const getAssetSource = (asset) => {
+	if (asset.startsWith(Asset_Svg_B64_Flag)) {
+		return AssetSourceType.LOCAL;
+	}
+
+	if (asset.startsWith('http://') || asset.startsWith('https://')) {
+		return AssetSourceType.REMOTE;
+	}
+	return AssetSourceType.UNKNOWN;
+};
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {
-		if (symbolSrc.startsWith('data:image/svg+xml;base64') || symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
+		if ([AssetSourceType.LOCAL, AssetSourceType.REMOTE].includes(getAssetSource(symbolSrc))) {
 			return symbolSrc;
 		}
 		console.warn('not recognized as valid src:', symbolSrc);
@@ -83,7 +101,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		scale: getMarkerScale(styleOption.scale)
 	};
 
-	const iconOptions = styleOption.symbolSrc ? (styleOption.symbolSrc.startsWith('data:image/svg+xml;base64,') ? svgIconOptions : rasterIconOptions) : svgIconOptions;
+	const iconOptions = styleOption.symbolSrc ? (getAssetSource(styleOption.symbolSrc) === AssetSourceType.LOCAL ? svgIconOptions : rasterIconOptions) : svgIconOptions;
 
 	return [new Style({
 		image: new Icon(iconOptions)
@@ -438,10 +456,11 @@ export const getColorFrom = (feature) => {
 			return rgbToHex(stroke.getColor());
 		}
 		if (image) {
+			// first try to get the tint-color
 			if (image.getColor()) {
 				return rgbToHex(image.getColor());
 			}
-			// try to get colorInformation from symbolSrc
+			// ...then try to get colorInformation from symbolSrc
 			const { IconService: iconService } = $injector.inject('IconService');
 			return rgbToHex(iconService.decodeColor(image.getSrc()));
 		}

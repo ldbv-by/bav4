@@ -1,4 +1,7 @@
-import { loadBvvIcons, getBvvIconsUrl } from './provider/icons.provider';
+import { loadBvvIcons } from './provider/icons.provider';
+import { getBvvIconsUrl } from './provider/iconUrl.provider';
+import { getBvvIconColor } from './provider/iconColor.provider';
+
 
 const Svg_Encoding_B64_Flag = 'data:image/svg+xml;base64,';
 const Svg_Marker_Name = 'marker';
@@ -12,9 +15,10 @@ const Svg_Marker_Content = '<svg xmlns="http://www.w3.org/2000/svg" width="32" h
  */
 export class IconService {
 
-	constructor(iconProvider = loadBvvIcons, urlProvider = getBvvIconsUrl) {
+	constructor(iconProvider = loadBvvIcons, urlProvider = getBvvIconsUrl, iconColorProvider = getBvvIconColor) {
 		this._iconProvider = iconProvider;
 		this._iconUrlProvider = urlProvider;
+		this._iconColorProvider = iconColorProvider;
 		this._icons = null;
 	}
 
@@ -70,7 +74,7 @@ export class IconService {
 		};
 
 		const getIconUrl = () => {
-			return idOrBase64.startsWith(Svg_Encoding_B64_Flag) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
+			return this.isLocal(idOrBase64) ? getUrlByBase64(idOrBase64) : getUrlByName(idOrBase64);
 		};
 		try {
 			return getIconUrl();
@@ -85,15 +89,7 @@ export class IconService {
 	   * @param {string} url
 	  */
 	decodeColor(url) {
-		const getIconUrl = (url) => {
-			if (url.includes('?url=')) {
-				return decodeURIComponent(url.slice(url.lastIndexOf('?url=') + 5));
-			}
-			return url;
-		};
-		const iconUrl = getIconUrl(url);
-		const components = iconUrl.split('/');
-		return components[components.length - 2].split(',').map(c => parseInt(c));
+		return this._iconColorProvider(url);
 	}
 
 	/**
@@ -115,6 +111,10 @@ export class IconService {
 			return new IconResult(id, b64DecodeUnicode(encodedString.replace(Svg_Encoding_B64_Flag, '')));
 		}
 		return null;
+	}
+
+	isLocal(iconCandidate) {
+		return iconCandidate.startsWith(Svg_Encoding_B64_Flag);
 	}
 
 }

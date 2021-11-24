@@ -4,6 +4,7 @@ import { Icon, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
 import { $injector } from '../../../../../injection';
+import { AssetSourceType, getAssetSource } from '../olStyleUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
@@ -59,7 +60,7 @@ const sanitizeStyle = (styles) => {
 		kmlStyleProperties.image = null;
 	}
 
-	if (kmlStyleProperties.image instanceof Icon && kmlStyleProperties.image.getSrc().startsWith('data:image/svg+xml;base64,')) {
+	if (kmlStyleProperties.image instanceof Icon && getAssetSource(kmlStyleProperties.image.getSrc()) === AssetSourceType.LOCAL) {
 		kmlStyleProperties.image = replaceIcon(kmlStyleProperties.image);
 	}
 

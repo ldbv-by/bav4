@@ -9,6 +9,7 @@ import { finish, remove, reset, setStyle, setType } from '../../../../store/draw
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
+import { AssetSourceType, getAssetSource } from '../../../map/components/olMap/olStyleUtils';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -272,7 +273,7 @@ export class DrawToolContent extends AbstractToolContent {
 					return fromEncodedUrl;
 				};
 				const getStyle = () => {
-					if (style.symbolSrc.startsWith('data:image/svg+xml;base64,')) {
+					if (getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
 						return { ...style, color: e.target.value };
 					}
 					const { IconService: iconService } = $injector.inject('IconService');

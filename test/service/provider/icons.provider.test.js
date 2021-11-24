@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { IconResult } from '../../../src/services/IconService';
-import { getBvvIconsUrl, loadBvvIcons } from '../../../src/services/provider/icons.provider';
+import { loadBvvIcons } from '../../../src/services/provider/icons.provider';
 
 describe('Icons provider', () => {
 
@@ -59,19 +59,6 @@ describe('Icons provider', () => {
 			expect(reason.message).toBe('Icons could not be retrieved');
 			done();
 		});
-
-	});
-
-	it('returns a url for icon id and color', async () => {
-		const id = 'foo';
-		const color = [0, 0, 0];
-		const backendUrl = 'https://backend.url/';
-		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-
-		const iconUrl = await getBvvIconsUrl(id, color);
-
-		expect(configServiceSpy).toHaveBeenCalled();
-		expect(iconUrl).toBe('https://backend.url/icons/0,0,0/foo');
 
 	});
 });
