@@ -35,8 +35,11 @@
 	margin-top: 6em;
 	border: 0;
 	padding: 0;
+	cursor: col-resize;
 
-
+}
+.main-menu__resize-button:hover {
+	background: var(--primary-color);
 }
 .resize-icon {
 	background: var(--primary-bg-color);
@@ -48,7 +51,9 @@
 	-webkit-mask: url('assets/expand.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
+
 }
+
 .is-full-size .main-menu__resize-button {
 
 	display: block;
