@@ -117,7 +117,7 @@ describe('styleUtils', () => {
 			const style = new Style({
 				fill: selectFill,
 				image: new CircleStyle({
-					radius: 5,
+					radius: 3,
 					fill: selectFill
 				})
 			});
