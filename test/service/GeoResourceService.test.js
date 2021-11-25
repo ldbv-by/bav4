@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceService } from '../../src/services/GeoResourceService';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
@@ -72,9 +72,9 @@ describe('GeoResourceService', () => {
 				const georesources = await instanceUnderTest.init();
 
 				expect(georesources.length).toBe(2);
-				expect(georesources[0].id).toBe('atkis');
+				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
-				expect(georesources[1].id).toBe('atkis_sw');
+				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
 				expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			});

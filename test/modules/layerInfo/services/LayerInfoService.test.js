@@ -1,6 +1,7 @@
 import { LayerInfoService, LayerInfoResult } from '../../../../src/modules/layerInfo/services/LayerInfoService';
 import { loadBvvLayerInfo } from '../../../../src/modules/layerInfo/services/provider/layerInfoResult.provider';
 import { $injector } from '../../../../src/injection';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '../../../../src/services/GeoResourceService';
 
 const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -99,12 +100,11 @@ describe('LayerInfoService', () => {
 			};
 			const warnSpy = spyOn(console, 'warn');
 			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
-			const geoResourceId_atkis = 'atkis';
-			const layerInfoResult = await layerInfoSerice.byId(geoResourceId_atkis);
+			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
 
 
 			expect(layerInfoResult.content).toBe('This is a fallback layerinfo');
-			expect(layerInfoResult.title).toBe('atkis');
+			expect(layerInfoResult.title).toBe(FALLBACK_GEORESOURCE_ID_0);
 			expect(warnSpy).toHaveBeenCalledWith('layerinfo could not be fetched from backend. Using fallback layerinfo');
 		});
 
@@ -117,12 +117,11 @@ describe('LayerInfoService', () => {
 			};
 			const warnSpy = spyOn(console, 'warn');
 			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
-			const geoResourceId_atkis_sw = 'atkis_sw';
-			const layerInfoResult = await layerInfoSerice.byId(geoResourceId_atkis_sw);
+			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_1);
 
 
 			expect(layerInfoResult.content).toBe('This is a fallback layerinfo');
-			expect(layerInfoResult.title).toBe('atkis_sw');
+			expect(layerInfoResult.title).toBe(FALLBACK_GEORESOURCE_ID_1);
 			expect(warnSpy).toHaveBeenCalledWith('layerinfo could not be fetched from backend. Using fallback layerinfo');
 		});
 
