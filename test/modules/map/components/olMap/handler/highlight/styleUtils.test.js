@@ -110,22 +110,15 @@ describe('styleUtils', () => {
 
 		it('should return a style function', () => {
 
-			const selectStroke = new Stroke({
-				color: [50, 128, 0, 1],
-				width: 3
-			});
-
 			const selectFill = new Fill({
-				color: [50, 255, 0, 0.3]
+				color: [9, 157, 221, 0.3]
 			});
 
 			const style = new Style({
 				fill: selectFill,
-				stroke: selectStroke,
 				image: new CircleStyle({
-					radius: 10,
-					fill: selectFill,
-					stroke: selectStroke
+					radius: 5,
+					fill: selectFill
 				})
 			});
 			const styles = highlightAnimatedCoordinateFeatureStyleFunction();
@@ -141,7 +134,7 @@ describe('styleUtils', () => {
 		const viewState = {
 			projection: projection, resolution: 1, rotation: 0
 		};
-		const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { }, setStyle: () => {} };
+		const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { }, setStyle: () => { } };
 		const setupMap = () => {
 			return new Map({
 				target: 'map',
@@ -198,40 +191,6 @@ describe('styleUtils', () => {
 			layer.on('postrender', functionUnderTest);
 
 			expect(() => layer.dispatchEvent(earlyEvent)).not.toThrow();
-		});
-
-		it('when animation ends, should NOT call the endCallback', () => {
-			const feature = getFeature();
-			const map = setupMap();
-			const layer = setupLayer(map, feature);
-
-			const endCallback = jasmine.createSpy();
-
-			const functionUnderTest = createAnimation(map, feature, endCallback);
-			layer.on('postrender', functionUnderTest);
-			layer.dispatchEvent(getPostRenderEvent(Date.now()));
-
-			expect(functionUnderTest).toBeDefined();
-			expect(endCallback).not.toHaveBeenCalled();
-
-		});
-
-		it('when animation ends, should call the endCallback', () => {
-			const feature = getFeature();
-			const map = setupMap();
-			const layer = setupLayer(map, feature);
-
-			const endCallback = jasmine.createSpy();
-
-			const functionUnderTest = createAnimation(map, feature, endCallback);
-			layer.on('postrender', functionUnderTest);
-			layer.dispatchEvent(getPostRenderEvent(Date.now()));
-
-			expect(functionUnderTest).toBeDefined();
-
-			layer.dispatchEvent(getPostRenderEvent(Date.now() + 1600));
-			expect(endCallback).toHaveBeenCalled();
-
 		});
 	});
 });

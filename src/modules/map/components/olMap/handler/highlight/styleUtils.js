@@ -77,41 +77,34 @@ export const highlightTemporaryGeometryFeatureStyleFunction = () => {
 
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
 
-	const selectStroke = new Stroke({
-		color: [50, 128, 0, 1],
-		width: 3
-	});
-
 	const selectFill = new Fill({
-		color: [50, 255, 0, 0.3]
+		color: [9, 157, 221, 0.3]
 	});
-
 	const selectStyle = new Style({
 		fill: selectFill,
-		stroke: selectStroke,
 		image: new CircleStyle({
-			radius: 10,
-			fill: selectFill,
-			stroke: selectStroke
+			radius: 3,
+			fill: selectFill
 		})
 	});
 
 	return [selectStyle];
 };
 
-export const createAnimation = (map, feature, endCallback) => {
-	const duration = 1500; // 1 second
-	const start = Date.now();
-
+export const createAnimation = (map, feature) => {
+	const state = {
+		duration: 1500,
+		start: Date.now()
+	};
 	const animate = (event) => {
 		const vectorContext = getVectorContext(event);
 		const frameState = event.frameState;
 		const flashGeom = feature.getGeometry().clone();
-		const elapsed = frameState.time - start;
+		const elapsed = frameState.time - state.start;
 		// don't allow negative values for radius
-		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / duration;
-		// radius will be 6 at start and 30 at end.
-		const radius = easeOut(elapsedRatio) * 24 + 6;
+		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / state.duration;
+		// radius will be 3 at start and 20 at end.
+		const radius = easeOut(elapsedRatio) * 17 + 3;
 		const opacity = easeOut(1 - elapsedRatio);
 
 		const getStyles = (radius, opacity, index) => {
@@ -123,13 +116,13 @@ export const createAnimation = (map, feature, endCallback) => {
 						width: 0.4 + opacity
 					}),
 					fill: new Fill({
-						color: 'rgba(9, 157, 221, ' + opacity + ')'
+						color: 'rgba(9, 157, 221, ' + (opacity * 0.6) + ')'
 					})
 				})
 			});
 
 
-			return radius >= 6 + 8 ? [style, ...getStyles(radius - 8, opacity, index + 1)] : [style];
+			return radius >= 5 + 8 ? [style, ...getStyles(radius - 8, opacity, index + 1)] : [style];
 		};
 
 		getStyles(radius, opacity, 0).forEach(style => {
@@ -138,18 +131,8 @@ export const createAnimation = (map, feature, endCallback) => {
 		});
 
 
-		if (elapsed > duration) {
-			endCallback();
-			return;
-			// TODO: a alternative solution, when the caller wants to implement a permanent
-			// blinking until a defined end is reached, so the endCallback must return true/false
-			// if (endCallback()) {
-			// 	return;
-			// }
-			// else {
-			// 	start = Date.now();
-			// }
-
+		if (elapsed > state.duration) {
+			state.start = Date.now();
 		}
 		// tell OpenLayers to continue postrender animation
 		map.render();
