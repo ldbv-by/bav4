@@ -1,6 +1,6 @@
 /**
  * Action creators to activate/deactive the measurement tool
- * @module map/action
+ * @module measurement/action
  */
 import { ACTIVE_CHANGED, STATISTIC_CHANGED, MODE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED } from './measurement.reducer';
 import { $injector } from '../../injection';

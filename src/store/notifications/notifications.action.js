@@ -3,6 +3,10 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
+ * @module notification/action
+ */
+
+/**
  * Enum for notification levels.
  * @readonly
  * @enum {string}
@@ -32,6 +36,7 @@ const getStore = () => {
  * Emits a new notification to the system
  * @param {string} content The notification content.
  * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+ * @function
   */
 export const emitNotification = (content, level) => {
 	getStore().dispatch({
@@ -44,6 +49,7 @@ export const emitNotification = (content, level) => {
  * Emits a new fixed notification to the system
  * @param {TemplateResult|null} content The notification content as a lit-html TemplateResult.
  * content === null signals to close the existing fixedNotification
+ * @function
 */
 export const emitFixedNotification = (content) => {
 	getStore().dispatch({

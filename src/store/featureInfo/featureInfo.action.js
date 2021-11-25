@@ -38,6 +38,7 @@ export const FeatureInfoGeometryTypes = Object.freeze({
 /**
   * Adds (appends) a single or an array of {@link FeatureInfo} items
   * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
+  * @function
   */
 export const addFeatureInfoItems = (featureInfo) => {
 
@@ -52,6 +53,7 @@ export const addFeatureInfoItems = (featureInfo) => {
 /**
  * Starts a new FeatureInfo request.
  * @param {coordinate} coordinate
+ * @function
  */
 export const startRequest = (coordinate) => {
 
@@ -64,6 +66,7 @@ export const startRequest = (coordinate) => {
 /**
  * Aborts the current FeatureInfo request and/or resets the result.
  * @param {coordinate} coordinate
+ * @function
  */
 export const abortOrReset = () => {
 
@@ -76,6 +79,7 @@ export const abortOrReset = () => {
 /**
  * Registers an active FeatureInfo query
  * @param {string} id id of that query
+ * @function
  */
 export const registerQuery = (id) => {
 
@@ -88,6 +92,7 @@ export const registerQuery = (id) => {
 /**
  * Marks a FeatureInfo query as resolved.
  * @param {string} id
+ * @function
  */
 export const resolveQuery = (id) => {
 
