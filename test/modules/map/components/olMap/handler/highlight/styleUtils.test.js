@@ -110,15 +110,22 @@ describe('styleUtils', () => {
 
 		it('should return a style function', () => {
 
+			const selectStroke = new Stroke(
+				{
+					color: [255, 255, 255, 1],
+					width: 2
+				}
+			);
 			const selectFill = new Fill({
-				color: [9, 157, 221, 0.3]
+				color: [9, 157, 221, 1]
 			});
 
 			const style = new Style({
 				fill: selectFill,
 				image: new CircleStyle({
-					radius: 3,
-					fill: selectFill
+					radius: 9,
+					fill: selectFill,
+					stroke: selectStroke
 				})
 			});
 			const styles = highlightAnimatedCoordinateFeatureStyleFunction();

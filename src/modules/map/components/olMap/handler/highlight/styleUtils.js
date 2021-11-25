@@ -1,6 +1,6 @@
 
 import { getVectorContext } from 'ol/render';
-import { easeOut } from 'ol/easing';
+import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from './assets/location.svg';
@@ -77,14 +77,21 @@ export const highlightTemporaryGeometryFeatureStyleFunction = () => {
 
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
 
+	const selectStroke = new Stroke(
+		{
+			color: [255, 255, 255, 1],
+			width: 2
+		}
+	);
 	const selectFill = new Fill({
-		color: [9, 157, 221, 0.3]
+		color: [9, 157, 221, 1]
 	});
 	const selectStyle = new Style({
 		fill: selectFill,
 		image: new CircleStyle({
-			radius: 3,
-			fill: selectFill
+			radius: 9,
+			fill: selectFill,
+			stroke: selectStroke
 		})
 	});
 
@@ -104,31 +111,30 @@ export const createAnimation = (map, feature) => {
 		// don't allow negative values for radius
 		const elapsedRatio = (elapsed >= 0 ? elapsed : 0) / state.duration;
 		// radius will be 3 at start and 20 at end.
-		const radius = easeOut(elapsedRatio) * 17 + 3;
-		const opacity = easeOut(1 - elapsedRatio);
+		const radius = easeOut(elapsedRatio) * 50 + 10;
+		const opacity = easeIn(1 - elapsedRatio);
 
 		const getStyles = (radius, opacity, index) => {
 			const style = new Style({
 				image: new CircleStyle({
 					radius: radius,
-					stroke: new Stroke({
-						color: index === 0 ? 'rgba(3, 3, 3, 0.2)' : 'rgba(255, 255, 255, ' + opacity + ')',
-						width: 0.4 + opacity
-					}),
 					fill: new Fill({
-						color: 'rgba(9, 157, 221, ' + (opacity * 0.6) + ')'
+						color: 'rgba(9, 157, 221, ' + (opacity) * 0.6 + ')'
 					})
 				})
 			});
 
 
-			return radius >= 5 + 8 ? [style, ...getStyles(radius - 8, opacity, index + 1)] : [style];
+			return radius >= 11 + 10 ? [style, ...getStyles(radius - 10, opacity, index + 1)] : [style];
 		};
 
 		getStyles(radius, opacity, 0).forEach(style => {
 			vectorContext.setStyle(style);
 			vectorContext.drawGeometry(flashGeom);
 		});
+		const staticStyle = highlightAnimatedCoordinateFeatureStyleFunction();
+		vectorContext.setStyle(staticStyle[0]);
+		vectorContext.drawGeometry(flashGeom);
 
 
 		if (elapsed > state.duration) {
