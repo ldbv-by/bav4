@@ -73,7 +73,7 @@ describe('IconsService', () => {
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.default();
 
-				expect(icons.length).toBe(6);
+				expect(icons.length).toBe(5);
 				expect(icons[0]).toEqual(defaultIcon);
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
 			});
