@@ -45,7 +45,7 @@ export const sort = (list) => {
 };
 
 /**
- * Creates a {@link Layer} containing all required properties (bound todefault values)
+ * Creates a {@link Layer} containing all required properties (bound to default values)
  * including `id` and `geoResourceId`.
  * @param {string} id The id of the layer
  * @returns a layer with default properties
