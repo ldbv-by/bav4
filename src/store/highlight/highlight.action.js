@@ -1,6 +1,6 @@
 /**
  * Action creators for highlighting a feature.
- * @module map/action
+ * @module highlight/action
  */
 import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 import { $injector } from '../../injection';
