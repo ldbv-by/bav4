@@ -1,6 +1,6 @@
 /**
  * Action creators for highlighting a feature.
- * @module map/action
+ * @module highlight/action
  */
 import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 import { $injector } from '../../injection';
@@ -30,7 +30,8 @@ import { $injector } from '../../injection';
 
 export const HighlightFeatureTypes = Object.freeze({
 	DEFAULT: 0,
-	TEMPORARY: 1
+	TEMPORARY: 1,
+	ANIMATED: 2
 });
 
 /**

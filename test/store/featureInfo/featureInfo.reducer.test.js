@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
-import { addFeatureInfoItems, registerQueryFor, unregisterQueryFor, startRequest, abortOrReset } from '../../../src/store/featureInfo/featureInfo.action.js';
+import { addFeatureInfoItems, startRequest, abortOrReset, registerQuery, resolveQuery } from '../../../src/store/featureInfo/featureInfo.action.js';
 
 
 describe('featureInfoReducer', () => {
@@ -14,7 +14,8 @@ describe('featureInfoReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().featureInfo.current).toEqual([]);
-		expect(store.getState().featureInfo.pending).toEqual([]);
+		expect(store.getState().featureInfo.queries).toEqual([]);
+		expect(store.getState().featureInfo.querying).toBeFalse();
 		expect(store.getState().featureInfo.coordinate).toBeNull();
 		expect(store.getState().featureInfo.aborted).toBeNull();
 	});
@@ -49,39 +50,52 @@ describe('featureInfoReducer', () => {
 		expect(store.getState().featureInfo.current).toHaveSize(0);
 	});
 
-	it('registers a query for a GeoResource', () => {
+	it('registers a query', () => {
 		const store = setup();
 
-		registerQueryFor('foo');
-		registerQueryFor('bar');
+		registerQuery('foo');
 
-		expect(store.getState().featureInfo.pending).toEqual(['foo', 'bar']);
+		expect(store.getState().featureInfo.queries).toEqual(['foo']);
+		expect(store.getState().featureInfo.querying).toBeTrue();
+
+		registerQuery('bar');
+
+		expect(store.getState().featureInfo.queries).toEqual(['foo', 'bar']);
+		expect(store.getState().featureInfo.querying).toBeTrue();
 	});
 
-	it('unregisters a GeoResource', () => {
+	it('resolve a query', () => {
 		const store = setup({
 			featureInfo: {
-				pending: ['foo', 'bar']
+				queries: ['foo', 'bar']
 			}
 		});
 
-		unregisterQueryFor('foo');
+		resolveQuery('foo');
 
-		expect(store.getState().featureInfo.pending).toEqual(['bar']);
+		expect(store.getState().featureInfo.queries).toEqual(['bar']);
+		expect(store.getState().featureInfo.querying).toBeTrue();
+
+		resolveQuery('bar');
+
+		expect(store.getState().featureInfo.queries).toHaveSize(0);
+		expect(store.getState().featureInfo.querying).toBeFalse();
 	});
 
 	it('aborts/resets a FeatureInfo request', () => {
 		const store = setup({
 			featureInfo: {
-				pending: ['foo', 'bar'],
-				current: ['some']
+				queries: ['foo', 'bar'],
+				current: ['some'],
+				querying: true
 			}
 		});
 
 		abortOrReset();
 
 		expect(store.getState().featureInfo.aborted).not.toBeNull();
-		expect(store.getState().featureInfo.pending).toHaveSize(0);
+		expect(store.getState().featureInfo.queries).toHaveSize(0);
+		expect(store.getState().featureInfo.querying).toBeFalse();
 		expect(store.getState().featureInfo.current).toHaveSize(0);
 	});
 });

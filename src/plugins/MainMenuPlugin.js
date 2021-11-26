@@ -24,9 +24,9 @@ export class MainMenuPlugin extends BaPlugin {
 		this._open = store.getState().mainMenu.open;
 		this._previousTabIndex = store.getState().mainMenu.tabIndex;
 
-		const onFeatureInfoPendingChanged = (pending, state) => {
+		const onFeatureInfoQueryingChanged = (querying, state) => {
 			const { featureInfo: { current } } = state;
-			if (pending.length === 0) {
+			if (!querying) {
 
 				if (current.length === 0) {
 					if (!this._open) {
@@ -58,7 +58,7 @@ export class MainMenuPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, state => state.featureInfo.pending, onFeatureInfoPendingChanged);
+		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChanged);
 		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
 	}

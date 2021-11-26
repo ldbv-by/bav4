@@ -105,12 +105,12 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
-				expect(store.getState().featureInfo.pending).toEqual([layerId0]);
+				expect(store.getState().featureInfo.querying).toBeTrue();
 				setTimeout(() => {
 					expect(store.getState().featureInfo.current).toHaveSize(1);
 					expect(store.getState().featureInfo.current[0].content).toBe('content');
 					expect(store.getState().featureInfo.current[0].title).toBe('title');
-					expect(store.getState().featureInfo.pending).toHaveSize(0);
+					expect(store.getState().featureInfo.querying).toBeFalse();
 				});
 			});
 
@@ -193,10 +193,10 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
-				expect(store.getState().featureInfo.pending).toEqual([layerId0]);
+				expect(store.getState().featureInfo.querying).toBeTrue();
 				setTimeout(() => {
 					expect(store.getState().featureInfo.current).toHaveSize(0);
-					expect(store.getState().featureInfo.pending).toHaveSize(0);
+					expect(store.getState().featureInfo.querying).toBeFalse();
 				});
 			});
 
@@ -223,11 +223,13 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
+				expect(store.getState().featureInfo.querying).toBeTrue();
 				setTimeout(() => {
 					expect(store.getState().featureInfo.current).toHaveSize(0);
 					expect(store.getState().notifications.latest.payload.content).toBe(`${layerLabel0}: featureInfoPlugin_featureInfoService_exception`);
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 					expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+					expect(store.getState().featureInfo.querying).toBeFalse();
 					done();
 				});
 			});
