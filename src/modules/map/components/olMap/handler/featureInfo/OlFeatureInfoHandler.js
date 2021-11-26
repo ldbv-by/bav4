@@ -9,6 +9,10 @@ import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/Hig
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 
 /**
+ * Amount of time (in ms) query resolution should be delayed.
+ */
+export const OlFeatureInfoHandler_Query_Resolution_Delay_Ms = 300;
+/**
  * MapHandler that publishes FeatureInfo and HighlightFeature items from ol vector sources.
  * @class
  * @author taulinger
@@ -86,10 +90,13 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					unsubscribe();
 				}
 			});
-			//let's put this to the callback queue and let it execute after other components have registered their queries
+			/**
+			 * let's delay this call and put it in the callback queue,
+			 * so we always run the HighlightFeature animation at least for this amount of time
+			 */
 			setTimeout(() => {
 				resolveQuery(queryId);
-			});
+			}, OlFeatureInfoHandler_Query_Resolution_Delay_Ms);
 		});
 	}
 }
