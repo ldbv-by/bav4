@@ -29,7 +29,7 @@
 	background-color: var(--tertiary-bg-color);
 	border-bottom: 1px solid var(--header-background-color);
 }
-.featureinfo-header:hover{
+.featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
 	
 }
