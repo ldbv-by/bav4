@@ -21,6 +21,7 @@ const getStore = () => {
  * @param {string} title The title of the modal
  * @param {string|TemplateResult} content  The content of the modal. Could either be a a plain string or a lit-html TemplateResult.
  * @param {ModalOptions} options
+ * @function
  */
 export const openModal = (title, content, options = {}) => {
 

@@ -1,8 +1,9 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIndex } from '../store/mainMenu/mainMenu.action';
+import { createUniqueId } from '../utils/numberUtils';
 
 
 /**
@@ -34,6 +35,9 @@ export class HighlightPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
+		const highlightFeatureId = createUniqueId();
+
+
 		const onChange = (active) => {
 
 			if (active) {
@@ -57,8 +61,19 @@ export class HighlightPlugin extends BaPlugin {
 			}
 		};
 
+		const onFeatureInfoQueryingChange = (querying, state) => {
+			if (querying) {
+				const coordinate = state.featureInfo.coordinate.payload;
+				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.ANIMATED });
+			}
+			else {
+				removeHighlightFeaturesById(highlightFeatureId);
+			}
+		};
+
 		observe(store, state => state.highlight.active, onChange);
 		observe(store, state => state.pointer.click, onPointerClick);
 		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
+		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChange);
 	}
 }
