@@ -7,6 +7,13 @@ import { $injector } from '../../injection';
 
 
 /**
+ * Represents a layer on a map or globe.
+ * See {@link LayerProperties} for its properties.
+ * @typedef {Object} Layer
+ */
+
+/**
+  * Properties of a {@link Layer}.
   * @typedef {Object} LayerProperties
   * @property {string} id Id of this layer
   * @property {string} label Label of this layer
@@ -18,13 +25,14 @@ import { $injector } from '../../injection';
   */
 
 /**
+ * Constraints of a {@link Layer}.
   * @typedef {Object} Constraints
   * @property {boolean} [hidden=false] Layer is not displayed in UI
   * @property {boolean} [alwaysTop=false] Layer always on top
   */
 
 /**
-  * Modifiable properties of a layer.
+  * Modifiable properties of a {@link Layer}.
   * @typedef {Object} ModifiableLayerProperties
   * @property {number} [opacity] Opacity (0, 1).
   * @property {boolean} [visible] Visibility.
@@ -39,7 +47,7 @@ const getStore = () => {
 };
 
 /**
-  * Updates the properties of a layer.
+  * Updates the properties of a {@link Layer}.
   * @function
   * @param {string} id Id of the layer
   * @param {ModifiableLayerProperties} properties New properties
@@ -52,7 +60,7 @@ export const modifyLayer = (id, properties = {}) => {
 };
 
 /**
-  * Adds a layer to the list of active layers.
+  * Adds a {@link Layer} to the list of active layers.
   * @function
   * @param {string} id Id of the layer
   * @param {LayerProperties} properties layer properties
@@ -65,7 +73,7 @@ export const addLayer = (id, properties = {}) => {
 };
 
 /**
-  * Removes a layer from the list of active layers.
+  * Removes a {@link Layer} from the list of active layers.
   * @function
   * @param {string} id Id of the layer
   */

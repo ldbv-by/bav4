@@ -6,7 +6,7 @@ export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 
 export const initialState = {
 	/**
-	 * List of currently active layers.
+	 * List of currently active {@link Layer}.
 	 */
 	active: [],
 	/**
@@ -45,7 +45,8 @@ export const sort = (list) => {
 };
 
 /**
- * Creates a layer containing all required properties set to default values.
+ * Creates a {@link Layer} containing all required properties (bound to default values)
+ * including `id` and `geoResourceId`.
  * @param {string} id The id of the layer
  * @returns a layer with default properties
  */
@@ -53,6 +54,10 @@ export const createDefaultLayer = (id) => {
 	return { id: id, geoResourceId: id, ...createDefaultLayerProperties() };
 };
 
+/**
+ * Creates an object containing all layer properties (bound to default values)
+ * except for `id` and `geoResourceId`.
+ */
 export const createDefaultLayerProperties = () => ({
 	label: '',
 	visible: true,
