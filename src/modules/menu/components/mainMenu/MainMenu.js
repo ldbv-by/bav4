@@ -68,7 +68,7 @@ export class MainMenu extends BaElement {
 		};
 
 		const getIsFullSize = () => {
-			return (tabIndex === 5) ? 'is-full-size' : '';
+			return (tabIndex === MainMenuTabIndex.FEATUREINFO.id) ? 'is-full-size' : '';
 		};
 
 
