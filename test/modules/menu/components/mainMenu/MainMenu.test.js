@@ -247,6 +247,22 @@ describe('MainMenu', () => {
 			setTabIndex(TabIndex.TOPICS);
 			check(MainMenuTabIndex.TOPICS, contentPanels);
 		});
+
+		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
+			const element = await setup();
+
+			setTabIndex(TabIndex.MAPS);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+
+			setTabIndex(TabIndex.FEATUREINFO);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
+
+			setTabIndex(TabIndex.MAPS);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+		});
 	});
 
 	describe('when close button clicked', () => {
