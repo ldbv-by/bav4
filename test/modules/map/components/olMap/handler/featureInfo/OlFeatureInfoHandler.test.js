@@ -2,7 +2,7 @@ import { Feature, Map, View } from 'ol';
 import { Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { OlFeatureInfoHandler } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/OlFeatureInfoHandler';
+import { OlFeatureInfoHandler, OlFeatureInfoHandler_Query_Resolution_Delay_Ms } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../../../test-utils';
 import { abortOrReset, FeatureInfoGeometryTypes, startRequest } from '../../../../../../../src/store/featureInfo/featureInfo.action';
@@ -16,8 +16,16 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../../../src/injection';
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 
+describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
+
+	it('determines amount of time query resolution delayed.', async () => {
+		expect(OlFeatureInfoHandler_Query_Resolution_Delay_Ms).toBe(300);
+	});
+});
 
 describe('OlFeatureInfoHandler', () => {
+
+	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 100;
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
@@ -109,7 +117,7 @@ describe('OlFeatureInfoHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().featureInfo.querying).toBeFalse();
 				done();
-			});
+			}, TestDelay);
 		});
 
 		it('adds exactly one FeatureInfo and HighlightFeature per layer', (done) => {
@@ -152,7 +160,7 @@ describe('OlFeatureInfoHandler', () => {
 					expect(store.getState().featureInfo.current).toHaveSize(0);
 					expect(store.getState().highlight.features).toHaveSize(0);
 					done();
-				});
+				}, TestDelay);
 			}));
 		});
 
@@ -272,10 +280,10 @@ describe('OlFeatureInfoHandler', () => {
 								expect(store.getState().highlight.features).toHaveSize(0);
 
 								done();
-							});
-						});
-					});
-				});
+							}, TestDelay);
+						}, TestDelay);
+					}, TestDelay);
+				}, TestDelay);
 			}));
 		});
 
