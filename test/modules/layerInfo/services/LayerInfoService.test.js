@@ -142,5 +142,19 @@ describe('LayerInfoService', () => {
 				expect(err.message).toBe('Could not load layerinfoResult from provider: ' + providerErrMsg);
 			}
 		});
+
+		it('just provides layerInfoResult when already available in locale cache', async () => {
+
+			const loadMockBvvLayerInfo = async () => {
+				return new LayerInfoResult('');
+			};
+			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
+			layerInfoSerice._layerInfoResult = new LayerInfoResult('<b>content</b>');
+
+			const layerInfoResult = await layerInfoSerice.byId(loadMockBvvLayerInfo);
+
+			expect(layerInfoResult instanceof LayerInfoResult);
+			expect(layerInfoResult.content).toBe('<b>content</b>');
+		});
 	});
 });

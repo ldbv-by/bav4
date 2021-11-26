@@ -6,30 +6,34 @@ export class LayerInfoService {
 
 	constructor(provider = loadBvvLayerInfo) {
 		this._provider = provider;
+		this._layerInfoResult = null;
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 	}
 
 	/**
-	* Returns the corresponding  {@link LayerInfoResult} for an id.
+	* Returns the corresponding  {@link LayerInfoResult} for an id if present in the internal cache, otherwise retrived from backend.
 	* @public
 	* @param {string} geoResourceId Id of the desired {@link LayerInfoResult}
 	* @returns {LayerInfoResult | null }
 	* @throws Will throw an error if the provider result is wrong and pass it to the view.
 	*/
 	async byId(geoResourceId) {
-		try {
-			return await this._provider(geoResourceId);
-		}
-		catch (e) {
-			if (this._environmentService.isStandalone()) {
-				console.warn('layerinfo could not be fetched from backend. Using fallback layerinfo');
-				return this._newFallbackLayerinfo(geoResourceId);
+		if (!this._layerInfoResult) {
+			try {
+				this._layerInfoResult = await this._provider(geoResourceId);
 			}
-			else {
-				throw new Error('Could not load layerinfoResult from provider: ' + e.message);
+			catch (e) {
+				if (this._environmentService.isStandalone()) {
+					console.warn('layerinfo could not be fetched from backend. Using fallback layerinfo');
+					this._layerInfoResult = this._newFallbackLayerinfo(geoResourceId);
+				}
+				else {
+					throw new Error('Could not load layerinfoResult from provider: ' + e.message);
+				}
 			}
 		}
+		return this._layerInfoResult;
 	}
 
 	/**
