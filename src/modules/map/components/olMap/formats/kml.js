@@ -15,20 +15,6 @@ const tryRectifyingLineString = (polygonCandidate) => {
 	return polygonCandidate;
 };
 
-const getIconScale = (svgScale) => {
-	switch (svgScale) {
-		case 1:
-			return 0.5;
-		case 0.75:
-			return 0.4;
-		case 0.5:
-			return 0.25;
-		default:
-			return svgScale;
-	}
-
-};
-
 const replaceIcon = (old) => {
 	const svgSrc = old.getSrc();
 	const svgScale = old.getScale();
@@ -40,7 +26,7 @@ const replaceIcon = (old) => {
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: iconUrl,
-		scale: getIconScale(svgScale)
+		scale: svgScale
 	};
 	return iconUrl ? new Icon(iconOptions) : old;
 };
