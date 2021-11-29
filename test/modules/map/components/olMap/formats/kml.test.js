@@ -191,7 +191,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 			const containsIconStyle = actual.includes('<IconStyle>');
 			const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
-			const containsScale = actual.includes(`<scale>${scale} </scale>`);
+			const containsScale = actual.includes(`<scale>${scale}</scale>`);
 			expect(containsIconStyle).toBeTrue();
 			expect(containsRemoteIcon).toBeTrue();
 			expect(containsScale).toBeTrue();

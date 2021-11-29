@@ -35,7 +35,8 @@ const replaceIcon = (old) => {
 };
 
 const sanitizeStyle = (styles) => {
-	const style = styles[0] ? styles[0].clone() : styles.clone();
+
+	const style = styles[0] ? styles[0].clone() : (styles && !Array.isArray(styles) ? styles.clone() : new Style());
 
 	const kmlStyleProperties = {
 		fill: style.getFill ? style.getFill() : null,
