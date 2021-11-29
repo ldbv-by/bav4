@@ -73,14 +73,14 @@ describe('kml', () => {
 		return () => [style];
 	};
 
-	const getAIconStyleFunction = (color, iconSrc) => {
+	const getAIconStyleFunction = (color, iconSrc, scale = 1) => {
 		const iconOptions = {
 			anchor: [0.5, 1],
 			anchorXUnits: 'fraction',
 			anchorYUnits: 'fraction',
 			src: iconSrc,
 			color: color,
-			scale: 1
+			scale: scale
 		};
 
 		const style = new Style({
@@ -180,19 +180,21 @@ describe('kml', () => {
 		});
 
 		it('reads and converts icon style-properties from feature', () => {
+			const scale = 5;
 			const color = [255, 42, 42];
 			const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
 			const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
-			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc, scale));
 			const features = [aPointFeature];
 			const layer = createLayerMock(features);
 
 			const actual = create(layer, projection);
-
 			const containsIconStyle = actual.includes('<IconStyle>');
 			const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+			const containsScale = actual.includes(`<scale>${scale} </scale>`);
 			expect(containsIconStyle).toBeTrue();
 			expect(containsRemoteIcon).toBeTrue();
+			expect(containsScale).toBeTrue();
 		});
 
 		it('reads and converts none-style-properties from feature', () => {

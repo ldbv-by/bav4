@@ -8,6 +8,9 @@ import { AssetSourceType, getAssetSource } from '../olStyleUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
+const Kml_Icon_Size_Default = 32;
+const App_Icon_Size_Default = 48;
+
 const tryRectifyingLineString = (polygonCandidate) => {
 	if (polygonCandidate instanceof Polygon && polygonCandidate.getCoordinates()[0].length === 3) {
 		return new LineString(polygonCandidate.getCoordinates()[0]);
@@ -26,13 +29,13 @@ const replaceIcon = (old) => {
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
 		src: iconUrl,
-		scale: svgScale
+		scale: svgScale / 2
 	};
 	return iconUrl ? new Icon(iconOptions) : old;
 };
 
 const sanitizeStyle = (styles) => {
-	const style = styles[0] ? styles[0] : styles;
+	const style = styles[0] ? styles[0].clone() : styles.clone();
 
 	const kmlStyleProperties = {
 		fill: style.getFill ? style.getFill() : null,
@@ -105,6 +108,21 @@ export const create = (layer, projection) => {
 };
 
 export const readFeatures = (kmlString) => {
+	const scaleUpIcon = (feature) => {
+		const getStyle = (styles) => {
+			if (typeof (styles) === 'function') {
+				return styles(feature)[0];
+			}
+			return styles[0];
+		};
+
+		const style = getStyle(feature.getStyle());
+		if (style.getImage() && style.getImage().getScale()) {
+			style.getImage().setScale((style.getImage().getScale() * App_Icon_Size_Default) / Kml_Icon_Size_Default);
+			feature.set(style);
+		}
+		return feature;
+	};
 	const format = new KML({ writeStyles: true });
-	return format.readFeatures(kmlString);
+	return format.readFeatures(kmlString).map(f => scaleUpIcon(f));
 };
