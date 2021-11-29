@@ -6,7 +6,7 @@ export class LayerInfoService {
 
 	constructor(provider = loadBvvLayerInfo) {
 		this._provider = provider;
-		this._layerInforesults = new Map();
+		this._layerInfoResults = new Map();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 	}
@@ -19,23 +19,23 @@ export class LayerInfoService {
 	* @throws Will throw an error if the provider result is wrong and pass it to the view.
 	*/
 	async byId(geoResourceId) {
-		if (!this._layerInforesults.get(geoResourceId)) {
+		if (!this._layerInfoResults.get(geoResourceId)) {
 			try {
 				this._layerInfoResult = await this._provider(geoResourceId);
-				this._layerInforesults.set(geoResourceId, this._layerInfoResult);
+				this._layerInfoResults.set(geoResourceId, this._layerInfoResult);
 			}
 			catch (e) {
 				if (this._environmentService.isStandalone()) {
 					console.warn('layerinfo could not be fetched from backend. Using fallback layerinfo');
 					this._layerInfoResult = this._newFallbackLayerinfo(geoResourceId);
-					this._layerInforesults.set(geoResourceId, this._layerInfoResult);
+					this._layerInfoResults.set(geoResourceId, this._layerInfoResult);
 				}
 				else {
 					throw new Error('Could not load layerinfoResult from provider: ' + e.message);
 				}
 			}
 		}
-		return this._layerInforesults.get(geoResourceId);
+		return this._layerInfoResults.get(geoResourceId);
 	}
 
 	/**

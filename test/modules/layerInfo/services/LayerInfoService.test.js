@@ -148,7 +148,7 @@ describe('LayerInfoService', () => {
 			};
 			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
 			const layerInfo = new LayerInfoResult('<b>content</b>');
-			layerInfoSerice._layerInforesults.set(FALLBACK_GEORESOURCE_ID_0, layerInfo);
+			layerInfoSerice._layerInfoResults.set(FALLBACK_GEORESOURCE_ID_0, layerInfo);
 
 			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
 
@@ -162,7 +162,7 @@ describe('LayerInfoService', () => {
 				return new LayerInfoResult('<div><content/div>');
 			};
 			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
-			layerInfoSerice._layerInforesults.set(FALLBACK_GEORESOURCE_ID_1, null);
+			layerInfoSerice._layerInfoResults.set(FALLBACK_GEORESOURCE_ID_1, null);
 
 			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
 
