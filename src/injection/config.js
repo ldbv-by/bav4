@@ -51,7 +51,7 @@ $injector
 	.register('UrlService', UrlService)
 	.register('AdministrationService', AdministrationService)
 	.register('FeatureInfoService', FeatureInfoService)
-	.register('LayerInfoService', LayerInfoService)
+	.registerSingleton('LayerInfoService', new LayerInfoService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
