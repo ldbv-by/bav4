@@ -1,12 +1,17 @@
 import { $injector } from '../../../../../../injection';
-import { addFeatureInfoItems } from '../../../../../../store/featureInfo/featureInfo.action';
+import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../../../utils/storeUtils';
 import { getLayerById } from '../../olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
 import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
+import { createUniqueId } from '../../../../../../utils/numberUtils';
 
+/**
+ * Amount of time (in ms) query resolution should be delayed.
+ */
+export const OlFeatureInfoHandler_Query_Resolution_Delay_Ms = 300;
 /**
  * MapHandler that publishes FeatureInfo and HighlightFeature items from ol vector sources.
  * @class
@@ -30,6 +35,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 	 */
 	register(map) {
 
+		const queryId = createUniqueId();
 		const translate = (key) => this._translationService.translate(key);
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
@@ -43,6 +49,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 
 			//remove previous HighlightFeature items
 			removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+			registerQuery(queryId);
 
 			const featureInfoItems = [...state.layers.active]
 				.filter(layerFilter)
@@ -74,8 +81,22 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryTypes.GEOJSON }
 				}));
 
-			//publish current HighlightFeature items
-			addHighlightFeatures(highlightFeatures);
+			const unsubscribe = observe(this._storeService.getStore(), state => state.featureInfo.querying, querying => {
+				//untestable else path cause function is self-removing
+				/* istanbul ignore else */
+				if (!querying) {
+					//publish current HighlightFeature items when all pending queries are resolved
+					addHighlightFeatures(highlightFeatures);
+					unsubscribe();
+				}
+			});
+			/**
+			 * let's delay this call and put it in the callback queue,
+			 * so we always run the HighlightFeature animation at least for this amount of time
+			 */
+			setTimeout(() => {
+				resolveQuery(queryId);
+			}, OlFeatureInfoHandler_Query_Resolution_Delay_Ms);
 		});
 	}
 }

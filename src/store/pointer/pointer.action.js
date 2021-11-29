@@ -1,6 +1,6 @@
 /**
  * Action creators concerning pointer based interactions of the user.
- * @module map/action
+ * @module pointer/action
  */
 
 import { $injector } from '../../injection';

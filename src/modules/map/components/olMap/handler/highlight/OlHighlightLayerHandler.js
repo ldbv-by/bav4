@@ -3,7 +3,7 @@ import { $injector } from '../../../../../../injection';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HIGHLIGHT_LAYER_ID } from '../../../../../../plugins/HighlightPlugin';
 import Feature from 'ol/Feature';
-import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from './styleUtils';
+import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from './styleUtils';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
@@ -24,6 +24,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		const { StoreService } = $injector.inject('StoreService');
 		this._storeService = StoreService;
 		this._unregister = () => { };
+		this._olMap = null;
+		this._olLayer = null;
 	}
 
 
@@ -31,10 +33,11 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 * Activates the Handler.
 		 * @override
 		 */
-	onActivate(/*eslint-disable no-unused-vars */olMap) {
-		const olLayer = this._createLayer();
-		this._unregister = this._register(this._storeService.getStore(), olLayer.getSource());
-		return olLayer;
+	onActivate(olMap) {
+		this._olMap = olMap;
+		this._olLayer = this._createLayer();
+		this._unregister = this._register(this._storeService.getStore(), this._olLayer.getSource());
+		return this._olLayer;
 	}
 
 	/**
@@ -43,6 +46,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		 */
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		this._unregister();
+		this._olMap = null;
+		this._olLayer = null;
 	}
 
 	_createLayer() {
@@ -70,6 +75,14 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		return null;
 	}
 
+	_animatePointFeature(olFeature, olMap = this._olMap, olLayer = this._olLayer) {
+		olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
+		const blinkAnimation = createAnimation(olMap, olFeature);
+		const listenerKey = olLayer.on('postrender', blinkAnimation);
+
+		return listenerKey;
+	}
+
 	_appendStyle(feature, olFeature) {
 		const { data } = feature;
 		//we have a HighlightCoordinate
@@ -83,6 +96,8 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				case HighlightFeatureTypes.TEMPORARY:
 					olFeature.setStyle(highlightTemporaryCoordinateFeatureStyleFunction);
 					break;
+				case HighlightFeatureTypes.ANIMATED:
+					this._animatePointFeature(olFeature);
 			}
 		}
 		else {
