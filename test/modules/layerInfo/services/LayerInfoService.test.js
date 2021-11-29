@@ -143,10 +143,7 @@ describe('LayerInfoService', () => {
 		});
 
 		it('just provides layerInfoResult when geoResourceId already available in locale cache', async () => {
-			const loadMockBvvLayerInfo = async () => {
-				return new LayerInfoResult('');
-			};
-			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
+			const layerInfoSerice = new LayerInfoService(null);
 			const layerInfo = new LayerInfoResult('<b>content</b>');
 			layerInfoSerice._layerInfoResults.set(FALLBACK_GEORESOURCE_ID_0, layerInfo);
 
