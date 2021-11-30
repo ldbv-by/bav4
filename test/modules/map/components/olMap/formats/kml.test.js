@@ -11,7 +11,11 @@ describe('kml', () => {
 	const aPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
 
-	const iconServiceMock = { getUrl: (idOrBase64, color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}` };
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { getUrl: (color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}` };
+		}
+	};
 	$injector.registerSingleton('IconService', iconServiceMock);
 
 	const createLayerMock = (features, withLabel = true) => {
@@ -180,21 +184,18 @@ describe('kml', () => {
 		});
 
 		it('reads and converts icon style-properties from feature', () => {
-			const scale = 5;
 			const color = [255, 42, 42];
 			const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
 			const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
-			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc, scale));
+			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
 			const features = [aPointFeature];
 			const layer = createLayerMock(features);
 
 			const actual = create(layer, projection);
 			const containsIconStyle = actual.includes('<IconStyle>');
 			const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
-			const containsScale = actual.includes(`<scale>${scale}</scale>`);
 			expect(containsIconStyle).toBeTrue();
 			expect(containsRemoteIcon).toBeTrue();
-			expect(containsScale).toBeTrue();
 		});
 
 		it('reads and converts none-style-properties from feature', () => {

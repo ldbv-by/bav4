@@ -20,10 +20,17 @@ export const loadBvvIcons = async () => {
 		const icons = [];
 		const payload = await result.json();
 
+		const matcher = (id) => {
+			return (idOrUrl) => idOrUrl === id || idOrUrl.endsWith(id);
+		};
+
+		const urlFactoryFunction = (id) => {
+			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}`;
+		};
 
 		payload.forEach(bvvIcon => {
 			const { id, svg } = bvvIcon;
-			icons.push(new IconResult(id, svg));
+			icons.push(new IconResult(id, svg, matcher(id), urlFactoryFunction(id)));
 
 		});
 

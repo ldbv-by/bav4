@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, hexToRgb, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -503,7 +503,10 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_getStyleOption() {
 		if (this._storeService.getStore().getState().draw.style == null) {
-			setStyle({ ...defaultStyleOption, symbolSrc: this._iconService.default().base64 });
+			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
+			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
+			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc });
+
 		}
 		return this._storeService.getStore().getState().draw.style;
 	}

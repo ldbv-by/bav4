@@ -9,7 +9,7 @@ import { finish, remove, reset, setStyle, setType } from '../../../../store/draw
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
-import { AssetSourceType, getAssetSource } from '../../../map/components/olMap/olStyleUtils';
+import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -268,19 +268,14 @@ export class DrawToolContent extends AbstractToolContent {
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
-				const getIconId = (iconUrl) => {
-					const fromUrl = iconUrl.slice(iconUrl.lastIndexOf('/') + 1);
-					return fromUrl;
-				};
 				const getStyle = () => {
 					if (getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
 						return { ...style, color: e.target.value };
 					}
 					const { IconService: iconService } = $injector.inject('IconService');
-
-					const iconId = getIconId(style.symbolSrc);
-					return { ...style, symbolSrc: iconService.getUrl(iconId, e.target.value) };
-
+					const iconResult = iconService.getIconResult(style.symbolSrc);
+					const color = hexToRgb(e.target.value);
+					return { ...style, symbolSrc: iconResult.getUrl(color), color: e.target.value };
 				};
 				const changedStyle = getStyle();
 				setStyle(changedStyle);
@@ -296,7 +291,10 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const changedStyle = { ...this.getModel().style, symbolSrc: e.detail.selected.base64 };
+				const hexColor = this.getModel().style.color;
+				const url = e.detail.selected.getUrl(hexToRgb(hexColor));
+				const symbolSrc = url ? url : e.detail.selected.base64;
+				const changedStyle = { ...this.getModel().style, symbolSrc: symbolSrc };
 				setStyle(changedStyle);
 			};
 

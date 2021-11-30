@@ -35,7 +35,7 @@ describe('DrawToolContent', () => {
 		}
 	};
 
-	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getUrl: () => {} };
+	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => { } };
 
 	const drawDefaultState = {
 		active: false,
@@ -206,7 +206,11 @@ describe('DrawToolContent', () => {
 
 		it('sets the style, after color changes in color-input (with REMOTE icon-asset)', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
-			const getUrlSpy = spyOn(iconServiceMock, 'getUrl').and.callFake(() => 'https://some.url/foo/bar/1,2,3/foobarbaz');
+			const getIconResultSpy = spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {
+				return {
+					getUrl: () => 'https://some.url/foo/bar/1,2,3/foobarbaz'
+				};
+			});
 			const newColor = '#ffffff';
 			const element = await setup({ ...drawDefaultState, style });
 
@@ -218,7 +222,7 @@ describe('DrawToolContent', () => {
 			colorInput.value = newColor;
 			colorInput.dispatchEvent(new Event('change'));
 
-			expect(getUrlSpy).toHaveBeenCalledWith('foobar', '#ffffff');
+			expect(getIconResultSpy).toHaveBeenCalledWith('https://some.url/foo/bar/0,0,0/foobar');
 			expect(store.getState().draw.style.symbolSrc).toBe('https://some.url/foo/bar/1,2,3/foobarbaz');
 		});
 

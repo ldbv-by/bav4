@@ -113,7 +113,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
-			.registerSingleton('IconService', { default: () => new IconResult('foo', 'bar') })
+			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
 				formatDistance: (distance, decimals) => {

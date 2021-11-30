@@ -14,9 +14,12 @@ describe('IconsService', () => {
 			.registerSingleton('ConfigService', configService);
 	});
 
-	const iconResult1 = new IconResult('foo1', 'bar1');
-	const iconResult2 = new IconResult('foo2', 'bar2');
-	const markerIconResult = new IconResult('marker', 'marker');
+	const getMatcher = (id) => {
+		return (idOrUrl) => idOrUrl === id || idOrUrl.endsWith(id);
+	};
+	const iconResult1 = new IconResult('foo1', 'bar1', getMatcher('foo1'), () => 'http://some.url/foo1');
+	const iconResult2 = new IconResult('foo2', 'bar2', getMatcher('foo2'), () => 'http://some.url/foo2');
+	const markerIconResult = new IconResult('marker', 'marker', getMatcher('marker'), () => 'http://some.url/marker');
 	const loadMockIcons = async () => {
 		return [
 			iconResult1,
@@ -24,12 +27,9 @@ describe('IconsService', () => {
 		];
 	};
 
-	const getIconsUrlMock = (id, color) => {
-		return `backend.url/${color}/${id}`;
-	};
 
-	const setup = (iconProvider = loadMockIcons, iconUrlProvider = getIconsUrlMock) => {
-		return new IconService(iconProvider, iconUrlProvider);
+	const setup = (iconProvider = loadMockIcons) => {
+		return new IconService(iconProvider);
 	};
 
 	describe('initialization', () => {
@@ -39,7 +39,7 @@ describe('IconsService', () => {
 			expect(instanceUnderTest._icons).toBeNull();
 
 			const icons = await instanceUnderTest.all();
-			const defaultIcon = instanceUnderTest.default();
+			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(icons.length).toBe(3);
 			expect(icons[0]).toEqual(defaultIcon);
@@ -71,7 +71,7 @@ describe('IconsService', () => {
 
 
 				const icons = await instanceUnderTest.all();
-				const defaultIcon = instanceUnderTest.default();
+				const defaultIcon = instanceUnderTest.getDefault();
 
 				expect(icons.length).toBe(5);
 				expect(icons[0]).toEqual(defaultIcon);
@@ -117,72 +117,59 @@ describe('IconsService', () => {
 		});
 	});
 
-	describe('getUrl', () => {
-		const color = [42, 12, 55];
-		it('provides a url for a icon-id and color', async () => {
-			const instanceUnderTest = setup();
-			const id = 'foo';
-
-			const url = await instanceUnderTest.getUrl(id, color);
-
-			expect(url).toBe('backend.url/42,12,55/foo');
-		});
-
-		it('provides a url for a base64String and color', async () => {
+	xdescribe('getIconResult', () => {
+		it('provides a IconResult for a icon-id', async () => {
 			const instanceUnderTest = setup(async () => {
-				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
+				return Promise.resolve([iconResult1, iconResult2]);
 			});
-			const base64String = iconResult2.base64;
+			const spy = spyOn(iconResult1, 'matches').and.callFake(() => true);
+
 			await instanceUnderTest.all();
-			const url = instanceUnderTest.getUrl(base64String, color);
-
-			expect(url).toBe('backend.url/42,12,55/foo2');
+			expect(spy).toHaveBeenCalled();
+			expect(instanceUnderTest.getIconResult('foo1')).toBe(iconResult1);
 		});
 
-		it('provides NO url, when icons not loaded', async () => {
-			const instanceUnderTest = setup(async () => {
-				return Promise.resolve([iconResult1, markerIconResult, iconResult2]);
-			});
-			const base64String = iconResult2.base64;
-			const warnSpy = spyOn(console, 'warn');
-			const url = instanceUnderTest.getUrl(base64String, color);
+		it('provides a IconResult for a base64-string', async () => {
+			const instanceUnderTest = setup();
+			await instanceUnderTest.all();
 
-			expect(url).toBeNull();
-			expect(warnSpy).toHaveBeenCalledWith('icons not loaded yet');
+			expect(instanceUnderTest.getIconResult(iconResult2.base64)).toBe(iconResult2);
 		});
 	});
 
-	describe('default', () => {
+	describe('getDefault', () => {
 		it('provides a default icon', async () => {
 			const instanceUnderTest = setup();
 
-			const defaultIcon = instanceUnderTest.default();
+			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(defaultIcon).toBeInstanceOf(IconResult);
 			expect(defaultIcon.id).toBe('marker');
 		});
 	});
 
-	describe('fromBase64', () => {
-		it('creates nothing when input is invalid content', () => {
-			const invalidInput = 'something';
-
-			const instanceUnderTest = setup();
-
-			expect(instanceUnderTest.fromBase64('bar', invalidInput)).toBeNull();
-		});
-	});
-
 	describe('IconResult', () => {
 
+		const fromBase64 = (id, encodedString) => {
+			if (encodedString.startsWith('data:image/svg+xml;base64,')) {
+				const b64DecodeUnicode = (str) => {
+					return decodeURIComponent(window.atob(str).split('').map(function (c) {
+						return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+					}).join(''));
+				};
+
+				return new IconResult(id, b64DecodeUnicode(encodedString.replace('data:image/svg+xml;base64,', '')));
+			}
+			return null;
+		};
+
 		it('creates a base64-encoded string and back', () => {
-			const instanceUnderTest = setup();
 			const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
 
 			const firstIconResult = new IconResult('foo', svg);
 			const base64String = firstIconResult.base64;
 
-			const secondIconResult = instanceUnderTest.fromBase64('bar', base64String);
+			const secondIconResult = fromBase64('bar', base64String);
 			expect(base64String).toBeTruthy();
 			expect(secondIconResult.svg).toEqual(firstIconResult.svg);
 		});
