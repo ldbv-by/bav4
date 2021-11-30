@@ -39,7 +39,7 @@
 	user-select: none;
 	border: 0;
 }
-.baselayer__button:hover, .baselayer__button:focus {
+.baselayer__button:hover, .baselayer__button:focus-visible {
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-close);      
 	transform: scale(1.2);
 	z-index: 2;
@@ -58,7 +58,7 @@
 	bottom: 0em;
 	user-select: 0;
 }
-.baselayer__button:hover .baselayer__label, .baselayer__button:focus .baselayer__label {
+.baselayer__button:hover .baselayer__label, .baselayer__button:focus-visible .baselayer__label {
 	display: block;
 }
 .baselayer__button[type="primary"] .baselayer__label {
