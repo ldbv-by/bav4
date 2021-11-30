@@ -21,7 +21,7 @@ describe('LayerInfo provider', () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 		const backendUrl = 'https://backend.url/';
-		const expectedArgs0 = backendUrl + 'layerinfo/' + geoResourceId;
+		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 			new Response('<b>hello</b>', { status: 200 })
@@ -40,7 +40,7 @@ describe('LayerInfo provider', () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 		const backendUrl = 'https://backend.url/';
-		const expectedArgs0 = backendUrl + 'layerinfo/' + geoResourceId;
+		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 			new Response(JSON.stringify(), { status: 404 })
@@ -57,7 +57,7 @@ describe('LayerInfo provider', () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 		const backendUrl = 'https://backend.url/';
-		const expectedArgs0 = backendUrl + 'layerinfo/' + geoResourceId;
+		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 			new Response(null, { status: 500 })
