@@ -7,8 +7,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0,0,0, .2);
-	backdrop-filter: blur(2px);
+	background-color: rgba(0,0,0,.3);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 }
 .modal__container {
