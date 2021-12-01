@@ -97,7 +97,20 @@ export class Icon extends MvuElement {
 			mask : url("${icon}");
 			-webkit-mask-image : url("${icon}");
 		}` : '';
-
+		const anchorClass = `.anchor {
+			--radius: ${size / 2}em;
+			--size: ${size}em;
+		}`;
+		const anchorClassFocus = (color_hover !== color) ?
+			`.anchor:focus .icon{
+			transform: scale(1.1);
+			background: ${color_hover};
+		}
+		.anchor:focus {
+			  background: ${color};
+			  box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+		}
+		` : '';
 		const classes = {
 			disabled: disabled
 		};
@@ -108,10 +121,12 @@ export class Icon extends MvuElement {
 			${anchorClassHover}
 			${customIconClass}
 			${css}
+			${anchorClass}
+			${anchorClassFocus}
 			</style>	
-			<a class='anchor' title=${title}>
+			<button class='anchor' title=${title}>
 				<span class='icon icon-custom ${classMap(classes)}'></span >
-			</a>
+			</button>
 			`;
 	}
 
