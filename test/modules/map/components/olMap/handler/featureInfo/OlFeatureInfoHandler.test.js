@@ -62,11 +62,11 @@ describe('OlFeatureInfoHandler', () => {
 	const delay = (fn) => {
 		/**
 		 * Although tests on map are wrapped within a map.once('postrender'), we still have flaky tests.
-		 * Therefore we have to delay them a bit (100ms seems to be enough)
+		 * Therefore we have to delay them a bit (200ms seems to be enough)
 		 */
 		return () => setTimeout(() => {
 			fn();
-		}, 100);
+		}, 200);
 	};
 
 	describe('constructor', () => {
