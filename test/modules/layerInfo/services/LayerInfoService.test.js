@@ -126,7 +126,6 @@ describe('LayerInfoService', () => {
 		});
 
 		it('logs an error when we are NOT in standalone mode', async () => {
-
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const providerErrMsg = 'LayerInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
 			const loadMockBvvLayerInfo = async () => {
@@ -141,6 +140,32 @@ describe('LayerInfoService', () => {
 			catch (err) {
 				expect(err.message).toBe('Could not load layerinfoResult from provider: ' + providerErrMsg);
 			}
+		});
+
+		it('just provides layerInfoResult when geoResourceId already available in locale cache', async () => {
+			const layerInfoSerice = new LayerInfoService(null);
+			const layerInfo = new LayerInfoResult('<b>content</b>');
+			layerInfoSerice._layerInfoResults.set(FALLBACK_GEORESOURCE_ID_0, layerInfo);
+
+			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
+
+			expect(layerInfoResult instanceof LayerInfoResult);
+			expect(layerInfoResult.content).toBe('<b>content</b>');
+			expect(layerInfoResult.title).toBe(null);
+		});
+
+		it('just provides layerInfoResult when geoResourceId not available in locale cache', async () => {
+			const loadMockBvvLayerInfo = async () => {
+				return new LayerInfoResult('<div><content/div>');
+			};
+			const layerInfoSerice = new LayerInfoService(loadMockBvvLayerInfo);
+			layerInfoSerice._layerInfoResults.set(FALLBACK_GEORESOURCE_ID_1, null);
+
+			const layerInfoResult = await layerInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
+
+			expect(layerInfoResult instanceof LayerInfoResult);
+			expect(layerInfoResult.content).toBe('<div><content/div>');
+			expect(layerInfoResult.title).toBe(null);
 		});
 	});
 });

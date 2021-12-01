@@ -67,6 +67,10 @@ export class MainMenu extends BaElement {
 			return minWidth ? 'is-desktop' : 'is-tablet';
 		};
 
+		const getIsFullSize = () => {
+			return (tabIndex === MainMenuTabIndex.FEATUREINFO.id) ? 'is-full-size' : '';
+		};
+
 
 		const getOverlayClass = () => {
 			return open ? 'is-open' : '';
@@ -77,19 +81,22 @@ export class MainMenu extends BaElement {
 		};
 
 		const contentPanels = Object.values(MainMenuTabIndex)
-		//Todo: refactor me when all content panels are real components
+			//Todo: refactor me when all content panels are real components
 			.map(v => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
 			<style>${css}</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getPreloadClass()}">
-				<div class="main-menu ${getOverlayClass()}">            
+			<div class="${getOrientationClass()} ${getPreloadClass()}">
+				<div class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
 					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
-						<i class='resize-icon'></i>	
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
+						<i class='resize-icon'></i>	
 					</button>	
+					<div class="main-menu__resize-button">						
+						<i class="resize-icon "></i>
+					</div>					
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`

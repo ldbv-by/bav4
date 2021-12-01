@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the state of the Toolbox.
- * @module toolbox/toolContainer/action
+ * @module toolContainer/action
  */
 import { OPEN_CLOSED_CHANGED, CONTENT_CHANGED } from './toolContainer.reducer';
 import { $injector } from '../../injection';

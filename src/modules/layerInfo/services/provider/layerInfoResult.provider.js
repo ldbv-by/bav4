@@ -9,7 +9,7 @@ import { LayerInfoResult } from '../LayerInfoService';
 export const loadBvvLayerInfo = async (geoResourceId) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = `${configService.getValueAsPath('BACKEND_URL')}layerinfo/${geoResourceId}`;
+	const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResourceId}`;
 
 	const result = await httpService.get(url);
 

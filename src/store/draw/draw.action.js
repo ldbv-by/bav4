@@ -1,6 +1,6 @@
 /**
  * Action creators to activate/deactive the drwa tool
- * @module map/action
+ * @module draw/action
  */
 import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED } from './draw.reducer';
 import { $injector } from '../../injection';

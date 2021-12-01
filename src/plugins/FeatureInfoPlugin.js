@@ -1,9 +1,10 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { addFeatureInfoItems, registerQueryFor, unregisterQueryFor, startRequest } from '../store/featureInfo/featureInfo.action';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { provide as provider } from './i18n/featureInfoPlugin.provider';
+import { createUniqueId } from '../utils/numberUtils';
 
 /**
  * @class
@@ -29,7 +30,6 @@ export class FeatureInfoPlugin extends BaPlugin {
 
 		const onPointerClick = async (evt, state) => {
 			const { payload: { coordinate } } = evt;
-			// clearFeatureInfoItems();
 			startRequest(coordinate);
 			const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
 			//use only visible and unhidden layers
@@ -39,10 +39,10 @@ export class FeatureInfoPlugin extends BaPlugin {
 			[...state.layers.active]
 				.filter(layerFilter)
 				.forEach(async layerProperties => {
-					const geoResourceId = layerProperties.geoResourceId;
+					const queryId = createUniqueId();
 					try {
-						registerQueryFor(geoResourceId);
-						const featureInfoResult = await this._featureInfoService.get(geoResourceId, coordinate, resolution);
+						registerQuery(queryId);
+						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
 						if (featureInfoResult) {
 							const title = featureInfoResult.title || layerProperties.label;
 							addFeatureInfoItems({ title: title, content: featureInfoResult.content });
@@ -53,7 +53,7 @@ export class FeatureInfoPlugin extends BaPlugin {
 						emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
 					}
 					finally {
-						unregisterQueryFor(geoResourceId);
+						resolveQuery(queryId);
 					}
 				});
 		};

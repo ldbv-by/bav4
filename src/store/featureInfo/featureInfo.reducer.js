@@ -1,8 +1,8 @@
 export const FEATURE_INFO_ADDED = 'featureInfo/added';
 export const FEATURE_INFO_REQUEST_START = 'featureInfo/request/start';
 export const FEATURE_INFO_REQUEST_ABORT = 'featureInfo/request/abort';
-export const QUERIED_GEORESOUCE_ADDED = 'featureInfo/queriedGeoresource/added';
-export const QUERIED_GEORESOUCE_REMOVED = 'featureInfo/queriedGeoresource/removed';
+export const QUERY_REGISTERED = 'featureInfo/queriedGeoresource/added';
+export const QUERY_RESOLVED = 'featureInfo/queriedGeoresource/removed';
 
 export const initialState = {
 	/**
@@ -18,10 +18,16 @@ export const initialState = {
 	coordinate: null,
 
 	/**
-	 * Array of GeoResource Ids being currently queried
+	 * Array of running queries
 	 * @property {Array.<string>}
 	 */
-	pending: [],
+	queries: [],
+
+	/**
+	 * `true` if one or more queries are running
+	 * @property {boolean}
+	 */
+	querying: false,
 
 	/**
 	 * Changes when current FeatureInfo request should be aborted and/or results should be reseted.
@@ -43,24 +49,30 @@ export const featureInfoReducer = (state = initialState, action) => {
 			return {
 				...state,
 				current: [],
-				coordinate: payload
+				coordinate: payload,
+				querying: true
 			};
-		case QUERIED_GEORESOUCE_ADDED:
+		case QUERY_REGISTERED:
 			return {
 				...state,
-				pending: [...state.pending, payload]
+				queries: [...state.queries, payload],
+				querying: true
 			};
-		case QUERIED_GEORESOUCE_REMOVED:
+		case QUERY_RESOLVED: {
+			const queries = state.queries.filter(geoResId => geoResId !== payload);
 			return {
 				...state,
-				pending: state.pending.filter(geoResId => geoResId !== payload)
+				queries: queries,
+				querying: queries.length > 0
 			};
+		}
 		case FEATURE_INFO_REQUEST_ABORT:
 			return {
 				...state,
 				current: [],
-				pending: [],
-				aborted: payload
+				queries: [],
+				aborted: payload,
+				querying: false
 			};
 	}
 
