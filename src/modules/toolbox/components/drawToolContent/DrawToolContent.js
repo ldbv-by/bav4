@@ -249,7 +249,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			return html`
-            <div id=${tool.name}
+            <button id=${tool.name}
                 class="tool-container__button ${classMap(classes)}" 
                 title=${tool.title}
                 @click=${toggle}>
@@ -257,7 +257,7 @@ export class DrawToolContent extends AbstractToolContent {
                 <div class="tool-container__icon ${tool.icon}">
                 </div>  
                 <div class="tool-container__button-text">${tool.title}</div>
-            </div>
+            </button>
             `;
 		};
 

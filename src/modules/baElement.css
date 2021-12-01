@@ -17,7 +17,7 @@
 *,*:focus,*:hover {
 	outline: none;
 }
-*:focus {
+*:focus-visible {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 

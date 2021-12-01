@@ -3,6 +3,14 @@
 	flex-direction: column;
 }
 
+.button {
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);  
+}
+
+.button:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);	
+}
+
 .zoom-buttons :first-child {
 	margin: 0 0 .4em 0;  
 }
@@ -27,11 +35,11 @@
 	width: 2.5em;
 }
 
-.icon:hover {
-	transform: scale(1.1);
+.button:hover,.button:focus {
+	transform: scale(1.1);	
 }
 
-.icon:active {
+.button:active {
 	transform: scale(1.15);
 }
 
