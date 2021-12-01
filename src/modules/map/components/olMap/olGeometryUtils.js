@@ -267,6 +267,7 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	}
 
 	return residuals;
+};
 /**
  * Checks whether or not the geometry is valid for mapping purposes
  * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon
