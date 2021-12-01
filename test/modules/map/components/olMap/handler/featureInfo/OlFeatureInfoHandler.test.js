@@ -180,10 +180,13 @@ describe('OlFeatureInfoHandler', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(notMatchingCoordinate);
 
-				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].id).toBe('foo');
+				setTimeout(() => {
 
-				done();
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].id).toBe('foo');
+
+					done();
+				}, TestDelay);
 			}));
 		});
 
