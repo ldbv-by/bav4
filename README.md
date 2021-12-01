@@ -18,7 +18,7 @@ Next-generation web-map viewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-  - Modern Js (ES9), no transpiler
+  - Modern JavaScript (ES11), no transpiler
   - Web Components
   - Vanilla CSS 
 - Built-in dependency injection
