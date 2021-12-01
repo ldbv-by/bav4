@@ -86,17 +86,40 @@ export class MainMenu extends BaElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+		const changeWidth = (event) => {
+			const popup = this.shadowRoot.getElementById('mainmenu');
+			popup.style.width = parseInt(event.target.value) + 'em';
+		};
+
+		const getSlider = () => {
+
+			const onPreventDragging = (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			};
+
+			return html`<div class='slider-container'>
+				<input  
+					type="range" 
+					min="28" 
+					max="100" 
+					value="28" 
+					draggable='true' 
+					@input=${changeWidth} 
+					@dragstart=${onPreventDragging}
+					></div>`;
+		};
+
+
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
-				<div class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
+				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
 					<button @click="${toggle}" class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<span class='arrow'></span>	
 					</button>	
-					<div class="main-menu__resize-button">						
-						<i class="resize-icon "></i>
-					</div>					
+						${getSlider()}   				
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`

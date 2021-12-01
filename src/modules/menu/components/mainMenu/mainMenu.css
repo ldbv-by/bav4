@@ -13,50 +13,13 @@
 	transition-timing-function: var(--animation-easing-linea);   
 }
 
-.is-full-size {
+.is-desktop.is-full-size {
 	top: -14em;
 	z-index: calc(var(--z-header) + 90);
 	min-width: 28em;
 	max-width: 90vw;
 	resize: horizontal;
-	overflow: auto;
-}
-
-.main-menu__resize-button {
-	display: none;
-	position: absolute;
-	height: 3em;
-	width: 3em;
-	background: var(--secondary-color);
-	border-radius: 3em;
-	right: -1.5em;
-	z-index: calc(var(--z-header) + 91);
-	top: 50%;
-	margin-top: 6em;
-	border: 0;
-	padding: 0;
-	cursor: col-resize;
-
-}
-.main-menu__resize-button:hover {
-	background: var(--primary-color);
-}
-.resize-icon {
-	background: var(--primary-bg-color);
-	display: block;
-	height: 2.6em;
-	width: 2.6em;
-	margin: .2em;
-	mask: url('assets/expand.svg');
-	-webkit-mask: url('assets/expand.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-
-}
-
-.is-full-size .main-menu__resize-button {
-
-	display: block;
+	overflow: visible;
 }
 
 .main-menu__container {
@@ -209,6 +172,86 @@
 	position: absolute;
 	width: 100%;
 }
+
+.slider-container {
+	display: none;
+	position: fixed;
+	width: 100vw;
+	z-index: calc(var(--z-mainmenu) + 10);
+	padding: 0 0 0 28.4em;
+	height: 100%;
+	pointer-events: none;
+}
+.is-desktop.is-full-size .slider-container {
+	display: block;
+}
+.slider-container input {
+	width: 74.3em;
+	left: -1.5em;
+	top: 50%;
+	position: relative;
+	margin-top: 5em;
+	pointer-events: all;
+}
+
+input[type="range"] {
+	--track-height: 0;
+	--track-fill: 0%;
+	--thumb-size: 2.5em;
+	--thumb-offset: 0;
+	--thumb-highlight-size: 0px;
+	--primary-color-light: var(--primary-color-lighter);
+
+	appearance: none;         
+	display: block;    
+	background: transparent;  
+	outline-offset: 5px;      
+}
+input[type="range"]::-webkit-slider-thumb {
+	appearance: none; 
+	cursor: ew-resize; 
+	border: .2em solid var(--secondary-color);
+	block-size: var(--thumb-size);
+	inline-size: var(--thumb-size);
+	margin-top: var(--thumb-offset);
+	border-radius: 50%;
+	background: url('assets/expand.svg') var(--secondary-color);
+	width: 2.3em;
+	height: 2.3em;
+	background-size: 1.9em  1.9em;
+	background-repeat: no-repeat;
+	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
+	transition: box-shadow .1s ease;
+}
+
+input[type="range"]::-moz-range-thumb {
+	appearance: none; 
+	cursor: ew-resize; 
+	border: .4em solid var(--secondary-color);
+	block-size: var(--thumb-size);
+	inline-size: var(--thumb-size);
+	margin-top: var(--thumb-offset);
+	border-radius: 50%;
+	background: var(--primary-color) fixed;
+	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
+	transition: box-shadow .1s ease;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+	appearance: none; 
+	block-size: 0;
+}
+
+input[type="range"]::-moz-range-track {
+	appearance: none; 
+	block-size: 0;
+}
+input[type="range"]:focus {
+	box-shadow: none;
+}
+/* input[type="range"]:focus {
+	--thumb-highlight-size: .2em;
+} */
 
 @keyframes animateFadeIn {
 	0% {
