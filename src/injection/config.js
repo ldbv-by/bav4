@@ -53,7 +53,7 @@ $injector
 	.registerSingleton('IconService', new IconService())
 	.register('AdministrationService', AdministrationService)
 	.register('FeatureInfoService', FeatureInfoService)
-	.register('LayerInfoService', LayerInfoService)
+	.registerSingleton('LayerInfoService', new LayerInfoService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
