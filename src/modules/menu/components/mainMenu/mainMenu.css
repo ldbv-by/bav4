@@ -41,7 +41,7 @@
 .main-menu__resize-button:hover {
 	background: var(--primary-color);
 }
-.resize-icon {
+.swipe-icon {
 	background: var(--primary-bg-color);
 	display: block;
 	height: 2.6em;

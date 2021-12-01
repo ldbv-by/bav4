@@ -95,7 +95,7 @@ export class MainMenu extends BaElement {
 						<i class='resize-icon'></i>	
 					</button>	
 					<div class="main-menu__resize-button">						
-						<i class="resize-icon "></i>
+						<i class="swipe-icon "></i>
 					</div>					
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
