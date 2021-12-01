@@ -232,10 +232,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	// eslint-disable-next-line no-unused-vars
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later
+		setStyle(null);
+		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
@@ -252,8 +253,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
-		setStyle(null);
-		setSelectedStyle(null);
 		this._draw = null;
 		this._modify = false;
 		this._select = false;
