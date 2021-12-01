@@ -77,7 +77,7 @@ export class GeoResourceResultItem extends BaElement {
 
 			return html`
 				<style>${css}</style>
-                <li class="ba-list-item"
+                <li class="ba-list-item"  tabindex="0"
 					@click=${() => onClick(this._georesourceSearchResult)} 
 					@mouseenter=${() => onMouseEnter(this._georesourceSearchResult)} 
 					@mouseleave=${() => onMouseLeave(this._georesourceSearchResult)}>

@@ -79,7 +79,7 @@ export class LocationResultItem extends BaElement {
 
 			return html`
 				<style>${css}</style>
-                <li class="ba-list-item"
+                <li class="ba-list-item" tabindex="0"
 					@click=${() => onClick(this._locationSearchResult)} 
 					@mouseenter=${() => onMouseEnter(this._locationSearchResult)} 
 					@mouseleave=${() => onMouseLeave(this._locationSearchResult)}>

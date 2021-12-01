@@ -22,14 +22,18 @@
 	border: none;
 	outline: none;
 	padding-top: 0.25em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);  
 }
 
 .hidden {
 	display: none;
 }
 
-.rotation-button:hover {
+.rotation-button:hover ,.rotation-button:focus {
 	transform: scale(1.1);
+}
+.rotation-button:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);	
 }
 
 .rotation-button:active {

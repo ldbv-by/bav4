@@ -111,7 +111,15 @@
 	font-weight: bold;
 	display: flex;
 }
-.close {
+.close-icon {
 	position: absolute;
-	right: .5em;
+	right: 0;
+	top: 0;
+	height: 2.2em;
+	width: 2.2em;
+	border-radius: 3em;
+	padding: .3em;
+}
+.close-icon:hover {
+	background: var(--header-background-color)
 }

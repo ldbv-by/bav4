@@ -11,6 +11,7 @@ import { closeToolContainer } from '../../../../store/toolContainer/toolContaine
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import closeIcon from './assets/x-square.svg';
 
 /**
  * @class
@@ -103,11 +104,8 @@ export class ToolContainer extends BaElement {
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  	
 			<div class="tool-container"> 			
 				<div class="tool-container__content ${getOverlayClass()}">    
-				<div class="tool-container__tools-nav">                        
-                        <button @click=${closeToolContainer} class="tool-container__close-button">
-							<span class="close-icon">        							
-							</span>
-                        </button>                             
+				<div class="tool-container__tools-nav">                         
+						<ba-icon class='tool-container__close-button' .icon='${closeIcon}' .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${closeToolContainer}>						
                 </div>		
 					${content}    				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
