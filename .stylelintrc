@@ -1,13 +1,13 @@
 {
   "extends": "stylelint-config-recommended",
-  "defaultSeverity": "warning",
+  "defaultSeverity": "error",
   "rules": {
     "no-missing-end-of-source-newline": true,
     "no-empty-first-line": true,
     "max-empty-lines": 1,
     "indentation": "tab",
     "block-opening-brace-newline-after": "always",
-    "block-opening-brace-space-before" : "always",
+    "block-opening-brace-space-before": "always",
     "declaration-bang-space-before": "always",
     "declaration-colon-space-after": "always"
   }

@@ -3,7 +3,9 @@ import { $injector } from '../../../../../src/injection';
 import { DrawToolContent } from '../../../../../src/modules/toolbox/components/drawToolContent/DrawToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
-import { setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
+import { EventLike } from '../../../../../src/utils/storeUtils';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 
@@ -11,6 +13,20 @@ describe('DrawToolContent', () => {
 	let store;
 	const windowMock = {
 		matchMedia() { }
+	};
+
+	const shareServiceMock = {
+		copyToClipboard() {
+			return Promise.resolve();
+		},
+		encodeState() {
+			return 'http://this.is.a.url?forTestCase';
+		}
+	};
+	const urlServiceMock = {
+		shorten() {
+			return Promise.resolve('http://foo');
+		}
 	};
 
 	const drawDefaultState = {
@@ -32,18 +48,23 @@ describe('DrawToolContent', () => {
 		height: 10,
 		text: ''
 	};
-	const setup = async (drawState = drawDefaultState) => {
+	const setup = async (drawState = drawDefaultState, config = {}) => {
 		const state = {
 			draw: drawState
 		};
 
-		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer });
+		const { embed = false, isTouch = false } = config;
+
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => false,
-				getWindow: () => windowMock
+				isEmbedded: () => embed,
+				getWindow: () => windowMock,
+				isTouch: () => isTouch
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('UrlService', urlServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
 
@@ -62,8 +83,8 @@ describe('DrawToolContent', () => {
 		it('builds list of tools', async () => {
 			const element = await setup();
 
-			expect(element._tools).toBeTruthy();
-			expect(element._tools.length).toBe(4);
+			expect(element._model.tools).toBeTruthy();
+			expect(element._model.tools.length).toBe(4);
 			expect(element.shadowRoot.querySelector('.tool-container__buttons')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-container__buttons').childElementCount).toBe(4);
 		});
@@ -71,12 +92,10 @@ describe('DrawToolContent', () => {
 		it('activates the Line draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('line');
 		});
@@ -84,12 +103,10 @@ describe('DrawToolContent', () => {
 		it('activates the marker draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#marker');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('marker');
 		});
@@ -97,12 +114,10 @@ describe('DrawToolContent', () => {
 		it('activates the Text draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#text');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('text');
 		});
@@ -110,12 +125,10 @@ describe('DrawToolContent', () => {
 		it('activates the Polygon draw tool', async () => {
 
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#polygon');
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalled();
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 			expect(store.getState().draw.type).toBe('polygon');
 		});
@@ -135,17 +148,14 @@ describe('DrawToolContent', () => {
 
 		it('toggles a tool', async () => {
 			const element = await setup();
-			const spy = spyOn(element, '_setActiveToolByType').and.callThrough();
 			const toolButton = element.shadowRoot.querySelector('#line');
 
 			toolButton.click();
-
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
 
 			toolButton.click();
 
-			expect(spy).toHaveBeenCalledTimes(2);
 			expect(toolButton.classList.contains('is-active')).toBeFalse();
 		});
 
@@ -157,6 +167,15 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#style_marker')).toBeNull();
 			setType(drawType);
 			setStyle(style);
+			expect(element.shadowRoot.querySelector('#style_marker')).toBeTruthy();
+		});
+
+		it('displays style form, when selectedStyle is available', async () => {
+			const selectedStyle = { type: 'marker', style: { ...StyleOptionTemplate, color: '#f00ba3' } };
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#style_marker')).toBeNull();
+			setSelectedStyle(selectedStyle);
 			expect(element.shadowRoot.querySelector('#style_marker')).toBeTruthy();
 		});
 
@@ -247,6 +266,199 @@ describe('DrawToolContent', () => {
 			setType('polygon');
 
 			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+		});
+
+		it('hides the style-inputs', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('polygon');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+
+			setType(null);
+			expect(element.shadowRoot.querySelector('.tool-container__form').childElementCount).toBe(0);
+		});
+
+		it('hides the style-inputs on invalid drawType', async () => {
+			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('polygon');
+
+			expect(element.shadowRoot.querySelector('#style_color')).toBeTruthy();
+
+			setType('foo');
+			expect(element.shadowRoot.querySelector('.tool-container__form').childElementCount).toBe(0);
+		});
+
+		it('displays the finish-button for polygon', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
+		});
+
+		it('displays the finish-button for line', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish').label).toBe('toolbox_drawTool_finish');
+		});
+
+		it('displays NOT the finish-button for marker', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#cancel').label).toBe('toolbox_drawTool_cancel');
+		});
+
+		it('displays NOT the finish-button for text', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+
+			expect(element.shadowRoot.querySelector('#cancel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#finish')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('#cancel').label).toBe('toolbox_drawTool_cancel');
+		});
+
+		it('finishes the drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+			const finishButton = element.shadowRoot.querySelector('#finish');
+
+			finishButton.click();
+
+			expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
+		});
+
+		it('resets the measurement', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'marker' });
+			const resetButton = element.shadowRoot.querySelector('#cancel');
+
+			resetButton.click();
+			expect(resetButton.label).toBe('toolbox_drawTool_cancel');
+			expect(store.getState().draw.reset).toBeInstanceOf(EventLike);
+		});
+
+		it('removes the selected drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'modify', type: 'line' });
+			const removeButton = element.shadowRoot.querySelector('#remove');
+
+			removeButton.click();
+			expect(removeButton.label).toBe('toolbox_drawTool_delete_drawing');
+			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('deletes the last drawn point of drawing', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
+			const removeButton = element.shadowRoot.querySelector('#remove');
+
+			removeButton.click();
+			expect(removeButton.label).toBe('toolbox_drawTool_delete_point');
+			expect(store.getState().draw.remove).toBeInstanceOf(EventLike);
+		});
+
+		it('shows the drawing sub-text', async () => {
+			const element = await setup(drawDefaultState);
+			const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+			expect(subTextElement).toBeTruthy();
+			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+		});
+
+		it('shows the drawing share-button', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeTruthy();
+		});
+
+		it('shows NOT the drawing share-container when fileSaveResult is null', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: null });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeFalsy();
+		});
+
+		it('shows NOT the drawing share-container for invalid fileSaveResult', async () => {
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: null } });
+			const shareButton = element.shadowRoot.querySelector('#share');
+
+			expect(shareButton).toBeFalsy();
+		});
+
+		it('opens the modal with shortened share-urls on click', async (done) => {
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+
+			const shareButton = element.shadowRoot.querySelector('#share');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(store.getState().modal.data.title).toBe('toolbox_drawTool_share');
+				done();
+			});
+
+		});
+
+		it('logs a warning, when shortener fails', async (done) => {
+			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
+			const warnSpy = spyOn(console, 'warn');
+			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
+
+			const shareButton = element.shadowRoot.querySelector('#share');
+			shareButton.click();
+
+			setTimeout(() => {
+				expect(shareButton).toBeTruthy();
+				expect(shortenerSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledTimes(2);
+				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
+				done();
+			});
+
+		});
+		describe('with touch-device', () => {
+			const touchConfig = {
+				embed: false,
+				isTouch: true
+			};
+
+			it('shows the drawing sub-text for mode:active', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'active' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_active');
+			});
+
+			it('shows the drawing sub-text for mode:draw', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'draw' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_draw');
+			});
+
+			it('shows the drawing sub-text for mode:modify', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'modify' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_modify');
+			});
+
+			it('shows the drawing sub-text for mode:select', async () => {
+				const element = await setup({ ...drawDefaultState, mode: 'select' }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_select');
+			});
 		});
 	});
 });

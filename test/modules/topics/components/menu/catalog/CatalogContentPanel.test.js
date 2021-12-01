@@ -10,6 +10,7 @@ import { TopicsContentPanelIndex } from '../../../../../../src/modules/topics/co
 import { Topic } from '../../../../../../src/services/domain/topic';
 import { Spinner } from '../../../../../../src/modules/commons/components/spinner/Spinner';
 import { topicsContentPanelReducer } from '../../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { AbstractContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
 
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
@@ -36,6 +37,16 @@ describe('TopicsContentPanel', () => {
 
 		return TestUtils.render(CatalogContentPanel.tag);
 	};
+
+	describe('class', () => {
+
+		it('inherits from AbstractContentPanel', async () => {
+
+			const element = await setup();
+
+			expect(element instanceof AbstractContentPanel).toBeTrue();
+		});
+	});
 
 	describe('when initialized', () => {
 
@@ -147,14 +158,14 @@ describe('TopicsContentPanel', () => {
 				// //test existence of important css classes
 				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.ba-list-item__after')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.back-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
 				expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
 				// //no style present for current topic
 				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(0);
 				// //test i18n
-				expect(element.shadowRoot.querySelector('.ba-list-item__text').textContent).toBe('topics_catalog_panel_change_topic');
+				expect(element.shadowRoot.querySelector('.ba-list-item__header').title).toBe('topics_catalog_panel_change_topic');
 				//the example catalog returns one node and one leaf object on the top level
 				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);

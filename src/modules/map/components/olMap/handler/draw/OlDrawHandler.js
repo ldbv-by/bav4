@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType } from '../../../../../../store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType, setGeometryIsValid } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
@@ -19,11 +19,10 @@ import { FileStorageServiceDataTypes } from '../../../../../../services/FileStor
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
-import { emitNotification } from '../../../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../../../store/notifications/notifications.reducer';
-import { isEmptyLayer } from '../../olMapUtils';
+import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
-import { setMode } from '../../../../../../store/measurement/measurement.action';
+import { setMode } from '../../../../../../store/draw/draw.action';
+import { isValidGeometry } from '../../olGeometryUtils';
 
 
 export const MAX_SELECTION_SIZE = 1;
@@ -120,8 +119,11 @@ export class OlDrawHandler extends OlLayerHandler {
 					vgr.getData().then(data => {
 						const oldFeatures = readFeatures(data);
 						const onFeatureChange = (event) => {
+							const geometry = event.target.getGeometry();
+							setGeometryIsValid(isValidGeometry(geometry));
 							this._styleService.updateStyle(event.target, olMap);
 						};
+
 						oldFeatures.forEach(f => {
 							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 							f.set('srid', this._mapService.getSrid(), true);
@@ -152,12 +154,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			const coordinate = event.coordinate;
 			const dragging = event.dragging;
 			const pixel = event.pixel;
-			this._updateDrawState(coordinate, pixel, dragging);
+
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0 && !this._modifyActivated) {
+			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
 				setSelectedStyle(null);
-				this._setDrawState({ ...this._drawState, type: InteractionStateType.SELECT, snap: null });
 			}
 
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
@@ -168,7 +169,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					}
 				});
 			}
-			this._modifyActivated = false;
+			this._updateDrawState(coordinate, pixel, dragging);
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -221,6 +222,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (preselectDrawType) {
 			this._init(preselectDrawType);
 		}
+		this._updateDrawState();
 
 		return this._vectorLayer;
 	}
@@ -230,10 +232,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	// eslint-disable-next-line no-unused-vars
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later
+		setStyle(null);
+		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
@@ -250,8 +253,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
-		setStyle(null);
-		setSelectedStyle(null);
 		this._draw = null;
 		this._modify = false;
 		this._select = false;
@@ -282,13 +283,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.type, (type) => this._init(type)),
 			observe(store, state => state.draw.style, () => this._updateStyle()),
 			observe(store, state => state.draw.finish, () => this._finish()),
-			observe(store, state => state.draw.reset, () => this._startNew()),
+			observe(store, state => state.draw.reset, () => this._reset()),
 			observe(store, state => state.draw.remove, () => this._remove())];
 	}
 
 	_init(type) {
 		const styleOption = this._getStyleOption();
-
+		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
@@ -311,19 +312,26 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._draw) {
 
 			this._draw.on('drawstart', event => {
+				const onFeatureChange = (event) => {
+					const geometry = event.target.getGeometry();
+					setGeometryIsValid(isValidGeometry(geometry));
+				};
 				this._sketchHandler.activate(event.feature);
 				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
 				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
+				listener = event.feature.on('change', onFeatureChange);
 			});
 			this._draw.on('drawend', event => {
 				this._activateModify(event.feature);
 				this._sketchHandler.deactivate();
+				unByKey(listener);
 			});
 
 			this._map.addInteraction(this._draw);
 			this._draw.setActive(true);
+			this._updateDrawState();
 		}
 
 	}
@@ -336,11 +344,21 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_remove() {
 		if (this._draw && this._draw.getActive()) {
-
-			this._draw.removeLastPoint();
-			if (this._pointCount === 1) {
+			const isValid = () => {
+				if (this._sketchHandler.isActive) {
+					const geometry = this._sketchHandler.active.getGeometry();
+					return isValidGeometry(geometry);
+				}
+				return false;
+			};
+			if (!isValid()) {
 				this._startNew();
 			}
+			else {
+				this._draw.removeLastPoint();
+				this._updateDrawState();
+			}
+
 			if (this._lastPointerMoveEvent) {
 				this._draw.handleEvent(this._lastPointerMoveEvent);
 			}
@@ -348,12 +366,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
+			this._select.getFeatures().clear();
+			setSelectedStyle(null);
+			this._updateDrawState();
 		}
+
 	}
 
 	_finish() {
 		if (this._sketchHandler.isActive) {
 			this._draw.finishDrawing();
+			this._updateDrawState();
 		}
 		else {
 			this._activateModify(null);
@@ -367,10 +390,25 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._modify.setActive(false);
 			setSelectedStyle(null);
 
+			this._helpTooltip.deactivate();
 			const currenType = this._storeService.getStore().getState().draw.type;
 			this._init(currenType);
+			this._helpTooltip.activate(this._map);
 		}
+		this._updateDrawState();
+	}
 
+	_reset() {
+		if (this._draw) {
+			this._draw.abortDrawing();
+			this._select.getFeatures().clear();
+			this._modify.setActive(false);
+			setSelectedStyle(null);
+
+			this._helpTooltip.deactivate();
+			setType(null);
+		}
+		this._updateDrawState();
 	}
 
 	_createDrawByType(type, styleOption) {
@@ -454,8 +492,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		}
 		this._modify.setActive(true);
-		this._modifyActivated = true;
-
 		this._setSelected(feature);
 	}
 
@@ -491,8 +527,9 @@ export class OlDrawHandler extends OlLayerHandler {
 			coordinate: coordinate,
 			pointCount: pointCount
 		};
-
-		drawState.snap = getSnapState(this._map, this._vectorLayer, pixel);
+		if (pixel) {
+			drawState.snap = getSnapState(this._map, this._vectorLayer, pixel);
+		}
 
 		if (this._draw) {
 			drawState.type = InteractionStateType.ACTIVE;
@@ -513,6 +550,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		drawState.dragging = dragging;
+		if (coordinate == null && pixel == null && this._drawState.type === InteractionStateType.MODIFY) {
+			drawState.type = InteractionStateType.SELECT;
+		}
 		this._setDrawState(drawState);
 	}
 
@@ -590,7 +630,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('map_olMap_handler_measure_layer_label');
 
-		if (isEmptyLayer(this._vectorLayer)) {
+		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
+		if (isEmpty) {
 			console.warn('Cannot store empty layer');
 			return;
 		}

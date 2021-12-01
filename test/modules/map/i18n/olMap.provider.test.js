@@ -16,6 +16,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen');
 		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Klicke und ziehen um die Beschriftung zu verschieben');
 		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF Taste');
+		expect(map.map_olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Letzter Punkt löschen: ENTF Taste');
 		expect(map.map_olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
 		expect(map.map_olMap_handler_measure_layer_label).toBe('Messung');
@@ -24,6 +25,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
+		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
 	});
 
 	it('provides translation for en', () => {
@@ -39,6 +41,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_measure_modify_click_or_drag).toBe('Click to delete the point.<br/> Click then drag to move the point');
 		expect(map.map_olMap_handler_measure_modify_click_drag_overlay).toBe('Click then drag to move the label');
 		expect(map.map_olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the measurement');
+		expect(map.map_olMap_handler_draw_modify_key_for_delete).toBe('Press DEL to delete the drawing');
 		expect(map.map_olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
 		expect(map.map_olMap_handler_measure_select).toBe('Select existing or start new measurement');
 		expect(map.map_olMap_handler_measure_layer_label).toBe('Measurement');
@@ -47,10 +50,11 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.map_olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
+		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Object Information not available');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 17;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

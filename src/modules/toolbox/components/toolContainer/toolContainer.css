@@ -17,9 +17,9 @@
 	margin: 0;
 	padding: 0;
 	width: 3em;
-	height: 2.5em;
+	height: 2.5em;    
 	border: 0;
-	opacity: 1;
+	background: var(--secondary-bg-color);
 	font-weight: bold;
 	cursor: pointer;
 	opacity: .9;

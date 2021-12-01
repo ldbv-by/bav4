@@ -18,6 +18,7 @@ import VectorSource from 'ol/source/Vector';
 import Event from 'ol/events/Event';
 import { Group as LayerGroup } from 'ol/layer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
+import { getDefaultLayerOptions } from '../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -62,6 +63,9 @@ describe('OlMap', () => {
 		},
 		get active() {
 			return false;
+		},
+		get options() {
+			return getDefaultLayerOptions();
 		}
 	};
 	const drawLayerHandlerMock = {
@@ -69,6 +73,9 @@ describe('OlMap', () => {
 		deactivate() { },
 		get id() {
 			return 'drawLayerHandlerMockId';
+		},
+		get options() {
+			return getDefaultLayerOptions();
 		}
 	};
 	const geolocationLayerHandlerMock = {
@@ -76,13 +83,28 @@ describe('OlMap', () => {
 		deactivate() { },
 		get id() {
 			return 'geolocationLayerHandlerMockId';
+		},
+		get options() {
+			return getDefaultLayerOptions();
 		}
 	};
 	const highlightLayerHandlerMock = {
-		activate() { },
+
 		deactivate() { },
 		get id() {
 			return 'highlightLayerHandlerMockId';
+		},
+		get active() {
+			return false;
+		},
+		get options() {
+			return getDefaultLayerOptions();
+		}
+	};
+	const featureInfoHandlerMock = {
+		register() { },
+		get id() {
+			return 'featureInfoHandlerMockId';
 		}
 	};
 
@@ -124,6 +146,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
+			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('VectorImportService', vectorImportServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
@@ -278,6 +301,25 @@ describe('OlMap', () => {
 			expect(preventDefault).toHaveBeenCalled();
 		});
 
+		it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+
+			//we set the highlightLayerHandlerMock active which allows click handling
+			spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
+			spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
+			const element = await setup();
+			const map = element._map;
+			const coordinate = [38, 75];
+			const screenCoordinate = [21, 42];
+			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+			const preventDefault = jasmine.createSpy();
+
+			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+
+			expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+			expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+			expect(preventDefault).toHaveBeenCalled();
+		});
+
 		it('does nothing when layer handler is active', async () => {
 
 			const element = await setup();
@@ -325,6 +367,25 @@ describe('OlMap', () => {
 					expect(preventDefault).toHaveBeenCalled();
 				});
 
+				it('updates the \'contextclick\' when layer handler is active but allows default context click handling', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					//we set the highlightLayerHandlerMock active which allows context click handling
+					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
+					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: false });
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
+
+					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+					expect(preventDefault).toHaveBeenCalled();
+				});
+
 				it('does nothing when layer handler is active', async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 					//we set one handler active
@@ -347,6 +408,28 @@ describe('OlMap', () => {
 				it('updates the \'contextclick\' property in pointer store', async () => {
 					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					const element = await setup();
+					const map = element._map;
+					const coordinate = [38, 75];
+					const screenCoordinate = [21, 42];
+					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+					const preventDefault = jasmine.createSpy();
+
+					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					jasmine.clock().tick(defaultDelay + 100);
+					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
+					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
+					expect(preventDefault).toHaveBeenCalled();
+				});
+
+				it('updates the \'contextclick\' when layer handler is active but allows default context click handling', async () => {
+					const defaultDelay = 300;
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					//we set one handler active
+					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
+					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: false });
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
@@ -684,6 +767,14 @@ describe('OlMap', () => {
 			removeLayer(geolocationLayerHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('featureInfo handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._mapHandler.get('featureInfoHandlerMockId')).toEqual(featureInfoHandlerMock);
 		});
 	});
 });

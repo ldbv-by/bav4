@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceService } from '../../src/services/GeoResourceService';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
@@ -23,6 +23,7 @@ describe('GeoResourceService', () => {
 	describe('init', () => {
 
 		it('initializes the service', async () => {
+
 			const instanceUnderTest = setup();
 			expect(instanceUnderTest._georesources).toBeNull();
 
@@ -33,12 +34,21 @@ describe('GeoResourceService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
+
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 		});
 
+		it('initializes the service with custom provider', async () => {
+
+			const customProvider = async () => { };
+			const instanceUnderTest = setup(customProvider);
+			expect(instanceUnderTest._provider).toBeDefined();
+			expect(instanceUnderTest._provider).toEqual(customProvider);
+		});
 
 		it('just provides GeoResources when already initialized', async () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -62,9 +72,9 @@ describe('GeoResourceService', () => {
 				const georesources = await instanceUnderTest.init();
 
 				expect(georesources.length).toBe(2);
-				expect(georesources[0].id).toBe('atkis');
+				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
-				expect(georesources[1].id).toBe('atkis_sw');
+				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
 				expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			});
@@ -89,6 +99,7 @@ describe('GeoResourceService', () => {
 	describe('all', () => {
 
 		it('provides all GeoResources', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -98,6 +109,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when service hat not been initialized', () => {
+
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -109,6 +121,7 @@ describe('GeoResourceService', () => {
 	describe('byId', () => {
 
 		it('provides a GeoResource by id', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -119,6 +132,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('provides null if for an unknown id', () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [wmtsGeoResource];
 
@@ -128,6 +142,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when when service hat not been initialized', () => {
+
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -139,6 +154,7 @@ describe('GeoResourceService', () => {
 	describe('addOrReplace', () => {
 
 		it('adds a GeoResource', async () => {
+
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
@@ -149,6 +165,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('replaces a GeoResource', async () => {
+
 			const instanceUnderTest = setup();
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');

@@ -5,8 +5,13 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
-import { setStyle, setType } from '../../../../store/draw/draw.action';
+import { finish, remove, reset, setStyle, setType } from '../../../../store/draw/draw.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { openModal } from '../../../../store/modal/modal.action';
+import { QueryParameters } from '../../../../services/domain/queryParameters';
 
+const Update = 'update';
+const Update_Tools = 'update_tools';
 
 /**
  * @class
@@ -15,11 +20,47 @@ import { setStyle, setType } from '../../../../store/draw/draw.action';
  */
 export class DrawToolContent extends AbstractToolContent {
 	constructor() {
-		super();
+		super({
+			type: null,
+			style: null,
+			selectedStyle: null,
+			mode: null,
+			fileSaveResult: { adminId: 'init', fileId: 'init' },
+			validGeometry: null, tools: null
+		});
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
-		this._tools = this._buildTools();
+		this._environmentService = environmentService;
+		this._shareService = shareService;
+		this._urlService = urlService;
+		this.signal(Update_Tools, this._buildTools());
+	}
+
+	onInitialize() {
+		this.observe(state => state.draw, data => this.signal(Update, data));
+	}
+
+	update(type, data, model) {
+		const setActiveToolByType = (tools, type) => {
+			return tools.map(tool => {
+				return { ...tool, active: tool.name === type };
+			});
+		};
+
+		switch (type) {
+			case Update:
+				return { ...model,
+					type: data.type,
+					style: data.style,
+					selectedStyle: data.selectedStyle,
+					mode: data.mode,
+					validGeometry: data.validGeometry,
+					fileSaveResult: data.fileSaveResult,
+					tools: setActiveToolByType(model.tools, data.type) };
+			case Update_Tools:
+				return { ...model, tools: data };
+		}
 	}
 
 	_buildTools() {
@@ -55,13 +96,12 @@ export class DrawToolContent extends AbstractToolContent {
 		}];
 	}
 
-	_setActiveToolByType(type) {
-		this._tools.forEach(tool => tool.active = tool.name === type);
-		this._showActive();
+	_getActiveTool(model) {
+		return model.tools.find(tool => tool.active);
 	}
 
-	_showActive() {
-		this._tools.forEach(tool => {
+	_showActive(tools) {
+		tools.forEach(tool => {
 			const id = tool.name;
 			const element = this._root.querySelector('#' + id);
 			if (element) {
@@ -75,21 +115,137 @@ export class DrawToolContent extends AbstractToolContent {
 		});
 	}
 
-	createView(state) {
+	_getButtons(model) {
+		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle, selectedStyle } = state;
-		this._setActiveToolByType(preselectedType);
+		const { mode, validGeometry } = model;
+
+		const getButton = (id, title, onClick) => {
+			return html`<ba-button id=${id} 
+								class="tool-container__button" 
+								.label=${title}
+								@click=${onClick}></ba-button>`;
+		};
+
+		const activeTool = this._getActiveTool(model);
+		const activeToolName = activeTool ? activeTool.name : 'noTool';
+		// Cancel-Button
+
+		if (mode === 'draw') {
+			const getButtonOptions = () => {
+				if (validGeometry) {
+					// alternate Finish-Button
+					return { id: 'finish', title: translate('toolbox_drawTool_finish'), onClick: () => finish() };
+				}
+				return {
+					id: 'cancel',
+					title: translate('toolbox_drawTool_cancel'),
+					onClick: () => reset()
+				};
+			};
+			const options = getButtonOptions();
+
+			buttons.push(getButton(options.id, options.title, options.onClick));
+		}
+		// Remove-Button
+		const removeAllowed = ['draw', 'modify'].includes(mode);
+		if (removeAllowed) {
+			const id = 'remove';
+			const title = mode === 'draw' && ['polygon', 'line'].includes(activeToolName) && validGeometry ? translate('toolbox_drawTool_delete_point') : translate('toolbox_drawTool_delete_drawing');
+			const onClick = () => remove();
+			buttons.push(getButton(id, title, onClick));
+		}
+
+		buttons.push(this._getShareButton(model));
+
+		return buttons;
+	}
+
+	_getShareButton(model) {
+		const { fileSaveResult } = model;
+		const translate = (key) => this._translationService.translate(key);
+		const isValidForSharing = (fileSaveResult) => {
+			if (!fileSaveResult) {
+				return false;
+			}
+			if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
+				return false;
+			}
+			return true;
+		};
+		const buildShareUrl = async (id) => {
+			const extraParams = { [QueryParameters.LAYER]: id };
+			const url = this._shareService.encodeState(extraParams);
+			try {
+				const shortUrl = await this._urlService.shorten(url);
+				return shortUrl;
+			}
+			catch (error) {
+				console.warn('Could shortener-service is not working:', error);
+				return url;
+			}
+
+
+		};
+		const generateShareUrls = async () => {
+			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
+			const forFileId = await buildShareUrl(fileSaveResult.fileId);
+			return { adminId: forAdminId, fileId: forFileId };
+
+		};
+		if (isValidForSharing(fileSaveResult)) {
+
+			const title = translate('toolbox_drawTool_share');
+			const onClick = () => {
+				generateShareUrls().then(shareUrls => {
+					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
+				});
+			};
+			return html`<ba-button id='share' 
+			class="tool-container__button" 
+			.label=${title}
+			@click=${onClick}></ba-button>`;
+
+		}
+		return nothing;
+	}
+
+	_getSubText(model) {
+		const { mode } = model;
+		const translate = (key) => this._translationService.translate(key);
+		let subTextMessage = translate('toolbox_drawTool_info');
+		if (this._environmentService.isTouch()) {
+			switch (mode) {
+				case 'active':
+					subTextMessage = translate('toolbox_drawTool_draw_active');
+					break;
+				case 'draw':
+					subTextMessage = translate('toolbox_drawTool_draw_draw');
+					break;
+				case 'modify':
+					subTextMessage = translate('toolbox_drawTool_draw_modify');
+					break;
+				case 'select':
+					subTextMessage = translate('toolbox_drawTool_draw_select');
+			}
+		}
+		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+	}
+
+	createView(model) {
+		const translate = (key) => this._translationService.translate(key);
+		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools } = model;
+
+		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
 			const toggle = () => {
-				tool.active = !tool.active;
 				if (tool.active) {
-					tool.activate();
-				}
-				else {
 					setType(null);
 				}
-				this._showActive();
+				else {
+					tool.activate();
+				}
 			};
 
 			return html`
@@ -200,6 +356,10 @@ export class DrawToolContent extends AbstractToolContent {
 			return nothing;
 
 		};
+
+		const buttons = this._getButtons(model);
+		const subText = this._getSubText(model);
+
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -209,35 +369,20 @@ export class DrawToolContent extends AbstractToolContent {
 					</div>      
 					<div class="ba-tool-container__content">                						     				
 						<div class="tool-container__buttons">                                    
-                			${repeat(this._tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
+                			${repeat(tools, (tool) => tool.id, (tool) => toolTemplate(tool))}
                 		</div>	
                 	</div>	
 				<div class="tool-container__form">
 				${getStyleTemplate(drawingType, drawingStyle)}
 				</div>				            			
-				<div class="tool-container__info sub-text">
-					<span>
-						${translate('toolbox_drawTool_info')}
-					</span>
-                </div>
+				<div class='sub-text'>${subText}</div>
 				<div class="ba-tool-container__actions">                         				
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_delete')}></ba-button>
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_share')}></ba-button>
-					<ba-button class="tool-container__button" .label=${translate('toolbox_drawTool_save')}></ba-button>
+				${buttons}
 				</div> 
             </div >	  
         </div >
 			`;
 
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { draw } = globalState;
-		return draw;
 	}
 
 	static get tag() {

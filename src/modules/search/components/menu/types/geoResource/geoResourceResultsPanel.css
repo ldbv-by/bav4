@@ -1,14 +1,14 @@
 .georesource-label {
 	display: flex;
 }
-.georesource-label:hover .georesource-label__text {
-	color: var(--primary-color);
-	cursor: pointer;
-}
 .georesource-label__text {
 	font-weight: bold;
 	padding: .8em 1.5em;
 	flex-grow: 1;
+}
+.georesource-label:hover .georesource-label__text {
+	color: var(--primary-color);
+	cursor: pointer;
 }
 .georesource-items {
 	max-height: 100em;

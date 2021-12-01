@@ -41,9 +41,12 @@ export const registerLongPressListener = (map, callback, delay = 300) => {
 	});
 };
 
-export const isEmptyLayer = (layer) => {
-	if (layer) {
-		return !layer.getSource().getFeatures().length > 0;
-	}
-	return true;
+/**
+ *
+ * @param {*} map olMap
+ * @param {string} id id of the desired layer
+ * @returns olLayer or `undefined`
+ */
+export const getLayerById = (map, id) => {
+	return map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
 };

@@ -1,6 +1,6 @@
 /**
  * Action creators to change/update the state of the main menu.
- * @module menu/action
+ * @module mainMenu/action
  */
 import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../injection';

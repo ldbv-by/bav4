@@ -1,11 +1,12 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { LocationResultItem } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HightlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
+import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 
@@ -72,8 +73,10 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
 
-				expect(store.getState().highlight.temporaryFeature.data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.temporaryFeature.type).toBe(HightlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.TEMPORARY);
+				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
 		});
 
@@ -85,7 +88,7 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
 				const element = await setup({
 					highlight: {
-						temporaryFeature: { data: coordinate }
+						features: [{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
 					}
 				});
 				element.data = data;
@@ -94,7 +97,7 @@ describe('LocationResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
-				expect(store.getState().highlight.temporaryFeature).toBeNull();
+				expect(store.getState().highlight.features).toHaveSize(0);
 			});
 		});
 
@@ -110,8 +113,9 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate, extent);
 				const element = await setup({
 					highlight: {
-						feature: { data: coordinate },
-						temporaryFeature: { data: previousCoordinate }
+						features: [
+							{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+						]
 					},
 					mainMenu: {
 						open: true
@@ -133,9 +137,10 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeature).toBeNull();
-					expect(store.getState().highlight.feature.data.coordinate).toEqual(coordinate);
-					expect(store.getState().highlight.feature.type).toBe(HightlightFeatureTypes.DEFAULT);
+					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
+					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
 				});
 
 				it('fits the map by a coordinate', async () => {
@@ -159,8 +164,7 @@ describe('LocationResultItem', () => {
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
-					expect(store.getState().highlight.temporaryFeature).toBeNull();
-					expect(store.getState().highlight.feature).toBeNull();
+					expect(store.getState().highlight.features).toHaveSize(0);
 				});
 
 				it('fits the map by an extent', async () => {

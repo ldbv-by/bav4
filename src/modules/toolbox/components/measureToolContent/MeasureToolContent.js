@@ -8,6 +8,9 @@ import { QueryParameters } from '../../../../services/domain/queryParameters';
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { openModal } from '../../../../store/modal/modal.action';
+
+const Update = 'update';
+
 /**
  * @class
  * @author thiloSchlemmer
@@ -15,7 +18,11 @@ import { openModal } from '../../../../store/modal/modal.action';
 export class MeasureToolContent extends AbstractToolContent {
 
 	constructor() {
-		super();
+		super({
+			statistic: { length: 0, area: 0 },
+			fileSaveResult: null,
+			mode: null
+		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
@@ -23,25 +30,31 @@ export class MeasureToolContent extends AbstractToolContent {
 		this._unitsService = unitsService;
 		this._shareService = shareService;
 		this._urlService = urlService;
-		this._tool = {
-			name: 'measure',
-			active: false,
-			title: 'toolbox_measureTool_measure',
-			icon: 'measure'
-		};
-		this._isFirstMeasurement = true;
-		this._shareAsReadOnly = false;
-		this._shareUrls = null;
 	}
 
-	createView(state) {
+	onInitialize() {
+		this.observe(state => state.measurement, data => this.signal(Update, data));
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update:
+				return { ...model,
+					statistic: data.statistic,
+					fileSaveResult: data.fileSaveResult,
+					mode: data.mode
+				};
+		}
+	}
+
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, statistic } = state;
-		this._tool.active = active;
+		const { statistic } = model;
+
 		const areaClasses = { 'is-area': statistic.area > 0 };
 
-		const buttons = this._getButtons(state);
-		const subText = this._getSubText(state);
+		const buttons = this._getButtons(model);
+		const subText = this._getSubText(model);
 		const buildPackage = (measurement) => {
 			const splitted = measurement.split(' ');
 			if (splitted.length === 2) {
@@ -98,12 +111,10 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	}
 
-	_getButtons(state) {
+	_getButtons(model) {
 		const buttons = [];
 		const translate = (key) => this._translationService.translate(key);
-		const { active, statistic, mode } = state;
-		this._isFirstMeasurement = this._isFirstMeasurement ? (statistic.length === 0 ? true : false) : false;
-		this._tool.active = active;
+		const { statistic, mode } = model;
 
 		const getButton = (id, title, onClick) => {
 			return html`<ba-button id=${id} 
@@ -137,13 +148,13 @@ export class MeasureToolContent extends AbstractToolContent {
 			buttons.push(getButton(id, title, onClick));
 		}
 
-		buttons.push(this._getShareButton(state));
+		buttons.push(this._getShareButton(model));
 
 		return buttons;
 	}
 
-	_getShareButton(state) {
-		const { fileSaveResult } = state;
+	_getShareButton(model) {
+		const { fileSaveResult } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const isValidForSharing = (fileSaveResult) => {
 			if (!fileSaveResult) {
@@ -217,15 +228,6 @@ export class MeasureToolContent extends AbstractToolContent {
 		await this._shareService.copyToClipboard(value).then(() => { }, () => {
 			console.warn('Clipboard API not available');
 		});
-	}
-
-	/**
-	 * @override
-	 * @param {Object} globalState
-	 */
-	extractState(globalState) {
-		const { measurement } = globalState;
-		return measurement;
 	}
 
 	static get tag() {

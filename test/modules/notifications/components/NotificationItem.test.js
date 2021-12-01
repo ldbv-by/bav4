@@ -1,13 +1,15 @@
 import { NotificationItem } from '../../../../src/modules/notifications/components/NotificationItem';
-import { LevelTypes, notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
+import { html } from 'lit-html';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
 describe('NotificationItem', () => {
 	const notificationTemplate = {
-		message: null,
+		content: null,
 		level: LevelTypes.INFO,
 		permanent: false,
 		id: 1234,
@@ -33,17 +35,36 @@ describe('NotificationItem', () => {
 			return element;
 		};
 
-		it('displays the notification message', async () => {
-			const element = await setup({ ...notificationTemplate, message: 'FooBar' });
+		it('displays the notification content', async () => {
+			const element = await setup({ ...notificationTemplate, content: 'FooBar' });
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toContain('FooBar');
 		});
 
+		it('displays the notification content from a lit-html template-result', async () => {
+			const template = (str) => html`${str}`;
+
+			const element = await setup({ ...notificationTemplate, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
+			const contentElement = element.shadowRoot.querySelector('.notification_content');
+
+			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
+		});
+
+		it('displays the notification as fixed', async () => {
+			const template = (str) => html`${str}`;
+
+			const element = await setup({ ...notificationTemplate, content: template('FooBarBaz'), level: LevelTypes.CUSTOM });
+			element.fixed = true;
+
+			expect(element.shadowRoot.querySelector('.notification_fixed')).toBeTruthy();
+		});
+
+
 		it('starts hiding with autoclose after 1 sec.', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;
-			const notification = { ...notificationTemplate, message: 'FooBar', autocloseTime: autocloseTime };
+			const notification = { ...notificationTemplate, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
 			const hideSpy = spyOn(element, '_hide').and.callThrough();
@@ -56,7 +77,7 @@ describe('NotificationItem', () => {
 		it('closes the notification item with call of onClose', async () => {
 			const autocloseTime = 1000;
 			const laterThenAutoCloseTime = autocloseTime + 100;
-			const notification = { ...notificationTemplate, message: 'FooBar', autocloseTime: autocloseTime };
+			const notification = { ...notificationTemplate, content: 'FooBar', autocloseTime: autocloseTime };
 
 			const element = await setup(notification);
 			element.onClose = jasmine.createSpy();
@@ -92,6 +113,12 @@ describe('NotificationItem', () => {
 				const contentElement = element.shadowRoot.querySelector('.notification_level');
 
 				expect(contentElement.innerText).toContain('notifications_item_error');
+			});
+
+			it('custom', async () => {
+				const element = await setup({ ...notificationTemplate, level: LevelTypes.custom });
+
+				expect(element.shadowRoot.querySelector('.notification_level')).toBeFalsy();
 			});
 
 		});
