@@ -12,16 +12,16 @@
 .georesource-results-panel:hover {
 	border-left: .3em solid var(--secondary-color);
 }
+.georesource-label__text {
+	font-weight: bold;
+	padding: .8em 1.5em .8em 1.3em;
+	flex-grow: 1;
+}
 .georesource-results-panel:hover .georesource-label__text {
 	color: var(--primary-color);
 }
 .georesource-label:focus-visible {
 	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
-}
-.georesource-label__text {
-	font-weight: bold;
-	padding: .8em 1.5em .8em 1.3em;
-	flex-grow: 1;
 }
 .georesource-items {
 	overflow: hidden;

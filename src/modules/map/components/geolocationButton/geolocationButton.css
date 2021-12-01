@@ -1,6 +1,7 @@
 .geolocation-icon {
 	mask: url("./assets/circleFill.svg");
 	-webkit-mask-image: url("./assets/circleFill.svg");
+	background: var(--text3);
 }
 .icon {
 	mask-size: cover;
@@ -15,10 +16,6 @@
 }
 .active {
 	background: var(--warning-color) !important;
-}
-
-.geolocation-icon {
-	background: var(--text3);
 }
 
 .active .geolocation-icon {

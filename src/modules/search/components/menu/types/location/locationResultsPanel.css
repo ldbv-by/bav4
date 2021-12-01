@@ -12,16 +12,16 @@
 .location-results-panel:hover {
 	border-left: .3em solid var(--secondary-color);
 }
+.location-label__text {
+	font-weight: bold;
+	padding: .8em 1.5em .8em 1.3em;
+	flex-grow: 1;
+}
 .location-results-panel:hover .location-label__text {
 	color: var(--primary-color);
 }
 .location-label:focus-visible {
 	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
-}
-.location-label__text {
-	font-weight: bold;
-	padding: .8em 1.5em .8em 1.3em;
-	flex-grow: 1;
 }
 .location-items {
 	overflow: hidden;
