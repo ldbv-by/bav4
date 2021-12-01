@@ -24,8 +24,8 @@ export class IconService {
 	}
 
 	createDefault() {
-		const matcher = () => {
-			return (idOrUrl) => idOrUrl === Svg_Marker_Name || idOrUrl.endsWith(Svg_Marker_Name);
+		const matcher = (idOrUrl) => {
+			return idOrUrl === Svg_Marker_Name || idOrUrl.endsWith(Svg_Marker_Name);
 		};
 		const urlFactoryFunction = () => {
 			const { ConfigService: configService } = $injector.inject('ConfigService');
@@ -35,7 +35,7 @@ export class IconService {
 					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}`;
 				}
 				catch (e) {
-					console.warn('Icons could not be fetched from backend.');
+					console.warn('No backend-information available.');
 				}
 				return null;
 			};
@@ -115,12 +115,12 @@ export class IconResult {
 	 * @param {function():(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
 	 * @param {function(Array<number>): (string)} urlProvider a function, which provides a url as remote-location for this icon with a specified rgb-color as Array<number>
 	 */
-	constructor(id, svg, urlMatcher, urlProvider = null) {
+	constructor(id, svg, urlMatcher = null, urlProvider = null) {
 
 		this._id = id;
 		this._svg = svg;
 		this._base64 = this._toBase64(svg);
-		this._urlMatcher = urlMatcher;
+		this._urlMatcher = urlMatcher ? urlMatcher : () => false;
 		this._urlProvider = urlProvider ? urlProvider : () => null;
 	}
 
@@ -160,10 +160,6 @@ export class IconResult {
 		return this._base64;
 	}
 
-	get isLocalAsset() {
-		return this._urlProvider === null;
-	}
-
 }
 
 
@@ -172,9 +168,9 @@ export class IconResult {
  */
 const loadFallbackIcons = () => {
 	return [
-		new IconResult('triangle-stroked', '<svg id="triangle-stroked" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M25.59375,10.578125Q25.0625,9.65625,24.0,9.65625Q22.9375,9.65625,22.40625,10.578125L7.203125,35.625Q7.0,36.015625,7.0,36.546875Q7.0,38.34375,8.796875,38.34375L39.203125,38.34375Q41.0,38.34375,41.0,36.546875Q41.0,36.015625,40.796875,35.625L25.59375,10.578125ZM24.0,15.03125L36.15625,34.75L11.84375,34.75L24.0,15.03125Z" /></svg>', () => false),
-		new IconResult('triangle', '<svg id="triangle" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M25.59375,10.578125Q25.0625,9.65625,24.0,9.65625Q22.9375,9.65625,22.40625,10.578125L7.203125,35.625Q7.0,36.015625,7.0,36.546875Q7.0,38.34375,8.796875,38.34375L39.203125,38.34375Q41.0,38.34375,41.0,36.546875Q41.0,36.015625,40.796875,35.625L25.59375,10.578125Z" /></svg>', () => false),
-		new IconResult('square-stroked', '<svg id="square-stroked" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M9.0,7.0Q8.125,7.0,7.5625,7.5625Q7.0,8.125,7.0,8.984375L7.0,39.0Q7.0,39.875,7.5625,40.4375Q8.125,41.0,9.0,41.0L39.015625,41.0Q39.875,41.0,40.4375,40.4375Q41.0,39.875,41.0,39.0L41.0,8.984375Q41.0,8.125,40.4375,7.5625Q39.875,7.0,39.015625,7.0L9.0,7.0ZM10.984375,10.984375L37.015625,10.984375L37.015625,37.015625L10.984375,37.015625L10.984375,10.984375Z" /></svg>', () => false),
-		new IconResult('square', '<svg id="square" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M9.0,7.0L39.015625,7.0Q39.875,7.0,40.4375,7.5625Q41.0,8.125,41.0,8.984375L41.0,39.0Q41.0,39.875,40.4375,40.4375Q39.875,41.0,39.015625,41.0L9.0,41.0Q8.125,41.0,7.5625,40.4375Q7.0,39.875,7.0,39.0L7.0,8.984375Q7.0,8.125,7.5625,7.5625Q8.125,7.0,9.0,7.0Z" /></svg>', () => false)
+		new IconResult('triangle-stroked', '<svg id="triangle-stroked" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M25.59375,10.578125Q25.0625,9.65625,24.0,9.65625Q22.9375,9.65625,22.40625,10.578125L7.203125,35.625Q7.0,36.015625,7.0,36.546875Q7.0,38.34375,8.796875,38.34375L39.203125,38.34375Q41.0,38.34375,41.0,36.546875Q41.0,36.015625,40.796875,35.625L25.59375,10.578125ZM24.0,15.03125L36.15625,34.75L11.84375,34.75L24.0,15.03125Z" /></svg>'),
+		new IconResult('triangle', '<svg id="triangle" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M25.59375,10.578125Q25.0625,9.65625,24.0,9.65625Q22.9375,9.65625,22.40625,10.578125L7.203125,35.625Q7.0,36.015625,7.0,36.546875Q7.0,38.34375,8.796875,38.34375L39.203125,38.34375Q41.0,38.34375,41.0,36.546875Q41.0,36.015625,40.796875,35.625L25.59375,10.578125Z" /></svg>'),
+		new IconResult('square-stroked', '<svg id="square-stroked" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M9.0,7.0Q8.125,7.0,7.5625,7.5625Q7.0,8.125,7.0,8.984375L7.0,39.0Q7.0,39.875,7.5625,40.4375Q8.125,41.0,9.0,41.0L39.015625,41.0Q39.875,41.0,40.4375,40.4375Q41.0,39.875,41.0,39.0L41.0,8.984375Q41.0,8.125,40.4375,7.5625Q39.875,7.0,39.015625,7.0L9.0,7.0ZM10.984375,10.984375L37.015625,10.984375L37.015625,37.015625L10.984375,37.015625L10.984375,10.984375Z" /></svg>'),
+		new IconResult('square', '<svg id="square" xmlns="http://www.w3.org/2000/svg" width="34.0" height="34.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M9.0,7.0L39.015625,7.0Q39.875,7.0,40.4375,7.5625Q41.0,8.125,41.0,8.984375L41.0,39.0Q41.0,39.875,40.4375,40.4375Q39.875,41.0,39.015625,41.0L9.0,41.0Q8.125,41.0,7.5625,40.4375Q7.0,39.875,7.0,39.0L7.0,8.984375Q7.0,8.125,7.5625,7.5625Q8.125,7.0,9.0,7.0Z" /></svg>')
 	];
 };

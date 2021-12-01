@@ -35,7 +35,7 @@ export const loadBvvIcons = async () => {
 		});
 
 		if (icons.length === 0) {
-			console.warn('The retrieved Icons are invalid');
+			console.warn('The backend provides no icons');
 		}
 		return icons;
 	}

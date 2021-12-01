@@ -5,13 +5,14 @@ import { $injector } from '../../src/injection';
 
 describe('IconsService', () => {
 
-	const configService = {
-		getValue: () => { }
+	const configServiceMock = {
+		getValue: () => { },
+		getValueAsPath: () => { }
 	};
 
 	beforeAll(() => {
 		$injector
-			.registerSingleton('ConfigService', configService);
+			.registerSingleton('ConfigService', configServiceMock);
 	});
 
 	const getMatcher = (id) => {
@@ -75,6 +76,13 @@ describe('IconsService', () => {
 
 				expect(icons.length).toBe(5);
 				expect(icons[0]).toEqual(defaultIcon);
+				expect(icons).toEqual(jasmine.arrayContaining([
+					jasmine.objectContaining({ id: 'marker' }),
+					jasmine.objectContaining({ id: 'triangle-stroked' }),
+					jasmine.objectContaining({ id: 'triangle' }),
+					jasmine.objectContaining({ id: 'square-stroked' }),
+					jasmine.objectContaining({ id: 'square' })
+				]));
 				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
 			});
 		});
@@ -117,15 +125,11 @@ describe('IconsService', () => {
 		});
 	});
 
-	xdescribe('getIconResult', () => {
+	describe('getIconResult', () => {
 		it('provides a IconResult for a icon-id', async () => {
-			const instanceUnderTest = setup(async () => {
-				return Promise.resolve([iconResult1, iconResult2]);
-			});
-			const spy = spyOn(iconResult1, 'matches').and.callFake(() => true);
-
+			const instanceUnderTest = setup();
 			await instanceUnderTest.all();
-			expect(spy).toHaveBeenCalled();
+
 			expect(instanceUnderTest.getIconResult('foo1')).toBe(iconResult1);
 		});
 
@@ -135,16 +139,58 @@ describe('IconsService', () => {
 
 			expect(instanceUnderTest.getIconResult(iconResult2.base64)).toBe(iconResult2);
 		});
+
+		it('provides NO IconResult, when icons-arrray is empty/nuuĺl', async () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.getIconResult('foo1')).toBeNull();
+
+			await instanceUnderTest.all();
+			expect(instanceUnderTest.getIconResult('foo1')).toBe(iconResult1);
+		});
+
+		it('provides the default-IconResult for the base64-string', async () => {
+			const instanceUnderTest = setup();
+			await instanceUnderTest.all();
+
+			const defaultIcon = instanceUnderTest.getDefault();
+
+			expect(instanceUnderTest.getIconResult(defaultIcon.base64)).toBe(defaultIcon);
+		});
 	});
 
 	describe('getDefault', () => {
 		it('provides a default icon', async () => {
 			const instanceUnderTest = setup();
-
+			spyOn(configServiceMock, 'getValueAsPath').and.callFake(() => 'http://some.url/');
 			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(defaultIcon).toBeInstanceOf(IconResult);
 			expect(defaultIcon.id).toBe('marker');
+			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/marker');
+
+		});
+
+		it('provides a default icon, without url', async () => {
+			spyOn(configServiceMock, 'getValueAsPath').and.throwError('something');
+			const instanceUnderTest = setup();
+			const warnSpy = spyOn(console, 'warn').and.callThrough();
+			const defaultIcon = instanceUnderTest.getDefault();
+
+
+			expect(defaultIcon.getUrl([1, 2, 3])).toBeNull();
+			expect(warnSpy).toHaveBeenCalledWith('No backend-information available.');
+
+		});
+	});
+
+	describe('decodeColor', () => {
+		it('calls the iconColorProvider', () => {
+			const instanceUnderTest = setup();
+			const iconColorProviderSpy = spyOn(instanceUnderTest, '_iconColorProvider');
+
+			instanceUnderTest.decodeColor('some.url');
+			expect(iconColorProviderSpy).toHaveBeenCalled();
 		});
 	});
 
@@ -162,6 +208,13 @@ describe('IconsService', () => {
 			}
 			return null;
 		};
+
+		it('uses default urlProvider, when not given', () => {
+			const iconResult = new IconResult('foo', 'bar');
+
+			expect(iconResult.matches('somethingWithfoo')).toBeFalse();
+			expect(iconResult.getUrl()).toBeNull();
+		});
 
 		it('creates a base64-encoded string and back', () => {
 			const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
