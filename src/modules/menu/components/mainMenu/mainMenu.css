@@ -21,44 +21,6 @@
 	resize: horizontal;
 	overflow: visible;
 }
-
-.main-menu__resize-button {
-	display: none;
-	position: absolute;
-	height: 3em;
-	width: 3em;
-	background: var(--secondary-color);
-	border-radius: 3em;
-	right: -1.5em;
-	z-index: calc(var(--z-header) + 91);
-	top: 50%;
-	margin-top: 6em;
-	border: 0;
-	padding: 0;
-	cursor: col-resize;
-
-}
-.main-menu__resize-button:hover {
-	background: var(--primary-color);
-}
-.swipe-icon {
-	background: var(--primary-bg-color);
-	display: block;
-	height: 2.6em;
-	width: 2.6em;
-	margin: .2em;
-	mask: url('assets/expand.svg');
-	-webkit-mask: url('assets/expand.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-
-}
-
-.is-full-size .main-menu__resize-button {
-
-	display: block;
-}
-
 .main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
