@@ -25,7 +25,7 @@ describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 
 describe('OlFeatureInfoHandler', () => {
 
-	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 200;
+	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 500;
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
