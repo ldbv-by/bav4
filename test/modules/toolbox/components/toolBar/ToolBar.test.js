@@ -15,7 +15,9 @@ window.customElements.define(ToolBar.tag, ToolBar);
 
 describe('ToolBarElement', () => {
 
-
+	const configServiceMock = {
+		getValueAsPath: (value) => value
+	};
 	let store;
 	const setup = async (state = {}, config = {}) => {
 
@@ -52,7 +54,8 @@ describe('ToolBarElement', () => {
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ConfigService', configServiceMock);
 		return TestUtils.render(ToolBar.tag);
 	};
 
@@ -132,6 +135,26 @@ describe('ToolBarElement', () => {
 				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
 				setFetching(false);
 				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			});
+		});
+
+		describe('backend availability', () => {
+			it('disable the share-button, when backend is NOT available', async () => {
+				spyOn(configServiceMock, 'getValueAsPath').and.throwError('some reason');
+				const element = await setup();
+
+				const shareToolIcon = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
+				const button = shareToolIcon.closest('.tool-bar__button');
+				expect(button.disabled).toBeTrue();
+			});
+
+			it('disable not the share-button, when backend is available', async () => {
+				spyOn(configServiceMock, 'getValueAsPath').and.callFake(() => '/some.url/');
+				const element = await setup();
+
+				const shareToolIcon = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
+				const button = shareToolIcon.closest('.tool-bar__button');
+				expect(button.disabled).toBeFalse();
 			});
 		});
 	});
