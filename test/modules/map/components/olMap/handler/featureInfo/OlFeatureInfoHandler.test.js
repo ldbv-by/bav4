@@ -61,7 +61,7 @@ describe('OlFeatureInfoHandler', () => {
 
 	const delay = (fn) => {
 		/**
-		 * Although tests on map are wrapped within a map.once('postrender'), we still have flaky tests.
+		 * Although tests on map are wrapped within a map.once('postcompose'), we still have flaky tests.
 		 * Therefore we have to delay them a bit (200ms seems to be enough)
 		 */
 		return () => setTimeout(() => {
@@ -144,7 +144,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', delay(() => {
+			map.once('postcompose', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
@@ -176,7 +176,7 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			handler.register(map);
 
-			map.once('postrender', delay(() => {
+			map.once('postcompose', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(notMatchingCoordinate);
 
@@ -221,7 +221,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', delay(() => {
+			map.once('postcompose', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
@@ -317,7 +317,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postrender', delay(() => {
+			map.once('postcompose', delay(() => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
