@@ -3,6 +3,8 @@ import { LineString, Polygon } from 'ol/geom';
 import { Icon, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
+import { $injector } from '../../../../../injection';
+import { AssetSourceType, getAssetSource } from '../olStyleUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
@@ -13,8 +15,26 @@ const tryRectifyingLineString = (polygonCandidate) => {
 	return polygonCandidate;
 };
 
+const replaceIcon = (old) => {
+	const svgSrc = old.getSrc();
+	const svgScale = old.getScale();
+	const { IconService: iconService } = $injector.inject('IconService');
+	const iconResult = iconService.getIconResult(svgSrc);
+	const iconUrl = iconResult.getUrl(old.getColor());
+
+	const iconOptions = {
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: iconUrl,
+		scale: svgScale
+	};
+	return iconUrl ? new Icon(iconOptions) : old;
+};
+
 const sanitizeStyle = (styles) => {
-	const style = styles[0] ? styles[0] : styles;
+
+	const style = styles[0] ? styles[0].clone() : (styles && !Array.isArray(styles) ? styles.clone() : new Style());
 
 	const kmlStyleProperties = {
 		fill: style.getFill ? style.getFill() : null,
@@ -26,6 +46,10 @@ const sanitizeStyle = (styles) => {
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
 		kmlStyleProperties.image = null;
+	}
+
+	if (kmlStyleProperties.image instanceof Icon && getAssetSource(kmlStyleProperties.image.getSrc()) === AssetSourceType.LOCAL) {
+		kmlStyleProperties.image = replaceIcon(kmlStyleProperties.image);
 	}
 
 	const isTextOnlyStyle = kmlStyleProperties.text && !kmlStyleProperties.image;
