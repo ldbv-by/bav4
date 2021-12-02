@@ -253,8 +253,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
-		this._unreg(this._registeredObservers);
 		this._unreg(this._drawStateChangedListeners);
+		this._unsubscribe(this._registeredObservers);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -270,6 +270,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	_unreg(listeners) {
 		unByKey(listeners);
 		listeners = [];
+	}
+
+	_unsubscribe(observers) {
+		observers.forEach(unsubscribe => unsubscribe());
+		observers = [];
 	}
 
 	_setDrawState(value) {
@@ -293,10 +298,6 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
-		// do not allow a draw-interaction while deactivated
-		if (!this.active && this._map === null) {
-			return;
-		}
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
