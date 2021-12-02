@@ -12,15 +12,6 @@
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linea);   
 }
-
-.is-desktop.is-full-size {
-	top: -14em;
-	z-index: calc(var(--z-header) + 90);
-	min-width: 28em;
-	max-width: 90vw;
-	resize: horizontal;
-	overflow: visible;
-}
 .main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -30,7 +21,6 @@
 	position: absolute;
 	width: 100%;
 }
-
 .main-menu__close-button {
 	position: absolute;
 	z-index: calc(var(--z-mainmenu) + 10);
@@ -182,6 +172,24 @@
 	width: 100%;
 }
 
+.is-full-size.is-open {
+	z-index: calc(var(--z-header) + 90);
+}
+.is-landscape .is-full-size {
+	top: -14em;
+	min-width: 28em;
+	overflow: visible;
+}
+.is-landscape .is-desktop.is-full-size {
+	top: -13.5em;
+}
+.is-landscape .is-tablet.is-full-size {
+	top: -8.5em;
+}
+.is-portrait .is-full-size .main-menu__container {
+	top: 0;
+}
+
 .slider-container {
 	display: none;
 	position: fixed;
@@ -191,7 +199,7 @@
 	height: 100%;
 	pointer-events: none;
 }
-.is-desktop.is-full-size .slider-container {
+.is-landscape .is-full-size .slider-container {
 	display: block;
 }
 .slider-container input {
@@ -209,8 +217,6 @@ input[type="range"] {
 	--thumb-size: 2.5em;
 	--thumb-offset: 0;
 	--thumb-highlight-size: 0px;
-	--primary-color-light: var(--primary-color-lighter);
-
 	appearance: none;         
 	display: block;    
 	background: transparent;  
@@ -236,12 +242,16 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-moz-range-thumb {
 	appearance: none; 
 	cursor: ew-resize; 
-	border: .4em solid var(--secondary-color);
-	block-size: var(--thumb-size);
-	inline-size: var(--thumb-size);
-	margin-top: var(--thumb-offset);
+	border: .2em solid var(--secondary-color);
+	block-size: 2em;
+	inline-size: 2em;
+	margin-top: 0;
 	border-radius: 50%;
-	background: var(--primary-color) fixed;
+	background: url('assets/expand.svg') var(--secondary-color);
+	width: 2em;
+	height: 2em;
+	background-size: 1.9em  1.9em;
+	background-repeat: no-repeat;
 	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
 	transition: box-shadow .1s ease;
 }
@@ -256,11 +266,8 @@ input[type="range"]::-moz-range-track {
 	block-size: 0;
 }
 input[type="range"]:focus {
-	box-shadow: none;
+	--thumb-highlight-size: .3em;
 }
-/* input[type="range"]:focus {
-	--thumb-highlight-size: .2em;
-} */
 
 @keyframes animateFadeIn {
 	0% {
