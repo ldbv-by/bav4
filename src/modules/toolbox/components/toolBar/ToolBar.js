@@ -22,12 +22,14 @@ export class ToolBar extends BaElement {
 
 		const {
 			EnvironmentService: environmentService,
-			TranslationService: translationService
+			TranslationService: translationService,
+			ConfigService: configService
 		}
 			= $injector.inject('EnvironmentService', 'TranslationService');
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
+		this._configService = configService;
 	}
 
 	/**
@@ -79,6 +81,16 @@ export class ToolBar extends BaElement {
 			return fetching ? 'animated-action-button__border__running' : '';
 		};
 
+		const backendIsAvailable = () => {
+			try {
+				const backend = this._configService.getValueAsPath('BACKEND_URL') + 'icons';
+				return backend != null;
+			}
+			catch (e) {
+				return false;
+			}
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
@@ -107,7 +119,7 @@ export class ToolBar extends BaElement {
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${toggleShareTool}" class="tool-bar__button">
+					<button  @click="${toggleShareTool}" disabled=${backendIsAvailable} class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
