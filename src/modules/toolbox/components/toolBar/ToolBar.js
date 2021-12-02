@@ -119,7 +119,7 @@ export class ToolBar extends BaElement {
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${toggleShareTool}" disabled=${backendIsAvailable} class="tool-bar__button">
+					<button  @click="${toggleShareTool}" disabled=${!backendIsAvailable} class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">

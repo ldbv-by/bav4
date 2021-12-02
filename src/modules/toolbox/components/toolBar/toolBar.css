@@ -52,6 +52,12 @@
 	opacity: 1;
 	background: var(--header-background-color);
 }
+.tool-bar__button:disabled {
+	opacity: 0.7;
+    cursor: not-allowed;
+    color: var(--text1);
+    background: var(--secondary-bg-color);
+}
 .tool-bar__button_icon {
 	height: 2.5em;
 	width: 2.5em;
