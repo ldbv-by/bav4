@@ -1,7 +1,8 @@
 import { create } from '../../../../../../src/modules/map/components/olMap/formats/kml';
 import { Point, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
-import { Style, Circle, Fill, Stroke, Text } from 'ol/style';
+import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
+import { $injector } from '../../../../../../src/injection';
 
 
 describe('kml', () => {
@@ -10,6 +11,12 @@ describe('kml', () => {
 	const aPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
 
+	const iconServiceMock = {
+		getIconResult: (idOrBase64) => {
+			return { getUrl: (color) => `backend.url/icon/${color}/${idOrBase64.substr(idOrBase64.length - 5)}` };
+		}
+	};
+	$injector.registerSingleton('IconService', iconServiceMock);
 
 	const createLayerMock = (features, withLabel = true) => {
 		const layerMock = {
@@ -20,7 +27,8 @@ describe('kml', () => {
 			},
 			getStyleFunction() {
 				return null;
-			} };
+			}
+		};
 
 		return withLabel ? { ...layerMock, label: 'Foo' } : layerMock;
 	};
@@ -69,6 +77,22 @@ describe('kml', () => {
 		return () => [style];
 	};
 
+	const getAIconStyleFunction = (color, iconSrc, scale = 1) => {
+		const iconOptions = {
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: iconSrc,
+			color: color,
+			scale: scale
+		};
+
+		const style = new Style({
+			image: new Icon(iconOptions)
+		});
+		return () => [style];
+	};
+
 	const getANoneStyleFunction = () => {
 		return () => [];
 	};
@@ -90,7 +114,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
-			const containsNameTag = actual.includes('<name>Foo</name>') ;
+			const containsNameTag = actual.includes('<name>Foo</name>');
 			expect(containsDocumentTag).toBeTrue();
 			expect(containsNameTag).toBeTrue();
 		});
@@ -102,7 +126,7 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsDocumentTag = actual.includes('<Document>') && actual.includes('</Document>');
-			const containsNameTag = actual.includes('<name>Foo</name>') ;
+			const containsNameTag = actual.includes('<name>Foo</name>');
 			expect(containsDocumentTag).toBeTrue();
 			expect(containsNameTag).toBeFalse();
 		});
@@ -154,9 +178,24 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 
 			const containsIconStyle = actual.includes('<IconStyle>');
-			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>') ;
+			const containsDummyIcon = actual.includes('<Icon><href>noimage</href></Icon>');
 			expect(containsIconStyle).toBeTrue();
 			expect(containsDummyIcon).toBeFalse();
+		});
+
+		it('reads and converts icon style-properties from feature', () => {
+			const color = [255, 42, 42];
+			const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+			const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+			const features = [aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsIconStyle = actual.includes('<IconStyle>');
+			const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+			expect(containsIconStyle).toBeTrue();
+			expect(containsRemoteIcon).toBeTrue();
 		});
 
 		it('reads and converts none-style-properties from feature', () => {
@@ -176,7 +215,7 @@ describe('kml', () => {
 			const layer = createLayerMock(features);
 
 			const actual = create(layer, projection);
-			const containsIconStyle = actual.includes('PolyStyle') ;
+			const containsIconStyle = actual.includes('PolyStyle');
 			expect(containsIconStyle).toBeTrue();
 		});
 	});

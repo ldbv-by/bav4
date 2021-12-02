@@ -9,6 +9,7 @@ import { finish, remove, reset, setStyle, setType } from '../../../../store/draw
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
+import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -26,7 +27,8 @@ export class DrawToolContent extends AbstractToolContent {
 			selectedStyle: null,
 			mode: null,
 			fileSaveResult: { adminId: 'init', fileId: 'init' },
-			validGeometry: null, tools: null
+			validGeometry: null,
+			tools: null
 		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
@@ -50,14 +52,16 @@ export class DrawToolContent extends AbstractToolContent {
 
 		switch (type) {
 			case Update:
-				return { ...model,
+				return {
+					...model,
 					type: data.type,
 					style: data.style,
 					selectedStyle: data.selectedStyle,
 					mode: data.mode,
 					validGeometry: data.validGeometry,
 					fileSaveResult: data.fileSaveResult,
-					tools: setActiveToolByType(model.tools, data.type) };
+					tools: setActiveToolByType(model.tools, data.type)
+				};
 			case Update_Tools:
 				return { ...model, tools: data };
 		}
@@ -235,7 +239,6 @@ export class DrawToolContent extends AbstractToolContent {
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools } = model;
-
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
@@ -263,12 +266,20 @@ export class DrawToolContent extends AbstractToolContent {
 
 		const drawingStyle = selectedStyle ? selectedStyle.style : preselectedStyle;
 		const drawingType = preselectedType ? preselectedType : (selectedStyle ? selectedStyle.type : null);
-
-
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
-				const changedStyle = { ...style, color: e.target.value };
+				const getStyle = () => {
+					if (getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
+						return { ...style, color: e.target.value };
+					}
+					const { IconService: iconService } = $injector.inject('IconService');
+					const iconResult = iconService.getIconResult(style.symbolSrc);
+					const color = hexToRgb(e.target.value);
+					return { ...style, symbolSrc: iconResult.getUrl(color), color: e.target.value };
+				};
+				const changedStyle = getStyle();
 				setStyle(changedStyle);
+
 			};
 			const onChangeScale = (e) => {
 				const changedStyle = { ...style, scale: e.target.value };
@@ -279,10 +290,17 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
+			const onChangeSymbol = (e) => {
+				const hexColor = this.getModel().style.color;
+				const url = e.detail.selected.getUrl(hexToRgb(hexColor));
+				const symbolSrc = url ? url : e.detail.selected.base64;
+				const changedStyle = { ...this.getModel().style, symbolSrc: symbolSrc };
+				setStyle(changedStyle);
+			};
+
 			const selectTemplate = (sizes, selectedSize) => {
 				return sizes.map((size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)} </option>)}`);
 			};
-
 
 			// todo: refactor to specific toolStyleContent-Components or factory
 			if (type && style) {
@@ -291,17 +309,21 @@ export class DrawToolContent extends AbstractToolContent {
 						return html`
 						<div id='style_marker'
 							class="tool-container__style" 
-							title='Symbol'>
+							title='Symbol'>							
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
 							</div>					
 							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
-								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>	
+								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>									
 								<select id="style_size" @change=${onChangeScale}>
 									${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
 								</select>								
-							</div>
+							</div>			
+							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
+								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
+								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>													
+							</div>				
 						</div>
 						`;
 					case 'text':

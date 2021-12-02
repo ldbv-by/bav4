@@ -242,8 +242,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
-		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
+		this._unsubscribe(this._registeredObservers);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -261,6 +261,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_unreg(listeners) {
 		unByKey(listeners);
 		listeners = [];
+	}
+
+	_unsubscribe(observers) {
+		observers.forEach(unsubscribe => unsubscribe());
+		observers = [];
 	}
 
 	_setMeasureState(value) {
