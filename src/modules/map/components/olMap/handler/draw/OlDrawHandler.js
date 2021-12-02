@@ -87,7 +87,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
-		this._registeredObservers = this._register(this._storeService.getStore());
+		this._registeredObservers = [];
 	}
 
 	/**
@@ -213,6 +213,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
+			this._registeredObservers = this._register(this._storeService.getStore());
 		}
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
@@ -241,7 +242,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			map.getInteractions().getArray().filter(i => i instanceof Draw).forEach(d => map.removeInteraction(d));
 
 		};
-
 		setStyle(null);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
