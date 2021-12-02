@@ -71,10 +71,6 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 .ba-checkbox:hover span:first-child {
 	border-color: var(--primary-color);
 }
-.input:focus + .ba-checkbox span:first-child {
-	background: red;
-
-}
 .input:checked + .ba-checkbox span:first-child {
 	border-color: var(--primary-color);
 	background: var(--primary-color);

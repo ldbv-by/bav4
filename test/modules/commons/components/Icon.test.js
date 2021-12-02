@@ -134,7 +134,7 @@ describe('Icon', () => {
 
 			const element = await TestUtils.render(Icon.tag);
 			element.onClick = jasmine.createSpy();
-			const icon = element.shadowRoot.querySelector('a');
+			const icon = element.shadowRoot.querySelector('button');
 
 			icon.click();
 

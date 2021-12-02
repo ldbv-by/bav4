@@ -50,8 +50,8 @@ export class GeolocationButton extends BaElement {
 		return html`
 		<style>${css}</style> 
 		<div class='geolocation'>
-			<button class='geolocation-button' @click=${onClick} title=${title} >
-			<i class="icon geolocation-icon ${classMap(classes)}"></i></button>
+			<button class='geolocation-button ${classMap(classes)}' @click=${onClick} title=${title} >
+			<i class="icon geolocation-icon"></i></button>
 		</div>
 		`;
 	}

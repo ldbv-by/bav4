@@ -917,6 +917,24 @@ describe('OlDrawHandler', () => {
 
 		});
 
+		it('left no active draw-interaction', (done) => {
+			setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+
+			classUnderTest.activate(map);
+			setType('marker');
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				const draw = map.getInteractions().getArray().find(i => i instanceof Draw);
+				expect(draw == null).toBeTrue();
+				expect(classUnderTest._draw).toBeNull();
+				done();
+			});
+		});
+
 	});
 
 	describe('when draw a line', () => {

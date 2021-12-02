@@ -22,10 +22,14 @@
 	border: none;
 	outline: none;
 	padding-top: 0.25em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);  
 }
 
-.zoom-to-extent-button:hover {
+.zoom-to-extent-button:hover,.zoom-to-extent-button:focus {
 	transform: scale(1.1);
+}
+.zoom-to-extent-button:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
 .zoom-to-extent-button:active {

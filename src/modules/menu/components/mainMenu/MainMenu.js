@@ -90,12 +90,12 @@ export class MainMenu extends BaElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
-					<button @click="${toggle}" class="main-menu__close-button">
+					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
-						<span class='arrow'></span>	
+						<i class='resize-icon'></i>	
 					</button>	
 					<div class="main-menu__resize-button">						
-						<i class="resize-icon "></i>
+						<i class="swipe-icon "></i>
 					</div>					
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">

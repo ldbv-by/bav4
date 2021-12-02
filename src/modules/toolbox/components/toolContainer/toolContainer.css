@@ -15,17 +15,19 @@
 }
 .tool-container__close-button {
 	margin: 0;
-	padding: 0;
-	width: 3em;
-	height: 2.5em;    
+	width: 2.5em;
+	height: 2.5em;
+	border-radius: 2.5em;
 	border: 0;
-	background: var(--secondary-bg-color);
+	background: var(--primary-bg-color);
 	font-weight: bold;
 	cursor: pointer;
-	opacity: .9;
+	position: relative;
+	display: block;
+	padding: .5em;
 }
 .tool-container__close-button:hover {
-	opacity: 1;
+	background: var(--header-background-color)
 }
 .tool-container__content {
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);  
