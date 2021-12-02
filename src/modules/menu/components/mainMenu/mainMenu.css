@@ -5,13 +5,17 @@
 	bottom: 0;
 	top: 0;
 	left: -28em;
-	width: 28em;   
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	overflow: visible;
 	transition-property: transform;
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linea);   
 }
+
+.main-menu:not(.is-full-size) {
+	width: 28em !important;   
+}
+
 .main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
