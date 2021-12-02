@@ -606,7 +606,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._startNew();
 		}
 
-
 	}
 
 	_setSelected(feature) {
@@ -662,7 +661,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			return Temp_Session_Id;
 		};
 
-		// todo: enable full storage-functionality, after complete implementation of backend-functions to manage and store symbols
 		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
 
 		const getOrCreateVectorGeoResource = () => {
