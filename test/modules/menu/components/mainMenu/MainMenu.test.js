@@ -328,10 +328,8 @@ describe('MainMenu', () => {
 			const mainMenu = element.shadowRoot.querySelector('#mainmenu');
 			const slider = element.shadowRoot.querySelector('.slider-container input');
 
-
 			slider.value = value;
 			slider.dispatchEvent(new Event('input'));
-
 
 			expect(mainMenu.style.width).toBe(`${value}em`);
 		});
