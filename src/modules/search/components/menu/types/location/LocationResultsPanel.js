@@ -97,20 +97,20 @@ export class LocationResultsPanel extends MvuElement {
 		return html`
         <style>${css}</style>
 		<div class="location-results-panel divider">
-			<div class="location-label" @click="${toggleCollapse}">
+			<button class="location-label" @click="${toggleCollapse}">
 				<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>			
 				<a class='location-label__collapse'>
 					<i class='icon chevron ${classMap(iconCollapseClass)}'>
 					</i>
 				</a>   
-			</div>		
+			</button>		
 			<div class="${classMap(bodyCollapseClass)}">		
 				<ul class="location-items">	
 					${results
 		.slice(0, indexEnd)
 		.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
 				</ul>
-				<div class="show-all ${classMap(showAllButton)}" @click="${toggleShowAll}">
+				<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
 				${translate('search_menu_showAll_label')}
 				</div>
 			</div>	

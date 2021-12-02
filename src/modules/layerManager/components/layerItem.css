@@ -80,10 +80,6 @@ ba-icon:hover {
 ba-icon:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
-#remove:hover {
-	background: var(--error-color);
-}
-
 .ba-list-item:hover {
 	background: transparent;
 }

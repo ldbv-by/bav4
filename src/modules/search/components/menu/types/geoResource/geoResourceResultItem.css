@@ -3,7 +3,9 @@
 	cursor: pointer;
 	list-style: none;
 }
-
+.ba-list-item:focus-visible {
+	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
+}
 .ba-list-item b {
 	color: var(--primary-color);
 }
@@ -20,7 +22,6 @@
 .ba-list-item > *:last-child {
 	padding-right: 1.5em;
 }
-
 .ba-list-item__pre {
 	display: flex;
 	margin: 0 1em 0 0;
@@ -29,11 +30,9 @@
 	display: flex;
 	margin: 0 0 0 1em;
 }
-
 .ba-list-item__icon-info {
 	background-repeat: no-repeat;
 	background-image: url('../../assets/subtract.svg');
-	color: red;
 	margin: auto;
 	height: 100%;
 	width: 2em;

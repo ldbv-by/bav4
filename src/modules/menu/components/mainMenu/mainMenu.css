@@ -22,6 +22,43 @@
 	overflow: visible;
 }
 
+.main-menu__resize-button {
+	display: none;
+	position: absolute;
+	height: 3em;
+	width: 3em;
+	background: var(--secondary-color);
+	border-radius: 3em;
+	right: -1.5em;
+	z-index: calc(var(--z-header) + 91);
+	top: 50%;
+	margin-top: 6em;
+	border: 0;
+	padding: 0;
+	cursor: col-resize;
+
+}
+.main-menu__resize-button:hover {
+	background: var(--primary-color);
+}
+.swipe-icon {
+	background: var(--primary-bg-color);
+	display: block;
+	height: 2.6em;
+	width: 2.6em;
+	margin: .2em;
+	mask: url('assets/expand.svg');
+	-webkit-mask: url('assets/expand.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+
+}
+
+.is-full-size .main-menu__resize-button {
+
+	display: block;
+}
+
 .main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -35,21 +72,29 @@
 .main-menu__close-button {
 	position: absolute;
 	z-index: calc(var(--z-mainmenu) + 10);
-	background-color: var(--secondary-bg-color);
+	background: var(--primary-bg-color);
 	border: 0;
-	width: 9.5em;
-	height: 2.5em;
-	left: 29em;
+	width: 3.5em;
+	height: 3.5em;
+	left: 29.8em;
 	top: 7.5em;
 	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 	text-align: left;
 	border-radius: 2em;
-	padding: 0 1em;
+	padding: 0 .8em;
 	transition-property: left;
 	transition-duration: var(--animation-duration-large-open);
 	transition-delay: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linea);  
 }
+
+.main-menu__close-button:hover {
+	background: var(--header-background-color);
+}
+.main-menu__close-button:focus {
+	box-shadow: inset 0 0 0 .2em var(--primary-color-lighter);
+}
+
 .is-open .main-menu__close-button {
 	left: -15em;
 	transition-delay: 0s;
@@ -68,6 +113,7 @@
 }
 .main-menu__close-button-text {
 	display: block;
+	display: none;
 }
 
 .is-open {
@@ -104,7 +150,7 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 5em;
+	top: 2em;
 }
 
 /*portrait */
@@ -127,6 +173,7 @@
 	width: 4em;
 	margin-left: -2em;
 	height: 2.5em;
+	background: var(--secondary-color);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
@@ -362,4 +409,25 @@ input[type="range"]:focus {
 
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
+}
+
+.resize-icon {
+	background: var(--secondary-color);
+	background: var(--text2);
+	display: block;
+	height: 2em;
+	width: 2.1em;
+	margin: .2em;
+	mask: url('assets/arrowBarRight.svg');
+	-webkit-mask: url('assets/arrowBarRight.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.is-portrait .resize-icon {
+	transform: rotate(270deg);
+	position: relative;
+	top: .1em;
+	left: -.1em;
+	background: var(--primary-bg-color);
 }

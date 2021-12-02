@@ -115,11 +115,11 @@ export class MainMenu extends BaElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
-					<button @click="${toggle}" class="main-menu__close-button">
+					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
-						<span class='arrow'></span>	
+						<i class='resize-icon'></i>	
 					</button>	
-						${getSlider()}   				
+					${getSlider()} 
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
