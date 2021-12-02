@@ -76,8 +76,8 @@ export class MainMenu extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const changeWidth = (event) => {
-			const popup = this.shadowRoot.getElementById('mainmenu');
-			popup.style.width = parseInt(event.target.value) + 'em';
+			const container = this.shadowRoot.getElementById('mainmenu');
+			container.style.width = parseInt(event.target.value) + 'em';
 		};
 
 		const getSlider = () => {
