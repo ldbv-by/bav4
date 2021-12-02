@@ -15,13 +15,32 @@ const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
+const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
+
+export const AssetSourceType = Object.freeze({
+	LOCAL: 'local',
+	REMOTE: 'remote',
+	UNKNOWN: 'unknown'
+});
+
+export const getAssetSource = (asset) => {
+	if (asset.startsWith(Asset_Svg_B64_Flag)) {
+		return AssetSourceType.LOCAL;
+	}
+
+	if (asset.startsWith('http://') || asset.startsWith('https://')) {
+		return AssetSourceType.REMOTE;
+	}
+	return AssetSourceType.UNKNOWN;
+};
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {
-		if (symbolSrc.startsWith('http://') || symbolSrc.startsWith('https://')) {
+		if ([AssetSourceType.LOCAL, AssetSourceType.REMOTE].includes(getAssetSource(symbolSrc))) {
 			return symbolSrc;
 		}
-		return getIconUrl(symbolSrc, hexToRgb(symbolColor));
+		console.warn('not recognized as valid src:', symbolSrc);
+		return getIconUrl(Default_Symbol, hexToRgb(symbolColor));
 	}
 	return getIconUrl(Default_Symbol);
 };
@@ -48,10 +67,6 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 })];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
-	// todo: reactivate usage of environmentService, when backend is ready with icon-functions
-	// const { EnvironmentService } = $injector.inject('EnvironmentService');
-	// const environmentService = EnvironmentService;
-	const isOfflineModus = true; // environmentService.isStandalone()
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 
@@ -69,27 +84,25 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 				return 0.5;
 		}
 	};
-
-	const fallbackIconOptions = {
+	const rasterIconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
 		anchorYUnits: 'fraction',
-		src: markerIcon,
-		scale: getMarkerScale(styleOption.scale),
-		color: markerColor
+		src: styleOption.symbolSrc,
+		scale: getMarkerScale(styleOption.scale)
 	};
 
-	const getDefaultIconOptions = () => {
-		return {
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: getMarkerSrc(styleOption.symbolSrc, markerColor),
-			scale: getMarkerScale(styleOption.scale)
-		};
+	const svgIconOptions = {
+		anchor: [0.5, 1],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'fraction',
+		src: styleOption.symbolSrc ? styleOption.symbolSrc : markerIcon,
+		color: markerColor,
+		scale: getMarkerScale(styleOption.scale)
 	};
 
-	const iconOptions = isOfflineModus ? fallbackIconOptions : getDefaultIconOptions();
+	const iconOptions = styleOption.symbolSrc ? (getAssetSource(styleOption.symbolSrc) === AssetSourceType.LOCAL ? svgIconOptions : rasterIconOptions) : svgIconOptions;
+
 	return [new Style({
 		image: new Icon(iconOptions)
 	})];
@@ -442,14 +455,42 @@ export const getColorFrom = (feature) => {
 		if (stroke) {
 			return rgbToHex(stroke.getColor());
 		}
-		if (image && image.getColor()) {
-			return rgbToHex(image.getColor());
+		if (image) {
+			// first try to get the tint-color
+			if (image.getColor()) {
+				return rgbToHex(image.getColor());
+			}
+			// ...then try to get colorInformation from symbolSrc
+			const { IconService: iconService } = $injector.inject('IconService');
+			return rgbToHex(iconService.decodeColor(image.getSrc()));
 		}
 		if (text) {
 			return rgbToHex(text.getFill().getColor());
 		}
 	}
 
+	return null;
+};
+
+
+/**
+ * extracts the symbolSrc-value or null from a feature
+ * @param {Feature} feature the feature with or without a style
+ * @returns {string|null} the symbolSrc-Value or null
+ */
+export const getSymbolFrom = (feature) => {
+	if (feature == null) {
+		return null;
+	}
+	const styles = feature.getStyle();
+	if (styles) {
+		const style = styles[0];
+		const image = style.getImage();
+
+		if (image) {
+			return image.getSrc();
+		}
+	}
 	return null;
 };
 
@@ -470,22 +511,6 @@ export const getContrastColorFrom = (baseColor) => {
 	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
 
 	return hsvToRgb(contrastHsv);
-};
-
-/**
- * creates the complementary color for the specified color
- * from https://www.tutorialspoint.com/javascript-complementary-colors-builder
- * @param {string} color the color as hex-string
- * @returns {string} the complementary color as hex string
- */
-export const getComplementaryColor = (color = '') => {
-	const colorPart = color.slice(1);
-	const ind = parseInt(colorPart, 16);
-	let iter = ((1 << 4 * colorPart.length) - 1 - ind).toString(16);
-	while (iter.length < colorPart.length) {
-		iter = '0' + iter;
-	}
-	return '#' + iter;
 };
 
 /***
