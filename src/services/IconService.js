@@ -19,11 +19,11 @@ export class IconService {
 	constructor(iconProvider = loadBvvIcons, iconColorProvider = getBvvIconColor) {
 		this._iconProvider = iconProvider;
 		this._iconColorProvider = iconColorProvider;
-		this._default = this.createDefault();
+		this._default = this._createDefault();
 		this._icons = null;
 	}
 
-	createDefault() {
+	_createDefault() {
 		const matcher = (idOrUrl) => {
 			return idOrUrl === Svg_Marker_Name || idOrUrl.endsWith(Svg_Marker_Name);
 		};

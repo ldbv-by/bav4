@@ -1,6 +1,7 @@
 import { IconResult, IconService } from '../../src/services/IconService';
 import { loadBvvIcons } from '../../src/services/provider/icons.provider';
 import { $injector } from '../../src/injection';
+import { getBvvIconColor } from '../../src/services/provider/iconColor.provider';
 
 
 describe('IconsService', () => {
@@ -49,6 +50,7 @@ describe('IconsService', () => {
 		it('initializes the service with default provider', async () => {
 			const instanceUnderTest = new IconService();
 			expect(instanceUnderTest._iconProvider).toEqual(loadBvvIcons);
+			expect(instanceUnderTest._iconColorProvider).toEqual(getBvvIconColor);
 		});
 
 
