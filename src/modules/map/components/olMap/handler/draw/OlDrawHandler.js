@@ -237,6 +237,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later
+		const removeAllDrawInteractions = (map) => {
+			map.getInteractions().getArray().filter(i => i instanceof Draw).forEach(d => map.removeInteraction(d));
+
+		};
+
 		setStyle(null);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
@@ -244,14 +249,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		if (this._draw) {
-			olMap.removeInteraction(this._draw);
-		}
-
+		removeAllDrawInteractions(olMap);
 		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
 		this._unreg(this._registeredObservers);
+		this._unreg(this._drawStateChangedListeners);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -290,6 +293,10 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
+		// do not allow a draw-interaction while deactivated
+		if (!this.active && this._map === null) {
+			return;
+		}
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();

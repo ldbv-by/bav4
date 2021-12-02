@@ -922,9 +922,8 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
-
 			classUnderTest.activate(map);
-			setType('marker');
+			setType('line');
 			classUnderTest.deactivate(map);
 
 			setTimeout(() => {
