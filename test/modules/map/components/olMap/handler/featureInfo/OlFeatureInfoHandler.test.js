@@ -59,16 +59,6 @@ describe('OlFeatureInfoHandler', () => {
 		});
 	};
 
-	const delay = (fn) => {
-		/**
-		 * Although tests on map are wrapped within a map.once('postcompose'), we still have flaky tests.
-		 * Therefore we have to delay them a bit (200ms seems to be enough)
-		 */
-		return () => setTimeout(() => {
-			fn();
-		}, 200);
-	};
-
 	describe('constructor', () => {
 
 		it('initializes the service with custom provider', async () => {
@@ -144,7 +134,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postcompose', delay(() => {
+			map.once('rendercomplete', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
@@ -161,7 +151,7 @@ describe('OlFeatureInfoHandler', () => {
 					expect(store.getState().highlight.features).toHaveSize(0);
 					done();
 				}, TestDelay);
-			}));
+			});
 		});
 
 		it('removes outdated HighlightFeature items', (done) => {
@@ -176,7 +166,7 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			handler.register(map);
 
-			map.once('postcompose', delay(() => {
+			map.once('rendercomplete', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(notMatchingCoordinate);
 
@@ -187,10 +177,10 @@ describe('OlFeatureInfoHandler', () => {
 
 					done();
 				}, TestDelay);
-			}));
+			});
 		});
 
-		xit('adds one FeatureInfo and HighlightFeature from each suitable layer', (done) => {
+		it('adds one FeatureInfo and HighlightFeature from each suitable layer', (done) => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -221,7 +211,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postcompose', delay(() => {
+			map.once('rendercomplete', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
@@ -287,7 +277,7 @@ describe('OlFeatureInfoHandler', () => {
 						}, TestDelay);
 					}, TestDelay);
 				}, TestDelay);
-			}));
+			});
 		});
 
 		it('adds \'Not_Available\' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null', (done) => {
@@ -300,6 +290,7 @@ describe('OlFeatureInfoHandler', () => {
 				}
 			}, mockNullFeatureInfoProvider);
 			const map = setupMap();
+
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
@@ -317,7 +308,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('postcompose', delay(() => {
+			map.once('rendercomplete', () => {
 				// safe to call map.getPixelFromCoordinate from now on
 				startRequest(matchingCoordinate);
 
@@ -327,7 +318,7 @@ describe('OlFeatureInfoHandler', () => {
 				expect(store.getState().highlight.features).toHaveSize(0);
 
 				done();
-			}));
+			});
 		});
 	});
 });
