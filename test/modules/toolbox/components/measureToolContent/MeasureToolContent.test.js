@@ -7,7 +7,9 @@ import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
+import { ShareButton } from '../../../../../src/modules/toolbox/components/measureToolContent/ShareButton';
 
+window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(Icon.tag, Icon);
@@ -271,74 +273,9 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const shareButton = element.shadowRoot.querySelector('#share');
+			const shareButton = element.shadowRoot.querySelector('ba-share-button');
 
 			expect(shareButton).toBeTruthy();
-		});
-
-		it('shows NOT the measurement share-container for invalid fileSaveResult', async () => {
-			const state = {
-				measurement: {
-					statistic: { length: 42, area: 0 },
-					fileSaveResult: { adminId: 'a_fooBar', fileId: null },
-					reset: null,
-					remove: null
-				}
-			};
-			const element = await setup(state);
-			const shareButton = element.shadowRoot.querySelector('#share');
-
-			expect(shareButton).toBeFalsy();
-		});
-
-		it('opens the modal with shortened share-urls on click', async (done) => {
-			const state = {
-				measurement: {
-					statistic: { length: 42, area: 0 },
-					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
-					reset: null,
-					remove: null
-				}
-			};
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			const element = await setup(state);
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().modal.data.title).toBe('toolbox_measureTool_share');
-				done();
-			});
-
-		});
-
-		it('logs a warning, when shortener fails', async (done) => {
-			const state = {
-				measurement: {
-					statistic: { length: 42, area: 0 },
-					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
-					reset: null,
-					remove: null
-				}
-			};
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup(state);
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
-				done();
-			});
-
 		});
 
 		describe('with touch-device', () => {
