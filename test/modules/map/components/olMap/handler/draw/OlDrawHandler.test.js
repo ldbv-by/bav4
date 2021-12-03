@@ -854,30 +854,30 @@ describe('OlDrawHandler', () => {
 		});
 
 
-		// it('adds a vectorGeoResource for persisting purpose', (done) => {
-		// 	const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-		// 	setup(state);
-		// 	const classUnderTest = new OlDrawHandler();
-		// 	const map = setupMap();
-		// 	const feature = createFeature();
-		// 	const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-		// 	spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
-		// 	const storageSpy = spyOn(measurementStorageServiceMock, 'store');
-		// 	classUnderTest.activate(map);
-		// 	classUnderTest._vectorLayer.getSource().addFeature(feature);
-		// 	classUnderTest.deactivate(map);
+		it('adds a vectorGeoResource for persisting purpose', (done) => {
+			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
+			setup(state);
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
 
-		// 	setTimeout(() => {
-		// 		expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
-		// 		expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
-		// 		expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-		// 			id: 'f_ooBarId',
-		// 			label: 'map_olMap_handler_draw_layer_label'
-		// 		}));
-		// 		done();
-		// 	});
+			setTimeout(() => {
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
+				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
+					id: 'f_ooBarId',
+					label: 'map_olMap_handler_measure_layer_label'
+				}));
+				done();
+			});
 
-		// });
+		});
 
 		it('adds layer with temporaryId while persisting layer failed', (done) => {
 			const state = { ...initialState, fileSaveResult: null };
