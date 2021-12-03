@@ -15,13 +15,10 @@ window.customElements.define(ToolBar.tag, ToolBar);
 
 describe('ToolBarElement', () => {
 
-	const configServiceMock = {
-		getValueAsPath: (value) => value
-	};
 	let store;
 	const setup = async (state = {}, config = {}) => {
 
-		const { embed = false, fetching = false } = config;
+		const { embed = false, fetching = false, isStandalone = false } = config;
 
 		const initialState = {
 			toolBar: {
@@ -52,10 +49,10 @@ describe('ToolBarElement', () => {
 
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed
+				isEmbedded: () => embed,
+				isStandalone: () => isStandalone
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('ConfigService', configServiceMock);
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ToolBar.tag);
 	};
 
@@ -138,18 +135,16 @@ describe('ToolBarElement', () => {
 			});
 		});
 
-		describe('backend availability', () => {
-			it('disable the share-button, when backend is NOT available', async () => {
-				spyOn(configServiceMock, 'getValueAsPath').and.throwError('some reason');
-				const element = await setup();
+		describe('in standalone-modus', () => {
+			it('disable the share-button, when App is standalone', async () => {
+				const element = await setup({}, { isStandalone: true });
 
 				const shareToolIcon = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
 				const button = shareToolIcon.closest('.tool-bar__button');
 				expect(button.disabled).toBeTrue();
 			});
 
-			it('disable not the share-button, when backend is available', async () => {
-				spyOn(configServiceMock, 'getValueAsPath').and.callFake(() => '/some.url/');
+			it('disable not the share-button, when App is NOT standalone', async () => {
 				const element = await setup();
 
 				const shareToolIcon = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
