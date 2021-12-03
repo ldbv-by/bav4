@@ -199,7 +199,7 @@ describe('DrawToolContent', () => {
 			expect(colorInput.value).toBe('#f00ba3');
 
 			colorInput.value = newColor;
-			colorInput.dispatchEvent(new Event('change'));
+			colorInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
@@ -220,7 +220,7 @@ describe('DrawToolContent', () => {
 			expect(colorInput.value).toBe('#f00ba3');
 
 			colorInput.value = newColor;
-			colorInput.dispatchEvent(new Event('change'));
+			colorInput.dispatchEvent(new Event('input'));
 
 			expect(getIconResultSpy).toHaveBeenCalledWith('https://some.url/foo/bar/0,0,0/foobar');
 			expect(store.getState().draw.style.symbolSrc).toBe('https://some.url/foo/bar/1,2,3/foobarbaz');
@@ -253,7 +253,7 @@ describe('DrawToolContent', () => {
 			expect(textInput.value).toBe('foo');
 
 			textInput.value = newText;
-			textInput.dispatchEvent(new Event('change'));
+			textInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
