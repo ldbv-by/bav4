@@ -10,7 +10,6 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { openModal } from '../../../../store/modal/modal.action';
 import { QueryParameters } from '../../../../services/domain/queryParameters';
 import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -220,7 +219,6 @@ export class DrawToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		let subTextMessage = translate('toolbox_drawTool_info');
 		if (this._environmentService.isTouch()) {
-			emitNotification(translate('toolbox_drawTool_info'), LevelTypes.Info);
 			switch (mode) {
 				case 'active':
 					subTextMessage = translate('toolbox_drawTool_draw_active');
