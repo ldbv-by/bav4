@@ -334,6 +334,30 @@ describe('MainMenu', () => {
 			expect(mainMenu.style.width).toBe(`${value}em`);
 		});
 
+		it('saves and restores width values', async () => {
+			const value = 50;
+			const element = await setup();
+			const mainMenu = element.shadowRoot.querySelector('#mainmenu');
+			const slider = element.shadowRoot.querySelector('.slider-container input');
+			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
+
+			//open FeatureInfo panel and adjust width
+			setTabIndex(TabIndex.FEATUREINFO);
+			slider.value = value;
+			slider.dispatchEvent(new Event('input'));
+			const adjustedWidthInPx = window.getComputedStyle(mainMenu).width;
+
+			//open another panel
+			setTabIndex(TabIndex.MAPS);
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
+
+			//open FeatureInfo panel again
+			setTabIndex(TabIndex.FEATUREINFO);
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+		});
+
 		it('prevents default event handling and stops its propagation', async () => {
 			const state = {
 				mainMenu: {
