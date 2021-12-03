@@ -312,7 +312,7 @@ export class DrawToolContent extends AbstractToolContent {
 							title='Symbol'>							
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
-								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
+								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
 							</div>					
 							<div class="tool-container__style_size" title="${translate('toolbox_drawTool_style_size')}">
 								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>									
@@ -333,7 +333,7 @@ export class DrawToolContent extends AbstractToolContent {
 							title='Text'>
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
-								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
+								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
 							</div>	
 							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_size')}">
 								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>	
@@ -343,7 +343,7 @@ export class DrawToolContent extends AbstractToolContent {
 							</div>				
 							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
 								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
-								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @change=${onChangeText}>
+								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
 							</div>							
 						</div>
 						`;
@@ -354,7 +354,7 @@ export class DrawToolContent extends AbstractToolContent {
 							title='Line'>
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
-								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
+								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
 							</div>					
 						</div>
 						`;
@@ -365,7 +365,7 @@ export class DrawToolContent extends AbstractToolContent {
 								title='Polygon'>
 								<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 									<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
-									<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @change=${onChangeColor}>						
+									<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
 								</div>				
 							</div>
 							`;
