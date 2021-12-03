@@ -59,26 +59,15 @@ export class MainMenu extends BaElement {
 
 		this._activeTabIndex = tabIndex;
 
-		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
-		};
+		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
 
-		const getMinWidthClass = () => {
-			return minWidth ? 'is-desktop' : 'is-tablet';
-		};
+		const getMinWidthClass = () => minWidth ? 'is-desktop' : 'is-tablet';
 
-		const getIsFullSize = () => {
-			return (tabIndex === MainMenuTabIndex.FEATUREINFO.id) ? 'is-full-size' : '';
-		};
+		const getFullSizeClass = () => (tabIndex === MainMenuTabIndex.FEATUREINFO.id) ? 'is-full-size' : '';
 
+		const getOverlayClass = () => open ? 'is-open' : '';
 
-		const getOverlayClass = () => {
-			return open ? 'is-open' : '';
-		};
-
-		const getPreloadClass = () => {
-			return observeResponsiveParameter ? '' : 'prevent-transition';
-		};
+		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
 
 		const contentPanels = Object.values(MainMenuTabIndex)
 			//Todo: refactor me when all content panels are real components
@@ -86,17 +75,40 @@ export class MainMenu extends BaElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+		const changeWidth = (event) => {
+			const container = this.shadowRoot.getElementById('mainmenu');
+			container.style.width = parseInt(event.target.value) + 'em';
+		};
+
+		const getSlider = () => {
+
+			const onPreventDragging = (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			};
+
+			return html`<div class='slider-container'>
+				<input  
+					type="range" 
+					min="28" 
+					max="100" 
+					value="28" 
+					draggable='true' 
+					@input=${changeWidth} 
+					@dragstart=${onPreventDragging}
+					></div>`;
+		};
+
+
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
-				<div class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getIsFullSize()}">            
+				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
 					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<i class='resize-icon'></i>	
 					</button>	
-					<div class="main-menu__resize-button">						
-						<i class="swipe-icon "></i>
-					</div>					
+					${getSlider()} 
 					<div id='mainMenuContainer' class='main-menu__container'>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`

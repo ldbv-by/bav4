@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "@playwright/test": "^1.17.0",
+    "@playwright/test": "^1.17.1",
     "css-loader": "^6.5.1",
     "dotenv-webpack": "^7.0.3",
     "es-check": "^6.1.1",
@@ -33,7 +33,7 @@
     "karma-spec-reporter": "^0.0.32",
     "karma-webkit-launcher": "^1.0.2",
     "karma-webpack": "^5.0.0",
-    "playwright": "^1.17.0",
+    "playwright": "^1.17.1",
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.3.1",
@@ -57,7 +57,7 @@
     "test:debug": "karma start --single-run --browsers ChromeDebugging",
     "test:gha": "karma start karma.conf.gha.js --single-run",
     "e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
-    "es-check": "es-check es9 \"./src/**/*.js\" --module",
+    "es-check": "es-check es11 \"./src/**/*.js\" --module",
     "analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
   }
 }
