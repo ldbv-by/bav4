@@ -286,13 +286,16 @@ describe('StyleService', () => {
 			const addOverlaySpy = jasmine.createSpy();
 			const styleSetterSpy = spyOn(feature, 'setStyle');
 			const propertySetterSpy = spyOn(feature, 'set');
+
 			const viewMock = {
 				getResolution() {
 					return 50;
 				},
-				once() { }
+				once(eventName, callback) {
+					callback();
+				}
 			};
-			const onceSpy = spyOn(viewMock, 'once');
+			const onceOnViewSpy = spyOn(viewMock, 'once').and.callThrough();
 
 			const mapMock = {
 				getView: () => viewMock,
@@ -302,14 +305,18 @@ describe('StyleService', () => {
 				},
 				getInteractions() {
 					return { getArray: () => [] };
-				}
+				},
+				once() {}
 			};
+			const eventMock = { map: mapMock };
+			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
 
 			instanceUnderTest.addStyle(feature, mapMock, 'measure');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
-			expect(onceSpy).toHaveBeenCalled();
+			expect(onceOnViewSpy).toHaveBeenCalledWith('change:resolution', jasmine.any(Function));
+			expect(onceOnMapSpy).toHaveBeenCalledWith('moveend', jasmine.any(Function));
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 

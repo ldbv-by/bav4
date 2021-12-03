@@ -14,11 +14,6 @@ input {
 	font-family: var(--font-family);
 	width: 100%;
 }
-
-input:focus {
-	outline: none;
-}
-
 .autocomplete-items {
 	z-index: 99;
 	/*position the autocomplete items to be the same width as the container:*/

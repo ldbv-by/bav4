@@ -97,3 +97,7 @@ img {
 	max-width: 25em;
 	height: auto;
 }
+
+.ba-section:hover .ba-list-item__header .ba-list-item__text {
+	color: var(--primary-color);
+}

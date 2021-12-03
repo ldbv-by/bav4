@@ -10,6 +10,10 @@ import { FileStorageServiceDataTypes } from '../../../../services/FileStorageSer
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 
+
+
+
+
 /**
  * Displays a showcase of common and reusable components or
  * functional behaviors, which are not finally in place
@@ -28,6 +32,7 @@ export class ShowCase extends BaElement {
 		this._geoResourceService = GeoResourceService;
 		this._urlService = UrlService;
 		this._shareService = ShareService;
+		this._icons = [];
 		this._url = '';
 		this._shortUrl = '';
 		this._fileStorageService = FileStorageService;
@@ -191,8 +196,8 @@ export class ShowCase extends BaElement {
 						<ba-button id='notification1' .label=${'Warn Notification'} type="primary" @click=${onClickEmitWarn}></ba-button>
 						<ba-button id='notification2' .label=${'Error Notification'} type="primary" @click=${onClickEmitError}></ba-button>
 						<ba-button id='notification3' .label=${'Custom Notification'} type="primary" @click=${onClickEmitCustom}></ba-button>
-			</div>
-		</div>`;
+			</div>		
+		</div > `;
 	}
 
 	static get tag() {

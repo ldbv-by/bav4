@@ -178,14 +178,17 @@ export class Header extends MvuElement {
 							</div>
 						</div>
 					</div>
-					<div class='header__text'>
+					<div id='header__text' class='${getOverlayClass()} header__text'>
 					</div>
 				</div>			
-				<div id='headerMobile' class='header__text-mobile'>	
+				<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
 				</div>
 				<div class='header__emblem'>
 				</div>
-				<div  class="header ${getOverlayClass()}">   
+				<div  class="header ${getOverlayClass()}">  
+					<button class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
+						<i class="resize-icon "></i>
+					</button> 
 					<div class="header__background">
 					</div>
 					<div class='header__search-container'>
@@ -216,9 +219,6 @@ export class Header extends MvuElement {
 							</span>
 						</button>
 					</div>
-					<button class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
-						<span class='arrow'></span>	
-					</button>
 				</div>				
             </div>
 		`;

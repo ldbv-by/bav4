@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, selectStyleFunction } from '../../olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, hexToRgb, selectStyleFunction } from '../../olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -25,6 +25,7 @@ import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
 
 
+
 export const MAX_SELECTION_SIZE = 1;
 
 const Debounce_Delay = 1000;
@@ -33,7 +34,7 @@ const Temp_Session_Id = 'temp_measure_id';
 
 
 const defaultStyleOption = {
-	symbolSrc: 'marker', // used by: Symbol
+	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
 	text: '' // used by Text
@@ -48,7 +49,7 @@ const defaultStyleOption = {
 export class OlDrawHandler extends OlLayerHandler {
 	constructor() {
 		super(DRAW_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, MeasurementStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'MeasurementStorageService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, MeasurementStorageService, IconService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'MeasurementStorageService', 'IconService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -58,6 +59,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
 		this._storageHandler = MeasurementStorageService;
+		this._iconService = IconService;
 
 		this._vectorLayer = null;
 		this._draw = null;
@@ -85,7 +87,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._drawStateChangedListeners = [];
-		this._registeredObservers = this._register(this._storeService.getStore());
+		this._registeredObservers = [];
 	}
 
 	/**
@@ -211,6 +213,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
+			this._registeredObservers = this._register(this._storeService.getStore());
 		}
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
@@ -232,28 +235,29 @@ export class OlDrawHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	// eslint-disable-next-line no-unused-vars
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later
+		const removeAllDrawInteractions = (map) => {
+			map.getInteractions().getArray().filter(i => i instanceof Draw).forEach(d => map.removeInteraction(d));
+
+		};
+		setStyle(null);
+		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
 		olMap.removeInteraction(this._select);
 		olMap.removeInteraction(this._dragPan);
 
-		if (this._draw) {
-			olMap.removeInteraction(this._draw);
-		}
-
+		removeAllDrawInteractions(olMap);
 		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
-		this._unreg(this._registeredObservers);
+		this._unreg(this._drawStateChangedListeners);
+		this._unsubscribe(this._registeredObservers);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
-		setStyle(null);
-		setSelectedStyle(null);
 		this._draw = null;
 		this._modify = false;
 		this._select = false;
@@ -266,6 +270,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	_unreg(listeners) {
 		unByKey(listeners);
 		listeners = [];
+	}
+
+	_unsubscribe(observers) {
+		observers.forEach(unsubscribe => unsubscribe());
+		observers = [];
 	}
 
 	_setDrawState(value) {
@@ -289,14 +298,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
-		const styleOption = this._getStyleOption();
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
 			this._map.removeInteraction(this._draw);
 		}
-		this._draw = this._createDrawByType(type, styleOption);
+		this._draw = this._createDrawByType(type, this._getStyleOption());
 		this._select.getFeatures().clear();
 
 		// we deactivate the modify-interaction only,
@@ -319,7 +327,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				};
 				this._sketchHandler.activate(event.feature);
 				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
-				const styleFunction = this._getStyleFunctionByDrawType(type, styleOption);
+				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
 				listener = event.feature.on('change', onFeatureChange);
@@ -417,6 +425,10 @@ export class OlDrawHandler extends OlLayerHandler {
 			return null;
 		}
 
+		if (type === StyleTypes.MARKER && !styleOption.symbolSrc) {
+			return null;
+		}
+
 		if (this._vectorLayer == null) {
 			return null;
 		}
@@ -497,13 +509,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		const currentStyleOptions = this._storeService.getStore().getState().draw.style;
-		if (currentStyleOptions == null) {
-			setStyle(defaultStyleOption);
-			return defaultStyleOption;
-		}
+		if (this._storeService.getStore().getState().draw.style == null) {
+			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
+			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
+			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc });
 
-		return currentStyleOptions;
+		}
+		return this._storeService.getStore().getState().draw.style;
 	}
 
 	_getStyleFunctionFrom(feature) {
@@ -595,7 +607,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._startNew();
 		}
 
-
 	}
 
 	_setSelected(feature) {
@@ -607,8 +618,10 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._select.getFeatures().push(feature);
 			const currentStyleOption = this._getStyleOption();
 			const featureColor = getColorFrom(feature);
+			const featureSymbol = getSymbolFrom(feature);
 			const color = featureColor ? featureColor : currentStyleOption.color;
-			const style = { ...currentStyleOption, color: color };
+			const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
+			const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc };
 			const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 			setSelectedStyle(selectedStyle);
 		}
@@ -649,9 +662,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			return Temp_Session_Id;
 		};
 
-		// todo: enable full storage-functionality, after complete implementation of backend-functions to manage and store symbols
-		//const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
-		const id = createTempIdAndWarn();
+		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
 
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);

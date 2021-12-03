@@ -100,20 +100,20 @@ export class GeoResouceResultsPanel extends MvuElement {
 		return html`
         <style>${css}</style>
 		<div class="georesource-results-panel divider">
-				<div class="georesource-label" @click="${toggleCollapse}">
+				<button class="georesource-label" @click="${toggleCollapse}">
 					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
 					<a class='georesource-label__collapse'>
 						<i class='icon chevron ${classMap(iconCollapseClass)}'>
 						</i>
 					</a>   
-				</div>
+				</button>
 				<div class="${classMap(bodyCollapseClass)}">	
 					<ul class="georesource-items">	
 						${results
 		.slice(0, indexEnd)
 		.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" @click="${toggleShowAll}">
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
 					${translate('search_menu_showAll_label')}
 					</div>
 				</div>

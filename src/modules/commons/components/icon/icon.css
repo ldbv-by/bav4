@@ -26,4 +26,9 @@
 
 .anchor {
 	display: inline-block;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius);
+	height: var(--size);
+	width: var(--size);
 }
