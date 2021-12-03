@@ -197,6 +197,17 @@ describe('MainMenu', () => {
 			}
 		});
 
+		it('adds a slider to resize width', async () => {
+			const element = await setup();
+			const slider = element.shadowRoot.querySelector('.slider-container input');
+
+			expect(slider.type).toBe('range');
+			expect(slider.value).toBe('28');
+			expect(slider.min).toBe('28');
+			expect(slider.max).toBe('100');
+			expect(slider.draggable).toBeTrue();
+		});
+
 		it('contains a dev info', async () => {
 			const element = await setup();
 
@@ -300,6 +311,70 @@ describe('MainMenu', () => {
 			enableResponsiveParameterObservation();
 
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+		});
+	});
+
+	describe('when slider changes', () => {
+
+		it('adjusts the main menu width', async () => {
+			const value = 50;
+			const state = {
+				mainMenu: {
+					open: true,
+					tabIndex: MainMenuTabIndex.FEATUREINFO.id
+				}
+			};
+			const element = await setup(state);
+			const mainMenu = element.shadowRoot.querySelector('#mainmenu');
+			const slider = element.shadowRoot.querySelector('.slider-container input');
+
+			slider.value = value;
+			slider.dispatchEvent(new Event('input'));
+
+			expect(mainMenu.style.width).toBe(`${value}em`);
+		});
+
+		it('saves and restores width values', async () => {
+			const value = 50;
+			const element = await setup();
+			const mainMenu = element.shadowRoot.querySelector('#mainmenu');
+			const slider = element.shadowRoot.querySelector('.slider-container input');
+			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
+
+			//open FeatureInfo panel and adjust width
+			setTabIndex(TabIndex.FEATUREINFO);
+			slider.value = value;
+			slider.dispatchEvent(new Event('input'));
+			const adjustedWidthInPx = window.getComputedStyle(mainMenu).width;
+
+			//open another panel
+			setTabIndex(TabIndex.MAPS);
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
+
+			//open FeatureInfo panel again
+			setTabIndex(TabIndex.FEATUREINFO);
+
+			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+		});
+
+		it('prevents default event handling and stops its propagation', async () => {
+			const state = {
+				mainMenu: {
+					open: true,
+					tabIndex: MainMenuTabIndex.FEATUREINFO.id
+				}
+			};
+			const element = await setup(state);
+			const slider = element.shadowRoot.querySelector('.slider-container input');
+			const event = new Event('dragstart');
+			const preventDefaultSpy = spyOn(event, 'preventDefault');
+			const stopPropagationSpy = spyOn(event, 'stopPropagation');
+
+			slider.dispatchEvent(event);
+
+			expect(preventDefaultSpy).toHaveBeenCalled();
+			expect(stopPropagationSpy).toHaveBeenCalled();
 		});
 	});
 });
