@@ -3,16 +3,16 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
-import css from './shareMeasureDialog.css';
+import css from './shareDialogContent.css';
 
 /**
  * A content component to show and share perma-links of
- * user-generated measurement-data
+ * user-generated measurement- or drawing-data
  * @class
  * @author thiloSchlemmer
  * @author alsturm
  */
-export class ShareMeasureDialog extends BaElement {
+export class ShareDialogContent extends BaElement {
 
 	constructor() {
 		super();
@@ -88,6 +88,6 @@ export class ShareMeasureDialog extends BaElement {
 	}
 
 	static get tag() {
-		return 'ba-sharemeasure';
+		return 'ba-share-content';
 	}
 }
