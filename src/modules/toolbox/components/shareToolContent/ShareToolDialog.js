@@ -43,7 +43,7 @@ export class ShareToolDialog extends BaElement {
 	 */
 	_buildShareItem(url, label) {
 		const translate = (key) => this._translationService.translate(key);
-		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard();
+		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
 		return html`
 		<div class='share_label'>${label}</div>			
@@ -57,11 +57,10 @@ export class ShareToolDialog extends BaElement {
 	/**
 	 * @private
 	 */
-	async _copyValueToClipboard() {
-		const value = 'the link';
+	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
-			emitNotification(`${value} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+			emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_link_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 		}
 		catch (error) {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');

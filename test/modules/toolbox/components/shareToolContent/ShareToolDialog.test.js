@@ -51,33 +51,33 @@ describe('ShareToolDialog', () => {
 	});
 
 	it('copies the https url to the clipboard, when click', async (done) => {
-		const value = 'the link';
+		const link = 'https://mock.url';
 
-		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(value).and.returnValue(Promise.resolve());
+		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(link).and.returnValue(Promise.resolve());
 		const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
 		copyButton.click();
 
 		expect(copyButton).toBeTruthy();
-		expect(copyToClipboardMock).toHaveBeenCalledWith(value);
+		expect(copyToClipboardMock).toHaveBeenCalledWith(link);
 		setTimeout(() => {
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe(`${value} map_contextMenuContent_clipboard_success`);
+			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_link_text map_contextMenuContent_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			done();
 		});
 	});
 
 	it('logs a warning when copyToClipboard fails using http ', async (done) => {
-		const value = 'the link';
-		element.shareUrl = value;
+		const link = 'http://mock.url';
+		element.shareUrl = link;
 
-		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(value).and.returnValue(Promise.reject());
+		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(link).and.returnValue(Promise.reject());
 		const warnSpy = spyOn(console, 'warn');
 		const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
 		copyButton.click();
 
 		expect(copyButton).toBeTruthy();
-		expect(copyToClipboardMock).toHaveBeenCalledWith(value);
+		expect(copyToClipboardMock).toHaveBeenCalledWith(link);
 		setTimeout(() => {
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
