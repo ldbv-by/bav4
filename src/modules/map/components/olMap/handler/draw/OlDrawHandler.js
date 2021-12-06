@@ -118,25 +118,24 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (vgr) {
 
 					this._storageHandler.setStorageId(oldLayer.get('id'));
-					vgr.getData().then(data => {
-						const oldFeatures = readFeatures(data);
-						const onFeatureChange = (event) => {
-							const geometry = event.target.getGeometry();
-							setGeometryIsValid(isValidGeometry(geometry));
-							this._styleService.updateStyle(event.target, olMap);
-						};
+					const data = await vgr.getData();
+					const oldFeatures = readFeatures(data);
+					const onFeatureChange = (event) => {
+						const geometry = event.target.getGeometry();
+						setGeometryIsValid(isValidGeometry(geometry));
+						this._styleService.updateStyle(event.target, olMap);
+					};
 
-						oldFeatures.forEach(f => {
-							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
-							f.set('srid', this._mapService.getSrid(), true);
-							this._styleService.removeStyle(f, olMap);
-							this._styleService.addStyle(f, olMap);
-							layer.getSource().addFeature(f);
-							f.on('change', onFeatureChange);
-						});
-					})
-						.then(() => removeLayer(oldLayer.get('id')))
-						.then(() => this._finish());
+					oldFeatures.forEach(f => {
+						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+						f.set('srid', this._mapService.getSrid(), true);
+						this._styleService.removeStyle(f, olMap);
+						this._styleService.addStyle(f, olMap);
+						layer.getSource().addFeature(f);
+						f.on('change', onFeatureChange);
+					});
+					removeLayer(oldLayer.get('id'));
+					this._finish();
 				}
 			}
 		};
