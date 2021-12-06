@@ -23,7 +23,8 @@ export class ShareButton extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update:
-				return { ...model,
+				return {
+					...model,
 					fileSaveResult: data
 				};
 		}
@@ -65,10 +66,9 @@ export class ShareButton extends MvuElement {
 		if (isValidForSharing(fileSaveResult)) {
 
 			const title = translate('toolbox_measureTool_share');
-			const onClick = () => {
-				generateShareUrls().then(shareUrls => {
-					openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
-				});
+			const onClick = async () => {
+				const shareUrls = await generateShareUrls();
+				openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
 			};
 			return html`<ba-button id='share' 
 			class="tool-container__button" 
