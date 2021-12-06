@@ -123,6 +123,8 @@ export class VectorImportService {
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
 
+		// here we use the Promise API for loading the source in an async manner
+		// eslint-disable-next-line promise/prefer-await-to-then
 		geoResource.getData().then(data => {
 			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
 			const features = format.readFeatures(data);
