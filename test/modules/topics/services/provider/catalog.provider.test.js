@@ -41,7 +41,7 @@ describe('Catalog provider', () => {
 		});
 
 
-		it('rejects when backend request cannot be fulfilled', (done) => {
+		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const topicId = 'foo';
 			const backendUrl = 'https://backend.url/';
@@ -51,14 +51,15 @@ describe('Catalog provider', () => {
 				Promise.resolve(new Response(null, { status: 404 })
 				));
 
-			loadBvvCatalog(topicId).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvCatalog(topicId);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe(`Catalog for '${topicId}' could not be loaded`);
-				done();
-			});
+				expect(error.message).toBe(`Catalog for '${topicId}' could not be loaded`);
+			}
 		});
 	});
 
