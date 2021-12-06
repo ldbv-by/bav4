@@ -155,6 +155,7 @@ export const polygonStyleFunction = (styleOption = { color: false }) => {
 	})];
 };
 
+
 const getRulerStyle = (feature, resolution) => {
 	const geom = feature.getGeometry();
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
@@ -237,13 +238,23 @@ const getRulerStyle = (feature, resolution) => {
  * @returns
  */
 export const measureStyleFunction = (feature, resolution) => {
-	if (resolution === undefined) {
-		console.warn('Resolution is not defined');
-	}
+
 	const stroke = new Stroke({
 		color: Red_Color.concat([1]),
 		width: 3
 	});
+
+	const getFallbackStyle = () => {
+		console.warn('Resolution is null or undefined; Using FallbackStyle');
+		return	new Style({
+			stroke: new Stroke({
+				color: Red_Color.concat([1]),
+				fill: new Fill({
+					color: Red_Color.concat([0.4])
+				}),
+				width: 2 })
+		});
+	};
 	const styles = [
 		new Style({
 			stroke: stroke,
@@ -258,7 +269,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		getRulerStyle(feature, resolution)];
+		resolution ? getRulerStyle(feature, resolution) : getFallbackStyle()];
 	return styles;
 };
 
