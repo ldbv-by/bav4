@@ -50,11 +50,16 @@ export class ShareDialogContent extends BaElement {
 
 		const getShareApiContent = (useShareApi) => {
 			if (useShareApi) {
-				const onClickWithApi = () => {
-					this._environmentService.getWindow().navigator.share({
-						title: translate('toolbox_measureTool_share_link_title'),
-						url: url
-					}).catch((ex) => console.error('Share-API failed:', ex));
+				const onClickWithApi = async () => {
+					try {
+						await this._environmentService.getWindow().navigator.share({
+							title: translate('toolbox_measureTool_share_link_title'),
+							url: url
+						});
+					}
+					catch (error) {
+						console.error('Share-API failed:', error);
+					}
 				};
 				return html`<ba-icon class='share_api' .icon='${shareIcon}' .title=${translate('toolbox_measureTool_share_api')} .size=${2} @click=${onClickWithApi}>
 				</ba-icon>`;
