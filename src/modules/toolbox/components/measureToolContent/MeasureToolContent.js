@@ -147,6 +147,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
+
 		const getShareButton = () => html`<ba-share-button .share=${model.fileSaveResult}></ba-share-button>`;
 		buttons.push(getShareButton(model));
 

@@ -88,6 +88,6 @@ export class ShareDialogContent extends BaElement {
 	}
 
 	static get tag() {
-		return 'ba-sharemeasure';
+		return 'ba-share-content';
 	}
 }

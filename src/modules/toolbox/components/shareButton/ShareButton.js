@@ -64,7 +64,7 @@ export class ShareButton extends MvuElement {
 			const title = translate('toolbox_measureTool_share');
 			const onClick = () => {
 				generateShareUrls().then(shareUrls => {
-					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
+					openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
 				});
 			};
 			return html`<ba-button id='share' 
@@ -80,7 +80,6 @@ export class ShareButton extends MvuElement {
 	 * @property {FileSaveResult} value The FileSaveResult, which contains the data to generate share-urls
 	 */
 	set share(value) {
-		console.log('ShareButton:', value);
 		this.signal(Update, value);
 	}
 
