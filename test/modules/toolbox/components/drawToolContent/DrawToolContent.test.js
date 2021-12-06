@@ -420,60 +420,13 @@ describe('DrawToolContent', () => {
 			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
 		});
 
-		it('shows the drawing share-button', async () => {
+		it('shows the share-button', async () => {
 			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-			const shareButton = element.shadowRoot.querySelector('#share');
+			const shareButton = element.shadowRoot.querySelector('ba-share-button');
 
 			expect(shareButton).toBeTruthy();
 		});
 
-		it('shows NOT the drawing share-container when fileSaveResult is null', async () => {
-			const element = await setup({ ...drawDefaultState, fileSaveResult: null });
-			const shareButton = element.shadowRoot.querySelector('#share');
-
-			expect(shareButton).toBeFalsy();
-		});
-
-		it('shows NOT the drawing share-container for invalid fileSaveResult', async () => {
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: null } });
-			const shareButton = element.shadowRoot.querySelector('#share');
-
-			expect(shareButton).toBeFalsy();
-		});
-
-		it('opens the modal with shortened share-urls on click', async (done) => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().modal.data.title).toBe('toolbox_drawTool_share');
-				done();
-			});
-
-		});
-
-		it('logs a warning, when shortener fails', async (done) => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
-				done();
-			});
-
-		});
 		describe('with touch-device', () => {
 			const touchConfig = {
 				embed: false,
