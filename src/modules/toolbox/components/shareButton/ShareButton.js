@@ -5,7 +5,10 @@ import { openModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 
 const Update = 'update';
-
+/**
+ * Common ToolContent-Component to manage state of sharing usercreated drawings and measurements
+ * @author thiloSchlemmer
+ */
 export class ShareButton extends MvuElement {
 	constructor() {
 		super({ fileSaveResult: null });
@@ -81,10 +84,6 @@ export class ShareButton extends MvuElement {
 	 */
 	set share(value) {
 		this.signal(Update, value);
-	}
-
-	get share() {
-		return this.getModel().fileSaveResult;
 	}
 
 	static get tag() {

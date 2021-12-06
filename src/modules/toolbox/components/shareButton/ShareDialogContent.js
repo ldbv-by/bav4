@@ -7,7 +7,7 @@ import css from './shareDialogContent.css';
 
 /**
  * A content component to show and share perma-links of
- * user-generated measurement-data
+ * user-generated measurement- or drawing-data
  * @class
  * @author thiloSchlemmer
  * @author alsturm
