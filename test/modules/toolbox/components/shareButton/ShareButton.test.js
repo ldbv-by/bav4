@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { ShareButton } from '../../../../../src/modules/toolbox/components/measureToolContent/ShareButton';
+import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 

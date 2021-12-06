@@ -3,7 +3,7 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
-import css from './shareMeasureDialog.css';
+import css from './shareDialogContent.css';
 
 /**
  * A content component to show and share perma-links of
@@ -12,7 +12,7 @@ import css from './shareMeasureDialog.css';
  * @author thiloSchlemmer
  * @author alsturm
  */
-export class ShareMeasureDialog extends BaElement {
+export class ShareDialogContent extends BaElement {
 
 	constructor() {
 		super();

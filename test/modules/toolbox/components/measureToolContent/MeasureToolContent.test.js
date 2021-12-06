@@ -7,7 +7,7 @@ import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
-import { ShareButton } from '../../../../../src/modules/toolbox/components/measureToolContent/ShareButton';
+import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 
 window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);

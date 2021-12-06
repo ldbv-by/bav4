@@ -1,10 +1,10 @@
-import { ShareMeasureDialog } from '../../../../../src/modules/toolbox/components/measureToolContent/ShareMeasureDialog';
+import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 
-window.customElements.define(ShareMeasureDialog.tag, ShareMeasureDialog);
+window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 
-describe('ShareMeasureDialog', () => {
+describe('ShareDialogContent', () => {
 	const windowMock = {
 		matchMedia() { },
 		navigator: () => {
@@ -34,7 +34,7 @@ describe('ShareMeasureDialog', () => {
 
 			}).registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock);
-		return TestUtils.render(ShareMeasureDialog.tag);
+		return TestUtils.render(ShareDialogContent.tag);
 	};
 
 	it('renders the component', async () => {
