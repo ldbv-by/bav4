@@ -99,7 +99,7 @@ export class MeasurementStorageService {
 			else {
 				try {
 					const fileSaveResult = await fileStorageService.save(null, content, type);
-					setMeasurementFileSaveResult(fileSaveResult);
+					this._setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content initially:', error);
