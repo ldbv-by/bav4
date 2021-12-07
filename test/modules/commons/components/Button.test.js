@@ -76,11 +76,13 @@ describe('Button', () => {
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
-			expect(button.className).toBe('button secondary');
+			expect(button.classList.contains('secondary')).toBeTrue();
+			expect(button.classList.contains('primary')).toBeFalse();
 
 			element.type = 'primary';
 
-			expect(button.className).toBe('button primary');
+			expect(button.classList.contains('secondary')).toBeFalse();
+			expect(button.classList.contains('primary')).toBeTrue();
 		});
 	});
 
