@@ -6,6 +6,7 @@ module.exports = {
 		es2020: true,
 		'jasmine': true
 	},
+	plugins: ['promise'],
 	extends: [
 		'eslint:recommended',
 		'plugin:import/errors'
@@ -44,6 +45,7 @@ module.exports = {
 			'asyncArrow': 'always'
 		}],
 		'no-multi-spaces': ['error'],
-		'comma-dangle': ['error']
+		'comma-dangle': ['error'],
+		'promise/prefer-await-to-then': ['error']
 	}
 };
