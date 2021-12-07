@@ -7,7 +7,7 @@ import { TopicsContentPanel } from '../../../topics/components/menu/TopicsConten
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 import { toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 /**
  * @enum

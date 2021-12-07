@@ -6,7 +6,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
 import { finish, remove, reset, setStyle, setType } from '../../../../store/draw/draw.action';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
 const Update = 'update';

@@ -1,5 +1,5 @@
 import { html, TemplateResult } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';

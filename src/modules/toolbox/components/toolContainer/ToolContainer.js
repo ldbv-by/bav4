@@ -10,7 +10,7 @@ import css from './toolContainer.css';
 import { closeToolContainer } from '../../../../store/toolContainer/toolContainer.action';
 import { emitNotification } from '../../../../store/notifications/notifications.action';
 import { LevelTypes } from '../../../../store/notifications/notifications.action';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
 
 /**
