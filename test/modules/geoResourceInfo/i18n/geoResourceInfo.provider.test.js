@@ -1,14 +1,14 @@
-import { provide } from '../../../../src/modules/layerInfo/i18n/layerInfo.provider';
+import { provide } from '../../../../src/modules/geoResourceInfo/i18n/geoResourceInfo.provider';
 
 
-describe('i18n for layerinfo', () => {
+describe('i18n for georesourceinfo', () => {
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.layerinfo_empty_layerInfo).toBe('No Layer Information available');
-		expect(map.layerinfo_layerInfo_response_error).toBe('The Layer Information could not be loaded');
+		expect(map.geoResourceInfo_empty_geoResourceInfo).toBe('No Layer Information available');
+		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('The Layer Information could not be loaded');
 	});
 
 
@@ -16,8 +16,8 @@ describe('i18n for layerinfo', () => {
 
 		const map = provide('de');
 
-		expect(map.layerinfo_empty_layerInfo).toBe('Keine Ebenen-Information verfügbar');
-		expect(map.layerinfo_layerInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
+		expect(map.geoResourceInfo_empty_geoResourceInfo).toBe('Keine Ebenen-Information verfügbar');
+		expect(map.geoResourceInfo_geoResourceInfo_response_error).toBe('Die Ebenen-Information konnte nicht geladen werden');
 	});
 
 	it('have the expected amount of translations', () => {

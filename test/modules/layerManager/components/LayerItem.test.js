@@ -182,7 +182,7 @@ describe('LayerItem', () => {
 			expect(element._layer.collapsed).toBeFalse();
 		});
 
-		it('click on info icon show layerinfo panel as modal', async () => {
+		it('click on info icon show georesourceinfo panel as modal', async () => {
 			const store = setup();
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer };

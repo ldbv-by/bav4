@@ -1,12 +1,12 @@
 import { $injector } from '../../../../injection';
-import { LayerInfoResult } from '../LayerInfoService';
+import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 
 /**
- * Uses the BVV endpoint to load layerinfoResult.
+ * Uses the BVV endpoint to load GeoResourceInfoResult.
  * @function
- * @returns {Promise<LayerInfoResult>}
+ * @returns {Promise<GeoResourceInfoResult>}
  */
-export const loadBvvLayerInfo = async (geoResourceId) => {
+export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResourceId}`;
@@ -16,12 +16,12 @@ export const loadBvvLayerInfo = async (geoResourceId) => {
 	switch (result.status) {
 		case 200: {
 			const htmlContent = await result.text();
-			return new LayerInfoResult(htmlContent);
+			return new GeoResourceInfoResult(htmlContent);
 		}
 		case 404: {
 			return null;
 		}
 	}
 
-	throw new Error(`LayerInfoResult for '${geoResourceId}' could not be loaded`);
+	throw new Error(`GeoResourceInfoResult for '${geoResourceId}' could not be loaded`);
 };
