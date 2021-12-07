@@ -14,15 +14,16 @@ describe('BaPlugin', () => {
 		});
 
 		describe('methods', () => {
-			it('throws exception when abstract #createView is called without overriding', (done) => {
+			it('throws exception when abstract #createView is called without overriding', async () => {
 
-				new BaPluginNoImpl().register().then(() => {
-					done(new Error('Promise should not be resolved'));
-				}, (reason) => {
-					expect(reason.message).toContain('Please implement abstract method #register or do not call super.register from child.');
-					expect(reason).toBeInstanceOf(Error);
-					done();
-				});
+				try {
+					await new BaPluginNoImpl().register();
+					throw new Error('Promise should not be resolved');
+				}
+				catch (error) {
+					expect(error.message).toContain('Please implement abstract method #register or do not call super.register from child.');
+					expect(error).toBeInstanceOf(Error);
+				}
 			});
 		});
 	});

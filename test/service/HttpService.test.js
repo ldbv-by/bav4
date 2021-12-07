@@ -244,38 +244,37 @@ describe('NetworkStateSyncHttpService', () => {
 			expect(store.getState().network.fetching).toBeFalse();
 		});
 
-		it('regards pending responses when not resolved', (done) => {
+		it('regards pending responses when not resolved', async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 			spyOn(window, 'fetch').and.callFake(async () => {
 				throw new Error('oops');
 			});
 
-			instanceUnderTest.fetch('first').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, () => {
+			try {
+				await instanceUnderTest.fetch('first');
+				throw new Error('Promise should not be resolved');
+			}
+			catch {
 				expect(store.getState().network.fetching).toBeFalse();
-				done();
-			});
+			}
 		});
 
-		it('it updates the store when fetch call fails', (done) => {
+		it('it updates the store when fetch call fails', async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 			spyOn(window, 'fetch').and.callFake(() => {
-
 				expect(store.getState().network.fetching).toBeTrue();
 				return Promise.reject('something got wrong');
-
 			});
 
-
-			instanceUnderTest.fetch('something').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, () => {
+			try {
+				await instanceUnderTest.fetch('something');
+				throw new Error('Promise should not be resolved');
+			}
+			catch {
 				expect(store.getState().network.fetching).toBeFalse();
-				done();
-			});
+			}
 		});
 	});
 });

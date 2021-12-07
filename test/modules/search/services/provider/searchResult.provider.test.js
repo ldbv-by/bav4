@@ -55,7 +55,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult.extent).toBeNull();
 		});
 
-		it('rejects when backend request cannot be fulfilled', (done) => {
+		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'search/type/layers/searchText/some';
@@ -64,15 +64,15 @@ describe('SearchResult provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-
-			loadBvvGeoResourceSearchResults('some').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvGeoResourceSearchResults('some');
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('SearchResults for georesources could not be retrieved');
-				done();
-			});
+				expect(error.message).toBe('SearchResults for georesources could not be retrieved');
+			}
 		});
 
 
@@ -119,7 +119,7 @@ describe('SearchResult provider', () => {
 		});
 
 
-		it('rejects when backend request cannot be fulfilled', (done) => {
+		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'search/type/locations/searchText/some';
@@ -128,15 +128,15 @@ describe('SearchResult provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-
-			loadBvvLocationSearchResults('some').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvLocationSearchResults('some');
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('SearchResults for locations could not be retrieved');
-				done();
-			});
+				expect(error.message).toBe('SearchResults for locations could not be retrieved');
+			}
 		});
 	});
 });

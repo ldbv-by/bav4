@@ -118,7 +118,7 @@ describe('Topics provider', () => {
 		expect(warnSpy).toHaveBeenCalledWith('Could not create topic');
 	});
 
-	it('rejects when backend request cannot be fulfilled', (done) => {
+	it('rejects when backend request cannot be fulfilled', async () => {
 
 		const backendUrl = 'https://backend.url';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -126,15 +126,14 @@ describe('Topics provider', () => {
 			new Response(null, { status: 404 })
 		));
 
-
-		loadBvvTopics().then(() => {
-			done(new Error('Promise should not be resolved'));
-		}, (reason) => {
+		try {
+			await loadBvvTopics();
+			throw new Error('Promise should not be resolved');
+		}
+		catch (error) {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(reason.message).toBe('Topics could not be retrieved');
-			done();
-		});
-
+			expect(error.message).toBe('Topics could not be retrieved');
+		}
 	});
 });

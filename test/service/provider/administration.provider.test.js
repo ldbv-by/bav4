@@ -42,7 +42,7 @@ describe('Administration provider', () => {
 			expect(administration.gemarkung).toEqual(administrationMock.district);
 		});
 
-		it('throws error when backend provides empty payload', (done) => {
+		it('throws error when backend provides empty payload', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -50,17 +50,18 @@ describe('Administration provider', () => {
 				new Response(JSON.stringify({}), { status: 200 })
 			));
 
-			loadBvvAdministration(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAdministration(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toContain('Administration could not be retrieved');
-				done();
-			});
+				expect(error.message).toContain('Administration could not be retrieved');
+			}
 		});
 
-		it('throws error when backend provides empty administration', (done) => {
+		it('throws error when backend provides empty administration', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -69,17 +70,18 @@ describe('Administration provider', () => {
 				new Response(JSON.stringify(administrationMock), { status: 200 })
 			));
 
-			loadBvvAdministration(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAdministration(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toContain('Administration could not be retrieved');
-				done();
-			});
+				expect(error.message).toContain('Administration could not be retrieved');
+			}
 		});
 
-		it('throws error when backend provides just one property', (done) => {
+		it('throws error when backend provides just one property', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -88,17 +90,18 @@ describe('Administration provider', () => {
 				new Response(JSON.stringify(administrationMock), { status: 200 })
 			));
 
-			loadBvvAdministration(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAdministration(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toContain('Administration could not be retrieved');
-				done();
-			});
+				expect(error.message).toContain('Administration could not be retrieved');
+			}
 		});
 
-		it('throws error when backend request cannot be fulfilled', (done) => {
+		it('throws error when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -106,14 +109,15 @@ describe('Administration provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-			loadBvvAdministration(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAdministration(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('Administration could not be retrieved');
-				done();
-			});
+				expect(error.message).toBe('Administration could not be retrieved');
+			}
 		});
 	});
 });

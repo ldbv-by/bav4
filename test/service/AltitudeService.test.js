@@ -26,42 +26,42 @@ describe('AltitudeService', () => {
 			const instanceUnderTest = setup(async () => {
 				return mockAltitude;
 			});
-
 			const mockCoordinate = [0, 0];
 
-			instanceUnderTest.getAltitude(mockCoordinate).then((returnValue) => {
-				expect(returnValue).toEqual(mockAltitude);
-			});
+			const result = await instanceUnderTest.getAltitude(mockCoordinate);
+
+			expect(result).toEqual(mockAltitude);
 		});
 	});
 
 	describe('Error handling', () => {
 
-		it('rejects when backend is not available', (done) => {
+		it('rejects when backend is not available', async () => {
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Altitude Provider error');
 			});
-
 			const mockCoordinate = [0, 0];
 
-			instanceUnderTest.getAltitude(mockCoordinate).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('Could not load altitude from provider: Altitude Provider error');
-				done();
-			});
+			try {
+				await instanceUnderTest.getAltitude(mockCoordinate);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('Could not load altitude from provider: Altitude Provider error');
+			}
 		});
 
-		it('rejects when argument is not a coordinate', (done) => {
+		it('rejects when argument is not a coordinate', async () => {
 			const instanceUnderTest = setup();
 
-			instanceUnderTest.getAltitude('False Input').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toEqual(jasmine.any(TypeError));
-				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
-				done();
-			});
+			try {
+				await instanceUnderTest.getAltitude('invalid input');
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toEqual(jasmine.any(TypeError));
+				expect(error.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+			}
 		});
 	});
 });

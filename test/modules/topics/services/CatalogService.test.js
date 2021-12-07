@@ -47,20 +47,19 @@ describe('CatalogService', () => {
 
 		describe('and provider throws exception', () => {
 
-			it('throws an exception when provider throws exception', (done) => {
+			it('throws an exception when provider throws exception', async () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Something got wrong');
 				});
 
-
-				instanceUnderTest.byId('foo').then(() => {
-					done(new Error('Promise should not be resolved'));
-				}, (reason) => {
-					expect(reason.message).toContain('Could not load catalog from provider: Something got wrong');
-					expect(reason).toBeInstanceOf(Error);
-					done();
-				});
-
+				try {
+					await instanceUnderTest.byId('foo');
+					throw new Error('Promise should not be resolved');
+				}
+				catch (error) {
+					expect(error.message).toContain('Could not load catalog from provider: Something got wrong');
+					expect(error).toBeInstanceOf(Error);
+				}
 			});
 
 			it('returns a fallback catalog when we have a fallback topic', async () => {

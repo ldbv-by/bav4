@@ -95,15 +95,17 @@ export class MapContextMenuContent extends MvuElement {
 		}
 	}
 
-	_copyCoordinateToClipboard(stringifiedCoord) {
-
-		this._shareService.copyToClipboard(stringifiedCoord).then(() => {
+	async _copyCoordinateToClipboard(stringifiedCoord) {
+		try {
+			await this._shareService.copyToClipboard(stringifiedCoord);
 			emitNotification(`"${stringifiedCoord}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
-		}, () => {
+
+		}
+		catch {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	createView(model) {
