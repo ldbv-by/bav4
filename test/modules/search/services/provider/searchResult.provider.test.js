@@ -129,7 +129,7 @@ describe('SearchResult provider', () => {
 			));
 
 			try {
-				loadBvvLocationSearchResults('some');
+				await loadBvvLocationSearchResults('some');
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
