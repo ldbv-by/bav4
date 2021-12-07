@@ -2,6 +2,12 @@ import { loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provide
 import { $injector } from '../../../injection';
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '../../../services/GeoResourceService';
 
+/**
+ * Service for managing {@link GeoResourceInfoResult}s.
+ *
+ * @class
+ * @author costa_gi
+ */
 export class GeoResourceInfoService {
 
 	constructor(provider = loadBvvGeoResourceInfo) {
