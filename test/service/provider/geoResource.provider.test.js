@@ -197,7 +197,7 @@ describe('GeoResource provider', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not create a GeoResource  for someId');
 		});
 
-		it('rejects when backend request cannot be fulfilled', (done) => {
+		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources';
@@ -209,18 +209,18 @@ describe('GeoResource provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-
-			loadBvvGeoResources().then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvGeoResources();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('GeoResources could not be loaded');
-				done();
-			});
-
+				expect(error.message).toBe('GeoResources could not be loaded');
+			}
 		});
 	});
+
 	describe('Example GeoResource provider', () => {
 		it('loads GeoResources', async () => {
 			const georesources = await loadExampleGeoResources();
