@@ -72,20 +72,19 @@ export class AutocompleteSearch extends MvuElement {
 	createView(model) {
 		const { candidates } = model;
 		// let inputText = this._onSelect.label ? this._onSelect.label : '';
-		const requestData = async (e) => {
+		const requestData = (e) => {
 			const val = e.target.value;
 			if (this.provider) {
 				if (val.trim().length > 2) {
-					try {
-						const data = await this.provider(val);
-						if (data) {
-							this.signal(Update_Candidates, data);
-						}
-					}
-					catch (e) {
-						this._clearCandidates();
-						console.warn(e);
-					}
+					this.provider(val)
+						.then(data => {
+							if (data) {
+								this.signal(Update_Candidates, data);
+							}
+						}, reason => {
+							this._clearCandidates();
+							console.warn(reason);
+						});
 				}
 			}
 			else {
