@@ -130,8 +130,8 @@ export class LayerItem extends AbstractContentPanel {
 			iscollapse: this._layer.collapsed
 		};
 
-		const openLayerInfoPanel = async () => {
-			const content = html`<ba-layerinfo-panel .geoResourceId=${this._layer.id}></ba-layerinfo-panel>`;
+		const openGeoResourceInfoPanel = async () => {
+			const content = html`<ba-georesourceinfo-panel .geoResourceId=${this._layer.id}></ba-georesourceinfo-panel>`;
 			openModal(this._layer.label, content);
 		};
 
@@ -155,7 +155,7 @@ export class LayerItem extends AbstractContentPanel {
 						<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='info' .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openLayerInfoPanel}></ba-icon>                 
+						<ba-icon id='info' .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               

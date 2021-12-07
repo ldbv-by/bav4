@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../src/injection';
-import { loadBvvLayerInfo } from '../../../../../src/modules/layerInfo/services/provider/layerInfoResult.provider';
+import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
 
-describe('LayerInfo provider', () => {
+describe('GeoResourceInfo provider', () => {
 
 	const configService = {
 		getValueAsPath: () => { }
@@ -17,7 +17,7 @@ describe('LayerInfo provider', () => {
 			.registerSingleton('HttpService', httpService);
 	});
 
-	it('should load layerinfo', async () => {
+	it('should load GeoResourceInfo', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 		const backendUrl = 'https://backend.url/';
@@ -27,7 +27,7 @@ describe('LayerInfo provider', () => {
 			new Response('<b>hello</b>', { status: 200 })
 		));
 
-		const result = await loadBvvLayerInfo('914c9263-5312-453e-b3eb-5104db1bf788');
+		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe('LayerInfo provider', () => {
 			new Response(JSON.stringify(), { status: 404 })
 		));
 
-		const result = await loadBvvLayerInfo('914c9263-5312-453e-b3eb-5104db1bf788');
+		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
@@ -63,10 +63,10 @@ describe('LayerInfo provider', () => {
 			new Response(null, { status: 500 })
 		));
 
-		const errorMessage = 'LayerInfoResult for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
+		const errorMessage = 'GeoResourceInfoResult for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
 
 		try {
-			await loadBvvLayerInfo('914c9263-5312-453e-b3eb-5104db1bf788');
+			await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
 			throw new Error('Promise should not be resolved');
 		}
 		catch (err) {

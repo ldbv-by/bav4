@@ -162,7 +162,7 @@ describe('CatalogLeaf', () => {
 
 			describe('icon info events', () => {
 
-				it('shows a layerinfo panel as modal', async () => {
+				it('shows a georesourceinfo panel as modal', async () => {
 					const geoResourceLabel = 'someLabel';
 					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
