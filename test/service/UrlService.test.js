@@ -63,15 +63,16 @@ describe('UrlService', () => {
 			expect(result).toBeFalse();
 		});
 
-		it('rejects when argument is not a string', (done) => {
+		it('rejects when argument is not a string', async () => {
 
-			instanceUnderTest.isCorsEnabled(123).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toEqual(jasmine.any(TypeError));
-				expect(reason.message).toBe('Parameter \'url\' must be a string');
-				done();
-			});
+			try {
+				await instanceUnderTest.isCorsEnabled(123);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toEqual(jasmine.any(TypeError));
+				expect(error.message).toBe('Parameter \'url\' must be a string');
+			}
 		});
 	});
 
@@ -118,15 +119,16 @@ describe('UrlService', () => {
 				expect(result).toBe(url);
 			});
 
-			it('rejects when argument is not a string', (done) => {
+			it('rejects when argument is not a string', async () => {
 
-				instanceUnderTest.proxify(123).then(() => {
-					done(new Error('Promise should not be resolved'));
-				}, (reason) => {
-					expect(reason).toEqual(jasmine.any(TypeError));
-					expect(reason.message).toBe('Parameter \'url\' must be a string');
-					done();
-				});
+				try {
+					await instanceUnderTest.proxify(123);
+					throw new Error('Promise should not be resolved');
+				}
+				catch (error) {
+					expect(error).toEqual(jasmine.any(TypeError));
+					expect(error.message).toBe('Parameter \'url\' must be a string');
+				}
 			});
 		});
 	});
@@ -141,15 +143,16 @@ describe('UrlService', () => {
 			expect(result).toBe('https://much.shorter');
 		});
 
-		it('rejects when argument is not a string', (done) => {
+		it('rejects when argument is not a string', async () => {
 
-			instanceUnderTest.shorten(123).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toEqual(jasmine.any(TypeError));
-				expect(reason.message).toBe('Parameter \'url\' must be a string');
-				done();
-			});
+			try {
+				await instanceUnderTest.shorten(123);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toEqual(jasmine.any(TypeError));
+				expect(error.message).toBe('Parameter \'url\' must be a string');
+			}
 		});
 	});
 
