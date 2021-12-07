@@ -1,4 +1,4 @@
-import { html, TemplateResult } from 'lit-html';
+import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';
 import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
@@ -9,6 +9,7 @@ import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
 import { addHighlightFeatures, HighlightFeatureTypes, HighlightGeometryTypes, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../utils/numberUtils';
+import { isTemplateResult } from '../../../utils/checks';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
@@ -51,7 +52,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		const translate = (key) => this._translationService.translate(key);
 
 		const getContent = content => {
-			return content instanceof TemplateResult ? content : html`${unsafeHTML(content)}`;
+			return isTemplateResult(content) ? content : html`${unsafeHTML(content)}`;
 		};
 
 		/**
