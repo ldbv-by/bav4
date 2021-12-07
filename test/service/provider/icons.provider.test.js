@@ -49,7 +49,7 @@ describe('Icons provider', () => {
 		const backendUrl = 'https://backend.url';
 		const payload = JSON.stringify([]);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const warnSpy = spyOn(console, 'warn').and.callThrough();
+		const warnSpy = spyOn(console, 'warn');
 		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 			new Response(payload)));
 
@@ -63,7 +63,7 @@ describe('Icons provider', () => {
 	});
 
 
-	it('rejects when backend request cannot be fulfilled', (done) => {
+	it('rejects when backend request cannot be fulfilled', async () => {
 
 		const backendUrl = 'https://backend.url';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -71,15 +71,14 @@ describe('Icons provider', () => {
 			new Response(null, { status: 404 })
 		));
 
-
-		loadBvvIcons().then(() => {
-			done(new Error('Promise should not be resolved'));
-		}, (reason) => {
+		try {
+			await loadBvvIcons();
+			throw new Error('Promise should not be resolved');
+		}
+		catch (error) {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(reason.message).toBe('Icons could not be retrieved');
-			done();
-		});
-
+			expect(error.message).toBe('Icons could not be retrieved');
+		}
 	});
 });
