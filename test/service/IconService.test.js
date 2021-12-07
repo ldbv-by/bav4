@@ -176,7 +176,7 @@ describe('IconsService', () => {
 		it('provides a default icon, without url', async () => {
 			spyOn(configServiceMock, 'getValueAsPath').and.throwError('something');
 			const instanceUnderTest = setup();
-			const warnSpy = spyOn(console, 'warn').and.callThrough();
+			const warnSpy = spyOn(console, 'warn');
 			const defaultIcon = instanceUnderTest.getDefault();
 
 
