@@ -12,10 +12,6 @@
 	transition-timing-function: var(--animation-easing-linea);   
 }
 
-.is-landscape .main-menu:not(.is-full-size) {
-	width: 28em !important;   
-}
-
 .main-menu__container {
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -119,6 +115,11 @@
 	overflow: auto;
 	padding: 3em 0;
 }
+
+.is-landscape .main-menu:not(.is-full-size) {
+	width: 28em !important;   
+}
+
 .is-portrait .main-menu__close-button {
 	position: absolute;
 	top: unset;
