@@ -12,7 +12,7 @@
 	transition-timing-function: var(--animation-easing-linea);   
 }
 
-.main-menu:not(.is-full-size) {
+.is-landscape .main-menu:not(.is-full-size) {
 	width: 28em !important;   
 }
 
