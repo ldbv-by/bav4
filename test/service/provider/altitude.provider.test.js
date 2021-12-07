@@ -41,7 +41,7 @@ describe('Altitude provider', () => {
 			expect(altitude).toEqual(altitudeMock.altitude);
 		});
 
-		it('throws error when backend provides empty payload', (done) => {
+		it('throws error when backend provides empty payload', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -49,17 +49,18 @@ describe('Altitude provider', () => {
 				new Response(JSON.stringify({}), { status: 200 })
 			));
 
-			loadBvvAltitude(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAltitude(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toContain('Altitude could not be retrieved');
-				done();
-			});
+				expect(error.message).toContain('Altitude could not be retrieved');
+			}
 		});
 
-		it('throws error when backend provides empty altitude', (done) => {
+		it('throws error when backend provides empty altitude', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -67,17 +68,19 @@ describe('Altitude provider', () => {
 				new Response(JSON.stringify({ altitude: null }), { status: 200 })
 			));
 
-			loadBvvAltitude(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAltitude(coordinateMock);
+				throw new Error('Promise should not be resolved');
+
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toContain('Altitude could not be retrieved');
-				done();
-			});
+				expect(error.message).toContain('Altitude could not be retrieved');
+			}
 		});
 
-		it('throws error when backend request cannot be fulfilled', (done) => {
+		it('throws error when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -85,14 +88,15 @@ describe('Altitude provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-			loadBvvAltitude(coordinateMock).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await loadBvvAltitude(coordinateMock);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('Altitude could not be retrieved');
-				done();
-			});
+				expect(error.message).toBe('Altitude could not be retrieved');
+			}
 		});
 	});
 });
