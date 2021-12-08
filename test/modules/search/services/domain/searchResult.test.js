@@ -6,8 +6,10 @@ describe('searchResult', () => {
 
 		it('provides an enum of all available types', () => {
 
+			expect(Object.keys(SearchResultTypes).length).toBe(3);
 			expect(SearchResultTypes.LOCATION).toBeTruthy();
 			expect(SearchResultTypes.GEORESOURCE).toBeTruthy();
+			expect(SearchResultTypes.CADASTRAL_PARCEL).toBeTruthy();
 		});
 	});
 });
