@@ -358,17 +358,26 @@ describe('polygonStyleFunction', () => {
 describe('modifyStyleFunction', () => {
 
 	it('should return a style with a default-color', () => {
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 2
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
 		const styles = modifyStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
 
 		const style = styles[0];
-		expect(style.getImage()).toEqual(jasmine.any(CircleStyle));
-		expect(style.getImage().getRadius()).toBe(6);
-		expect(style.getImage().getStroke().getColor()).toEqual([255, 255, 255]);
-		expect(style.getImage().getStroke().getWidth()).toBe(2);
-		expect(style.getImage().getFill().getColor()).toEqual([255, 0, 0]);
+		expect(style).toEqual(expectedStyle);
 	});
 
 	it('should return a style with the feature-color', () => {
@@ -379,6 +388,20 @@ describe('modifyStyleFunction', () => {
 		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
 		feature.setStyle([featureStyle]);
 
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 2
+				}),
+				fill: new Fill({
+					color: '#010203'
+				})
+			})
+		});
+
+
 
 		const modifyFeatureMock = { get: () => [feature] };
 		const styles = modifyStyleFunction(modifyFeatureMock);
@@ -387,11 +410,7 @@ describe('modifyStyleFunction', () => {
 		expect(styles.length).toBe(1);
 
 		const style = styles[0];
-		expect(style.getImage()).toEqual(jasmine.any(CircleStyle));
-		expect(style.getImage().getRadius()).toBe(6);
-		expect(style.getImage().getStroke().getColor()).toEqual([255, 255, 255]);
-		expect(style.getImage().getStroke().getWidth()).toBe(2);
-		expect(style.getImage().getFill().getColor()).toEqual('#010203');
+		expect(style).toEqual(expectedStyle);
 	});
 
 });
@@ -399,10 +418,10 @@ describe('modifyStyleFunction', () => {
 describe('selectStyleFunction', () => {
 
 	it('should create a stylefunction', () => {
-
 		const styleFunction = selectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
+
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
