@@ -58,7 +58,7 @@ describe('FeatureInfoPanel', () => {
 
 				const element = await setup({
 					featureInfo: {
-						//content may be a String or a TempateResult
+						//content may be a String or a TemplateResult
 						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
 					}
 				});

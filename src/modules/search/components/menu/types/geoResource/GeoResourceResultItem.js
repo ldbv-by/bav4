@@ -1,5 +1,5 @@
 import { html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { close as closeMainMenu, setTabIndex, TabIndex } from '../../../../../../store/mainMenu/mainMenu.action';
