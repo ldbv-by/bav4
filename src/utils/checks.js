@@ -46,7 +46,7 @@ export const isCoordinate = (val) => {
 /**
  * Checks if a value is a Promise.
  * @param {*} val
- * @returns boolean} true if it is a Promise
+ * @returns {boolean} true if it is a Promise
  */
 export const isPromise = (val) => {
 	// eslint-disable-next-line promise/prefer-await-to-then
