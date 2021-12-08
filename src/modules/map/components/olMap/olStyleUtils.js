@@ -13,6 +13,7 @@ const Z_Line = 20;
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
+// eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
 const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
