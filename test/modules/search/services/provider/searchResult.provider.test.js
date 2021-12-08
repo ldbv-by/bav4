@@ -27,9 +27,10 @@ describe('SearchResult provider', () => {
 		];
 
 		it('loads SearchResults for georesources', async () => {
+			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'search/type/layers/searchText/some';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -38,7 +39,7 @@ describe('SearchResult provider', () => {
 				)
 			));
 
-			const searchResults = await loadBvvGeoResourceSearchResults('some');
+			const searchResults = await loadBvvGeoResourceSearchResults(term);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
@@ -55,17 +56,38 @@ describe('SearchResult provider', () => {
 			expect(searchResult.extent).toBeNull();
 		});
 
+		it('returns an empty array when response is empty', async () => {
+			const term = 'term';
+			const backendUrl = 'https://backend.url';
+			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						[]
+					)
+				)
+			));
+
+			const searchResults = await loadBvvGeoResourceSearchResults(term);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(searchResults.length).toBe(0);
+		});
+
 		it('rejects when backend request cannot be fulfilled', async () => {
 
+			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'search/type/layers/searchText/some';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
 			try {
-				await loadBvvGeoResourceSearchResults('some');
+				await loadBvvGeoResourceSearchResults(term);
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
@@ -74,8 +96,6 @@ describe('SearchResult provider', () => {
 				expect(error.message).toBe('SearchResults for georesources could not be retrieved');
 			}
 		});
-
-
 	});
 
 	describe('Bvv SearchResult provider for locations', () => {
@@ -87,9 +107,10 @@ describe('SearchResult provider', () => {
 
 		it('loads SearchResults for locations', async () => {
 
+			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'search/type/locations/searchText/some';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -98,7 +119,7 @@ describe('SearchResult provider', () => {
 				)
 			));
 
-			const searchResults = await loadBvvLocationSearchResults('some');
+			const searchResults = await loadBvvLocationSearchResults(term);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
@@ -118,18 +139,39 @@ describe('SearchResult provider', () => {
 			expect(searchResult1.extent).toBeNull();
 		});
 
+		it('returns an empty array when response is empty', async () => {
+
+			const term = 'term';
+			const backendUrl = 'https://backend.url';
+			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						[]
+					)
+				)
+			));
+
+			const searchResults = await loadBvvLocationSearchResults(term);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(searchResults.length).toBe(0);
+		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
 
+			const term = 'term';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'search/type/locations/searchText/some';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 404 })
 			));
 
 			try {
-				await loadBvvLocationSearchResults('some');
+				await loadBvvLocationSearchResults(term);
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
@@ -177,7 +219,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult0.extent).toBeNull();
 		});
 
-		it('returns an empty array when nothing is found', async () => {
+		it('returns an empty array when response is empty', async () => {
 
 			const term = 'term';
 			const backendUrl = 'https://backend.url';
