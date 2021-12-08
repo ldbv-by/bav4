@@ -56,7 +56,10 @@ export class LocationResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			addHighlightFeatures({ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] } });
+			addHighlightFeatures({
+				id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] }
+			});
 		};
 		const onMouseLeave = () => {
 			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
@@ -67,7 +70,10 @@ export class LocationResultItem extends MvuElement {
 			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
-				addHighlightFeatures({ id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+				addHighlightFeatures({
+					id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] }
+				});
 			}
 			else {
 				removeHighlightFeaturesById(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);

@@ -55,7 +55,8 @@ export class GeoResourceResultItem extends MvuElement {
 		 */
 		const onMouseEnter = (result) => {
 			//add a preview layer
-			addLayer(GeoResourceResultItem._tmpLayerId(result.id), { label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
+			addLayer(GeoResourceResultItem._tmpLayerId(result.id),
+				{ label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
