@@ -24,6 +24,7 @@ import { FileStorageServiceDataTypes } from '../../../../../../../src/services/F
 import VectorSource from 'ol/source/Vector';
 import { simulateMouseEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
+import Stroke from 'ol/style/Stroke';
 
 
 
@@ -1275,6 +1276,7 @@ describe('OlDrawHandler', () => {
 		describe('when switching to modify', () => {
 			const geometry = new LineString([[0, 0], [100, 0]]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setStyle(new Style({ stroke: new Stroke({ color: [0, 0, 0] }) }));
 
 			it('pointer is not snapped on sketch', () => {
 				setup();
