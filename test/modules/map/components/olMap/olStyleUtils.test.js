@@ -5,6 +5,7 @@ import markerIcon from '../../../../../src/modules/map/components/olMap/assets/m
 import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import CircleStyle from 'ol/style/Circle';
 
 const Rgb_WHITE = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -356,12 +357,43 @@ describe('polygonStyleFunction', () => {
 
 describe('modifyStyleFunction', () => {
 
-	it('should return a style', () => {
+	it('should return a style with a default-color', () => {
 		const styles = modifyStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style.getImage()).toEqual(jasmine.any(CircleStyle));
+		expect(style.getImage().getRadius()).toBe(6);
+		expect(style.getImage().getStroke().getColor()).toEqual([255, 255, 255]);
+		expect(style.getImage().getStroke().getWidth()).toBe(2);
+		expect(style.getImage().getFill().getColor()).toEqual([255, 0, 0]);
 	});
+
+	it('should return a style with the feature-color', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+
+		const modifyFeatureMock = { get: () => [feature] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style.getImage()).toEqual(jasmine.any(CircleStyle));
+		expect(style.getImage().getRadius()).toBe(6);
+		expect(style.getImage().getStroke().getColor()).toEqual([255, 255, 255]);
+		expect(style.getImage().getStroke().getWidth()).toBe(2);
+		expect(style.getImage().getFill().getColor()).toEqual('#010203');
+	});
+
 });
 
 describe('selectStyleFunction', () => {
