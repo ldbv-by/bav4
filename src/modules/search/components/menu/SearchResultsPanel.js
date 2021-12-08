@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { LocationResultsPanel } from './types/location/LocationResultsPanel';
 import { GeoResouceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';

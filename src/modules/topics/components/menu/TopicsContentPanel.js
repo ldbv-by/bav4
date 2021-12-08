@@ -4,7 +4,7 @@ import { setCurrent } from '../../../../store/topics/topics.action';
 import { AbstractContentPanel } from '../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './topicsContentPanel.css';
 import commonTopicsCss from './assets/topics.css';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 
 

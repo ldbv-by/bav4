@@ -1,11 +1,12 @@
 import { Modal } from '../../../../src/modules/modal/components/Modal';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
-import { html, TemplateResult } from 'lit-html';
+import { html } from 'lit-html';
 import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { isTemplateResult } from '../../../../src/utils/checks';
 
 
 window.customElements.define(Modal.tag, Modal);
@@ -120,7 +121,7 @@ describe('Modal', () => {
 				openModal('title', template('content'));
 
 				expect(store.getState().modal.data.title).toBe('title');
-				expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
+				expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
 				expect(element.shadowRoot.querySelector('.modal')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 				//Note: Webkit appends a line break to the 'content' in this case

@@ -1,5 +1,5 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../injection';
 import { equals } from '../utils/storeUtils';
 import css from './baElement.css';
