@@ -1,4 +1,4 @@
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes } from '../../src/store/highlight/highlight.action';
@@ -116,8 +116,8 @@ describe('HighlightPlugin', () => {
 		});
 
 		it('clears all searchResult related highlight items (also initially)', async () => {
-			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID };
-			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature2 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
