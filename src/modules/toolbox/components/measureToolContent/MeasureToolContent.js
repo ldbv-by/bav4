@@ -67,8 +67,8 @@ export class MeasureToolContent extends AbstractToolContent {
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
-		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance);
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea);
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance, 'distance');
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea, 'area');
 
 		return html`
         <style>${css}</style>
@@ -177,10 +177,19 @@ export class MeasureToolContent extends AbstractToolContent {
 		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
 	}
 
-	async _copyValueToClipboard(value) {
+	async _copyValueToClipboard(value, measure) {
 		try {
 			await this._shareService.copyToClipboard(value);
-			emitNotification(`"${value}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+			switch (measure) {
+				case 'distance': {
+					emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_measure_distance')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					break;
+				}
+				case 'area': {
+					emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_measure_area')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					break;
+				}
+			}
 		}
 		catch (error) {
 			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');

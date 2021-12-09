@@ -215,7 +215,7 @@ describe('MeasureToolContent', () => {
 				expect(copyDistanceElement).toBeTruthy();
 				expect(copyToClipboardMock).toHaveBeenCalledWith(length);
 				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe(`"${length}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_measure_distance map_contextMenuContent_clipboard_success');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				done();
 			});
@@ -240,7 +240,7 @@ describe('MeasureToolContent', () => {
 				expect(copyAreaElement).toBeTruthy();
 				expect(copyToClipboardMock).toHaveBeenCalledWith(area);
 				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe(`"${area}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_measure_area map_contextMenuContent_clipboard_success');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				done();
 			});
