@@ -380,7 +380,7 @@ describe('modifyStyleFunction', () => {
 		expect(style).toEqual(expectedStyle);
 	});
 
-	it('should return a style with the feature-color', () => {
+	it('should return a style with the feature-color over sketchFeature', () => {
 		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
 		const featureColor = hexToRgb('#010203');
@@ -404,6 +404,37 @@ describe('modifyStyleFunction', () => {
 
 
 		const modifyFeatureMock = { get: () => [feature] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
+	});
+
+	it('should NOT return a style with the feature-color', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
+		const modifyFeatureMock = { get: () => [] };
 		const styles = modifyStyleFunction(modifyFeatureMock);
 
 		expect(styles).toBeDefined();
