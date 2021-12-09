@@ -18,11 +18,11 @@ export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId'
 /**
  *ID for SearchResult related highlight features
  */
-export const SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureId';
+export const SEARCH_RESULT_HIGHLIGHT_FEATURE_ID = 'searchResultHighlightFeatureId';
 /**
  *ID for SearchResult related temporary highlight features
  */
-export const SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
+export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTemporaryHighlightFeatureId';
 /**
  * @class
  * @author taulinger
@@ -57,7 +57,7 @@ export class HighlightPlugin extends BaPlugin {
 				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
 			}
 			if (tabIndex !== TabIndex.SEARCH) {
-				removeHighlightFeaturesById([SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesById([SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
 

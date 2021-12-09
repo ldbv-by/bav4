@@ -20,7 +20,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { finish, remove, reset } from '../../../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
-import { Style } from 'ol/style';
+import { Stroke, Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import VectorSource from 'ol/source/Vector';
@@ -1180,6 +1180,7 @@ describe('OlMeasurementHandler', () => {
 		describe('when switching to modify', () => {
 			const geometry = new LineString([[0, 0], [100, 0]]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setStyle(new Style({ stroke: new Stroke({ color: [0, 0, 0] }) }));
 
 			it('pointer is not snapped on sketch', () => {
 				setup();
