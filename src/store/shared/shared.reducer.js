@@ -7,7 +7,7 @@ export const initialState = {
 	/**
      * @type {boolean}
      */
-	termsOfUseAcknowlegded: false,
+	termsOfUseAcknowledged: false,
 	/**
      * @type {FileSaveResult}
      */
@@ -19,10 +19,9 @@ export const sharedReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case TERMS_OF_USE_ACKNOWLEDGED_CHANGED: {
-
 			return {
 				...state,
-				termsOfUseAcknowlegded: payload
+				termsOfUseAcknowledged: payload
 
 			};
 		}

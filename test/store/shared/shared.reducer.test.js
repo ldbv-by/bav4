@@ -13,7 +13,7 @@ describe('sharedReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().shared.termsOfUseAcknowlegded).toBeFalse();
+		expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
 		expect(store.getState().shared.fileSaveResult).toBeNull();
 	});
 

@@ -13,8 +13,7 @@ const getStore = () => {
 
 /**
  * Set the acknowledgement of the user for the Terms of Use.
- * @param {boolean} isAcknowledged
- * @function
+  * @function
  */
 export const termsOfUseAcknowledged = () => {
 
