@@ -1,57 +1,62 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { BaElement } from '../../../../../BaElement';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { close as closeMainMenu, setTabIndex, TabIndex } from '../../../../../../store/mainMenu/mainMenu.action';
 import css from './geoResourceResultItem.css';
+import { MvuElement } from '../../../../../MvuElement';
 
-
+const Update_IsPortrait = 'update_isPortrait';
+const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 
 /**
- * Renders an search result item for a geoResource.
+ * Renders a search result item for a geoResource.
  *
- * Configurable Properties:
- * - `data`
- *
- * Observed Properties:
+ * Properties:
  * - `data`
  *
  * @class
  * @author taulinger
  */
-export class GeoResourceResultItem extends BaElement {
+export class GeoResourceResultItem extends MvuElement {
+
+	constructor() {
+		super({
+			geoResourceSearchResult: null,
+			isPortrait: false
+		});
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_GeoResourceSearchResult:
+				return { ...model, geoResourceSearchResult: data };
+			case Update_IsPortrait:
+				return { ...model, isPortrait: data };
+		}
+	}
+
+	onInitialize() {
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
+	}
 
 	set data(geoResourceSearchResult) {
-		this._georesourceSearchResult = geoResourceSearchResult;
-		this.render();
+		this.signal(Update_GeoResourceSearchResult, geoResourceSearchResult);
 	}
 
 	static _tmpLayerId(id) {
 		return `tmp_${GeoResourceResultItem.name}_${id}`;
 	}
 
-	onStateChanged() {
-		//nothing to do here, we only render when geoResourceSearchResult changes
-	}
-
-	/**
-	  * @override
-	  * @param {Object} globalState
-	  */
-	extractState(globalState) {
-		const { media: { portrait } } = globalState;
-		return { portrait };
-	}
-
-	createView(state) {
-		const { portrait } = state;
+	createView(model) {
+		const { isPortrait, geoResourceSearchResult } = model;
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a preview layer.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
 			//add a preview layer
-			addLayer(GeoResourceResultItem._tmpLayerId(result.id), { label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
+			addLayer(GeoResourceResultItem._tmpLayerId(result.id),
+				{ label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
@@ -63,7 +68,7 @@ export class GeoResourceResultItem extends BaElement {
 			//add the "real" layer
 			addLayer(result.id, { label: result.label });
 
-			if (portrait) {
+			if (isPortrait) {
 				//close the main menu
 				closeMainMenu();
 			}
@@ -73,20 +78,20 @@ export class GeoResourceResultItem extends BaElement {
 			}
 		};
 
-		if (this._georesourceSearchResult) {
+		if (geoResourceSearchResult) {
 
 			return html`
 				<style>${css}</style>
                 <li class="ba-list-item"  tabindex="0"
-					@click=${() => onClick(this._georesourceSearchResult)} 
-					@mouseenter=${() => onMouseEnter(this._georesourceSearchResult)} 
-					@mouseleave=${() => onMouseLeave(this._georesourceSearchResult)}>
+					@click=${() => onClick(geoResourceSearchResult)} 
+					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)} 
+					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}>
 						<span class="ba-list-item__pre ">
 							<span class="ba-list-item__icon-info">
 							</span>
 						</span>
 						<span class="ba-list-item__text ">
-						${unsafeHTML(this._georesourceSearchResult.labelFormated)}
+						${unsafeHTML(geoResourceSearchResult.labelFormated)}
 						</span>
 				</li>				
             `;
