@@ -10,7 +10,7 @@ import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
 import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
-import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
+import { simulateMapEvent, simulateMapBrowserEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
 import { mapReducer } from '../../../../../src/store/map/map.reducer';
@@ -246,7 +246,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
 
 				expect(store.getState().pointer.move.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.move.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -262,7 +262,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
 
 				expect(store.getState().pointer.move).toBeNull();
 			});
@@ -274,7 +274,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
 
 				expect(store.getState().pointer.beingDragged).toBeTrue();
 
@@ -298,7 +298,7 @@ describe('OlMap', () => {
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 				const preventDefault = jasmine.createSpy();
 
-				simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -317,7 +317,7 @@ describe('OlMap', () => {
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 				const preventDefault = jasmine.createSpy();
 
-				simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -335,7 +335,7 @@ describe('OlMap', () => {
 				spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
 				const preventDefault = jasmine.createSpy();
 
-				simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
 
 				expect(preventDefault).not.toHaveBeenCalled();
 			});
@@ -361,9 +361,9 @@ describe('OlMap', () => {
 				const preventDefault = jasmine.createSpy();
 
 				//we simulate a "short-press" event
-				simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 				jasmine.clock().tick(longPressDelay - 100);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -383,9 +383,9 @@ describe('OlMap', () => {
 				const preventDefault = jasmine.createSpy();
 
 				//we simulate a "short-press" event
-				simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 				jasmine.clock().tick(longPressDelay - 100);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -404,9 +404,9 @@ describe('OlMap', () => {
 				const preventDefault = jasmine.createSpy();
 
 				//we simulate a "short-press" event
-				simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 				jasmine.clock().tick(longPressDelay - 100);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
 				expect(preventDefault).not.toHaveBeenCalled();
 			});
@@ -428,7 +428,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -447,7 +447,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -465,7 +465,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(preventDefault).not.toHaveBeenCalled();
 				});
@@ -491,9 +491,9 @@ describe('OlMap', () => {
 					const preventDefault = jasmine.createSpy();
 
 					//we simulate a "long-press" event
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
 					jasmine.clock().tick(longPressDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -513,9 +513,9 @@ describe('OlMap', () => {
 					const preventDefault = jasmine.createSpy();
 
 					//we simulate a "long-press" event
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
 					jasmine.clock().tick(longPressDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -534,9 +534,9 @@ describe('OlMap', () => {
 					const preventDefault = jasmine.createSpy();
 
 					//we simulate a "long-press" event
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
 					jasmine.clock().tick(longPressDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(preventDefault).not.toHaveBeenCalled();
 				});

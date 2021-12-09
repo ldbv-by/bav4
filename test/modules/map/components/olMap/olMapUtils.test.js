@@ -2,7 +2,7 @@ import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
 import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../../src/modules/map/components/olMap/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { simulateMouseEvent } from './mapTestUtils';
+import { simulateMapBrowserEvent } from './mapTestUtils';
 
 
 describe('olMapUtils', () => {
@@ -76,9 +76,9 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(defaultDelay - 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).not.toHaveBeenCalled();
 		});
@@ -89,9 +89,9 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(defaultDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
 				{
@@ -106,11 +106,11 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			//a second pointer event!
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(defaultDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
 				{
@@ -126,9 +126,9 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, longPressSpy, shortPressSpy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(defaultDelay - 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(longPressSpy).not.toHaveBeenCalled();
 			expect(shortPressSpy).toHaveBeenCalled();
@@ -141,9 +141,9 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, longPressSpy, shortPressSpy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(defaultDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(longPressSpy).toHaveBeenCalled();
 			expect(shortPressSpy).not.toHaveBeenCalled();
@@ -155,9 +155,9 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy, null, customDelay);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(customDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
 				{
@@ -172,10 +172,10 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, true);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, true);
 			jasmine.clock().tick(defaultDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).not.toHaveBeenCalled();
 		});
@@ -186,10 +186,10 @@ describe('olMapUtils', () => {
 			const map = new Map();
 			registerLongPressListener(map, spy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, false);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0, false);
 			jasmine.clock().tick(defaultDelay + 100);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 			expect(spy).toHaveBeenCalled();
 		});
