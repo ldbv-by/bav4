@@ -13,6 +13,7 @@ import { isTemplateResult } from '../../../utils/checks';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
+const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
 
 
 /**
@@ -31,6 +32,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		this._translationService = TranslationService;
 
 		this.observe(store => store.featureInfo.current, current => this.signal(Update_FeatureInfo_Data, [...current]));
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait, { isPortrait: media.portrait }));
 	}
 
 	/**
@@ -40,6 +42,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		switch (type) {
 			case Update_FeatureInfo_Data:
 				return { ...model, featureInfoData: [...data] };
+			case Update_IsPortrait:
+				return { ...model, ...data };
 		}
 	}
 
@@ -48,7 +52,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	 */
 	createView(model) {
 
-		const { featureInfoData } = model;
+		const { featureInfoData, isPortrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const getContent = content => {
@@ -72,10 +76,14 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 		};
 
+		const getOrientationClass = () => {
+			return isPortrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		return html`
         <style>${css}</style>
 		<div>
-			<div class="container">
+			<div class="container  ${getOrientationClass()}">
 			<ul class="ba-list">	
 				<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">			
 					<span class="ba-list-item__pre" style='position:relative;left:-1em;'>													
@@ -86,10 +94,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 							${translate('featureInfo_header')}
 						</span>					
 					</span>
-					<span class="ba-icon-button ba-list-item__after vertical-center separator" style='padding-right: 1.5em;'>											
+					<span class="share ba-icon-button ba-list-item__after vertical-center separator" style='padding-right: 1.5em;'>											
 						<ba-icon .icon='${shareIcon}' .size=${1.3} ></ba-icon>												
 					</span>
-					<span class="ba-icon-button ba-list-item__after vertical-center separator">														
+					<span class="print ba-icon-button ba-list-item__after vertical-center separator">														
 						<ba-icon .icon='${printerIcon}' .size=${1.5} ></ba-icon>												
 					</span>
 				</li>	
