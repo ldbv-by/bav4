@@ -8,6 +8,8 @@ import { AbstractToolContent } from '../../../../../src/modules/toolbox/componen
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
@@ -61,7 +63,7 @@ describe('MeasureToolContent', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer, notifications: notificationReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -194,7 +196,8 @@ describe('MeasureToolContent', () => {
 			expect(unitSpan.textContent).toBe('m');
 		});
 
-		it('copies the measurement values to the clipboard', async (done) => {
+		it('copies the measurement length value to the clipboard', async (done) => {
+			const length = '42 m';
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -203,23 +206,44 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(length).and.returnValue(Promise.resolve());
 
 			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
-			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
-
 			copyDistanceElement.click();
-			copyAreaElement.click();
 
 			setTimeout(() => {
 				expect(copyDistanceElement).toBeTruthy();
-				expect(copyAreaElement).toBeTruthy();
-				expect(copySpy).toHaveBeenCalledTimes(2);
-				expect(copySpy).toHaveBeenCalledWith('42 m');
-				expect(copySpy).toHaveBeenCalledWith('2 m²');
+				expect(copyToClipboardMock).toHaveBeenCalledWith(length);
+				//check notification
+				expect(store.getState().notifications.latest.payload.content).toBe(`"${length}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				done();
 			});
+		});
 
+		it('copies the measurement area value to the clipboard', async (done) => {
+			const area = '2 m²';
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 2 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(area).and.returnValue(Promise.resolve());
+
+			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
+			copyAreaElement.click();
+
+			setTimeout(() => {
+				expect(copyAreaElement).toBeTruthy();
+				expect(copyToClipboardMock).toHaveBeenCalledWith(area);
+				//check notification
+				expect(store.getState().notifications.latest.payload.content).toBe(`"${area}" map_contextMenuContent_clipboard_success`);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				done();
+			});
 		});
 
 		it('logs a warning when copyToClipboard fails', async (done) => {
@@ -240,6 +264,9 @@ describe('MeasureToolContent', () => {
 
 			setTimeout(() => {
 				expect(copySpy).toHaveBeenCalledWith('42 m');
+				//check notification
+				expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 				done();
 			});

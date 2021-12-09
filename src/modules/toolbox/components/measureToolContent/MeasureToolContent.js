@@ -7,13 +7,14 @@ import { finish, remove, reset } from '../../../../store/measurement/measurement
 
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update = 'update';
 
 /**
  * @class
  * @author thiloSchlemmer
+ * @author costa_gi
  */
 export class MeasureToolContent extends AbstractToolContent {
 
@@ -177,9 +178,15 @@ export class MeasureToolContent extends AbstractToolContent {
 	}
 
 	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+		try {
+			await this._shareService.copyToClipboard(value);
+			emitNotification(`"${value}" ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+		}
+		catch (error) {
+			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	static get tag() {

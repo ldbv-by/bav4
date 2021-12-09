@@ -1,10 +1,13 @@
 import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 
 describe('ShareDialogContent', () => {
+	let store;
 	const windowMock = {
 		matchMedia() { },
 		navigator: () => {
@@ -25,7 +28,7 @@ describe('ShareDialogContent', () => {
 
 		const { embed = false, isTouch = false, share = false } = config;
 		windowMock.navigator.share = share;
-		TestUtils.setupStoreAndDi(state, {});
+		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -87,6 +90,9 @@ describe('ShareDialogContent', () => {
 		setTimeout(() => {
 			expect(copyButton).toBeTruthy();
 			expect(copySpy).toHaveBeenCalledWith('foo');
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_link_text map_contextMenuContent_clipboard_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			done();
 		});
 	});
@@ -134,6 +140,9 @@ describe('ShareDialogContent', () => {
 
 		setTimeout(() => {
 			expect(copySpy).toHaveBeenCalledWith('foo');
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 			done();
 		});

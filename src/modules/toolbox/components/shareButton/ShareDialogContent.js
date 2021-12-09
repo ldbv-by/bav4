@@ -4,6 +4,7 @@ import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
 import css from './shareDialogContent.css';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 /**
  * A content component to show and share perma-links of
@@ -11,6 +12,7 @@ import css from './shareDialogContent.css';
  * @class
  * @author thiloSchlemmer
  * @author alsturm
+ * @author costa_gi
  */
 export class ShareDialogContent extends BaElement {
 
@@ -82,9 +84,15 @@ export class ShareDialogContent extends BaElement {
 	}
 
 	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+		try {
+			await this._shareService.copyToClipboard(value);
+			emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_link_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+		}
+		catch (error) {
+			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	set shareurls(value) {
