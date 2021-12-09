@@ -4,7 +4,7 @@
 export const SearchResultTypes = Object.freeze({
 	LOCATION: Symbol.for('location'),
 	GEORESOURCE: Symbol.for('georesource'),
-	CADASTRAL_PARCEL: Symbol.for('cadastra_parcel')
+	CADASTRAL_PARCEL: Symbol.for('cadastral_parcel')
 });
 
 /**
