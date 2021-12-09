@@ -7,6 +7,8 @@ import { provide as provider } from './i18n/featureInfoPlugin.provider';
 import { createUniqueId } from '../utils/numberUtils';
 
 /**
+ * Causes a server-side FeatureInfo detection for Raster sources.
+ * Detection for Vector sources is done within a mapping framework-specific handler.
  * @class
  * @author taulinger
  */

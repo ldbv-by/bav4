@@ -10,6 +10,7 @@ import { Point } from 'ol/geom';
 import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
+import { unByKey } from 'ol/Observable';
 
 
 /**
@@ -26,6 +27,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		this._unregister = () => { };
 		this._olMap = null;
 		this._olLayer = null;
+		this._animationListenerKeys = [];
 	}
 
 
@@ -79,7 +81,7 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
 		const blinkAnimation = createAnimation(olMap, olFeature);
 		const listenerKey = olLayer.on('postrender', blinkAnimation);
-
+		this._animationListenerKeys.push(listenerKey);
 		return listenerKey;
 	}
 
@@ -119,6 +121,13 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		const onChange = ({ features }) => {
 
 			olSource.clear();
+			/**
+			 * we unregister all animation related event listeners
+			 * */
+			for (let i = this._animationListenerKeys.length - 1; i >= 0; i--) {
+				unByKey(this._animationListenerKeys[i]);
+				this._animationListenerKeys.splice(i, 1);
+			}
 
 			olSource.addFeatures(
 				features
