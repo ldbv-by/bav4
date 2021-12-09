@@ -4,7 +4,7 @@ import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
-import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
 
 const Update_IsPortrait = 'update_isPortrait';
@@ -57,26 +57,26 @@ export class LocationResultItem extends MvuElement {
 		 */
 		const onMouseEnter = (result) => {
 			addHighlightFeatures({
-				id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
 				type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] }
 			});
 		};
 		const onMouseLeave = () => {
-			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 		};
 		const onClick = (result) => {
 
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
 				addHighlightFeatures({
-					id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID,
+					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] }
 				});
 			}
 			else {
-				removeHighlightFeaturesById(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 			}
 
 			if (isPortrait) {
