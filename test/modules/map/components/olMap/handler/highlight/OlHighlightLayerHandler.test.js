@@ -50,6 +50,7 @@ describe('OlHighlightLayerHandler', () => {
 		expect(handler._unregister()).toEqual((() => { })());
 		expect(handler._olMap).toBeNull();
 		expect(handler._olLayer).toBeNull();
+		expect(handler._animationListenerKeys).toHaveSize(0);
 	});
 
 	describe('when handler is activated', () => {
@@ -82,9 +83,10 @@ describe('OlHighlightLayerHandler', () => {
 		describe('and highlight features are available', () => {
 
 			it('adds ol features', () => {
-				const highlightFeature = [{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 0] } }, { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [2, 1] } }];
-				const temporaryFeature = [{ type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [3, 4] } }];
-				const state = { ...initialState, active: true, features: [...highlightFeature, ...temporaryFeature] };
+				const highlightFeatures = [{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 0] } }, { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [2, 1] } }];
+				const temporaryFeatures = [{ type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [3, 4] } }];
+				const animatedFeatures = [{ type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [5, 55] } }];
+				const state = { ...initialState, active: true, features: [...highlightFeatures, ...temporaryFeatures, ...animatedFeatures] };
 				const map = setupMap();
 				setup(state);
 				const handler = new OlHighlightLayerHandler();
@@ -92,7 +94,8 @@ describe('OlHighlightLayerHandler', () => {
 				const olLayer = handler.activate(map);
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(3);
+				expect(olFeatures).toHaveSize(4);
+				expect(handler._animationListenerKeys).toHaveSize(1);
 			});
 		});
 
@@ -104,17 +107,22 @@ describe('OlHighlightLayerHandler', () => {
 				const handler = new OlHighlightLayerHandler();
 				const olLayer = handler.activate(map);
 
-				addHighlightFeatures([{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } }, { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [38, 57] } }]);
+				addHighlightFeatures([
+					{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } },
+					{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [38, 57] } },
+					{ type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [5, 55] } }
+				]);
 
 				const olFeatures = olLayer.getSource().getFeatures();
-				expect(olFeatures).toHaveSize(2);
+				expect(olFeatures).toHaveSize(3);
+				expect(handler._animationListenerKeys).toHaveSize(1);
 			});
 		});
 
 		describe('and highlight features are removed', () => {
 
 			it('removes ol features', () => {
-				const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 0] } };
+				const highlightFeature = { type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [1, 0] } };
 				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [] };
 				const map = setupMap();
 				setup(state);
@@ -125,6 +133,7 @@ describe('OlHighlightLayerHandler', () => {
 
 				const olFeatures = olLayer.getSource().getFeatures();
 				expect(olFeatures).toHaveSize(0);
+				expect(handler._animationListenerKeys).toHaveSize(0);
 			});
 		});
 	});
@@ -253,7 +262,7 @@ describe('OlHighlightLayerHandler', () => {
 
 			const id = handler._animatePointFeature(animatedFeature);
 
-			expect(id).toBeDefined();
+			expect(handler._animationListenerKeys).toEqual([id]);
 		});
 	});
 });
