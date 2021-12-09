@@ -114,7 +114,8 @@ describe('LocationResultItem', () => {
 				const element = await setup({
 					highlight: {
 						features: [
-							{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+							{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
+							{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
 						]
 					},
 					mainMenu: {
@@ -131,7 +132,7 @@ describe('LocationResultItem', () => {
 
 			describe('result has NO extent', () => {
 
-				it('removes the temporary highlight feature and set the permanent highlight feature', async () => {
+				it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
 
 					const target = element.shadowRoot.querySelector('li');
@@ -158,7 +159,7 @@ describe('LocationResultItem', () => {
 
 			describe('result has an extent', () => {
 
-				it('removes the temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
+				it('removes both an existing and temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
 					const element = await setupOnClickTests(false, extent);
 
 					const target = element.shadowRoot.querySelector('li');

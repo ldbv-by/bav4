@@ -67,7 +67,7 @@ export class LocationResultItem extends MvuElement {
 		const onClick = (result) => {
 
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
-			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
 				addHighlightFeatures({
