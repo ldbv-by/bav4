@@ -284,7 +284,7 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('single click event', () => {
+	describe('single-click / short-press event', () => {
 
 		it('updates the \'click\' property in pointer store', async () => {
 			const element = await setup();
@@ -337,7 +337,7 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('context click event', () => {
+	describe('context-click / long-press event', () => {
 
 		beforeEach(async () => {
 			jasmine.clock().install();

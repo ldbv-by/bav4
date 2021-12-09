@@ -116,17 +116,6 @@ export class OlMap extends MvuElement {
 			})])
 		});
 
-		const singleClickHandler = (evt) => {
-			//when no layer handler is currently active or active handler does not prevent click handling
-			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultClickHandling).length === 0) {
-				evt.preventDefault();
-				const coord = this._map.getEventCoordinate(evt.originalEvent);
-				setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
-			}
-		};
-
-		this._map.on('singleclick', singleClickHandler);
-
 		this._map.on('movestart', () => {
 			setMoveStart();
 			setBeingMoved(true);
@@ -141,7 +130,16 @@ export class OlMap extends MvuElement {
 			setBeingMoved(false);
 		});
 
-		const contextHandler = (evt) => {
+		const singleClickOrShortPressHandler = (evt) => {
+			//when no layer handler is currently active or active handler does not prevent click handling
+			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultClickHandling).length === 0) {
+				evt.preventDefault();
+				const coord = this._map.getEventCoordinate(evt.originalEvent);
+				setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
+			}
+		};
+
+		const contextOrLongPressHandler = (evt) => {
 			//when no layer handler is currently active or active handler does not prevent context click handling
 			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultContextClickHandling).length === 0) {
 				evt.preventDefault();
@@ -151,10 +149,11 @@ export class OlMap extends MvuElement {
 		};
 
 		if (this._environmentService.isTouch()) {
-			registerLongPressListener(this._map, contextHandler);
+			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
 		}
 		else {
-			this._map.addEventListener('contextmenu', contextHandler);
+			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
+			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
 
 
