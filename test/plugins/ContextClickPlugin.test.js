@@ -2,10 +2,10 @@ import { TestUtils } from '../test-utils.js';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { setClick, setContextClick } from '../../src/store/pointer/pointer.action';
 import { ContextClickPlugin } from '../../src/plugins/ContextClickPlugin.js';
-import { TemplateResult } from 'lit-html';
 import { mapReducer } from '../../src/store/map/map.reducer.js';
 import { setMoveStart } from '../../src/store/map/map.action.js';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
+import { isTemplateResult } from '../../src/utils/checks.js';
 
 
 
@@ -32,7 +32,7 @@ describe('ContextClickPlugin', () => {
 
 			const { coordinate, content } = store.getState().mapContextMenu;
 			expect(coordinate).toEqual([21, 42]);
-			expect(content).toBeInstanceOf(TemplateResult);
+			expect(isTemplateResult(content)).toBeTrue();
 		});
 	});
 

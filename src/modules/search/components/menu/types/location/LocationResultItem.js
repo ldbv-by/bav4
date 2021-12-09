@@ -1,58 +1,65 @@
 import { html, nothing } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { BaElement } from '../../../../../BaElement';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './locationResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
+import { MvuElement } from '../../../../../MvuElement';
 
-
+const Update_IsPortrait = 'update_isPortrait';
+const Update_LocationSearchResult = 'update_locationSearchResult';
 
 /**
  * Renders an search result item for a location.
  *
- * Configurable Properties:
- * - `data`
- *
- * Observed Properties:
+ * Properties:
  * - `data`
  *
  * @class
  * @author taulinger
  */
-export class LocationResultItem extends BaElement {
+export class LocationResultItem extends MvuElement {
+
+	constructor() {
+		super({
+			locationSearchResult: null,
+			isPortrait: false
+		});
+	}
 
 	static get _maxZoomLevel() {
 		return 19;
 	}
 
+	update(type, data, model) {
+		switch (type) {
+			case Update_LocationSearchResult:
+				return { ...model, locationSearchResult: data };
+			case Update_IsPortrait:
+				return { ...model, isPortrait: data };
+		}
+	}
+
+	onInitialize() {
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
+	}
+
 	set data(locationSearchResult) {
-		this._locationSearchResult = locationSearchResult;
-		this.render();
+		this.signal(Update_LocationSearchResult, locationSearchResult);
 	}
 
-	onStateChanged() {
-		//nothing to do here, we only render when locationSearchResult changes
-	}
-
-	/**
-	  * @override
-	  * @param {Object} globalState
-	  */
-	extractState(globalState) {
-		const { media: { portrait } } = globalState;
-		return { portrait };
-	}
-
-	createView(state) {
-		const { portrait } = state;
+	createView(model) {
+		const { isPortrait, locationSearchResult } = model;
 		/**
 		 * Uses mouseenter and mouseleave events for adding/removing a temporary highlight feature.
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
-			addHighlightFeatures({ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] } });
+			addHighlightFeatures({
+				id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] }
+			});
 		};
 		const onMouseLeave = () => {
 			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
@@ -63,32 +70,35 @@ export class LocationResultItem extends BaElement {
 			removeHighlightFeaturesById(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			setFit(extent, { maxZoom: LocationResultItem._maxZoomLevel });
 			if (!result.extent) {
-				addHighlightFeatures({ id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] } });
+				addHighlightFeatures({
+					id: SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID,
+					type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] }
+				});
 			}
 			else {
 				removeHighlightFeaturesById(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
 			}
 
-			if (portrait) {
+			if (isPortrait) {
 				//close the main menu
 				closeMainMenu();
 			}
 		};
 
-		if (this._locationSearchResult) {
+		if (locationSearchResult) {
 
 			return html`
 				<style>${css}</style>
                 <li class="ba-list-item" tabindex="0"
-					@click=${() => onClick(this._locationSearchResult)} 
-					@mouseenter=${() => onMouseEnter(this._locationSearchResult)} 
-					@mouseleave=${() => onMouseLeave(this._locationSearchResult)}>
+					@click=${() => onClick(locationSearchResult)} 
+					@mouseenter=${() => onMouseEnter(locationSearchResult)} 
+					@mouseleave=${() => onMouseLeave(locationSearchResult)}>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon-info">
 						</span>
 					</span>
 					<span class="ba-list-item__text ">
-					${unsafeHTML(this._locationSearchResult.labelFormated)}
+					${unsafeHTML(locationSearchResult.labelFormated)}
 					</span>
 				</li>
             `;

@@ -1,5 +1,5 @@
 import { html, nothing } from 'lit-html';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../../injection';
 import { setIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
