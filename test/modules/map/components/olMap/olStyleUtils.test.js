@@ -306,7 +306,7 @@ describe('lineStyleFunction', () => {
 		const styles = lineStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -318,7 +318,7 @@ describe('lineStyleFunction', () => {
 		expect(stroke).toBeTruthy();
 
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
@@ -335,7 +335,7 @@ describe('polygonStyleFunction', () => {
 		const styles = polygonStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -350,7 +350,7 @@ describe('polygonStyleFunction', () => {
 
 		expect(fill.getColor()).toEqual([190, 218, 85, 0.4]);
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
@@ -363,7 +363,7 @@ describe('modifyStyleFunction', () => {
 				radius: 6,
 				stroke: new Stroke({
 					color: [255, 255, 255],
-					width: 2
+					width: 3
 				}),
 				fill: new Fill({
 					color: [255, 0, 0]
@@ -393,7 +393,7 @@ describe('modifyStyleFunction', () => {
 				radius: 6,
 				stroke: new Stroke({
 					color: [255, 255, 255],
-					width: 2
+					width: 3
 				}),
 				fill: new Fill({
 					color: '#010203'

@@ -149,17 +149,18 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 
 export const lineStyleFunction = (styleOption = { color: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
-	const strokeWidth = 2;
+	const strokeWidth = 3;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
 			width: strokeWidth
 		})
-	})];
+	})
+	];
 };
 export const polygonStyleFunction = (styleOption = { color: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
-	const strokeWidth = 2;
+	const strokeWidth = 3;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
@@ -226,7 +227,7 @@ export const modifyStyleFunction = (feature) => {
 			radius: 6,
 			stroke: new Stroke({
 				color: White_Color,
-				width: 2
+				width: 3
 			}),
 			fill: new Fill({
 				color: color
@@ -241,7 +242,7 @@ export const selectStyleFunction = () => {
 			radius: 5,
 			stroke: new Stroke({
 				color: White_Color,
-				width: 2
+				width: 3
 			}),
 			fill: new Fill({
 				color: color
