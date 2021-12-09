@@ -11,6 +11,7 @@ import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/componen
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
+const Update_FileSaveResult = 'update_fileSaveResult';
 
 /**
  * @class
@@ -39,6 +40,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.draw, data => this.signal(Update, data));
+		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {
@@ -57,11 +59,12 @@ export class DrawToolContent extends AbstractToolContent {
 					selectedStyle: data.selectedStyle,
 					mode: data.mode,
 					validGeometry: data.validGeometry,
-					fileSaveResult: data.fileSaveResult,
 					tools: setActiveToolByType(model.tools, data.type)
 				};
 			case Update_Tools:
 				return { ...model, tools: data };
+			case Update_FileSaveResult:
+				return { ...model, fileSaveResult: data.fileSaveResult };
 		}
 	}
 

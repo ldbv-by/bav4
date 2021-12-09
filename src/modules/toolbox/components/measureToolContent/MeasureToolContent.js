@@ -10,6 +10,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 
 
 const Update = 'update';
+const Update_FileSaveResult = 'update_fileSaveResult';
 
 /**
  * @class
@@ -34,16 +35,19 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.measurement, data => this.signal(Update, data));
+		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update:
-				return { ...model,
+				return {
+					...model,
 					statistic: data.statistic,
-					fileSaveResult: data.fileSaveResult,
 					mode: data.mode
 				};
+			case Update_FileSaveResult:
+				return { ...model, fileSaveResult: data.fileSaveResult };
 		}
 	}
 

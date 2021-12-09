@@ -97,6 +97,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
 			expect(reducerKeys.includes('measurement')).toBeTrue();
 			expect(reducerKeys.includes('draw')).toBeTrue();
+			expect(reducerKeys.includes('shared')).toBeTrue();
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 			expect(reducerKeys.includes('topics')).toBeTrue();
 			expect(reducerKeys.includes('network')).toBeTrue();

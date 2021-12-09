@@ -13,6 +13,7 @@ import { modalReducer } from '../store/modal/modal.reducer';
 import { toolContainerReducer } from '../store/toolContainer/toolContainer.reducer';
 import { toolBarReducer } from '../store/toolBar/toolBar.reducer';
 import { drawReducer } from '../store/draw/draw.reducer';
+import { sharedReducer } from '../store/shared/shared.reducer';
 import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
 import { mapReducer } from '../store/map/map.reducer';
 import { measurementReducer } from '../store/measurement/measurement.reducer';
@@ -20,6 +21,7 @@ import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
+
 
 
 /**
@@ -47,6 +49,7 @@ export class StoreService {
 			mapContextMenu: mapContextMenuReducer,
 			measurement: measurementReducer,
 			draw: drawReducer,
+			shared: sharedReducer,
 			geolocation: geolocationReducer,
 			topics: topicsReducer,
 			network: networkReducer,

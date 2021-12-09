@@ -1,6 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { setFileSaveResult as setMeasurementFileSaveResult } from '../../../../../store/measurement/measurement.action';
-import { setFileSaveResult as setDrawingFileSaveResult } from '../../../../../store/draw/draw.action';
+import { setFileSaveResult as setSharedFileSaveResult } from '../../../../../store/shared/shared.action';
 
 
 /**
@@ -59,8 +58,7 @@ export class MeasurementStorageService {
 	}
 
 	_setFileSaveResult(fileSaveResult) {
-		setMeasurementFileSaveResult(fileSaveResult);
-		setDrawingFileSaveResult(fileSaveResult);
+		setSharedFileSaveResult(fileSaveResult);
 	}
 
 	_getLastFileSaveResult() {
