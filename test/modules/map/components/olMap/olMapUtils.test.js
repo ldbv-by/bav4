@@ -119,11 +119,41 @@ describe('olMapUtils', () => {
 			));
 		});
 
+		it('register a listener on long AND shot press events with default delay (I)', () => {
+			const defaultDelay = 300;
+			const longPressSpy = jasmine.createSpy();
+			const shortPressSpy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, longPressSpy, shortPressSpy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(defaultDelay - 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(longPressSpy).not.toHaveBeenCalled();
+			expect(shortPressSpy).toHaveBeenCalled();
+		});
+
+		it('register a listener on long AND shot press events with default delay (II)', () => {
+			const defaultDelay = 300;
+			const longPressSpy = jasmine.createSpy();
+			const shortPressSpy = jasmine.createSpy();
+			const map = new Map();
+			registerLongPressListener(map, longPressSpy, shortPressSpy);
+
+			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
+			jasmine.clock().tick(defaultDelay + 100);
+			simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+
+			expect(longPressSpy).toHaveBeenCalled();
+			expect(shortPressSpy).not.toHaveBeenCalled();
+		});
+
 		it('register a listener on long press events with custom delay', () => {
 			const customDelay = 100;
 			const spy = jasmine.createSpy();
 			const map = new Map();
-			registerLongPressListener(map, spy, customDelay);
+			registerLongPressListener(map, spy, null, customDelay);
 
 			simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN);
 			jasmine.clock().tick(customDelay + 100);
