@@ -33,14 +33,21 @@
 	
 }
 
+/* not implemented yet  */
+.icon-rotate-90 , .print , .share {
+	display: none;
+}
+
 /* GetFeat styl  */
 
 table , tr, td, th {
-	/* display: flex; */
-	flex-direction: column;
 	border: 0;
 	background: transparent;
 	width: 100%;
+}
+
+a {
+	word-break: break-all;
 }
 
 table {
@@ -66,7 +73,12 @@ th, td {
 
 }
 
-td:first-child {
+.is-portrait table , .is-portrait tr, .is-portrait td, .is-portrait th {
+	display: flex;
+	flex-direction: column;
+}
+
+td:nth-last-child(2):first-child {
 	opacity: .8;
 	font-size: .9rem;
 	font-weight: bold;
@@ -98,5 +110,5 @@ img {
 }
 
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
-	color: var(--primary-color);
+	color: var(--primary-color) .3;
 }

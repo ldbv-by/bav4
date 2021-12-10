@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { $injector } from '../../../../src/injection';
 import { SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
-import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
+import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
 
 describe('SearchResultService', () => {
@@ -15,8 +15,12 @@ describe('SearchResultService', () => {
 			.registerSingleton('EnvironmentService', environmentService);
 	});
 
-	const setup = (locationSearchResultProvider = () => { }, geoResourceSearchResultProvider = () => { }) => {
-		return new SearchResultService(locationSearchResultProvider, geoResourceSearchResultProvider);
+	const setup = (
+		locationSearchResultProvider = () => { },
+		geoResourceSearchResultProvider = () => { },
+		cadastralParcelResultProvider = () => { }
+	) => {
+		return new SearchResultService(locationSearchResultProvider, geoResourceSearchResultProvider, cadastralParcelResultProvider);
 	};
 
 	describe('constructor', () => {
@@ -26,6 +30,7 @@ describe('SearchResultService', () => {
 
 			expect(instanceUnderTest._locationResultProvider).toBe(loadBvvLocationSearchResults);
 			expect(instanceUnderTest._georesourceResultProvider).toBe(loadBvvGeoResourceSearchResults);
+			expect(instanceUnderTest._cadastralParcelResultProvider).toBe(loadBvvCadastralParcelSearchResults);
 		});
 	});
 
@@ -55,6 +60,17 @@ describe('SearchResultService', () => {
 		});
 	});
 
+	describe('_newFallbackCadastralParcelSearchResults', () => {
+
+		it('provides fallback search results for cadastral parcels', () => {
+			const instanceUnderTest = setup();
+
+			const results = instanceUnderTest._newFallbackCadastralParcelSearchResults();
+
+			expect(results).toHaveSize(0);
+		});
+	});
+
 	describe('geoResourceByTerm', () => {
 
 		it('provides search results for geoGeoresources', async () => {
@@ -64,7 +80,7 @@ describe('SearchResultService', () => {
 				new SearchResult('foo', 'foo', 'foo', SearchResultTypes.GEORESOURCE),
 				new SearchResult('bar', 'bar', 'bar', SearchResultTypes.GEORESOURCE)
 			]);
-			const instanceUnderTest = setup(undefined, provider);
+			const instanceUnderTest = setup(null, provider);
 
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
 
@@ -106,6 +122,33 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest.locationsByTerm(term);
 
 			expect(results).toEqual(instanceUnderTest._newFallbackLocationSearchResults());
+		});
+	});
+
+	describe('cadastralParcelsByTerm', () => {
+
+		it('provides search results for cadastral parcels', async () => {
+			const term = 'term';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const provider = jasmine.createSpy().and.resolveTo([
+				new SearchResult('foo', 'foo', 'foo', SearchResultTypes.CADASTRAL_PARCEL),
+				new SearchResult('bar', 'bar', 'bar', SearchResultTypes.CADASTRAL_PARCEL)
+			]);
+			const instanceUnderTest = setup(null, null, provider);
+
+			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
+
+			expect(results).toHaveSize(2);
+		});
+
+		it('provides fallback search results', async () => {
+			const term = 'term';
+			spyOn(environmentService, 'isStandalone').and.returnValue(true);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
+
+			expect(results).toEqual(instanceUnderTest._newFallbackCadastralParcelSearchResults());
 		});
 	});
 });

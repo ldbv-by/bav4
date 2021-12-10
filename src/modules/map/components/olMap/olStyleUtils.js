@@ -13,6 +13,7 @@ const Z_Line = 20;
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
+// eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
 const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
@@ -148,17 +149,18 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 
 export const lineStyleFunction = (styleOption = { color: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
-	const strokeWidth = 2;
+	const strokeWidth = 3;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
 			width: strokeWidth
 		})
-	})];
+	})
+	];
 };
 export const polygonStyleFunction = (styleOption = { color: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
-	const strokeWidth = 2;
+	const strokeWidth = 3;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
@@ -212,31 +214,38 @@ export const measureStyleFunction = (feature) => {
 	return styles;
 };
 
-export const modifyStyleFunction = () => {
+export const modifyStyleFunction = (feature) => {
+	const getParentFeature = (child) => {
+		const features = child.get('features');
+		return features[0] ? features[0] : null;
+	};
+	const currentFeature = feature ? getParentFeature(feature) : null;
+	const color = currentFeature ? getColorFrom(currentFeature) : Red_Color;
+
 	return [new Style({
 		image: new CircleStyle({
-			radius: 8,
+			radius: 6,
 			stroke: new Stroke({
-				color: Red_Color,
-				width: 1
+				color: White_Color,
+				width: 3
 			}),
 			fill: new Fill({
-				color: White_Color
+				color: color
 			})
 		})
 	})];
 };
 
 export const selectStyleFunction = () => {
-	const appendableVertexStyle = new Style({
+	const getAppendableVertexStyle = (color) => new Style({
 		image: new CircleStyle({
-			radius: 7,
+			radius: 5,
 			stroke: new Stroke({
-				color: Black_Color,
-				width: 1
+				color: White_Color,
+				width: 3
 			}),
 			fill: new Fill({
-				color: White_Color
+				color: color
 			})
 		}),
 		geometry: (feature) => {
@@ -263,12 +272,14 @@ export const selectStyleFunction = () => {
 
 
 	return (feature, resolution) => {
+		const colorFromFeature = getColorFrom(feature);
+		const color = colorFromFeature ? colorFromFeature : Red_Color;
 		const styleFunction = feature.getStyleFunction();
 		if (!styleFunction || !styleFunction(feature, resolution)) {
-			return [appendableVertexStyle];
+			return [getAppendableVertexStyle(color)];
 		}
 		const styles = styleFunction(feature, resolution);
-		return styles[0] ? styles.concat([appendableVertexStyle]) : [styles, appendableVertexStyle];
+		return styles[0] ? styles.concat([getAppendableVertexStyle(color)]) : [styles, getAppendableVertexStyle(color)];
 	};
 };
 
@@ -448,9 +459,9 @@ export const getColorFrom = (feature) => {
 	const styles = feature.getStyle();
 	if (styles) {
 		const style = styles[0];
-		const stroke = style.getStroke();
-		const image = style.getImage();
-		const text = style.getText();
+		const stroke = style?.getStroke();
+		const image = style?.getImage();
+		const text = style?.getText();
 
 		if (stroke) {
 			return rgbToHex(stroke.getColor());

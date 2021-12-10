@@ -22,8 +22,9 @@ import { InteractionSnapType, InteractionStateType } from '../../../../../../../
 import { VectorGeoResource, VectorSourceType } from '../../../../../../../src/services/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
 import VectorSource from 'ol/source/Vector';
-import { simulateMouseEvent } from '../../mapTestUtils';
+import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
+import Stroke from 'ol/style/Stroke';
 
 
 
@@ -1173,15 +1174,15 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			classUnderTest._onDrawStateChanged(drawStateSpy);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: null, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 			setStyle({ symbolSrc: 'something' });
 			setType('marker');
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 			classUnderTest._sketchHandler.activate(new Feature({ geometry: new Point([1, 0]) }));
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 1, dragging: jasmine.any(Boolean) });
 		});
 
@@ -1197,14 +1198,14 @@ describe('OlDrawHandler', () => {
 			setType('line');
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]);
 			feature.getGeometry().dispatchEvent('change');
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5, dragging: jasmine.any(Boolean) });
 		});
 
@@ -1219,13 +1220,13 @@ describe('OlDrawHandler', () => {
 			setType('line');
 			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]);
 			feature.getGeometry().dispatchEvent('change');
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 6, dragging: jasmine.any(Boolean) });
 		});
 
@@ -1260,7 +1261,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
 			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
 			feature.getGeometry().dispatchEvent('change');
@@ -1275,6 +1276,7 @@ describe('OlDrawHandler', () => {
 		describe('when switching to modify', () => {
 			const geometry = new LineString([[0, 0], [100, 0]]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setStyle(new Style({ stroke: new Stroke({ color: [0, 0, 0] }) }));
 
 			it('pointer is not snapped on sketch', () => {
 				setup();
@@ -1289,7 +1291,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._select.getFeatures().push(feature);
 				classUnderTest._modify.setActive(true);
 
-				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
@@ -1311,7 +1313,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._onDrawStateChanged(drawStateSpy);
 				classUnderTest._select.getFeatures().push(feature);
 				classUnderTest._modify.setActive(true);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
@@ -1332,7 +1334,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._onDrawStateChanged(drawStateSpy);
 				classUnderTest._select.getFeatures().push(feature);
 				classUnderTest._modify.setActive(true);
-				simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
@@ -1394,7 +1396,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			expect(map.getView().getZoom()).toBe(1);
 
-			simulateMouseEvent(map, MapBrowserEventType.DBLCLICK, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.DBLCLICK, 10, 0);
 
 			expect(map.getView().getZoom()).toBe(1);
 		});
@@ -1440,16 +1442,16 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			simulateMouseEvent(map, MapBrowserEventType.CLICK, 550, 550);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 600, 0);
-			simulateMouseEvent(map, MapBrowserEventType.CLICK, 600, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 600, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
 		});
 
@@ -1466,7 +1468,7 @@ describe('OlDrawHandler', () => {
 			const feature = new Feature({ geometry: geometry });
 
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			feature.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
@@ -1482,8 +1484,8 @@ describe('OlDrawHandler', () => {
 			});
 
 			// re-select
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
-			simulateMouseEvent(map, MapBrowserEventType.CLICK, 550, 550);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
@@ -1500,14 +1502,14 @@ describe('OlDrawHandler', () => {
 			const feature2 = new Feature({ geometry: geometry });
 
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature1);
 			feature1.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature1);
 			expect(classUnderTest._select).toBeDefined();
 
 			setType('marker');
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature2);
 			feature2.getGeometry().dispatchEvent('change');
 			simulateDrawEvent('drawend', classUnderTest._draw, feature2);
@@ -1528,12 +1530,12 @@ describe('OlDrawHandler', () => {
 			});
 
 			// re-select
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
-			simulateMouseEvent(map, MapBrowserEventType.CLICK, 0, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0, 0);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 
-			simulateMouseEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
-			simulateMouseEvent(map, MapBrowserEventType.CLICK, 50, 50);
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 50, 50);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 	});

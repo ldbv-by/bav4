@@ -8,6 +8,7 @@ import { html } from 'lit-html';
 import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../src/store/highlight/highlight.action.js';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
@@ -16,10 +17,19 @@ window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 describe('FeatureInfoPanel', () => {
 
 	let store;
-
 	const setup = (state) => {
 
-		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, highlight: highlightReducer });
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, {
+			featureInfo: featureInfoReducer, highlight: highlightReducer,
+			media: createNoInitialStateMediaReducer()
+		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureInfoPanel.tag);
@@ -77,6 +87,32 @@ describe('FeatureInfoPanel', () => {
 				expect(header.innerText).toBe('featureInfo_header');
 			});
 		});
+	});
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
+		});
+
+		it('layouts for portrait', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
+		});
+
 	});
 
 	describe('when initialized', () => {
