@@ -12,8 +12,8 @@ import { createUniqueId } from '../../../utils/numberUtils';
 import { isTemplateResult } from '../../../utils/checks';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
-export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
+export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 
 
 /**
@@ -32,7 +32,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		this._translationService = TranslationService;
 
 		this.observe(store => store.featureInfo.current, current => this.signal(Update_FeatureInfo_Data, [...current]));
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait, { isPortrait: media.portrait }));
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
 	}
 
 	/**
@@ -43,7 +43,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			case Update_FeatureInfo_Data:
 				return { ...model, featureInfoData: [...data] };
 			case Update_IsPortrait:
-				return { ...model, ...data };
+				return { ...model, isPortrait: data };
 		}
 	}
 
