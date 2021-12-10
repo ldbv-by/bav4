@@ -4,7 +4,7 @@ import { setFileSaveResult as setSharedFileSaveResult } from '../../../../../sto
 
 /**
  * Facade for FileStorageService and StoreService,
- * to give the interaction-based LayerHandlers a simplified access for storage-functionality
+ * to provide interaction-based LayerHandlers a simplified access for storage-functionality
  *
  * @class
  * @author thiloSchlemmer
