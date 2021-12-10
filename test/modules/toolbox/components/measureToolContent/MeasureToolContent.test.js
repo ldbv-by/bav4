@@ -6,6 +6,7 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 
@@ -27,7 +28,9 @@ describe('MeasureToolContent', () => {
 			fileSaveResult: null,
 			reset: null,
 			remove: null
-		}
+		},
+		shared: { termsOfUseAcknowledged: false,
+			fileSaveResult: null }
 	};
 	const shareServiceMock = {
 		copyToClipboard() {
@@ -61,7 +64,7 @@ describe('MeasureToolContent', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer, shared: sharedReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,

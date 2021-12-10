@@ -20,10 +20,10 @@ export class MeasurementStorageService {
 	setStorageId(value) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 		if (fileStorageService.isAdminId(value)) {
-			this._setFileSaveResult({ adminId: value, fileId: null });
+			setSharedFileSaveResult({ adminId: value, fileId: null });
 		}
 		if (fileStorageService.isFileId(value)) {
-			this._setFileSaveResult({ fileId: value, adminId: null });
+			setSharedFileSaveResult({ fileId: value, adminId: null });
 		}
 	}
 
@@ -57,14 +57,10 @@ export class MeasurementStorageService {
 		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
 
-	_setFileSaveResult(fileSaveResult) {
-		setSharedFileSaveResult(fileSaveResult);
-	}
-
 	_getLastFileSaveResult() {
 		const { StoreService: storeService } = $injector.inject('StoreService');
-		const { measurement } = storeService.getStore().getState();
-		return measurement.fileSaveResult;
+		const { shared } = storeService.getStore().getState();
+		return shared.fileSaveResult;
 	}
 
 	_isValidFileSaveResult(fileSaveResult) {
@@ -84,11 +80,11 @@ export class MeasurementStorageService {
 		const { StoreService: storeService, FileStorageService: fileStorageService } = $injector.inject('StoreService', 'FileStorageService');
 
 		if (content) {
-			const { measurement } = storeService.getStore().getState();
-			if (measurement.fileSaveResult) {
+			const { shared } = storeService.getStore().getState();
+			if (shared.fileSaveResult) {
 				try {
-					const fileSaveResult = await fileStorageService.save(measurement.fileSaveResult.adminId, content, type);
-					this._setFileSaveResult(fileSaveResult);
+					const fileSaveResult = await fileStorageService.save(shared.fileSaveResult.adminId, content, type);
+					setSharedFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content:', error);
@@ -97,16 +93,16 @@ export class MeasurementStorageService {
 			else {
 				try {
 					const fileSaveResult = await fileStorageService.save(null, content, type);
-					this._setFileSaveResult(fileSaveResult);
+					setSharedFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content initially:', error);
-					this._setFileSaveResult(null);
+					setSharedFileSaveResult(null);
 				}
 			}
 		}
 		else {
-			this._setFileSaveResult(null);
+			setSharedFileSaveResult(null);
 		}
 	}
 }
