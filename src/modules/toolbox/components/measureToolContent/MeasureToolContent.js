@@ -182,11 +182,11 @@ export class MeasureToolContent extends AbstractToolContent {
 			await this._shareService.copyToClipboard(value);
 			switch (measure) {
 				case 'distance': {
-					emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_measure_distance')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_distance_notification_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 					break;
 				}
 				case 'area': {
-					emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_measure_area')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_area_notification_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
 					break;
 				}
 			}
