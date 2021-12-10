@@ -1,3 +1,12 @@
+/**
+ * Checks if a value is a Object.
+ * @function
+ * @param {*} val
+ * @returns {boolean} true if it is a object
+ */
+export const isObject = (val) => {
+	return Object.prototype.toString.call(val) === '[object Object]';
+};
 
 /**
  * Checks if a value is a string (primitive or object).
@@ -37,8 +46,18 @@ export const isCoordinate = (val) => {
 /**
  * Checks if a value is a Promise.
  * @param {*} val
- * @returns boolean} true if it is a Promise
+ * @returns {boolean} true if it is a Promise
  */
 export const isPromise = (val) => {
+	// eslint-disable-next-line promise/prefer-await-to-then
 	return Boolean(val && typeof val.then === 'function');
+};
+
+/**
+ * Checks if a value is a lit-html TemplateResult.
+ * @param {*} val
+ * @returns boolean} true if it is a TemplateResult
+ */
+export const isTemplateResult = (val) => {
+	return isObject(val) ? '_$litType$' in val : false;
 };

@@ -1,6 +1,7 @@
 import { $injector } from '../../../../../../src/injection';
 import { MeasurementStorageService } from '../../../../../../src/modules/map/components/olMap/services/MeasurementStorageService';
 import { FileStorageServiceDataTypes } from '../../../../../../src/services/FileStorageService';
+import { drawReducer } from '../../../../../../src/store/draw/draw.reducer';
 import { setFileSaveResult } from '../../../../../../src/store/measurement/measurement.action';
 import { measurementReducer } from '../../../../../../src/store/measurement/measurement.reducer';
 import { TestUtils } from '../../../../../test-utils.js';
@@ -30,8 +31,10 @@ describe('MeasurementStorageService', () => {
 
 	const setup = (state = initialState) => {
 		const measurementState = {
-			measurement: state };
-		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
+			measurement: state,
+			draw: state
+		};
+		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, draw: drawReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('FileStorageService', fileStorageServiceMock);
 		return store;
@@ -55,8 +58,10 @@ describe('MeasurementStorageService', () => {
 
 		classUnderTest.setStorageId('f_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
 		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 	});
 
 	it('returns valid Id or null', () => {
@@ -66,6 +71,7 @@ describe('MeasurementStorageService', () => {
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 		expect(classUnderTest.getStorageId()).toBeNull();
 		setFileSaveResult(null);
 		expect(classUnderTest.getStorageId()).toBeNull();
@@ -111,6 +117,7 @@ describe('MeasurementStorageService', () => {
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith(null, content, FileStorageServiceDataTypes.KML);
 
@@ -127,6 +134,7 @@ describe('MeasurementStorageService', () => {
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
 
@@ -140,6 +148,7 @@ describe('MeasurementStorageService', () => {
 		await classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
+		expect(store.getState().draw.fileSaveResult).toBeNull();
 	});
 
 	it('logs a warning on initial store', async () => {
@@ -154,6 +163,7 @@ describe('MeasurementStorageService', () => {
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
+		expect(store.getState().draw.fileSaveResult).toBeNull();
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 	});
 
@@ -169,6 +179,7 @@ describe('MeasurementStorageService', () => {
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
+		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
 	});
 

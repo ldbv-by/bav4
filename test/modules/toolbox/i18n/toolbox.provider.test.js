@@ -18,13 +18,15 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel).toBe('Abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
-		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch für ein Jahr gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
 		expect(map.toolbox_drawTool_style_size).toBe('Größe');
 		expect(map.toolbox_drawTool_style_size_small).toBe('klein');
 		expect(map.toolbox_drawTool_style_size_medium).toBe('mittel');
 		expect(map.toolbox_drawTool_style_size_large).toBe('groß');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
+		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
+		expect(map.toolbox_drawTool_style_symbol_select).toBe('Symbol auswählen');
 		expect(map.toolbox_drawTool_draw_active).toBe('In die Karte tippen, um die Zeichnung zu beginnen');
 		expect(map.toolbox_drawTool_draw_draw).toBe('In die Karte tippen, um die Linie zu zeichnen (Doppelt tippen zum Beenden)');
 		expect(map.toolbox_drawTool_draw_modify).toBe('Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
@@ -77,13 +79,15 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel).toBe('Cancel');
 		expect(map.toolbox_drawTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Delete drawing');
-		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved for one year. By using this service you agree to the terms of use.');
+		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
 		expect(map.toolbox_drawTool_style_size_small).toBe('small');
 		expect(map.toolbox_drawTool_style_size_medium).toBe('medium');
 		expect(map.toolbox_drawTool_style_size_large).toBe('large');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
+		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
+		expect(map.toolbox_drawTool_style_symbol_select).toBe('select Symbol');
 		expect(map.toolbox_drawTool_draw_active).toBe('Tap on the map to start drawing');
 		expect(map.toolbox_drawTool_draw_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
 		expect(map.toolbox_drawTool_draw_modify).toBe('To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
@@ -122,7 +126,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 53;
+		const expectedSize = 55;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

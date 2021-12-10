@@ -6,8 +6,14 @@ import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { IconResult } from '../../../../../src/services/IconService';
+import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
+import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 
+window.customElements.define(Icon.tag, Icon);
+window.customElements.define(IconSelect.tag, IconSelect);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
+
 
 describe('DrawToolContent', () => {
 	let store;
@@ -28,6 +34,8 @@ describe('DrawToolContent', () => {
 			return Promise.resolve('http://foo');
 		}
 	};
+
+	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => { } };
 
 	const drawDefaultState = {
 		active: false,
@@ -64,6 +72,7 @@ describe('DrawToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('IconService', iconServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
@@ -179,8 +188,8 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#style_marker')).toBeTruthy();
 		});
 
-		it('sets the style, after color changes in color-input', async () => {
-			const style = { ...StyleOptionTemplate, color: '#f00ba3' };
+		it('sets the style, after color changes in color-input (with LOCAL icon-asset)', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 			const newColor = '#ffffff';
 			const element = await setup({ ...drawDefaultState, style });
 
@@ -190,9 +199,31 @@ describe('DrawToolContent', () => {
 			expect(colorInput.value).toBe('#f00ba3');
 
 			colorInput.value = newColor;
-			colorInput.dispatchEvent(new Event('change'));
+			colorInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.color).toBe(newColor);
+		});
+
+		it('sets the style, after color changes in color-input (with REMOTE icon-asset)', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
+			const getIconResultSpy = spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {
+				return {
+					getUrl: () => 'https://some.url/foo/bar/1,2,3/foobarbaz'
+				};
+			});
+			const newColor = '#ffffff';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+			const colorInput = element.shadowRoot.querySelector('#style_color');
+			expect(colorInput).toBeTruthy();
+			expect(colorInput.value).toBe('#f00ba3');
+
+			colorInput.value = newColor;
+			colorInput.dispatchEvent(new Event('input'));
+
+			expect(getIconResultSpy).toHaveBeenCalledWith('https://some.url/foo/bar/0,0,0/foobar');
+			expect(store.getState().draw.style.symbolSrc).toBe('https://some.url/foo/bar/1,2,3/foobarbaz');
 		});
 
 		it('sets the style, after scale changes in scale-input', async () => {
@@ -222,12 +253,33 @@ describe('DrawToolContent', () => {
 			expect(textInput.value).toBe('foo');
 
 			textInput.value = newText;
-			textInput.dispatchEvent(new Event('change'));
+			textInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
+		it('sets the style, after symbol changes in iconSelect', async (done) => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
+			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
+			const element = await setup({ ...drawDefaultState, style });
 
+			setType('marker');
+			const iconSelect = element.shadowRoot.querySelector('ba-iconselect');
+			expect(iconSelect).toBeTruthy();
+			// wait to get icons loaded....
+			setTimeout(() => {
+				// ..then perform ui-actions
+				const iconButton = iconSelect.shadowRoot.querySelector('ba-icon');
+				iconButton.click();
+
+				const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
+				selectableIcon.click();
+
+				expect(store.getState().draw.style.symbolSrc).toBeTruthy();
+				done();
+			});
+
+		});
 
 		it('sets the style-inputs for symbol-tool', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
@@ -368,60 +420,13 @@ describe('DrawToolContent', () => {
 			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
 		});
 
-		it('shows the drawing share-button', async () => {
+		it('shows the share-button', async () => {
 			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-			const shareButton = element.shadowRoot.querySelector('#share');
+			const shareButton = element.shadowRoot.querySelector('ba-share-button');
 
 			expect(shareButton).toBeTruthy();
 		});
 
-		it('shows NOT the drawing share-container when fileSaveResult is null', async () => {
-			const element = await setup({ ...drawDefaultState, fileSaveResult: null });
-			const shareButton = element.shadowRoot.querySelector('#share');
-
-			expect(shareButton).toBeFalsy();
-		});
-
-		it('shows NOT the drawing share-container for invalid fileSaveResult', async () => {
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: null } });
-			const shareButton = element.shadowRoot.querySelector('#share');
-
-			expect(shareButton).toBeFalsy();
-		});
-
-		it('opens the modal with shortened share-urls on click', async (done) => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().modal.data.title).toBe('toolbox_drawTool_share');
-				done();
-			});
-
-		});
-
-		it('logs a warning, when shortener fails', async (done) => {
-			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
-			const warnSpy = spyOn(console, 'warn');
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-
-			const shareButton = element.shadowRoot.querySelector('#share');
-			shareButton.click();
-
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
-				done();
-			});
-
-		});
 		describe('with touch-device', () => {
 			const touchConfig = {
 				embed: false,

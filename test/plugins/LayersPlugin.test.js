@@ -381,7 +381,7 @@ describe('LayersPlugin', () => {
 				expect(result.srid).toBe(srid);
 			});
 
-			it('throws an error when source type is not supported', (done) => {
+			it('throws an error when source type is not supported', async () => {
 				const id = 'id';
 				const fileId = 'f_id';
 				const data = 'data';
@@ -398,13 +398,13 @@ describe('LayersPlugin', () => {
 				const loader = instanceUnderTest._newVectorGeoResourceLoader(id);
 				expect(typeof loader === 'function').toBeTrue();
 
-
-				loader().then(() => {
-					done(new Error('Promise should not be resolved'));
-				}, (reason) => {
-					expect(reason.message).toBe('No VectorGeoResourceLoader available for ' + type);
-					done();
-				});
+				try {
+					await loader();
+					throw new Error('Promise should not be resolved');
+				}
+				catch (error) {
+					expect(error.message).toBe('No VectorGeoResourceLoader available for ' + type);
+				}
 			});
 		});
 
@@ -455,20 +455,20 @@ describe('LayersPlugin', () => {
 				expect(result).toBe(fileId);
 			});
 
-			it('throws an error when a fileId could not be determined', (done) => {
+			it('throws an error when a fileId could not be determined', async () => {
 				const id = 'foo';
 				setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(id).and.returnValue(false);
 				spyOn(fileStorageServiceMock, 'isFileId').withArgs(id).and.returnValue(false);
 
-
-				instanceUnderTest._getFileId(id).then(() => {
-					done(new Error('Promise should not be resolved'));
-				}, (reason) => {
-					expect(reason.message).toBe(`${id} is not a valid fileId or adminId`);
-					done();
-				});
+				try {
+					await instanceUnderTest._getFileId(id);
+					throw new Error('Promise should not be resolved');
+				}
+				catch (error) {
+					expect(error.message).toBe(`${id} is not a valid fileId or adminId`);
+				}
 			});
 		});
 	});

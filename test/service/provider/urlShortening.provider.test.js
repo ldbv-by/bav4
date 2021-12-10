@@ -41,7 +41,7 @@ describe('UrlShortening provider', () => {
 			expect(shortUrl).toBe(expectedShortUrl);
 		});
 
-		it('rejects when backend request cannot be fulfilled', (done) => {
+		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const urlShorteningServiceUrl = 'https://shortening.url';
 			const urlToShorten = 'https://makeme.shorter';
@@ -51,15 +51,15 @@ describe('UrlShortening provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-			shortenBvvUrls(urlToShorten).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
+			try {
+				await shortenBvvUrls(urlToShorten);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(reason.message).toBe('A short url could not be retrieved');
-				done();
-			});
-
+				expect(error.message).toBe('A short url could not be retrieved');
+			}
 		});
 	});
 });

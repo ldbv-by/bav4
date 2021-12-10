@@ -18,7 +18,7 @@ describe('Button', () => {
 			];
 		}
 		return [];
-	} ;
+	};
 
 	beforeEach(async () => {
 		jasmine.clock().install();
@@ -120,26 +120,6 @@ describe('Button', () => {
 			});
 		});
 
-		it('logs a warn statement when provider rejects', async () => {
-
-			const element = await TestUtils.render(AutocompleteSearch.tag);
-			element.provider = () => Promise.reject('Something got wrong');
-			const input = element.shadowRoot.querySelector('input');
-			const warnSpy = spyOn(console, 'warn');
-
-			input.value = 'some';
-			input.dispatchEvent(new Event('input'));
-			//AutocompleteSearch uses debounce from timer.js
-			jasmine.clock().tick(300);
-
-
-			//wait for elements
-			window.requestAnimationFrame(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
-				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
-			});
-		});
-
 		it('logs a warn statement no provider exists', async () => {
 
 			const element = await TestUtils.render(AutocompleteSearch.tag);
@@ -179,6 +159,25 @@ describe('Button', () => {
 				element.shadowRoot.querySelector('#autocomplete-list').querySelector('div').click();
 				expect(element.onSelect).toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('provider cannot fullfill', () => {
+
+		it('logs a warn statement', async () => {
+
+			const element = await TestUtils.render(AutocompleteSearch.tag);
+			element.provider = () => Promise.reject('Something got wrong');
+			const input = element.shadowRoot.querySelector('input');
+			const warnSpy = spyOn(console, 'warn');
+
+			input.value = 'some';
+			input.dispatchEvent(new Event('input'));
+			//AutocompleteSearch uses debounce from timer.js
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
+				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
+			}, 300);
 		});
 	});
 

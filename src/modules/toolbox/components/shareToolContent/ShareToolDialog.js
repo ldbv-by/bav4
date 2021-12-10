@@ -3,11 +3,13 @@ import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import css from './shareToolDialog.css';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 /**
  * @class
  * @author bakir_en
  * @author alsturm
+ * @author costa_gi
  */
 export class ShareToolDialog extends BaElement {
 
@@ -33,11 +35,12 @@ export class ShareToolDialog extends BaElement {
                 ${dialogContent}
             </div>`;
 		}
-
 		return html.nothing;
-
 	}
 
+	/**
+	 * @private
+	 */
 	_buildShareItem(url, label) {
 		const translate = (key) => this._translationService.translate(key);
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
@@ -51,10 +54,19 @@ export class ShareToolDialog extends BaElement {
     `;
 	}
 
+	/**
+	 * @private
+	 */
 	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+		try {
+			await this._shareService.copyToClipboard(value);
+			emitNotification(`${this._translationService.translate('map_contextMenuContent_clipboard_link_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+		}
+		catch (error) {
+			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	set shareUrl(value) {

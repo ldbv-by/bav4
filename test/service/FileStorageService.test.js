@@ -45,7 +45,7 @@ describe('BvvFileStorageService', () => {
 			expect(result.srid).toBe(4326);
 		});
 
-		it('throws an error when content-type is not supported', (done) => {
+		it('throws an error when content-type is not supported', async () => {
 			const contentType = 'someContentType';
 			const data = 'data';
 			const fileId = 'someId';
@@ -62,15 +62,17 @@ describe('BvvFileStorageService', () => {
 			));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			instanceUnderTest.get('someId').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('Content-Type ' + contentType + ' currently not supported');
-				done();
-			});
+			try {
+				await instanceUnderTest.get('someId');
+				throw new Error('Promise should not be resolved');
+
+			}
+			catch (error) {
+				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
+			}
 		});
 
-		it('throws an error when endpoint returns status-code != 200', (done) => {
+		it('throws an error when endpoint returns status-code != 200', async () => {
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
@@ -81,12 +83,13 @@ describe('BvvFileStorageService', () => {
 			));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			instanceUnderTest.get('someId').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('File could not be loaded: ' + expectedUrl);
-				done();
-			});
+			try {
+				await instanceUnderTest.get('someId');
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('File could not be loaded: ' + expectedUrl);
+			}
 		});
 	});
 
@@ -142,21 +145,21 @@ describe('BvvFileStorageService', () => {
 			expect(result.fileId).toBe(fileId);
 		});
 
-		it('throws an error when content-type is not supported', (done) => {
+		it('throws an error when content-type is not supported', async () => {
 			const contentType = 'someContentType';
 			const data = 'data';
 			const instanceUnderTest = new BvvFileStorageService();
 
-			instanceUnderTest.save(null, data, contentType).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('Content-Type ' + contentType + ' currently not supported');
-				done();
-			});
-
+			try {
+				await instanceUnderTest.save(null, data, contentType);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
+			}
 		});
 
-		it('throws an error when file cannot be saved', (done) => {
+		it('throws an error when file cannot be saved', async () => {
 			const data = 'data';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
@@ -166,13 +169,13 @@ describe('BvvFileStorageService', () => {
 			));
 			const instanceUnderTest = new BvvFileStorageService();
 
-
-			instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('File could not be saved: ' + expectedUrl);
-				done();
-			});
+			try {
+				await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('File could not be saved: ' + expectedUrl);
+			}
 		});
 	});
 
@@ -223,7 +226,7 @@ describe('BvvFileStorageService', () => {
 			expect(result).toBe(fileId);
 		});
 
-		it('throws an error when result contains no fileId', async (done) => {
+		it('throws an error when result contains no fileId', async () => {
 			const adminId = 'a_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
@@ -236,15 +239,16 @@ describe('BvvFileStorageService', () => {
 			));
 			const instanceUnderTest = new BvvFileStorageService();
 
-			instanceUnderTest.getFileId(adminId).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('FileId could not be retrieved: ' + expectedUrl);
-				done();
-			});
+			try {
+				await instanceUnderTest.getFileId(adminId);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
+			}
 		});
 
-		it('throws an error when endpoints return status-code != 200', (done) => {
+		it('throws an error when endpoints return status-code != 200', async () => {
 			const adminId = 'a_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
@@ -254,13 +258,13 @@ describe('BvvFileStorageService', () => {
 			));
 			const instanceUnderTest = new BvvFileStorageService();
 
-
-			instanceUnderTest.getFileId(adminId).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('FileId could not be retrieved: ' + expectedUrl);
-				done();
-			});
+			try {
+				await instanceUnderTest.getFileId(adminId);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
+			}
 		});
 	});
 });

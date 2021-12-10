@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, getComplementaryColor, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -10,6 +10,7 @@ import markerIcon from '../../../../../src/modules/map/components/olMap/assets/m
 import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import CircleStyle from 'ol/style/Circle';
 
 const Rgb_WHITE = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -34,11 +35,14 @@ const configService = {
 const environmentService = {
 	isStandalone: () => false
 };
+
+const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 beforeAll(() => {
 	TestUtils.setupStoreAndDi();
 	$injector
 		.registerSingleton('EnvironmentService', environmentService)
-		.registerSingleton('ConfigService', configService);
+		.registerSingleton('ConfigService', configService)
+		.registerSingleton('IconService', iconServiceMock);
 
 });
 
@@ -47,10 +51,10 @@ describe('getMarkerSrc', () => {
 		expect(getMarkerSrc()).toBe('http://backend.url/icons/255,255,255/marker');
 	});
 
-	it('returns a defined marker source', () => {
+	it('returns a defined marker source, when markersource is invalid', () => {
 		const symbolName = 'foo';
 		const color = '#ff0000';
-		expect(getMarkerSrc(symbolName, color)).toBe('http://backend.url/icons/255,0,0/foo');
+		expect(getMarkerSrc(symbolName, color)).toBe('http://backend.url/icons/255,0,0/marker');
 	});
 
 	it('does nothing when markerSrc is already a URL', () => {
@@ -171,6 +175,7 @@ describe('markerStyleFunction', () => {
 
 	it('should return a style with a default Image', () => {
 		const styleOption = { color: '#BEDA55', scale: 'small' };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -180,11 +185,10 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'small' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'small' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -193,12 +197,10 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
-		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; medium image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'medium' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'medium' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -207,12 +209,10 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; large image', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 'large' };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 'large' };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -221,12 +221,10 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(1);
-		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 	it('should return a style specified by styleOption; scale value as number', () => {
-		const styleOption = { symbolSrc: 'marker', color: '#BEDA55', scale: 0.75 };
+		const styleOption = { symbolSrc: markerIcon, color: '#BEDA55', scale: 0.75 };
 		const styles = markerStyleFunction(styleOption);
 
 		expect(styles).toBeDefined();
@@ -235,8 +233,6 @@ describe('markerStyleFunction', () => {
 
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
-		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
-		// expect(image.getSrc()).toContain('backend/icons/190,218,85/marker');
 	});
 
 });
@@ -315,7 +311,7 @@ describe('lineStyleFunction', () => {
 		const styles = lineStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -327,7 +323,7 @@ describe('lineStyleFunction', () => {
 		expect(stroke).toBeTruthy();
 
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
@@ -344,7 +340,7 @@ describe('polygonStyleFunction', () => {
 		const styles = polygonStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -359,28 +355,109 @@ describe('polygonStyleFunction', () => {
 
 		expect(fill.getColor()).toEqual([190, 218, 85, 0.4]);
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
 
 describe('modifyStyleFunction', () => {
 
-	it('should return a style', () => {
+	it('should return a style with a default-color', () => {
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
 		const styles = modifyStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
 	});
+
+	it('should return a style with the feature-color over sketchFeature', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: '#010203'
+				})
+			})
+		});
+
+
+
+		const modifyFeatureMock = { get: () => [feature] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
+	});
+
+	it('should NOT return a style with the feature-color', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
+		const modifyFeatureMock = { get: () => [] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
+	});
+
 });
 
 describe('selectStyleFunction', () => {
 
 	it('should create a stylefunction', () => {
-
 		const styleFunction = selectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
+
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
@@ -528,14 +605,6 @@ describe('hsvToRgb', () => {
 	});
 });
 
-describe('getComplementaryColor', () => {
-
-	it('should find a color with maximum contrast', () => {
-
-		expect(getComplementaryColor(rgbToHex(Rgb_Red))).toEqual('#00ffff');
-
-	});
-});
 
 describe('getContrastColorFrom', () => {
 
@@ -597,10 +666,11 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(featureMock)).toBe('#ff0000');
 	});
 
-	it('should NOT extract a color from feature style (image), when tint color is not present', () => {
+	it('should extract a color from feature style (image), using iconService', () => {
 		const featureMock = { getStyle: () => [imageStyleWithoutTint] };
-
-		expect(getColorFrom(featureMock)).toBeNull();
+		const iconServiceSpy = spyOn(iconServiceMock, 'decodeColor').and.callFake(() => [42, 42, 42]);
+		expect(getColorFrom(featureMock)).toBe('#2a2a2a');
+		expect(iconServiceSpy).toHaveBeenCalled();
 	});
 
 	it('should extract a color from feature style (text)', () => {
@@ -615,6 +685,47 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(featureWithoutStyle)).toBeNull();
 		expect(getColorFrom(null)).toBeNull();
 		expect(getColorFrom(undefined)).toBeNull();
+	});
+
+});
+
+describe('getSymbolFrom', () => {
+	const imageStyle = new Style({
+		image: new Icon({
+			src: markerIcon,
+			color: [255, 0, 0]
+		})
+	});
+
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+
+	it('should extract a image from feature style', () => {
+		const featureMock = { getStyle: () => [imageStyle] };
+
+		expect(getSymbolFrom(featureMock)).toBeTruthy();
+	});
+
+	it('should NOT extract a image from feature style (image)', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getSymbolFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
+		expect(getSymbolFrom(null)).toBeNull();
+		expect(getSymbolFrom(undefined)).toBeNull();
 	});
 
 });

@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../injection';
-import { setFileSaveResult } from '../../../../../store/measurement/measurement.action';
+import { setFileSaveResult as setMeasurementFileSaveResult } from '../../../../../store/measurement/measurement.action';
+import { setFileSaveResult as setDrawingFileSaveResult } from '../../../../../store/draw/draw.action';
 
 
 /**
@@ -20,10 +21,10 @@ export class MeasurementStorageService {
 	setStorageId(value) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 		if (fileStorageService.isAdminId(value)) {
-			setFileSaveResult({ adminId: value, fileId: null });
+			this._setFileSaveResult({ adminId: value, fileId: null });
 		}
 		if (fileStorageService.isFileId(value)) {
-			setFileSaveResult({ fileId: value, adminId: null });
+			this._setFileSaveResult({ fileId: value, adminId: null });
 		}
 	}
 
@@ -57,6 +58,11 @@ export class MeasurementStorageService {
 		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
 
+	_setFileSaveResult(fileSaveResult) {
+		setMeasurementFileSaveResult(fileSaveResult);
+		setDrawingFileSaveResult(fileSaveResult);
+	}
+
 	_getLastFileSaveResult() {
 		const { StoreService: storeService } = $injector.inject('StoreService');
 		const { measurement } = storeService.getStore().getState();
@@ -84,7 +90,7 @@ export class MeasurementStorageService {
 			if (measurement.fileSaveResult) {
 				try {
 					const fileSaveResult = await fileStorageService.save(measurement.fileSaveResult.adminId, content, type);
-					setFileSaveResult(fileSaveResult);
+					this._setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content:', error);
@@ -93,16 +99,16 @@ export class MeasurementStorageService {
 			else {
 				try {
 					const fileSaveResult = await fileStorageService.save(null, content, type);
-					setFileSaveResult(fileSaveResult);
+					this._setFileSaveResult(fileSaveResult);
 				}
 				catch (error) {
 					console.warn('Could not store content initially:', error);
-					setFileSaveResult(null);
+					this._setFileSaveResult(null);
 				}
 			}
 		}
 		else {
-			setFileSaveResult(null);
+			this._setFileSaveResult(null);
 		}
 	}
 }

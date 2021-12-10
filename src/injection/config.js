@@ -10,6 +10,7 @@ import { UnitsService } from '../services/UnitsService';
 import { GeoResourceService } from '../services/GeoResourceService';
 import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
+import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
 import { mapModule } from '../modules/map/injection';
 import { AdministrationService } from '../services/AdministrationService';
@@ -30,7 +31,7 @@ import { NotificationPlugin } from '../plugins/NotificationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
-import { LayerInfoService } from '../modules/layerInfo/services/LayerInfoService';
+import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 
 
 $injector
@@ -49,9 +50,10 @@ $injector
 	.register('UnitsService', UnitsService)
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
+	.registerSingleton('IconService', new IconService())
 	.register('AdministrationService', AdministrationService)
 	.register('FeatureInfoService', FeatureInfoService)
-	.registerSingleton('LayerInfoService', new LayerInfoService())
+	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

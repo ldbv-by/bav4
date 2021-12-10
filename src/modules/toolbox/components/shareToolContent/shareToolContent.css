@@ -3,7 +3,7 @@
 	display: flex;
 	justify-content: center;
 }
-.tool-container__buttons > div {
+.tool-container__buttons > button {
 	position: relative;
 	background: transparent;
 	cursor: pointer;
@@ -11,8 +11,9 @@
 	color: rgba(255,255,255,.8);
 	padding: 0 1em;
 	border-right: 1px dotted var(--header-background-color);
+	border: 0;
 }
-.tool-container__buttons > div:last-child {
+.tool-container__buttons > button:last-child {
 	border-right: none;
 }
 .tool-container__background {
@@ -74,15 +75,13 @@
 	text-align: center;
 	min-width: 5em;
 }
-ba-checkbox:focus {
-	box-shadow: none;
-}
 .preview_button {
 	width: 100%;
 	padding: .8em 1.5em;
 }
 .tool-container__checkbox {
 	font-size: .9rem;
+	display: block;	
 } 
 .disclaimer-text {
 	text-align: justify;

@@ -8,7 +8,7 @@ import { createDefaultLayerProperties } from '../../../../../../src/store/layers
 import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
-import { TemplateResult } from 'lit-html';
+import { isTemplateResult } from '../../../../../../src/utils/checks';
 
 
 
@@ -162,7 +162,7 @@ describe('CatalogLeaf', () => {
 
 			describe('icon info events', () => {
 
-				it('shows a layerinfo panel as modal', async () => {
+				it('shows a georesourceinfo panel as modal', async () => {
 					const geoResourceLabel = 'someLabel';
 					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
@@ -175,7 +175,7 @@ describe('CatalogLeaf', () => {
 					icon.click();
 
 					expect(store.getState().modal.data.title).toBe('someLabel');
-					expect(store.getState().modal.data.content).toBeInstanceOf(TemplateResult);
+					expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
 				});
 			});
 		});

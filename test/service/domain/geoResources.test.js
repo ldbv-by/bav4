@@ -176,6 +176,7 @@ describe('GeoResource', () => {
 
 	it('provides an enum of all available vector source types', () => {
 
+		expect(Object.keys(VectorSourceType).length).toBe(3);
 		expect(VectorSourceType.KML).toBeTruthy();
 		expect(VectorSourceType.GPX).toBeTruthy();
 		expect(VectorSourceType.GEOJSON).toBeTruthy();
@@ -236,16 +237,17 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource._data).toBe('someData');
 		});
 
-		it('passes the reason of a rejected source promise', (done) => {
+		it('passes the reason of a rejected source promise', async () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 1234);
 
-			vectorGeoResource.getData().then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toBe('somethingGotWrong');
-				done();
-			});
+			try {
+				await vectorGeoResource.getData();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toBe('somethingGotWrong');
+			}
 		});
 
 		it('sets the source of an internal VectorGeoResource by a loader', async () => {
@@ -277,17 +279,19 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource._data).toBe('someData');
 		});
 
-		it('passes the reason of a rejected loader', (done) => {
+		it('passes the reason of a rejected loader', async () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
 				.setLoader(() => Promise.reject('somethingGotWrong'));
 
-			vectorGeoResource.getData().then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toBe('somethingGotWrong');
-				done();
-			});
+			try {
+				await vectorGeoResource.getData();
+				throw new Error('Promise should not be resolved');
+
+			}
+			catch (error) {
+				expect(error).toBe('somethingGotWrong');
+			}
 		});
 	});
 

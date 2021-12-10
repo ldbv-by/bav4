@@ -3,7 +3,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { openModal } from '../../../../store/modal/modal.action';
 
 
@@ -153,16 +153,16 @@ export class ShareToolContent extends AbstractToolContent {
 			};
 
 			return html`				
-					<div 
+					<button 
 						id=${tool.name}
 						class="tool-container__button" 
 						title=${tool.title}
 						role="button" tabindex="0" 
 						@click=${getOnClickFunction()}
 						target="_blank"
-						> 
+						> 		
 						${buttonContent}
-					</div>`;
+					</button>`;
 
 		};
 		return html`
@@ -179,12 +179,10 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__title ">
 				${translate('toolbox_shareTool_embed')}							
 				</div>
-				<div class="ba-tool-container__content">      					                  					
-					<div class="tool-container__checkbox">						
-						<ba-checkbox tabindex='0' @toggle=${onToggle} .checked=${false}> 
+				<div class="ba-tool-container__content">      					                  											
+						<ba-checkbox class="tool-container__checkbox" tabindex='0' @toggle=${onToggle} .checked=${false}> 
 							<span class="disclaimer-text">${unsafeHTML(`${translate('toolbox_shareTool_disclaimer')}`)}</span>
 						</ba-checkbox>						
-					</div>    
 				</div>				
 				<div class="ba-tool-container__actions">           
 					<ba-button class="preview_button" .type=${'primary'} .label=${translate('toolbox_shareTool_preview')} .disabled=${true}></ba-button>

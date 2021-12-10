@@ -4,10 +4,10 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import { finish, remove, reset } from '../../../../store/measurement/measurement.action';
-import { QueryParameters } from '../../../../services/domain/queryParameters';
+
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { openModal } from '../../../../store/modal/modal.action';
+
 
 const Update = 'update';
 
@@ -148,58 +148,10 @@ export class MeasureToolContent extends AbstractToolContent {
 			buttons.push(getButton(id, title, onClick));
 		}
 
-		buttons.push(this._getShareButton(model));
+		const getShareButton = () => html`<ba-share-button .share=${model.fileSaveResult}></ba-share-button>`;
+		buttons.push(getShareButton(model));
 
 		return buttons;
-	}
-
-	_getShareButton(model) {
-		const { fileSaveResult } = model;
-		const translate = (key) => this._translationService.translate(key);
-		const isValidForSharing = (fileSaveResult) => {
-			if (!fileSaveResult) {
-				return false;
-			}
-			if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
-				return false;
-			}
-			return true;
-		};
-		const buildShareUrl = async (id) => {
-			const extraParams = { [QueryParameters.LAYER]: id };
-			const url = this._shareService.encodeState(extraParams);
-			try {
-				const shortUrl = await this._urlService.shorten(url);
-				return shortUrl;
-			}
-			catch (error) {
-				console.warn('Could shortener-service is not working:', error);
-				return url;
-			}
-
-
-		};
-		const generateShareUrls = async () => {
-			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
-			const forFileId = await buildShareUrl(fileSaveResult.fileId);
-			return { adminId: forAdminId, fileId: forFileId };
-
-		};
-		if (isValidForSharing(fileSaveResult)) {
-
-			const title = translate('toolbox_measureTool_share');
-			const onClick = () => {
-				generateShareUrls().then(shareUrls => {
-					openModal(title, html`<ba-sharemeasure .shareurls=${shareUrls}></ba-sharemeasure>`);
-				});
-			};
-			return html`<ba-button id='share' 
-			class="tool-container__button" 
-			.label=${title}
-			@click=${onClick}></ba-button>`;
-
-		}
-		return html.nothing;
 	}
 
 	_getSubText(state) {

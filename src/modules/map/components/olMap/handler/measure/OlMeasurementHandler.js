@@ -102,25 +102,24 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (vgr) {
 
 					this._storageHandler.setStorageId(oldLayer.get('id'));
-					vgr.getData().then(data => {
-						const oldFeatures = readFeatures(data);
-						const onFeatureChange = (event) => {
-							const measureGeometry = this._createMeasureGeometry(event.target);
-							this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
-							this._setStatistics(event.target);
-						};
-						oldFeatures.forEach(f => {
-							f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
-							f.set('srid', this._mapService.getSrid(), true);
-							layer.getSource().addFeature(f);
-							this._styleService.removeStyle(f, olMap);
-							this._styleService.addStyle(f, olMap);
-							f.on('change', onFeatureChange);
-						});
-					})
-						.then(() => removeLayer(oldLayer.get('id')))
-						.then(() => this._finish())
-						.then(() => this._updateMeasureState());
+					const data = await vgr.getData();
+					const oldFeatures = readFeatures(data);
+					const onFeatureChange = (event) => {
+						const measureGeometry = this._createMeasureGeometry(event.target);
+						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);
+						this._setStatistics(event.target);
+					};
+					oldFeatures.forEach(f => {
+						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
+						f.set('srid', this._mapService.getSrid(), true);
+						layer.getSource().addFeature(f);
+						this._styleService.removeStyle(f, olMap);
+						this._styleService.addStyle(f, olMap);
+						f.on('change', onFeatureChange);
+					});
+					removeLayer(oldLayer.get('id'));
+					this._finish();
+					this._updateMeasureState();
 				}
 			}
 		};
@@ -242,8 +241,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip.deactivate();
 
 		this._unreg(this._listeners);
-		this._unreg(this._registeredObservers);
 		this._unreg(this._measureStateChangedListeners);
+		this._unsubscribe(this._registeredObservers);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -261,6 +260,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_unreg(listeners) {
 		unByKey(listeners);
 		listeners = [];
+	}
+
+	_unsubscribe(observers) {
+		observers.forEach(unsubscribe => unsubscribe());
+		observers = [];
 	}
 
 	_setMeasureState(value) {

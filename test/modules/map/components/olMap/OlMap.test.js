@@ -10,7 +10,7 @@ import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
 import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
-import { simulateMapEvent, simulateMouseEvent } from './mapTestUtils';
+import { simulateMapEvent, simulateMapBrowserEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
 import { mapReducer } from '../../../../../src/store/map/map.reducer';
@@ -28,6 +28,7 @@ describe('OlMap', () => {
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialZoomLevel = 10;
 	const initialRotationValue = .5;
+	const longPressDelay = 300;
 
 	const mapServiceStub = {
 		getMinimalRotation() {
@@ -245,7 +246,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate);
 
 				expect(store.getState().pointer.move.payload.coordinate).toEqual(coordinate);
 				expect(store.getState().pointer.move.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -261,7 +262,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERMOVE, ...screenCoordinate, true);
 
 				expect(store.getState().pointer.move).toBeNull();
 			});
@@ -273,7 +274,7 @@ describe('OlMap', () => {
 				const screenCoordinate = [21, 42];
 				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 
-				simulateMouseEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
+				simulateMapBrowserEvent(element._map, MapBrowserEventType.POINTERDRAG, ...screenCoordinate, true);
 
 				expect(store.getState().pointer.beingDragged).toBeTrue();
 
@@ -284,68 +285,135 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('single click event', () => {
+	describe('single-click / short-press event', () => {
 
-		it('updates the \'click\' property in pointer store', async () => {
-			const element = await setup();
-			const map = element._map;
-			const coordinate = [38, 75];
-			const screenCoordinate = [21, 42];
-			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-			const preventDefault = jasmine.createSpy();
+		describe('on non touch device', () => {
 
-			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+			it('updates the \'click\' property in pointer store', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				const preventDefault = jasmine.createSpy();
 
-			expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
-			expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
-			expect(preventDefault).toHaveBeenCalled();
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+
+				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+				expect(preventDefault).toHaveBeenCalled();
+			});
+
+			it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				//we set the highlightLayerHandlerMock active which allows click handling
+				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
+				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				const preventDefault = jasmine.createSpy();
+
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+
+				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+				expect(preventDefault).toHaveBeenCalled();
+			});
+
+			it('does nothing when layer handler is active', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				//we set one handler active
+				spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+				const preventDefault = jasmine.createSpy();
+
+				simulateMapBrowserEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+
+				expect(preventDefault).not.toHaveBeenCalled();
+			});
 		});
 
-		it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+		describe('on touch device', () => {
 
-			//we set the highlightLayerHandlerMock active which allows click handling
-			spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-			spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
-			const element = await setup();
-			const map = element._map;
-			const coordinate = [38, 75];
-			const screenCoordinate = [21, 42];
-			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-			const preventDefault = jasmine.createSpy();
+			beforeEach(async () => {
+				jasmine.clock().install();
+			});
 
-			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+			afterEach(function () {
+				jasmine.clock().uninstall();
+			});
 
-			expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
-			expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
-			expect(preventDefault).toHaveBeenCalled();
-		});
+			it('updates the \'click\' property in pointer store', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				const preventDefault = jasmine.createSpy();
 
-		it('does nothing when layer handler is active', async () => {
+				//we simulate a "short-press" event
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
+				jasmine.clock().tick(longPressDelay - 100);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
 
-			const element = await setup();
-			const map = element._map;
-			const coordinate = [38, 75];
-			const screenCoordinate = [21, 42];
-			spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
-			//we set one handler active
-			spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
-			const preventDefault = jasmine.createSpy();
+				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+				expect(preventDefault).toHaveBeenCalled();
+			});
 
-			simulateMouseEvent(map, MapBrowserEventType.SINGLECLICK, ...screenCoordinate, false, preventDefault);
+			it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				//we set the highlightLayerHandlerMock active which allows click handling
+				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
+				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				const preventDefault = jasmine.createSpy();
 
-			expect(preventDefault).not.toHaveBeenCalled();
+				//we simulate a "short-press" event
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
+				jasmine.clock().tick(longPressDelay - 100);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
+
+				expect(store.getState().pointer.click.payload.coordinate).toEqual(coordinate);
+				expect(store.getState().pointer.click.payload.screenCoordinate).toEqual(screenCoordinate);
+				expect(preventDefault).toHaveBeenCalled();
+			});
+
+			it('does nothing when layer handler is active', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				const element = await setup();
+				const map = element._map;
+				const coordinate = [38, 75];
+				const screenCoordinate = [21, 42];
+				spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
+				//we set one handler active
+				spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
+				const preventDefault = jasmine.createSpy();
+
+				//we simulate a "short-press" event
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN);
+				jasmine.clock().tick(longPressDelay - 100);
+				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP, ...screenCoordinate, false, preventDefault);
+
+				expect(preventDefault).not.toHaveBeenCalled();
+			});
 		});
 	});
 
-	describe('context click event', () => {
-
-		beforeEach(async () => {
-			jasmine.clock().install();
-		});
-
-		afterEach(function () {
-			jasmine.clock().uninstall();
-		});
+	describe('context-click / long-press event', () => {
 
 		describe('contextmenu event handling', () => {
 
@@ -360,7 +428,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -379,7 +447,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -397,7 +465,7 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
+					simulateMapBrowserEvent(map, 'contextmenu', ...screenCoordinate, false, preventDefault);
 
 					expect(preventDefault).not.toHaveBeenCalled();
 				});
@@ -405,8 +473,15 @@ describe('OlMap', () => {
 
 			describe('on touch device', () => {
 
+				beforeEach(async () => {
+					jasmine.clock().install();
+				});
+
+				afterEach(function () {
+					jasmine.clock().uninstall();
+				});
+
 				it('updates the \'contextclick\' property in pointer store', async () => {
-					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 					const element = await setup();
 					const map = element._map;
@@ -415,9 +490,10 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(defaultDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					//we simulate a "long-press" event
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					jasmine.clock().tick(longPressDelay + 100);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -425,7 +501,6 @@ describe('OlMap', () => {
 				});
 
 				it('updates the \'contextclick\' when layer handler is active but allows default context click handling', async () => {
-					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 					//we set one handler active
 					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
@@ -437,9 +512,10 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(defaultDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					//we simulate a "long-press" event
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					jasmine.clock().tick(longPressDelay + 100);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(store.getState().pointer.contextClick.payload.coordinate).toEqual(coordinate);
 					expect(store.getState().pointer.contextClick.payload.screenCoordinate).toEqual(screenCoordinate);
@@ -447,7 +523,6 @@ describe('OlMap', () => {
 				});
 
 				it('does nothing when layer handler is active', async () => {
-					const defaultDelay = 300;
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 					//we set one handler active
 					spyOnProperty(measurementLayerHandlerMock, 'active').and.returnValue(true);
@@ -458,9 +533,10 @@ describe('OlMap', () => {
 					spyOn(map, 'getEventCoordinate').and.returnValue(coordinate);
 					const preventDefault = jasmine.createSpy();
 
-					simulateMouseEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
-					jasmine.clock().tick(defaultDelay + 100);
-					simulateMouseEvent(map, MapBrowserEventType.POINTERUP);
+					//we simulate a "long-press" event
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERDOWN, ...screenCoordinate, false, preventDefault);
+					jasmine.clock().tick(longPressDelay + 100);
+					simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
 					expect(preventDefault).not.toHaveBeenCalled();
 				});

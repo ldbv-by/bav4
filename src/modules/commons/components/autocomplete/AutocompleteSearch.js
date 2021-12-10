@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';
@@ -72,19 +72,20 @@ export class AutocompleteSearch extends MvuElement {
 	createView(model) {
 		const { candidates } = model;
 		// let inputText = this._onSelect.label ? this._onSelect.label : '';
-		const requestData = (e) => {
+		const requestData = async (e) => {
 			const val = e.target.value;
 			if (this.provider) {
 				if (val.trim().length > 2) {
-					this.provider(val)
-						.then(data => {
-							if (data) {
-								this.signal(Update_Candidates, data);
-							}
-						}, reason => {
-							this._clearCandidates();
-							console.warn(reason);
-						});
+					try {
+						const data = await this.provider(val);
+						if (data) {
+							this.signal(Update_Candidates, data);
+						}
+					}
+					catch (e) {
+						this._clearCandidates();
+						console.warn(e);
+					}
 				}
 			}
 			else {

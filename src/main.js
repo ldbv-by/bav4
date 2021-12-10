@@ -26,4 +26,5 @@ import './modules/layerManager';
 import './modules/notifications';
 import './modules/examples';
 import './modules/featureInfo';
-import './modules/layerInfo';
+import './modules/iconSelect';
+import './modules/geoResourceInfo';

@@ -1,4 +1,4 @@
-.ba-list-item__text:focus {
+.ba-list-item__text:focus-visible {
 	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
 }
 .ba-list-item ba-checkbox {
@@ -20,7 +20,7 @@ ba-icon:hover {
 	background: var(--primary-color);
 
 }
-ba-icon:focus {
+ba-icon:focus-visible {
 	background: var(--primary-color);
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }

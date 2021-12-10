@@ -1,5 +1,5 @@
 import { html, nothing } from 'lit-html';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../../injection';
 import { setIndex } from '../../../../../store/topicsContentPanel/topicsContentPanel.action';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
@@ -40,7 +40,20 @@ export class CatalogContentPanel extends AbstractContentPanel {
 
 	initialize() {
 
-		const updateView = async (currentTopicId) => {
+		const updateView = (currentTopicId) => {
+
+			const fetchDataAndRender = async () => {
+				try {
+					const catalog = await this._catalogService.byId(this._topicId);
+					this._catalog = catalog;
+					//we render the catalog
+					this.render();
+				}
+				catch (error) {
+					//Todo: As soon as we have a message channel we should inform the user here and remove the spinner
+					console.warn(error.message);
+				}
+			};
 
 			if (this._topicId && currentTopicId === this._topicId) {
 
@@ -49,18 +62,7 @@ export class CatalogContentPanel extends AbstractContentPanel {
 
 					//we render the spinner
 					this.render();
-
-					//if we use "await" the first call of #render seems to be blocked until await is resolved (!?)
-					this._catalogService.byId(this._topicId)
-						.then(catalog => {
-							this._catalog = catalog;
-							//we render the catalog
-							this.render();
-
-						}, (e) => {
-							//Todo: As soon as we have a message channel we should inform the user here and remove the spinner
-							console.warn(e.message);
-						});
+					fetchDataAndRender(this._topicId);
 				}
 				this.style.display = 'inline';
 			}

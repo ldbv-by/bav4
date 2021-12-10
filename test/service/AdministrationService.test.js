@@ -26,55 +26,57 @@ describe('AdministrationService', () => {
 			const instanceUnderTest = setup(async () => {
 				return administrationMock;
 			});
-
 			const mockCoordinate = [0, 0];
 
-			instanceUnderTest.getAdministration(mockCoordinate).then((returnValue) => {
-				expect(returnValue.gemeinde).toEqual(administrationMock.gemeinde);
-				expect(returnValue.gemarkung).toEqual(administrationMock.gemarkung);
-			});
+			const result = await instanceUnderTest.getAdministration(mockCoordinate);
+
+			expect(result.gemeinde).toEqual(administrationMock.gemeinde);
+			expect(result.gemarkung).toEqual(administrationMock.gemarkung);
 		});
 	});
 
 	describe('Error handling', () => {
 
-		it('rejects when backend is not available', (done) => {
+		it('rejects when backend is not available', async () => {
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Administration Provider error');
 			});
 
 			const mockCoordinate = [0, 0];
 
-			instanceUnderTest.getAdministration(mockCoordinate).then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason.message).toBe('Could not load administration from provider: Administration Provider error');
-				done();
-			});
+			try {
+				await instanceUnderTest.getAdministration(mockCoordinate);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe('Could not load administration from provider: Administration Provider error');
+			}
 		});
 
-		it('rejects when no coordinates are delivered', (done) => {
+		it('rejects when no coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			instanceUnderTest.getAdministration().then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toEqual(jasmine.any(TypeError));
-				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
-				done();
-			});
+			try {
+				await instanceUnderTest.getAdministration();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toEqual(jasmine.any(TypeError));
+				expect(error.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+			}
 		});
 
-		it('rejects when false coordinates are delivered', (done) => {
+		it('rejects when false coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			instanceUnderTest.getAdministration('false input').then(() => {
-				done(new Error('Promise should not be resolved'));
-			}, (reason) => {
-				expect(reason).toEqual(jasmine.any(TypeError));
-				expect(reason.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
-				done();
-			});
+			try {
+				await instanceUnderTest.getAdministration('invalid input');
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toEqual(jasmine.any(TypeError));
+				expect(error.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+			}
 		});
 	});
 });
