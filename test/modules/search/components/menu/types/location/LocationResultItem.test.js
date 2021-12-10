@@ -6,7 +6,7 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../../../test-utils.js';
-import { SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID, SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
+import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
 
@@ -76,7 +76,7 @@ describe('LocationResultItem', () => {
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.TEMPORARY);
-				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
 		});
 
@@ -88,7 +88,7 @@ describe('LocationResultItem', () => {
 				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.LOCATION, coordinate);
 				const element = await setup({
 					highlight: {
-						features: [{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
+						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
 					}
 				});
 				element.data = data;
@@ -114,7 +114,8 @@ describe('LocationResultItem', () => {
 				const element = await setup({
 					highlight: {
 						features: [
-							{ id: SEARCH_RERSULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
+							{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: previousCoordinate },
+							{ id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, data: previousCoordinate }
 						]
 					},
 					mainMenu: {
@@ -131,14 +132,14 @@ describe('LocationResultItem', () => {
 
 			describe('result has NO extent', () => {
 
-				it('removes the temporary highlight feature and set the permanent highlight feature', async () => {
+				it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
 
 					const target = element.shadowRoot.querySelector('li');
 					target.click();
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RERSULT_HIGHLIGHT_FEATURE_ID);
+					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
 					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
 				});
@@ -158,7 +159,7 @@ describe('LocationResultItem', () => {
 
 			describe('result has an extent', () => {
 
-				it('removes the temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
+				it('removes both an existing and temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
 					const element = await setupOnClickTests(false, extent);
 
 					const target = element.shadowRoot.querySelector('li');

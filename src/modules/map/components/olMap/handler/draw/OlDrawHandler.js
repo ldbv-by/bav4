@@ -591,6 +591,8 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
+			this._select.getFeatures().clear();
+			this._select.getFeatures().push(feature);
 			setSelectedStyle({ type: getDrawingTypeFrom(feature), style: this._getStyleOption() });
 		}
 
@@ -605,7 +607,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		if (this._drawState.type == null) {
 			this._startNew();
 		}
-
 	}
 
 	_setSelected(feature) {
