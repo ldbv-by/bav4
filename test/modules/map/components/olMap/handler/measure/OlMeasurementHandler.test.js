@@ -27,6 +27,9 @@ import VectorSource from 'ol/source/Vector';
 import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
 import { simulateMouseEvent } from '../../mapTestUtils';
 import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
+import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -101,9 +104,12 @@ describe('OlMeasurementHandler', () => {
 			shared: {
 				termsOfUseAcknowledged: false,
 				fileSaveResult: null
+			},
+			notifications: {
+				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer, shared: sharedReducer });
+		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -184,6 +190,42 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest.activate(map);
 
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+		});
+
+		describe('when not TermsOfUseAcknowledged', () => {
+			it('emits a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+				classUnderTest.activate(map);
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				setTimeout(() => {
+					//check notification
+					expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_handler_termOfUse');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					done();
+				});
+			});
+		});
+
+		describe('when TermsOfUseAcknowledged already', () => {
+			it('emits NOT a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlMeasurementHandler();
+				termsOfUseAcknowledged();
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				setTimeout(() => {
+					//check notification
+					expect(store.getState().notifications.latest).toBeFalsy();
+					done();
+				});
+			});
 		});
 
 		describe('uses Interactions', () => {

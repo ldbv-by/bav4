@@ -26,6 +26,9 @@ import { simulateMouseEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
 import Stroke from 'ol/style/Stroke';
 import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
+import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
 
 
 
@@ -110,9 +113,12 @@ describe('OlDrawHandler', () => {
 			shared: {
 				termsOfUseAcknowledged: false,
 				fileSaveResult: null
+			},
+			notifications: {
+				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer });
+		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -214,6 +220,42 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+		});
+
+		describe('when not TermsOfUseAcknowledged', () => {
+			it('emits a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+				classUnderTest.activate(map);
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				setTimeout(() => {
+					//check notification
+					expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_handler_termOfUse');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					done();
+				});
+			});
+		});
+
+		describe('when TermsOfUseAcknowledged already', () => {
+			it('emits NOT a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				termsOfUseAcknowledged();
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				setTimeout(() => {
+					//check notification
+					expect(store.getState().notifications.latest).toBeFalsy();
+					done();
+				});
+			});
 		});
 
 		describe('uses Interactions', () => {
