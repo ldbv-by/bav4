@@ -25,6 +25,7 @@ import VectorSource from 'ol/source/Vector';
 import { simulateMouseEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
 import Stroke from 'ol/style/Stroke';
+import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
 
 
 
@@ -105,9 +106,13 @@ describe('OlDrawHandler', () => {
 			layers: {
 				active: [],
 				background: 'null'
+			},
+			shared: {
+				termsOfUseAcknowledged: false,
+				fileSaveResult: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer });
+		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)

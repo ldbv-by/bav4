@@ -26,6 +26,7 @@ import { InteractionSnapType, InteractionStateType } from '../../../../../../../
 import VectorSource from 'ol/source/Vector';
 import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
 import { simulateMouseEvent } from '../../mapTestUtils';
+import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -96,9 +97,13 @@ describe('OlMeasurementHandler', () => {
 			layers: {
 				active: [],
 				background: 'null'
+			},
+			shared: {
+				termsOfUseAcknowledged: false,
+				fileSaveResult: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer });
+		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer, shared: sharedReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)

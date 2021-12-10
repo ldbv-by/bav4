@@ -23,6 +23,7 @@ import { emitNotification, LevelTypes } from '../../../../../../store/notificati
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
+import { termsOfUseAcknowledged } from '../../../../../../store/shared/shared.action';
 
 
 
@@ -95,6 +96,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+		const translate = (key) => this._translationService.translate(key);
+		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged) {
+			emitNotification(translate('map_olMap_handler_termOfUse'), LevelTypes.INFO);
+			termsOfUseAcknowledged();
+		}
 		const getOldLayer = (map) => {
 			return map.getLayers().getArray().find(l => l.get('id') && (
 				this._storageHandler.isStorageId(l.get('id')) ||
@@ -102,7 +108,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const translate = (key) => this._translationService.translate(key);
+
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source
