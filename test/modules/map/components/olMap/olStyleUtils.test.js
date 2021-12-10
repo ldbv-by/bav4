@@ -5,6 +5,7 @@ import markerIcon from '../../../../../src/modules/map/components/olMap/assets/m
 import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
+import CircleStyle from 'ol/style/Circle';
 
 const Rgb_WHITE = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -305,7 +306,7 @@ describe('lineStyleFunction', () => {
 		const styles = lineStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -317,7 +318,7 @@ describe('lineStyleFunction', () => {
 		expect(stroke).toBeTruthy();
 
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
@@ -334,7 +335,7 @@ describe('polygonStyleFunction', () => {
 		const styles = polygonStyleFunction();
 
 		expect(styles).toBeDefined();
-		expect(styles[0].getStroke().getWidth()).toBe(2);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
 	});
 
 	it('should return a style specified by styleOption', () => {
@@ -349,28 +350,109 @@ describe('polygonStyleFunction', () => {
 
 		expect(fill.getColor()).toEqual([190, 218, 85, 0.4]);
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
-		expect(stroke.getWidth()).toBe(2);
+		expect(stroke.getWidth()).toBe(3);
 	});
 
 });
 
 describe('modifyStyleFunction', () => {
 
-	it('should return a style', () => {
+	it('should return a style with a default-color', () => {
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
 		const styles = modifyStyleFunction();
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
 	});
+
+	it('should return a style with the feature-color over sketchFeature', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: '#010203'
+				})
+			})
+		});
+
+
+
+		const modifyFeatureMock = { get: () => [feature] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
+	});
+
+	it('should NOT return a style with the feature-color', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+		const featureColor = hexToRgb('#010203');
+
+		const featureStyle = new Style({ stroke: new Stroke({ color: featureColor, width: 2 }) });
+		feature.setStyle([featureStyle]);
+
+		const expectedStyle = new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: [255, 255, 255],
+					width: 3
+				}),
+				fill: new Fill({
+					color: [255, 0, 0]
+				})
+			})
+		});
+
+		const modifyFeatureMock = { get: () => [] };
+		const styles = modifyStyleFunction(modifyFeatureMock);
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+
+		const style = styles[0];
+		expect(style).toEqual(expectedStyle);
+	});
+
 });
 
 describe('selectStyleFunction', () => {
 
 	it('should create a stylefunction', () => {
-
 		const styleFunction = selectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
+
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {

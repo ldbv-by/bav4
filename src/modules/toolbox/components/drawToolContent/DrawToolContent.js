@@ -222,13 +222,17 @@ export class DrawToolContent extends AbstractToolContent {
 		const getStyleTemplate = (type, style) => {
 			const onChangeColor = (e) => {
 				const getStyle = () => {
-					if (getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
+					if (style.symbolSrc && getAssetSource(style.symbolSrc) === AssetSourceType.LOCAL) {
 						return { ...style, color: e.target.value };
 					}
-					const { IconService: iconService } = $injector.inject('IconService');
-					const iconResult = iconService.getIconResult(style.symbolSrc);
+					const getSymbolSrc = () => {
+						const { IconService: iconService } = $injector.inject('IconService');
+						const iconResult = iconService.getIconResult(style.symbolSrc);
+						return iconResult.getUrl(color);
+					};
+
 					const color = hexToRgb(e.target.value);
-					return { ...style, symbolSrc: iconResult.getUrl(color), color: e.target.value };
+					return { ...style, symbolSrc: type === 'marker' ? getSymbolSrc() : null, color: e.target.value };
 				};
 				const changedStyle = getStyle();
 				setStyle(changedStyle);
