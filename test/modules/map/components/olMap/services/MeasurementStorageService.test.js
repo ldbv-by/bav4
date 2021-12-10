@@ -1,11 +1,11 @@
 import { $injector } from '../../../../../../src/injection';
-import { MeasurementStorageService } from '../../../../../../src/modules/map/components/olMap/services/MeasurementStorageService';
+import { InteractionStorageService } from '../../../../../../src/modules/map/components/olMap/services/InteractionStorageService';
 import { FileStorageServiceDataTypes } from '../../../../../../src/services/FileStorageService';
 import { setFileSaveResult } from '../../../../../../src/store/shared/shared.action';
 import { sharedReducer } from '../../../../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../../../../test-utils.js';
 
-describe('MeasurementStorageService', () => {
+describe('InteractionStorageService', () => {
 	const fileStorageServiceMock = {
 		async save(adminId, content, format) {
 			if (adminId) {
@@ -35,7 +35,7 @@ describe('MeasurementStorageService', () => {
 
 	it('has methods', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		expect(classUnderTest).toBeTruthy();
 		expect(classUnderTest.isValid).toBeTruthy();
 		expect(classUnderTest.store).toBeTruthy();
@@ -47,7 +47,7 @@ describe('MeasurementStorageService', () => {
 	it('sets the storage id correctly', () => {
 		const store = setup({ ...initialState, fileSaveResult: null });
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		classUnderTest.setStorageId('f_someId');
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
@@ -57,7 +57,7 @@ describe('MeasurementStorageService', () => {
 
 	it('returns valid Id or null', () => {
 		const store = setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
@@ -69,7 +69,7 @@ describe('MeasurementStorageService', () => {
 
 	it('recognize storageIds', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.isStorageId('f_someId')).toBeTrue();
 		expect(classUnderTest.isStorageId('a_someId')).toBeTrue();
@@ -83,7 +83,7 @@ describe('MeasurementStorageService', () => {
 	it('detect valid storage state', () => {
 		setup();
 		const validFileSaveResult = { adminId: 'a_someId', fileId: 'f_someId' };
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.isValid()).toBeFalse();
 		classUnderTest.setStorageId('a_someId');
@@ -103,7 +103,7 @@ describe('MeasurementStorageService', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
@@ -119,7 +119,7 @@ describe('MeasurementStorageService', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
@@ -132,7 +132,7 @@ describe('MeasurementStorageService', () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const emptyContent = null;
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().shared.fileSaveResult).toBeNull();
@@ -146,7 +146,7 @@ describe('MeasurementStorageService', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().shared.fileSaveResult).toBeNull();
@@ -161,7 +161,7 @@ describe('MeasurementStorageService', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });

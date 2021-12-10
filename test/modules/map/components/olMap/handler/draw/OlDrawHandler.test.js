@@ -64,7 +64,7 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const measurementStorageServiceMock = {
+	const interactionStorageServiceMock = {
 		async store() { },
 		isValid() {
 			return false;
@@ -112,7 +112,7 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
+			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
@@ -627,7 +627,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -651,7 +651,7 @@ describe('OlDrawHandler', () => {
 
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
@@ -698,7 +698,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateStyleSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -826,7 +826,7 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -845,7 +845,7 @@ describe('OlDrawHandler', () => {
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
 			const saveSpy = spyOn(classUnderTest, '_save');
-			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.setSource(source);
@@ -862,8 +862,8 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);

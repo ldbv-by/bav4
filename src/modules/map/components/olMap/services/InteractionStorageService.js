@@ -4,12 +4,12 @@ import { setFileSaveResult as setSharedFileSaveResult } from '../../../../../sto
 
 /**
  * Facade for FileStorageService and StoreService,
- * to give the measurement a simplified access for storage-functionality
+ * to give the interaction-based LayerHandlers a simplified access for storage-functionality
  *
  * @class
  * @author thiloSchlemmer
  */
-export class MeasurementStorageService {
+export class InteractionStorageService {
 
 	/**
 	 *

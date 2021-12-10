@@ -68,7 +68,7 @@ describe('OlMeasurementHandler', () => {
 	};
 
 
-	const measurementStorageServiceMock = {
+	const interactionStorageServiceMock = {
 		async store() { },
 		isValid() {
 			return false;
@@ -103,7 +103,7 @@ describe('OlMeasurementHandler', () => {
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
+			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
 			.registerSingleton('IconService', { getUrl: () => 'some.url' })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -330,7 +330,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -355,7 +355,7 @@ describe('OlMeasurementHandler', () => {
 
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
@@ -403,7 +403,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -429,7 +429,7 @@ describe('OlMeasurementHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateOverlaysSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -484,7 +484,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -504,7 +504,7 @@ describe('OlMeasurementHandler', () => {
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
 			const saveSpy = spyOn(classUnderTest, '_save');
-			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
 
 
 			classUnderTest.activate(map);
@@ -522,8 +522,8 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);
@@ -839,7 +839,7 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
 				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
@@ -858,7 +858,7 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
 				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
@@ -877,7 +877,7 @@ describe('OlMeasurementHandler', () => {
 				setup();
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
-				const storeSpy = spyOn(measurementStorageServiceMock, 'store');
+				const storeSpy = spyOn(interactionStorageServiceMock, 'store');
 				const privateSaveSpy = spyOn(classUnderTest, '_save').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });

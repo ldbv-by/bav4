@@ -6,7 +6,7 @@ import { LayerService } from '../components/olMap/services/LayerService';
 import { StyleService } from '../components/olMap/services/StyleService';
 import { OverlayService } from '../components/olMap/services/OverlayService';
 import { OlDrawHandler } from '../components/olMap/handler/draw/OlDrawHandler';
-import { MeasurementStorageService } from '../components/olMap/services/MeasurementStorageService';
+import { InteractionStorageService } from '../components/olMap/services/InteractionStorageService';
 import { OlFeatureInfoHandler } from '../components/olMap/handler/featureInfo/OlFeatureInfoHandler';
 
 export const mapModule = ($injector) => {
@@ -18,7 +18,7 @@ export const mapModule = ($injector) => {
 		.register('VectorImportService', VectorImportService)
 		.register('LayerService', LayerService)
 		.register('StyleService', StyleService)
-		.register('MeasurementStorageService', MeasurementStorageService)
+		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler);
 };

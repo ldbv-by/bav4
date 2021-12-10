@@ -49,7 +49,7 @@ const defaultStyleOption = {
 export class OlDrawHandler extends OlLayerHandler {
 	constructor() {
 		super(DRAW_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, MeasurementStorageService, IconService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'MeasurementStorageService', 'IconService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, InteractionStorageService, IconService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'InteractionStorageService', 'IconService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -58,7 +58,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
-		this._storageHandler = MeasurementStorageService;
+		this._storageHandler = InteractionStorageService;
 		this._iconService = IconService;
 
 		this._vectorLayer = null;
