@@ -39,7 +39,7 @@ const Temp_Session_Id = 'temp_measure_id';
 export class OlMeasurementHandler extends OlLayerHandler {
 	constructor() {
 		super(MEASUREMENT_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService, MeasurementStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'OverlayService', 'StyleService', 'MeasurementStorageService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, OverlayService, StyleService, InteractionStorageService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'OverlayService', 'StyleService', 'InteractionStorageService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -47,7 +47,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._geoResourceService = GeoResourceService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
-		this._storageHandler = MeasurementStorageService;
+		this._storageHandler = InteractionStorageService;
 
 		this._vectorLayer = null;
 		this._draw = false;
