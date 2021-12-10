@@ -17,26 +17,40 @@ export const toOlLayerFromHandler = (id, handler, map) => {
 };
 
 /**
- * Registers a listener on long touch/click events.
+ * Registers a listener on long-press events.
+ * A listener for "short-press" events can be registered optionally.
  * @param {OlMap} map
- * @param {function(MapBrowserEvent)} callback callback with a MapBrowserEvent as argument
- * @param {number} [delay] delay in ms (default=300)
+ * @param {function(MapBrowserEvent)} longPressCallback callback with a MapBrowserEvent as argument
+ * @param {function(MapBrowserEvent)} [shortPressCallback] optionally callback with a MapBrowserEvent as argument.
+ *  Will be called wenn the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
+ * @param {number} [delay] amount of time in ms after which a long-press event will be fired (default=300)
  */
-export const registerLongPressListener = (map, callback, delay = 300) => {
+export const registerLongPressListener = (map, longPressCallback, shortPressCallback = () => { }, delay = 300) => {
 
 	let timeoutID;
+	const reset = () => {
+		window.clearTimeout(timeoutID);
+		timeoutID = null;
+	};
+
 	map.on('pointerdown', (evt) => {
 		if (timeoutID) {
-			window.clearTimeout(timeoutID);
+			reset();
 		}
-		timeoutID = window.setTimeout(() => callback(evt), delay);
+		timeoutID = window.setTimeout(() => {
+			timeoutID = null;
+			longPressCallback(evt);
+		}, delay);
 	});
-	map.on('pointerup', () => {
-		window.clearTimeout(timeoutID);
+	map.on('pointerup', (evt) => {
+		if (timeoutID) {
+			shortPressCallback(evt);
+		}
+		reset();
 	});
 	map.on('pointermove', (event) => {
 		if (event.dragging) {
-			window.clearTimeout(timeoutID);
+			reset();
 		}
 	});
 };
