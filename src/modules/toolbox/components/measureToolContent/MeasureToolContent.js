@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
@@ -161,23 +161,9 @@ export class MeasureToolContent extends AbstractToolContent {
 	_getSubText(state) {
 		const { mode } = state;
 		const translate = (key) => this._translationService.translate(key);
-		let subTextMessage = translate('toolbox_drawTool_info');
-		if (this._environmentService.isTouch()) {
-			switch (mode) {
-				case 'active':
-					subTextMessage = translate('toolbox_measureTool_measure_active');
-					break;
-				case 'draw':
-					subTextMessage = translate('toolbox_measureTool_measure_draw');
-					break;
-				case 'modify':
-					subTextMessage = translate('toolbox_measureTool_measure_modify');
-					break;
-				case 'select':
-					subTextMessage = translate('toolbox_measureTool_measure_select');
-			}
-		}
-		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
+		const getMeasurementModeMessage = (mode) => getTranslatedSpan('toolbox_measureTool_measure_' + mode);
+		return this._environmentService.isTouch() ? getMeasurementModeMessage(mode) : nothing;
 	}
 
 	async _copyValueToClipboard(value) {

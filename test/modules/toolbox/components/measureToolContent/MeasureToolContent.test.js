@@ -263,7 +263,7 @@ describe('MeasureToolContent', () => {
 
 
 			expect(subTextElement).toBeTruthy();
-			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+			expect(subTextElement.textContent).toBe('');
 		});
 
 		it('shows the measurement share-button', async () => {

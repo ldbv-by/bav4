@@ -170,23 +170,9 @@ export class DrawToolContent extends AbstractToolContent {
 	_getSubText(model) {
 		const { mode } = model;
 		const translate = (key) => this._translationService.translate(key);
-		let subTextMessage = translate('toolbox_drawTool_info');
-		if (this._environmentService.isTouch()) {
-			switch (mode) {
-				case 'active':
-					subTextMessage = translate('toolbox_drawTool_draw_active');
-					break;
-				case 'draw':
-					subTextMessage = translate('toolbox_drawTool_draw_draw');
-					break;
-				case 'modify':
-					subTextMessage = translate('toolbox_drawTool_draw_modify');
-					break;
-				case 'select':
-					subTextMessage = translate('toolbox_drawTool_draw_select');
-			}
-		}
-		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
+		const getDrawModeMessage = (mode) => getTranslatedSpan('toolbox_drawTool_draw_' + mode);
+		return this._environmentService.isTouch() ? getDrawModeMessage(mode) : nothing;
 	}
 
 	createView(model) {

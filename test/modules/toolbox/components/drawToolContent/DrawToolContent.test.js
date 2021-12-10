@@ -420,7 +420,7 @@ describe('DrawToolContent', () => {
 			const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 			expect(subTextElement).toBeTruthy();
-			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+			expect(subTextElement.textContent).toBe('');
 		});
 
 		it('shows the share-button', async () => {
