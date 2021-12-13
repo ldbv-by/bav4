@@ -65,6 +65,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_link_notification_text).toBe('Der Link');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
+		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
+		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 	});
 
 	it('provides translation for en', () => {
@@ -129,10 +131,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_link_notification_text).toBe('The link');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
+		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
+		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 58;
+		const expectedSize = 60;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

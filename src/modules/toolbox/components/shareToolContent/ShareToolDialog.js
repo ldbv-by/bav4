@@ -60,10 +60,10 @@ export class ShareToolDialog extends BaElement {
 	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
-			emitNotification(`${this._translationService.translate('toolbox_clipboard_link_notification_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+			emitNotification(`${this._translationService.translate('toolbox_clipboard_link_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
 		}
 		catch (error) {
-			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			const message = this._translationService.translate('toolbox_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}

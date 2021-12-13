@@ -61,7 +61,9 @@ export const provide = (lang) => {
 				toolbox_toolbar_measure_button: 'Measure',
 				toolbox_clipboard_link_notification_text: 'The link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'The area',
-				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance'
+				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance',
+				toolbox_clipboard_error: '"Copy to clipboard" is not available',
+				toolbox_clipboard_success: 'was copied to clipboard'
 			};
 
 		case 'de':
@@ -124,7 +126,9 @@ export const provide = (lang) => {
 				toolbox_toolbar_measure_button: 'Messen',
 				toolbox_clipboard_link_notification_text: 'Der Link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'Die Fläche',
-				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge'
+				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
+				toolbox_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
+				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert'
 			};
 
 		default:

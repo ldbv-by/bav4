@@ -182,17 +182,17 @@ export class MeasureToolContent extends AbstractToolContent {
 			await this._shareService.copyToClipboard(value);
 			switch (measure) {
 				case 'distance': {
-					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_distance_notification_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_distance_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
 					break;
 				}
 				case 'area': {
-					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_area_notification_text')} ${this._translationService.translate('map_contextMenuContent_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_area_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
 					break;
 				}
 			}
 		}
 		catch (error) {
-			const message = this._translationService.translate('map_contextMenuContent_clipboard_error');
+			const message = this._translationService.translate('toolbox_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
