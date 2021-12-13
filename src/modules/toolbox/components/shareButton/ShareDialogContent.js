@@ -66,7 +66,7 @@ export class ShareDialogContent extends BaElement {
 				return html`<ba-icon class='share_api' .icon='${shareIcon}' .title=${translate('toolbox_measureTool_share_api')} .size=${2} @click=${onClickWithApi}>
 				</ba-icon>`;
 			}
-			return html`<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}>
+			return html`<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}>
             </ba-icon>`;
 		};
 

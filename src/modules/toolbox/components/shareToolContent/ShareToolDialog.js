@@ -49,7 +49,7 @@ export class ShareToolDialog extends BaElement {
 		<div class='share_label'>${label}</div>			
 			<div class='link'>
             	<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							
-				<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}></ba-icon>
+				<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}></ba-icon>
 			</div>            
     `;
 	}
