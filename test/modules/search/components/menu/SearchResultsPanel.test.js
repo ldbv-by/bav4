@@ -2,7 +2,7 @@ import { GeoResouceResultsPanel } from '../../../../../src/modules/search/compon
 import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '../../../../test-utils.js';
-import { AbstractContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
@@ -19,7 +19,7 @@ describe('SearchResultsPanel', () => {
 
 			const element = await setup();
 
-			expect(element instanceof AbstractContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
 		});
 	});
 
