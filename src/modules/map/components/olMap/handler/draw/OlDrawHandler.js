@@ -218,8 +218,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
-			this._registeredObservers = this._register(this._storeService.getStore());
 		}
+		this._registeredObservers = this._register(this._storeService.getStore());
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);

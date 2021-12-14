@@ -70,7 +70,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._helpTooltip = new HelpTooltip();
 		this._helpTooltip.messageProvideFunction = messageProvide;
 		this._measureStateChangedListeners = [];
-		this._registeredObservers = this._register(this._storeService.getStore());
+		this._registeredObservers = [];
 	}
 
 	/**
@@ -216,6 +216,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
+			this._registeredObservers = this._register(this._storeService.getStore());
 
 			olMap.addInteraction(this._select);
 			olMap.addInteraction(this._modify);
