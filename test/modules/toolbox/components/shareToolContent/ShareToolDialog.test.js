@@ -61,7 +61,7 @@ describe('ShareToolDialog', () => {
 		expect(copyToClipboardMock).toHaveBeenCalledWith(url);
 		setTimeout(() => {
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_link_text map_contextMenuContent_clipboard_success');
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_link_notification_text toolbox_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			done();
 		});
@@ -79,7 +79,7 @@ describe('ShareToolDialog', () => {
 		expect(copyToClipboardMock).toHaveBeenCalledWith(url);
 		setTimeout(() => {
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('map_contextMenuContent_clipboard_error');
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 			done();

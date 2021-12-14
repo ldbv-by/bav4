@@ -15,7 +15,6 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_copy_icon).toBe('Copy to clipboard');
 		expect(map.map_contextMenuContent_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.map_contextMenuContent_clipboard_success).toBe('was copied to clipboard');
-		expect(map.map_contextMenuContent_clipboard_link_text).toBe('The link');
 	});
 
 
@@ -31,11 +30,10 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.map_contextMenuContent_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.map_contextMenuContent_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
-		expect(map.map_contextMenuContent_clipboard_link_text).toBe('Der Link');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 9;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
