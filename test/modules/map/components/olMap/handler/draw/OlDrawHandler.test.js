@@ -357,6 +357,21 @@ describe('OlDrawHandler', () => {
 			});
 
 
+			it('register observer for reset-request again, after deactivate', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const resetSpy = spyOn(classUnderTest, '_reset').and.callThrough();
+
+				classUnderTest.activate(map);
+				reset();
+				classUnderTest.deactivate(map);
+				classUnderTest.activate(map);
+				reset();
+				expect(resetSpy).toHaveBeenCalledTimes(2);
+			});
+
 			it('register observer for remove-request', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();

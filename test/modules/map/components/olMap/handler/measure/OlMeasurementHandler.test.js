@@ -305,6 +305,21 @@ describe('OlMeasurementHandler', () => {
 				expect(startNewSpy).toHaveBeenCalled();
 			});
 
+			it('register observer for reset-request again, after deactivate', () => {
+				setup();
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+				classUnderTest.activate(map);
+				reset();
+				classUnderTest.deactivate(map);
+				classUnderTest.activate(map);
+				reset();
+				expect(startNewSpy).toHaveBeenCalledTimes(2);
+			});
+
 
 			it('register observer for remove-request', () => {
 				setup();
