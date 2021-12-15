@@ -25,6 +25,10 @@ import VectorSource from 'ol/source/Vector';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
 import Stroke from 'ol/style/Stroke';
+import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
+import { acknowledgeTermsOfUse } from '../../../../../../../src/store/shared/shared.action';
+import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
 
 
 
@@ -64,7 +68,7 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const measurementStorageServiceMock = {
+	const interactionStorageServiceMock = {
 		async store() { },
 		isValid() {
 			return false;
@@ -90,7 +94,9 @@ describe('OlDrawHandler', () => {
 		}
 
 	};
-	const environmentServiceMock = { isTouch: () => false };
+
+	const translationServiceMock = { translate: (key) => key };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
 		active: false,
 		mode: null,
@@ -105,14 +111,21 @@ describe('OlDrawHandler', () => {
 			layers: {
 				active: [],
 				background: 'null'
+			},
+			shared: {
+				termsOfUseAcknowledged: false,
+				fileSaveResult: null
+			},
+			notifications: {
+				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key })
+		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
+		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MeasurementStorageService', measurementStorageServiceMock)
+			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
 			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
@@ -209,6 +222,62 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+		});
+
+		describe('when not TermsOfUseAcknowledged', () => {
+			it('emits a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+				classUnderTest.activate(map);
+
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				setTimeout(() => {
+					// check notification
+					// content is provided by lit unsafeHtml-Directive; a testable string is found in the values-property
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('map_olMap_handler_termsOfUse');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					done();
+				});
+			});
+			describe('when termsOfUse are empty', () => {
+				it('emits not a notification', (done) => {
+					const store = setup();
+					const map = setupMap();
+					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
+					const classUnderTest = new OlDrawHandler();
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+					classUnderTest.activate(map);
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+					setTimeout(() => {
+						// check notification
+						expect(store.getState().notifications.latest).toBeFalsy();
+						done();
+					});
+				});
+			});
+
+		});
+
+		describe('when TermsOfUse already acknowledged', () => {
+			it('emits NOT a notification', (done) => {
+				const store = setup();
+				const map = setupMap();
+				const classUnderTest = new OlDrawHandler();
+				acknowledgeTermsOfUse();
+				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+				classUnderTest.activate(map);
+
+				setTimeout(() => {
+					//check notification
+					expect(store.getState().notifications.latest).toBeFalsy();
+					done();
+				});
+			});
 		});
 
 		describe('uses Interactions', () => {
@@ -642,7 +711,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -666,7 +735,7 @@ describe('OlDrawHandler', () => {
 
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
@@ -713,7 +782,7 @@ describe('OlDrawHandler', () => {
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
-			spyOn(measurementStorageServiceMock, 'isStorageId').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateStyleSpy = spyOn(classUnderTest._styleService, 'updateStyle');
@@ -841,7 +910,7 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -860,7 +929,7 @@ describe('OlDrawHandler', () => {
 			const source = new VectorSource({ wrapX: false });
 			source.addFeature(createFeature());
 			const saveSpy = spyOn(classUnderTest, '_save');
-			spyOn(measurementStorageServiceMock, 'isValid').and.callFake(() => true);
+			spyOn(interactionStorageServiceMock, 'isValid').and.callFake(() => true);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.setSource(source);
@@ -877,8 +946,8 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const feature = createFeature();
 			const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-			spyOn(measurementStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
-			const storageSpy = spyOn(measurementStorageServiceMock, 'store');
+			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest.deactivate(map);

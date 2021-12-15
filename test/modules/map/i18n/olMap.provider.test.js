@@ -26,6 +26,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
+		expect(map.map_olMap_handler_termsOfUse).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.');
 	});
 
 	it('provides translation for en', () => {
@@ -51,10 +52,11 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Object Information not available');
+		expect(map.map_olMap_handler_termsOfUse).toBe(''); // no termsOfUse in default/standalone-version
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 19;
+		const expectedSize = 20;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

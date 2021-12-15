@@ -85,7 +85,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(20);
+			expect(reducerKeys.length).toBe(21);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -97,6 +97,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
 			expect(reducerKeys.includes('measurement')).toBeTrue();
 			expect(reducerKeys.includes('draw')).toBeTrue();
+			expect(reducerKeys.includes('shared')).toBeTrue();
 			expect(reducerKeys.includes('geolocation')).toBeTrue();
 			expect(reducerKeys.includes('topics')).toBeTrue();
 			expect(reducerKeys.includes('network')).toBeTrue();

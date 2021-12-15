@@ -13,6 +13,7 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
@@ -46,6 +47,8 @@ describe('ToolContainer', () => {
 				portrait: false,
 				minWidth: true
 			},
+			shared: { termsOfUseAcknowledged: false,
+				fileSaveResult: null },
 			...state
 		};
 
@@ -78,7 +81,8 @@ describe('ToolContainer', () => {
 			measurement: measurementReducer,
 			draw: drawReducer,
 			notifications: notificationReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			shared: sharedReducer
 		});
 
 		$injector

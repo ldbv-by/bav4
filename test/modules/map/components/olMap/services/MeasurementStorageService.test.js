@@ -1,12 +1,11 @@
 import { $injector } from '../../../../../../src/injection';
-import { MeasurementStorageService } from '../../../../../../src/modules/map/components/olMap/services/MeasurementStorageService';
+import { InteractionStorageService } from '../../../../../../src/modules/map/components/olMap/services/InteractionStorageService';
 import { FileStorageServiceDataTypes } from '../../../../../../src/services/FileStorageService';
-import { drawReducer } from '../../../../../../src/store/draw/draw.reducer';
-import { setFileSaveResult } from '../../../../../../src/store/measurement/measurement.action';
-import { measurementReducer } from '../../../../../../src/store/measurement/measurement.reducer';
+import { setFileSaveResult } from '../../../../../../src/store/shared/shared.action';
+import { sharedReducer } from '../../../../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../../../../test-utils.js';
 
-describe('MeasurementStorageService', () => {
+describe('InteractionStorageService', () => {
 	const fileStorageServiceMock = {
 		async save(adminId, content, format) {
 			if (adminId) {
@@ -23,18 +22,12 @@ describe('MeasurementStorageService', () => {
 
 	};
 	const initialState = {
-		active: false,
-		statistic: { length: 0, area: 0 },
-		reset: null,
+		termsOfUseAcknowledged: false,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
 	const setup = (state = initialState) => {
-		const measurementState = {
-			measurement: state,
-			draw: state
-		};
-		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, draw: drawReducer });
+		const store = TestUtils.setupStoreAndDi({ shared: state }, { shared: sharedReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('FileStorageService', fileStorageServiceMock);
 		return store;
@@ -42,7 +35,7 @@ describe('MeasurementStorageService', () => {
 
 	it('has methods', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		expect(classUnderTest).toBeTruthy();
 		expect(classUnderTest.isValid).toBeTruthy();
 		expect(classUnderTest.store).toBeTruthy();
@@ -54,24 +47,21 @@ describe('MeasurementStorageService', () => {
 	it('sets the storage id correctly', () => {
 		const store = setup({ ...initialState, fileSaveResult: null });
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		classUnderTest.setStorageId('f_someId');
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: null });
 		classUnderTest.setStorageId('a_someId');
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 	});
 
 	it('returns valid Id or null', () => {
 		const store = setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 		expect(classUnderTest.getStorageId()).toBeNull();
 		setFileSaveResult(null);
 		expect(classUnderTest.getStorageId()).toBeNull();
@@ -79,7 +69,7 @@ describe('MeasurementStorageService', () => {
 
 	it('recognize storageIds', () => {
 		setup();
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.isStorageId('f_someId')).toBeTrue();
 		expect(classUnderTest.isStorageId('a_someId')).toBeTrue();
@@ -93,7 +83,7 @@ describe('MeasurementStorageService', () => {
 	it('detect valid storage state', () => {
 		setup();
 		const validFileSaveResult = { adminId: 'a_someId', fileId: 'f_someId' };
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.isValid()).toBeFalse();
 		classUnderTest.setStorageId('a_someId');
@@ -113,11 +103,10 @@ describe('MeasurementStorageService', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith(null, content, FileStorageServiceDataTypes.KML);
 
@@ -130,11 +119,10 @@ describe('MeasurementStorageService', () => {
 			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
 
@@ -144,11 +132,10 @@ describe('MeasurementStorageService', () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const emptyContent = null;
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML);
 
-		expect(store.getState().measurement.fileSaveResult).toBeNull();
-		expect(store.getState().draw.fileSaveResult).toBeNull();
+		expect(store.getState().shared.fileSaveResult).toBeNull();
 	});
 
 	it('logs a warning on initial store', async () => {
@@ -159,11 +146,10 @@ describe('MeasurementStorageService', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
-		expect(store.getState().measurement.fileSaveResult).toBeNull();
-		expect(store.getState().draw.fileSaveResult).toBeNull();
+		expect(store.getState().shared.fileSaveResult).toBeNull();
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content initially:', jasmine.any(Error));
 	});
 
@@ -175,11 +161,10 @@ describe('MeasurementStorageService', () => {
 			Promise.reject(new Error('Failed'))
 		);
 
-		const classUnderTest = new MeasurementStorageService();
+		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
-		expect(store.getState().measurement.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
-		expect(store.getState().draw.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
+		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
 	});
 
