@@ -30,7 +30,7 @@ import { notificationReducer } from '../../../../../../../src/store/notification
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
-import { isTemplateResult } from '../../../../../../../src/utils/checks';
+
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
