@@ -94,7 +94,9 @@ describe('OlDrawHandler', () => {
 		}
 
 	};
-	const environmentServiceMock = { isTouch: () => false };
+
+	const translationServiceMock = { translate: (key) => key };
+	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
 		active: false,
 		mode: null,
@@ -119,7 +121,7 @@ describe('OlDrawHandler', () => {
 			}
 		};
 		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key })
+		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -240,6 +242,25 @@ describe('OlDrawHandler', () => {
 					done();
 				});
 			});
+			describe('when termsOfUse are empty', () => {
+				it('emits not a notification', (done) => {
+					const store = setup();
+					const map = setupMap();
+					spyOn(translationServiceMock, 'translate').and.callFake(() => '');
+					const classUnderTest = new OlDrawHandler();
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
+					classUnderTest.activate(map);
+
+					expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
+					setTimeout(() => {
+						// check notification
+						expect(store.getState().notifications.latest).toBeFalsy();
+						done();
+					});
+				});
+			});
+
 		});
 
 		describe('when TermsOfUseAcknowledged already', () => {

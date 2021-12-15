@@ -23,7 +23,7 @@ export const provide = (lang) => {
 				map_olMap_handler_draw_select: 'Select existing or start new drawing',
 				map_olMap_handler_storage_offline: 'Offline: Could not store layer-data. The data will get lost after this session.',
 				map_olMap_handler_featureInfo_not_available: 'Object Information not available',
-				map_olMap_handler_termsOfUse: 'Your drawing will be automatically saved. By using this service you agree to the <a href="url" target="_blank">terms of use</a>.'
+				map_olMap_handler_termsOfUse: '' // no termsOfUse in default/standalone-version
 			};
 
 		case 'de':
@@ -48,7 +48,7 @@ export const provide = (lang) => {
 				map_olMap_handler_draw_select: 'bestehende Zeichnung auswählen oder neue Zeichnung beginnen',
 				map_olMap_handler_storage_offline: 'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.',
 				map_olMap_handler_featureInfo_not_available: 'Objekt-Info nicht verfügbar',
-				map_olMap_handler_termsOfUse: 'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="url" target="_blank">Nutzungsbedingungen</a> zu.'
+				map_olMap_handler_termsOfUse: 'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.'
 			};
 
 		default:
