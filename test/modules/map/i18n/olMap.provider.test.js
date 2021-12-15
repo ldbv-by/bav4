@@ -26,7 +26,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
-		expect(map.map_olMap_handler_termOfUse).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.map_olMap_handler_termsOfUse).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="url" target="_blank">Nutzungsbedingungen</a> zu.');
 	});
 
 	it('provides translation for en', () => {
@@ -52,7 +52,7 @@ describe('i18n for map module', () => {
 		expect(map.map_olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Object Information not available');
-		expect(map.map_olMap_handler_termOfUse).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
+		expect(map.map_olMap_handler_termsOfUse).toBe('Your drawing will be automatically saved. By using this service you agree to the <a href="url" target="_blank">terms of use</a>.');
 	});
 
 	it('have the expected amount of translations', () => {

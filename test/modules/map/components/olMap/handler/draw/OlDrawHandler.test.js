@@ -233,8 +233,9 @@ describe('OlDrawHandler', () => {
 
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 				setTimeout(() => {
-					//check notification
-					expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_handler_termOfUse');
+					// check notification
+					// content is provided by lit unsafeHtml-Directive; a testable string is found in the values-property
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('map_olMap_handler_termsOfUse');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					done();
 				});

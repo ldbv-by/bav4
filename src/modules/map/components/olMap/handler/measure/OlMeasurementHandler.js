@@ -25,6 +25,7 @@ import { emitNotification, LevelTypes } from '../../../../../../store/notificati
 import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
 import { termsOfUseAcknowledged } from '../../../../../../store/shared/shared.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 const Debounce_Delay = 1000;
 
@@ -80,7 +81,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
 		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged) {
-			emitNotification(translate('map_olMap_handler_termOfUse'), LevelTypes.INFO);
+			emitNotification(unsafeHTML(translate('map_olMap_handler_termsOfUse')), LevelTypes.INFO);
 			termsOfUseAcknowledged();
 		}
 		const getOldLayer = (map) => {

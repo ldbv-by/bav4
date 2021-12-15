@@ -30,6 +30,7 @@ import { notificationReducer } from '../../../../../../../src/store/notification
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
+import { isTemplateResult } from '../../../../../../../src/utils/checks';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -203,8 +204,9 @@ describe('OlMeasurementHandler', () => {
 
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 				setTimeout(() => {
-					//check notification
-					expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_handler_termOfUse');
+					// check notification
+					// content is provided by lit unsafeHtml-Directive; a testable string is found in the values-property
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('map_olMap_handler_termsOfUse');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					done();
 				});

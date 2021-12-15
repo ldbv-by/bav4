@@ -24,6 +24,7 @@ import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
 import { termsOfUseAcknowledged } from '../../../../../../store/shared/shared.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 
 
@@ -98,7 +99,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
 		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged) {
-			emitNotification(translate('map_olMap_handler_termOfUse'), LevelTypes.INFO);
+			emitNotification(unsafeHTML(translate('map_olMap_handler_termsOfUse')), LevelTypes.INFO);
 			termsOfUseAcknowledged();
 		}
 		const getOldLayer = (map) => {
