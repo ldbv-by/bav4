@@ -25,7 +25,7 @@ export class ContextClickPlugin extends BaPlugin {
 			const { EnvironmentService: environmentService }
 				= $injector.inject('EnvironmentService');
 
-			const content = html`<ba-map-context-menu-content .coordinate=${evt.coordinate}></ba-map-context-menu-content`;
+			const content = html`<ba-map-context-menu-content .coordinate=${evt.coordinate}></ba-map-context-menu-content>`;
 
 			if (environmentService.isTouch()) {
 				emitFixedNotification(content);
