@@ -26,7 +26,7 @@ import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { IconResult } from '../../../../../../../src/services/IconService';
 import Stroke from 'ol/style/Stroke';
 import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
-import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
+import { acknowledgeTermsOfUse } from '../../../../../../../src/store/shared/shared.action';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
 
@@ -263,12 +263,12 @@ describe('OlDrawHandler', () => {
 
 		});
 
-		describe('when TermsOfUseAcknowledged already', () => {
+		describe('when TermsOfUse already acknowledged', () => {
 			it('emits NOT a notification', (done) => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlDrawHandler();
-				termsOfUseAcknowledged();
+				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 				classUnderTest.activate(map);
 

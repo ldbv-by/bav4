@@ -23,7 +23,7 @@ import { emitNotification, LevelTypes } from '../../../../../../store/notificati
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
-import { termsOfUseAcknowledged } from '../../../../../../store/shared/shared.action';
+import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 
@@ -100,10 +100,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
 			const termsOfUse = translate('map_olMap_handler_termsOfUse');
-			if (termsOfUse !== '') {
+			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
 			}
-			termsOfUseAcknowledged();
+			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
 			return map.getLayers().getArray().find(l => l.get('id') && (

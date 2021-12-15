@@ -1,4 +1,4 @@
-import { setFileSaveResult, termsOfUseAcknowledged } from '../../../src/store/shared/shared.action';
+import { setFileSaveResult, acknowledgeTermsOfUse } from '../../../src/store/shared/shared.action';
 import { sharedReducer } from '../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../test-utils';
 
@@ -22,7 +22,7 @@ describe('sharedReducer', () => {
 
 		expect(store.getState().shared.termsOfUseAcknowledged).toBeFalse();
 
-		termsOfUseAcknowledged();
+		acknowledgeTermsOfUse();
 
 		expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 	});

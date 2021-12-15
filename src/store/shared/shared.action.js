@@ -15,7 +15,7 @@ const getStore = () => {
  * Set the acknowledgement of the user for the Terms of Use.
   * @function
  */
-export const termsOfUseAcknowledged = () => {
+export const acknowledgeTermsOfUse = () => {
 
 	getStore().dispatch({
 		type: TERMS_OF_USE_ACKNOWLEDGED_CHANGED,

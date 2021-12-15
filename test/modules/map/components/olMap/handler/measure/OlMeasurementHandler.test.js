@@ -28,7 +28,7 @@ import { measurementReducer } from '../../../../../../../src/store/measurement/m
 import { sharedReducer } from '../../../../../../../src/store/shared/shared.reducer';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
-import { termsOfUseAcknowledged } from '../../../../../../../src/store/shared/shared.action';
+import { acknowledgeTermsOfUse } from '../../../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
 
 
@@ -233,12 +233,12 @@ describe('OlMeasurementHandler', () => {
 			});
 		});
 
-		describe('when TermsOfUseAcknowledged already', () => {
+		describe('when TermsOfUse already acknowledged', () => {
 			it('emits NOT a notification', (done) => {
 				const store = setup();
 				const map = setupMap();
 				const classUnderTest = new OlMeasurementHandler();
-				termsOfUseAcknowledged();
+				acknowledgeTermsOfUse();
 				expect(store.getState().shared.termsOfUseAcknowledged).toBeTrue();
 				classUnderTest.activate(map);
 
