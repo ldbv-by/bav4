@@ -15,6 +15,7 @@
 	--surface2-light: hsl(var(--brand-hue) 10% 90%);
 	--surface3-light: hsl(var(--brand-hue) 60% 95%);
 	--surface4-light: hsl(var(--brand-hue) 20% 100%);
+	--surface5-light: hsla(var(--brand-hue),10%,15%,.8);
   
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue)  calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / .9));
@@ -27,6 +28,7 @@
 	--surface2-dark: hsl(var(--brand-hue) 15% 40%);
 	--surface3-dark: hsl(var(--brand-hue) 40% 25%);
 	--surface4-dark: hsl(var(--brand-hue) 10% 15%);
+	--surface5-dark: hsla(var(--brand-hue),15%,40%,.8);
 
 	/* others */
 	--error-color: hsla(341, 60%, 52%, 1);
@@ -86,6 +88,7 @@
 	--secondary-bg-color: var(--surface2-light); 
 	--tertiary-bg-color: var(--surface4-light);    
 	--header-background-color: var(--surface3-light);    
+	--modal-background-color: var(--surface5-light);    
 	/* text */
 	--text1: var(--text1-light);
 	--text2: var(--text2-light);
@@ -103,6 +106,7 @@
 	--secondary-bg-color: var(--surface2-dark); 
 	--tertiary-bg-color: var(--surface4-dark);      
 	--header-background-color: var(--surface3-dark);    
+	--modal-background-color: var(--surface5-dark);    
 	/* text */
 	--text1: var(--text1-dark);
 	--text2: var(--text2-dark);
