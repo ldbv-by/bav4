@@ -8,8 +8,8 @@ import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContext
 import { isTemplateResult } from '../../src/utils/checks.js';
 import { $injector } from '../../src/injection/index.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
-
-
+import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
+import { HighlightFeatureTypes } from '../../src/store/highlight/highlight.action.js';
 
 describe('ContextClickPlugin', () => {
 
@@ -22,7 +22,8 @@ describe('ContextClickPlugin', () => {
 			pointer: pointerReducer,
 			map: mapReducer,
 			mapContextMenu: mapContextMenuReducer,
-			notifications: notificationReducer
+			notifications: notificationReducer,
+			highlight: highlightReducer
 		});
 
 		$injector
@@ -39,14 +40,54 @@ describe('ContextClickPlugin', () => {
 
 		describe('when context-click state changed', () => {
 
-			it('updates the mapContextMenu store section', () => {
+			it('updates the mapContextMenu and the highlight store section', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
-
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.DEFAULT);
+
+				//let's call it again
+				setContextClick({ coordinate: [21210, 42420], screenCoordinate: [210, 420] });
+
+				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.DEFAULT);
+			});
+
+			describe('when move-start state changed', () => {
+
+				it('updates the highlight store section', () => {
+					const store = setup();
+					new ContextClickPlugin().register(store);
+
+					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+					expect(store.getState().highlight.features).toHaveSize(1);
+
+					setMoveStart();
+
+					expect(store.getState().highlight.features).toHaveSize(0);
+				});
+			});
+
+			describe('when pointer-click state changed', () => {
+
+				it('updates the highlight store section', () => {
+					const store = setup();
+					new ContextClickPlugin().register(store);
+
+					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+					expect(store.getState().highlight.features).toHaveSize(1);
+
+					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+					expect(store.getState().highlight.features).toHaveSize(0);
+				});
 			});
 		});
 	});
