@@ -29,7 +29,6 @@ describe('GeoResourceInfoPanel', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, media: createNoInitialStateMediaReducer() });
-		// TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('GeoResourceInfoService', geoResourceInfoServiceMock);
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });

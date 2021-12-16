@@ -13,6 +13,7 @@ const UPDATE_GEORESOURCEINFO = 'UPDATE_GEORESOURCEINFO';
  * Component for managing georesourceinfo.
  * @class
  * @author costa_gi
+ * @author alsturm
  */
 export class GeoResourceInfoPanel extends MvuElement {
 
