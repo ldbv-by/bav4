@@ -251,6 +251,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			map.getInteractions().getArray().filter(i => i instanceof Draw).forEach(d => map.removeInteraction(d));
 
 		};
+		this._unreg(this._listeners);
 		setStyle(null);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
@@ -261,7 +262,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		removeAllDrawInteractions(olMap);
 		this._helpTooltip.deactivate();
 
-		this._unreg(this._listeners);
 		this._unreg(this._drawStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
 
