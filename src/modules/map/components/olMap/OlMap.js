@@ -106,6 +106,7 @@ export class OlMap extends MvuElement {
 				zoom: false,
 				rotate: false
 			}),
+			moveTolerance: this._environmentService.isTouch() ? 3 : 1,
 			interactions: defaultInteractions({
 				//for embedded mode
 				//onFocusOnly: false,
