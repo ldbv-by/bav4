@@ -155,8 +155,10 @@ describe('OlMap', () => {
 	};
 
 	describe('when initialized', () => {
+
 		it('configures the map and adds a div which contains the ol-map', async () => {
 			const element = await setup();
+
 			expect(element._view.getZoom()).toBe(initialZoomLevel);
 			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element._view.getRotation()).toBe(initialRotationValue);
@@ -165,6 +167,17 @@ describe('OlMap', () => {
 			expect(element._map.getControls().getLength()).toBe(0);
 			//all interactions are present
 			expect(element._map.getInteractions().getLength()).toBe(9);
+			expect(element._map.moveTolerance_).toBe(1);
+		});
+
+		describe('on touch device', () => {
+
+			it('configures the map and adds a div which contains the ol-map', async () => {
+				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				const element = await setup();
+
+				expect(element._map.moveTolerance_).toBe(3);
+			});
 		});
 	});
 
