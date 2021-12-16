@@ -533,6 +533,27 @@ export const getSymbolFrom = (feature) => {
 };
 
 /**
+ * extracts the symbolSrc-value or null from a feature
+ * @param {Feature} feature the feature with or without a style
+ * @returns {string|null} the symbolSrc-Value or null
+ */
+export const getTextFrom = (feature) => {
+	if (feature == null) {
+		return null;
+	}
+	const styles = feature.getStyle();
+	if (styles) {
+		const style = styles[0];
+		const textStyle = style.getText();
+
+		if (textStyle) {
+			return textStyle.getText();
+		}
+	}
+	return null;
+};
+
+/**
  * creates a ligther or darker version of the specified basecolor
  * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
