@@ -644,8 +644,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 		this._storedContent = newContent;
+		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 	}
 
 	/**

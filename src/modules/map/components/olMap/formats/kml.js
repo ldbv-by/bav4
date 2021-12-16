@@ -56,7 +56,6 @@ const sanitizeStyle = (styles) => {
 	if (isTextOnlyStyle) {
 		kmlStyleProperties.image = new Icon({ src: 'noimage', scale: 0 });
 	}
-
 	return new Style(kmlStyleProperties);
 };
 
@@ -74,10 +73,12 @@ export const create = (layer, projection) => {
 			if (clone.getGeometry().getType() === 'Polygon') {
 				clone.setGeometry(tryRectifyingLineString(clone.getGeometry()));
 			}
-
 			const styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
 				const kmlStyle = sanitizeStyle(styles(clone));
+				if (clone.get('name')) {
+					clone.unset('name');
+				}
 				clone.setStyle(kmlStyle);
 			}
 
