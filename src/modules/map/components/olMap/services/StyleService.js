@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword } from '../olStyleUtils';
 
 /**
  * @enum
@@ -182,7 +182,8 @@ export class StyleService {
 
 		const getStyle = (styles) => {
 			if (typeof (styles) === 'function') {
-				return styles(olFeature)[0];
+				const computedStyles = styles(olFeature);
+				return Array.isArray(computedStyles) ? computedStyles[0] : computedStyles;
 			}
 			return styles[0];
 		};
@@ -190,8 +191,9 @@ export class StyleService {
 			const style = getStyle(styles);
 			const color = style.getImage().getColor();
 			const symbolSrc = style.getImage().getSrc();
-			const scale = style.getImage().getScale();
-			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale };
+			const scale = markerScaleToKeyword(style.getImage().getScale());
+			const text = style.getText().getText();
+			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
 		};
 
 		const newStyle = markerStyleFunction(getStyleOption(olFeature.getStyle()));

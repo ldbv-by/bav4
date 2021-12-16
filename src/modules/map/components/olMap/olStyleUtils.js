@@ -24,6 +24,71 @@ export const AssetSourceType = Object.freeze({
 	UNKNOWN: 'unknown'
 });
 
+const getTextStyle = (text, color = '#ff0000', scale = 1) => {
+	const strokeWidth = 1;
+	const createStyle = (text, color, scale) => {
+		return new TextStyle({
+			text: text,
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({
+				color: getContrastColorFrom(hexToRgb(color)).concat(0.4),
+				width: strokeWidth
+			}),
+			fill: new Fill({
+				color: hexToRgb(color).concat([1])
+			}),
+			scale: scale,
+			offsetY: -5
+		});
+	};
+	return text ? createStyle(text, color, scale) : null;
+};
+
+const getTextScale = (sizeKeyword) => {
+	if (typeof (sizeKeyword) === 'number') {
+		return sizeKeyword;
+	}
+	switch (sizeKeyword) {
+
+		case 'large':
+			return 2;
+		case 'medium':
+			return 1.5;
+		case 'small':
+		default:
+			return 1;
+	}
+};
+
+const getMarkerScale = (sizeKeyword) => {
+	if (typeof (sizeKeyword) === 'number') {
+		return sizeKeyword;
+	}
+	switch (sizeKeyword) {
+		case 'large':
+			return 1;
+		case 'medium':
+			return 0.75;
+		case 'small':
+		default:
+			return 0.5;
+	}
+};
+
+export const markerScaleToKeyword = (scaleCandidate) => {
+	const scale = typeof (scaleCandidate) === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
+
+	switch (scale) {
+		case 1:
+			return 'large';
+		case 0.75:
+			return 'medium';
+		case 0.5:
+		default:
+			return 'small';
+	}
+};
+
 export const getAssetSource = (asset) => {
 	if (asset.startsWith(Asset_Svg_B64_Flag)) {
 		return AssetSourceType.LOCAL;
@@ -67,24 +132,10 @@ export const highlightTemporaryStyleFunction = () => [new Style({
 	})
 })];
 
-export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false }) => {
+export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false, text: false }) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
 
 
-	const getMarkerScale = (sizeKeyword) => {
-		if (typeof (sizeKeyword) === 'number') {
-			return sizeKeyword;
-		}
-		switch (sizeKeyword) {
-			case 'large':
-				return 1;
-			case 'medium':
-				return 0.75;
-			case 'small':
-			default:
-				return 0.5;
-		}
-	};
 	const rasterIconOptions = {
 		anchor: [0.5, 1],
 		anchorXUnits: 'fraction',
@@ -105,60 +156,35 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 	const iconOptions = styleOption.symbolSrc ? (getAssetSource(styleOption.symbolSrc) === AssetSourceType.LOCAL ? svgIconOptions : rasterIconOptions) : svgIconOptions;
 
 	return [new Style({
-		image: new Icon(iconOptions)
+		image: new Icon(iconOptions),
+		text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale)) : null
 	})];
 };
 
 export const textStyleFunction = (styleOption = { color: false, scale: false, text: false }) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
 	const textContent = styleOption.text ? styleOption.text : 'New Text';
-	const strokeWidth = 2;
-	const getTextScale = (sizeKeyword) => {
-		if (typeof (sizeKeyword) === 'number') {
-			return sizeKeyword;
-		}
-		switch (sizeKeyword) {
 
-			case 'large':
-				return 2;
-			case 'medium':
-				return 1.5;
-			case 'small':
-			default:
-				return 1;
-		}
-	};
 	const textScale = getTextScale(styleOption.scale);
 
 	return [new Style({
-		text: new TextStyle({
-			text: textContent,
-			font: 'normal 16px sans-serif',
-			stroke: new Stroke({
-				color: getContrastColorFrom(hexToRgb(strokeColor)).concat(0.4),
-				width: strokeWidth
-			}),
-			fill: new Fill({
-				color: hexToRgb(strokeColor).concat([1])
-			}),
-			scale: textScale,
-			offsetY: -5
-		})
+		text: getTextStyle(textContent, strokeColor, textScale)
 	})];
 };
 
-export const lineStyleFunction = (styleOption = { color: false }) => {
+export const lineStyleFunction = (styleOption = { color: false, text: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
 			width: strokeWidth
-		})
+		}),
+		text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
 	})
 	];
 };
-export const polygonStyleFunction = (styleOption = { color: false }) => {
+export const polygonStyleFunction = (styleOption = { color: false, text: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
 	return [new Style({
@@ -168,7 +194,8 @@ export const polygonStyleFunction = (styleOption = { color: false }) => {
 		}),
 		fill: new Fill({
 			color: strokeColor.concat([0.4])
-		})
+		}),
+		text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
 	})];
 };
 
