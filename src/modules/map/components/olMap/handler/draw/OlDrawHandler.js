@@ -23,6 +23,8 @@ import { emitNotification, LevelTypes } from '../../../../../../store/notificati
 import { OlSketchHandler } from '../OlSketchHandler';
 import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
+import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.action';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 
 
@@ -49,7 +51,7 @@ const defaultStyleOption = {
 export class OlDrawHandler extends OlLayerHandler {
 	constructor() {
 		super(DRAW_LAYER_ID);
-		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, MeasurementStorageService, IconService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'MeasurementStorageService', 'IconService');
+		const { TranslationService, MapService, EnvironmentService, StoreService, GeoResourceService, FileStorageService, OverlayService, StyleService, InteractionStorageService, IconService } = $injector.inject('TranslationService', 'MapService', 'EnvironmentService', 'StoreService', 'GeoResourceService', 'FileStorageService', 'OverlayService', 'StyleService', 'InteractionStorageService', 'IconService');
 		this._translationService = TranslationService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
@@ -58,7 +60,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._fileStorageService = FileStorageService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
-		this._storageHandler = MeasurementStorageService;
+		this._storageHandler = InteractionStorageService;
 		this._iconService = IconService;
 
 		this._vectorLayer = null;
@@ -95,6 +97,14 @@ export class OlDrawHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+		const translate = (key) => this._translationService.translate(key);
+		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
+			const termsOfUse = translate('map_olMap_handler_termsOfUse');
+			if (termsOfUse) {
+				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
+			}
+			acknowledgeTermsOfUse();
+		}
 		const getOldLayer = (map) => {
 			return map.getLayers().getArray().find(l => l.get('id') && (
 				this._storageHandler.isStorageId(l.get('id')) ||
@@ -102,7 +112,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const translate = (key) => this._translationService.translate(key);
+
 			const source = new VectorSource({ wrapX: false });
 			const layer = new VectorLayer({
 				source: source
@@ -212,8 +222,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
-			this._registeredObservers = this._register(this._storeService.getStore());
 		}
+		this._registeredObservers = this._register(this._storeService.getStore());
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);

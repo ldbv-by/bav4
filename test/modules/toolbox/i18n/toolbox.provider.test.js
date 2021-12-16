@@ -62,6 +62,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
+		expect(map.toolbox_clipboard_link_notification_text).toBe('Der Link');
+		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
+		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
+		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
+		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
+		expect(map.toolbox_copy_icon).toBe('In die Zwischenablage kopieren');
 	});
 
 	it('provides translation for en', () => {
@@ -123,10 +129,16 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
+		expect(map.toolbox_clipboard_link_notification_text).toBe('The link');
+		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
+		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
+		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
+		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
+		expect(map.toolbox_copy_icon).toBe('Copy to clipboard');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 55;
+		const expectedSize = 61;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

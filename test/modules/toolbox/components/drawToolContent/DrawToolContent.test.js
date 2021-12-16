@@ -6,6 +6,7 @@ import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
 import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
@@ -58,12 +59,14 @@ describe('DrawToolContent', () => {
 	};
 	const setup = async (drawState = drawDefaultState, config = {}) => {
 		const state = {
-			draw: drawState
+			draw: drawState,
+			shared: { termsOfUseAcknowledged: false,
+				fileSaveResult: null }
 		};
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer, shared: sharedReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -417,7 +420,7 @@ describe('DrawToolContent', () => {
 			const subTextElement = element.shadowRoot.querySelector('.sub-text');
 
 			expect(subTextElement).toBeTruthy();
-			expect(subTextElement.textContent).toBe('toolbox_drawTool_info');
+			expect(subTextElement.textContent).toBe('');
 		});
 
 		it('shows the share-button', async () => {

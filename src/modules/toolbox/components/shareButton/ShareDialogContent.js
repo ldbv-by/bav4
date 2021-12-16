@@ -4,6 +4,7 @@ import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
 import css from './shareDialogContent.css';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 /**
  * A content component to show and share perma-links of
@@ -11,6 +12,7 @@ import css from './shareDialogContent.css';
  * @class
  * @author thiloSchlemmer
  * @author alsturm
+ * @author costa_gi
  */
 export class ShareDialogContent extends BaElement {
 
@@ -64,7 +66,7 @@ export class ShareDialogContent extends BaElement {
 				return html`<ba-icon class='share_api' .icon='${shareIcon}' .title=${translate('toolbox_measureTool_share_api')} .size=${2} @click=${onClickWithApi}>
 				</ba-icon>`;
 			}
-			return html`<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}>
+			return html`<ba-icon class='share_copy' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${2} @click=${onCopyUrlToClipBoard}>
             </ba-icon>`;
 		};
 
@@ -82,9 +84,15 @@ export class ShareDialogContent extends BaElement {
 	}
 
 	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+		try {
+			await this._shareService.copyToClipboard(value);
+			emitNotification(`${this._translationService.translate('toolbox_clipboard_link_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
+		}
+		catch (error) {
+			const message = this._translationService.translate('toolbox_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	set shareurls(value) {

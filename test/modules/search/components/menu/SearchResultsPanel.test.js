@@ -2,7 +2,8 @@ import { GeoResouceResultsPanel } from '../../../../../src/modules/search/compon
 import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '../../../../test-utils.js';
-import { AbstractContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractMvuContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { CpResultsPanel } from '../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
 
 window.customElements.define(SearchResultsPanel.tag, SearchResultsPanel);
 
@@ -19,7 +20,7 @@ describe('SearchResultsPanel', () => {
 
 			const element = await setup();
 
-			expect(element instanceof AbstractContentPanel).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
 		});
 	});
 
@@ -32,6 +33,7 @@ describe('SearchResultsPanel', () => {
 			expect(element.shadowRoot.querySelector('.search-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag)).toBeTruthy();
 			expect(element.shadowRoot.querySelector(GeoResouceResultsPanel.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector(CpResultsPanel.tag)).toBeTruthy();
 		});
 	});
 });
