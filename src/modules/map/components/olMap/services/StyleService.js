@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray } from '../olStyleUtils';
 
 /**
  * @enum
@@ -157,20 +157,13 @@ export class StyleService {
 	}
 
 	_addTextStyle(olFeature) {
-		const styles = olFeature.getStyle();
+		const styles = getStyleArray(olFeature);
 		const getStyleOption = () => {
-			if (typeof (styles) === 'function') {
-				const currentStyle = styles(olFeature);
-				const currentColor = currentStyle.getText().getFill().getColor();
-				const currentText = currentStyle.getText().getText();
-				const currentScale = currentStyle.getText().getScale();
-				return { color: rgbToHex(currentColor), scale: currentScale, text: currentText };
-			}
 			const currentStyle = styles[0];
 			const currentColor = currentStyle.getText().getFill().getColor();
 			const currentText = currentStyle.getText().getText();
 			const currentScale = currentStyle.getText().getScale();
-			return { color: currentColor, scale: currentScale, text: currentText };
+			return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
 		};
 
 		const newStyle = textStyleFunction(getStyleOption());
@@ -179,24 +172,20 @@ export class StyleService {
 	}
 
 	_addMarkerStyle(olFeature) {
+		const { IconService: iconService } = $injector.inject('IconService');
 
-		const getStyle = (styles) => {
-			if (typeof (styles) === 'function') {
-				const computedStyles = styles(olFeature);
-				return Array.isArray(computedStyles) ? computedStyles[0] : computedStyles;
-			}
-			return styles[0];
-		};
-		const getStyleOption = (styles) => {
-			const style = getStyle(styles);
-			const color = style.getImage().getColor();
+
+		const getStyleOption = (feature) => {
+			const style = getStyleArray(feature)[0];
 			const symbolSrc = style.getImage().getSrc();
+			const styleColor = style.getImage().getColor();
+			const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
 			const scale = markerScaleToKeyword(style.getImage().getScale());
 			const text = style.getText().getText();
 			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
 		};
 
-		const newStyle = markerStyleFunction(getStyleOption(olFeature.getStyle()));
+		const newStyle = markerStyleFunction(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
 	}

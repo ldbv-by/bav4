@@ -483,7 +483,7 @@ export const getColorFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = feature.getStyle();
+	const styles = getStyleArray(feature); feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const stroke = style?.getStroke();
@@ -493,6 +493,8 @@ export const getColorFrom = (feature) => {
 		if (stroke) {
 			return rgbToHex(stroke.getColor());
 		}
+
+
 		if (image) {
 			// first try to get the tint-color
 			if (image.getColor()) {
@@ -502,9 +504,11 @@ export const getColorFrom = (feature) => {
 			const { IconService: iconService } = $injector.inject('IconService');
 			return rgbToHex(iconService.decodeColor(image.getSrc()));
 		}
+
 		if (text) {
 			return rgbToHex(text.getFill().getColor());
 		}
+
 	}
 
 	return null;
@@ -520,7 +524,7 @@ export const getSymbolFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = feature.getStyle();
+	const styles = getStyleArray(feature); feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const image = style.getImage();
@@ -541,7 +545,7 @@ export const getTextFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = feature.getStyle();
+	const styles = getStyleArray(feature); feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const textStyle = style.getText();
@@ -592,4 +596,15 @@ export const getDrawingTypeFrom = (feature) => {
 		return parts[type_index];
 	}
 	return null;
+};
+
+
+export const getStyleArray = (feature) => {
+
+	const toArray = (arrayCandidate) => Array.isArray(arrayCandidate) ? arrayCandidate : [arrayCandidate];
+	const applyStyleFunction = (styleFunction, feature) => toArray(styleFunction(feature));
+	const getArray = (styles) => typeof (styles) === 'function' ? applyStyleFunction(styles, feature) : toArray(styles);
+
+
+	return feature.getStyle() ? getArray(feature.getStyle()) : null;
 };
