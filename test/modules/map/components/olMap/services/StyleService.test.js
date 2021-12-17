@@ -29,6 +29,8 @@ describe('StyleService', () => {
 			return area + ' m²';
 		}
 	};
+
+	const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 	let instanceUnderTest;
 
 
@@ -38,6 +40,7 @@ describe('StyleService', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
+			.registerSingleton('IconService', iconServiceMock)
 			.register('OverlayService', OverlayService);
 	});
 
@@ -306,7 +309,7 @@ describe('StyleService', () => {
 				getInteractions() {
 					return { getArray: () => [] };
 				},
-				once() {}
+				once() { }
 			};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
