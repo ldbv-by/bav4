@@ -4,13 +4,16 @@ import { MvuElement } from '../../MvuElement';
 import { $injector } from '../../../injection';
 import { GeoResourceInfoResult } from '../services/GeoResourceInfoService';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import css from './geoResourceInfoPanel.css';
 
+const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
 const UPDATE_GEORESOURCEINFO = 'UPDATE_GEORESOURCEINFO';
 
 /**
  * Component for managing georesourceinfo.
  * @class
  * @author costa_gi
+ * @author alsturm
  */
 export class GeoResourceInfoPanel extends MvuElement {
 
@@ -20,12 +23,15 @@ export class GeoResourceInfoPanel extends MvuElement {
 		= $injector.inject('TranslationService', 'GeoResourceInfoService');
 		this._translationService = translationService;
 		this._geoResourceInfoService = geoResourceInfoService;
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case UPDATE_GEORESOURCEINFO:
 				return { ...model, geoResourceInfo: data };
+			case Update_IsPortrait:
+				return { ...model, isPortrait: data };
 		}
 	}
 
@@ -33,12 +39,17 @@ export class GeoResourceInfoPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { geoResourceInfo } = model;
+		const { geoResourceInfo, isPortrait } = model;
+
+		const getOrientationClass = () => {
+			return isPortrait ? 'is-portrait' : 'is-landscape';
+		};
 
 		if (geoResourceInfo) {
 			return html`
+			<style>${css}</style>
 			<div>${geoResourceInfo.title}</div>
-			<div>${unsafeHTML(`${geoResourceInfo.content}`)}</div>
+			<div class='${getOrientationClass()}'>${unsafeHTML(`${geoResourceInfo.content}`)}</div>
 			`;
 		}
 		return html`<ba-spinner></ba-spinner>`;
