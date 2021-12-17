@@ -1,0 +1,96 @@
+h4, h5 {
+	padding: 1em 0 .8em 0;
+}
+
+h6 {
+	padding: 0 0 .8em;
+	font-weight: normal;
+}
+
+a {
+	color: var(--primary-color);
+	text-decoration: unset;
+}
+
+a:hover,a:focus {
+	text-decoration: underline;
+}
+
+a:before {
+	content: url('../assets/placeholder.svg');
+	margin: 0 .2em 0 0;
+	background: var(--primary-color);
+	mask: url('../assets/boxarrowupright.svg');
+	-webkit-mask-image: url('../assets/boxarrowupright.svg');
+	-webkit-mask-repeat: no-repeat;
+	position: relative;
+	top: .1em;
+}
+
+svg {
+	fill: red;
+	height: 2em;
+	width: 2em;
+}
+
+table {
+	width: 100%;
+	background: var(--header-background-color);
+	margin: 0 0 .8em 0;
+}
+
+td {
+	padding: 1em .8em;
+	border-right: 1px dotted var(--primary-color);
+	border-right: 1px dotted var(--primary-bg-color);
+}
+
+.is-portrait td {
+	display: inline-block;  
+}
+
+table td:last-child {
+	border-right: none;
+
+}
+
+table td:first-child {
+	width: 14em;
+}
+
+table td:nth-child(3) {
+	width: 8em;
+}
+
+img[src=""] {
+	display: none;
+}
+
+.ba-layer-info {
+	padding: 1em .8em;
+	max-width: 70em;
+}
+
+.is-landscape .img-rounded {
+	float: left;
+	margin: 0 1.5em 1.5em 0;
+	max-width: 32em;
+}
+.is-portrait .img-rounded {
+	max-width: 100%;
+	margin: 0 0 1em 0;
+}
+
+.chapter {
+	padding: .8em 0;
+	clear: both;
+}
+
+.thumbnail h4 {
+	display: none;
+}
+
+.is-portrait table , .is-portrait td:nth-child(-n+3) {
+	display: flex;
+	flex-direction: column;    
+}

@@ -5,6 +5,7 @@ import { GeoResourceInfoResult } from '../../../../src/modules/geoResourceInfo/s
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);
 
@@ -14,24 +15,34 @@ describe('GeoResourceInfoPanel', () => {
 		byId() { }
 	};
 
-	const state = {
-		notifications: {
-			notification: null
-		}
+	let store;
+	const setup = (state) => {
+
+		const initialState = {
+			notifications: {
+				notification: null
+			},
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, media: createNoInitialStateMediaReducer() });
+		$injector.registerSingleton('GeoResourceInfoService', geoResourceInfoServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key });
+		return TestUtils.render(GeoResourceInfoPanel.tag);
 	};
 
-	const store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 
-	// TestUtils.setupStoreAndDi();
-	$injector.registerSingleton('GeoResourceInfoService', geoResourceInfoServiceMock);
-	$injector
-		.registerSingleton('TranslationService', { translate: (key) => key });
+
 
 	describe('when initialized', () => {
 
 		it('should render the spinner when geoResourceId is null', async () => {
 
-			const element = await TestUtils.render(GeoResourceInfoPanel.tag);
+			const element = await setup();
 
 			const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
 
@@ -43,7 +54,7 @@ describe('GeoResourceInfoPanel', () => {
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
 
-			const element = await TestUtils.render(GeoResourceInfoPanel.tag);
+			const element = await setup();
 
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -60,7 +71,7 @@ describe('GeoResourceInfoPanel', () => {
 
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(null);
 
-			const element = await TestUtils.render(GeoResourceInfoPanel.tag);
+			const element = await setup();
 
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
@@ -79,7 +90,7 @@ describe('GeoResourceInfoPanel', () => {
 				.and.returnValue(Promise.reject('geoResourceInfo error object'));
 			const warnSpy = spyOn(console, 'warn');
 
-			const element = await TestUtils.render(GeoResourceInfoPanel.tag);
+			const element = await setup();
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
 			setTimeout(() => {
@@ -93,4 +104,43 @@ describe('GeoResourceInfoPanel', () => {
 			});
 		});
 	});
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
+			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const element = await setup(state);
+			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+			setTimeout(() => {
+				expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
+			});
+		});
+
+		it('layouts for portrait', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
+			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+			const element = await setup(state);
+			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+			setTimeout(() => {
+				expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
+			});
+		});
+
+	});
+
 });
