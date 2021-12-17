@@ -46,13 +46,13 @@ describe('ShareDialogContent', () => {
 		expect(element).toBeTruthy;
 	});
 
-	it('renders the sharedUrls', async () => {
+	it('renders the sharedUrl', async () => {
 		const element = await setup();
 		element.shareurls = { adminId: 'foo', fileid: 'bar' };
 
 
 		const shareItems = element.shadowRoot.querySelectorAll('.share_item');
-		expect(shareItems.length).toBe(2);
+		expect(shareItems.length).toBe(1);
 	});
 
 	it('renders the shareApi-Button', async () => {
@@ -65,6 +65,16 @@ describe('ShareDialogContent', () => {
 
 		expect(shareButton).toBeTruthy();
 		expect(copyButton).toBeFalsy();
+	});
+
+	it('clicks the toggle element setting it to not checked => false', async () => {
+		const element = await setup({}, { share: true });
+		element.shareurls = { adminId: 'foo', fileid: 'bar' };
+
+		const toggleElement = element.shadowRoot.querySelector('ba-toggle');
+		toggleElement.dispatchEvent(new MouseEvent('toggle'));
+
+		expect(toggleElement).toBeTruthy();
 	});
 
 	it('renders the CopyToClipboard-Button, when ShareApi is missing', async () => {
