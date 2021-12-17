@@ -175,18 +175,25 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 export const lineStyleFunction = (styleOption = { color: false, text: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
+	// TODO: activate TextStyle with:
+	// ...
+	// text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
+	// ...
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
 			width: strokeWidth
-		}),
-		text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
+		})
 	})
 	];
 };
 export const polygonStyleFunction = (styleOption = { color: false, text: false }) => {
 	const strokeColor = styleOption.color ? hexToRgb(styleOption.color) : hexToRgb('#ff0000');
 	const strokeWidth = 3;
+	// TODO: activate TextStyle with:
+	// ...
+	// text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
+	// ...
 	return [new Style({
 		stroke: new Stroke({
 			color: strokeColor.concat([1]),
@@ -194,8 +201,7 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 		}),
 		fill: new Fill({
 			color: strokeColor.concat([0.4])
-		}),
-		text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
+		})
 	})];
 };
 
