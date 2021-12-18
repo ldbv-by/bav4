@@ -174,12 +174,10 @@ export const polygonStyleFunction = (styleOption = { color: false }) => {
 const getRulerStyle = (feature, resolution) => {
 	const geom = feature.getGeometry();
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-	const fallBackResolution = feature.get('partition_resolution');
 
-	const currentResolution = resolution ? resolution : fallBackResolution;
-	const partition = getPartitionDelta(geom, currentResolution, calculationHints);
+	const partition = getPartitionDelta(geom, resolution, calculationHints);
 	const partitionLength = partition * getGeometryLength(geom);
-	const partitionTickDistance = partitionLength / currentResolution;
+	const partitionTickDistance = partitionLength / resolution;
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -260,7 +258,6 @@ export const measureStyleFunction = (feature, resolution) => {
 	});
 
 	const getFallbackStyle = () => {
-		console.warn('Resolution is null or undefined; Using FallbackStyle');
 		return	new Style({
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),

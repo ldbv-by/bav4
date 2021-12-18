@@ -192,7 +192,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
 			olFeature.set('partition_delta', delta);
-			olFeature.set('partition_resolution', resolution);
 		}
 	}
 
