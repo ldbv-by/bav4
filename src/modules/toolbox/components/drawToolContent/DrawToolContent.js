@@ -11,6 +11,7 @@ import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/componen
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
+const Update_FileSaveResult = 'update_fileSaveResult';
 
 /**
  * @class
@@ -39,6 +40,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.draw, data => this.signal(Update, data));
+		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {
@@ -57,11 +59,12 @@ export class DrawToolContent extends AbstractToolContent {
 					selectedStyle: data.selectedStyle,
 					mode: data.mode,
 					validGeometry: data.validGeometry,
-					fileSaveResult: data.fileSaveResult,
 					tools: setActiveToolByType(model.tools, data.type)
 				};
 			case Update_Tools:
 				return { ...model, tools: data };
+			case Update_FileSaveResult:
+				return { ...model, fileSaveResult: data.fileSaveResult };
 		}
 	}
 
@@ -167,23 +170,9 @@ export class DrawToolContent extends AbstractToolContent {
 	_getSubText(model) {
 		const { mode } = model;
 		const translate = (key) => this._translationService.translate(key);
-		let subTextMessage = translate('toolbox_drawTool_info');
-		if (this._environmentService.isTouch()) {
-			switch (mode) {
-				case 'active':
-					subTextMessage = translate('toolbox_drawTool_draw_active');
-					break;
-				case 'draw':
-					subTextMessage = translate('toolbox_drawTool_draw_draw');
-					break;
-				case 'modify':
-					subTextMessage = translate('toolbox_drawTool_draw_modify');
-					break;
-				case 'select':
-					subTextMessage = translate('toolbox_drawTool_draw_select');
-			}
-		}
-		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
+		const getDrawModeMessage = (mode) => getTranslatedSpan('toolbox_drawTool_draw_' + mode);
+		return this._environmentService.isTouch() ? getDrawModeMessage(mode) : nothing;
 	}
 
 	createView(model) {

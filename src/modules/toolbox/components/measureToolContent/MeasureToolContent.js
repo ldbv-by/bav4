@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
@@ -7,13 +7,15 @@ import { finish, remove, reset } from '../../../../store/measurement/measurement
 
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update = 'update';
+const Update_FileSaveResult = 'update_fileSaveResult';
 
 /**
  * @class
  * @author thiloSchlemmer
+ * @author costa_gi
  */
 export class MeasureToolContent extends AbstractToolContent {
 
@@ -34,16 +36,19 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.measurement, data => this.signal(Update, data));
+		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update:
-				return { ...model,
+				return {
+					...model,
 					statistic: data.statistic,
-					fileSaveResult: data.fileSaveResult,
 					mode: data.mode
 				};
+			case Update_FileSaveResult:
+				return { ...model, fileSaveResult: data.fileSaveResult };
 		}
 	}
 
@@ -66,8 +71,8 @@ export class MeasureToolContent extends AbstractToolContent {
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
-		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance);
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea);
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(formattedDistance, 'distance');
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(formattedArea, 'area');
 
 		return html`
         <style>${css}</style>
@@ -83,7 +88,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedDistancePackage.value}</span>		
 						<span class='prime-text-unit'>${formattedDistancePackage.unit}</span>									
 						<span class='copy'>
-							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${onCopyDistanceToClipboard}>
+							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyDistanceToClipboard}>
 							</ba-icon>
 						</span>											
 					</div>														
@@ -94,7 +99,7 @@ export class MeasureToolContent extends AbstractToolContent {
 						<span class='prime-text-value'>${formattedAreaPackage.value}</span>
 						<span class='prime-text-unit'>${unsafeHTML(formattedAreaPackage.unit)}</span>
 						<span class='copy'>
-							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('map_contextMenuContent_copy_icon')} .size=${1.5} @click=${onCopyAreaToClipboard}>
+							<ba-icon class='close' .icon='${clipboardIcon}' .title=${translate('toolbox_copy_icon')} .size=${1.5} @click=${onCopyAreaToClipboard}>
 							</ba-icon>
 						</ba-icon>
 						</span>			
@@ -157,29 +162,30 @@ export class MeasureToolContent extends AbstractToolContent {
 	_getSubText(state) {
 		const { mode } = state;
 		const translate = (key) => this._translationService.translate(key);
-		let subTextMessage = translate('toolbox_drawTool_info');
-		if (this._environmentService.isTouch()) {
-			switch (mode) {
-				case 'active':
-					subTextMessage = translate('toolbox_measureTool_measure_active');
-					break;
-				case 'draw':
-					subTextMessage = translate('toolbox_measureTool_measure_draw');
-					break;
-				case 'modify':
-					subTextMessage = translate('toolbox_measureTool_measure_modify');
-					break;
-				case 'select':
-					subTextMessage = translate('toolbox_measureTool_measure_select');
-			}
-		}
-		return html`<span>${unsafeHTML(subTextMessage)}</span>`;
+		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
+		const getMeasurementModeMessage = (mode) => getTranslatedSpan('toolbox_measureTool_measure_' + mode);
+		return this._environmentService.isTouch() ? getMeasurementModeMessage(mode) : nothing;
 	}
 
-	async _copyValueToClipboard(value) {
-		await this._shareService.copyToClipboard(value).then(() => { }, () => {
+	async _copyValueToClipboard(value, measure) {
+		try {
+			await this._shareService.copyToClipboard(value);
+			switch (measure) {
+				case 'distance': {
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_distance_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
+					break;
+				}
+				case 'area': {
+					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_area_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
+					break;
+				}
+			}
+		}
+		catch (error) {
+			const message = this._translationService.translate('toolbox_clipboard_error');
+			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
-		});
+		}
 	}
 
 	static get tag() {
