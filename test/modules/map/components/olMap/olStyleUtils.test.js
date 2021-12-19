@@ -68,21 +68,10 @@ describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
 	const feature = new Feature({ geometry: geometry });
 	it('should create styles', () => {
-
-
 		const styles = measureStyleFunction(feature);
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(2);
-	});
-
-	it('should query the featureGeometry', () => {
-		const geometrySpy = spyOn(feature, 'getGeometry');
-
-		const styles = measureStyleFunction(feature);
-
-		expect(styles).toBeTruthy();
-		expect(geometrySpy).toHaveBeenCalled();
 	});
 
 	it('should have a style which creates circle for Lines', () => {
