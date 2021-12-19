@@ -172,12 +172,7 @@ export const polygonStyleFunction = (styleOption = { color: false }) => {
 
 
 const getRulerStyle = (feature, resolution) => {
-	const geom = feature.getGeometry();
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
-
-	const partition = getPartitionDelta(geom, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geom);
-	const partitionTickDistance = partitionLength / resolution;
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -187,7 +182,7 @@ const getRulerStyle = (feature, resolution) => {
 		}),
 		width: 3 });
 
-	const getMainTickStroke = (residual) => {
+	const getMainTickStroke = (residual, partitionTickDistance) => {
 		return new Stroke({
 			color: Red_Color.concat([1]),
 			width: 8,
@@ -197,7 +192,7 @@ const getRulerStyle = (feature, resolution) => {
 		});
 	};
 
-	const getSubTickStroke = (residual) => {
+	const getSubTickStroke = (residual, partitionTickDistance) => {
 		return new Stroke({
 			color: Red_Color.concat([1]),
 			width: 5,
@@ -209,12 +204,13 @@ const getRulerStyle = (feature, resolution) => {
 
 
 
-
-	const residuals = calculatePartitionResidualOfSegments(geom, partition);
 	return new Style({ renderer: (pixelCoordinates, state) => {
 		const context = state.context;
 		const geometry = state.geometry.clone();
-
+		const partition = getPartitionDelta(geometry, resolution, calculationHints);
+		const partitionLength = partition * getGeometryLength(geometry);
+		const partitionTickDistance = partitionLength / resolution;
+		const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 		const renderContext = toContext(context, { pixelRatio: 1 });
 		geometry.setCoordinates(pixelCoordinates);
 		renderContext.setFillStrokeStyle(fill, baseStroke);
@@ -234,9 +230,9 @@ const getRulerStyle = (feature, resolution) => {
 				const coords = [from, to];
 				const geometry = state.geometry.clone();
 				geometry.setCoordinates(coords);
-				renderContext.setFillStrokeStyle(fill, getMainTickStroke(residual));
+				renderContext.setFillStrokeStyle(fill, getMainTickStroke(residual, partitionTickDistance));
 				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -4));
-				renderContext.setFillStrokeStyle(fill, getSubTickStroke(residual));
+				renderContext.setFillStrokeStyle(fill, getSubTickStroke(residual, partitionTickDistance));
 				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -2));
 			}
 		}
