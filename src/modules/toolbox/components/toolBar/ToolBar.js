@@ -6,7 +6,6 @@ import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { $injector } from '../../../../injection';
 import { openToolContainer, setContainerContent, toggleToolContainer } from '../../../../store/toolContainer/toolContainer.action';
-import { toggleToolBar } from '../../../../store/toolBar/toolBar.action';
 
 
 /**
@@ -14,6 +13,7 @@ import { toggleToolBar } from '../../../../store/toolBar/toolBar.action';
  *
  * @class
  * @author alsturm
+ * @author taulinger
  */
 export class ToolBar extends BaElement {
 
@@ -28,6 +28,7 @@ export class ToolBar extends BaElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
+		this._open = false;
 	}
 
 	/**
@@ -35,9 +36,8 @@ export class ToolBar extends BaElement {
 	 */
 	createView(state) {
 
-		const { toolBar, toolContainer, fetching, portrait, minWidth } = state;
+		const { toolContainer, fetching, portrait, minWidth } = state;
 
-		const toolBarOpen = toolBar.open;
 		const activeToolId = toolContainer.contentId;
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -48,7 +48,12 @@ export class ToolBar extends BaElement {
 		};
 
 		const getOverlayClass = () => {
-			return toolBarOpen ? 'is-open' : '';
+			return this._open ? 'is-open' : '';
+		};
+
+		const toggleToolBar = () => {
+			this._open = !this._open;
+			this.render();
 		};
 
 		const toggleTool = (toolId) => {
