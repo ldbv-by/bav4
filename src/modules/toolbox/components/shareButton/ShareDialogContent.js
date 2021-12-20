@@ -19,7 +19,7 @@ const Switch_Toggle = 'switch_toggle';
 export class ShareDialogContent extends MvuElement {
 
 	constructor() {
-		super({ checkedToggle: true });
+		super({ checkedToggle: false });
 		const { TranslationService: translationService, EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
