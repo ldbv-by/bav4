@@ -81,6 +81,7 @@ export class StyleService {
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		if (usingStyleType === StyleTypes.MEASURE) {
 			overlayService.update(olFeature, olMap, usingStyleType, properties);
+			this._updateMeasureStyle(olFeature, olMap);
 		}
 
 	}
@@ -154,6 +155,13 @@ export class StyleService {
 
 		olFeature.setStyle(measureStyleFunction);
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	}
+
+	_updateMeasureStyle(olFeature, olMap) {
+		const getResolution = () => olMap.getView().getResolution();
+		olFeature.setStyle(measureStyleFunction);
+		const styles = measureStyleFunction(olFeature, getResolution());
+		olFeature.setStyle(styles);
 	}
 
 	_addTextStyle(olFeature) {
