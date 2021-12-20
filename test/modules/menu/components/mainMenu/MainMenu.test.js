@@ -5,7 +5,7 @@ import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/ma
 import { TabKey, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
-import { setTabIndex } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/DevInfo';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
@@ -227,37 +227,37 @@ describe('MainMenu', () => {
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
-			setTabIndex(TabKey.MAPS);
+			setTab(TabKey.MAPS);
 			check(TabKey.MAPS, contentPanels);
 
-			setTabIndex(TabKey.MORE);
+			setTab(TabKey.MORE);
 			check(TabKey.MORE, contentPanels);
 
-			setTabIndex(TabKey.ROUTING);
+			setTab(TabKey.ROUTING);
 			check(TabKey.ROUTING, contentPanels);
 
-			setTabIndex(TabKey.SEARCH);
+			setTab(TabKey.SEARCH);
 			check(TabKey.SEARCH, contentPanels);
 
-			setTabIndex(TabKey.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 			check(TabKey.FEATUREINFO, contentPanels);
 
-			setTabIndex(TabKey.TOPICS);
+			setTab(TabKey.TOPICS);
 			check(TabKey.TOPICS, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
 			const element = await setup();
 
-			setTabIndex(TabKey.MAPS);
+			setTab(TabKey.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 
-			setTabIndex(TabKey.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
 
-			setTabIndex(TabKey.MAPS);
+			setTab(TabKey.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 		});
@@ -328,18 +328,18 @@ describe('MainMenu', () => {
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open FeatureInfo panel and adjust width
-			setTabIndex(TabKey.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 			slider.value = value;
 			slider.dispatchEvent(new Event('input'));
 			const adjustedWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open another panel
-			setTabIndex(TabKey.MAPS);
+			setTab(TabKey.MAPS);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
 
 			//open FeatureInfo panel again
-			setTabIndex(TabKey.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
 		});

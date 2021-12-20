@@ -59,13 +59,13 @@ export const TabKey = Object.freeze({
 });
 
 /**
- * Displays the tab for a given index.
+ * Displays the tab for a given key.
  * @see {@link TabKey}
- * @param {number} index
+ * @param {number} key
  */
-export const setTabIndex = (index) => {
+export const setTab = (key) => {
 	getStore().dispatch({
 		type: INDEX_CHANGED,
-		payload: index
+		payload: key
 	});
 };

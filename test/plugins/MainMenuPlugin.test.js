@@ -1,6 +1,6 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { setTabIndex, TabKey } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab, TabKey } from '../../src/store/mainMenu/mainMenu.action';
 import { abortOrReset, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
@@ -205,11 +205,11 @@ describe('MainMenuPlugin', () => {
 			const instanceUnderTest = new MainMenuPlugin();
 			await instanceUnderTest.register(store);
 
-			setTabIndex(TabKey.MORE);
+			setTab(TabKey.MORE);
 
 			expect(instanceUnderTest._previousTabIndex).toBe(TabKey.MORE);
 
-			setTabIndex(TabKey.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 
 			expect(instanceUnderTest._open).toBeTrue();
 		});

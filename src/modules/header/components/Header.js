@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTabIndex, TabKey, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, TabKey, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
@@ -112,7 +112,7 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTabIndex(TabKey.SEARCH);
+			setTab(TabKey.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -144,17 +144,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTabIndex(TabKey.TOPICS);
+			setTab(TabKey.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(TabKey.MAPS);
+			setTab(TabKey.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(TabKey.MORE);
+			setTab(TabKey.MORE);
 			openMainMenu();
 		};
 
