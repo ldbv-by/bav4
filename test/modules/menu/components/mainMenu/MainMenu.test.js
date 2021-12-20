@@ -24,7 +24,7 @@ describe('MainMenu', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: 0
+				tab: null
 			},
 			media: {
 				portrait: false,
@@ -171,7 +171,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: activeTabIndex
+					tab: activeTabIndex
 				}
 			};
 			const element = await setup(state);
@@ -307,7 +307,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: TabKey.FEATUREINFO
+					tab: TabKey.FEATUREINFO
 				}
 			};
 			const element = await setup(state);
@@ -348,7 +348,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: TabKey.FEATUREINFO
+					tab: TabKey.FEATUREINFO
 				}
 			};
 			const element = await setup(state);

@@ -23,7 +23,7 @@ export class MainMenu extends BaElement {
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._activeTabIndex = null;
+		this._activeTab = null;
 	}
 
 	_activateTab(key) {
@@ -35,7 +35,7 @@ export class MainMenu extends BaElement {
 	* @override
 	*/
 	onAfterRender() {
-		this._activateTab(this._activeTabIndex);
+		this._activateTab(this._activeTab);
 	}
 
 	/**
@@ -43,15 +43,15 @@ export class MainMenu extends BaElement {
 	 */
 	createView(state) {
 
-		const { open, tabIndex, portrait, minWidth, observeResponsiveParameter } = state;
+		const { open, tab, portrait, minWidth, observeResponsiveParameter } = state;
 
-		this._activeTabIndex = tabIndex;
+		this._activeTab = tab;
 
 		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
 
 		const getMinWidthClass = () => minWidth ? 'is-desktop' : 'is-tablet';
 
-		const getFullSizeClass = () => (tabIndex === TabKey.FEATUREINFO) ? 'is-full-size' : '';
+		const getFullSizeClass = () => (tab === TabKey.FEATUREINFO) ? 'is-full-size' : '';
 
 		const getOverlayClass = () => open ? 'is-open' : '';
 
@@ -241,8 +241,8 @@ export class MainMenu extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
-		return { open, tabIndex, portrait, minWidth, observeResponsiveParameter };
+		const { mainMenu: { open, tab }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
+		return { open, tab, portrait, minWidth, observeResponsiveParameter };
 	}
 
 	static get tag() {
