@@ -1,4 +1,3 @@
-import { MainMenuTabIndex } from '../../../src/modules/menu/components/mainMenu/MainMenu';
 import { TabIndex } from '../../../src/store/mainMenu/mainMenu.action';
 
 describe('mainMenuAction', () => {
@@ -7,11 +6,11 @@ describe('mainMenuAction', () => {
 		expect(Object.keys(TabIndex).length).toBe(6);
 		expect(Object.isFrozen(TabIndex)).toBeTrue();
 
-		expect(TabIndex.TOPICS).toBe(MainMenuTabIndex.TOPICS.id);
-		expect(TabIndex.MAPS).toBe(MainMenuTabIndex.MAPS.id);
-		expect(TabIndex.MORE).toBe(MainMenuTabIndex.MORE.id);
-		expect(TabIndex.ROUTING).toBe(MainMenuTabIndex.ROUTING.id);
-		expect(TabIndex.SEARCH).toBe(MainMenuTabIndex.SEARCH.id);
-		expect(TabIndex.FEATUREINFO).toBe(MainMenuTabIndex.FEATUREINFO.id);
+		expect(TabIndex.TOPICS).toBe(0);
+		expect(TabIndex.MAPS).toBe(1);
+		expect(TabIndex.MORE).toBe(2);
+		expect(TabIndex.ROUTING).toBe(3);
+		expect(TabIndex.SEARCH).toBe(4);
+		expect(TabIndex.FEATUREINFO).toBe(5);
 	});
 });

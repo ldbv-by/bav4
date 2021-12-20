@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { MainMenu, MainMenuTabIndex } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
+import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
 import { TabIndex, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
@@ -15,24 +15,7 @@ import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/compone
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
-describe('MainMenuTabIndex', () => {
-
-	it('is an enum with an id and a tag property', () => {
-
-		expect(Object.entries(MainMenuTabIndex).length).toBe(6);
-		expect(Object.isFrozen(MainMenuTabIndex)).toBeTrue();
-		expect(MainMenuTabIndex.TOPICS).toEqual({ id: 0, component: TopicsContentPanel });
-		expect(MainMenuTabIndex.MAPS).toEqual({ id: 1, component: null });
-		expect(MainMenuTabIndex.MORE).toEqual({ id: 2, component: null });
-		expect(MainMenuTabIndex.ROUTING).toEqual({ id: 3, component: null });
-		expect(MainMenuTabIndex.SEARCH).toEqual({ id: 4, component: SearchResultsPanel });
-		expect(MainMenuTabIndex.FEATUREINFO).toEqual({ id: 5, component: FeatureInfoPanel });
-	});
-});
-
-
 describe('MainMenu', () => {
-
 
 	const setup = (state = {}, config = {}) => {
 
@@ -156,15 +139,18 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
 				// Todo check all content panels when implemented
 				switch (i) {
-					case MainMenuTabIndex.SEARCH.id:
+					case TabIndex.SEARCH:
 						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 						break;
-					case MainMenuTabIndex.TOPICS.id:
+					case TabIndex.TOPICS:
 						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
+						break;
+					case TabIndex.FEATUREINFO:
+						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBeTrue();
 						break;
 				}
 			}
@@ -174,7 +160,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(i === 0);
 			}
@@ -191,7 +177,7 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(MainMenuTabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
 				expect(contentPanels[i].classList.contains('is-active')).toBe(i === activeTabIndex);
 			}
@@ -233,7 +219,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].classList.contains('is-active')).toBe(i === index.id);
+				expect(panels[i].classList.contains('is-active')).toBe(i === index);
 			}
 		};
 
@@ -242,22 +228,22 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
 			setTabIndex(TabIndex.MAPS);
-			check(MainMenuTabIndex.MAPS, contentPanels);
+			check(TabIndex.MAPS, contentPanels);
 
 			setTabIndex(TabIndex.MORE);
-			check(MainMenuTabIndex.MORE, contentPanels);
+			check(TabIndex.MORE, contentPanels);
 
 			setTabIndex(TabIndex.ROUTING);
-			check(MainMenuTabIndex.ROUTING, contentPanels);
+			check(TabIndex.ROUTING, contentPanels);
 
 			setTabIndex(TabIndex.SEARCH);
-			check(MainMenuTabIndex.SEARCH, contentPanels);
+			check(TabIndex.SEARCH, contentPanels);
 
 			setTabIndex(TabIndex.FEATUREINFO);
-			check(MainMenuTabIndex.FEATUREINFO, contentPanels);
+			check(TabIndex.FEATUREINFO, contentPanels);
 
 			setTabIndex(TabIndex.TOPICS);
-			check(MainMenuTabIndex.TOPICS, contentPanels);
+			check(TabIndex.TOPICS, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
@@ -321,7 +307,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: MainMenuTabIndex.FEATUREINFO.id
+					tabIndex: TabIndex.FEATUREINFO
 				}
 			};
 			const element = await setup(state);
@@ -362,7 +348,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: MainMenuTabIndex.FEATUREINFO.id
+					tabIndex: TabIndex.FEATUREINFO
 				}
 			};
 			const element = await setup(state);
