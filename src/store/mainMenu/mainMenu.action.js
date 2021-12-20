@@ -50,12 +50,12 @@ export const toggle = () => {
  @enum
  */
 export const TabKey = Object.freeze({
-	TOPICS: '0',
-	MAPS: '1',
-	MORE: '2',
-	ROUTING: '3',
-	SEARCH: '4',
-	FEATUREINFO: '5'
+	TOPICS: 'topics',
+	MAPS: 'maps',
+	MORE: 'more',
+	ROUTING: 'routing',
+	SEARCH: 'search',
+	FEATUREINFO: 'featureinfo'
 });
 
 /**

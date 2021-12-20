@@ -6,11 +6,11 @@ describe('mainMenuAction', () => {
 		expect(Object.keys(TabKey).length).toBe(6);
 		expect(Object.isFrozen(TabKey)).toBeTrue();
 
-		expect(TabKey.TOPICS).toBe('0');
-		expect(TabKey.MAPS).toBe('1');
-		expect(TabKey.MORE).toBe('2');
-		expect(TabKey.ROUTING).toBe('3');
-		expect(TabKey.SEARCH).toBe('4');
-		expect(TabKey.FEATUREINFO).toBe('5');
+		expect(TabKey.TOPICS).toBe('topics');
+		expect(TabKey.MAPS).toBe('maps');
+		expect(TabKey.MORE).toBe('more');
+		expect(TabKey.ROUTING).toBe('routing');
+		expect(TabKey.SEARCH).toBe('search');
+		expect(TabKey.FEATUREINFO).toBe('featureinfo');
 	});
 });
