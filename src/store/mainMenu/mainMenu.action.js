@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the main menu.
  * @module mainMenu/action
  */
-import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
+import { OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -65,7 +65,7 @@ export const TabKey = Object.freeze({
  */
 export const setTab = (key) => {
 	getStore().dispatch({
-		type: INDEX_CHANGED,
+		type: TAB_CHANGED,
 		payload: key
 	});
 };
