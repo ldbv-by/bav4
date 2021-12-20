@@ -13,7 +13,7 @@ describe('MainMenuPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: false,
-				tabIndex: TabKey.MAPS
+				tab: TabKey.MAPS
 			},
 			...state
 		};
@@ -31,7 +31,7 @@ describe('MainMenuPlugin', () => {
 			setup();
 			const instanceUnderTest = new MainMenuPlugin();
 
-			expect(instanceUnderTest._previousTabIndex).toBe(-1);
+			expect(instanceUnderTest._previousTab).toBe(-1);
 			expect(instanceUnderTest._open).toBeNull();
 		});
 	});
@@ -42,7 +42,7 @@ describe('MainMenuPlugin', () => {
 			const store = setup({
 				mainMenu: {
 					open: true,
-					tabIndex: TabKey.MAPS
+					tab: TabKey.MAPS
 				}
 			});
 			const instanceUnderTest = new MainMenuPlugin();
@@ -50,7 +50,7 @@ describe('MainMenuPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(instanceUnderTest._open).toBeTrue();
-			expect(instanceUnderTest._previousTabIndex).toBe(TabKey.MAPS);
+			expect(instanceUnderTest._previousTab).toBe(TabKey.MAPS);
 		});
 	});
 
@@ -75,7 +75,7 @@ describe('MainMenuPlugin', () => {
 					resolveQuery(queryId);
 
 					expect(store.getState().featureInfo.current).toHaveSize(1);
-					expect(store.getState().mainMenu.tabIndex).toBe(TabKey.FEATUREINFO);
+					expect(store.getState().mainMenu.tab).toBe(TabKey.FEATUREINFO);
 					expect(store.getState().mainMenu.open).toBeTrue();
 				});
 			});
@@ -89,7 +89,7 @@ describe('MainMenuPlugin', () => {
 						const queryId = 'foo';
 						const store = setup({
 							mainMenu: {
-								tabIndex: tabIndex,
+								tab: tabIndex,
 								open: false
 							},
 							featureInfo: {
@@ -103,7 +103,7 @@ describe('MainMenuPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
+						expect(store.getState().mainMenu.tab).toBe(tabIndex);
 						expect(store.getState().mainMenu.open).toBeFalse();
 					});
 				});
@@ -115,7 +115,7 @@ describe('MainMenuPlugin', () => {
 						const queryId = 'foo';
 						const store = setup({
 							mainMenu: {
-								tabIndex: tabIndex,
+								tab: tabIndex,
 								open: true
 							},
 							featureInfo: {
@@ -129,7 +129,7 @@ describe('MainMenuPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
+						expect(store.getState().mainMenu.tab).toBe(tabIndex);
 						expect(store.getState().mainMenu.open).toBeTrue();
 					});
 				});
@@ -146,7 +146,7 @@ describe('MainMenuPlugin', () => {
 				const queryId = 'foo';
 				const store = setup({
 					mainMenu: {
-						tabIndex: tabIndex,
+						tab: tabIndex,
 						open: false
 					},
 					featureInfo: {
@@ -160,7 +160,7 @@ describe('MainMenuPlugin', () => {
 
 				abortOrReset();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
+				expect(store.getState().mainMenu.tab).toBe(tabIndex);
 				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});
@@ -172,7 +172,7 @@ describe('MainMenuPlugin', () => {
 				const queryId = 'foo';
 				const store = setup({
 					mainMenu: {
-						tabIndex: tabIndex,
+						tab: tabIndex,
 						open: true
 					},
 					featureInfo: {
@@ -186,7 +186,7 @@ describe('MainMenuPlugin', () => {
 
 				abortOrReset();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(tabIndex);
+				expect(store.getState().mainMenu.tab).toBe(tabIndex);
 				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 		});
@@ -198,7 +198,7 @@ describe('MainMenuPlugin', () => {
 			const tabIndex = TabKey.MAPS;
 			const store = setup({
 				mainMenu: {
-					tabIndex: tabIndex,
+					tab: tabIndex,
 					open: true
 				}
 			});
@@ -207,7 +207,7 @@ describe('MainMenuPlugin', () => {
 
 			setTab(TabKey.MORE);
 
-			expect(instanceUnderTest._previousTabIndex).toBe(TabKey.MORE);
+			expect(instanceUnderTest._previousTab).toBe(TabKey.MORE);
 
 			setTab(TabKey.FEATUREINFO);
 
