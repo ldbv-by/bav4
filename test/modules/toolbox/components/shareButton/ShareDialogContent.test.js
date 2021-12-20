@@ -78,19 +78,6 @@ describe('ShareDialogContent', () => {
 		expect(toggleElement.checked).toBe(false);
 	});
 
-	it('switches the toggle element to be checked => true', async () => {
-		const element = await setup({}, { share: true });
-		element.shareurls = shareUrls;
-
-		const toggleElement = element.shadowRoot.querySelector('ba-toggle');
-
-		toggleElement.dispatchEvent(new CustomEvent('toggle', {
-			detail: { checked: true }
-		}));
-
-		expect(toggleElement.checked).toBe(true);
-	});
-
 	it('should switch the toggle showing different urls ', async () => {
 		const element = await setup();
 		element.shareurls = shareUrls;
@@ -111,7 +98,7 @@ describe('ShareDialogContent', () => {
 		expect(toggleElement.checked).toBe(true);
 	});
 
-	it('should show the fileId url when toggle is false => default value', async () => {
+	it('uses the fileId url when toggle is false => default value', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').withArgs(shareUrls.fileId).and.returnValue(() => Promise.resolve());
 		const element = await setup();
 		element.shareurls = shareUrls;
@@ -122,7 +109,7 @@ describe('ShareDialogContent', () => {
 		expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
 	});
 
-	it('should show the adminId url when toggle is switched to true', async () => {
+	it('uses the adminId url when toggle is switched to true', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').withArgs(shareUrls.adminId).and.returnValue(() => Promise.resolve());
 		const element = await setup();
 		element.shareurls = shareUrls;
