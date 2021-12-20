@@ -26,7 +26,7 @@ describe('Header', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: TabKey.TOPICS
+				tab: TabKey.TOPICS
 			},
 			network: {
 				fetching: false,
@@ -70,7 +70,7 @@ describe('Header', () => {
 
 			expect(model).toEqual({
 				isOpen: false,
-				tabIndex: 0,
+				tabIndex: null,
 				isFetching: false,
 				layers: [],
 				isPortrait: false,
@@ -212,7 +212,7 @@ describe('Header', () => {
 
 	});
 
-	describe('when menu button TabIndex.MAPS', () => {
+	describe('when menu button is Tab.MAPS', () => {
 
 		it('updates the store', async () => {
 			const state = {
@@ -271,11 +271,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabKey.TOPICS);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabKey.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabKey.MORE);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.MORE);
 		});
 
 	});
@@ -487,7 +487,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(TabKey.SEARCH);
+				expect(store.getState().mainMenu.tab).toBe(TabKey.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {
