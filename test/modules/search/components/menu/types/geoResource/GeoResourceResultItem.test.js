@@ -106,7 +106,7 @@ describe('GeoResourceResultItem', () => {
 						active: [previewLayer]
 					},
 					mainMenu: {
-						tabIndex: TabKey.SEARCH,
+						tab: TabKey.SEARCH,
 						open: true
 					},
 					media: {
@@ -134,7 +134,7 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(TabKey.MAPS);
+				expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
 				expect(store.getState().mainMenu.open).toBeTrue;
 			});
 
