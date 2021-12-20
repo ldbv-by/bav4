@@ -17,7 +17,7 @@ describe('HighlightPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: TabKey.MAPS
+				tab: TabKey.MAPS
 			},
 			...state
 		};
@@ -75,14 +75,14 @@ describe('HighlightPlugin', () => {
 		});
 	});
 
-	describe('when mainMenu.tabIndex changes', () => {
+	describe('when mainMenu.tab changes', () => {
 
 		it('clears all featureInfo related highlight items (also initially)', async () => {
 			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
-					tabIndex: TabKey.TOPICS,
+					tab: TabKey.TOPICS,
 					open: false
 				},
 				highlight: {
@@ -121,7 +121,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
-					tabIndex: TabKey.TOPICS,
+					tab: TabKey.TOPICS,
 					open: false
 				},
 				highlight: {
