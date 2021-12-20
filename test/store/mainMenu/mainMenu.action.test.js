@@ -1,16 +1,16 @@
-import { TabIndex } from '../../../src/store/mainMenu/mainMenu.action';
+import { TabKey } from '../../../src/store/mainMenu/mainMenu.action';
 
 describe('mainMenuAction', () => {
 
-	it('exports a TabIndex enum', () => {
-		expect(Object.keys(TabIndex).length).toBe(6);
-		expect(Object.isFrozen(TabIndex)).toBeTrue();
+	it('exports a TabKey enum', () => {
+		expect(Object.keys(TabKey).length).toBe(6);
+		expect(Object.isFrozen(TabKey)).toBeTrue();
 
-		expect(TabIndex.TOPICS).toBe('0');
-		expect(TabIndex.MAPS).toBe('1');
-		expect(TabIndex.MORE).toBe('2');
-		expect(TabIndex.ROUTING).toBe('3');
-		expect(TabIndex.SEARCH).toBe('4');
-		expect(TabIndex.FEATUREINFO).toBe('5');
+		expect(TabKey.TOPICS).toBe('0');
+		expect(TabKey.MAPS).toBe('1');
+		expect(TabKey.MORE).toBe('2');
+		expect(TabKey.ROUTING).toBe('3');
+		expect(TabKey.SEARCH).toBe('4');
+		expect(TabKey.FEATUREINFO).toBe('5');
 	});
 });

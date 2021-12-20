@@ -2,7 +2,7 @@
 
 import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
-import { TabIndex, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { TabKey, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTabIndex } from '../../../../../src/store/mainMenu/mainMenu.action';
@@ -139,17 +139,17 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
 			for (let i = 0; i < contentPanels.length; i++) {
 				// Todo check all content panels when implemented
 				switch (i) {
-					case TabIndex.SEARCH:
+					case TabKey.SEARCH:
 						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 						break;
-					case TabIndex.TOPICS:
+					case TabKey.TOPICS:
 						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
 						break;
-					case TabIndex.FEATUREINFO:
+					case TabKey.FEATUREINFO:
 						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBeTrue();
 						break;
 				}
@@ -160,14 +160,14 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === 0);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === 0);
 			}
 		});
 
 		it('displays the content panel for non default index', async () => {
-			const activeTabIndex = TabIndex.MORE;
+			const activeTabIndex = TabKey.MORE;
 			const state = {
 				mainMenu: {
 					open: true,
@@ -177,9 +177,9 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
+			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === activeTabIndex);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === activeTabIndex);
 			}
 		});
 
@@ -219,7 +219,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === index);
+				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === index);
 			}
 		};
 
@@ -227,37 +227,37 @@ describe('MainMenu', () => {
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
-			setTabIndex(TabIndex.MAPS);
-			check(TabIndex.MAPS, contentPanels);
+			setTabIndex(TabKey.MAPS);
+			check(TabKey.MAPS, contentPanels);
 
-			setTabIndex(TabIndex.MORE);
-			check(TabIndex.MORE, contentPanels);
+			setTabIndex(TabKey.MORE);
+			check(TabKey.MORE, contentPanels);
 
-			setTabIndex(TabIndex.ROUTING);
-			check(TabIndex.ROUTING, contentPanels);
+			setTabIndex(TabKey.ROUTING);
+			check(TabKey.ROUTING, contentPanels);
 
-			setTabIndex(TabIndex.SEARCH);
-			check(TabIndex.SEARCH, contentPanels);
+			setTabIndex(TabKey.SEARCH);
+			check(TabKey.SEARCH, contentPanels);
 
-			setTabIndex(TabIndex.FEATUREINFO);
-			check(TabIndex.FEATUREINFO, contentPanels);
+			setTabIndex(TabKey.FEATUREINFO);
+			check(TabKey.FEATUREINFO, contentPanels);
 
-			setTabIndex(TabIndex.TOPICS);
-			check(TabIndex.TOPICS, contentPanels);
+			setTabIndex(TabKey.TOPICS);
+			check(TabKey.TOPICS, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
 			const element = await setup();
 
-			setTabIndex(TabIndex.MAPS);
+			setTabIndex(TabKey.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 
-			setTabIndex(TabIndex.FEATUREINFO);
+			setTabIndex(TabKey.FEATUREINFO);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
 
-			setTabIndex(TabIndex.MAPS);
+			setTabIndex(TabKey.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 		});
@@ -307,7 +307,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: TabIndex.FEATUREINFO
+					tabIndex: TabKey.FEATUREINFO
 				}
 			};
 			const element = await setup(state);
@@ -328,18 +328,18 @@ describe('MainMenu', () => {
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open FeatureInfo panel and adjust width
-			setTabIndex(TabIndex.FEATUREINFO);
+			setTabIndex(TabKey.FEATUREINFO);
 			slider.value = value;
 			slider.dispatchEvent(new Event('input'));
 			const adjustedWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open another panel
-			setTabIndex(TabIndex.MAPS);
+			setTabIndex(TabKey.MAPS);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
 
 			//open FeatureInfo panel again
-			setTabIndex(TabIndex.FEATUREINFO);
+			setTabIndex(TabKey.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
 		});
@@ -348,7 +348,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tabIndex: TabIndex.FEATUREINFO
+					tabIndex: TabKey.FEATUREINFO
 				}
 			};
 			const element = await setup(state);

@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTabIndex, TabIndex, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTabIndex, TabKey, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
@@ -112,7 +112,7 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTabIndex(TabIndex.SEARCH);
+			setTabIndex(TabKey.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -144,17 +144,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTabIndex(TabIndex.TOPICS);
+			setTabIndex(TabKey.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(TabIndex.MAPS);
+			setTabIndex(TabKey.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(TabIndex.MORE);
+			setTabIndex(TabKey.MORE);
 			openMainMenu();
 		};
 
@@ -200,12 +200,12 @@ export class Header extends MvuElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(TabIndex.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
+						<button class="${getActiveClass(TabKey.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
 							<span>
 								${translate('header_tab_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(TabIndex.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(TabKey.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 							<span>
 								${translate('header_tab_maps_button')}
 							</span>
@@ -213,7 +213,7 @@ export class Header extends MvuElement {
 							 	${layerCount}
 							</div>
 						</button>
-						<button class="${getActiveClass(TabIndex.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
+						<button class="${getActiveClass(TabKey.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
 								${translate('header_tab_more_button')}
 							</span>

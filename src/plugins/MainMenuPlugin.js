@@ -1,6 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { close, open, setTabIndex, TabIndex } from '../store/mainMenu/mainMenu.action';
+import { close, open, setTabIndex, TabKey } from '../store/mainMenu/mainMenu.action';
 
 
 /**
@@ -35,7 +35,7 @@ export class MainMenuPlugin extends BaPlugin {
 					setTabIndex(this._previousTabIndex);
 				}
 				else {
-					setTabIndex(TabIndex.FEATUREINFO);
+					setTabIndex(TabKey.FEATUREINFO);
 					open();
 				}
 			}
@@ -50,7 +50,7 @@ export class MainMenuPlugin extends BaPlugin {
 		};
 
 		const onTabIndexChanged = (tabIndex, state) => {
-			if (tabIndex === TabIndex.FEATUREINFO) {
+			if (tabIndex === TabKey.FEATUREINFO) {
 				this._open = state.mainMenu.open;
 			}
 			else {

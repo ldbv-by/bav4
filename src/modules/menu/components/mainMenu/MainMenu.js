@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { TabIndex, toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { TabKey, toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
@@ -28,7 +28,7 @@ export class MainMenu extends BaElement {
 
 	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) => (Object.values(TabIndex)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
+		tabcontents.forEach((tabcontent, i) => (Object.values(TabKey)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
 	}
 
 	/**
@@ -51,13 +51,13 @@ export class MainMenu extends BaElement {
 
 		const getMinWidthClass = () => minWidth ? 'is-desktop' : 'is-tablet';
 
-		const getFullSizeClass = () => (tabIndex === TabIndex.FEATUREINFO) ? 'is-full-size' : '';
+		const getFullSizeClass = () => (tabIndex === TabKey.FEATUREINFO) ? 'is-full-size' : '';
 
 		const getOverlayClass = () => open ? 'is-open' : '';
 
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
 
-		const contentPanels = Object.values(TabIndex)
+		const contentPanels = Object.values(TabKey)
 			//Todo: refactor me when all content panels are real components
 			.map(v => this._getContentPanel(v));
 
@@ -116,15 +116,15 @@ export class MainMenu extends BaElement {
 
 	_getContentPanel(index) {
 		switch (index) {
-			case TabIndex.MAPS:
+			case TabKey.MAPS:
 				return this._demoMapContent();
-			case TabIndex.MORE:
+			case TabKey.MORE:
 				return this._demoMoreContent();
-			case TabIndex.SEARCH:
+			case TabKey.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
-			case TabIndex.TOPICS:
+			case TabKey.TOPICS:
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag}/>`)}`;
-			case TabIndex.FEATUREINFO:
+			case TabKey.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag}/>`)}`;
 			default:
 				return nothing;

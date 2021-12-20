@@ -49,7 +49,7 @@ export const toggle = () => {
  *Available menu tabs.
  @enum
  */
-export const TabIndex = Object.freeze({
+export const TabKey = Object.freeze({
 	TOPICS: '0',
 	MAPS: '1',
 	MORE: '2',
@@ -60,7 +60,7 @@ export const TabIndex = Object.freeze({
 
 /**
  * Displays the tab for a given index.
- * @see {@link TabIndex}
+ * @see {@link TabKey}
  * @param {number} index
  */
 export const setTabIndex = (index) => {
