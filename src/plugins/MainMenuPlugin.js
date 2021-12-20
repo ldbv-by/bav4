@@ -11,7 +11,7 @@ export class MainMenuPlugin extends BaPlugin {
 
 	constructor() {
 		super();
-		this._previousTab = -1;
+		this._previousTab = null;
 		this._open = null;
 	}
 

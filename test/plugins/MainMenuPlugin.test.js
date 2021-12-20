@@ -31,7 +31,7 @@ describe('MainMenuPlugin', () => {
 			setup();
 			const instanceUnderTest = new MainMenuPlugin();
 
-			expect(instanceUnderTest._previousTab).toBe(-1);
+			expect(instanceUnderTest._previousTab).toBeNull();
 			expect(instanceUnderTest._open).toBeNull();
 		});
 	});
