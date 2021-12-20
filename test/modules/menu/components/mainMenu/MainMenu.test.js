@@ -162,12 +162,12 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(i === 0);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === 0);
 			}
 		});
 
 		it('displays the content panel for non default index', async () => {
-			const activeTabIndex = 2;
+			const activeTabIndex = TabIndex.MORE;
 			const state = {
 				mainMenu: {
 					open: true,
@@ -179,7 +179,7 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(TabIndex).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(i === activeTabIndex);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === activeTabIndex);
 			}
 		});
 
@@ -219,7 +219,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].classList.contains('is-active')).toBe(i === index);
+				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabIndex)[i] === index);
 			}
 		};
 

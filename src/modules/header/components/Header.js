@@ -200,12 +200,12 @@ export class Header extends MvuElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
+						<button class="${getActiveClass(TabIndex.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
 							<span>
 								${translate('header_tab_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(1)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(TabIndex.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 							<span>
 								${translate('header_tab_maps_button')}
 							</span>
@@ -213,7 +213,7 @@ export class Header extends MvuElement {
 							 	${layerCount}
 							</div>
 						</button>
-						<button class="${getActiveClass(2)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
+						<button class="${getActiveClass(TabIndex.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
 								${translate('header_tab_more_button')}
 							</span>

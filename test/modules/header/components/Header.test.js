@@ -26,7 +26,7 @@ describe('Header', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: 0
+				tabIndex: TabIndex.TOPICS
 			},
 			network: {
 				fetching: false,
@@ -212,7 +212,7 @@ describe('Header', () => {
 
 	});
 
-	describe('when menu button clicked', () => {
+	describe('when menu button TabIndex.MAPS', () => {
 
 		it('updates the store', async () => {
 			const state = {

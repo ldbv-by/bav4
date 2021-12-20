@@ -25,7 +25,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeFalse();
-				expect(store.getState().mainMenu.tabIndex).toBe(0);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
 			});
 
 			it('initiales the store by media query for ORIENTATION \'landscape\'', () => {
@@ -34,7 +34,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeTrue();
-				expect(store.getState().mainMenu.tabIndex).toBe(0);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
 			});
 
 			it('uses the real window as default argument', () => {
@@ -42,7 +42,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer());
 
 				expect(store.getState().mainMenu.open).toMatch(/true|false/);
-				expect(store.getState().mainMenu.tabIndex).toBe(0);
+				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
 			});
 		});
 	});
@@ -100,9 +100,9 @@ describe('mainMenuReducer', () => {
 			const store = setup(createNoInitialStateMainMenuReducer());
 
 			setTabIndex(TabIndex.MAPS);
-			expect(store.getState().mainMenu.tabIndex).toBe(1);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
 			setTabIndex(TabIndex.MORE);
-			expect(store.getState().mainMenu.tabIndex).toBe(2);
+			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MORE);
 		});
 	});
 });

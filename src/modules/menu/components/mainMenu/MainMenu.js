@@ -23,12 +23,12 @@ export class MainMenu extends BaElement {
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._activeTabIndex = 0;
+		this._activeTabIndex = null;
 	}
 
-	_activateTab(index) {
+	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
+		tabcontents.forEach((tabcontent, i) => (Object.values(TabIndex)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
 	}
 
 	/**
