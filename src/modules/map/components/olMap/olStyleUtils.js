@@ -212,7 +212,7 @@ const getRulerStyle = () => {
 		const partitionLength = partition * getGeometryLength(geometry);
 		const partitionTickDistance = partitionLength / resolution;
 		const residuals = calculatePartitionResidualOfSegments(geometry, partition);
-		const renderContext = toContext(context, { pixelRatio: 1 });
+		const renderContext = toContext(context, { pixelRatio: state.pixelRatio });
 		geometry.setCoordinates(pixelCoordinates);
 		renderContext.setFillStrokeStyle(fill, baseStroke);
 		renderContext.drawGeometry(geometry);
