@@ -7,6 +7,7 @@ import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
+import { ToolKey } from '../../../../../src/store/toolContainer/toolContainer.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -79,74 +80,80 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.share')).toBeTruthy();
 		});
 
-		it('opens and closes the toolbar', async () => {
-
-			const element = await setup();
-
-			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
-
-			element.shadowRoot.querySelector('.action-button').click();
-
-			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
-
-			element.shadowRoot.querySelector('.action-button').click();
-
-			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
-		});
-
 		it('renders nothing when embedded', async () => {
 			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+	});
+
+	describe('when Toolbar button is clicked', () => {
+
+		it('open or closes the Toolbar', async () => {
+			const element = await setup();
+			const toolBarButton = element.shadowRoot.querySelector('.action-button');
+
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+
+			toolBarButton.click();
+
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+
+			toolBarButton.click();
+
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+		});
+	});
+
+	describe('when tool bottons are clicked', () => {
 
 		it('toggles a tool', async () => {
 
 			const element = await setup();
-			const toolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.measure');
+			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
-			expect(store.getState().toolContainer.open).toBeFalse();
-			toolButton.click();
-			expect(store.getState().toolContainer.open).toBeTrue();
-			toolButton.click();
-			expect(store.getState().toolContainer.open).toBeFalse();
+			expect(toolButtons).toHaveSize(3);
 
+			toolButtons[0].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.MEASURING);
+			toolButtons[0].click();
+			expect(store.getState().toolContainer.contentId).toBeNull();
+
+			toolButtons[1].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.DRAWING);
+			toolButtons[1].click();
+			expect(store.getState().toolContainer.contentId).toBeNull();
+
+			toolButtons[2].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.SHARING);
+			toolButtons[2].click();
+			expect(store.getState().toolContainer.contentId).toBeNull();
 		});
 
-		it('toggles and switches the tools', async () => {
+		it('switches a tool', async () => {
 
 			const element = await setup();
-			const measureToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.measure');
-			const drawToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.pencil');
-			const shareToolButton = element.shadowRoot.querySelector('.tool-bar__button_icon.share');
+			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
-			expect(store.getState().toolContainer.open).toBeFalse();
-			expect(store.getState().toolContainer.contentId).toBeFalse();
-			measureToolButton.click();
-			expect(store.getState().toolContainer.open).toBeTrue();
-			expect(store.getState().toolContainer.contentId).toBe('ba-tool-measure-content');
-			drawToolButton.click();
-			expect(store.getState().toolContainer.open).toBeTrue();
-			expect(store.getState().toolContainer.contentId).toBe('ba-tool-draw-content');
-			drawToolButton.click();
-			expect(store.getState().toolContainer.open).toBeFalse();
-			shareToolButton.click();
-			expect(store.getState().toolContainer.open).toBeTrue();
-			expect(store.getState().toolContainer.contentId).toBe('ba-tool-share-content');
-			shareToolButton.click();
-			expect(store.getState().toolContainer.open).toBeFalse();
+			expect(toolButtons).toHaveSize(3);
 
+			toolButtons[0].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.MEASURING);
+			toolButtons[1].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.DRAWING);
+			toolButtons[2].click();
+			expect(store.getState().toolContainer.contentId).toBe(ToolKey.SHARING);
 		});
+	});
 
-		describe('network fetching state', () => {
-			it('runs or pauses the border animation class', async () => {
-				const element = await setup();
-				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
-				setFetching(true);
-				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
-				setFetching(false);
-				expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
-			});
+	describe('network fetching state', () => {
+		it('runs or pauses the border animation class', async () => {
+			const element = await setup();
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			setFetching(true);
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
+			setFetching(false);
+			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 		});
 	});
 
