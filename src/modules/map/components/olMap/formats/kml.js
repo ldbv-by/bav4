@@ -32,17 +32,21 @@ const replaceIcon = (old) => {
 	return iconUrl ? new Icon(iconOptions) : old;
 };
 
-const sanitizeStyle = (styles) => {
-
-	const style = styles[0] ? styles[0].clone() : (styles && !Array.isArray(styles) ? styles.clone() : new Style());
-
-	const kmlStyleProperties = {
+export const toKmlStyleProperties = (style) => {
+	return {
 		fill: style.getFill ? style.getFill() : null,
 		stroke: style.getStroke ? style.getStroke() : null,
 		text: style.getText ? style.getText() : null,
 		image: style.getImage ? style.getImage() : null,
 		zIndex: style.getZIndex ? style.getZIndex() : null
 	};
+};
+
+const sanitizeStyle = (styles) => {
+
+	const style = styles[0] ? styles[0].clone() : (styles && !Array.isArray(styles) ? styles.clone() : new Style());
+
+	const kmlStyleProperties = toKmlStyleProperties(style);
 
 	if (kmlStyleProperties.image instanceof CircleStyle) {
 		kmlStyleProperties.image = null;

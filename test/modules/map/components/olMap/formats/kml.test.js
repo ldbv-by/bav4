@@ -1,4 +1,4 @@
-import { create } from '../../../../../../src/modules/map/components/olMap/formats/kml';
+import { create, toKmlStyleProperties } from '../../../../../../src/modules/map/components/olMap/formats/kml';
 import { Point, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
@@ -131,6 +131,18 @@ describe('kml', () => {
 			expect(containsNameTag).toBeFalse();
 		});
 
+		it('creates a kml with 2 feature', () => {
+			const features = [aPolygonFeature, aPointFeature];
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+
+			const containsPolygonFeature = actual.includes('<Placemark><Polygon>');
+			const containsPointFeature = actual.includes('<Placemark><Point>');
+			expect(containsPolygonFeature).toBeTrue();
+			expect(containsPointFeature).toBeTrue();
+		});
+
 		it('rectifies polygon to linestring before export', () => {
 			const features = [aLineStringAsPolygonFeature];
 			const layer = createLayerMock(features);
@@ -231,6 +243,40 @@ describe('kml', () => {
 			const actual = create(layer, projection);
 			const containsIconStyle = actual.includes('PolyStyle');
 			expect(containsIconStyle).toBeTrue();
+		});
+
+		describe('when iconService fails to resolve icon to url', () => {
+			it('should use svg icon style-properties ', () => {
+				const color = [255, 42, 42];
+				const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+				const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
+				aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
+				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {
+					return { getUrl: () => null };
+				});
+				const features = [aPointFeature];
+				const layer = createLayerMock(features);
+
+				const actual = create(layer, projection);
+				const containsIconStyle = actual.includes('<IconStyle>');
+				const containsRemoteIcon = actual.includes(`<Icon><href>${expectedUrl}</href></Icon>`);
+				expect(containsIconStyle).toBeTrue();
+				expect(containsRemoteIcon).toBeFalse();
+			});
+		});
+	});
+
+	describe('toKmlStyleProperties', () => {
+		it('maps a missing style-component to null', () => {
+			const nullStyleMock = {};
+
+			const kmlStyleProperties = toKmlStyleProperties(nullStyleMock);
+
+			expect(kmlStyleProperties.fill).toBeNull();
+			expect(kmlStyleProperties.stroke).toBeNull();
+			expect(kmlStyleProperties.text).toBeNull();
+			expect(kmlStyleProperties.image).toBeNull();
+			expect(kmlStyleProperties.zIndex).toBeNull();
 		});
 	});
 });
