@@ -5,21 +5,9 @@ import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { TabKey, toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-
-/**
- * @enum
- */
-export const MainMenuTabIndex = Object.freeze({
-	TOPICS: { id: 0, component: TopicsContentPanel },
-	MAPS: { id: 1, component: null },
-	MORE: { id: 2, component: null },
-	ROUTING: { id: 3, component: null },
-	SEARCH: { id: 4, component: SearchResultsPanel },
-	FEATUREINFO: { id: 5, component: FeatureInfoPanel }
-});
 
 
 /**
@@ -35,19 +23,19 @@ export class MainMenu extends BaElement {
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._activeTabIndex = 0;
+		this._activeTab = null;
 	}
 
-	_activateTab(index) {
+	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) => (i === index) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
+		tabcontents.forEach((tabcontent, i) => (Object.values(TabKey)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
 	}
 
 	/**
 	* @override
 	*/
 	onAfterRender() {
-		this._activateTab(this._activeTabIndex);
+		this._activateTab(this._activeTab);
 	}
 
 	/**
@@ -55,21 +43,21 @@ export class MainMenu extends BaElement {
 	 */
 	createView(state) {
 
-		const { open, tabIndex, portrait, minWidth, observeResponsiveParameter } = state;
+		const { open, tab, portrait, minWidth, observeResponsiveParameter } = state;
 
-		this._activeTabIndex = tabIndex;
+		this._activeTab = tab;
 
 		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
 
 		const getMinWidthClass = () => minWidth ? 'is-desktop' : 'is-tablet';
 
-		const getFullSizeClass = () => (tabIndex === MainMenuTabIndex.FEATUREINFO.id) ? 'is-full-size' : '';
+		const getFullSizeClass = () => (tab === TabKey.FEATUREINFO) ? 'is-full-size' : '';
 
 		const getOverlayClass = () => open ? 'is-open' : '';
 
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
 
-		const contentPanels = Object.values(MainMenuTabIndex)
+		const contentPanels = Object.values(TabKey)
 			//Todo: refactor me when all content panels are real components
 			.map(v => this._getContentPanel(v));
 
@@ -126,17 +114,18 @@ export class MainMenu extends BaElement {
 		`;
 	}
 
-	_getContentPanel(definition) {
-		//Todo: can be removed when all content panels are real components
-		switch (definition) {
-			case MainMenuTabIndex.MAPS:
+	_getContentPanel(index) {
+		switch (index) {
+			case TabKey.MAPS:
 				return this._demoMapContent();
-			case MainMenuTabIndex.MORE:
+			case TabKey.MORE:
 				return this._demoMoreContent();
-			case MainMenuTabIndex.SEARCH:
-			case MainMenuTabIndex.TOPICS:
-			case MainMenuTabIndex.FEATUREINFO:
-				return html`${unsafeHTML(`<${definition.component.tag}/>`)}`;
+			case TabKey.SEARCH:
+				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
+			case TabKey.TOPICS:
+				return html`${unsafeHTML(`<${TopicsContentPanel.tag}/>`)}`;
+			case TabKey.FEATUREINFO:
+				return html`${unsafeHTML(`<${FeatureInfoPanel.tag}/>`)}`;
 			default:
 				return nothing;
 		}
@@ -252,8 +241,8 @@ export class MainMenu extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open, tabIndex }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
-		return { open, tabIndex, portrait, minWidth, observeResponsiveParameter };
+		const { mainMenu: { open, tab }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
+		return { open, tab, portrait, minWidth, observeResponsiveParameter };
 	}
 
 	static get tag() {
