@@ -171,7 +171,7 @@ export const polygonStyleFunction = (styleOption = { color: false }) => {
 };
 
 
-const getRulerStyle = (feature, resolution) => {
+const getRulerStyle = () => {
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
@@ -207,6 +207,7 @@ const getRulerStyle = (feature, resolution) => {
 	return new Style({ renderer: (pixelCoordinates, state) => {
 		const context = state.context;
 		const geometry = state.geometry.clone();
+		const resolution = 	state.resolution;
 		const partition = getPartitionDelta(geometry, resolution, calculationHints);
 		const partitionLength = partition * getGeometryLength(geometry);
 		const partitionTickDistance = partitionLength / resolution;
@@ -277,7 +278,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle(feature, resolution) : getFallbackStyle()];
+		resolution ? getRulerStyle() : getFallbackStyle()];
 	return styles;
 };
 
