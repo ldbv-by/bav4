@@ -4,7 +4,7 @@ import { GeoResourceResultItem } from '../../../../../../../src/modules/search/c
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
-import { TabIndex } from '../../../../../../../src/store/mainMenu/mainMenu.action';
+import { TabKey } from '../../../../../../../src/store/mainMenu/mainMenu.action';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
@@ -106,7 +106,7 @@ describe('GeoResourceResultItem', () => {
 						active: [previewLayer]
 					},
 					mainMenu: {
-						tabIndex: TabIndex.SEARCH,
+						tab: TabKey.SEARCH,
 						open: true
 					},
 					media: {
@@ -134,7 +134,7 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
+				expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
 				expect(store.getState().mainMenu.open).toBeTrue;
 			});
 

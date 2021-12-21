@@ -5,7 +5,7 @@ import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes } f
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { setTabIndex, TabIndex } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab, TabKey } from '../../src/store/mainMenu/mainMenu.action';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
@@ -17,7 +17,7 @@ describe('HighlightPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: TabIndex.MAPS
+				tab: TabKey.MAPS
 			},
 			...state
 		};
@@ -75,14 +75,14 @@ describe('HighlightPlugin', () => {
 		});
 	});
 
-	describe('when mainMenu.tabIndex changes', () => {
+	describe('when mainMenu.tab changes', () => {
 
 		it('clears all featureInfo related highlight items (also initially)', async () => {
 			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
-					tabIndex: TabIndex.TOPICS,
+					tab: TabKey.TOPICS,
 					open: false
 				},
 				highlight: {
@@ -101,7 +101,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1]);
 
 			//we change the tab index
-			setTabIndex(TabIndex.MAPS);
+			setTab(TabKey.MAPS);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
@@ -110,7 +110,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1]);
 
 			//we change the tab index to the FeatureInfo tab
-			setTabIndex(TabIndex.FEATUREINFO);
+			setTab(TabKey.FEATUREINFO);
 
 			expect(store.getState().highlight.features).toHaveSize(2);
 		});
@@ -121,7 +121,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
-					tabIndex: TabIndex.TOPICS,
+					tab: TabKey.TOPICS,
 					open: false
 				},
 				highlight: {
@@ -140,7 +140,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index
-			setTabIndex(TabIndex.MAPS);
+			setTab(TabKey.MAPS);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
@@ -149,7 +149,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			// //we change the tab index to the FeatureInfo tab
-			setTabIndex(TabIndex.SEARCH);
+			setTab(TabKey.SEARCH);
 
 			expect(store.getState().highlight.features).toHaveSize(3);
 		});

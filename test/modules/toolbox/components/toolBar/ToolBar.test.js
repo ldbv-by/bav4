@@ -7,8 +7,6 @@ import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
-import { toolBarReducer } from '../../../../../src/store/toolBar/toolBar.reducer';
-import { toggleToolBar } from '../../../../../src/store/toolBar/toolBar.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -22,9 +20,6 @@ describe('ToolBarElement', () => {
 		const { embed = false, fetching = false } = config;
 
 		const initialState = {
-			toolBar: {
-				open: true
-			},
 			toolContainer: {
 				open: false,
 				contentId: false
@@ -42,7 +37,6 @@ describe('ToolBarElement', () => {
 
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			toolBar: toolBarReducer,
 			toolContainer: toolContainerReducer,
 			network: networkReducer,
 			media: createNoInitialStateMediaReducer()
@@ -56,6 +50,20 @@ describe('ToolBarElement', () => {
 		return TestUtils.render(ToolBar.tag);
 	};
 
+	describe('constructor', () => {
+
+		it('sets a default model', async () => {
+			setup();
+			const element = new ToolBar();
+
+			expect(element.getModel()).toEqual({
+				isOpen: false,
+				isFetching: false,
+				isPortrait: false,
+				hasMinWidth: false
+			});
+		});
+	});
 
 	describe('when initialized', () => {
 
@@ -63,7 +71,7 @@ describe('ToolBarElement', () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.tool-bar.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button').length).toBe(3);
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.measure')).toBeTruthy();
@@ -71,13 +79,19 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.share')).toBeTruthy();
 		});
 
-		it('closes the toolbar', async () => {
+		it('opens and closes the toolbar', async () => {
 
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.tool-bar.is-open')).toBeTruthy();
-			toggleToolBar();
-			expect(element.shadowRoot.querySelector('.tool-box.is-open')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+
+			element.shadowRoot.querySelector('.action-button').click();
+
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 		});
 
 		it('renders nothing when embedded', async () => {

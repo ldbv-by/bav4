@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the main menu.
  * @module mainMenu/action
  */
-import { OPEN_CLOSED_CHANGED, INDEX_CHANGED } from './mainMenu.reducer';
+import { OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -49,23 +49,23 @@ export const toggle = () => {
  *Available menu tabs.
  @enum
  */
-export const TabIndex = Object.freeze({
-	TOPICS: 0,
-	MAPS: 1,
-	MORE: 2,
-	ROUTING: 3,
-	SEARCH: 4,
-	FEATUREINFO: 5
+export const TabKey = Object.freeze({
+	TOPICS: 'topics',
+	MAPS: 'maps',
+	MORE: 'more',
+	ROUTING: 'routing',
+	SEARCH: 'search',
+	FEATUREINFO: 'featureinfo'
 });
 
 /**
- * Displays the tab for a given index.
- * @see {@link TabIndex}
- * @param {number} index
+ * Displays the tab for a given key.
+ * @see {@link TabKey}
+ * @param {number} key
  */
-export const setTabIndex = (index) => {
+export const setTab = (key) => {
 	getStore().dispatch({
-		type: INDEX_CHANGED,
-		payload: index
+		type: TAB_CHANGED,
+		payload: key
 	});
 };

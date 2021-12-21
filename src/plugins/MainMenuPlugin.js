@@ -1,6 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { close, open, setTabIndex, TabIndex } from '../store/mainMenu/mainMenu.action';
+import { close, open, setTab, TabKey } from '../store/mainMenu/mainMenu.action';
 
 
 /**
@@ -11,7 +11,7 @@ export class MainMenuPlugin extends BaPlugin {
 
 	constructor() {
 		super();
-		this._previousTabIndex = -1;
+		this._previousTab = null;
 		this._open = null;
 	}
 
@@ -22,7 +22,7 @@ export class MainMenuPlugin extends BaPlugin {
 	async register(store) {
 
 		this._open = store.getState().mainMenu.open;
-		this._previousTabIndex = store.getState().mainMenu.tabIndex;
+		this._previousTab = store.getState().mainMenu.tab;
 
 		const onFeatureInfoQueryingChanged = (querying, state) => {
 			const { featureInfo: { current } } = state;
@@ -32,10 +32,10 @@ export class MainMenuPlugin extends BaPlugin {
 					if (!this._open) {
 						close();
 					}
-					setTabIndex(this._previousTabIndex);
+					setTab(this._previousTab);
 				}
 				else {
-					setTabIndex(TabIndex.FEATUREINFO);
+					setTab(TabKey.FEATUREINFO);
 					open();
 				}
 			}
@@ -46,20 +46,20 @@ export class MainMenuPlugin extends BaPlugin {
 			if (!this._open) {
 				close();
 			}
-			setTabIndex(this._previousTabIndex);
+			setTab(this._previousTab);
 		};
 
-		const onTabIndexChanged = (tabIndex, state) => {
-			if (tabIndex === TabIndex.FEATUREINFO) {
+		const onTabChanged = (tab, state) => {
+			if (tab === TabKey.FEATUREINFO) {
 				this._open = state.mainMenu.open;
 			}
 			else {
-				this._previousTabIndex = tabIndex;
+				this._previousTab = tab;
 			}
 		};
 
 		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChanged);
 		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
-		observe(store, store => store.mainMenu.tabIndex, onTabIndexChanged, false);
+		observe(store, store => store.mainMenu.tab, onTabChanged, false);
 	}
 }

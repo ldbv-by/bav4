@@ -1,5 +1,7 @@
+import { TabKey } from './mainMenu.action';
+
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
-export const INDEX_CHANGED = 'components/menu/mainMenumaon/tabIndex';
+export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
 const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
 
 const mainMenuReducer = (state, action) => {
@@ -13,11 +15,11 @@ const mainMenuReducer = (state, action) => {
 			};
 		}
 
-		case INDEX_CHANGED: {
+		case TAB_CHANGED: {
 
 			return {
 				...state,
-				tabIndex: payload
+				tab: payload
 			};
 		}
 
@@ -49,7 +51,7 @@ export const createMainMenuReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		tabIndex: 0
+		tab: TabKey.TOPICS
 	};
 
 	return (state = initialState, action) => mainMenuReducer(state, action);

@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTabIndex, TabIndex, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, TabKey, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
@@ -24,7 +24,7 @@ export class Header extends MvuElement {
 	constructor() {
 		super({
 			isOpen: false,
-			tabIndex: 0,
+			tabIndex: null,
 			isFetching: false,
 			layers: [],
 			isPortrait: false,
@@ -60,7 +60,7 @@ export class Header extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tabIndex }));
+		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active.filter(l => l.constraints.hidden === false)));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
@@ -112,7 +112,7 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTabIndex(TabIndex.SEARCH);
+			setTab(TabKey.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -144,17 +144,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTabIndex(TabIndex.TOPICS);
+			setTab(TabKey.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTabIndex(TabIndex.MAPS);
+			setTab(TabKey.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTabIndex(TabIndex.MORE);
+			setTab(TabKey.MORE);
 			openMainMenu();
 		};
 
@@ -200,12 +200,12 @@ export class Header extends MvuElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(0)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
+						<button class="${getActiveClass(TabKey.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
 							<span>
 								${translate('header_tab_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(1)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(TabKey.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 							<span>
 								${translate('header_tab_maps_button')}
 							</span>
@@ -213,7 +213,7 @@ export class Header extends MvuElement {
 							 	${layerCount}
 							</div>
 						</button>
-						<button class="${getActiveClass(2)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
+						<button class="${getActiveClass(TabKey.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
 								${translate('header_tab_more_button')}
 							</span>
