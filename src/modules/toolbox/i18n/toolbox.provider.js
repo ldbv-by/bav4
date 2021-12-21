@@ -51,8 +51,6 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_select: 'Select an existing measurement or start a new one',
 				toolbox_measureTool_share: 'Share',
 				toolbox_measureTool_share_api: 'Click to share',
-				toolbox_measureTool_share_link_readonly: 'Link to share your measurement',
-				toolbox_measureTool_share_link_edit: 'Link to editable share your measurement',
 				toolbox_measureTool_share_link_title: 'shared with BayernAtlas.de',
 				toolbox_drawTool_finish: 'Finish',
 				toolbox_prevent_switching_tool: 'Please close the current tool first',
@@ -64,7 +62,8 @@ export const provide = (lang) => {
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance',
 				toolbox_clipboard_error: '"Copy to clipboard" is not available',
 				toolbox_clipboard_success: 'was copied to clipboard',
-				toolbox_copy_icon: 'Copy to clipboard'
+				toolbox_copy_icon: 'Copy to clipboard',
+				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing'
 			};
 
 		case 'de':
@@ -117,8 +116,6 @@ export const provide = (lang) => {
 				toolbox_measureTool_measure_select: 'Eine bestehende Messung auswählen oder eine neue Messung beginnen',
 				toolbox_measureTool_share: 'Teilen',
 				toolbox_measureTool_share_api: 'Klicken, um zu teilen',
-				toolbox_measureTool_share_link_readonly: 'Link zum Teilen Ihrer Zeichnung',
-				toolbox_measureTool_share_link_edit: 'Link zum Editieren Ihrer Zeichnung',
 				toolbox_measureTool_share_link_title: 'geteilt über BayernAtlas.de',
 				toolbox_drawTool_finish: 'Fertig',
 				toolbox_prevent_switching_tool: 'Bitte zuerst das aktuelle Werkzeug schließen/beenden',
@@ -130,7 +127,8 @@ export const provide = (lang) => {
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
 				toolbox_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
 				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert',
-				toolbox_copy_icon: 'In die Zwischenablage kopieren'
+				toolbox_copy_icon: 'In die Zwischenablage kopieren',
+				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten'
 			};
 
 		default:

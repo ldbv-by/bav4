@@ -1,10 +1,12 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';
 import shareIcon from './assets/share.svg';
 import css from './shareDialogContent.css';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { MvuElement } from '../../../MvuElement';
+
+const Switch_Toggle = 'switch_toggle';
 
 /**
  * A content component to show and share perma-links of
@@ -14,10 +16,10 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
  * @author alsturm
  * @author costa_gi
  */
-export class ShareDialogContent extends BaElement {
+export class ShareDialogContent extends MvuElement {
 
 	constructor() {
-		super();
+		super({ checkedToggle: false });
 		const { TranslationService: translationService, EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
@@ -25,28 +27,43 @@ export class ShareDialogContent extends BaElement {
 		this._shareUrls = null;
 	}
 
+	update(type, data, model) {
+		switch (type) {
+			case Switch_Toggle:
+				return { ...model, checkedToggle: data };
+		}
+	}
 
-	createView() {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
+		const { checkedToggle } = model;
 
 		if (this._shareUrls) {
 			const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
 
-			const editableContent = this._buildShareItem(this._shareUrls.adminId, translate('toolbox_measureTool_share_link_readonly'), useShareApi);
-			const readOnlyContent = this._buildShareItem(this._shareUrls.fileId, translate('toolbox_measureTool_share_link_edit'), useShareApi);
+			const editableContent = this._buildShareItem(this._shareUrls.adminId, useShareApi);
+			const readOnlyContent = this._buildShareItem(this._shareUrls.fileId, useShareApi);
+			const urlContent = checkedToggle === true ? editableContent : readOnlyContent;
+
+			const onToggle = (event) => {
+				this.signal(Switch_Toggle, event.detail.checked);
+			};
 
 			return html`
 			<style>${css}</style>
+			<div class='toggle' style="display: flex;justify-content: flex-start;">
+			<ba-toggle id='toggle' .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+			<span class='share_copy'>${translate('toolbox_measureTool_share_link')}</span>
+			</div>
             <div class='share_content'>
-                ${editableContent}
-                ${readOnlyContent}
+				${urlContent} 
             </div>`;
 		}
 
 		return html.nothing;
 	}
 
-	_buildShareItem(url, label, useShareApi) {
+	_buildShareItem(url, useShareApi) {
 		const translate = (key) => this._translationService.translate(key);
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
@@ -73,8 +90,7 @@ export class ShareDialogContent extends BaElement {
 		const shareApiContent = getShareApiContent(useShareApi);
 
 		return html`
-        <div class='share_item'>
-			<div class='share_label'>${label}</div>			
+        <div class='share_item share_label'>
 			<div class='link'>
 				<input class='share_url' type='text' id='shareurl' name='shareurl' value=${url} readonly>							           
 				${shareApiContent}
