@@ -55,7 +55,10 @@ export class Footer extends BaElement {
 	}
 
 	createChildrenView() {
-		return html`<ba-map-info></ba-map-info>`;
+		return html`
+		<div class="scale"></div>
+		<ba-map-info></ba-map-info>
+		`;
 	}
 
 	/**
