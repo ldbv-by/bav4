@@ -50,6 +50,20 @@ describe('ToolBarElement', () => {
 		return TestUtils.render(ToolBar.tag);
 	};
 
+	describe('constructor', () => {
+
+		it('sets a default model', async () => {
+			setup();
+			const element = new ToolBar();
+
+			expect(element.getModel()).toEqual({
+				isOpen: false,
+				isFetching: false,
+				isPortrait: false,
+				hasMinWidth: false
+			});
+		});
+	});
 
 	describe('when initialized', () => {
 
