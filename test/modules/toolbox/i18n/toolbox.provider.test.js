@@ -54,8 +54,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
 		expect(map.toolbox_measureTool_share_api).toBe('Klicken, um zu teilen');
-		expect(map.toolbox_measureTool_share_link_readonly).toBe('Link zum Teilen Ihrer Zeichnung');
-		expect(map.toolbox_measureTool_share_link_edit).toBe('Link zum Editieren Ihrer Zeichnung');
 		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
@@ -68,6 +66,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 		expect(map.toolbox_copy_icon).toBe('In die Zwischenablage kopieren');
+		expect(map.toolbox_measureTool_share_link).toBe('Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten');
 	});
 
 	it('provides translation for en', () => {
@@ -121,8 +120,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
 		expect(map.toolbox_measureTool_share).toBe('Share');
 		expect(map.toolbox_measureTool_share_api).toBe('Click to share');
-		expect(map.toolbox_measureTool_share_link_readonly).toBe('Link to share your measurement');
-		expect(map.toolbox_measureTool_share_link_edit).toBe('Link to editable share your measurement');
 		expect(map.toolbox_measureTool_share_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
@@ -135,10 +132,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
 		expect(map.toolbox_copy_icon).toBe('Copy to clipboard');
+		expect(map.toolbox_measureTool_share_link).toBe('Anyone, who has this link, can edit this drawing');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 61;
+		const expectedSize = 60;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
