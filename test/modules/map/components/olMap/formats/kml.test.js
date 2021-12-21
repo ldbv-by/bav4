@@ -156,6 +156,20 @@ describe('kml', () => {
 			expect(containsPolyStyle).toBeTrue();
 		});
 
+		it('overrides existing name-attribute of feature for text-style', () => {
+			const feature = aPointFeature.clone();
+			feature.set('name', 'Bar');
+
+			feature.setStyle(getATextStyleFunction());
+			const features = [feature];
+
+			const layer = createLayerMock(features);
+
+			const actual = create(layer, projection);
+			const containsTextStyle = actual.includes('IconStyle') && actual.includes('<Placemark><name>Foo</name>');
+			expect(containsTextStyle).toBeTrue();
+		});
+
 		it('reads and converts style-properties from layer', () => {
 
 			const features = [aPolygonFeature];
