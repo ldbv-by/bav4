@@ -24,7 +24,7 @@ export const AssetSourceType = Object.freeze({
 	UNKNOWN: 'unknown'
 });
 
-const getTextStyle = (text, color = '#ff0000', scale = 1) => {
+const getTextStyle = (text, color, scale) => {
 	const strokeWidth = 1;
 	const createStyle = (text, color, scale) => {
 		return new TextStyle({
