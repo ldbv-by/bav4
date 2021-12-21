@@ -1,8 +1,8 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
-import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
@@ -756,6 +756,57 @@ describe('getSymbolFrom', () => {
 
 });
 
+describe('getTextFrom', () => {
+	const getTextStyle = () => {
+		const strokeWidth = 1;
+		return new Style({ text: new Text({
+			text: 'Foo',
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({
+				color: [0, 0, 0],
+				width: strokeWidth
+			}),
+			fill: new Fill({
+				color: [255, 255, 255]
+			})
+		}) });
+	};
+
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+
+	it('should extract a text from feature style', () => {
+		const featureMock = { getStyle: () => [getTextStyle()] };
+
+		expect(getTextFrom(featureMock)).toBeTruthy();
+	});
+
+	it('should NOT extract a text from feature style', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getTextFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
+		expect(getSymbolFrom(null)).toBeNull();
+		expect(getSymbolFrom(undefined)).toBeNull();
+	});
+
+});
+
+
+
 describe('getDrawingTypeFrom', () => {
 	it('get the DrawingType from valid feature', () => {
 		const feature = new Feature({ geometry: new Point([0, 0]) });
@@ -769,5 +820,26 @@ describe('getDrawingTypeFrom', () => {
 		expect(getDrawingTypeFrom(feature)).toBe(null);
 		feature.setId('foo_bar_baz_000');
 		expect(getDrawingTypeFrom(feature)).toBe('bar');
+	});
+});
+
+describe('getStyleArray', () => {
+	const getStyledFeature = (styleLike = []) => {
+		const feature = new Feature({ geometry: new Point([0, 0]) });
+		feature.setStyle(styleLike);
+		return feature;
+	};
+	it('provides a array for a stylefunction', () => {
+		const styleFunction = () => new Style();
+
+		expect(getStyleArray(getStyledFeature(styleFunction)).length).toBe(1);
+	});
+
+	it('provides a array for a styleArray', () => {
+		expect(getStyleArray(getStyledFeature([new Style(), new Style()])).length).toBe(2);
+	});
+
+	it('provides a empty array for a no style', () => {
+		expect(getStyleArray(getStyledFeature()).length).toBe(0);
 	});
 });
