@@ -10,7 +10,7 @@ import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { TabIndex } from '../../../../src/store/mainMenu/mainMenu.action';
+import { TabKey } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(Header.tag, Header);
@@ -26,7 +26,7 @@ describe('Header', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: 0
+				tab: TabKey.TOPICS
 			},
 			network: {
 				fetching: false,
@@ -70,7 +70,7 @@ describe('Header', () => {
 
 			expect(model).toEqual({
 				isOpen: false,
-				tabIndex: 0,
+				tabIndex: null,
 				isFetching: false,
 				layers: [],
 				isPortrait: false,
@@ -212,7 +212,7 @@ describe('Header', () => {
 
 	});
 
-	describe('when menu button clicked', () => {
+	describe('when menu button is Tab.MAPS', () => {
 
 		it('updates the store', async () => {
 			const state = {
@@ -271,11 +271,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.TOPICS);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.MORE);
+			expect(store.getState().mainMenu.tab).toBe(TabKey.MORE);
 		});
 
 	});
@@ -487,7 +487,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tabIndex).toBe(TabIndex.SEARCH);
+				expect(store.getState().mainMenu.tab).toBe(TabKey.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {
