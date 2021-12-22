@@ -12,6 +12,8 @@ import { TopicsContentPanel } from '../../../../../src/modules/topics/components
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
+import { MoreContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/more/MoreContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -141,7 +143,6 @@ describe('MainMenu', () => {
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				// Todo check all content panels when implemented
 				switch (i) {
 					case TabKey.SEARCH:
 						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
@@ -151,6 +152,12 @@ describe('MainMenu', () => {
 						break;
 					case TabKey.FEATUREINFO:
 						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBeTrue();
+						break;
+					case TabKey.MAPS:
+						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
+						break;
+					case TabKey.MORE:
+						expect(contentPanels[i].innerHTML.toString().includes(MoreContentPanel.tag)).toBeTrue();
 						break;
 				}
 			}
