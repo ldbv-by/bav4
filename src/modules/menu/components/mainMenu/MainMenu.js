@@ -8,6 +8,8 @@ import { SearchResultsPanel } from '../../../search/components/menu/SearchResult
 import { TabKey, toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { MapsContentPanel } from './content/maps/MapsContentPanel';
+import { MoreContentPanel } from './content/more/MoreContentPanel';
 
 
 /**
@@ -58,7 +60,6 @@ export class MainMenu extends BaElement {
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
 
 		const contentPanels = Object.values(TabKey)
-			//Todo: refactor me when all content panels are real components
 			.map(v => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
@@ -117,9 +118,9 @@ export class MainMenu extends BaElement {
 	_getContentPanel(index) {
 		switch (index) {
 			case TabKey.MAPS:
-				return this._demoMapContent();
+				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
 			case TabKey.MORE:
-				return this._demoMoreContent();
+				return html`${unsafeHTML(`<${MoreContentPanel.tag}/>`)}`;
 			case TabKey.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
 			case TabKey.TOPICS:
@@ -129,107 +130,6 @@ export class MainMenu extends BaElement {
 			default:
 				return nothing;
 		}
-	}
-
-	_demoMapContent() {
-
-		return html`
-		<div>
-			<ba-base-layer-switcher></ba-base-layer-switcher>
-			<ba-layer-manager></ba-layer-manager>
-		</div>
-		`;
-	}
-
-	_demoMoreContent() {
-		return html`
-		<ul class="ba-list">	
-		<li class="ba-list-item  ba-list-item__header">
-		<span class="ba-list-item__text ">
-			<span class="ba-list-item__primary-text">
-				Settings
-			</span>
-		</span>
-	</li>		
-		<li  class="ba-list-item">
-		<span class="ba-list-item__text vertical-center">
-		<span class="ba-list-item__primary-text">
-		Dark mode
-		</span>              
-	</span>
-	<span class="ba-list-item__after">
-	<ba-theme-toggle></ba-theme-toggle>
-	</span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>
-			</span>
-		</li>
-		<li class="ba-list-item  ba-list-item__header">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-					Links
-				</span>
-			</span>
-		</li>
-   
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum
-				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-				</span>
-			</span>
-		</li>             
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum 
-				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-				</span>
-			</span>
-		</li>             
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum 
-				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
-				</span>
-			</span>
-		</li>          
-		<li class="ba-list-item" style="display:none">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon">
-				</span>
-			</span>
-			<span class="ba-list-item__text vertical-center">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>              
-			</span>
-			<span class="ba-list-item__after">
-			<span class="ba-list-item__icon-info">                                
-			</span>
-		</span>
-		</li>  		          
-	</ul>
-	`;
 	}
 
 	isRenderingSkipped() {
