@@ -1,4 +1,4 @@
-import { Point, LineString, MultiLineString, Polygon, LinearRing, Circle } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
 
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
@@ -222,20 +222,24 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 };
 
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
+	const getLineString = (geometry) => {
+		if (geometry instanceof LineString) {
+			return geometry;
+		}
+		else if (geometry instanceof LinearRing) {
+			return new LineString(geometry.getCoordinates());
+		}
+		else if (geometry instanceof Polygon) {
+			return new LineString(geometry.getLinearRing(0).getCoordinates());
+		}
+		return null;
+	};
+
 	const residuals = [];
-	let currentLength = 0;
-	let lineString;
-	if (geometry instanceof LineString) {
-		lineString = geometry;
-	}
-	else if (geometry instanceof LinearRing) {
-		lineString = new LineString(geometry.getCoordinates());
-	}
-	else if (geometry instanceof Polygon) {
-		lineString = new LineString(geometry.getLinearRing(0).getCoordinates());
-	}
+	const lineString = getLineString(geometry);
 	if (lineString) {
 		const partitionLength = getGeometryLength(lineString) * partition;
+		let currentLength = 0;
 		let lastResidual = 0;
 		lineString.forEachSegment((from, to) => {
 			const segmentGeometry = new LineString([from, to]);
