@@ -229,6 +229,23 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.symbolSrc).toBe('https://some.url/foo/bar/1,2,3/foobarbaz');
 		});
 
+		it('sets the style, after color changes in color-input (ignoring icon-asset)', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
+			const newColor = '#ffffff';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('line');
+			const colorInput = element.shadowRoot.querySelector('#style_color');
+			expect(colorInput).toBeTruthy();
+			expect(colorInput.value).toBe('#f00ba3');
+
+			colorInput.value = newColor;
+			colorInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.color).toBe(newColor);
+			expect(store.getState().draw.style.symbolSrc).toBeNull();
+		});
+
 		it('sets the style, after scale changes in scale-input', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
 			const newScale = 'large';

@@ -29,6 +29,8 @@ describe('StyleService', () => {
 			return area + ' m²';
 		}
 	};
+
+	const iconServiceMock = { decodeColor: () => [0, 0, 0] };
 	let instanceUnderTest;
 
 
@@ -38,6 +40,7 @@ describe('StyleService', () => {
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock)
+			.registerSingleton('IconService', iconServiceMock)
 			.register('OverlayService', OverlayService);
 	});
 
@@ -178,7 +181,7 @@ describe('StyleService', () => {
 		it('adds marker-style to feature with explicit style-type', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
-			const style = new Style({ image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }) });
+			const style = new Style({ image: new Icon({ src: 'http://foo.bar/icon.png', anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction', color: '#ff0000' }), text: new Text({ text: 'foo' }) });
 			featureWithStyleArray.setId('draw_marker_12345678');
 			featureWithStyleFunction.setId('draw_marker_9876543');
 			featureWithStyleArray.setStyle([style]);
@@ -306,7 +309,7 @@ describe('StyleService', () => {
 				getInteractions() {
 					return { getArray: () => [] };
 				},
-				once() {}
+				once() { }
 			};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
