@@ -204,27 +204,6 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	return result ? true : false;
 };
 
-export const createOffsetGeometry = (geometry, lineOffsetInMeter) => {
-
-	const segments = [];
-	geometry.forEachSegment(function (from, to) {
-		const coords = [];
-		const angle = Math.atan2(to[1] - from[1], to[0] - from[0]);
-		const newFrom = [
-			Math.sin(angle) * lineOffsetInMeter + from[0],
-			-Math.cos(angle) * lineOffsetInMeter + from[1]
-		];
-		const newTo = [
-			Math.sin(angle) * lineOffsetInMeter + to[0],
-			-Math.cos(angle) * lineOffsetInMeter + to[1]
-		];
-		coords.push(newFrom);
-		coords.push(newTo);
-		segments.push(new LineString(coords));
-	});
-	return new MultiLineString(segments);
-};
-
 export const moveParallel = (fromPoint, toPoint, distance) => {
 	const coords = [];
 	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
