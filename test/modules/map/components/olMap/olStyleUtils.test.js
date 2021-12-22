@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -7,12 +7,12 @@ import { register } from 'ol/proj/proj4';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
-import { Fill, Icon, Stroke, Style, Text as TextStyle } from 'ol/style';
+import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 
-const Rgb_WHITE = [255, 255, 255];
+const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
 const Hsv_Red = [0, 1, 1];
 const Rgb_Green = [0, 255, 0];
@@ -62,6 +62,19 @@ describe('getMarkerSrc', () => {
 		expect(getMarkerSrc(markerSrc)).toBe('http://foo.bar/42/baz');
 	});
 
+});
+
+describe('markerScaleToKeyword', () => {
+	it('should map to keyword', () => {
+
+		expect(markerScaleToKeyword(1)).toBe('large');
+		expect(markerScaleToKeyword(0.75)).toBe('medium');
+		expect(markerScaleToKeyword(0.5)).toBe('small');
+		expect(markerScaleToKeyword(null)).toBe('small');
+		expect(markerScaleToKeyword('something')).toBe('small');
+		expect(markerScaleToKeyword(true)).toBe('small');
+		expect(markerScaleToKeyword(false)).toBe('small');
+	});
 });
 
 describe('measureStyleFunction', () => {
@@ -174,6 +187,24 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.5);
 		expect(styles[0].getImage().getSrc()).toBe(markerIcon);
+	});
+
+	it('should return a style with a Text', () => {
+		const styleOption = { color: '#BEDA55', scale: 'small', text: 'foo' };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getText().getText()).toBe('foo');
+	});
+
+	it('should return a style WITHOUT a Text', () => {
+		const styleOption = { color: '#BEDA55', scale: 'small' };
+		spyOn(environmentService, 'isStandalone').and.returnValue(() => true);
+		const styles = markerStyleFunction(styleOption);
+
+		expect(styles).toBeDefined();
+		expect(styles[0].getText()).toBeNull();
 	});
 
 	it('should return a style specified by styleOption; small image', () => {
@@ -602,7 +633,7 @@ describe('getContrastColorFrom', () => {
 		const rgbLightBlue = [36, 3, 185];
 		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_Black);
 		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
-		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_WHITE);
+		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
 	});
 });
@@ -719,6 +750,57 @@ describe('getSymbolFrom', () => {
 
 });
 
+describe('getTextFrom', () => {
+	const getTextStyle = () => {
+		const strokeWidth = 1;
+		return new Style({ text: new Text({
+			text: 'Foo',
+			font: 'normal 16px sans-serif',
+			stroke: new Stroke({
+				color: [0, 0, 0],
+				width: strokeWidth
+			}),
+			fill: new Fill({
+				color: [255, 255, 255]
+			})
+		}) });
+	};
+
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+
+	it('should extract a text from feature style', () => {
+		const featureMock = { getStyle: () => [getTextStyle()] };
+
+		expect(getTextFrom(featureMock)).toBeTruthy();
+	});
+
+	it('should NOT extract a text from feature style', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getTextFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
+		expect(getSymbolFrom(null)).toBeNull();
+		expect(getSymbolFrom(undefined)).toBeNull();
+	});
+
+});
+
+
+
 describe('getDrawingTypeFrom', () => {
 	it('get the DrawingType from valid feature', () => {
 		const feature = new Feature({ geometry: new Point([0, 0]) });
@@ -732,5 +814,26 @@ describe('getDrawingTypeFrom', () => {
 		expect(getDrawingTypeFrom(feature)).toBe(null);
 		feature.setId('foo_bar_baz_000');
 		expect(getDrawingTypeFrom(feature)).toBe('bar');
+	});
+});
+
+describe('getStyleArray', () => {
+	const getStyledFeature = (styleLike = []) => {
+		const feature = new Feature({ geometry: new Point([0, 0]) });
+		feature.setStyle(styleLike);
+		return feature;
+	};
+	it('provides a array for a stylefunction', () => {
+		const styleFunction = () => new Style();
+
+		expect(getStyleArray(getStyledFeature(styleFunction)).length).toBe(1);
+	});
+
+	it('provides a array for a styleArray', () => {
+		expect(getStyleArray(getStyledFeature([new Style(), new Style()])).length).toBe(2);
+	});
+
+	it('provides a empty array for a no style', () => {
+		expect(getStyleArray(getStyledFeature()).length).toBe(0);
 	});
 });

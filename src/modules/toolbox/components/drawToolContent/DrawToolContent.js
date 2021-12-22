@@ -262,7 +262,11 @@ export class DrawToolContent extends AbstractToolContent {
 								<select id="style_size" @change=${onChangeScale}>
 									${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
 								</select>								
-							</div>			
+							</div>		
+							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
+								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
+								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+							</div>	
 							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
 								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
 								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>													
