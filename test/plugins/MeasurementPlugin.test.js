@@ -4,6 +4,8 @@ import { activate, deactivate } from '../../src/store/measurement/measurement.ac
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
+import { toolContainerReducer } from '../../src/store/toolContainer/toolContainer.reducer';
+import { setContainerContent, ToolKey } from '../../src/store/toolContainer/toolContainer.action';
 
 
 
@@ -12,26 +14,57 @@ describe('MeasurementPlugin', () => {
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer,
-			layers: layersReducer
+			layers: layersReducer,
+			toolContainer: toolContainerReducer
 		});
 		return store;
 	};
 
+	describe('when toolId changes', () => {
+		it('updates the active property (I)', async (done) => {
+			const store = setup();
+			const instanceUnderTest = new MeasurementPlugin();
+			await instanceUnderTest.register(store);
 
-	it('adds or removes the measurement layer', async () => {
-		const store = setup();
-		const instanceUnderTest = new MeasurementPlugin();
-		await instanceUnderTest.register(store);
+			setContainerContent(ToolKey.MEASURING);
 
-		activate();
+			setTimeout(() => {
+				expect(store.getState().measurement.active).toBeTrue();
+				done();
+			});
+		});
 
-		expect(store.getState().layers.active.length).toBe(1);
-		expect(store.getState().layers.active[0].id).toBe(MEASUREMENT_LAYER_ID);
-		expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
-		expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+		it('updates the active property (II)', async () => {
+			const store = setup({
+				toolContainer: {
+					contentId: ToolKey.MEASURING
+				}
+			});
+			const instanceUnderTest = new MeasurementPlugin();
+			await instanceUnderTest.register(store);
 
-		deactivate();
+			setContainerContent('foo');
 
-		expect(store.getState().layers.active.length).toBe(0);
+			expect(store.getState().measurement.active).toBeFalse();
+		});
+	});
+
+	describe('when active property changes', () => {
+		it('adds or removes the measurement layer', async () => {
+			const store = setup();
+			const instanceUnderTest = new MeasurementPlugin();
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(MEASUREMENT_LAYER_ID);
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+
+			deactivate();
+
+			expect(store.getState().layers.active.length).toBe(0);
+		});
 	});
 });
