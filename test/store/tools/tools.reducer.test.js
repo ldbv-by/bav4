@@ -13,7 +13,7 @@ describe('toolContainerReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().tools.toolId).toBeNull();
+		expect(store.getState().tools.current).toBeNull();
 	});
 
 	describe('changes the \'content\' property', () => {
@@ -23,7 +23,7 @@ describe('toolContainerReducer', () => {
 
 			setContainerContent('foo');
 
-			expect(store.getState().tools.toolId).toBe('foo');
+			expect(store.getState().tools.current).toBe('foo');
 		});
 	});
 

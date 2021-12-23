@@ -36,7 +36,7 @@ describe('DrawPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
-					toolId: Tool.DRAWING
+					current: Tool.DRAWING
 				}
 			});
 			const instanceUnderTest = new DrawPlugin();

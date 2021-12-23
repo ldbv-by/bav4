@@ -37,7 +37,7 @@ describe('MeasurementPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
-					toolId: Tool.MEASURING
+					current: Tool.MEASURING
 				}
 			});
 			const instanceUnderTest = new MeasurementPlugin();

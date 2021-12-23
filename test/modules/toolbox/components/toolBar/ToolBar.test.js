@@ -22,8 +22,7 @@ describe('ToolBarElement', () => {
 
 		const initialState = {
 			tools: {
-				open: false,
-				toolId: false
+				current: false
 			},
 			network: {
 				fetching: fetching,
@@ -115,19 +114,19 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.toolId).toBe(Tool.MEASURING);
+			expect(store.getState().tools.current).toBe(Tool.MEASURING);
 			toolButtons[0].click();
-			expect(store.getState().tools.toolId).toBeNull();
+			expect(store.getState().tools.current).toBeNull();
 
 			toolButtons[1].click();
-			expect(store.getState().tools.toolId).toBe(Tool.DRAWING);
+			expect(store.getState().tools.current).toBe(Tool.DRAWING);
 			toolButtons[1].click();
-			expect(store.getState().tools.toolId).toBeNull();
+			expect(store.getState().tools.current).toBeNull();
 
 			toolButtons[2].click();
-			expect(store.getState().tools.toolId).toBe(Tool.SHARING);
+			expect(store.getState().tools.current).toBe(Tool.SHARING);
 			toolButtons[2].click();
-			expect(store.getState().tools.toolId).toBeNull();
+			expect(store.getState().tools.current).toBeNull();
 		});
 
 		it('switches a tool', async () => {
@@ -138,11 +137,11 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.toolId).toBe(Tool.MEASURING);
+			expect(store.getState().tools.current).toBe(Tool.MEASURING);
 			toolButtons[1].click();
-			expect(store.getState().tools.toolId).toBe(Tool.DRAWING);
+			expect(store.getState().tools.current).toBe(Tool.DRAWING);
 			toolButtons[2].click();
-			expect(store.getState().tools.toolId).toBe(Tool.SHARING);
+			expect(store.getState().tools.current).toBe(Tool.SHARING);
 		});
 	});
 

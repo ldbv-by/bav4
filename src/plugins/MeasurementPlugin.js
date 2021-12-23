@@ -57,6 +57,6 @@ export class MeasurementPlugin extends BaPlugin {
 		};
 
 		observe(store, state => state.measurement.active, onChange);
-		observe(store, state => state.tools.toolId, onToolChanged, false);
+		observe(store, state => state.tools.current, onToolChanged, false);
 	}
 }

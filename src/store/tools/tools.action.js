@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the Toolbox.
  * @module toolContainer/action
  */
-import { ACTIVE_TOOL_CHANGED } from './tools.reducer';
+import { CURRENT_TOOL_CHANGED } from './tools.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -27,7 +27,7 @@ export const Tool = Object.freeze({
  */
 export const setContainerContent = (toolId) => {
 	getStore().dispatch({
-		type: ACTIVE_TOOL_CHANGED,
+		type: CURRENT_TOOL_CHANGED,
 		payload: toolId
 	});
 };

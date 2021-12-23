@@ -66,7 +66,7 @@ describe('ToolContainer', () => {
 			spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				}
 			};
 			const element = await setup(state);
@@ -77,7 +77,7 @@ describe('ToolContainer', () => {
 		it('adds a div which holds the container', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				}
 			};
 			const element = await setup(state);
@@ -88,7 +88,7 @@ describe('ToolContainer', () => {
 		it('opens the toolcontainer with draw-content', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				}
 			};
 
@@ -125,7 +125,7 @@ describe('ToolContainer', () => {
 		it('layouts for landscape desktop', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				},
 				media: {
 					portrait: false,
@@ -143,7 +143,7 @@ describe('ToolContainer', () => {
 		it('layouts for landscape tablet', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				},
 				media: {
 					portrait: false,
@@ -161,7 +161,7 @@ describe('ToolContainer', () => {
 		it('layouts for portrait desktop', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				},
 				media: {
 					portrait: true,
@@ -179,7 +179,7 @@ describe('ToolContainer', () => {
 		it('layouts for portrait tablet', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				},
 				media: {
 					portrait: true,
@@ -200,14 +200,14 @@ describe('ToolContainer', () => {
 		it('resets the toolId', async () => {
 			const state = {
 				tools: {
-					toolId: 'foo'
+					current: 'foo'
 				}
 			};
 			const element = await setup(state);
 
 			element.shadowRoot.querySelector('.tool-container__close-button').click();
 
-			expect(store.getState().tools.toolId).toBeNull();
+			expect(store.getState().tools.current).toBeNull();
 		});
 	});
 });

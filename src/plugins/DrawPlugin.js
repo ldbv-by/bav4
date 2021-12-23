@@ -58,6 +58,6 @@ export class DrawPlugin extends BaPlugin {
 		};
 
 		observe(store, state => state.draw.active, onChange);
-		observe(store, state => state.tools.toolId, onToolChanged, false);
+		observe(store, state => state.tools.current, onToolChanged, false);
 	}
 }

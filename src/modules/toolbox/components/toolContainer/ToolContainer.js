@@ -54,7 +54,7 @@ export class ToolContainer extends MvuElement {
 	 */
 	onInitialize() {
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.tools.toolId, toolId => this.signal(Update_ToolId, toolId));
+		this.observe(state => state.tools.current, current => this.signal(Update_ToolId, current));
 	}
 
 	/**
