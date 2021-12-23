@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import css from './toolBar.css';
 import { $injector } from '../../../../injection';
-import { setContainerContent, ToolKey } from '../../../../store/tools/toolContainer.action';
+import { setContainerContent, ToolKey } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 
 

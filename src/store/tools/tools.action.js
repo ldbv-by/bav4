@@ -2,7 +2,7 @@
  * Action creators to change/update the state of the Toolbox.
  * @module toolContainer/action
  */
-import { CONTENT_CHANGED } from './toolContainer.reducer';
+import { CONTENT_CHANGED } from './tools.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {

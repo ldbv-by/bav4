@@ -3,8 +3,8 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '../../src/store/draw/draw.action.js';
 import { drawReducer } from '../../src/store/draw/draw.reducer.js';
-import { setContainerContent, ToolKey } from '../../src/store/tools/toolContainer.action.js';
-import { toolContainerReducer } from '../../src/store/tools/toolContainer.reducer.js';
+import { setContainerContent, ToolKey } from '../../src/store/tools/tools.action.js';
+import { toolContainerReducer } from '../../src/store/tools/tools.reducer.js';
 
 
 
