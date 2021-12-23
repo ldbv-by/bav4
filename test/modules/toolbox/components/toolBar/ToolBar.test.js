@@ -6,7 +6,7 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
-import { toolContainerReducer } from '../../../../../src/store/tools/tools.reducer';
+import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { Tool } from '../../../../../src/store/tools/tools.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
@@ -21,9 +21,9 @@ describe('ToolBarElement', () => {
 		const { embed = false, fetching = false } = config;
 
 		const initialState = {
-			toolContainer: {
+			tools: {
 				open: false,
-				contentId: false
+				toolId: false
 			},
 			network: {
 				fetching: fetching,
@@ -38,7 +38,7 @@ describe('ToolBarElement', () => {
 
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			toolContainer: toolContainerReducer,
+			tools: toolsReducer,
 			network: networkReducer,
 			media: createNoInitialStateMediaReducer()
 		});
@@ -115,19 +115,19 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.MEASURING);
+			expect(store.getState().tools.toolId).toBe(Tool.MEASURING);
 			toolButtons[0].click();
-			expect(store.getState().toolContainer.contentId).toBeNull();
+			expect(store.getState().tools.toolId).toBeNull();
 
 			toolButtons[1].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.DRAWING);
+			expect(store.getState().tools.toolId).toBe(Tool.DRAWING);
 			toolButtons[1].click();
-			expect(store.getState().toolContainer.contentId).toBeNull();
+			expect(store.getState().tools.toolId).toBeNull();
 
 			toolButtons[2].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.SHARING);
+			expect(store.getState().tools.toolId).toBe(Tool.SHARING);
 			toolButtons[2].click();
-			expect(store.getState().toolContainer.contentId).toBeNull();
+			expect(store.getState().tools.toolId).toBeNull();
 		});
 
 		it('switches a tool', async () => {
@@ -138,11 +138,11 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.MEASURING);
+			expect(store.getState().tools.toolId).toBe(Tool.MEASURING);
 			toolButtons[1].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.DRAWING);
+			expect(store.getState().tools.toolId).toBe(Tool.DRAWING);
 			toolButtons[2].click();
-			expect(store.getState().toolContainer.contentId).toBe(Tool.SHARING);
+			expect(store.getState().tools.toolId).toBe(Tool.SHARING);
 		});
 	});
 

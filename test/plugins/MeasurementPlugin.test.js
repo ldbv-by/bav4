@@ -4,7 +4,7 @@ import { activate, deactivate } from '../../src/store/measurement/measurement.ac
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
-import { toolContainerReducer } from '../../src/store/tools/tools.reducer';
+import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setContainerContent, Tool } from '../../src/store/tools/tools.action';
 
 
@@ -15,7 +15,7 @@ describe('MeasurementPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer,
 			layers: layersReducer,
-			toolContainer: toolContainerReducer
+			tools: toolsReducer
 		});
 		return store;
 	};
@@ -36,8 +36,8 @@ describe('MeasurementPlugin', () => {
 
 		it('updates the active property (II)', async () => {
 			const store = setup({
-				toolContainer: {
-					contentId: Tool.MEASURING
+				tools: {
+					toolId: Tool.MEASURING
 				}
 			});
 			const instanceUnderTest = new MeasurementPlugin();

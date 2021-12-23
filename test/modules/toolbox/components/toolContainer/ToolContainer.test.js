@@ -7,7 +7,7 @@ import { DrawToolContent } from '../../../../../src/modules/toolbox/components/d
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { toolContainerReducer } from '../../../../../src/store/tools/tools.reducer';
+import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { setContainerContent, Tool } from '../../../../../src/store/tools/tools.action';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
@@ -30,7 +30,7 @@ describe('ToolContainer', () => {
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, {
-			toolContainer: toolContainerReducer,
+			tools: toolsReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 
@@ -65,8 +65,8 @@ describe('ToolContainer', () => {
 		it('renders nothing when embedded', async () => {
 			spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				}
 			};
 			const element = await setup(state);
@@ -76,8 +76,8 @@ describe('ToolContainer', () => {
 
 		it('adds a div which holds the container', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				}
 			};
 			const element = await setup(state);
@@ -87,8 +87,8 @@ describe('ToolContainer', () => {
 
 		it('opens the toolcontainer with draw-content', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				}
 			};
 
@@ -124,8 +124,8 @@ describe('ToolContainer', () => {
 
 		it('layouts for landscape desktop', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				},
 				media: {
 					portrait: false,
@@ -142,8 +142,8 @@ describe('ToolContainer', () => {
 
 		it('layouts for landscape tablet', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				},
 				media: {
 					portrait: false,
@@ -160,8 +160,8 @@ describe('ToolContainer', () => {
 
 		it('layouts for portrait desktop', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				},
 				media: {
 					portrait: true,
@@ -178,8 +178,8 @@ describe('ToolContainer', () => {
 
 		it('layouts for portrait tablet', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				},
 				media: {
 					portrait: true,
@@ -199,15 +199,15 @@ describe('ToolContainer', () => {
 
 		it('resets the toolId', async () => {
 			const state = {
-				toolContainer: {
-					contentId: 'foo'
+				tools: {
+					toolId: 'foo'
 				}
 			};
 			const element = await setup(state);
 
 			element.shadowRoot.querySelector('.tool-container__close-button').click();
 
-			expect(store.getState().toolContainer.contentId).toBeNull();
+			expect(store.getState().tools.toolId).toBeNull();
 		});
 	});
 });

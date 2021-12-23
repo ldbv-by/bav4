@@ -4,7 +4,7 @@ import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '../../src/store/draw/draw.action.js';
 import { drawReducer } from '../../src/store/draw/draw.reducer.js';
 import { setContainerContent, Tool } from '../../src/store/tools/tools.action.js';
-import { toolContainerReducer } from '../../src/store/tools/tools.reducer.js';
+import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 
 
@@ -14,7 +14,7 @@ describe('DrawPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer,
 			layers: layersReducer,
-			toolContainer: toolContainerReducer
+			tools: toolsReducer
 		});
 		return store;
 	};
@@ -35,8 +35,8 @@ describe('DrawPlugin', () => {
 
 		it('updates the active property (II)', async () => {
 			const store = setup({
-				toolContainer: {
-					contentId: Tool.DRAWING
+				tools: {
+					toolId: Tool.DRAWING
 				}
 			});
 			const instanceUnderTest = new DrawPlugin();

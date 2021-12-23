@@ -1,5 +1,5 @@
 import { TestUtils } from '../../test-utils.js';
-import { toolContainerReducer } from '../../../src/store/tools/tools.reducer.js';
+import { toolsReducer } from '../../../src/store/tools/tools.reducer.js';
 import { setContainerContent } from '../../../src/store/tools/tools.action.js';
 
 
@@ -7,13 +7,13 @@ describe('toolContainerReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
-			toolContainer: toolContainerReducer
+			tools: toolsReducer
 		});
 	};
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().toolContainer.contentId).toBeNull();
+		expect(store.getState().tools.toolId).toBeNull();
 	});
 
 	describe('changes the \'content\' property', () => {
@@ -21,10 +21,9 @@ describe('toolContainerReducer', () => {
 		it('sets content id', () => {
 			const store = setup();
 
-
 			setContainerContent('foo');
 
-			expect(store.getState().toolContainer.contentId).toBe('foo');
+			expect(store.getState().tools.toolId).toBe('foo');
 		});
 	});
 

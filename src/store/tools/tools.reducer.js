@@ -1,19 +1,19 @@
-export const CONTENT_CHANGED = 'toolbox/toolContainer/contentId';
+export const ACTIVE_TOOL_CHANGED = 'tools/toolId';
 
 export const initialState = {
-	open: false,
-	contentId: null
+	// id of current active tool
+	toolId: null
 };
 
-export const toolContainerReducer = (state = initialState, action) => {
+export const toolsReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 
-		case CONTENT_CHANGED: {
+		case ACTIVE_TOOL_CHANGED: {
 
 			return {
 				...state,
-				contentId: payload
+				toolId: payload
 			};
 		}
 	}
