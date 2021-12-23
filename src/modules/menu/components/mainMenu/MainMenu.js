@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { TabKey, toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { TabId, toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
@@ -30,7 +30,7 @@ export class MainMenu extends BaElement {
 
 	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) => (Object.values(TabKey)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
+		tabcontents.forEach((tabcontent, i) => (Object.values(TabId)[i] === key) ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active'));
 	}
 
 	/**
@@ -53,13 +53,13 @@ export class MainMenu extends BaElement {
 
 		const getMinWidthClass = () => minWidth ? 'is-desktop' : 'is-tablet';
 
-		const getFullSizeClass = () => (tab === TabKey.FEATUREINFO) ? 'is-full-size' : '';
+		const getFullSizeClass = () => (tab === TabId.FEATUREINFO) ? 'is-full-size' : '';
 
 		const getOverlayClass = () => open ? 'is-open' : '';
 
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
 
-		const contentPanels = Object.values(TabKey)
+		const contentPanels = Object.values(TabId)
 			.map(v => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
@@ -117,15 +117,15 @@ export class MainMenu extends BaElement {
 
 	_getContentPanel(index) {
 		switch (index) {
-			case TabKey.MAPS:
+			case TabId.MAPS:
 				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
-			case TabKey.MORE:
+			case TabId.MORE:
 				return html`${unsafeHTML(`<${MoreContentPanel.tag}/>`)}`;
-			case TabKey.SEARCH:
+			case TabId.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
-			case TabKey.TOPICS:
+			case TabId.TOPICS:
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag}/>`)}`;
-			case TabKey.FEATUREINFO:
+			case TabId.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag}/>`)}`;
 			default:
 				return nothing;

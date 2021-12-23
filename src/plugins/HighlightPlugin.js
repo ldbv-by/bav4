@@ -2,7 +2,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
-import { TabKey } from '../store/mainMenu/mainMenu.action';
+import { TabId } from '../store/mainMenu/mainMenu.action';
 import { createUniqueId } from '../utils/numberUtils';
 
 
@@ -53,10 +53,10 @@ export class HighlightPlugin extends BaPlugin {
 		};
 
 		const onTabChanged = (tab) => {
-			if (tab !== TabKey.FEATUREINFO) {
+			if (tab !== TabId.FEATUREINFO) {
 				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
 			}
-			if (tab !== TabKey.SEARCH) {
+			if (tab !== TabId.SEARCH) {
 				removeHighlightFeaturesById([SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
 			}
 		};

@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
-import { close as closeMainMenu, setTab, TabKey } from '../../../../../../store/mainMenu/mainMenu.action';
+import { close as closeMainMenu, setTab, TabId } from '../../../../../../store/mainMenu/mainMenu.action';
 import css from './geoResourceResultItem.css';
 import { MvuElement } from '../../../../../MvuElement';
 
@@ -74,7 +74,7 @@ export class GeoResourceResultItem extends MvuElement {
 			}
 			else {
 				//switch to "maps" tab in main menu
-				setTab(TabKey.MAPS);
+				setTab(TabId.MAPS);
 			}
 		};
 
