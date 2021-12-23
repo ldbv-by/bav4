@@ -4,7 +4,7 @@ import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import css from './toolContainer.css';
-import { setContainerContent, Tool } from '../../../../store/tools/tools.action';
+import { setCurrentTool, Tool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
@@ -77,7 +77,7 @@ export class ToolContainer extends MvuElement {
 		};
 
 		const close = () => {
-			setContainerContent(null);
+			setCurrentTool(null);
 		};
 
 		const getOrientationClass = () => {

@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { toolsReducer } from '../../../src/store/tools/tools.reducer.js';
-import { setContainerContent } from '../../../src/store/tools/tools.action.js';
+import { setCurrentTool } from '../../../src/store/tools/tools.action.js';
 
 
 describe('toolContainerReducer', () => {
@@ -16,15 +16,15 @@ describe('toolContainerReducer', () => {
 		expect(store.getState().tools.current).toBeNull();
 	});
 
-	describe('changes the \'content\' property', () => {
+	it('changes the \'current\' property', () => {
+		const store = setup();
 
-		it('sets content id', () => {
-			const store = setup();
+		setCurrentTool('foo');
 
-			setContainerContent('foo');
+		expect(store.getState().tools.current).toBe('foo');
 
-			expect(store.getState().tools.current).toBe('foo');
-		});
+		setCurrentTool(null);
+
+		expect(store.getState().tools.current).toBeNull();
 	});
-
 });

@@ -21,11 +21,12 @@ export const Tool = Object.freeze({
 });
 
 
+
 /**
- * Sets the content to the specified content-id.
- * @function
+ * Sets the current active tool. A value of `null` will disable an currently active tool.
+ * @param {string|null} toolId
  */
-export const setContainerContent = (toolId) => {
+export const setCurrentTool = (toolId) => {
 	getStore().dispatch({
 		type: CURRENT_TOOL_CHANGED,
 		payload: toolId

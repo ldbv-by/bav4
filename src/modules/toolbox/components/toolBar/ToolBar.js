@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import css from './toolBar.css';
 import { $injector } from '../../../../injection';
-import { setContainerContent, Tool } from '../../../../store/tools/tools.action';
+import { setCurrentTool, Tool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 
 
@@ -75,10 +75,10 @@ export class ToolBar extends MvuElement {
 
 		const toggleTool = (id) => {
 			if (this._toolId === id) {
-				setContainerContent(null);
+				setCurrentTool(null);
 			}
 			else {
-				setContainerContent(id);
+				setCurrentTool(id);
 			}
 		};
 

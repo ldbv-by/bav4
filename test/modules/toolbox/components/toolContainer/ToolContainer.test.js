@@ -8,7 +8,7 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { setContainerContent, Tool } from '../../../../../src/store/tools/tools.action';
+import { setCurrentTool, Tool } from '../../../../../src/store/tools/tools.action';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -102,7 +102,7 @@ describe('ToolContainer', () => {
 
 			Object.entries(Tool).forEach(([, value]) => {
 
-				setContainerContent(value);
+				setCurrentTool(value);
 				const content = element.shadowRoot.querySelector('.tool-container__content');
 
 				switch (value) {

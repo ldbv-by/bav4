@@ -3,7 +3,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '../../src/store/draw/draw.action.js';
 import { drawReducer } from '../../src/store/draw/draw.reducer.js';
-import { setContainerContent, Tool } from '../../src/store/tools/tools.action.js';
+import { setCurrentTool, Tool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 
@@ -25,7 +25,7 @@ describe('DrawPlugin', () => {
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
-			setContainerContent(Tool.DRAWING);
+			setCurrentTool(Tool.DRAWING);
 
 			setTimeout(() => {
 				expect(store.getState().draw.active).toBeTrue();
@@ -42,7 +42,7 @@ describe('DrawPlugin', () => {
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
-			setContainerContent('foo');
+			setCurrentTool('foo');
 
 			expect(store.getState().draw.active).toBeFalse();
 		});
