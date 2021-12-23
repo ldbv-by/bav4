@@ -1,7 +1,7 @@
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { Tool } from '../store/tools/tools.action';
+import { ToolId } from '../store/tools/tools.action';
 import { activate, deactivate } from '../store/draw/draw.action';
 
 /**
@@ -39,7 +39,7 @@ export class DrawPlugin extends BaPlugin {
 	async register(store) {
 
 		const onToolChanged = toolId => {
-			if (toolId !== Tool.DRAWING) {
+			if (toolId !== ToolId.DRAWING) {
 				deactivate();
 			}
 			else {

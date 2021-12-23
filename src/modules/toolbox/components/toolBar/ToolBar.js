@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import css from './toolBar.css';
 import { $injector } from '../../../../injection';
-import { setCurrentTool, Tool } from '../../../../store/tools/tools.action';
+import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 
 
@@ -100,21 +100,21 @@ export class ToolBar extends MvuElement {
 					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button  @click="${() => toggleTool(Tool.MEASURING)}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
-					<button  @click="${() => toggleTool(Tool.DRAWING)}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${() => toggleTool(Tool.SHARING)}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">

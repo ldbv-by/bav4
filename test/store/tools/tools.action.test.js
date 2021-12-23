@@ -1,13 +1,13 @@
-import { Tool } from '../../../src/store/tools/tools.action';
+import { ToolId } from '../../../src/store/tools/tools.action';
 
 describe('toolAction', () => {
 
-	it('exports a ToolKey enum', () => {
-		expect(Object.keys(Tool).length).toBe(3);
-		expect(Object.isFrozen(Tool)).toBeTrue();
+	it('exports a ToolId enum', () => {
+		expect(Object.keys(ToolId).length).toBe(3);
+		expect(Object.isFrozen(ToolId)).toBeTrue();
 
-		expect(Tool.MEASURING).toBe('measuring');
-		expect(Tool.DRAWING).toBe('drawing');
-		expect(Tool.SHARING).toBe('sharing');
+		expect(ToolId.MEASURING).toBe('measuring');
+		expect(ToolId.DRAWING).toBe('drawing');
+		expect(ToolId.SHARING).toBe('sharing');
 	});
 });

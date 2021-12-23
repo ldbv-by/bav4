@@ -3,7 +3,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '../../src/store/draw/draw.action.js';
 import { drawReducer } from '../../src/store/draw/draw.reducer.js';
-import { setCurrentTool, Tool } from '../../src/store/tools/tools.action.js';
+import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 
@@ -25,7 +25,7 @@ describe('DrawPlugin', () => {
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
-			setCurrentTool(Tool.DRAWING);
+			setCurrentTool(ToolId.DRAWING);
 
 			setTimeout(() => {
 				expect(store.getState().draw.active).toBeTrue();
@@ -36,7 +36,7 @@ describe('DrawPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
-					current: Tool.DRAWING
+					current: ToolId.DRAWING
 				}
 			});
 			const instanceUnderTest = new DrawPlugin();
