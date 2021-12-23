@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { toolContainerReducer } from '../../../src/store/toolContainer/toolContainer.reducer.js';
-import { closeToolContainer, openToolContainer, setContainerContent, toggleToolContainer } from '../../../src/store/toolContainer/toolContainer.action.js';
+import { setContainerContent } from '../../../src/store/toolContainer/toolContainer.action.js';
 
 
 describe('toolContainerReducer', () => {
@@ -11,49 +11,11 @@ describe('toolContainerReducer', () => {
 		});
 	};
 
-
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().toolContainer.open).toBeFalse();
-		expect(store.getState().toolContainer.contentId).toBeFalse();
+		expect(store.getState().toolContainer.contentId).toBeNull();
 	});
-	describe('changes the \'open\' property', () => {
 
-		it('sets true', () => {
-			const store = setup();
-
-
-			openToolContainer();
-
-			expect(store.getState().toolContainer.open).toBeTrue();
-		});
-
-		it('sets false', () => {
-			const store = setup({ toolContainer: { open: true, contentId: 'foo' } });
-
-			expect(store.getState().toolContainer.open).toBeTrue();
-
-			closeToolContainer();
-
-			expect(store.getState().toolContainer.open).toBeFalse();
-		});
-
-		it('toggles current value', () => {
-			const store = setup({ toolContainer: { open: true } });
-
-			expect(store.getState().toolContainer.open).toBeTrue();
-
-			toggleToolContainer();
-
-			expect(store.getState().toolContainer.open).toBeFalse();
-
-			toggleToolContainer();
-
-			expect(store.getState().toolContainer.open).toBeTrue();
-		});
-
-
-	});
 	describe('changes the \'content\' property', () => {
 
 		it('sets content id', () => {
