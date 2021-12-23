@@ -1,27 +1,30 @@
 import { html, nothing } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
-import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
-import { activate as activateDraw, deactivate as deactivateDraw } from '../../../../store/draw/draw.action';
 import css from './toolContainer.css';
-import { closeToolContainer } from '../../../../store/toolContainer/toolContainer.action';
-import { emitNotification } from '../../../../store/notifications/notifications.action';
-import { LevelTypes } from '../../../../store/notifications/notifications.action';
+import { setContainerContent, ToolKey } from '../../../../store/toolContainer/toolContainer.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
+import { MvuElement } from '../../../MvuElement';
 
+
+const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_ToolId = 'update_tooId';
 /**
  * @class
  * @author thiloSchlemmer
  * @author taulinger
  */
-export class ToolContainer extends BaElement {
+export class ToolContainer extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			isPortrait: false,
+			hasMinWidth: false,
+			toolId: null
+		});
 
 		const {
 			EnvironmentService: environmentService,
@@ -31,87 +34,73 @@ export class ToolContainer extends BaElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._lastContentId = false;
 	}
-
 
 
 	/**
 	 * @override
 	 */
-	createView(state) {
+	update(type, data, model) {
+		switch (type) {
+			case Update_IsPortrait_HasMinWidth:
+				return { ...model, ...data };
+			case Update_ToolId:
+				return { ...model, toolId: data };
+		}
+	}
 
-		const { open, contentId, portrait, minWidth } = state;
-		const translate = (key) => this._translationService.translate(key);
-		const getContent = (contentId) => {
-			switch (contentId) {
-				case DrawToolContent.tag:
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
+		this.observe(state => state.toolContainer.contentId, contentId => this.signal(Update_ToolId, contentId));
+	}
+
+	/**
+	 * @override
+	 */
+	createView(model) {
+		const { toolId, isPortrait, hasMinWidth } = model;
+
+		const getContentPanel = (toolId) => {
+			switch (toolId) {
+				case ToolKey.DRAWING:
 					return html`${unsafeHTML(`<${DrawToolContent.tag}/>`)}`;
-				case MeasureToolContent.tag:
+				case ToolKey.MEASURING:
 					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
-				case ShareToolContent.tag:
+				case ToolKey.SHARING:
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
 				default:
-					return null;
+					return nothing;
 			}
 		};
 
-
-		const getNextActiveContent = () => {
-			if (this._lastContentId !== contentId && open) {
-				if (this._lastContentId) {
-					return this._lastContentId;
-				}
-
-			}
-			if (!open) {
-				return null;
-			}
-			return contentId;
+		const close = () => {
+			setContainerContent(null);
 		};
-		const nextActiveContentId = getNextActiveContent();
-		if (nextActiveContentId === this._lastContentId) {
-			emitNotification(translate('toolbox_prevent_switching_tool'), LevelTypes.WARN);
-		}
-		else {
-			if (nextActiveContentId) {
-				this._lastContentId = nextActiveContentId;
-				this._activateByContentId(nextActiveContentId);
-			}
-			else {
-				this._deactivateByContentId(this._lastContentId);
-			}
-		}
 
 		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
+			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const getMinWidthClass = () => {
-			return minWidth ? 'is-desktop' : 'is-tablet';
+			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		const getOverlayClass = () => {
-			return open ? 'is-open' : '';
-		};
-		const content = getContent(nextActiveContentId);
-		if (content == null) {
-			return nothing;
-		}
-
-		return html`
+		return toolId ? html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  	
 			<div class="tool-container"> 			
-				<div class="tool-container__content ${getOverlayClass()}">    
-				<div class="tool-container__tools-nav">                         
-						<ba-icon class='tool-container__close-button' .icon='${closeIcon}' .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${closeToolContainer}>						
-                </div>		
-					${content}    				               				 				           					 				               				               				 				            				               				               				 				           
+				<div class="tool-container__content is-open">    
+					<div class="tool-container__tools-nav">                         
+						<ba-icon class='tool-container__close-button' .icon='${closeIcon}' .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${close}>						
+                	</div>		
+					${getContentPanel(toolId)}    				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
 			</div>		
-		`;
+		` : nothing;
 
 	}
 
@@ -119,39 +108,7 @@ export class ToolContainer extends BaElement {
 		return this._environmentService.isEmbedded();
 	}
 
-	/**
-* @override
-* @param {Object} globalState
-*/
-	extractState(globalState) {
-		const { toolContainer: { open, contentId }, media: { portrait, minWidth } } = globalState;
-		return { open, contentId, portrait, minWidth };
-	}
-
 	static get tag() {
 		return 'ba-tool-container';
-	}
-
-	_activateByContentId(contentId) {
-		switch (contentId) {
-			case MeasureToolContent.tag:
-				activateMeasurement();
-				break;
-			case DrawToolContent.tag:
-				activateDraw();
-				break;
-		}
-	}
-
-	_deactivateByContentId(contentId) {
-		switch (contentId) {
-			case MeasureToolContent.tag:
-				deactivateMeasurement();
-				break;
-			case DrawToolContent.tag:
-				deactivateDraw();
-				break;
-		}
-		this._lastContentId = false;
 	}
 }
