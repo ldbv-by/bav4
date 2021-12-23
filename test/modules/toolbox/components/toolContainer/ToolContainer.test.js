@@ -7,8 +7,8 @@ import { DrawToolContent } from '../../../../../src/modules/toolbox/components/d
 import { MeasureToolContent } from '../../../../../src/modules/toolbox/components/measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
-import { setContainerContent, ToolKey } from '../../../../../src/store/toolContainer/toolContainer.action';
+import { toolContainerReducer } from '../../../../../src/store/tools/toolContainer.reducer';
+import { setContainerContent, ToolKey } from '../../../../../src/store/tools/toolContainer.action';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 

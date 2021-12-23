@@ -1,4 +1,4 @@
-import { ToolKey } from '../../../src/store/toolContainer/toolContainer.action';
+import { ToolKey } from '../../../src/store/tools/toolContainer.action';
 
 describe('toolAction', () => {
 

@@ -6,8 +6,8 @@ import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
-import { toolContainerReducer } from '../../../../../src/store/toolContainer/toolContainer.reducer';
-import { ToolKey } from '../../../../../src/store/toolContainer/toolContainer.action';
+import { toolContainerReducer } from '../../../../../src/store/tools/toolContainer.reducer';
+import { ToolKey } from '../../../../../src/store/tools/toolContainer.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 

@@ -4,8 +4,8 @@ import { activate, deactivate } from '../../src/store/measurement/measurement.ac
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
-import { toolContainerReducer } from '../../src/store/toolContainer/toolContainer.reducer';
-import { setContainerContent, ToolKey } from '../../src/store/toolContainer/toolContainer.action';
+import { toolContainerReducer } from '../../src/store/tools/toolContainer.reducer';
+import { setContainerContent, ToolKey } from '../../src/store/tools/toolContainer.action';
 
 
 
