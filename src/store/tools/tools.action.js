@@ -14,7 +14,7 @@ const getStore = () => {
  *Available tools.
  * @enum
  */
-export const ToolKey = Object.freeze({
+export const Tool = Object.freeze({
 	MEASURING: 'measuring',
 	DRAWING: 'drawing',
 	SHARING: 'sharing'

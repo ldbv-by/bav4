@@ -4,7 +4,7 @@ import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import css from './toolContainer.css';
-import { setContainerContent, ToolKey } from '../../../../store/tools/tools.action';
+import { setContainerContent, Tool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
@@ -65,11 +65,11 @@ export class ToolContainer extends MvuElement {
 
 		const getContentPanel = (toolId) => {
 			switch (toolId) {
-				case ToolKey.DRAWING:
+				case Tool.DRAWING:
 					return html`${unsafeHTML(`<${DrawToolContent.tag}/>`)}`;
-				case ToolKey.MEASURING:
+				case Tool.MEASURING:
 					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
-				case ToolKey.SHARING:
+				case Tool.SHARING:
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
 				default:
 					return nothing;

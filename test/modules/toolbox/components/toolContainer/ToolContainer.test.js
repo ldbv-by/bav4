@@ -8,7 +8,7 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { toolContainerReducer } from '../../../../../src/store/tools/tools.reducer';
-import { setContainerContent, ToolKey } from '../../../../../src/store/tools/tools.action';
+import { setContainerContent, Tool } from '../../../../../src/store/tools/tools.action';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -100,19 +100,19 @@ describe('ToolContainer', () => {
 		it('renders the correct content panel', async () => {
 			const element = await setup();
 
-			Object.entries(ToolKey).forEach(([, value]) => {
+			Object.entries(Tool).forEach(([, value]) => {
 
 				setContainerContent(value);
 				const content = element.shadowRoot.querySelector('.tool-container__content');
 
 				switch (value) {
-					case ToolKey.MEASURING:
+					case Tool.MEASURING:
 						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBeTrue();
 						break;
-					case ToolKey.DRAWING:
+					case Tool.DRAWING:
 						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBeTrue();
 						break;
-					case ToolKey.SHARING:
+					case Tool.SHARING:
 						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
 						break;
 				}

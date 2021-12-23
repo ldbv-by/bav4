@@ -7,7 +7,7 @@ import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolContainerReducer } from '../../../../../src/store/tools/tools.reducer';
-import { ToolKey } from '../../../../../src/store/tools/tools.action';
+import { Tool } from '../../../../../src/store/tools/tools.action';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -115,17 +115,17 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.MEASURING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.MEASURING);
 			toolButtons[0].click();
 			expect(store.getState().toolContainer.contentId).toBeNull();
 
 			toolButtons[1].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.DRAWING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.DRAWING);
 			toolButtons[1].click();
 			expect(store.getState().toolContainer.contentId).toBeNull();
 
 			toolButtons[2].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.SHARING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.SHARING);
 			toolButtons[2].click();
 			expect(store.getState().toolContainer.contentId).toBeNull();
 		});
@@ -138,11 +138,11 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(3);
 
 			toolButtons[0].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.MEASURING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.MEASURING);
 			toolButtons[1].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.DRAWING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.DRAWING);
 			toolButtons[2].click();
-			expect(store.getState().toolContainer.contentId).toBe(ToolKey.SHARING);
+			expect(store.getState().toolContainer.contentId).toBe(Tool.SHARING);
 		});
 	});
 

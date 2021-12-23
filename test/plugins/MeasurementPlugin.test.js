@@ -5,7 +5,7 @@ import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { measurementReducer } from '../../src/store/measurement/measurement.reducer';
 import { toolContainerReducer } from '../../src/store/tools/tools.reducer';
-import { setContainerContent, ToolKey } from '../../src/store/tools/tools.action';
+import { setContainerContent, Tool } from '../../src/store/tools/tools.action';
 
 
 
@@ -26,7 +26,7 @@ describe('MeasurementPlugin', () => {
 			const instanceUnderTest = new MeasurementPlugin();
 			await instanceUnderTest.register(store);
 
-			setContainerContent(ToolKey.MEASURING);
+			setContainerContent(Tool.MEASURING);
 
 			setTimeout(() => {
 				expect(store.getState().measurement.active).toBeTrue();
@@ -37,7 +37,7 @@ describe('MeasurementPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				toolContainer: {
-					contentId: ToolKey.MEASURING
+					contentId: Tool.MEASURING
 				}
 			});
 			const instanceUnderTest = new MeasurementPlugin();

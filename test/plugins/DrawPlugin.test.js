@@ -3,7 +3,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { DrawPlugin, DRAW_LAYER_ID } from '../../src/plugins/DrawPlugin.js';
 import { activate, deactivate } from '../../src/store/draw/draw.action.js';
 import { drawReducer } from '../../src/store/draw/draw.reducer.js';
-import { setContainerContent, ToolKey } from '../../src/store/tools/tools.action.js';
+import { setContainerContent, Tool } from '../../src/store/tools/tools.action.js';
 import { toolContainerReducer } from '../../src/store/tools/tools.reducer.js';
 
 
@@ -25,7 +25,7 @@ describe('DrawPlugin', () => {
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
-			setContainerContent(ToolKey.DRAWING);
+			setContainerContent(Tool.DRAWING);
 
 			setTimeout(() => {
 				expect(store.getState().draw.active).toBeTrue();
@@ -36,7 +36,7 @@ describe('DrawPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				toolContainer: {
-					contentId: ToolKey.DRAWING
+					contentId: Tool.DRAWING
 				}
 			});
 			const instanceUnderTest = new DrawPlugin();
