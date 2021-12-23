@@ -45,6 +45,20 @@ describe('FeatureInfoPanel', () => {
 		});
 	});
 
+
+	describe('when instantiated', () => {
+
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new FeatureInfoPanel().getModel();
+
+			expect(model).toEqual({
+				featureInfoData: [],
+				isPortrait: false
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 
 		describe('and no featureInfo items are available', () => {
