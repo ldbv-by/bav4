@@ -80,21 +80,22 @@ describe('markerScaleToKeyword', () => {
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
 	const feature = new Feature({ geometry: geometry });
+	const resolution = 1;
 	it('should create styles', () => {
-		const styles = measureStyleFunction(feature);
+		const styles = measureStyleFunction(feature, resolution);
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(2);
 	});
 
 	it('should have a style which creates circle for Lines', () => {
-		const styles = measureStyleFunction(feature);
+		const styles = measureStyleFunction(feature, resolution);
 
 
 		const circleStyle = styles.find(style => {
 			const geometryFunction = style.getGeometryFunction();
 			if (geometryFunction) {
-				const renderObject = geometryFunction(feature);
+				const renderObject = geometryFunction(feature, resolution);
 				return renderObject.getType() === 'Circle';
 			}
 			else {
@@ -113,6 +114,27 @@ describe('measureStyleFunction', () => {
 		expect(circle).toBeTruthy();
 		expect(nonCircle).toBeFalsy();
 		expect(circleStyle).toBeTruthy();
+	});
+
+	it('should have a ruler-style with renderer-function', () => {
+		const styles = measureStyleFunction(feature, resolution);
+
+		const rulerStyle = styles.find(style => style.getRenderer != null);
+
+		expect(rulerStyle).toBeDefined();
+	});
+
+
+	it('should draw to context with ruler-style', () => {
+		const styles = measureStyleFunction(feature, resolution);
+		const rulerStyle = styles.find(style => style.getRenderer != null);
+		const pixelCoordinates = [[0, 0], [1, 1]];
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } } };
+		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
+
+		rulerStyle.getRenderer(pixelCoordinates, stateMock);
+
+		expect(rulerStyle).toBeDefined();
 	});
 });
 

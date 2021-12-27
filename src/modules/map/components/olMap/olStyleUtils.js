@@ -210,9 +210,6 @@ const getRulerStyle = () => {
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		fill: new Fill({
-			color: Red_Color.concat([0.4])
-		}),
 		width: 3 });
 
 	const getMainTickStroke = (residual, partitionTickDistance) => {
@@ -235,41 +232,43 @@ const getRulerStyle = () => {
 		});
 	};
 
+	const drawToContext = (context, geometry, fill, stroke) => {
+		context.setFillStrokeStyle(fill, stroke);
+		context.drawGeometry(geometry);
+	};
 
+	const drawTicks = (context, segment, residual, tickDistance) => {
+		const draw = () => {
+			const mainTickSegment = moveParallel(segment[0], segment[1], -4);
+			const subTickSegment = moveParallel(segment[0], segment[1], -2);
+			drawToContext(context, mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
+			drawToContext(context, subTickSegment, fill, getSubTickStroke(residual, tickDistance));
+
+			return true;
+		};
+		const cancel = () => false;
+		return segment[1] ? draw() : cancel();
+	};
 
 	return new Style({ renderer: (pixelCoordinates, state) => {
-		const context = state.context;
 		const geometry = state.geometry.clone();
 		const resolution = 	state.resolution;
 		const partition = getPartitionDelta(geometry, resolution, calculationHints);
 		const partitionLength = partition * getGeometryLength(geometry);
 		const partitionTickDistance = partitionLength / resolution;
 		const residuals = calculatePartitionResidualOfSegments(geometry, partition);
-		const renderContext = toContext(context, { pixelRatio: state.pixelRatio });
+		const renderContext = toContext(state.context, { pixelRatio: state.pixelRatio });
+
+		// baseLine
 		geometry.setCoordinates(pixelCoordinates);
-		renderContext.setFillStrokeStyle(fill, baseStroke);
-		renderContext.drawGeometry(geometry);
-		let segmentCoordinates = pixelCoordinates;
-		if (geometry instanceof Polygon) {
-			segmentCoordinates = pixelCoordinates[0];
-		}
-		if (segmentCoordinates.length > 1) {
-			for (let index = 0; index < residuals.length; index++) {
-				const residual = residuals[index];
-				const from = segmentCoordinates[index];
-				const to = segmentCoordinates[index + 1];
-				if (!to) {
-					break;
-				}
-				const coords = [from, to];
-				const geometry = state.geometry.clone();
-				geometry.setCoordinates(coords);
-				renderContext.setFillStrokeStyle(fill, getMainTickStroke(residual, partitionTickDistance));
-				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -4));
-				renderContext.setFillStrokeStyle(fill, getSubTickStroke(residual, partitionTickDistance));
-				renderContext.drawGeometry(moveParallel(coords[0], coords[1], -2));
-			}
-		}
+		drawToContext(renderContext, geometry, fill, baseStroke);
+
+		// per segment
+		const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+
+		segmentCoordinates.every((coordinate, index, coordinates) => {
+			return drawTicks(renderContext, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+		});
 	} });
 };
 
