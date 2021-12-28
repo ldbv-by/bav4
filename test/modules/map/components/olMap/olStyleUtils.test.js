@@ -144,13 +144,51 @@ describe('renderRulerSegments', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
 	const feature = new Feature({ geometry: geometry });
 	const resolution = 1;
-	it('should call contextrenderer', () => {
+	it('should call contextRenderer', () => {
 		const contextRenderer = jasmine.createSpy();
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
 		const pixelCoordinates = [[0, 0], [0, 1]];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it('should call contextRenderer with subTickStroke', () => {
+		const expectedSubStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 5,
+			lineCap: 'butt',
+			lineDash: [2, -1.8],
+			lineDashOffset: 2
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualStrokes).toContain(expectedSubStroke);
+	});
+
+	it('should call contextRenderer with mainTickStroke', () => {
+		const expectedMainStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 8,
+			lineCap: 'butt',
+			lineDash: [3, -2],
+			lineDashOffset: 3
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualStrokes).toContain(expectedMainStroke);
 	});
 });
 
