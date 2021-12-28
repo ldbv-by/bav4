@@ -1,5 +1,5 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -126,15 +126,31 @@ describe('measureStyleFunction', () => {
 
 
 	it('should draw to context with ruler-style', () => {
-		const styles = measureStyleFunction(feature, resolution);
-		const rulerStyle = styles.find(style => style.getRenderer != null);
 		const pixelCoordinates = [[0, 0], [1, 1]];
-		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } } };
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => {}, moveTo: () => {}, lineTo: () => {} };
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
+		const styles = measureStyleFunction(feature, resolution);
+		const rulerStyle = styles.find(style => style.getRenderer());
 
-		rulerStyle.getRenderer(pixelCoordinates, stateMock);
+		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
+		const cunstomRenderer = rulerStyle.getRenderer();
+		cunstomRenderer(pixelCoordinates, stateMock);
 
-		expect(rulerStyle).toBeDefined();
+		expect(contextMoveToSpy).toHaveBeenCalled();
+	});
+});
+
+describe('renderRulerSegments', () => {
+	const geometry = new LineString([[0, 0], [1, 0]]);
+	const feature = new Feature({ geometry: geometry });
+	const resolution = 1;
+	it('should call contextrenderer', () => {
+		const contextRenderer = jasmine.createSpy();
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
 	});
 });
 
@@ -814,9 +830,9 @@ describe('getTextFrom', () => {
 	it('should return null for empty feature', () => {
 		const featureWithoutStyle = { getStyle: () => null };
 
-		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
-		expect(getSymbolFrom(null)).toBeNull();
-		expect(getSymbolFrom(undefined)).toBeNull();
+		expect(getTextFrom(featureWithoutStyle)).toBeNull();
+		expect(getTextFrom(null)).toBeNull();
+		expect(getTextFrom(undefined)).toBeNull();
 	});
 
 });

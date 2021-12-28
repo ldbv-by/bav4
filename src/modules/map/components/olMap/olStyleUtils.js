@@ -205,7 +205,27 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 
 
 const getRulerStyle = () => {
+
+	return new Style({ renderer: (pixelCoordinates, state) => {
+		const renderContext = toContext(state.context, { pixelRatio: state.pixelRatio });
+		const renderToContext = (geometry, fill, stroke) => {
+			renderContext.setFillStrokeStyle(fill, stroke);
+			renderContext.drawGeometry(geometry);
+		};
+		renderRulerSegments(pixelCoordinates, state, renderToContext);
+	} });
+};
+
+export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) => {
+	const geometry = state.geometry.clone();
+	const resolution = 	state.resolution;
+
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+	const partition = getPartitionDelta(geometry, resolution, calculationHints);
+	const partitionLength = partition * getGeometryLength(geometry);
+	const partitionTickDistance = partitionLength / resolution;
+	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -232,17 +252,12 @@ const getRulerStyle = () => {
 		});
 	};
 
-	const drawToContext = (context, geometry, fill, stroke) => {
-		context.setFillStrokeStyle(fill, stroke);
-		context.drawGeometry(geometry);
-	};
-
-	const drawTicks = (context, segment, residual, tickDistance) => {
+	const drawTicks = (contextRenderer, segment, residual, tickDistance) => {
 		const draw = () => {
 			const mainTickSegment = moveParallel(segment[0], segment[1], -4);
 			const subTickSegment = moveParallel(segment[0], segment[1], -2);
-			drawToContext(context, mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
-			drawToContext(context, subTickSegment, fill, getSubTickStroke(residual, tickDistance));
+			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
+			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
 
 			return true;
 		};
@@ -250,26 +265,17 @@ const getRulerStyle = () => {
 		return segment[1] ? draw() : cancel();
 	};
 
-	return new Style({ renderer: (pixelCoordinates, state) => {
-		const geometry = state.geometry.clone();
-		const resolution = 	state.resolution;
-		const partition = getPartitionDelta(geometry, resolution, calculationHints);
-		const partitionLength = partition * getGeometryLength(geometry);
-		const partitionTickDistance = partitionLength / resolution;
-		const residuals = calculatePartitionResidualOfSegments(geometry, partition);
-		const renderContext = toContext(state.context, { pixelRatio: state.pixelRatio });
+	// baseLine
+	geometry.setCoordinates(pixelCoordinates);
+	contextRenderer(geometry, fill, baseStroke);
 
-		// baseLine
-		geometry.setCoordinates(pixelCoordinates);
-		drawToContext(renderContext, geometry, fill, baseStroke);
+	// per segment
+	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
 
-		// per segment
-		const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+	segmentCoordinates.every((coordinate, index, coordinates) => {
+		return drawTicks(contextRenderer, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+	});
 
-		segmentCoordinates.every((coordinate, index, coordinates) => {
-			return drawTicks(renderContext, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-		});
-	} });
 };
 
 
