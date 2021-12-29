@@ -156,13 +156,22 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+		const getPartitions = () => {
+			const partitions = olFeature.get('partitions') || [];
+			if (simplifiedGeometry) {
+				return partitions;
+			}
+			partitions.forEach(p => this._remove(p, olFeature, olMap));
+			return [];
+		};
+		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
 			simplifiedGeometry = olFeature.getGeometry();
 			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates()[0]);
+				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
 			}
 		}
-		const partitions = olFeature.get('partitions') || [];
+
 		const resolution = olMap.getView().getResolution();
 		let delta;
 		if (partitions.length === 0) {
@@ -189,6 +198,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				partitions.pop();
 			}
 		}
+
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
 			olFeature.set('partition_delta', delta);

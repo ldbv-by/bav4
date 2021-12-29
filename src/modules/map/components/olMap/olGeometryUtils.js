@@ -50,7 +50,7 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 				return new LineString(lineStringCandidate.getCoordinates());
 			}
 			else if (lineStringCandidate instanceof Polygon) {
-				return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+				return new LineString(lineStringCandidate.getCoordinates(false)[0]);
 			}
 		};
 		const lineString = getLineString(calculationGeometry);
@@ -80,7 +80,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 			return new LineString(lineStringCandidate.getCoordinates());
 		}
 		else if (lineStringCandidate instanceof Polygon) {
-			return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
+			return new LineString(lineStringCandidate.getCoordinates(false)[0]);
 		}
 	};
 	const lineString = getLineString(geometry);
@@ -119,7 +119,7 @@ export const getAzimuth = (geometry) => {
 		!(geometry instanceof LinearRing)) {
 		return null;
 	}
-	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates()[0] : geometry.getCoordinates();
+	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates(false)[0] : geometry.getCoordinates();
 
 	if (coordinates.length < 2) {
 		return null;
@@ -191,7 +191,7 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	const vertexCoordinate = vertexCandidate.getCoordinates();
 	const getCoordinates = (geometry) => {
 		if (geometry instanceof Polygon) {
-			return geometry.getCoordinates()[0];
+			return geometry.getCoordinates(false)[0];
 		}
 		if (geometry instanceof Point) {
 			return [geometry.getCoordinates()];
@@ -230,7 +230,7 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 			return new LineString(geometry.getCoordinates());
 		}
 		else if (geometry instanceof Polygon) {
-			return new LineString(geometry.getLinearRing(0).getCoordinates());
+			return new LineString(geometry.getCoordinates(false)[0]);
 		}
 		return null;
 	};
