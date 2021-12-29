@@ -88,9 +88,10 @@ describe('getAzimuth', () => {
 		});
 
 		it('calculates angle for a Polygon', () => {
-			const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
-
-			expect(getAzimuth(polygon)).toBe(90);
+			const polygonCounterClockwise = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+			const polygonClockwise = new Polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]);
+			expect(getAzimuth(polygonCounterClockwise)).toBe(0);
+			expect(getAzimuth(polygonClockwise)).toBe(0);
 		});
 
 		it('calculates NO angle for a imcomplete LineString', () => {
