@@ -34,6 +34,7 @@ export const MeasurementOverlayTypes = {
  * - `static`
  * - `geometry`
  * - `position`
+ * - `placement`
  * - `projectionHints`
  * @class
  * @author thiloSchlemmer
@@ -55,7 +56,6 @@ export class MeasurementOverlay extends BaOverlay {
 	 */
 	createView() {
 		const content = this._getContent(this._type);
-
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
 			area: this._type === MeasurementOverlayTypes.AREA,
@@ -63,8 +63,13 @@ export class MeasurementOverlay extends BaOverlay {
 			partition: this._type === MeasurementOverlayTypes.DISTANCE_PARTITION,
 			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
 			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP,
-			draggable: this._isDraggable
+			draggable: this._isDraggable,
+			top: this.placement ? this.placement.sector === 'top' : false,
+			right: this.placement ? this.placement.sector === 'right' : false,
+			bottom: this.placement ? this.placement.sector === 'bottom' : false,
+			left: this.placement ? this.placement.sector === 'left' : false
 		};
+
 
 		return html`
 			<style>${css}</style>
@@ -81,7 +86,7 @@ export class MeasurementOverlay extends BaOverlay {
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
-				this._getOverlayPlacement(this.geometry, this._value) ;
+				this._placement = this._getPlacement(this.geometry, this._value) ;
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 			case MeasurementOverlayTypes.HELP:
@@ -115,24 +120,34 @@ export class MeasurementOverlay extends BaOverlay {
 		}
 	}
 
-	_getOverlayPlacement(geometry, fraction) {
+	_getPlacement(geometry, fraction) {
 
 		const segment = getSegmentAt(geometry, fraction);
 		if (segment) {
-			const segmentCoordinates = segment.getCoordinates();
 
-			const startPoint = segmentCoordinates[0];
-			const endPoint = segmentCoordinates[1];
-
-			const x = endPoint[0] - startPoint[0];
-			const y = endPoint[1] - startPoint[1];
-			const rad = Math.atan2(y, x);
-
-			const factor = x > 0 ? 1 : -1;
-
-			const angle = (360 + (factor * rad * 180 / Math.PI)) % 360;
-			console.log(angle);
+			const angle = getAzimuth(segment);
+			const isSectorTop = (angle) => angle < 60 || 300 < angle ? 'top' : false;
+			const isSectorRight = (angle) => 60 < angle && angle < 120 ? 'right' : false;
+			const isSectorBottom = (angle) => 120 < angle && angle < 210 ? 'bottom' : false;
+			const isSectorLeft = (angle) => 210 < angle && angle < 300 ? 'left' : false;
+			const sector = [isSectorTop, isSectorRight, isSectorBottom, isSectorLeft].find(isSector => isSector(angle));
+			switch (sector(angle)) {
+				case 'right':
+					return { sector: sector(angle), positioning: 'top-center', offset: [0, -25] };
+				case 'bottom':
+					return { sector: sector(angle), positioning: 'center-left', offset: [25, 0] };
+				case 'left':
+					return { sector: sector(angle), positioning: 'bottom-center', offset: [0, 25] };
+				case 'top':
+					return { sector: sector(angle), positioning: 'center-right', offset: [-25, 0] };
+				default:
+					console.warn('No sector found for:', angle);
+			}
 		}
+	}
+
+	get placement() {
+		return this._placement ? this._placement : { sector: 'right', positioning: 'top-center', offset: [0, -25] };
 	}
 
 	static get tag() {

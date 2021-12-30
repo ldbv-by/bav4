@@ -121,9 +121,9 @@ export const getSegmentAt = (geometry, fraction) => {
 	if (lineString) {
 		const segmentCoordinate = lineString.getCoordinateAt(fraction);
 		const segment = lineString.forEachSegment((from, to) => findSegment(from, to, segmentCoordinate));
-		return segment ? segment : null;
+		return segment ? segment : geometry;
 	}
-	return null;
+	return geometry;
 };
 
 /**

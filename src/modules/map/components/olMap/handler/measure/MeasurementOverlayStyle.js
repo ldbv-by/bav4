@@ -239,6 +239,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
 			overlay.setPosition(element.position);
+			if (element.placement) {
+				overlay.setPositioning(element.placement.positioning);
+				overlay.setOffset(element.placement.offset);
+			}
+
 		}
 	}
 
