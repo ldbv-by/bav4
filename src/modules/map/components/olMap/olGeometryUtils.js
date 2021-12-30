@@ -91,6 +91,41 @@ export const getCoordinateAt = (geometry, fraction) => {
 	return null;
 };
 
+
+/**
+ *
+ * Return the segment at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
+ * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
+ * @param {Geometry} geometry
+ * @param {number} fraction
+ * @returns {Geometry| null} the segment-geometry or null if the geometry is not linear or area-like
+ */
+export const getSegmentAt = (geometry, fraction) => {
+	const getLineString = (lineStringCandidate) => {
+		if (lineStringCandidate instanceof LineString) {
+			return lineStringCandidate;
+		}
+		else if (lineStringCandidate instanceof LinearRing) {
+			return new LineString(lineStringCandidate.getCoordinates());
+		}
+		else if (lineStringCandidate instanceof Polygon) {
+			return new LineString(lineStringCandidate.getCoordinates(false)[0]);
+		}
+	};
+	const lineString = getLineString(geometry);
+
+	const findSegment = (from, to, coordinateCandidate) => {
+		const segment = new LineString([from, to]);
+		return segment.intersectsCoordinate(coordinateCandidate) ? segment : false;
+	};
+	if (lineString) {
+		const segmentCoordinate = lineString.getCoordinateAt(fraction);
+		const segment = lineString.forEachSegment((from, to) => findSegment(from, to, segmentCoordinate));
+		return segment ? segment : null;
+	}
+	return null;
+};
+
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
  * @param {Geometry} geometry the geometry

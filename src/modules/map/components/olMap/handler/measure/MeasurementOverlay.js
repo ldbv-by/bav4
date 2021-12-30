@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../../olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea, getSegmentAt } from '../../olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from '../../BaOverlay';
 
@@ -81,6 +81,7 @@ export class MeasurementOverlay extends BaOverlay {
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
+				this._getOverlayPlacement(this.geometry, this._value) ;
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 			case MeasurementOverlayTypes.HELP:
@@ -111,6 +112,26 @@ export class MeasurementOverlay extends BaOverlay {
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 				return this._value;
+		}
+	}
+
+	_getOverlayPlacement(geometry, fraction) {
+
+		const segment = getSegmentAt(geometry, fraction);
+		if (segment) {
+			const segmentCoordinates = segment.getCoordinates();
+
+			const startPoint = segmentCoordinates[0];
+			const endPoint = segmentCoordinates[1];
+
+			const x = endPoint[0] - startPoint[0];
+			const y = endPoint[1] - startPoint[1];
+			const rad = Math.atan2(y, x);
+
+			const factor = x > 0 ? 1 : -1;
+
+			const angle = (360 + (factor * rad * 180 / Math.PI)) % 360;
+			console.log(angle);
 		}
 	}
 
