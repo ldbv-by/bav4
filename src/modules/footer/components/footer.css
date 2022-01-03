@@ -29,10 +29,22 @@ ba-attribution-info {
 	position: absolute;
 }
 
-/* ol scale line specific classes */
-
-/* .ol-scale-line {
+.scale {
+	position: absolute;
+	top: -2em;
+	background: var(--primary-color);
+	background: var(--secondary-color);
+	color: var(--primary-color);
+	left: 0;
+	font-size: .8rem;
 }
-  
+
 .ol-scale-line-inner {
-}  */
+	padding: 0.2em .5em;
+	color: var(--text3);
+	height: 1.6em;
+	max-height: 1.6em;
+	border-right: 1px solid var(--primary-color);
+	border-bottom: 1px solid var(--primary-color);
+	border-left: 1px solid var(--primary-color);
+}
