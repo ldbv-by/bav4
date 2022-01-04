@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../injection';
 import { OverlayStyle } from '../../OverlayStyle';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { getPartitionDelta } from '../../olGeometryUtils';
+import { getAzimuth, getLineString, getPartitionDelta } from '../../olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -156,6 +156,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			if (simplifiedGeometry) {
@@ -199,6 +200,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 		}
 
+		this._justifyPlacement(simplifiedGeometry, partitions);
+
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
 			olFeature.set('partition_delta', delta);
@@ -221,6 +224,31 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		});
 	}
 
+	_justifyPlacement(geometry, partitions) {
+		const lineString = getLineString(geometry);
+		const collectedSegments = { minPartition: 0, length: 0 };
+
+		lineString.forEachSegment((from, to) => {
+			const segment = new LineString([from, to]);
+
+			const currentLength = collectedSegments.length + segment.getLength();
+			const currentMinPartition = currentLength / lineString.getLength();
+			const azimuth = getAzimuth(segment);
+			partitions.forEach(overlay => {
+				const element = overlay.getElement();
+				const partition = element.value;
+				if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
+					element.placement = this._getPlacement(azimuth);
+					overlay.setOffset(element.placement.offset);
+					overlay.setPositioning(element.placement.positioning);
+				}
+			});
+
+			collectedSegments.minPartition = currentMinPartition;
+			collectedSegments.length = currentLength;
+		});
+	}
+
 	_createOlOverlay(olMap, overlayOptions = {}, type, projectionHints, isDraggable = false) {
 		const measurementOverlay = document.createElement(MeasurementOverlay.tag);
 		measurementOverlay.type = type;
@@ -239,11 +267,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		element.geometry = geometry;
 		if (!overlay.get('manualPositioning')) {
 			overlay.setPosition(element.position);
-			if (element.placement) {
-				overlay.setPositioning(element.placement.positioning);
-				overlay.setOffset(element.placement.offset);
-			}
-
 		}
 	}
 
@@ -267,6 +290,29 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
 			element.addEventListener('mouseenter', handleMouseEnter);
 			element.addEventListener('mouseleave', handleMouseLeave);
+		}
+
+	}
+
+	_getPlacement(angle) {
+		const sectorFunction = [
+			(angle) => angle <= 60 || 300 < angle ? 'top' : false,
+			(angle) => 60 < angle && angle <= 120 ? 'right' : false,
+			(angle) => 120 < angle && angle <= 210 ? 'bottom' : false,
+			(angle) => 210 < angle && angle <= 300 ? 'left' : false
+		].find(isSector => isSector(angle));
+		const sector = sectorFunction ? sectorFunction(angle) : null;
+		switch (sector) {
+			case 'right':
+				return { sector: sector, positioning: 'top-center', offset: [0, -25] };
+			case 'bottom':
+				return { sector: sector, positioning: 'center-left', offset: [10, 0] };
+			case 'left':
+				return { sector: sector, positioning: 'bottom-center', offset: [0, 25] };
+			case 'top':
+				return { sector: sector, positioning: 'center-right', offset: [-15, 0] };
+			default:
+				return null;
 		}
 
 	}

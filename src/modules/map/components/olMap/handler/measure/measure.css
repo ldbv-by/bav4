@@ -26,17 +26,6 @@
 	padding: .1em .2em;
 	border-radius: 0;
 }
-	
-/* .partition:after {
-	content: '';
-	position: absolute;
-	border-width: 5px;
-	border-style: solid;
-	border-color: var(--primary-bg-color-05) transparent transparent  transparent;
-	left: 50%;
-	margin-left: -6px;
-	top: 16px;
-} */
 
 .partition.left:after {
 	width: 0; 

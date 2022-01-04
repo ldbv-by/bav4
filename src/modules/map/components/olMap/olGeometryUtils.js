@@ -10,6 +10,26 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 };
 
 /**
+ * Coerce the provided geometry to a LineString or null,
+ * if the geometry is not a LineString,LinearRing or Polygon
+ *
+ * @param {Geometry} geometry the geometry to coerce to LineString
+ * @return {Geometry | null} the coerced LineString or null
+ */
+export const getLineString = (geometry) => {
+	if (geometry instanceof LineString) {
+		return geometry;
+	}
+	else if (geometry instanceof LinearRing) {
+		return new LineString(geometry.getCoordinates());
+	}
+	else if (geometry instanceof Polygon) {
+		return new LineString(geometry.getCoordinates(false)[0]);
+	}
+	return null;
+};
+
+/**
  * Contains informations for transformation-methods
  * @typedef {Object} CalculationHints
  * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
@@ -42,17 +62,6 @@ export const getArea = (geometry, calculationHints = {}) => {
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		const getLineString = (lineStringCandidate) => {
-			if (lineStringCandidate instanceof LineString) {
-				return lineStringCandidate;
-			}
-			else if (lineStringCandidate instanceof LinearRing) {
-				return new LineString(lineStringCandidate.getCoordinates());
-			}
-			else if (lineStringCandidate instanceof Polygon) {
-				return new LineString(lineStringCandidate.getCoordinates(false)[0]);
-			}
-		};
 		const lineString = getLineString(calculationGeometry);
 
 
@@ -72,17 +81,6 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
-	const getLineString = (lineStringCandidate) => {
-		if (lineStringCandidate instanceof LineString) {
-			return lineStringCandidate;
-		}
-		else if (lineStringCandidate instanceof LinearRing) {
-			return new LineString(lineStringCandidate.getCoordinates());
-		}
-		else if (lineStringCandidate instanceof Polygon) {
-			return new LineString(lineStringCandidate.getCoordinates(false)[0]);
-		}
-	};
 	const lineString = getLineString(geometry);
 
 	if (lineString) {
@@ -91,50 +89,6 @@ export const getCoordinateAt = (geometry, fraction) => {
 	return null;
 };
 
-
-/**
- *
- * Return the segment at the provided fraction along the linear geometry or along the boundary of a area-like geometry.
- * The fraction is a number between 0 and 1, where 0 is the start (first coordinate) of the geometry and 1 is the end (last coordinate). *
- * @param {Geometry} geometry
- * @param {number} fraction
- * @returns {Geometry| null} the segment-geometry or null if the geometry is not linear or area-like
- */
-export const getSegmentAt = (geometry, fraction) => {
-	const getLineString = (lineStringCandidate) => {
-		if (lineStringCandidate instanceof LineString) {
-			return lineStringCandidate;
-		}
-		else if (lineStringCandidate instanceof LinearRing) {
-			return new LineString(lineStringCandidate.getCoordinates());
-		}
-		else if (lineStringCandidate instanceof Polygon) {
-			return new LineString(lineStringCandidate.getCoordinates(false)[0]);
-		}
-	};
-	const lineString = getLineString(geometry);
-
-	const findSegment = (from, to, coordinateCandidate) => {
-		const isFrom = from[0] === coordinateCandidate[0] && from[1] === coordinateCandidate[1];
-		const isTo = to[0] === coordinateCandidate[0] && to[1] === coordinateCandidate[1];
-		if (isFrom || isTo) {
-			return true;
-		}
-		const segment = new LineString([from, to]);
-		return segment.intersectsCoordinate(coordinateCandidate) ? segment : false;
-	};
-
-	const noSegment = () => {
-		return null;
-	};
-	if (lineString) {
-		const segmentCoordinate = lineString.getCoordinateAt(fraction);
-		const segment = lineString.forEachSegment((from, to) => findSegment(from, to, segmentCoordinate));
-		return segment ? segment : noSegment();
-	}
-
-	return noSegment();
-};
 
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
@@ -265,19 +219,6 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 };
 
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
-	const getLineString = (geometry) => {
-		if (geometry instanceof LineString) {
-			return geometry;
-		}
-		else if (geometry instanceof LinearRing) {
-			return new LineString(geometry.getCoordinates());
-		}
-		else if (geometry instanceof Polygon) {
-			return new LineString(geometry.getCoordinates(false)[0]);
-		}
-		return null;
-	};
-
 	const residuals = [];
 	const lineString = getLineString(geometry);
 	if (lineString) {

@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../../../injection';
 import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea, getSegmentAt } from '../../olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../../olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from '../../BaOverlay';
 
@@ -88,7 +88,6 @@ export class MeasurementOverlay extends BaOverlay {
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
-				this._placement = this._updatePlacement(this._placement);
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 			case MeasurementOverlayTypes.HELP:
@@ -96,14 +95,6 @@ export class MeasurementOverlay extends BaOverlay {
 			default:
 				this._position = this.geometry.getLastCoordinate();
 		}
-	}
-
-	_updatePlacement(currentPlacement) {
-		if (this._value && this._geometry) {
-			const newPlacement = this._getPlacement(this._geometry, this._value);
-			return newPlacement ? newPlacement : currentPlacement;
-		}
-		return currentPlacement;
 	}
 
 	_getContent(type) {
@@ -130,37 +121,14 @@ export class MeasurementOverlay extends BaOverlay {
 		}
 	}
 
-	_getPlacement(geometry, fraction) {
-
-		const segment = getSegmentAt(geometry, fraction);
-		if (segment) {
-			const angle = Math.round(getAzimuth(segment));
-			const sectorFunction = [
-				(angle) => angle <= 60 || 300 < angle ? 'top' : false,
-				(angle) => 60 < angle && angle <= 120 ? 'right' : false,
-				(angle) => 120 < angle && angle <= 210 ? 'bottom' : false,
-				(angle) => 210 < angle && angle <= 300 ? 'left' : false
-			].find(isSector => isSector(angle));
-			const sector = sectorFunction ? sectorFunction(angle) : null;
-			switch (sector) {
-				case 'right':
-					return { sector: sector, positioning: 'top-center', offset: [0, -25] };
-				case 'bottom':
-					return { sector: sector, positioning: 'center-left', offset: [10, 0] };
-				case 'left':
-					return { sector: sector, positioning: 'bottom-center', offset: [0, 25] };
-				case 'top':
-					return { sector: sector, positioning: 'center-right', offset: [-15, 0] };
-				default:
-					return null;
-			}
+	set placement(value) {
+		if (value !== this.placement) {
+			this._placement = value;
+			this.render();
 		}
 	}
 
 	get placement() {
-		if (this._placement.sector === 'init' && this._value && this._geometry) {
-			this._placement = this._updatePlacement(this._placement);
-		}
 		return this._placement;
 	}
 
