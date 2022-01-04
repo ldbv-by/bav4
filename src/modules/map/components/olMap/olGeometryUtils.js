@@ -115,15 +115,25 @@ export const getSegmentAt = (geometry, fraction) => {
 	const lineString = getLineString(geometry);
 
 	const findSegment = (from, to, coordinateCandidate) => {
+		const isFrom = from[0] === coordinateCandidate[0] && from[1] === coordinateCandidate[1];
+		const isTo = to[0] === coordinateCandidate[0] && to[1] === coordinateCandidate[1];
+		if (isFrom || isTo) {
+			return true;
+		}
 		const segment = new LineString([from, to]);
 		return segment.intersectsCoordinate(coordinateCandidate) ? segment : false;
+	};
+
+	const noSegment = () => {
+		return null;
 	};
 	if (lineString) {
 		const segmentCoordinate = lineString.getCoordinateAt(fraction);
 		const segment = lineString.forEachSegment((from, to) => findSegment(from, to, segmentCoordinate));
-		return segment ? segment : geometry;
+		return segment ? segment : noSegment();
 	}
-	return geometry;
+
+	return noSegment();
 };
 
 /**
@@ -191,7 +201,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	};
 
 	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions
+	const minDelta = 0.02; // results in max 50 allowed partitions
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
@@ -240,19 +250,17 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 };
 
 export const moveParallel = (fromPoint, toPoint, distance) => {
-	const coords = [];
+
 	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
-	const newFrom = [
+	const movedFrom = [
 		Math.sin(angle) * distance + fromPoint[0],
 		-Math.cos(angle) * distance + fromPoint[1]
 	];
-	const newTo = [
+	const movedTo = [
 		Math.sin(angle) * distance + toPoint[0],
 		-Math.cos(angle) * distance + toPoint[1]
 	];
-	coords.push(newFrom);
-	coords.push(newTo);
-	return new LineString(coords);
+	return new LineString([movedFrom, movedTo]);
 
 };
 

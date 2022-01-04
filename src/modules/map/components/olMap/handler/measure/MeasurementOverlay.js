@@ -49,6 +49,7 @@ export class MeasurementOverlay extends BaOverlay {
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = false;
 		this._isDraggable = false;
+		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 	}
 
 	/**
@@ -64,12 +65,12 @@ export class MeasurementOverlay extends BaOverlay {
 			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
 			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP,
 			draggable: this._isDraggable,
-			top: this.placement ? this.placement.sector === 'top' : false,
-			right: this.placement ? this.placement.sector === 'right' : false,
-			bottom: this.placement ? this.placement.sector === 'bottom' : false,
-			left: this.placement ? this.placement.sector === 'left' : false
+			top: this.placement.sector === 'top',
+			right: this.placement.sector === 'right',
+			bottom: this.placement.sector === 'bottom',
+			left: this.placement.sector === 'left',
+			init: this.placement.sector === 'init'
 		};
-
 
 		return html`
 			<style>${css}</style>
@@ -80,13 +81,14 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_updatePosition() {
+
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
 				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
 				break;
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
 				this._position = getCoordinateAt(this.geometry, this._value);
-				this._placement = this._getPlacement(this.geometry, this._value) ;
+				this._placement = this._updatePlacement(this._placement);
 				break;
 			case MeasurementOverlayTypes.DISTANCE:
 			case MeasurementOverlayTypes.HELP:
@@ -94,6 +96,14 @@ export class MeasurementOverlay extends BaOverlay {
 			default:
 				this._position = this.geometry.getLastCoordinate();
 		}
+	}
+
+	_updatePlacement(currentPlacement) {
+		if (this._value && this._geometry) {
+			const newPlacement = this._getPlacement(this._geometry, this._value);
+			return newPlacement ? newPlacement : currentPlacement;
+		}
+		return currentPlacement;
 	}
 
 	_getContent(type) {
@@ -124,30 +134,34 @@ export class MeasurementOverlay extends BaOverlay {
 
 		const segment = getSegmentAt(geometry, fraction);
 		if (segment) {
-
-			const angle = getAzimuth(segment);
-			const isSectorTop = (angle) => angle < 60 || 300 < angle ? 'top' : false;
-			const isSectorRight = (angle) => 60 < angle && angle < 120 ? 'right' : false;
-			const isSectorBottom = (angle) => 120 < angle && angle < 210 ? 'bottom' : false;
-			const isSectorLeft = (angle) => 210 < angle && angle < 300 ? 'left' : false;
-			const sector = [isSectorTop, isSectorRight, isSectorBottom, isSectorLeft].find(isSector => isSector(angle));
-			switch (sector(angle)) {
+			const angle = Math.round(getAzimuth(segment));
+			const sectorFunction = [
+				(angle) => angle <= 60 || 300 < angle ? 'top' : false,
+				(angle) => 60 < angle && angle <= 120 ? 'right' : false,
+				(angle) => 120 < angle && angle <= 210 ? 'bottom' : false,
+				(angle) => 210 < angle && angle <= 300 ? 'left' : false
+			].find(isSector => isSector(angle));
+			const sector = sectorFunction ? sectorFunction(angle) : null;
+			switch (sector) {
 				case 'right':
-					return { sector: sector(angle), positioning: 'top-center', offset: [0, -25] };
+					return { sector: sector, positioning: 'top-center', offset: [0, -25] };
 				case 'bottom':
-					return { sector: sector(angle), positioning: 'center-left', offset: [25, 0] };
+					return { sector: sector, positioning: 'center-left', offset: [10, 0] };
 				case 'left':
-					return { sector: sector(angle), positioning: 'bottom-center', offset: [0, 25] };
+					return { sector: sector, positioning: 'bottom-center', offset: [0, 25] };
 				case 'top':
-					return { sector: sector(angle), positioning: 'center-right', offset: [-25, 0] };
+					return { sector: sector, positioning: 'center-right', offset: [-15, 0] };
 				default:
-					console.warn('No sector found for:', angle);
+					return null;
 			}
 		}
 	}
 
 	get placement() {
-		return this._placement ? this._placement : { sector: 'right', positioning: 'top-center', offset: [0, -25] };
+		if (this._placement.sector === 'init' && this._value && this._geometry) {
+			this._placement = this._updatePlacement(this._placement);
+		}
+		return this._placement;
 	}
 
 	static get tag() {

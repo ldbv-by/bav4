@@ -27,7 +27,7 @@
 	border-radius: 0;
 }
 	
-.partition:after {
+/* .partition:after {
 	content: '';
 	position: absolute;
 	border-width: 5px;
@@ -36,7 +36,55 @@
 	left: 50%;
 	margin-left: -6px;
 	top: 16px;
-}
+} */
+
+.partition.left:after {
+	width: 0; 
+	height: 0; 
+	border-top: 5px solid transparent;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid red;
+    position: absolute;
+    top: -11px;
+    left: 50%;
+  }
+
+  .partition.right:after {
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	
+	border-top: 5px solid red;
+	position: absolute;
+    top: 15px;
+    left: 40%;
+  }
+
+  .partition.top:after {
+	width: 0; 
+	height: 0; 
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	
+	border-left: 5px solid red;
+	position: absolute;
+    top: 2px;
+    left: 111%;
+  }
+
+  .partition.bottom:after {
+	width: 0; 
+	height: 0; 
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent; 
+	
+	border-right:5px solid red; 
+	position: absolute;
+    top: 2px;
+    left: -9%;
+  }
 
 .static,.distance, .area {
 	background-color: rgba(255,0,0,0.9);
