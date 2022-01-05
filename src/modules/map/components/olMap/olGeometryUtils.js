@@ -10,6 +10,26 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 };
 
 /**
+ * Coerce the provided geometry to a LineString or null,
+ * if the geometry is not a LineString,LinearRing or Polygon
+ *
+ * @param {Geometry} geometry the geometry to coerce to LineString
+ * @return {Geometry | null} the coerced LineString or null
+ */
+export const getLineString = (geometry) => {
+	if (geometry instanceof LineString) {
+		return geometry;
+	}
+	else if (geometry instanceof LinearRing) {
+		return new LineString(geometry.getCoordinates());
+	}
+	else if (geometry instanceof Polygon) {
+		return new LineString(geometry.getCoordinates(false)[0]);
+	}
+	return null;
+};
+
+/**
  * Contains informations for transformation-methods
  * @typedef {Object} CalculationHints
  * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
@@ -42,17 +62,6 @@ export const getArea = (geometry, calculationHints = {}) => {
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		const getLineString = (lineStringCandidate) => {
-			if (lineStringCandidate instanceof LineString) {
-				return lineStringCandidate;
-			}
-			else if (lineStringCandidate instanceof LinearRing) {
-				return new LineString(lineStringCandidate.getCoordinates());
-			}
-			else if (lineStringCandidate instanceof Polygon) {
-				return new LineString(lineStringCandidate.getCoordinates(false)[0]);
-			}
-		};
 		const lineString = getLineString(calculationGeometry);
 
 
@@ -72,17 +81,6 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
-	const getLineString = (lineStringCandidate) => {
-		if (lineStringCandidate instanceof LineString) {
-			return lineStringCandidate;
-		}
-		else if (lineStringCandidate instanceof LinearRing) {
-			return new LineString(lineStringCandidate.getCoordinates());
-		}
-		else if (lineStringCandidate instanceof Polygon) {
-			return new LineString(lineStringCandidate.getCoordinates(false)[0]);
-		}
-	};
 	const lineString = getLineString(geometry);
 
 	if (lineString) {
@@ -90,6 +88,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 	}
 	return null;
 };
+
 
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
@@ -156,7 +155,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	};
 
 	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions
+	const minDelta = 0.02; // results in max 50 allowed partitions
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
@@ -205,36 +204,21 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 };
 
 export const moveParallel = (fromPoint, toPoint, distance) => {
-	const coords = [];
+
 	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
-	const newFrom = [
+	const movedFrom = [
 		Math.sin(angle) * distance + fromPoint[0],
 		-Math.cos(angle) * distance + fromPoint[1]
 	];
-	const newTo = [
+	const movedTo = [
 		Math.sin(angle) * distance + toPoint[0],
 		-Math.cos(angle) * distance + toPoint[1]
 	];
-	coords.push(newFrom);
-	coords.push(newTo);
-	return new LineString(coords);
+	return new LineString([movedFrom, movedTo]);
 
 };
 
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
-	const getLineString = (geometry) => {
-		if (geometry instanceof LineString) {
-			return geometry;
-		}
-		else if (geometry instanceof LinearRing) {
-			return new LineString(geometry.getCoordinates());
-		}
-		else if (geometry instanceof Polygon) {
-			return new LineString(geometry.getCoordinates(false)[0]);
-		}
-		return null;
-	};
-
 	const residuals = [];
 	const lineString = getLineString(geometry);
 	if (lineString) {

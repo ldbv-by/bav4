@@ -350,7 +350,7 @@ describe('getPartitionDelta', () => {
 		const resolution = 50;
 		const delta = getPartitionDelta(lineString, resolution);
 
-		expect(delta).toBe(0.02);
+		expect(delta).toBe(0.2);
 	});
 });
 
