@@ -1,7 +1,7 @@
 {
   "name": "bav4-nomigration",
   "dependencies": {
-    "lit-html": "^2.0.2",
+    "lit-html": "^2.1.1",
     "ol": "^6.9.0",
     "proj4": "^2.7.5",
     "redux": "^4.1.2"
@@ -20,7 +20,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "fucazu-minami": "^1.1.7",
     "html-webpack-plugin": "^5.5.0",
-    "jasmine": "^4.0.0",
+    "jasmine": "^4.0.1",
     "jsdoc": "^3.6.7",
     "karma": "^6.3.9",
     "karma-chrome-launcher": "^3.1.0",
