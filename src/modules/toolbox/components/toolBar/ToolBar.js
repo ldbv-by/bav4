@@ -1,10 +1,7 @@
 import { html } from 'lit-html';
 import css from './toolBar.css';
-import { DrawToolContent } from '../drawToolContent/DrawToolContent';
-import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
-import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { $injector } from '../../../../injection';
-import { openToolContainer, setContainerContent, toggleToolContainer } from '../../../../store/toolContainer/toolContainer.action';
+import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 
 
@@ -16,6 +13,7 @@ const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
  *
  * @class
  * @author alsturm
+ * @author thiloSchlemmer
  * @author taulinger
  */
 export class ToolBar extends MvuElement {
@@ -53,7 +51,7 @@ export class ToolBar extends MvuElement {
 	onInitialize() {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.toolContainer.contentId, contentId => this._toolId = contentId);
+		this.observe(state => state.tools.current, current => this._toolId = current);
 	}
 
 	/**
@@ -77,26 +75,11 @@ export class ToolBar extends MvuElement {
 
 		const toggleTool = (id) => {
 			if (this._toolId === id) {
-				toggleToolContainer();
+				setCurrentTool(null);
 			}
 			else {
-				setContainerContent(id);
-				openToolContainer();
+				setCurrentTool(id);
 			}
-		};
-		const toggleDrawTool = () => {
-			const toolId = DrawToolContent.tag;
-			toggleTool(toolId);
-		};
-
-		const toggleMeasureTool = () => {
-			const toolId = MeasureToolContent.tag;
-			toggleTool(toolId);
-		};
-
-		const toggleShareTool = () => {
-			const toolId = ShareToolContent.tag;
-			toggleTool(toolId);
 		};
 
 		const getAnimatedBorderClass = () => {
@@ -117,21 +100,21 @@ export class ToolBar extends MvuElement {
 					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button  @click="${toggleMeasureTool}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
-					<button  @click="${toggleDrawTool}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${toggleShareTool}" class="tool-bar__button">
+					<button  @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
