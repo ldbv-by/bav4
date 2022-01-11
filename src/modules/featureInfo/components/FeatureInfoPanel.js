@@ -25,7 +25,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 
 	constructor() {
 		super({
-			featureInfoData: []
+			featureInfoData: [],
+			isPortrait: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');

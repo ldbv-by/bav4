@@ -10,15 +10,12 @@ describe('StoreService', () => {
 		const geoResourceServiceMock = {
 			init: () => { }
 		};
-
 		const measurementPluginMock = {
 			register: () => { }
 		};
-
 		const notificationPluginMock = {
 			register: () => { }
 		};
-
 		const drawPluginMock = {
 			register: () => { }
 		};
@@ -90,7 +87,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
 			expect(reducerKeys.includes('mainMenu')).toBeTrue();
-			expect(reducerKeys.includes('toolContainer')).toBeTrue();
+			expect(reducerKeys.includes('tools')).toBeTrue();
 			expect(reducerKeys.includes('modal')).toBeTrue();
 			expect(reducerKeys.includes('layers')).toBeTrue();
 			expect(reducerKeys.includes('mapContextMenu')).toBeTrue();
