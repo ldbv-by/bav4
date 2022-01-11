@@ -228,7 +228,7 @@ describe('styleUtils', () => {
 			await sleep(duration + 100);
 			// render last animation-step and restart
 			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
-			expect(contextSpy).toHaveBeenCalledTimes(callsForStaticStyle + callsForDurationDependingStyleEnd);
+			expect(contextSpy.calls.count()).toBeGreaterThanOrEqual(callsForStaticStyle + callsForDurationDependingStyleEnd);
 			contextSpy.calls.reset();
 			// render again first animation-step
 			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
