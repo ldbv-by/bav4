@@ -1,6 +1,6 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { setTab, TabKey } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab, TabId } from '../../src/store/mainMenu/mainMenu.action';
 import { abortOrReset, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
@@ -13,7 +13,7 @@ describe('MainMenuPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: false,
-				tab: TabKey.MAPS
+				tab: TabId.MAPS
 			},
 			...state
 		};
@@ -42,7 +42,7 @@ describe('MainMenuPlugin', () => {
 			const store = setup({
 				mainMenu: {
 					open: true,
-					tab: TabKey.MAPS
+					tab: TabId.MAPS
 				}
 			});
 			const instanceUnderTest = new MainMenuPlugin();
@@ -50,7 +50,7 @@ describe('MainMenuPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(instanceUnderTest._open).toBeTrue();
-			expect(instanceUnderTest._previousTab).toBe(TabKey.MAPS);
+			expect(instanceUnderTest._previousTab).toBe(TabId.MAPS);
 		});
 	});
 
@@ -75,7 +75,7 @@ describe('MainMenuPlugin', () => {
 					resolveQuery(queryId);
 
 					expect(store.getState().featureInfo.current).toHaveSize(1);
-					expect(store.getState().mainMenu.tab).toBe(TabKey.FEATUREINFO);
+					expect(store.getState().mainMenu.tab).toBe(TabId.FEATUREINFO);
 					expect(store.getState().mainMenu.open).toBeTrue();
 				});
 			});
@@ -85,7 +85,7 @@ describe('MainMenuPlugin', () => {
 				describe('and MainMenu is initially closed', () => {
 
 					it('restores the previous panel and closes the menu', async () => {
-						const tabIndex = TabKey.MAPS;
+						const tabIndex = TabId.MAPS;
 						const queryId = 'foo';
 						const store = setup({
 							mainMenu: {
@@ -111,7 +111,7 @@ describe('MainMenuPlugin', () => {
 				describe('and MainMenu is initially open', () => {
 
 					it('restores the previous panel', async () => {
-						const tabIndex = TabKey.MAPS;
+						const tabIndex = TabId.MAPS;
 						const queryId = 'foo';
 						const store = setup({
 							mainMenu: {
@@ -142,7 +142,7 @@ describe('MainMenuPlugin', () => {
 		describe('and MainMenu is initially closed', () => {
 
 			it('restores the previous panel', async () => {
-				const tabIndex = TabKey.MAPS;
+				const tabIndex = TabId.MAPS;
 				const queryId = 'foo';
 				const store = setup({
 					mainMenu: {
@@ -168,7 +168,7 @@ describe('MainMenuPlugin', () => {
 		describe('and MainMenu is initially open', () => {
 
 			it('restores the previous panel', async () => {
-				const tabIndex = TabKey.MAPS;
+				const tabIndex = TabId.MAPS;
 				const queryId = 'foo';
 				const store = setup({
 					mainMenu: {
@@ -195,7 +195,7 @@ describe('MainMenuPlugin', () => {
 	describe('when mainMenu.tabIndex changes', () => {
 
 		it('stores some properties', async () => {
-			const tabIndex = TabKey.MAPS;
+			const tabIndex = TabId.MAPS;
 			const store = setup({
 				mainMenu: {
 					tab: tabIndex,
@@ -205,11 +205,11 @@ describe('MainMenuPlugin', () => {
 			const instanceUnderTest = new MainMenuPlugin();
 			await instanceUnderTest.register(store);
 
-			setTab(TabKey.MORE);
+			setTab(TabId.MORE);
 
-			expect(instanceUnderTest._previousTab).toBe(TabKey.MORE);
+			expect(instanceUnderTest._previousTab).toBe(TabId.MORE);
 
-			setTab(TabKey.FEATUREINFO);
+			setTab(TabId.FEATUREINFO);
 
 			expect(instanceUnderTest._open).toBeTrue();
 		});

@@ -1,6 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { close, open, setTab, TabKey } from '../store/mainMenu/mainMenu.action';
+import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
 
 
 /**
@@ -35,7 +35,7 @@ export class MainMenuPlugin extends BaPlugin {
 					setTab(this._previousTab);
 				}
 				else {
-					setTab(TabKey.FEATUREINFO);
+					setTab(TabId.FEATUREINFO);
 					open();
 				}
 			}
@@ -50,7 +50,7 @@ export class MainMenuPlugin extends BaPlugin {
 		};
 
 		const onTabChanged = (tab, state) => {
-			if (tab === TabKey.FEATUREINFO) {
+			if (tab === TabId.FEATUREINFO) {
 				this._open = state.mainMenu.open;
 			}
 			else {
