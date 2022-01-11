@@ -1,6 +1,7 @@
 
 import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
+import { sleep } from '../../../../../../../src/utils/sleep';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight/assets/location.svg';
 import tempLocationIcon from '../../../../../../../src/modules/map/components/olMap/handler/highlight//assets/temporaryLocation.svg';
@@ -175,7 +176,7 @@ describe('styleUtils', () => {
 			};
 		};
 
-		const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), get2dContext());
+		const getPostRenderEvent = (time, ctx = get2dContext()) => new RenderEvent('postrender', transform, setupFrameState(time), ctx);
 
 		const getFeature = () => {
 			const geometry = new Point([0, 0]);
@@ -203,6 +204,35 @@ describe('styleUtils', () => {
 			layer.on('postrender', functionUnderTest);
 
 			expect(() => layer.dispatchEvent(earlyEvent)).not.toThrow();
+		});
+
+		it('when duration loop expires, animation should restart', async () => {
+			const feature = getFeature();
+			const map = setupMap();
+			const layer = setupLayer(map, feature);
+			const callsForStaticStyle = 1;
+			const callsForDurationDependingStyleStart = 1;
+			const callsForDurationDependingStyleEnd = 7;
+			const duration = 1500;
+
+			const context = get2dContext();
+			const contextSpy = spyOn(context, 'drawImage').and.callThrough();
+
+			const functionUnderTest = createAnimation(map, feature);
+			layer.on('postrender', functionUnderTest);
+
+			expect(functionUnderTest).toBeDefined();
+			// render first animation-step
+			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
+			expect(contextSpy).toHaveBeenCalledTimes(callsForStaticStyle + callsForDurationDependingStyleStart);
+			await sleep(duration + 100);
+			// render last animation-step and restart
+			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
+			expect(contextSpy).toHaveBeenCalledTimes(callsForStaticStyle + callsForDurationDependingStyleEnd);
+			contextSpy.calls.reset();
+			// render again first animation-step
+			layer.dispatchEvent(getPostRenderEvent(Date.now(), context));
+			expect(contextSpy).toHaveBeenCalledTimes(callsForStaticStyle + callsForDurationDependingStyleStart);
 		});
 	});
 });
