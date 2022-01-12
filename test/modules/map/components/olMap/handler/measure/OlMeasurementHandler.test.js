@@ -1533,6 +1533,7 @@ describe('OlMeasurementHandler', () => {
 			const store = setup();
 			const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
@@ -1555,8 +1556,10 @@ describe('OlMeasurementHandler', () => {
 			const store = setup();
 			const geometry1 = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]);
 			const feature1 = new Feature({ geometry: geometry1 });
+			feature1.setId('measure_1');
 			const geometry2 = new LineString([[2, 0], [7, 0]]);
 			const feature2 = new Feature({ geometry: geometry2 });
+			feature2.setId('measure_2');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);

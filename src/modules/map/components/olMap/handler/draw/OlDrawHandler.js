@@ -25,6 +25,7 @@ import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
 
 
 
@@ -145,7 +146,7 @@ export class OlDrawHandler extends OlLayerHandler {
 						f.on('change', onFeatureChange);
 					});
 					removeLayer(oldLayer.get('id'));
-					this._finish();
+					this._init(null);
 				}
 			}
 		};
@@ -166,21 +167,41 @@ export class OlDrawHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
-			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
-				this._select.getFeatures().clear();
-				setSelectedStyle(null);
-			}
+			const addToSelection = (features) => {
+				if (this._drawState.type === InteractionStateType.MODIFY && features.length === 0) {
+					this._select.getFeatures().clear();
+					setSelectedStyle(null);
+				}
 
-			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
-				selectableFeatures.forEach(f => {
-					const hasFeature = this._select.getFeatures().getArray().includes(f);
-					if (!hasFeature) {
-						this._setSelected(f);
-					}
-				});
-			}
-			this._updateDrawState(coordinate, pixel, dragging);
+				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && features.length > 0) {
+					features.forEach(f => {
+						const hasFeature = this._select.getFeatures().getArray().includes(f);
+						if (!hasFeature) {
+							this._setSelected(f);
+						}
+					});
+				}
+				this._updateDrawState(coordinate, pixel, dragging);
+			};
+
+			const changeTool = (features) => {
+				const changeToMeasureTool = (features) => {
+					return features.some(f => f.getId().startsWith('measure_'));
+				};
+				if (changeToMeasureTool(features)) {
+					setCurrentTool(ToolId.MEASURING);
+				}
+			};
+
+			const isToolChangeNeeded = (features) => {
+				return features.some(f => !f.getId().startsWith('draw_'));
+			};
+
+
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
+
+			const action = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
+			action(selectableFeatures);
 		};
 
 		const pointerMoveHandler = (event) => {
