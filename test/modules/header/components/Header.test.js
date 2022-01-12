@@ -10,7 +10,7 @@ import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { TabKey } from '../../../../src/store/mainMenu/mainMenu.action';
+import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(Header.tag, Header);
@@ -26,7 +26,7 @@ describe('Header', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tab: TabKey.TOPICS
+				tab: TabId.TOPICS
 			},
 			network: {
 				fetching: false,
@@ -271,11 +271,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
+			expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tab).toBe(TabKey.MORE);
+			expect(store.getState().mainMenu.tab).toBe(TabId.MORE);
 		});
 
 	});
@@ -487,7 +487,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tab).toBe(TabKey.SEARCH);
+				expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {

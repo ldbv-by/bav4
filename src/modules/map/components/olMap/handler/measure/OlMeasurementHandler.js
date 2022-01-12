@@ -159,9 +159,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
 				this._select.getFeatures().clear();
-				setStatistic({ length: 0, area: 0 });
 			}
-
 			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
 				selectableFeatures.forEach(f => {
 					const hasFeature = this._select.getFeatures().getArray().includes(f);
@@ -170,6 +168,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					}
 				});
 			}
+
+			this._updateStatistics();
 			this._updateMeasureState(coordinate, pixel, dragging);
 		};
 
