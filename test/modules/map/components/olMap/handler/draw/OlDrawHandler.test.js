@@ -4,7 +4,7 @@ import { DRAW_LAYER_ID } from '../../../../../../../src/plugins/DrawPlugin';
 import { drawReducer } from '../../../../../../../src/store/draw/draw.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
-import { Style } from 'ol/style';
+import { Icon, Style } from 'ol/style';
 import { OlDrawHandler } from '../../../../../../../src/modules/map/components/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -1166,23 +1166,26 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const deleteKeyCode = 46;
+			const sourceMock = { hasFeature: () => true,
+				removeFeature: () => {} };
 
 			classUnderTest.activate(map);
 			setType('line');
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
 
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
 
-			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+			const sourceSpy = spyOn(sourceMock, 'removeFeature');
+			spyOn(classUnderTest._vectorLayer, 'getSource').and.callFake(() => sourceMock);
+			spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
 			simulateKeyEvent(deleteKeyCode);
 
-
 			setTimeout(() => {
-				expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
+				expect(sourceSpy).toHaveBeenCalledWith(feature);
 				done();
 			});
 		});
@@ -1514,9 +1517,15 @@ describe('OlDrawHandler', () => {
 
 		};
 
+		const style = new Style({
+			image: new Icon({
+				src: 'something',
+				color: [0, 0, 0]
+			}) });
+
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			setup();
+			const store = setup({ ...initialState, selection: ['draw_1'] });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
@@ -1526,38 +1535,37 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+			feature.setId('draw_1');
+			classUnderTest._select.getFeatures().push(feature);
+
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 600, 0);
+
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
+
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+			expect(store.getState().draw.selection.length).toBe(0);
 		});
 
 
 		it('select feature, if clickposition is in anyinteract to selected feature', () => {
-			setup();
-			const classUnderTest = new OlDrawHandler();
-			const map = setupMap();
+			const store = setup();
 
-			classUnderTest.activate(map);
-			setStyle({ symbolSrc: 'something' });
-			setType('marker');
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			feature.setStyle(style);
+			const map = setupMap();
 
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			expect(classUnderTest._select).toBeDefined();
 
+			setType('marker');
 
 			// force deselect
 			classUnderTest._select.getFeatures().clear();
@@ -1568,37 +1576,29 @@ describe('OlDrawHandler', () => {
 			});
 
 			// re-select
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+			expect(store.getState().draw.selection.length).toBe(1);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
-			setup();
+			const feature1 = new Feature({ geometry: new Point([0, 0]) });
+			const feature2 = new Feature({ geometry: new Point([50, 50]) });
+			feature1.setId('draw_1');
+			feature2.setId('draw_2');
+			feature1.setStyle(style);
+			feature2.setStyle(style);
+			const store = setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
 			classUnderTest.activate(map);
-			setStyle({ symbolSrc: 'something' });
 			setType('marker');
-			const geometry = new Point([50, 50]);
-			const feature1 = new Feature({ geometry: new Point([0, 0]) });
-			const feature2 = new Feature({ geometry: geometry });
 
-
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature1);
-			feature1.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature1);
-			expect(classUnderTest._select).toBeDefined();
-
-			setType('marker');
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature2);
-			feature2.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature2);
-			expect(classUnderTest._select).toBeDefined();
-
+			classUnderTest._vectorLayer.getSource().addFeature(feature1);
+			classUnderTest._vectorLayer.getSource().addFeature(feature2);
 
 			// force deselect
 			classUnderTest._select.getFeatures().clear();
@@ -1614,13 +1614,15 @@ describe('OlDrawHandler', () => {
 			});
 
 			// re-select
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0, 0);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+			expect(store.getState().draw.selection).toEqual(['draw_1']);
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 50, 50);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+			expect(store.getState().draw.selection).toEqual(['draw_2']);
 		});
 	});
 

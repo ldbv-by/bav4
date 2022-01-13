@@ -6,6 +6,7 @@ export const STYLE_CHANGED = 'draw/style';
 export const SELECTED_STYLE_CHANGED = 'draw/selectedStyle';
 export const DESCRIPTION_CHANGED = 'draw/description';
 export const FILE_SAVE_RESULT_CHANGED = 'draw/fileSaveResult';
+export const SELECTION_CHANGED = 'draw/selection';
 export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
 export const REMOVE_REQUESTED = 'draw/remove';
@@ -44,6 +45,10 @@ export const initialState = {
 	 * @type {DrawFileSaveResult}
 	 */
 	fileSaveResult: null,
+	/**
+	 * @type {Array<String>}
+	 */
+	selection: [],
 	/**
 	 * @type EventLike
 	 */
@@ -123,6 +128,14 @@ export const drawReducer = (state = initialState, action) => {
 			return {
 				...state,
 				fileSaveResult: payload
+
+			};
+		}
+		case SELECTION_CHANGED: {
+
+			return {
+				...state,
+				selection: payload
 
 			};
 		}

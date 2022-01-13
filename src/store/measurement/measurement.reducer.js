@@ -2,6 +2,7 @@ export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
 export const FILE_SAVE_RESULT_CHANGED = 'measurement/fileSaveResult';
+export const SELECTION_CHANGED = 'measurement/selection';
 export const FINISH_REQUESTED = 'measurement/finish';
 export const RESET_REQUESTED = 'measurement/reset';
 export const REMOVE_REQUESTED = 'measurement/remove';
@@ -24,6 +25,10 @@ export const initialState = {
 	 * @type {MeasureFileSaveResult}
 	 */
 	fileSaveResult: null,
+	/**
+	 * @type {Array<String>}
+	 */
+	selection: [],
 	/**
 	 * @type EventLike
 	 */
@@ -71,6 +76,14 @@ export const measurementReducer = (state = initialState, action) => {
 			return {
 				...state,
 				fileSaveResult: payload
+
+			};
+		}
+		case SELECTION_CHANGED: {
+
+			return {
+				...state,
+				selection: payload
 
 			};
 		}

@@ -92,6 +92,7 @@ describe('OlMeasurementHandler', () => {
 	const initialState = {
 		active: false,
 		statistic: { length: 0, area: 0 },
+		selection: [],
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
@@ -865,13 +866,13 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => { });
+			feature.setId('measure_');
+			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {
+			});
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-
-			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._modify.setActive(true);
 			simulateKeyEvent(deleteKeyCode);
 
 
@@ -1197,36 +1198,18 @@ describe('OlMeasurementHandler', () => {
 
 		it('add the drawn feature to select after drawends', () => {
 			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-
-			classUnderTest.activate(map);
-
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			feature.setId('measure_1');
+
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._measureState.type = InteractionStateType.DRAW;
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-		});
-
-		it('did NOT add the drawn feature to select after drawabort', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-
-			classUnderTest.activate(map);
-
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
-			const feature = new Feature({ geometry: geometry });
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawabort', classUnderTest._draw, feature);
-
-			expect(classUnderTest._select).toBeDefined();
-			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
 		});
 
 		it('calls draw.finishDrawing after finish-action', () => {
@@ -1474,7 +1457,7 @@ describe('OlMeasurementHandler', () => {
 		};
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			setup();
+			const store = setup({ ...initialState, selection: ['measure_1'] });
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1482,37 +1465,32 @@ describe('OlMeasurementHandler', () => {
 
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
-			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0, 500);
+			feature.setId('measure_1');
+			classUnderTest._select.getFeatures().push(feature);
+
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 600, 0);
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
+
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+			expect(store.getState().measurement.selection.length).toBe(0);
 		});
 
 
 		it('select feature, if clickposition is in anyinteract to selected feature', () => {
-			setup();
-			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
-
-			classUnderTest.activate(map);
-
+			const store = setup();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+			const map = setupMap();
 
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			feature.getGeometry().dispatchEvent('change');
-			simulateDrawEvent('drawend', classUnderTest._draw, feature);
 			expect(classUnderTest._select).toBeDefined();
-
 
 			// force deselect
 			classUnderTest._select.getFeatures().clear();
@@ -1523,9 +1501,11 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			// re-select
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 500, 0);
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+			expect(store.getState().measurement.selection.length).toBe(1);
 		});
 
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
@@ -1545,7 +1525,7 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			// select
-			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
 			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
