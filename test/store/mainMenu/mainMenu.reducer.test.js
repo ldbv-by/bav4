@@ -1,6 +1,6 @@
 import { TestUtils } from '../../test-utils.js';
 import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
-import { open, close, toggle, setTab, TabKey } from '../../../src/store/mainMenu/mainMenu.action';
+import { open, close, toggle, setTab, TabId } from '../../../src/store/mainMenu/mainMenu.action';
 
 
 describe('mainMenuReducer', () => {
@@ -25,7 +25,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeFalse();
-				expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
+				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
 			});
 
 			it('initiales the store by media query for ORIENTATION \'landscape\'', () => {
@@ -34,7 +34,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeTrue();
-				expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
+				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
 			});
 
 			it('uses the real window as default argument', () => {
@@ -42,7 +42,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer());
 
 				expect(store.getState().mainMenu.open).toMatch(/true|false/);
-				expect(store.getState().mainMenu.tab).toBe(TabKey.TOPICS);
+				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
 			});
 		});
 	});
@@ -99,10 +99,10 @@ describe('mainMenuReducer', () => {
 		it('set the tab index', () => {
 			const store = setup(createNoInitialStateMainMenuReducer());
 
-			setTab(TabKey.MAPS);
-			expect(store.getState().mainMenu.tab).toBe(TabKey.MAPS);
-			setTab(TabKey.MORE);
-			expect(store.getState().mainMenu.tab).toBe(TabKey.MORE);
+			setTab(TabId.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			setTab(TabId.MORE);
+			expect(store.getState().mainMenu.tab).toBe(TabId.MORE);
 		});
 	});
 });

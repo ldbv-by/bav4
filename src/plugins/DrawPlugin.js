@@ -1,6 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
+import { ToolId } from '../store/tools/tools.action';
+import { activate, deactivate } from '../store/draw/draw.action';
 
 /**
  * Id of the layer used for draw interaction.
@@ -36,10 +38,16 @@ export class DrawPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
-		const extract = (state) => {
-			return state.draw.active;
-
+		const onToolChanged = toolId => {
+			if (toolId !== ToolId.DRAWING) {
+				deactivate();
+			}
+			else {
+				// we activate the tool after another possible active tool was deactivated
+				setTimeout(() => activate());
+			}
 		};
+
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(DRAW_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
@@ -49,6 +57,7 @@ export class DrawPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, extract, onChange);
+		observe(store, state => state.draw.active, onChange);
+		observe(store, state => state.tools.current, onToolChanged, false);
 	}
 }

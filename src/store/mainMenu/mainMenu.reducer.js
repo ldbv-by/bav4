@@ -1,4 +1,4 @@
-import { TabKey } from './mainMenu.action';
+import { TabId } from './mainMenu.action';
 
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
@@ -51,7 +51,7 @@ export const createMainMenuReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		tab: TabKey.TOPICS
+		tab: TabId.TOPICS
 	};
 
 	return (state = initialState, action) => mainMenuReducer(state, action);

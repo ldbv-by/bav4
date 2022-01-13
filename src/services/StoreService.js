@@ -10,8 +10,7 @@ import { notificationReducer } from '../store/notifications/notifications.reduce
 import { createMediaReducer } from '../store/media/media.reducer';
 import { topicsContentPanelReducer } from '../store/topicsContentPanel/topicsContentPanel.reducer';
 import { modalReducer } from '../store/modal/modal.reducer';
-import { toolContainerReducer } from '../store/toolContainer/toolContainer.reducer';
-import { toolBarReducer } from '../store/toolBar/toolBar.reducer';
+import { toolsReducer } from '../store/tools/tools.reducer';
 import { drawReducer } from '../store/draw/draw.reducer';
 import { sharedReducer } from '../store/shared/shared.reducer';
 import { geolocationReducer } from '../store/geolocation/geolocation.reducer';
@@ -42,8 +41,7 @@ export class StoreService {
 			pointer: pointerReducer,
 			position: positionReducer,
 			mainMenu: createMainMenuReducer(),
-			toolBar: toolBarReducer,
-			toolContainer: toolContainerReducer,
+			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,
 			mapContextMenu: mapContextMenuReducer,

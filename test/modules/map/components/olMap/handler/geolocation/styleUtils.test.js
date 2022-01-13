@@ -70,7 +70,13 @@ describe('createAnimateFunction', () => {
 	const viewState = {
 		projection: projection, resolution: 1, rotation: 0
 	};
-	const contextStub = { setTransform: () => { }, translate: () => { }, scale: () => { }, drawImage: () => { }, setStyle: () => {} };
+
+	const get2dContext = () => {
+		const canvas = document.createElement('canvas');
+		return canvas.getContext('2d');
+	};
+
+
 	const setupMap = () => {
 		return new Map({
 			target: 'map',
@@ -99,7 +105,7 @@ describe('createAnimateFunction', () => {
 		};
 	};
 
-	const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), contextStub);
+	const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), get2dContext());
 
 	const getFeature = () => {
 		const geometry = new Point([0, 0]);

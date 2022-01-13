@@ -1,6 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
+import { ToolId } from '../store/tools/tools.action';
+import { activate, deactivate } from '../store/measurement/measurement.action';
 
 /**
  * Id of the layer used for measurement interaction.
@@ -35,10 +37,16 @@ export class MeasurementPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
-		const extract = (state) => {
-			return state.measurement.active;
-
+		const onToolChanged = toolId => {
+			if (toolId !== ToolId.MEASURING) {
+				deactivate();
+			}
+			else {
+				// we activate the tool after another possible active tool was deactivated
+				setTimeout(() => activate());
+			}
 		};
+
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(MEASUREMENT_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
@@ -48,6 +56,7 @@ export class MeasurementPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, extract, onChange);
+		observe(store, state => state.measurement.active, onChange);
+		observe(store, state => state.tools.current, onToolChanged, false);
 	}
 }

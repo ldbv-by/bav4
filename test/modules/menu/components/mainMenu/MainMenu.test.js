@@ -2,7 +2,7 @@
 
 import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
-import { TabKey, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { TabId, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
@@ -12,6 +12,8 @@ import { TopicsContentPanel } from '../../../../../src/modules/topics/components
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
+import { MoreContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/more/MoreContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -139,18 +141,23 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
+			expect(contentPanels.length).toBe(Object.keys(TabId).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				// Todo check all content panels when implemented
 				switch (i) {
-					case TabKey.SEARCH:
+					case TabId.SEARCH:
 						expect(contentPanels[i].innerHTML.toString().includes(SearchResultsPanel.tag)).toBeTrue();
 						break;
-					case TabKey.TOPICS:
+					case TabId.TOPICS:
 						expect(contentPanels[i].innerHTML.toString().includes(TopicsContentPanel.tag)).toBeTrue();
 						break;
-					case TabKey.FEATUREINFO:
+					case TabId.FEATUREINFO:
 						expect(contentPanels[i].innerHTML.toString().includes(FeatureInfoPanel.tag)).toBeTrue();
+						break;
+					case TabId.MAPS:
+						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
+						break;
+					case TabId.MORE:
+						expect(contentPanels[i].innerHTML.toString().includes(MoreContentPanel.tag)).toBeTrue();
 						break;
 				}
 			}
@@ -160,14 +167,14 @@ describe('MainMenu', () => {
 			const element = await setup();
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
+			expect(contentPanels.length).toBe(Object.keys(TabId).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === 0);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabId)[i] === 0);
 			}
 		});
 
 		it('displays the content panel for non default index', async () => {
-			const activeTabIndex = TabKey.MORE;
+			const activeTabIndex = TabId.MORE;
 			const state = {
 				mainMenu: {
 					open: true,
@@ -177,9 +184,9 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
-			expect(contentPanels.length).toBe(Object.keys(TabKey).length);
+			expect(contentPanels.length).toBe(Object.keys(TabId).length);
 			for (let i = 0; i < contentPanels.length; i++) {
-				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === activeTabIndex);
+				expect(contentPanels[i].classList.contains('is-active')).toBe(Object.values(TabId)[i] === activeTabIndex);
 			}
 		});
 
@@ -219,7 +226,7 @@ describe('MainMenu', () => {
 
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
-				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabKey)[i] === index);
+				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabId)[i] === index);
 			}
 		};
 
@@ -227,37 +234,37 @@ describe('MainMenu', () => {
 			const element = await setup();
 			const contentPanels = element.shadowRoot.querySelectorAll('.tabcontent');
 
-			setTab(TabKey.MAPS);
-			check(TabKey.MAPS, contentPanels);
+			setTab(TabId.MAPS);
+			check(TabId.MAPS, contentPanels);
 
-			setTab(TabKey.MORE);
-			check(TabKey.MORE, contentPanels);
+			setTab(TabId.MORE);
+			check(TabId.MORE, contentPanels);
 
-			setTab(TabKey.ROUTING);
-			check(TabKey.ROUTING, contentPanels);
+			setTab(TabId.ROUTING);
+			check(TabId.ROUTING, contentPanels);
 
-			setTab(TabKey.SEARCH);
-			check(TabKey.SEARCH, contentPanels);
+			setTab(TabId.SEARCH);
+			check(TabId.SEARCH, contentPanels);
 
-			setTab(TabKey.FEATUREINFO);
-			check(TabKey.FEATUREINFO, contentPanels);
+			setTab(TabId.FEATUREINFO);
+			check(TabId.FEATUREINFO, contentPanels);
 
-			setTab(TabKey.TOPICS);
-			check(TabKey.TOPICS, contentPanels);
+			setTab(TabId.TOPICS);
+			check(TabId.TOPICS, contentPanels);
 		});
 
 		it('adds or removes a special Css class for the FeatureInfoContentPanel', async () => {
 			const element = await setup();
 
-			setTab(TabKey.MAPS);
+			setTab(TabId.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 
-			setTab(TabKey.FEATUREINFO);
+			setTab(TabId.FEATUREINFO);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
 
-			setTab(TabKey.MAPS);
+			setTab(TabId.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 		});
@@ -307,7 +314,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tab: TabKey.FEATUREINFO
+					tab: TabId.FEATUREINFO
 				}
 			};
 			const element = await setup(state);
@@ -328,18 +335,18 @@ describe('MainMenu', () => {
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open FeatureInfo panel and adjust width
-			setTab(TabKey.FEATUREINFO);
+			setTab(TabId.FEATUREINFO);
 			slider.value = value;
 			slider.dispatchEvent(new Event('input'));
 			const adjustedWidthInPx = window.getComputedStyle(mainMenu).width;
 
 			//open another panel
-			setTab(TabKey.MAPS);
+			setTab(TabId.MAPS);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(initialWidthInPx);
 
 			//open FeatureInfo panel again
-			setTab(TabKey.FEATUREINFO);
+			setTab(TabId.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
 		});
@@ -348,7 +355,7 @@ describe('MainMenu', () => {
 			const state = {
 				mainMenu: {
 					open: true,
-					tab: TabKey.FEATUREINFO
+					tab: TabId.FEATUREINFO
 				}
 			};
 			const element = await setup(state);

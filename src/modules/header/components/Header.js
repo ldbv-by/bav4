@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, TabKey, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, TabId, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
@@ -112,7 +112,7 @@ export class Header extends MvuElement {
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTab(TabKey.SEARCH);
+			setTab(TabId.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -144,17 +144,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTab(TabKey.TOPICS);
+			setTab(TabId.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTab(TabKey.MAPS);
+			setTab(TabId.MAPS);
 			openMainMenu();
 		};
 
 		const openMoreTab = () => {
-			setTab(TabKey.MORE);
+			setTab(TabId.MORE);
 			openMainMenu();
 		};
 
@@ -200,12 +200,12 @@ export class Header extends MvuElement {
 						</button>
 					</div>
 					<div  class="header__button-container">
-						<button class="${getActiveClass(TabKey.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
+						<button class="${getActiveClass(TabId.TOPICS)}" title=${translate('header_tab_topics_title')} @click="${openTopicsTab}">
 							<span>
 								${translate('header_tab_topics_button')}
 							</span>
 						</button>
-						<button class="${getActiveClass(TabKey.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
+						<button class="${getActiveClass(TabId.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 							<span>
 								${translate('header_tab_maps_button')}
 							</span>
@@ -213,7 +213,7 @@ export class Header extends MvuElement {
 							 	${layerCount}
 							</div>
 						</button>
-						<button class="${getActiveClass(TabKey.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
+						<button class="${getActiveClass(TabId.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
 							<span>
 								${translate('header_tab_more_button')}
 							</span>

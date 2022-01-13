@@ -1528,6 +1528,61 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
 
+		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
+
+			const store = setup();
+			const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]);
+			const feature = new Feature({ geometry: geometry });
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+			finish();
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// select
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+		});
+
+		it('updates and sums statistics if clickposition is in anyinteract to selected features', () => {
+
+			const store = setup();
+			const geometry1 = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]);
+			const feature1 = new Feature({ geometry: geometry1 });
+			const geometry2 = new LineString([[2, 0], [7, 0]]);
+			const feature2 = new Feature({ geometry: geometry2 });
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature1);
+			layer.getSource().addFeature(feature2);
+			finish();
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature1, classUnderTest._vectorLayer);
+			});
+
+			// first select
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 1, 0);
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(3, 1);
+			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature2, classUnderTest._vectorLayer);
+			});
+
+			// second select
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 5, 0);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(8, 0);
+			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
+		});
 	});
 });
 
