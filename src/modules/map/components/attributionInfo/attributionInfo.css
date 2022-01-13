@@ -46,6 +46,9 @@
 	display: block;
 	margin: .5em;
 }
+.isopen.attribution-container {
+	background-color: var(--primary-bg-color);
+}
 .isopen .icon {
 	-moz-transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
