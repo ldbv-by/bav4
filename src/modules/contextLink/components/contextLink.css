@@ -1,0 +1,58 @@
+.context-link__container{
+	position: absolute;
+	top: .8em;
+	left: 7.5em;
+	display:flex;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20)
+}
+
+.is-portrait .context-link__container{
+	display:none;
+}
+
+.is-desktop .is-open, .is-tablet .is-open{
+	transform: translate(28em, 0);
+	margin-left: -6.5em;
+}
+
+.context-link__link{
+	display:flex;
+	font-size: 1rem;
+	border: none;
+	border-radius: 2em;
+	padding: .5em 0.9em;
+	background: var(--info-color);
+	cursor: pointer;
+	text-decoration: none;
+	margin-right:1em;
+	margin:auto;
+	
+}
+
+.context-link__link *{
+	opacity: .8;
+}
+
+.context-link__link:hover *{
+	opacity: 1;
+}
+
+.context-link__link-text{
+	font-weight: bold;
+	color: #fff;
+	margin: auto .5em;
+}
+
+.context-link__link-icon{
+	display: inline-block;
+	height:1.1em;
+	width:1.1em;
+	background: #fff;
+	mask: url('assets/chatdots.svg');
+	-webkit-mask-image: url('assets/chatdots.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	left: 0.7em;
+}

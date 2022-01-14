@@ -1,21 +1,22 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './contextLinks.css';
+import css from './contextLink.css';
 import { MvuElement } from '../../MvuElement';
 
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
-const Update_ToolId = 'update_tooId';
+const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 /**
  * @class
  * @author alsturm
  */
-export class ToolContainer extends MvuElement {
+export class ContextLink extends MvuElement {
 
 	constructor() {
 		super({
 			isPortrait: false,
 			hasMinWidth: false,
+			isOpen: false,
 			toolId: null
 		});
 
@@ -37,8 +38,8 @@ export class ToolContainer extends MvuElement {
 		switch (type) {
 			case Update_IsPortrait_HasMinWidth:
 				return { ...model, ...data };
-			case Update_ToolId:
-				return { ...model, toolId: data };
+			case Update_IsOpen_TabIndex:
+				return { ...model, ...data };
 		}
 	}
 
@@ -47,14 +48,14 @@ export class ToolContainer extends MvuElement {
 	 */
 	onInitialize() {
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.tools.current, current => this.signal(Update_ToolId, current));
+		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const { isPortrait, hasMinWidth } = model;
+		const { isPortrait, hasMinWidth, isOpen } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -64,10 +65,21 @@ export class ToolContainer extends MvuElement {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
+		const getOverlayClass = () => {
+			return (isOpen && !isPortrait) ? 'is-open' : '';
+		};
+
+		const translate = (key) => this._translationService.translate(key);
+
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-                test	
+				<div class='context-link__container ${getOverlayClass()}'>				
+					<a target='_blank' href='#' class="context-link__link">
+						<i class='context-link__link-icon'></i>
+						<span class="context-link__link-text">${translate('contextlink_feedback')}</span>
+					</a>						
+				</div>
 			</div>		
 		` ;
 
@@ -78,6 +90,6 @@ export class ToolContainer extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-context-links';
+		return 'ba-context-link';
 	}
 }

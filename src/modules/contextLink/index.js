@@ -1,5 +1,5 @@
-// import './i18n';
-import { ContextLinks } from './components/ContextLinks';
-if (!window.customElements.get(ContextLinks.tag)) {
-	window.customElements.define(ContextLinks.tag, ContextLinks);
+import './i18n';
+import { ContextLink } from './components/ContextLink';
+if (!window.customElements.get(ContextLink.tag)) {
+	window.customElements.define(ContextLink.tag, ContextLink);
 }
