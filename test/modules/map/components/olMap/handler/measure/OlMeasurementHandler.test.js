@@ -30,6 +30,9 @@ import { notificationReducer } from '../../../../../../../src/store/notification
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { acknowledgeTermsOfUse } from '../../../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
+import { ToolId } from '../../../../../../../src/store/tools/tools.action';
+import { drawReducer } from '../../../../../../../src/store/draw/draw.reducer';
+import { toolsReducer } from '../../../../../../../src/store/tools/tools.reducer';
 
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
@@ -112,7 +115,7 @@ describe('OlMeasurementHandler', () => {
 				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
+		const store = TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer, draw: drawReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer, tools: toolsReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -1506,6 +1509,35 @@ describe('OlMeasurementHandler', () => {
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 			expect(store.getState().measurement.selection.length).toBe(1);
+		});
+
+		it('switch to draw-tool, if clickposition is in anyinteract to selected measure-feature', () => {
+			const store = setup();
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			const map = setupMap();
+
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._measureState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
+
+			expect(store.getState().draw.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
 		});
 
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {

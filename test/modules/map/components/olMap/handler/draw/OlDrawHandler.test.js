@@ -29,6 +29,9 @@ import { sharedReducer } from '../../../../../../../src/store/shared/shared.redu
 import { acknowledgeTermsOfUse } from '../../../../../../../src/store/shared/shared.action';
 import { LevelTypes } from '../../../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../../../src/store/notifications/notifications.reducer';
+import { ToolId } from '../../../../../../../src/store/tools/tools.action';
+import { toolsReducer } from '../../../../../../../src/store/tools/tools.reducer';
+import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
 
 
 
@@ -120,7 +123,7 @@ describe('OlDrawHandler', () => {
 				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer });
+		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, measurement: measurementReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer, tools: toolsReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
@@ -1166,8 +1169,10 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const deleteKeyCode = 46;
-			const sourceMock = { hasFeature: () => true,
-				removeFeature: () => {} };
+			const sourceMock = {
+				hasFeature: () => true,
+				removeFeature: () => { }
+			};
 
 			classUnderTest.activate(map);
 			setType('line');
@@ -1521,7 +1526,8 @@ describe('OlDrawHandler', () => {
 			image: new Icon({
 				src: 'something',
 				color: [0, 0, 0]
-			}) });
+			})
+		});
 
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
@@ -1581,6 +1587,39 @@ describe('OlDrawHandler', () => {
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 			expect(store.getState().draw.selection.length).toBe(1);
+		});
+
+		it('switch to measure-tool, if clickposition is in anyinteract to selected measure-feature', () => {
+			const store = setup();
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().measurement.selection.length).toBe(1);
+			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
