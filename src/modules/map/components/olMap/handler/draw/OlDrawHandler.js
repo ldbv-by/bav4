@@ -338,7 +338,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._map.removeInteraction(this._draw);
 		}
 		this._draw = this._createDrawByType(type, this._getStyleOption());
-		this._select.getFeatures().clear();
 
 		// we deactivate the modify-interaction only,
 		// if the given drawType results in a valid draw-interaction
@@ -427,9 +426,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	_startNew() {
 		if (this._draw) {
 			this._draw.abortDrawing();
-			this._select.getFeatures().clear();
 			this._modify.setActive(false);
-			setSelectedStyle(null);
+			setSelection([]);
 
 			this._helpTooltip.deactivate();
 			const currenType = this._storeService.getStore().getState().draw.type;
@@ -442,9 +440,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	_reset() {
 		if (this._draw) {
 			this._draw.abortDrawing();
-			this._select.getFeatures().clear();
 			this._modify.setActive(false);
-			setSelectedStyle(null);
+			setSelection([]);
 
 			this._helpTooltip.deactivate();
 			setType(null);
@@ -623,9 +620,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
-			this._select.getFeatures().clear();
-			this._select.getFeatures().push(feature);
-			setSelectedStyle({ type: getDrawingTypeFrom(feature), style: this._getStyleOption() });
+			setSelection([feature.getId()]);
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
@@ -657,7 +652,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_setSelection(ids = []) {
 		if (this._select) {
 			const selectionSize = this._select.getFeatures().getLength();
-			if (MAX_SELECTION_SIZE <= selectionSize) {
+			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._select.getFeatures().clear();
 				setSelectedStyle(null);
 			}
@@ -670,7 +665,6 @@ export class OlDrawHandler extends OlLayerHandler {
 				}
 			});
 		}
-
 	}
 
 	/**

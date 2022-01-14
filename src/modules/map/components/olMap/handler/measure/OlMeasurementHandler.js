@@ -361,7 +361,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 		}
 		this._draw.setActive(true);
-		this._select.getFeatures().clear();
+		setSelection([]);
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
