@@ -532,6 +532,22 @@ describe('OlMeasurementHandler', () => {
 			});
 		});
 
+		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', () => {
+			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+			const store = setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			classUnderTest._measureState.type = InteractionStateType.DRAW;
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(store.getState().measurement.selection).toEqual(['measure_1']);
+		});
+
+
 	});
 
 	describe('when deactivated over olMap', () => {

@@ -803,6 +803,23 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
+		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', () => {
+			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_line_1');
+			feature.setStyle(new Style());
+			const store = setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+			setType('marker');
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(store.getState().draw.selection).toEqual(['draw_line_1']);
+		});
+
 		describe('_createDrawByType', () => {
 			const defaultStyleOption = { symbolSrc: 'something', color: '#FFDAFF', scale: 0.5 };
 			it('returns a draw-interaction for \'Symbol\'', async () => {
