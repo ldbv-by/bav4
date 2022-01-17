@@ -98,6 +98,9 @@ export class ToolBar extends MvuElement {
 						<div class="ba">
 						</div>
 					</div>
+					<div class='toolbar__logo-badge'>										
+						${translate('toolbox_toolbar_logo_badge')}
+					</div>	
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
 					<button  @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">

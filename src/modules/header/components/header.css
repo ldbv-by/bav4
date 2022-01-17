@@ -31,6 +31,21 @@
 	position: fixed;
 	z-index: calc(var(--z-header) + 10);
 }
+.header__logo-badge {
+	background: var(--secondary-color);
+	background: var(--error-color);
+	font-weight: bold;
+	color: #fff;
+	border-radius: 2em;
+	padding: .2EM 0.5em;
+	Z-INDEX: 999999999;
+	position: absolute;
+	FONT-SIZE: .8rem;
+	top: 1em;
+	left: 5.3em;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+}
+
 .header__text {
 	position: relative;
 	top: 0.5em;

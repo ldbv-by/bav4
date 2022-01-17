@@ -180,7 +180,10 @@ export class Header extends MvuElement {
 					</div>
 					<div id='header__text' class='${getOverlayClass()} header__text'>
 					</div>
-				</div>			
+					<div class='header__logo-badge'>										
+						${translate('header_logo_badge')}
+					</div>	
+				</div>		
 				<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
 				</div>
 				<div class='header__emblem'>
