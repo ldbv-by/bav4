@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the measurement tool
  * @module measurement/action
  */
-import { ACTIVE_CHANGED, STATISTIC_CHANGED, MODE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED } from './measurement.reducer';
+import { ACTIVE_CHANGED, STATISTIC_CHANGED, MODE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, SELECTION_CHANGED } from './measurement.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -85,7 +85,17 @@ export const setFileSaveResult = (fileSaveResult) => {
 	});
 };
 
-
+/**
+ * set the list of ids of selected measurement features
+ * @function
+ * @param {Array<String>} selection the list of the ids of selected measurement-features
+ */
+export const setSelection = (selection) => {
+	getStore().dispatch({
+		type: SELECTION_CHANGED,
+		payload: selection
+	});
+};
 
 /**
  * set the reset request.
