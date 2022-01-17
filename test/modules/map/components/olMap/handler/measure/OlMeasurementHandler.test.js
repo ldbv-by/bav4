@@ -548,6 +548,46 @@ describe('OlMeasurementHandler', () => {
 		});
 
 
+		it('updates statistics and overlays of features on \'change\'', () => {
+			setup();
+			const map = setupMap();
+			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+
+			const classUnderTest = new OlMeasurementHandler();
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			feature.getGeometry().dispatchEvent('change');
+			simulateDrawEvent('drawend', classUnderTest._draw, feature);
+			// modify is activated after draw ends
+
+			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'update');
+			const statsSpy = spyOn(classUnderTest, '_updateStatistics');
+			feature.getGeometry().dispatchEvent('change');
+
+
+			expect(statsSpy).toHaveBeenCalledTimes(1);
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('removes overlays of features on \'drawabort\'', () => {
+			setup();
+			const map = setupMap();
+			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_1');
+
+			const classUnderTest = new OlMeasurementHandler();
+			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'remove');
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawabort', classUnderTest._draw, feature);
+
+			expect(updateOverlaysSpy).toHaveBeenCalledTimes(1);
+		});
+
+
 	});
 
 	describe('when deactivated over olMap', () => {
