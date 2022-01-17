@@ -63,7 +63,8 @@ export const provide = (lang) => {
 				toolbox_clipboard_error: '"Copy to clipboard" is not available',
 				toolbox_clipboard_success: 'was copied to clipboard',
 				toolbox_copy_icon: 'Copy to clipboard',
-				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing'
+				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing',
+				toolbox_toolbar_logo_badge: 'Beta'
 			};
 
 		case 'de':
@@ -128,7 +129,8 @@ export const provide = (lang) => {
 				toolbox_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
 				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert',
 				toolbox_copy_icon: 'In die Zwischenablage kopieren',
-				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten'
+				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
+				toolbox_toolbar_logo_badge: 'Beta'
 			};
 
 		default:

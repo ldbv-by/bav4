@@ -5,7 +5,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode } from '../../../../../../store/measurement/measurement.action';
+import { setStatistic, setMode, setSelection } from '../../../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
 import { getGeometryLength, getArea } from '../../olGeometryUtils';
@@ -26,6 +26,8 @@ import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../../../plugins/MeasurementPlugin';
 import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
+import { setSelection as setDrawSelection } from '../../../../../../store/draw/draw.action';
 
 const Debounce_Delay = 1000;
 
@@ -127,6 +129,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					});
 					removeLayer(oldLayer.get('id'));
 					this._finish();
+					this._setSelection(this._storeService.getStore().getState().measurement.selection);
 					this._updateMeasureState();
 				}
 			}
@@ -144,7 +147,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
-			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
+			const setSelectedAndSave = (event) => {
+				if (this._measureState.type === InteractionStateType.DRAW) {
+					setSelection([event.feature.getId()]);
+				}
+				this._save();
+			};
+			this._listeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
 			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
 			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
 			this._listeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
@@ -156,21 +165,33 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
-			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._measureState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
-				this._select.getFeatures().clear();
-			}
-			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type) && selectableFeatures.length > 0) {
-				selectableFeatures.forEach(f => {
-					const hasFeature = this._select.getFeatures().getArray().includes(f);
-					if (!hasFeature) {
-						this._select.getFeatures().push(f);
-					}
-				});
-			}
+			const addToSelection = (features) => {
+				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
+					const ids = features.map(f => f.getId());
+					setSelection(ids);
+					this._updateStatistics();
+					this._updateMeasureState(coordinate, pixel, dragging);
+				}
+			};
 
-			this._updateStatistics();
-			this._updateMeasureState(coordinate, pixel, dragging);
+			const changeTool = (features) => {
+				const changeToMeasureTool = (features) => {
+					return features.some(f => f.getId().startsWith('draw_'));
+				};
+				if (changeToMeasureTool(features)) {
+					const drawIds = features.filter(f => f.getId().startsWith('draw_')).map(f => f.getId());
+					setDrawSelection(drawIds);
+					setCurrentTool(ToolId.DRAWING);
+				}
+			};
+
+			const isToolChangeNeeded = (features) => {
+				return features.some(f => !f.getId().startsWith('measure_'));
+			};
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
+			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
+
+			clickAction(selectableFeatures);
 		};
 
 		const pointerUpHandler = () => {
@@ -230,6 +251,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			this._storedContent = null;
 		}
+
 		this._updateMeasureState();
 		return this._vectorLayer;
 	}
@@ -255,7 +277,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
-
+		setSelection([]);
 		setStatistic({ length: 0, area: 0 });
 
 		this._draw = false;
@@ -291,7 +313,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		return [
 			observe(store, state => state.measurement.finish, () => this._finish()),
 			observe(store, state => state.measurement.reset, () => this._startNew()),
-			observe(store, state => state.measurement.remove, () => this._remove())];
+			observe(store, state => state.measurement.remove, () => this._remove()),
+			observe(store, state => state.measurement.selection, (ids) => this._setSelection(ids))];
 	}
 
 	_removeLast(event) {
@@ -315,7 +338,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._modify && this._modify.getActive()) {
 			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
-			this._select.getFeatures().clear();
+			setSelection([]);
 			this._updateStatistics();
 			this._updateMeasureState();
 		}
@@ -338,7 +361,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._draw.abortDrawing();
 		}
 		this._draw.setActive(true);
-		this._select.getFeatures().clear();
+		setSelection([]);
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);
@@ -442,7 +465,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
-			this._select.getFeatures().push(feature);
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
@@ -550,6 +572,27 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		this._setMeasureState(measureState);
 	}
+
+
+	_setSelection(ids = []) {
+		const clear = () => {
+			if (this._select) {
+				this._select.getFeatures().clear();
+			}
+		};
+		const fill = (ids) => {
+			ids.forEach(id => {
+				const feature = this._vectorLayer.getSource().getFeatureById(id);
+				const hasFeature = this._select.getFeatures().getArray().includes(feature);
+				if (feature && !hasFeature) {
+					this._select.getFeatures().push(feature);
+				}
+			});
+		};
+		const action = ids.length === 0 ? clear : fill;
+		action(ids);
+	}
+
 
 
 	/**

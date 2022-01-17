@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid } from '../../../../../../store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
@@ -25,6 +25,8 @@ import { setMode } from '../../../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
+import { setSelection as setMeasurementSelection } from '../../../../../../store/measurement/measurement.action';
 
 
 
@@ -145,7 +147,8 @@ export class OlDrawHandler extends OlLayerHandler {
 						f.on('change', onFeatureChange);
 					});
 					removeLayer(oldLayer.get('id'));
-					this._finish();
+					this._init(null);
+					this._setSelection(this._storeService.getStore().getState().draw.selection);
 				}
 			}
 		};
@@ -155,7 +158,13 @@ export class OlDrawHandler extends OlLayerHandler {
 			const layer = createLayer();
 			addOldFeatures(layer, oldLayer);
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
-			this._listeners.push(layer.getSource().on('addfeature', () => this._save()));
+			const setSelectedAndSave = (event) => {
+				if (this._drawState.type === InteractionStateType.DRAW) {
+					setSelection([event.feature.getId()]);
+				}
+				this._save();
+			};
+			this._listeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
 			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
 			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
 			return layer;
@@ -166,21 +175,34 @@ export class OlDrawHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
-			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
-			if (this._drawState.type === InteractionStateType.MODIFY && selectableFeatures.length === 0) {
-				this._select.getFeatures().clear();
-				setSelectedStyle(null);
-			}
+			const addToSelection = (features) => {
+				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type)) {
+					const ids = features.map(f => f.getId());
+					setSelection(ids);
+				}
+				this._updateDrawState(coordinate, pixel, dragging);
+			};
 
-			if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._drawState.type) && selectableFeatures.length > 0) {
-				selectableFeatures.forEach(f => {
-					const hasFeature = this._select.getFeatures().getArray().includes(f);
-					if (!hasFeature) {
-						this._setSelected(f);
-					}
-				});
-			}
-			this._updateDrawState(coordinate, pixel, dragging);
+			const changeTool = (features) => {
+				const changeToMeasureTool = (features) => {
+					return features.some(f => f.getId().startsWith('measure_'));
+				};
+				if (changeToMeasureTool(features)) {
+					const measurementIds = features.filter(f => f.getId().startsWith('measure_')).map(f => f.getId());
+					setMeasurementSelection(measurementIds);
+					setCurrentTool(ToolId.MEASURING);
+				}
+			};
+
+			const isToolChangeNeeded = (features) => {
+				return features.some(f => !f.getId().startsWith('draw_'));
+			};
+
+
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
+			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
+
+			clickAction(selectableFeatures);
 		};
 
 		const pointerMoveHandler = (event) => {
@@ -265,6 +287,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._unreg(this._drawStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
 
+		setSelection([]);
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
 		this._draw = null;
@@ -303,7 +326,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.style, () => this._updateStyle()),
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._reset()),
-			observe(store, state => state.draw.remove, () => this._remove())];
+			observe(store, state => state.draw.remove, () => this._remove()),
+			observe(store, state => state.draw.selection, (ids) => this._setSelection(ids))];
 	}
 
 	_init(type) {
@@ -314,7 +338,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._map.removeInteraction(this._draw);
 		}
 		this._draw = this._createDrawByType(type, this._getStyleOption());
-		this._select.getFeatures().clear();
 
 		// we deactivate the modify-interaction only,
 		// if the given drawType results in a valid draw-interaction
@@ -384,8 +407,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
-			this._select.getFeatures().clear();
-			setSelectedStyle(null);
+			setSelection([]);
 			this._updateDrawState();
 		}
 
@@ -404,9 +426,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	_startNew() {
 		if (this._draw) {
 			this._draw.abortDrawing();
-			this._select.getFeatures().clear();
 			this._modify.setActive(false);
-			setSelectedStyle(null);
+			setSelection([]);
 
 			this._helpTooltip.deactivate();
 			const currenType = this._storeService.getStore().getState().draw.type;
@@ -419,9 +440,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	_reset() {
 		if (this._draw) {
 			this._draw.abortDrawing();
-			this._select.getFeatures().clear();
 			this._modify.setActive(false);
-			setSelectedStyle(null);
+			setSelection([]);
 
 			this._helpTooltip.deactivate();
 			setType(null);
@@ -507,14 +527,13 @@ export class OlDrawHandler extends OlLayerHandler {
 		return modify;
 	}
 
-	_activateModify(feature) {
+	_activateModify() {
 		if (this._draw) {
 			this._draw.setActive(false);
 			setType(null);
 
 		}
 		this._modify.setActive(true);
-		this._setSelected(feature);
 	}
 
 	_getStyleOption() {
@@ -601,9 +620,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
-			this._select.getFeatures().clear();
-			this._select.getFeatures().push(feature);
-			setSelectedStyle({ type: getDrawingTypeFrom(feature), style: this._getStyleOption() });
+			setSelection([feature.getId()]);
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
@@ -619,23 +636,34 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
-	_setSelected(feature) {
-		if (feature) {
+	_setSelectedStyle(feature) {
+		const currentStyleOption = this._getStyleOption();
+		const featureColor = getColorFrom(feature);
+		const featureSymbol = getSymbolFrom(feature);
+		const featureText = getTextFrom(feature);
+		const color = featureColor ? featureColor : currentStyleOption.color;
+		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
+		const text = featureText ? featureText : currentStyleOption.text;
+		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text };
+		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
+		setSelectedStyle(selectedStyle);
+	}
+
+	_setSelection(ids = []) {
+		if (this._select) {
 			const selectionSize = this._select.getFeatures().getLength();
-			if (MAX_SELECTION_SIZE <= selectionSize) {
+			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._select.getFeatures().clear();
+				setSelectedStyle(null);
 			}
-			this._select.getFeatures().push(feature);
-			const currentStyleOption = this._getStyleOption();
-			const featureColor = getColorFrom(feature);
-			const featureSymbol = getSymbolFrom(feature);
-			const featureText = getTextFrom(feature);
-			const color = featureColor ? featureColor : currentStyleOption.color;
-			const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
-			const text = featureText ? featureText : currentStyleOption.text;
-			const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text };
-			const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
-			setSelectedStyle(selectedStyle);
+
+			ids.forEach(id => {
+				const feature = this._vectorLayer.getSource().getFeatureById(id);
+				if (feature) {
+					this._select.getFeatures().push(feature);
+					this._setSelectedStyle(feature);
+				}
+			});
 		}
 	}
 

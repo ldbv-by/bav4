@@ -829,17 +829,19 @@ describe('getSymbolFrom', () => {
 describe('getTextFrom', () => {
 	const getTextStyle = () => {
 		const strokeWidth = 1;
-		return new Style({ text: new Text({
-			text: 'Foo',
-			font: 'normal 16px sans-serif',
-			stroke: new Stroke({
-				color: [0, 0, 0],
-				width: strokeWidth
-			}),
-			fill: new Fill({
-				color: [255, 255, 255]
+		return new Style({
+			text: new Text({
+				text: 'Foo',
+				font: 'normal 16px sans-serif',
+				stroke: new Stroke({
+					color: [0, 0, 0],
+					width: strokeWidth
+				}),
+				fill: new Fill({
+					color: [255, 255, 255]
+				})
 			})
-		}) });
+		});
 	};
 
 	const strokeStyle = new Style({
