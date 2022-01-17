@@ -80,7 +80,8 @@ export const create = (layer, projection) => {
 			const styles = clone.getStyleFunction() || layer.getStyleFunction();
 			if (styles) {
 				const kmlStyle = sanitizeStyle(styles(clone));
-				if (clone.get('name')) {
+
+				if (kmlStyle.getText() && clone.get('name')) {
 					clone.unset('name');
 				}
 				clone.setStyle(kmlStyle);
