@@ -83,7 +83,7 @@ export const measurementReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				selection: payload
+				selection: [...payload]
 
 			};
 		}

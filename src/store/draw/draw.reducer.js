@@ -135,7 +135,7 @@ export const drawReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				selection: payload
+				selection: [...payload]
 
 			};
 		}
