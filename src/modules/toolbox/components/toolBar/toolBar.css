@@ -65,6 +65,10 @@
 	mask-image: url('assets/share.svg');
 	-webkit-mask-image: url('assets/share.svg');
 }
+.import {
+	mask-image: url('assets/upload.svg');
+	-webkit-mask-image: url('assets/upload.svg');
+}
 
 .pencil {
 	mask-image: url('assets/pencil.svg');
@@ -99,19 +103,6 @@
 	border: none
 }
 
-.toolbar__logo-badge {
-	background: var(--error-color);
-	font-weight: bold;
-	color: #fff;
-	border-radius: 2em;
-	padding: .2EM 0.5em;
-	Z-INDEX: 999999999;
-	position: absolute;
-	top: -.5em;
-	left: 4.5em;
-	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
-	font-size: .6rem;
-}
 
 /* tablet */
 .is-tablet .tool-bar {

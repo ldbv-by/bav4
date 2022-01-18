@@ -4,8 +4,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 
 /**
  * @class
- * @author thiloSchlemmer
- * @author costa_gi
+ * @author alsturm
  */
 export class ImportToolContent extends AbstractToolContent {
 
