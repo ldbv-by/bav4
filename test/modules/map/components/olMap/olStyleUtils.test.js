@@ -165,7 +165,7 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [[0, 0], [0, 1]];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
@@ -184,7 +184,7 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
 		const pixelCoordinates = [[0, 0], [0, 1]];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
