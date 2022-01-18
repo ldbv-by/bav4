@@ -405,9 +405,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature);
-			this._sketchHandler.active.setId(MEASUREMENT_TOOL_ID + '_' + new Date().getTime());
-			this._sketchHandler.active.setProperties({ name: MEASUREMENT_TOOL_ID + ' ' + new Date().getTime(), description: 'no description' });
+			this._sketchHandler.activate(event.feature, MEASUREMENT_TOOL_ID + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);

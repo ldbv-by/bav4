@@ -620,14 +620,14 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
-				feature.setId('draw_line_1234');
+				//feature.setId('draw_line_1234');
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
 					type: InteractionStateType.DRAW
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature);
+				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
 
 				setType('line');
 
