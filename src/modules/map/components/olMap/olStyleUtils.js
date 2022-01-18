@@ -207,7 +207,7 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 const getRulerStyle = () => {
 
 	return new Style({ renderer: (pixelCoordinates, state) => {
-		const renderContext = toContext(state.context, { pixelRatio: state.pixelRatio });
+		const renderContext = toContext(state.context, { pixelRatio: 1 });
 		const renderToContext = (geometry, fill, stroke) => {
 			renderContext.setFillStrokeStyle(fill, stroke);
 			renderContext.drawGeometry(geometry);
@@ -219,6 +219,7 @@ const getRulerStyle = () => {
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) => {
 	const geometry = state.geometry.clone();
 	const resolution = 	state.resolution;
+	const pixelRatio = state.pixelRatio;
 
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
 
@@ -230,25 +231,25 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		width: 3 });
+		width: 3 * pixelRatio });
 
 	const getMainTickStroke = (residual, partitionTickDistance) => {
 		return new Stroke({
 			color: Red_Color.concat([1]),
-			width: 8,
+			width: 8 * pixelRatio,
 			lineCap: 'butt',
-			lineDash: [3, partitionTickDistance - 3],
-			lineDashOffset: 3 + (partitionTickDistance * residual)
+			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
+			lineDashOffset: 3 * pixelRatio + (partitionTickDistance * residual)
 		});
 	};
 
 	const getSubTickStroke = (residual, partitionTickDistance) => {
 		return new Stroke({
 			color: Red_Color.concat([1]),
-			width: 5,
+			width: 5 * pixelRatio,
 			lineCap: 'butt',
-			lineDash: [2, (partitionTickDistance / 5) - 2],
-			lineDashOffset: 2 + (partitionTickDistance * residual)
+			lineDash: [2 * pixelRatio, ((partitionTickDistance / 5) - 2) * pixelRatio],
+			lineDashOffset: 2 * pixelRatio + (partitionTickDistance * residual)
 		});
 	};
 
