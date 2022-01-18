@@ -5,7 +5,8 @@ export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
 
 /**
  * Sets the value (Test-Id) of the `data-test-id` attribute for a MvuElement and all of its children.
- * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements.
+ * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
+ *(BaElements are also supported).
  *
  * @param {MvuElement|BaElement} element
  */
@@ -14,14 +15,14 @@ export const generateTestIds = (element) => {
 	const pathElements = [];
 
 	/**
-     * Let's traverse the DOM and search for all parent MvuElements (BaElements), also detect the child index if necessary
+     * Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
      */
 	let currentParent = element.parentNode;
 	let currentMvuElement = element;
+
 	while (currentParent) {
 		if (currentParent instanceof BaElement || currentParent instanceof MvuElement) {
-
-			const elementIndex = [...currentParent.shadowRoot.querySelectorAll(currentMvuElement.tagName.toLowerCase())].indexOf(currentMvuElement);
+			const elementIndex = [...currentParent.shadowRoot.querySelectorAll(currentMvuElement.tagName)].indexOf(currentMvuElement);
 			const elementTag = currentMvuElement.tagName.toLowerCase();
 			pathElements.push(`${elementTag}-${elementIndex}`);
 			currentMvuElement = currentParent;
@@ -30,11 +31,10 @@ export const generateTestIds = (element) => {
 		currentParent = currentParent.parentNode ?? currentParent.host;
 		//if we have no more parent MvuElement we finally add the current one
 		if (!currentParent) {
-			const elementTag = currentMvuElement.tagName.toLowerCase();
-			pathElements.push(`${elementTag}-0`);
+			pathElements.push(`${currentMvuElement.tagName.toLowerCase()}-0`);
 		}
-
 	}
+
 	const basePath = pathElements.reverse().join('_');
 
 	//Provide the current MvuElement with the test id to if necessary
