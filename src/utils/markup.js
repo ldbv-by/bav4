@@ -28,7 +28,7 @@ export const generateTestIds = (element) => {
 		}
 
 		currentParent = currentParent.parentNode ?? currentParent.host;
-		//if we have no more parent MvuElement we finally add the current
+		//if we have no more parent MvuElement we finally add the current one
 		if (!currentParent) {
 			const elementTag = currentMvuElement.tagName.toLowerCase();
 			pathElements.push(`${elementTag}-0`);
