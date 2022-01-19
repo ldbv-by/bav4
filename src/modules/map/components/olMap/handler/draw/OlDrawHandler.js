@@ -327,7 +327,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._reset()),
 			observe(store, state => state.draw.remove, () => this._remove()),
-			observe(store, state => state.draw.selection, (ids) => this._setSelection(ids))];
+			observe(store, state => state.draw.selection, (ids) => this._setSelection(ids)),
+			observe(store, state => state.draw.description, (description) => this._updateSelectedFeature(description))];
 	}
 
 	_init(type) {
@@ -358,6 +359,10 @@ export class OlDrawHandler extends OlLayerHandler {
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
 				this._sketchHandler.activate(event.feature, DRAW_TOOL_ID + '_' + type + '_');
+				const description = this._storeService.getStore().getState().draw.description;
+				if (description) {
+					this._sketchHandler.active.set('description', description);
+				}
 				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
@@ -632,6 +637,24 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._drawState.type == null) {
 			this._startNew();
+		}
+	}
+
+	_updateSelectedFeature(description) {
+		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
+			const currenType = this._storeService.getStore().getState().draw.type;
+			this._init(currenType);
+		}
+
+		if (this._drawState.type === InteractionStateType.DRAW) {
+			if (this._sketchHandler.isActive) {
+				this._sketchHandler.active.setProperties({ description: description });
+			}
+		}
+
+		if (this._drawState.type === InteractionStateType.MODIFY) {
+			const feature = this._select.getFeatures().item(0);
+			feature.setProperties({ description: description });
 		}
 	}
 
