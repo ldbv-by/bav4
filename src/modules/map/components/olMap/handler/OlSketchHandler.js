@@ -44,7 +44,6 @@ export class OlSketchHandler {
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
 				sketchFeature.setId(idPrefix + new Date().getTime());
-				sketchFeature.setProperties({ name: '', description: '' });
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
