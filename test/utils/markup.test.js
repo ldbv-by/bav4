@@ -90,6 +90,7 @@ describe('markup utils', () => {
 		describe('generateTestIds for MvuElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
+				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
@@ -99,7 +100,7 @@ describe('markup utils', () => {
 				expect(divElements).toHaveSize(6);
 				expect(divElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_id');
 				expect(divElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_class-foo');
-				expect(divElements.item(2).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_div');
+				expect(warnSpy).toHaveBeenCalledOnceWith('No data-test-id qualifier found for: mvu-element-parent-0 -> div. Please add either an id or a class attribute.');
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
@@ -113,6 +114,7 @@ describe('markup utils', () => {
 		describe('generateTestIds for BaElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
+				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
@@ -122,7 +124,7 @@ describe('markup utils', () => {
 				expect(divElements).toHaveSize(6);
 				expect(divElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_id');
 				expect(divElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_class-foo');
-				expect(divElements.item(2).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_div');
+				expect(warnSpy).toHaveBeenCalledOnceWith('No data-test-id qualifier found for: ba-element-parent-0 -> div. Please add either an id or a class attribute.');
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();

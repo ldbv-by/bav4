@@ -46,8 +46,13 @@ export const generateTestIds = (element) => {
 	[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
 		.filter(el => !(el instanceof BaElement) && !(el instanceof MvuElement))
 		.forEach(el => {
-			//priority: id -> css-classes -> tag-name
-			const marker = el.getAttribute('id') ?? el.getAttribute('class') ?? el.tagName?.toLocaleLowerCase();
-			el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${marker.replace(' ', '-')}`);
+			//priority: id -> css-classes
+			const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
+			if (qualifier) {
+				el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${qualifier.replace(' ', '-')}`);
+			}
+			else {
+				console.warn(`No data-test-id qualifier found for: ${basePath} -> ${el.tagName.toLocaleLowerCase()}. Please add either an id or a class attribute.`);
+			}
 		});
 };
