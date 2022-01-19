@@ -87,9 +87,14 @@ describe('markup utils', () => {
 			TestUtils.setupStoreAndDi();
 		});
 
+		afterEach(() => {
+			window.baGenerateTestIds = undefined;
+		});
+
 		describe('generateTestIds for MvuElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
+				window.baGenerateTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
 
@@ -109,11 +114,23 @@ describe('markup utils', () => {
 				expect(mvuElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_mvu-element-child-1');
 				expect(mvuElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 			});
+
+			it('does nothing', async () => {
+				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
+
+				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(MvuElementChild.tag)];
+
+				expect(all).toHaveSize(9);
+				all.forEach(el => {
+					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
+				});
+			});
 		});
 
 		describe('generateTestIds for BaElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
+				window.baGenerateTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
 
@@ -132,6 +149,17 @@ describe('markup utils', () => {
 				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-0');
 				expect(mvuElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-1');
 				expect(mvuElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
+			});
+
+			it('does nothing', async () => {
+				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
+
+				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(BaElementChild.tag)];
+
+				expect(all).toHaveSize(9);
+				all.forEach(el => {
+					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
+				});
 			});
 		});
 	});
