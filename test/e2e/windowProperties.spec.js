@@ -33,7 +33,7 @@ test.describe('global properties', () => {
 		});
 
 		test.describe('when query parameter has value of something else', () => {
-			test('propert should be `false`', async ({ page }) => {
+			test('property should be `false`', async ({ page }) => {
 				await page.goto(`${BASE_URL}?generate_test_ids=foo`);
 
 				const aHandle = await page.evaluateHandle(() => window);
