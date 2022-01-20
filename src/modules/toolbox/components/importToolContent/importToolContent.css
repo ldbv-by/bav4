@@ -158,14 +158,14 @@
 	position: relative;
 }
 .ba-tool-container__split-text {
-    position: absolute;
-    font-weight: bold;
-    text-align: center;
-    width: 4em;
-    margin-left: -2em;
-    left: 50%;
-    top: 6.5em;
-    background: var(--primary-bg-color);
+	position: absolute;
+	font-weight: bold;
+	text-align: center;
+	width: 4em;
+	margin-left: -2em;
+	left: 50%;
+	top: 6.5em;
+	background: var(--primary-bg-color);
 }
 .ba-tool-container__sub-title {
 	font-size: .9rem; 
