@@ -69,7 +69,7 @@ export class LayerManager extends BaElement {
 		};
 
 		const createLayerElement = (layerItem) => {
-			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable>
+			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable data-test-id>
 					</ba-layer-item>`;
 		};
 
