@@ -595,7 +595,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const updateFeatureSpy = spyOn(classUnderTest, '_updateSelectedFeature').and.callThrough();
+				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -603,6 +603,8 @@ describe('OlDrawHandler', () => {
 				setType('line');
 				const draw = classUnderTest._draw;
 				simulateDrawEvent('drawstart', draw, feature);
+				classUnderTest._drawState.type = InteractionStateType.DRAW;
+
 				setDescription('Foo');
 
 				expect(updateFeatureSpy).toHaveBeenCalled();
@@ -613,7 +615,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const updateFeatureSpy = spyOn(classUnderTest, '_updateSelectedFeature').and.callThrough();
+				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
 				const geometry = new LineString([[0, 0], [1, 0]]);
 				const feature = new Feature({ geometry: geometry });
 
@@ -1190,13 +1192,13 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
-			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
+			const removeSpy = spyOn(classUnderTest._draw, 'removeLastPoint');
+			//spyOn(classUnderTest._draw, 'handleEvent').and.callThrough();
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
 			simulateKeyEvent(deleteKeyCode);
-			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+			expect(removeSpy).not.toHaveBeenCalled();
 		});
 
 		it('removes NOT last point if other keypressed', () => {
