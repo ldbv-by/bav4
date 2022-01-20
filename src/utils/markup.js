@@ -48,7 +48,7 @@ export const generateTestIds = (element) => {
 			element.setAttribute(TEST_ID_ATTRIBUTE_NAME, basePath);
 		}
 
-		//Provide all child elements (except for MvuElements) with test ids if requested
+		//Provide all child elements with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
 			.forEach(el => {
 				//priority: id -> css-classes
