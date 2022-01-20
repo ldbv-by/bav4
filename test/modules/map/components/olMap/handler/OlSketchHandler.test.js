@@ -22,7 +22,7 @@ describe('OlSketchPropertyHandler', () => {
 	describe('when set a activeSketch', () => {
 
 		it('registers a listener for feature change', () => {
-			const featureMock = { on: () => { }, getGeometry: () => new Point([0, 0]) };
+			const featureMock = { on: () => { }, getGeometry: () => new Point([0, 0]), setId: () => {}, setProperties: () => {} };
 			const listenerSpy = spyOn(featureMock, 'on');
 
 			const classUnderTest = new OlSketchHandler();

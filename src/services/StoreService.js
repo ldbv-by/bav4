@@ -76,7 +76,8 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
-				EnvironmentService: environmentService
+				EnvironmentService: environmentService,
+				ConfigService: configService
 			}
 				= $injector.inject(
 					'TopicsPlugin',
@@ -89,9 +90,10 @@ export class StoreService {
 					'ContextClickPlugin',
 					'HighlightPlugin',
 					'MediaPlugin',
-					'EnvironmentService',
 					'FeatureInfoPlugin',
-					'MainMenuPlugin'
+					'MainMenuPlugin',
+					'EnvironmentService',
+					'ConfigService'
 				);
 
 			setTimeout(async () => {
@@ -109,7 +111,9 @@ export class StoreService {
 				await featureInfoPlugin.register(this._store);
 				await mainMenuPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
-				environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
+				if (configService.getValue('RUNTIME_MODE') !== 'development') {
+					environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
+				}
 			});
 		});
 	}
