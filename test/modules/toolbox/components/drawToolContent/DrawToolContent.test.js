@@ -301,6 +301,22 @@ describe('DrawToolContent', () => {
 
 		});
 
+		it('sets the description, after description changes in textarea', async () => {
+
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, description: 'Foo', style: StyleOptionTemplate });
+
+			setType('text');
+			const descriptionTextArea = element.shadowRoot.querySelector('textarea');
+			expect(descriptionTextArea).toBeTruthy();
+			expect(descriptionTextArea.value).toBe('Foo');
+
+			descriptionTextArea.value = newText;
+			descriptionTextArea.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.description).toBe(newText);
+		});
+
 		it('sets the style-inputs for symbol-tool', async () => {
 			const style = { symbolSrc: null, color: '#f00ba3', scale: 'medium' };
 			const element = await setup({ ...drawDefaultState, style });

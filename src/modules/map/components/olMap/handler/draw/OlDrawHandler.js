@@ -9,7 +9,7 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection } from '../../../../../../store/draw/draw.action';
+import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
@@ -327,7 +327,8 @@ export class OlDrawHandler extends OlLayerHandler {
 			observe(store, state => state.draw.finish, () => this._finish()),
 			observe(store, state => state.draw.reset, () => this._reset()),
 			observe(store, state => state.draw.remove, () => this._remove()),
-			observe(store, state => state.draw.selection, (ids) => this._setSelection(ids))];
+			observe(store, state => state.draw.selection, (ids) => this._setSelection(ids)),
+			observe(store, state => state.draw.description, (description) => this._updateDescription(description))];
 	}
 
 	_init(type) {
@@ -357,8 +358,11 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature);
-				this._sketchHandler.active.setId(DRAW_TOOL_ID + '_' + type + '_' + new Date().getTime());
+				this._sketchHandler.activate(event.feature, DRAW_TOOL_ID + '_' + type + '_');
+				const description = this._storeService.getStore().getState().draw.description;
+				if (description) {
+					this._sketchHandler.active.set('description', description);
+				}
 				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
@@ -636,6 +640,39 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 	}
 
+	_updateDescription(description) {
+		const initDrawing = () => {
+			const currenType = this._storeService.getStore().getState().draw.type;
+			this._init(currenType);
+		};
+
+		const updateSketchFeature = () => {
+			if (this._sketchHandler.isActive) {
+				this._sketchHandler.active.setProperties({ description: description ? description : null });
+			}
+		};
+
+		const updateSelectedFeature = () => {
+			const feature = this._select.getFeatures().item(0);
+			if (feature) {
+				feature.setProperties({ description: description ? description : null });
+			}
+		};
+
+		switch (this._drawState.type) {
+			case InteractionStateType.ACTIVE:
+			case InteractionStateType.SELECT:
+				initDrawing();
+				break;
+			case InteractionStateType.DRAW:
+				updateSketchFeature();
+				break;
+			case InteractionStateType.MODIFY:
+				updateSelectedFeature();
+				break;
+		}
+	}
+
 	_setSelectedStyle(feature) {
 		const currentStyleOption = this._getStyleOption();
 		const featureColor = getColorFrom(feature);
@@ -649,12 +686,24 @@ export class OlDrawHandler extends OlLayerHandler {
 		setSelectedStyle(selectedStyle);
 	}
 
+	_setSelectedDescription(feature) {
+		const valueOrNull = (value) => {
+			return value ? value : null;
+		};
+		const getUpdatedDescription = (feature) => {
+			const value = feature ? feature.get('description') : null;
+			return valueOrNull(value);
+		};
+		setDescription(getUpdatedDescription(feature));
+	}
+
 	_setSelection(ids = []) {
 		if (this._select) {
 			const selectionSize = this._select.getFeatures().getLength();
 			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._select.getFeatures().clear();
 				setSelectedStyle(null);
+				setDescription(null);
 			}
 
 			ids.forEach(id => {
@@ -662,6 +711,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (feature) {
 					this._select.getFeatures().push(feature);
 					this._setSelectedStyle(feature);
+					this._setSelectedDescription(feature);
 				}
 			});
 		}

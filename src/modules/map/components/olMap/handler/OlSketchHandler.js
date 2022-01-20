@@ -40,9 +40,10 @@ export class OlSketchHandler {
 		}
 	}
 
-	activate(sketchFeature) {
+	activate(sketchFeature, idPrefix = 'draw_') {
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
+				sketchFeature.setId(idPrefix + new Date().getTime());
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
