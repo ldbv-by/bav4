@@ -5,6 +5,8 @@ const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);
 
+window.baGenerateTestIds = new URLSearchParams(window.location.search).get('generate_test_ids') === 'true';
+
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
 

@@ -12,7 +12,7 @@ import View from 'ol/View';
 import { OSM, TileDebug } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
 import { DragPan, Modify, Select, Snap } from 'ol/interaction';
-import { finish, reset, remove, setType, setStyle } from '../../../../../../../src/store/draw/draw.action';
+import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
@@ -574,6 +574,61 @@ describe('OlDrawHandler', () => {
 				expect(finishSpy).toHaveBeenCalled();
 			});
 
+			it('reads description from store when draw begins', () => {
+				const state = { ...initialState, description: 'Foo' };
+				setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+
+
+				expect(feature.get('description')).toBe('Foo');
+			});
+
+			it('updates description of sketchFeature when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				setType('line');
+				const draw = classUnderTest._draw;
+				simulateDrawEvent('drawstart', draw, feature);
+				classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+				setDescription('Foo');
+
+				expect(updateFeatureSpy).toHaveBeenCalled();
+				expect(feature.get('description')).toBe('Foo');
+			});
+
+			it('updates description of modifyable feature when store changes', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState.type = InteractionStateType.MODIFY;
+				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
+
+				setDescription('Foo');
+
+				expect(updateFeatureSpy).toHaveBeenCalled();
+				expect(feature.get('description')).toBe('Foo');
+			});
+
 			it('switches to modify after finish-request on not-present sketch', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -620,14 +675,14 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
-				feature.setId('draw_line_1234');
+
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
 					type: InteractionStateType.DRAW
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature);
+				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
 
 				setType('line');
 
@@ -704,6 +759,8 @@ describe('OlDrawHandler', () => {
 
 				expect(styleSpy).not.toHaveBeenCalled();
 			});
+
+
 		});
 
 		it('looks for drawing-layer and adds the feature for update/copy on save', (done) => {
@@ -1135,13 +1192,13 @@ describe('OlDrawHandler', () => {
 			classUnderTest.activate(map);
 			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
-			classUnderTest._draw.handleEvent = jasmine.createSpy().and.callThrough();
+			const removeSpy = spyOn(classUnderTest._draw, 'removeLastPoint');
+			//spyOn(classUnderTest._draw, 'handleEvent').and.callThrough();
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
 			simulateKeyEvent(deleteKeyCode);
-			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
+			expect(removeSpy).not.toHaveBeenCalled();
 		});
 
 		it('removes NOT last point if other keypressed', () => {
