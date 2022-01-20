@@ -296,7 +296,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	_getPlacement(angle) {
 		const sectorFunction = [
-			(angle) => angle <= 60 || 300 < angle ? { sector: 'top', positioning: 'center-right', offset: [-15, 0] } : false,
+			(angle) => angle <= 60 || 300 < angle ? { sector: 'top', positioning: 'center-right', offset: [-25, 0] } : false,
 			(angle) => 60 < angle && angle <= 120 ? { sector: 'right', positioning: 'top-center', offset: [0, -25] } : false,
 			(angle) => 120 < angle && angle <= 210 ? { sector: 'bottom', positioning: 'center-left', offset: [10, 0] } : false,
 			(angle) => 210 < angle && angle <= 300 ? { sector: 'left', positioning: 'bottom-center', offset: [0, 25] } : false

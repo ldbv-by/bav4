@@ -204,7 +204,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
-		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-right', offset: [-15, 0] });
+		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-right', offset: [-25, 0] });
 	});
 
 	it('creates partition tooltips for line big zoom', () => {
