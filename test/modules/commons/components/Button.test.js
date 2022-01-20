@@ -34,13 +34,6 @@ describe('Button', () => {
 			expect(button.classList.contains('disabled')).toBeFalse();
 			expect(button.innerText).toBe('label');
 		});
-
-		it('has a test-id', async () => {
-
-			const element = await TestUtils.render(Button.tag);
-
-			expect(element.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-		});
 	});
 
 	describe('when property\'disabled\' changes', () => {

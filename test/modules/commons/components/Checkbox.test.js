@@ -37,13 +37,6 @@ describe('Checkbox', () => {
 			//has slot assigned content?
 			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
 		});
-
-		it('has a test-id', async () => {
-
-			const element = await TestUtils.render(Checkbox.tag);
-
-			expect(element.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-		});
 	});
 
 	describe('when property\'disabled\' changes', () => {

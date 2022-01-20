@@ -43,13 +43,6 @@ describe('Icon', () => {
 			//customIconClass
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain('data:image/svg+xml;base64,PHN2ZyB4');
 		});
-
-		it('has a test-id', async () => {
-
-			const element = await TestUtils.render(Icon.tag);
-
-			expect(element.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-		});
 	});
 
 	describe('when property\'icon\' changes', () => {

@@ -2,7 +2,6 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './icon.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Disabled = 'update_disabled';
 const Update_Icon = 'update_icon';
@@ -77,7 +76,6 @@ export class Icon extends MvuElement {
 				this._onClick();
 			}
 		});
-		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, 'true');
 	}
 
 	/**
