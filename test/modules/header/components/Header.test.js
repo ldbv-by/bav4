@@ -12,6 +12,7 @@ import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 window.customElements.define(Header.tag, Header);
 
@@ -195,7 +196,6 @@ describe('Header', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-
 		it('displays 2 active Layers', async () => {
 			//we add one hidden layer
 			const hiddenLayer = createDefaultLayer('test2');
@@ -208,6 +208,16 @@ describe('Header', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('2');
+		});
+
+		it('contains test-id attributes', async () => {
+			const element = await setup();
+
+			const taggedElements = element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`);
+			expect(taggedElements).toHaveSize(3);
+			expect(element.shadowRoot.querySelector('#topics_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#maps_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#more_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 	});
