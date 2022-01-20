@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
-import { finish, remove, reset, setStyle, setType } from '../../../../store/draw/draw.action';
+import { finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
@@ -23,6 +23,7 @@ export class DrawToolContent extends AbstractToolContent {
 		super({
 			type: null,
 			style: null,
+			description: null,
 			selectedStyle: null,
 			mode: null,
 			fileSaveResult: { adminId: 'init', fileId: 'init' },
@@ -56,6 +57,7 @@ export class DrawToolContent extends AbstractToolContent {
 					...model,
 					type: data.type,
 					style: data.style,
+					description: data.description,
 					selectedStyle: data.selectedStyle,
 					mode: data.mode,
 					validGeometry: data.validGeometry,
@@ -177,7 +179,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools } = model;
+		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools, description } = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
@@ -233,6 +235,10 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
+			const onChangeDescription = (e) => {
+				setDescription(e.target.value);
+			};
+
 			const onChangeSymbol = (e) => {
 				const hexColor = this.getModel().style.color;
 				const url = e.detail.selected.getUrl(hexToRgb(hexColor));
@@ -253,6 +259,14 @@ export class DrawToolContent extends AbstractToolContent {
 						<div id='style_marker'
 							class="tool-container__style" 
 							title='Symbol'>							
+							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
+								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
+								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+							</div>	
+							<div class="tool-container__style_desc" title="${translate('toolbox_drawTool_style_desc')}">
+								<label for="style_desc">${translate('toolbox_drawTool_style_desc')}</label>	
+								<textarea id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
+							</div>	
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
@@ -262,11 +276,7 @@ export class DrawToolContent extends AbstractToolContent {
 								<select id="style_size" @change=${onChangeScale}>
 									${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
 								</select>								
-							</div>		
-							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
-								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
-								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
-							</div>	
+							</div>
 							<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">
 								<label for="style_symbol">${translate('toolbox_drawTool_style_symbol')}</label>	
 								<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${style.color} @select=${onChangeSymbol} ></ba-iconselect>													
@@ -278,20 +288,24 @@ export class DrawToolContent extends AbstractToolContent {
 						<div id='style_Text'
 							class="tool-container__style" 
 							title='Text'>
+							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
+								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
+								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+							</div>
+							<div class="tool-container__style_desc" title="${translate('toolbox_drawTool_style_desc')}">
+								<label for="style_desc">${translate('toolbox_drawTool_style_desc')}</label>	
+								<textarea id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
+							</div>									
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
-							</div>	
+							</div>							
 							<div class="tool-container__style_heigth" title="${translate('toolbox_drawTool_style_size')}">
 								<label for="style_size">${translate('toolbox_drawTool_style_size')}</label>	
 								<select id="style_size" @change=${onChangeScale}>
 									${selectTemplate(Object.values(StyleSizeTypes), style.scale)}
 								</select>
-							</div>				
-							<div class="tool-container__style_text" title="${translate('toolbox_drawTool_style_text')}">
-								<label for="style_text">${translate('toolbox_drawTool_style_text')}</label>	
-								<input type="string" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
-							</div>							
+							</div>
 						</div>
 						`;
 					case 'line':
@@ -299,6 +313,10 @@ export class DrawToolContent extends AbstractToolContent {
 						<div id='style_line'
 							class="tool-container__style" 
 							title='Line'>
+							<div class="tool-container__style_desc" title="${translate('toolbox_drawTool_style_desc')}">
+								<label for="style_desc">${translate('toolbox_drawTool_style_desc')}</label>	
+								<textarea id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
+							</div>		
 							<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 								<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 								<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						
@@ -310,6 +328,10 @@ export class DrawToolContent extends AbstractToolContent {
 							<div id='style_polygon'
 								class="tool-container__style" 
 								title='Polygon'>
+								<div class="tool-container__style_desc" title="${translate('toolbox_drawTool_style_desc')}">
+								<label for="style_desc">${translate('toolbox_drawTool_style_desc')}</label>	
+								<textarea id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
+							</div>		
 								<div class="tool-container__style_color" title="${translate('toolbox_drawTool_style_color')}">
 									<label for="style_color">${translate('toolbox_drawTool_style_color')}</label>	
 									<input type="color" id="style_color" name="${translate('toolbox_drawTool_style_color')}" .value=${style.color} @input=${onChangeColor}>						

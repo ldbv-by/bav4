@@ -110,10 +110,10 @@ ba-checkbox:focus {
 .tool-container__form label {
 	min-width: 7em;
 }
-.tool-container__style_color, .tool-container__style_heigth, .tool-container__style_text, .tool-container__style_size, .tool-container__style_symbol {
+.tool-container__style_color, .tool-container__style_heigth, .tool-container__style_text, .tool-container__style_desc, .tool-container__style_size, .tool-container__style_symbol {
 	padding: .3em 0;
 	display: flex;
 }
-.tool-container__form input, .tool-container__style_size select {
+.tool-container__form input, .tool-container__style_desc textarea, .tool-container__style_size select {
 	flex-grow: 1;
 }

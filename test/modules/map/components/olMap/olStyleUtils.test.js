@@ -759,17 +759,19 @@ describe('getSymbolFrom', () => {
 describe('getTextFrom', () => {
 	const getTextStyle = () => {
 		const strokeWidth = 1;
-		return new Style({ text: new Text({
-			text: 'Foo',
-			font: 'normal 16px sans-serif',
-			stroke: new Stroke({
-				color: [0, 0, 0],
-				width: strokeWidth
-			}),
-			fill: new Fill({
-				color: [255, 255, 255]
+		return new Style({
+			text: new Text({
+				text: 'Foo',
+				font: 'normal 16px sans-serif',
+				stroke: new Stroke({
+					color: [0, 0, 0],
+					width: strokeWidth
+				}),
+				fill: new Fill({
+					color: [255, 255, 255]
+				})
 			})
-		}) });
+		});
 	};
 
 	const strokeStyle = new Style({
@@ -798,9 +800,9 @@ describe('getTextFrom', () => {
 	it('should return null for empty feature', () => {
 		const featureWithoutStyle = { getStyle: () => null };
 
-		expect(getSymbolFrom(featureWithoutStyle)).toBeNull();
-		expect(getSymbolFrom(null)).toBeNull();
-		expect(getSymbolFrom(undefined)).toBeNull();
+		expect(getTextFrom(featureWithoutStyle)).toBeNull();
+		expect(getTextFrom(null)).toBeNull();
+		expect(getTextFrom(undefined)).toBeNull();
 	});
 
 });

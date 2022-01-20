@@ -5,6 +5,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { LayerItem } from '../../../../src/modules/layerManager/components/LayerItem';
 import { modifyLayer } from '../../../../src/store/layers/layers.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -52,6 +53,8 @@ describe('LayerManager', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.layer').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('with one not visible layer displays one layer item', async () => {

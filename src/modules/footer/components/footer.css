@@ -20,6 +20,11 @@
 .is-open {
 	transform: translate(28em, 0);
 }
+.is-portrait .footer {
+	bottom: 0;
+	left: 0;
+	border-radius: 0 1em 0 0;
+}
 .is-portrait .content {
 	display: none;
 }
@@ -27,4 +32,32 @@ ba-attribution-info {
 	bottom: 0;
 	left: 0;
 	position: absolute;
+}
+
+.is-portrait ba-attribution-info {
+	border-radius: 0 1.5em 0 0;
+	overflow: hidden;
+}
+
+.scale {
+	position: absolute;
+	top: -2em;
+	left: 0;
+	background: var(--secondary-color); 
+	font-size: .7rem;
+}
+
+.is-portrait .scale {
+	position: relative;
+	top: -2.8em;
+	left: 1.1em;
+}
+
+.ol-scale-line-inner {
+	padding: 0.2em .5em;
+	color: var(--secondary-color); 
+	color: var(--text3); 
+	height: 1.6em;
+	max-height: 1.6em;
+	font-weight: bold;
 }

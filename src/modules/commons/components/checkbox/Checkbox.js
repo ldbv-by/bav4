@@ -30,7 +30,6 @@ export class Checkbox extends MvuElement {
 		});
 	}
 
-
 	/**
 	 * @override
 	 */

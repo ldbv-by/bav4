@@ -51,6 +51,9 @@ describe('StoreService', () => {
 				replaceState() { }
 			}
 		};
+		const configService = {
+			getValue: () => { }
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -70,6 +73,7 @@ describe('StoreService', () => {
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
+				.registerSingleton('ConfigService', configService)
 
 				.ready();
 		};
@@ -145,18 +149,38 @@ describe('StoreService', () => {
 			});
 		});
 
-		it('removes all query params by calling #replaceState on history', (done) => {
-			const replaceStateMock = spyOn(windowMock.history, 'replaceState');
-			new StoreService();
+		describe('query parameter', () => {
 
-			setupInjector();
+			it('removes all query params by calling #replaceState on history', (done) => {
+				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
+				new StoreService();
 
-			//we need two setTimeout calls: window history is manipulated within a timeout function
-			setTimeout(() => {
+				setupInjector();
+
+				//we need two setTimeout calls: window history is manipulated within a timeout function
 				setTimeout(() => {
+					setTimeout(() => {
 
-					expect(replaceStateMock).toHaveBeenCalled();
-					done();
+						expect(replaceStateMock).toHaveBeenCalled();
+						done();
+					});
+				});
+			});
+
+			it('does NOT remove query params in deployment mode', (done) => {
+				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
+				spyOn(configService, 'getValue').and.returnValue('development');
+				new StoreService();
+
+				setupInjector();
+
+				//we need two setTimeout calls: window history is manipulated within a timeout function
+				setTimeout(() => {
+					setTimeout(() => {
+
+						expect(replaceStateMock).not.toHaveBeenCalled();
+						done();
+					});
 				});
 			});
 		});

@@ -33,7 +33,6 @@ export class Button extends MvuElement {
 		this._onClick = () => { };
 	}
 
-
 	update(type, data, model) {
 
 		switch (type) {

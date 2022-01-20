@@ -142,7 +142,7 @@ export class LayerItem extends AbstractContentPanel {
 
                     <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${this._layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
                                        
-                <button class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
+                <button id='button-detail' data-test-id class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
                 </button>   
             </div>
@@ -155,7 +155,7 @@ export class LayerItem extends AbstractContentPanel {
 						<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='info' .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
+						<ba-icon id='info' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               
