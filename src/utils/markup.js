@@ -43,12 +43,12 @@ export const generateTestIds = (element) => {
 
 		const basePath = pathElements.reverse().join('_');
 
-		//Give the current MvuElement a test id if requested
-		if (element.hasAttribute(TEST_ID_ATTRIBUTE_NAME)) {
+		//Give the current MvuElement only a test id if it has no parent MvuElement and requests it
+		if (element.hasAttribute(TEST_ID_ATTRIBUTE_NAME) && pathElements.length === 1) {
 			element.setAttribute(TEST_ID_ATTRIBUTE_NAME, basePath);
 		}
 
-		//Provide all child elements with test ids if requested
+		//Provide all child elements  with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
 			.forEach(el => {
 				//priority: id -> css-classes
