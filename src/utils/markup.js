@@ -13,7 +13,7 @@ export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
 export const generateTestIds = (element) => {
 
 	/**
-     * We cannot use a service here it's a low-level function for MvuElements, other services than the store service is not available.
+     * We cannot use a service here, it's a low-level function for MvuElements, other services than the store service are not available.
      * So we use a global window property for switching on id generation.
      */
 	if (window.baGenerateTestIds) {
