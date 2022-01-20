@@ -176,6 +176,7 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
 
 					// test-id attributes
+					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
 					expect(element.shadowRoot.querySelector(`#button-${topic0.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 					expect(element.shadowRoot.querySelector(`#button-${topic1.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				});

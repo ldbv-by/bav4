@@ -213,6 +213,7 @@ describe('Header', () => {
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
 			expect(element.shadowRoot.querySelector('#topics_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#maps_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#more_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();

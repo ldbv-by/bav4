@@ -61,6 +61,7 @@ describe('CatalogNode', () => {
 			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#list-item-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
