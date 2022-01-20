@@ -13,16 +13,16 @@ export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
 export const generateTestIds = (element) => {
 
 	/**
-     * We cannot use a service here, it's a low-level function for MvuElements, other services than the store service are not available.
-     * So we use a global window property for switching on id generation.
-     */
+	 * We cannot use a service here, it's a low-level function for MvuElements, other services than the store service are not available.
+	 * So we use a global window property for switching on id generation.
+	 */
 	if (window.baGenerateTestIds) {
 
 		const pathElements = [];
 
 		/**
-        * Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
-        */
+		* Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
+		*/
 		let currentParent = element.parentNode;
 		let currentMvuElement = element;
 
@@ -50,7 +50,6 @@ export const generateTestIds = (element) => {
 
 		//Provide all child elements (except for MvuElements) with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
-			.filter(el => !(el instanceof BaElement) && !(el instanceof MvuElement))
 			.forEach(el => {
 				//priority: id -> css-classes
 				const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
