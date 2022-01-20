@@ -68,6 +68,20 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 		expect(map.toolbox_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.toolbox_measureTool_share_link).toBe('Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten');
+		expect(map.toolbox_import_data_header).toBe('Datei Import');
+		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_data_button).toBe('Datei Auswählen');
+		expect(map.toolbox_import_data_seperator).toBe('oder');
+		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
+		expect(map.toolbox_import_data_draganddrop_target).toBe('in die Karte');
+		expect(map.toolbox_import_data_sucess_notification).toBe('Daten konnten erfolgreich geladen werden');
+		expect(map.toolbox_import_draganddrop_bg_message).toBe('KML, GPX, GeoJSON Datei hierhin ziehen');
+		expect(map.toolbox_import_url_header).toBe('URL Import');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
+		expect(map.toolbox_import_url_search).toBe('Suchfeld');
+		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
+		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
 	it('provides translation for en', () => {
@@ -135,10 +149,24 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
 		expect(map.toolbox_copy_icon).toBe('Copy to clipboard');
 		expect(map.toolbox_measureTool_share_link).toBe('Anyone, who has this link, can edit this drawing');
+		expect(map.toolbox_import_data_header).toBe('Data Import');
+		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_data_button).toBe('Choose a file');
+		expect(map.toolbox_import_data_seperator).toBe('or');
+		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
+		expect(map.toolbox_import_data_draganddrop_target).toBe('into the Map');
+		expect(map.toolbox_import_data_sucess_notification).toBe('Data transferred succeeded');
+		expect(map.toolbox_import_draganddrop_bg_message).toBe('KML, GPX, GeoJSON drop data here');
+		expect(map.toolbox_import_url_header).toBe('URL Import');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
+		expect(map.toolbox_import_url_search).toBe('Search Bar');
+		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
+		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 61;
+		const expectedSize = 75;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

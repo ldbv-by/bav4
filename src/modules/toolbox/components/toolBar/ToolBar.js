@@ -121,7 +121,7 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button_icon import">							
 						</div>
 						<div class="tool-bar__button-text">
-							Import
+						${translate('toolbox_toolbar_import_button')}							
 						</div>  					
 					</button>  				               
 					<button  @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
