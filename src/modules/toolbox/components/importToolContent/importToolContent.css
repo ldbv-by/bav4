@@ -14,12 +14,12 @@
 	border-right: 1px dotted var(--header-background-color);
 	border: 0;
 }
-
-.drag-drop-preview{
+.drag-drop-preview {
 	flex-basis: 100%;
-  text-align: center;
+	text-align: center;
+	padding: 2em 0em;
+	border-left: 1px dotted var(--text1);
 }
-
 .tool-container__buttons > button:last-child {
 	border-right: none;
 }
@@ -48,32 +48,18 @@
 	-webkit-mask-image: url('assets/data.svg');
 }
 
-.tool-container__button:hover:not(.disabled-tool__button) .tool-container__background {
-	height: 3.4em;
-	width: 3.4em;
-	background-color: var(--secondary-color);
-}
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__icon {
 	background: var(--text3);
 }
-.tool-container__button:focus:not(.disabled-tool__button) .tool-container__background {
-	height: 3.4em;
-	width: 3.4em;
-	background-color: var(--primary-color);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) ,  0 0 0 .2em var(--primary-color-lighter);
-}
-.tool-container__button:focus {
-	box-shadow: none;
-}
-.tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon {
-	background: var(--text3);
-}
+
 .tool-container__button-text {
 	font-size: .8rem;
 	margin: 5.5em .3em .5em .3em;
 	user-select: none;
 	text-align: center;
 	min-width: 5em;
+	position: relative;
+	left: -1.5em;
 }
 .preview_button {
 	width: 100%;
@@ -89,59 +75,50 @@
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-
-.text-to-search:hover .drag-drop-bg {
-	display: block;
-}
-
 .drag-drop-bg {
 	display: none;
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-    position: fixed;
-    height: auto;
-    width: auto;
-    outline: 10px dashed var(--text3);
-    outline-offset: -20px;
-    top: 0;
-    right: 0;
-    left: 0em;
-    bottom: 0;
-    z-index: calc(var(--z-toolbox) + 20);
-    background-color: var(--modal-background-color);
-    transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	position: fixed;
+	height: auto;
+	width: auto;
+	outline: 10px dashed var(--text3);
+	outline-offset: -20px;
+	top: 0;
+	right: 0;
+	left: 0em;
+	bottom: 0;
+	z-index: calc(var(--z-toolbox) + 20);
+	background-color: var(--modal-background-color);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-
-
+.text-to-search:hover .drag-drop-bg {
+	display: block;
+}
 .search-bg {
 	display: none;
-    position: fixed;
-    height: 3em;
-    width: 28em;
-    outline: 10px dashed var(--text3);
-    outline-offset: -20px;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background-color: var(--modal-background-color);
-    transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	position: fixed;
+	height: 3em;
+	width: 28em;
+	outline: 10px dashed var(--text3);
+	outline-offset: -20px;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	background-color: var(--modal-background-color);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-
-
 .drag-drop-bg-text {
 	font-weight: bold;
 	text-align: center;
 	font-size: 1.6rem;
 	color: var(--text3);
-	margin-top:.8em;
+	margin-top: .8em;
 }
-
 .drag-drop-bg-icon {
 	mask-image: url('assets/upload.svg');
 	-webkit-mask-image: url('assets/upload.svg');
-	mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktdXBsb2FkIiB2aWV3Qm94PSIwIDAgMTYgMTYiPjwhLS0gTUlUIExpY2Vuc2UgLS0+CiAgPHBhdGggZD0iTS41IDkuOWEuNS41IDAgMCAxIC41LjV2Mi41YTEgMSAwIDAgMCAxIDFoMTJhMSAxIDAgMCAwIDEtMXYtMi41YS41LjUgMCAwIDEgMSAwdjIuNWEyIDIgMCAwIDEtMiAySDJhMiAyIDAgMCAxLTItMnYtMi41YS41LjUgMCAwIDEgLjUtLjV6Ii8+CiAgPHBhdGggZD0iTTcuNjQ2IDEuMTQ2YS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSAyLjcwN1YxMS41YS41LjUgMCAwIDEtMSAwVjIuNzA3TDUuMzU0IDQuODU0YS41LjUgMCAxIDEtLjcwOC0uNzA4bDMtM3oiLz4KPC9zdmc+);
-	-webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktdXBsb2FkIiB2aWV3Qm94PSIwIDAgMTYgMTYiPjwhLS0gTUlUIExpY2Vuc2UgLS0+CiAgPHBhdGggZD0iTS41IDkuOWEuNS41IDAgMCAxIC41LjV2Mi41YTEgMSAwIDAgMCAxIDFoMTJhMSAxIDAgMCAwIDEtMXYtMi41YS41LjUgMCAwIDEgMSAwdjIuNWEyIDIgMCAwIDEtMiAySDJhMiAyIDAgMCAxLTItMnYtMi41YS41LjUgMCAwIDEgLjUtLjV6Ii8+CiAgPHBhdGggZD0iTTcuNjQ2IDEuMTQ2YS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSAyLjcwN1YxMS41YS41LjUgMCAwIDEtMSAwVjIuNzA3TDUuMzU0IDQuODU0YS41LjUgMCAxIDEtLjcwOC0uNzA4bDMtM3oiLz4KPC9zdmc+);
 	background: var(--text3);
 	height: 15em;
 	width: 15em;
@@ -149,7 +126,6 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;	
 }
-
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
@@ -160,45 +136,60 @@
 	display: inline-block;
 	height: .8em;
 	width: .8em;
-	background-repeat: no-repeat;
 	mask-image: url('assets/search.svg');
 	-webkit-mask-image: url('assets/search.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	background: var(--primary-color);
 }
-
 .ba-tool-container__content {
 	display: flex;
+}
+.ba-tool-container__url-import {
+	display: block;
 	padding-bottom: 1.5em;
 }
-
-
-#fileupload{
-	height:0;
-	width:0;
-	overflow:hidden;
+#fileupload {
+	height: 0;
+	width: 0;
+	overflow: hidden;
 }
-
-.tool-container__button{
+.tool-container__button {
 	position: relative;
 }
-
-.tool-container__button:focus .tool-container__background {
-
-	background: var(--primary-color);
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
-}
-
-
-
-.ba-tool-container__split-text{
-
+.ba-tool-container__split-text {
 	position: absolute;
 	font-weight: bold;
 	left: 50%;
-	margin-left:-1em;
-	top: 6em;
+	margin-left: -1em;
+	top: 6.5em;
 	background: var(--primary-bg-color);
 }
-	
+.ba-tool-container__sub-title {
+	font-size: .9rem; 
+	opacity: .9; 
+	margin-left: .5em;
+	font-weight: normal
+}
+.tool-container__button:focus {
+	box-shadow: none;
+}
+.tool-container__button:focus .tool-container__background {
+	background: var(--primary-color);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+.tool-container__button:hover:not(.disabled-tool__button) .tool-container__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--secondary-color);
+}
+
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__icon {
+	background: var(--text3);
+}
+.tool-container__button:focus:not(.disabled-tool__button) .tool-container__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--primary-color);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) ,  0 0 0 .2em var(--primary-color-lighter);
+}
