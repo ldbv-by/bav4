@@ -1,6 +1,7 @@
 .tool-container__buttons {
 	font-size: 1.2rem;
 	display: flex;
+	flex-basis: 100%;
 	justify-content: center;
 }
 .tool-container__buttons > button {
@@ -13,6 +14,12 @@
 	border-right: 1px dotted var(--header-background-color);
 	border: 0;
 }
+
+.drag-drop-preview{
+	flex-basis: 100%;
+  text-align: center;
+}
+
 .tool-container__buttons > button:last-child {
 	border-right: none;
 }
@@ -22,7 +29,7 @@
 	border-radius: 2.5em;
 	position: absolute;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	left: 2.8em;
+	left: 1.75em;
 	transform: translate(-50%, -50%);
 	top: 1.8em;
 }
@@ -86,8 +93,12 @@
 .text-to-search:hover .drag-drop-bg {
 	display: block;
 }
+
 .drag-drop-bg {
-    display: none;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
     position: fixed;
     height: auto;
     width: auto;
@@ -95,12 +106,11 @@
     outline-offset: -20px;
     top: 0;
     right: 0;
-    left: 28em;
+    left: 0em;
     bottom: 0;
-    z-index: 1;
+    z-index: calc(var(--z-toolbox) + 20);
     background-color: var(--modal-background-color);
     transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-    clip-path: polygon(0 0, 105em 0%, 105em 19em, 100% 24%, 100% 50%, 100% 100%, 0 100%);
 }
 
 
@@ -120,13 +130,11 @@
 
 
 .drag-drop-bg-text {
-	position: fixed;
-	top: 50vh;
-	width: 76%;
 	font-weight: bold;
 	text-align: center;
-	font-size: 1.7rem;
+	font-size: 1.6rem;
 	color: var(--text3);
+	margin-top:.8em;
 }
 
 .drag-drop-bg-icon {
@@ -137,12 +145,9 @@
 	background: var(--text3);
 	height: 15em;
 	width: 15em;
-	left: 40%;
-	top: 28%;
-	position: absolute;
+	margin: auto;
 	mask-size: cover;
 	-webkit-mask-size: cover;	
-	animation: scale 0.6s ease infinite;
 }
 
 .text-to-search {
@@ -164,5 +169,36 @@
 }
 
 .ba-tool-container__content {
+	display: flex;
 	padding-bottom: 1.5em;
 }
+
+
+#fileupload{
+	height:0;
+	width:0;
+	overflow:hidden;
+}
+
+.tool-container__button{
+	position: relative;
+}
+
+.tool-container__button:focus .tool-container__background {
+
+	background: var(--primary-color);
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+
+
+
+.ba-tool-container__split-text{
+
+	position: absolute;
+	font-weight: bold;
+	left: 50%;
+	margin-left:-1em;
+	top: 6em;
+	background: var(--primary-bg-color);
+}
+	

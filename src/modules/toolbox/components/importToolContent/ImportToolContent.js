@@ -24,33 +24,22 @@ export class ImportToolContent extends AbstractToolContent {
 						Datei Import 
 						<span style='font-size:.9rem; opacity:.9;margin-left:.5em; font-weight:normal'> KML, GPX, GeoJSON </span>
 				</div>
-				<div style="    position: absolute;
-				font-weight: bold;
-				left: 50%;
-				top: 6em;
-				background: var(--primary-bg-color);
-				">
-				oder
+				<div class='ba-tool-container__split-text'>
+					oder
 				</div>
 
-				<div class="ba-tool-container__content divider" style="display:flex">                						     				
-					<div class="tool-container__buttons" style="width: 12em">      
-						<button class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" > 	                              
+				<div class="ba-tool-container__content divider" >                						     				
+					<div class="tool-container__buttons">      
+						<label for='fileupload' class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" > 	                              
 							<div class="tool-container__background"></div>
 							<div class="tool-container__icon data"></div>  
 							<div class="tool-container__button-text" style='position: relative;left: -1.5em;'>Datei Auswählen</div>
-						</button>
+							<input id='fileupload' type='file'></input>
+						</label>
 					</div>
-					<div  class='drag-drop-preview' style='width: 12em;text-align: center;padding: 2em 0em;border-left: 1px dotted var(--text1);'>
+					<div  class='drag-drop-preview' style='text-align: center;padding: 2em 0em;border-left: 1px dotted var(--text1);'>
 							<div class='text-to-search'>
-								Drag and Drop 
-								<div class='drag-drop-bg'>
-									<div class='drag-drop-bg-icon'>
-									</div>	
-									<div class='drag-drop-bg-text'>
-									KML, GPX, GeoJSON Datei hierhin ziehen
-									</div>
-								</div>
+								Drag and Drop 								
 							</div>
 							<div>
 								in die Karte
@@ -71,6 +60,15 @@ export class ImportToolContent extends AbstractToolContent {
 				</div>								          
             </div>
 		</div>	  
+		<div class='drag-drop-bg'>
+		<div>
+									<div class='drag-drop-bg-icon'>
+									</div>	
+									<div class='drag-drop-bg-text'>
+									KML, GPX, GeoJSON Datei hierhin ziehen
+									</div>
+									</div>
+								</div>
         `;
 
 	}
