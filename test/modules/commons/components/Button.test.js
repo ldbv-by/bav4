@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 import { Button } from '../../../../src/modules/commons/components/button/Button';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Button.tag, Button);
 

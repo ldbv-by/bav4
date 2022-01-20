@@ -1,5 +1,4 @@
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Toggle.tag, Toggle);
 
