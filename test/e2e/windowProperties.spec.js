@@ -4,10 +4,10 @@ const BASE_URL = process.env.URL || 'http://localhost:8080';
 
 test.describe('global properties', () => {
 
-	test.describe('baGenerateTestIds', () => {
+	test.describe('baGenerateTestIds property', () => {
 
 		test.describe('when query parameter is not available', () => {
-			test('should be set to `false`', async ({ page }) => {
+			test('property should be `false`', async ({ page }) => {
 				await page.goto(`${BASE_URL}`);
 
 				const aHandle = await page.evaluateHandle(() => window);
@@ -19,8 +19,8 @@ test.describe('global properties', () => {
 			});
 		});
 
-		test.describe('when query parameter has value of true', () => {
-			test('should be set to `false`', async ({ page }) => {
+		test.describe('when query parameter has value of `true`', () => {
+			test('property should be `true`', async ({ page }) => {
 				await page.goto(`${BASE_URL}?generate_test_ids=true`);
 
 				const aHandle = await page.evaluateHandle(() => window);
@@ -33,7 +33,7 @@ test.describe('global properties', () => {
 		});
 
 		test.describe('when query parameter has value of something else', () => {
-			test('should be set `true`', async ({ page }) => {
+			test('propert should be `false`', async ({ page }) => {
 				await page.goto(`${BASE_URL}?generate_test_ids=foo`);
 
 				const aHandle = await page.evaluateHandle(() => window);
