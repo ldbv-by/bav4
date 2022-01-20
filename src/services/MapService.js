@@ -101,4 +101,13 @@ export class MapService {
 		}
 		throw new Error(`Unsupported SRID ${srid}`);
 	}
+
+	/**
+	 * Returns an HTMLElement acting as a container for a scale line component.
+	 * @returns {HTMLElement|null} element or `null`;
+	 */
+	getScaleLineContainer() {
+		const element = document.querySelector('ba-footer')?.shadowRoot.querySelector('.scale');
+		return element ?? null;
+	}
 }
