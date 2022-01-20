@@ -11,8 +11,7 @@ class MvuElementParent extends MvuElement {
 			<div id='id' data-test-id></div>
 			<div class='class foo' data-test-id></div>
 			<div data-test-id></div>
-			<mvu-element-child data-test-id></mvu-element-child>
-			<mvu-element-child data-test-id></mvu-element-child>
+			<mvu-element-child data-test-id id='id'></mvu-element-child>
 			<div id='id'></div>
 			<div class='class foo'></div>
 			<div></div>
@@ -28,7 +27,7 @@ class MvuElementParent extends MvuElement {
 class MvuElementChild extends MvuElement {
 
 	createView() {
-		return html``;
+		return html`<div id='id' data-test-id></div>`;
 	}
 
 	static get tag() {
@@ -46,8 +45,7 @@ class BaElementParent extends BaElement {
 			<div id='id' data-test-id></div>
 			<div class='class foo' data-test-id></div>
 			<div data-test-id></div>
-			<ba-element-child data-test-id></ba-element-child>
-			<ba-element-child data-test-id></ba-element-child>
+			<ba-element-child data-test-id id='id'></ba-element-child>
 			<div id='id'></div>
 			<div class='class foo'></div>
 			<div></div>
@@ -109,10 +107,9 @@ describe('markup utils', () => {
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(mvuElements).toHaveSize(3);
-				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_mvu-element-child-0');
-				expect(mvuElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_mvu-element-child-1');
-				expect(mvuElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
+				expect(mvuElements).toHaveSize(2);
+				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_id');
+				expect(mvuElements.item(1).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 			});
 
 			it('does nothing', async () => {
@@ -120,7 +117,7 @@ describe('markup utils', () => {
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(MvuElementChild.tag)];
 
-				expect(all).toHaveSize(9);
+				expect(all).toHaveSize(8);
 				all.forEach(el => {
 					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
 				});
@@ -145,10 +142,9 @@ describe('markup utils', () => {
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(mvuElements).toHaveSize(3);
-				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-0');
-				expect(mvuElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-1');
-				expect(mvuElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
+				expect(mvuElements).toHaveSize(2);
+				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_id');
+				expect(mvuElements.item(1).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 			});
 
 			it('does nothing', async () => {
@@ -156,7 +152,7 @@ describe('markup utils', () => {
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(BaElementChild.tag)];
 
-				expect(all).toHaveSize(9);
+				expect(all).toHaveSize(8);
 				all.forEach(el => {
 					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
 				});

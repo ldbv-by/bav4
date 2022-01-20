@@ -53,6 +53,7 @@ describe('LayerManager', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.layer').length).toBe(1);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.layer').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
