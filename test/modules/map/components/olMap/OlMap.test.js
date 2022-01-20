@@ -33,7 +33,8 @@ describe('OlMap', () => {
 	const mapServiceStub = {
 		getMinimalRotation() {
 			return .05;
-		}
+		},
+		getScaleLineContainer() {}
 	};
 
 	const geoResourceServiceStub = {
@@ -157,17 +158,20 @@ describe('OlMap', () => {
 	describe('when initialized', () => {
 
 		it('configures the map and adds a div which contains the ol-map', async () => {
+			const mapServiceSpy = spyOn(mapServiceStub, 'getScaleLineContainer');
+
 			const element = await setup();
 
 			expect(element._view.getZoom()).toBe(initialZoomLevel);
 			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
-			//all default controls are disabled
-			expect(element._map.getControls().getLength()).toBe(0);
+			//all default controls are removed, ScaleLine control added
+			expect(element._map.getControls().getLength()).toBe(1);
 			//all interactions are present
 			expect(element._map.getInteractions().getLength()).toBe(9);
 			expect(element._map.moveTolerance_).toBe(1);
+			expect(mapServiceSpy).toHaveBeenCalled();
 		});
 
 		describe('on touch device', () => {

@@ -3,7 +3,7 @@ import { MvuElement } from '../../../MvuElement';
 import olCss from 'ol/ol.css';
 import css from './olMap.css';
 import { Map as MapOl, View } from 'ol';
-import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../../store/layers/layers.action';
 import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../../store/position/position.action';
@@ -105,7 +105,7 @@ export class OlMap extends MvuElement {
 				attribution: false,
 				zoom: false,
 				rotate: false
-			}),
+			}).extend([new ScaleLine({ target: this._mapService.getScaleLineContainer() })]),
 			moveTolerance: this._environmentService.isTouch() ? 3 : 1,
 			interactions: defaultInteractions({
 				//for embedded mode
