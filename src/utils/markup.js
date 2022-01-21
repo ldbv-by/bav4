@@ -18,11 +18,10 @@ export const generateTestIds = (element) => {
 	 */
 	if (window.baGenerateTestIds) {
 
-		const pathElements = [];
-
 		/**
 		* Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
 		*/
+		const pathElements = [];
 		let currentParent = element.parentNode;
 		let currentMvuElement = element;
 
