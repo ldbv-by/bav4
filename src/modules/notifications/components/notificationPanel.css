@@ -5,6 +5,7 @@
 	justify-content: center; 
 	flex-direction: column;
 	bottom: 0.625em;
+	bottom: 1.2em;
 	left: 1em;
 	right: 1em;
 	z-index: var(--z-notification);
