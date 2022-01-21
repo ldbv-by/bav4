@@ -93,9 +93,7 @@
 	background-color: var(--modal-background-color);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-.text-to-search:hover .drag-drop-bg {
-	display: block;
-}
+
 .search-bg {
 	display: none;
 	position: fixed;

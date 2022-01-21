@@ -28,9 +28,14 @@ export class ImportToolContent extends AbstractToolContent {
 			document.getElementById('input').focus();
 		};
 
-		const onTextHoverShowDragAndDropBG = () => {
+		const onTextEnterShowDragAndDropBG = () => {
 			const dragDropBg = this.shadowRoot.getElementById('dragDropBg');
 			dragDropBg.style.display = 'flex';
+		};
+
+		const onTextMouseLeaveShowDragAndDropBG = () => {
+			const dragDropBg = this.shadowRoot.getElementById('dragDropBg');
+			dragDropBg.style.display = 'none';
 		};
 
 		const onUpload = () => {
@@ -61,7 +66,7 @@ export class ImportToolContent extends AbstractToolContent {
 						</label>
 					</div>
 					<div  class='drag-drop-preview'>
-						<div class='text-to-search' @mouseover=${onTextHoverShowDragAndDropBG}>
+						<div class='text-to-search' @mouseover=${onTextEnterShowDragAndDropBG}  @mouseleave=${onTextMouseLeaveShowDragAndDropBG}>
 							${translate('toolbox_import_data_draganddrop')}								
 						</div>
 						<div>
