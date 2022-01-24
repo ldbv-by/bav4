@@ -178,7 +178,7 @@ describe('GeoResource provider', () => {
 
 		});
 
-		it('logs a war statememt when GeoResource type cannot be resolved', async () => {
+		it('logs a warn statement when GeoResource type cannot be resolved', async () => {
 
 			const warnSpy = spyOn(console, 'warn');
 			const backendUrl = 'https://backend.url';
