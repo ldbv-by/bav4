@@ -5,9 +5,18 @@ import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/componen
 import { createDefaultLayer, createDefaultLayerProperties } from '../../../../../../../src/store/layers/layers.reducer';
 import GeoJSON from 'ol/format/GeoJSON';
 import { FeatureInfoGeometryTypes } from '../../../../../../../src/store/featureInfo/featureInfo.action';
+import { $injector } from '../../../../../../../src/injection';
 
 describe('FeatureInfo provider', () => {
+	const mapServiceMock = {
+		getSrid: () => 3857,
+		getDefaultGeodeticSrid: () => 25832
+	};
+	beforeAll(() => {
+		$injector
+			.registerSingleton('MapService', mapServiceMock);
 
+	});
 	const coordinate = fromLonLat([11, 48]);
 
 	describe('Bvv featureInfo provider', () => {
@@ -33,7 +42,11 @@ describe('FeatureInfo provider', () => {
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
 				feature.set('name', 'name');
-				const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
+				const expectedFeatureInfoGeometry = {
+					data: new GeoJSON().writeGeometry(geometry),
+					geometryType: FeatureInfoGeometryTypes.GEOJSON,
+					statistics: { coordinate: [1224514.3987260093, 6106854.83488507], azimuth: null, length: null, area: null }
+				};
 
 				let featureInfo = getBvvFeatureInfo(feature, layerProperties);
 

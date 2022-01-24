@@ -8,7 +8,7 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import { setStatistic, setMode, setSelection } from '../../../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUtils';
-import { getGeometryLength, getArea } from '../../olGeometryUtils';
+import { getStats } from '../../olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../../../utils/storeUtils';
 import { HelpTooltip } from './../../HelpTooltip';
@@ -473,17 +473,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_setStatistics(feature) {
-		const length = getGeometryLength(feature.getGeometry(), this._projectionHints);
-		const area = getArea(feature.getGeometry(), this._projectionHints);
-		setStatistic({ length: length, area: area });
+		const stats = getStats(feature.getGeometry(), this._projectionHints);
+		setStatistic({ length: stats.length, area: stats.area });
 	}
 
 	_updateStatistics() {
 		const startStatistic = { length: 0, area: 0 };
 		const sumStatistic = (before, feature) => {
+			const stats = getStats(feature.getGeometry(), this._projectionHints);
 			return {
-				length: before.length + getGeometryLength(feature.getGeometry(), this._projectionHints),
-				area: before.area + getArea(feature.getGeometry(), this._projectionHints)
+				length: before.length + stats.length,
+				area: before.area + stats.area
 			};
 		};
 		if (this._select) {

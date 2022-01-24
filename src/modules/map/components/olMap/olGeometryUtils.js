@@ -226,3 +226,23 @@ export const isValidGeometry = (geometry) => {
 	}
 	return false;
 };
+
+export const getStats = (geometry, calculationHints) => {
+	const stats = {
+		coordinate: null,
+		azimuth: null,
+		length: null,
+		area: null
+	};
+
+	if (geometry instanceof Point) {
+		return { ...stats, coordinate: geometry.getCoordinates() };
+	}
+	if (geometry instanceof LineString) {
+		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+	}
+	if (geometry instanceof Polygon) {
+		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
+	}
+	return stats;
+};

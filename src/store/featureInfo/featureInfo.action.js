@@ -24,6 +24,16 @@ const getStore = () => {
  * @typedef {Object} FeatureInfoGeometry
  * @property {object|string} data Geometry (e.g. geoJson, WKT)
  * @property {FeatureInfoType} geometryType the type of the geometry
+ * @property {GeometryStatistics} statistics the statistical data of the geometry
+ */
+
+/**
+ * Statistical data for a {@link FeatureInfoGeometry}
+ * @typedef {Object} GeometryStatistics
+ * @property {coordinate|null} coordinate the coordinate
+ * @property {number|null} azimuth the azimuth angle in degree of a two-point linestring
+ * @property {number|null} length the length of a linestring or circumference of a polygon in meters
+ * @property {number|null} area the area of a polygon in squared meters
  */
 
 /**
