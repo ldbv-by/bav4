@@ -114,6 +114,6 @@ ba-checkbox:focus {
 	padding: .3em 0;
 	display: flex;
 }
-.tool-container__form input, .tool-container__style_desc textarea, .tool-container__style_size select  {
+.tool-container__form input, .tool-container__style_desc textarea, .tool-container__style_size select {
 	flex-grow: 1;
 }

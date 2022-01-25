@@ -9,6 +9,7 @@ import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResour
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
 
 
 
@@ -90,6 +91,9 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(geoResourceLabel);
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+
+				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 
 			it('renders a checkbox unchecked', async () => {

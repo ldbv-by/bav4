@@ -6,6 +6,7 @@ import { Topic } from '../../../../../src/services/domain/topic';
 import { setCurrent } from '../../../../../src/store/topics/topics.action';
 import { topicsReducer } from '../../../../../src/store/topics/topics.reducer';
 import { topicsContentPanelReducer } from '../../../../../src/store/topicsContentPanel/topicsContentPanel.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils.js';
 
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
@@ -173,6 +174,11 @@ describe('TopicsContentPanel', () => {
 					expect(element.shadowRoot.querySelectorAll('.ba-list-item__secondary-text')[1].innerText).toBe(topic1.description);
 
 					expect(element.shadowRoot.querySelectorAll(CatalogContentPanel.tag)).toHaveSize(2);
+
+					// test-id attributes
+					expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
+					expect(element.shadowRoot.querySelector(`#button-${topic0.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+					expect(element.shadowRoot.querySelector(`#button-${topic1.id}`).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				});
 			});
 

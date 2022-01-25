@@ -1,6 +1,7 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../injection';
+import { generateTestIds } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import css from './baElement.css';
 
@@ -230,6 +231,7 @@ export class BaElement extends HTMLElement {
 				renderLitHtml(html`${this.defaultCss()} ${template}`, this.getRenderTarget());
 			}
 
+			generateTestIds(this);
 			this._rendered = true;
 			this.onAfterRender(initialRendering);
 		}

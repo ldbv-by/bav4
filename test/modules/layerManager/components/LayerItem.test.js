@@ -6,6 +6,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -123,6 +124,14 @@ describe('LayerItem', () => {
 		it('displays info button', async () => {
 			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
 			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
+		});
+
+		it('contains test-id attributes', async () => {
+			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
+			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 	});
