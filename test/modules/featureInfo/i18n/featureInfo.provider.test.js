@@ -9,6 +9,11 @@ describe('i18n for featureInfo module', () => {
 
 		expect(map.featureInfo_close_button).toBe('Schließen');
 		expect(map.featureInfo_header).toBe('Objekt-Info');
+		expect(map.geometryInfo_title_coordinate).toBe('Koordinate');
+		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-Winkel');
+		expect(map.geometryInfo_title_line_length).toBe('Länge');
+		expect(map.geometryInfo_title_polygon_length).toBe('Umfang');
+		expect(map.geometryInfo_title_polygon_area).toBe('Fläche');
 	});
 
 	it('provides translation for en', () => {
@@ -17,10 +22,15 @@ describe('i18n for featureInfo module', () => {
 
 		expect(map.featureInfo_close_button).toBe('Close');
 		expect(map.featureInfo_header).toBe('Object Information');
+		expect(map.geometryInfo_title_coordinate).toBe('Coordinate');
+		expect(map.geometryInfo_title_azimuth).toBe('Azimuth-angle');
+		expect(map.geometryInfo_title_line_length).toBe('Distance');
+		expect(map.geometryInfo_title_polygon_length).toBe('Perimeter');
+		expect(map.geometryInfo_title_polygon_area).toBe('Area');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

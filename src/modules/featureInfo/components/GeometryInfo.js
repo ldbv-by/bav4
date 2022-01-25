@@ -12,8 +12,8 @@ export class GeometryInfo extends MvuElement {
 	constructor() {
 		super({ statistics: EMPTY_GEOMETRY_STATISTICS });
 
-		const { CoordinateService, UnitsService } = $injector.inject('CoordinateService', 'UnitsService');
-
+		const { CoordinateService, UnitsService, TranslationService } = $injector.inject('CoordinateService', 'UnitsService', 'TranslationService');
+		this._translationService = TranslationService;
 		this._coordinateService = CoordinateService;
 		this._unitsService = UnitsService;
 	}
@@ -22,39 +22,39 @@ export class GeometryInfo extends MvuElement {
 	 * @override
 	 */
 	update(type, data, model) {
-		const sanitizeStatistic = candidate => {
-			return {
-				coordinate: candidate.coordinate ? candidate.coordinate : null,
-				azimuth: candidate.azimuth ? candidate.azimuth : null,
-				length: candidate.length ? candidate.length : null,
-				area: candidate.area ? candidate.area : null
-			};
-		};
 		switch (type) {
 			case Update_Statistics:
-				return { ...model, statistics: sanitizeStatistic(data) };
+				return { ...model, statistics: data };
 		}
 	}
 
 
 	createView(model) {
+		const translate = (key) => this._translationService.translate(key);
+
 		const getContent = statistics => {
 			if (statistics.coordinate) {
+				const title = translate('geometryInfo_title_coordinate');
 				const formattedCoordinate = this._coordinateService.stringify(
 					this._coordinateService.toLonLat(statistics.coordinate), 4326, { digits: 5 });
-				return html`<div class='stats-point stats-content'>${formattedCoordinate}</div>`;
+				return html`<div class='stats-point stats-content' title=${title}><span>${title}:</span>${formattedCoordinate}</div>`;
 			}
 			if (statistics.length && statistics.azimuth) {
-				return html`<div class='stats-line-azimuth stats-content'>${statistics.azimuth.toFixed(2)}°</div>
-					<div class='stats-line-length stats-content'>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
+				const titleAzimuth = translate('geometryInfo_title_azimuth');
+				const titleLength = translate('geometryInfo_title_line_length');
+				return html`<div class='stats-line-azimuth stats-content' title=${titleAzimuth}><span>${titleAzimuth}:</span>${statistics.azimuth.toFixed(2)}°</div>
+					<div class='stats-line-length stats-content' title=${titleLength}><span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
 			}
 
 			if (statistics.length && statistics.area) {
-				return html`<div class='stats-polygon-length stats-content'>${this._unitsService.formatDistance(statistics.length, 2)}</div>
-					<div class='stats-polygon-area stats-content'>${unsafeHTML(this._unitsService.formatArea(statistics.area, 2))}</div>`;
+				const titleArea = translate('geometryInfo_title_polygon_area');
+				const titleLength = translate('geometryInfo_title_line_length');
+				return html`<div class='stats-polygon-length stats-content' title=${titleLength}><span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>
+					<div class='stats-polygon-area stats-content' title=${titleArea}><span>${titleArea}:</span>${unsafeHTML(this._unitsService.formatArea(statistics.area, 2))}</div>`;
 			}
 			if (statistics.length) {
-				return html`<div class='stats-line-length stats-content'>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
+				const title = translate('geometryInfo_title_line_length');
+				return html`<div class='stats-line-length stats-content' title=${title}><span>${title}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
 			}
 			return null;
 		};
