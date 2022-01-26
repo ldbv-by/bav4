@@ -116,7 +116,8 @@ export class GeoResourceService {
 	}
 
 	/**
-	 * Loads a {@link GeoResource}. The loaded GeoResource cab  be addded to the internal cache by calling {@link GeoResourceService#addOrReplace}.
+	 * Loads a {@link GeoResource} by calling all registered {@link georesourceByIdProvider} in the order of their registration.
+	 * The loaded GeoResource can be addded to the internal cache by calling {@link GeoResourceService#addOrReplace}.
 	 * @param {string} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResource | null} returns the loaded GeoResource or `null` when no byIdProvider could fulfill
 	 */
