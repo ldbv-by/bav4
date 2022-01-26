@@ -1,13 +1,14 @@
 /**
 * Abstract base class for all BaPlugins.
-* `BaPlugins` implementations are a second important place for structuring code and logic.
-* In contrast to components, they often act a Controller on a higher abstraction level
-* managing global state being consumed by different components afterward.
-* For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app.
-* <br>
-* StorePlugins must implement {@link BaPlugin#register}, which is called by the global {@link StoreService}
-* after all dependency injection is done.
 *
+*
+* Besides MvuElements `BaPlugins` implementations are a second important place for structuring code and logic.
+* In contrast to MvuElements, they often act as a controller on a higher abstraction level and manage global state.
+* That means, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app.
+*
+*
+* Plugins must implement {@link BaPlugin#register}, which is called by the global {@link StoreService}
+* after dependency injection is done.
 * @abstract
 * @class
 * @author taulinger
