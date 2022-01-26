@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
 import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
-import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 
 describe('GeoResourceService', () => {
@@ -15,8 +15,8 @@ describe('GeoResourceService', () => {
 			.registerSingleton('EnvironmentService', environmentService);
 	});
 
-	const setup = (provider = loadExampleGeoResources) => {
-		return new GeoResourceService(provider);
+	const setup = (provider = loadExampleGeoResources, byIdProviders) => {
+		return new GeoResourceService(provider, byIdProviders);
 	};
 	const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'wmtsLabel', 'wmtsUrl');
 
@@ -33,18 +33,21 @@ describe('GeoResourceService', () => {
 			expect(georesources.length).toBe(6);
 		});
 
-		it('initializes the service with default provider', async () => {
+		it('initializes the service with default providers', async () => {
 
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
+			expect(instanceUnderTest._byIdProvider).toEqual([loadBvvGeoResourceById]);
 		});
 
 		it('initializes the service with custom provider', async () => {
 
 			const customProvider = async () => { };
-			const instanceUnderTest = setup(customProvider);
-			expect(instanceUnderTest._provider).toBeDefined();
+			const customByIdProvider0 = async () => { };
+			const customByIdProvider1 = async () => { };
+			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1]);
 			expect(instanceUnderTest._provider).toEqual(customProvider);
+			expect(instanceUnderTest._byIdProvider).toEqual([customByIdProvider0, customByIdProvider1]);
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
@@ -175,6 +178,33 @@ describe('GeoResourceService', () => {
 			instanceUnderTest.addOrReplace(geoResource2);
 			expect(instanceUnderTest._georesources.length).toBe(1);
 			expect(instanceUnderTest._georesources[0]).toEqual(geoResource2);
+		});
+	});
+
+	describe('loadById', () => {
+
+		it('loads a Georesouce by its id', async () => {
+			const customByIdProvider0 = async () => null;
+			const customByIdProvider1 = async id => {
+				if (id === wmtsGeoResource.id) {
+					return wmtsGeoResource;
+				}
+			};
+			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+
+			const geoResources = await instanceUnderTest.loadById(wmtsGeoResource.id);
+
+			expect(geoResources).toEqual(wmtsGeoResource);
+		});
+
+		it('returns null when no byIdProvider can fulfill', async () => {
+			const customByIdProvider0 = async () => null;
+			const customByIdProvider1 = async () => null;
+			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+
+			const geoResources = await instanceUnderTest.loadById('foo');
+
+			expect(geoResources).toBeNull();
 		});
 	});
 });

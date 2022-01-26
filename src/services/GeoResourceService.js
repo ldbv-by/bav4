@@ -4,12 +4,19 @@
  * {@link GeoResource}s.
  *
  * @async
- * @typedef {function():(Array<geoResource>)} georesourceProvider
+ * @typedef {function():(Array<GeoResource>)} georesourceProvider
+ */
+
+/**
+ * An async function that provides a {@link GeoResource}
+ *
+ * @async
+ * @typedef {function():(GeoResource)} georesourceByIdProvider
  */
 
 import { $injector } from '../injection';
 import { WMTSGeoResource } from './domain/geoResources';
-import { loadBvvGeoResources } from './provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
 export const FALLBACK_GEORESOURCE_ID_1 = 'atkis_sw';
@@ -17,7 +24,23 @@ export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Layer 1';
 export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Layer 2';
 
 /**
+* A function that returns a promise with an Array of GeoResources.
+*
+* @typedef {function() : (Promise<Array<GeoResource>>)} geoResourceProvider
+*/
+
+/**
+ * A function that returns a promise with a GeoResource.
+ * @param {string} id Id of the requested GeoResource
+ * @typedef {function(id) : (Promise<GeoResource|null>)} geoResourceByIdProvider
+ */
+
+/**
  * Service for managing {@link GeoResource}s.
+ *
+ *
+ * Georesources that should be available a startup time are loaded by the registered georesourceProvider.
+ * GeoResouces which should be loaded on-demand during runtime, are loaded by the registered georesourceByIdProviders.
  *
  * @class
  * @author taulinger
@@ -27,9 +50,11 @@ export class GeoResourceService {
 	/**
 	 *
 	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
+	 * @param {georesourceByIdProvider} [georesourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
 	 */
-	constructor(provider = loadBvvGeoResources) {
+	constructor(provider = loadBvvGeoResources, byIdProvider = [loadBvvGeoResourceById]) {
 		this._provider = provider;
+		this._byIdProvider = byIdProvider;
 		this._georesources = null;
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
@@ -88,6 +113,21 @@ export class GeoResourceService {
 		}
 		const geoResource = this._georesources.find(georesource => georesource.id === id);
 		return geoResource || null;
+	}
+
+	/**
+	 * Loads a {@link GeoResource}. The loaded GeoResource cab  be addded to the internal cache by calling {@link GeoResourceService#addOrReplace}.
+	 * @param {string} id Id of the desired {@link GeoResource}
+	 * @returns {GeoResource | null} returns the loaded GeoResource or `null` when no byIdProvider could fulfill
+	 */
+	async loadById(id) {
+		for (const byIdProvider of this._byIdProvider) {
+			const geoResouce = await byIdProvider(id);
+			if (geoResouce?.id === id) {
+				return geoResouce;
+			}
+		}
+		return null;
 	}
 
 	/**
