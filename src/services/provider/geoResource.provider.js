@@ -140,7 +140,7 @@ export const loadBvvGeoResourceById = async id => {
 		HttpService: httpService,
 		ConfigService: configService
 	}
-		= $injector.inject('TranslationService', 'HttpService', 'ConfigService');
+		= $injector.inject('HttpService', 'ConfigService');
 
 
 	const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;

@@ -2,7 +2,7 @@ import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
 
-describe('GeoResource provider', () => {
+describe('BVV GeoResource provider', () => {
 	const configService = {
 		getValueAsPath() { }
 	};
@@ -11,18 +11,10 @@ describe('GeoResource provider', () => {
 		async get() { }
 	};
 
-	const fileStorageService = {
-		get() { },
-		isFileId() { },
-		isAdminId() { }
-	};
-
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService)
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('FileStorageService', fileStorageService);
+			.registerSingleton('HttpService', httpService);
 	});
 
 	const basicAttribution = {
@@ -90,7 +82,7 @@ describe('GeoResource provider', () => {
 	});
 
 
-	describe('parseBvvAttributionDefinition', () => {
+	describe('_parseBvvAttributionDefinition', () => {
 
 		it('it returns null when basic attribution definition is missing', () => {
 
@@ -174,7 +166,7 @@ describe('GeoResource provider', () => {
 	});
 
 
-	describe('Bvv GeoResource provider', () => {
+	describe('loadBvvGeoResources', () => {
 
 		it('loads GeoResources', async () => {
 
@@ -254,7 +246,8 @@ describe('GeoResource provider', () => {
 		});
 	});
 
-	describe('Example GeoResource provider', () => {
+	describe('loadExampleGeoResources', () => {
+
 		it('loads GeoResources', async () => {
 			const georesources = await loadExampleGeoResources();
 
