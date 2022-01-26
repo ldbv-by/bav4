@@ -26,6 +26,7 @@ import { $injector } from '../injection';
 
 /**
  * Returns the corresponding fileId for an adminId.
+ * If the given id already a fileId, it will be returned unchanged.
  * @function
  * @async
  * @name FileStorageService#getFileId
@@ -111,8 +112,11 @@ export class BvvFileStorageService {
 		return id.startsWith('f_');
 	}
 
-	async getFileId(adminId) {
-		const url = `${this._getFileStorageUrl()}/${adminId}`;
+	async getFileId(possibleAdminId) {
+		if (this.isFileId(possibleAdminId)) {
+			return possibleAdminId;
+		}
+		const url = `${this._getFileStorageUrl()}/${possibleAdminId}`;
 
 		const result = await this._httpService.get(url);
 		if (result.ok) {
