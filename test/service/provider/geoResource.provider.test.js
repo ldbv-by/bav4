@@ -171,7 +171,7 @@ describe('BVV GeoResource provider', () => {
 		it('loads GeoResources', async () => {
 
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/georesources`;
+			const expectedArgs0 = `${backendUrl}/georesources/all`;
 			const expectedArgs1 = {
 				timeout: 2000
 			};
@@ -225,7 +225,7 @@ describe('BVV GeoResource provider', () => {
 		it('rejects when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'georesources';
+			const expectedArgs0 = backendUrl + 'georesources/all';
 			const expectedArgs1 = {
 				timeout: 2000
 			};
