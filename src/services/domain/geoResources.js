@@ -153,8 +153,8 @@ export class GeoResourceFuture extends GeoResource {
 	 * @param {string} id
 	 * @param {asyncGeoResourceLoader} loader
 	 */
-	constructor(id, loader) {
-		super(id);
+	constructor(id, loader, label = '') {
+		super(id, label);
 		this._loader = loader;
 		this._onResolve = () => { };
 		this._onReject = () => { };
