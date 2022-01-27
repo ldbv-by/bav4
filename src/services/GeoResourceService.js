@@ -103,10 +103,12 @@ export class GeoResourceService {
 	}
 
 	/**
-	 * Returns a {@link GeoResourceFuture} by calling all registered {@link geoResourceByIdProvider} in the order of their registration.
+	 * Returns a {@link GeoResourceFuture} by calling all registered {@link geoResourceByIdProvider} in the order of their registration
 	 * without checking the internal cache.
+	 *
+	 *
 	 * The GeoResourceFuture will be addded to the internal cache and can be replaced later
-	 * by the real GeoResource by calling {@link GeoResourceService#addOrReplace}.
+	 * by the resolved real GeoResource by calling {@link GeoResourceService#addOrReplace}.
 	 * @param {string} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResourceFuture | null} returns a GeoResourceFuture or `null` when no byIdProvider could fulfill
 	 */
