@@ -14,7 +14,8 @@ describe('BVV GeoResource provider', () => {
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
 	const basicAttribution = {
@@ -271,6 +272,7 @@ describe('BVV GeoResource provider', () => {
 			const geoResource = await future.get();
 
 			expect(future.id).toBe(wmsDefinition.id);
+			expect(future.label).toBe('layersPlugin_store_layer_default_layer_name_future');
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(geoResource.id).toBe(wmsDefinition.id);
