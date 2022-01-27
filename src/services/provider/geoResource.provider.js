@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from '../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -132,9 +132,9 @@ export const loadExampleGeoResources = async () => {
  * Uses the BVV endpoint to load a GeoResource by id
  * @function
  * @implements geoResourceByIdProvider
- * @returns {Promise<GeoResource|null>}
+ * @returns {GeoResourceFuture|null}
  */
-export const loadBvvGeoResourceById = async id => {
+export const loadBvvGeoResourceById = id => {
 
 	const {
 		HttpService: httpService,
@@ -142,17 +142,20 @@ export const loadBvvGeoResourceById = async id => {
 	}
 		= $injector.inject('HttpService', 'ConfigService');
 
+	const loader = async id => {
+		const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
 
-	const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
+		const result = await httpService.get(url);
 
-	const result = await httpService.get(url);
-
-	if (result.ok) {
-		const geoResourceDefinition = await result.json();
-		const geoResource = _definitionToGeoResource(geoResourceDefinition);
-		if (geoResource) {
-			return geoResource;
+		if (result.ok) {
+			const geoResourceDefinition = await result.json();
+			const geoResource = _definitionToGeoResource(geoResourceDefinition);
+			if (geoResource) {
+				return geoResource;
+			}
 		}
-	}
-	throw new Error(`GeoResource for id '${id}' could not be loaded`);
+		throw new Error(`GeoResource for id '${id}' could not be loaded`);
+	};
+
+	return new GeoResourceFuture(id, loader);
 };

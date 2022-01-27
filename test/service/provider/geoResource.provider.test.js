@@ -267,11 +267,13 @@ describe('BVV GeoResource provider', () => {
 				)
 			));
 
-			const georesource = await loadBvvGeoResourceById(wmsDefinition.id);
+			const future = loadBvvGeoResourceById(wmsDefinition.id);
+			const geoResource = await future.get();
 
+			expect(future.id).toBe(wmsDefinition.id);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(georesource.id).toBe(wmsDefinition.id);
+			expect(geoResource.id).toBe(wmsDefinition.id);
 		});
 
 		it('rejects when type is unknwon', async () => {
@@ -285,7 +287,8 @@ describe('BVV GeoResource provider', () => {
 			));
 
 			try {
-				await loadBvvGeoResourceById(id);
+				const future = loadBvvGeoResourceById(id);
+				await future.get();
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
@@ -303,7 +306,8 @@ describe('BVV GeoResource provider', () => {
 
 
 			try {
-				await loadBvvGeoResourceById(id);
+				const future = loadBvvGeoResourceById(id);
+				await future.get();
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
