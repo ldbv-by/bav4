@@ -53,7 +53,6 @@ describe('FeatureInfo provider', () => {
 
 				const layer = createDefaultLayer('foo');
 				const feature = new Feature({ });
-				//const feature = new Feature({ geometry: new Point(coordinate) });
 
 				const featureInfo = getBvvFeatureInfo(feature, layer);
 
