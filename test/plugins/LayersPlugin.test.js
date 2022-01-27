@@ -313,23 +313,25 @@ describe('LayersPlugin', () => {
 			});
 
 
-			it('update the layers label for on-demand geoResources', async () => {
+			it('updates the layers label for on-demand geoResources', async () => {
 				const queryParam = `${QueryParameters.LAYER}=some0`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				const id = 'id';
-				const label = 'label';
-				const geoResource0 = new WMTSGeoResource(id, label, 'someUrl0');
+				const labelBefore = 'labelBefore';
+				const labelAfter = 'labelAfter';
+				const geoResource0 = new WMTSGeoResource(id, labelAfter, 'someUrl0');
 				const future0 = new GeoResourceFuture('some0', async () => geoResource0);
+				future0.label = labelBefore;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'asyncById').and.returnValue(future0);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active[0].label).toBe('');
+				expect(store.getState().layers.active[0].label).toBe(labelBefore);
 				//Let's resolve the future
 				await future0.get();
-				expect(store.getState().layers.active[0].label).toBe(label);
+				expect(store.getState().layers.active[0].label).toBe(labelAfter);
 			});
 		});
 	});
