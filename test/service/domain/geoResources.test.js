@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture } from '../../../src/services/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
@@ -144,6 +144,74 @@ describe('GeoResource', () => {
 			});
 		});
 
+	});
+
+	describe('GeoResourceFuture', () => {
+
+		it('instantiates a GeoResourceFuture', () => {
+			const loader = async () => { };
+
+			const future = new GeoResourceFuture('id', loader);
+
+			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
+			expect(future._loader).toBe(loader);
+		});
+
+		it('returns the real GeoResource by calling loader', async () => {
+			const id = 'id';
+			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const future = new GeoResourceFuture(id, loader);
+
+			const geoResource = await future.get();
+
+			expect(geoResource).toEqual(expectdGeoResource);
+		});
+
+		it('rejects when the loader rejects', async () => {
+			const id = 'id';
+			const message = 'error';
+			const loader = jasmine.createSpy().withArgs(id).and.rejectWith(message);
+			const future = new GeoResourceFuture(id, loader);
+
+			try {
+				await future.get();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error).toBe(message);
+			}
+		});
+
+		it('calls the onResolve callback', async () => {
+			const id = 'id';
+			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const onResolveCallback = jasmine.createSpy();
+			const future = new GeoResourceFuture(id, loader);
+			future.onResolve(onResolveCallback);
+
+			await future.get();
+
+			expect(onResolveCallback).toHaveBeenCalledWith(expectdGeoResource, future);
+		});
+
+		it('calls the onReject callback', async () => {
+			const id = 'id';
+			const loader = jasmine.createSpy().withArgs(id).and.rejectWith('error');
+			const onResolveCallback = jasmine.createSpy();
+			const future = new GeoResourceFuture(id, loader);
+			future.onReject(onResolveCallback);
+
+			try {
+				await future.get();
+				throw new Error('Promise should not be resolved');
+
+			}
+			catch (error) {
+				expect(onResolveCallback).toHaveBeenCalledWith(future);
+			}
+		});
 	});
 
 	describe('WmsGeoResource', () => {
