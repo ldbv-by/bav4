@@ -1,17 +1,15 @@
 
 /**
- * An async function that provides an array of
- * {@link GeoResource}s.
+ * An async function that provides an array of {@link GeoResource}s.
  *
  * @async
- * @typedef {function():(Array<GeoResource>)} georesourceProvider
+ * @typedef {function():(Array<GeoResource>)} geoResourceProvider
  */
 
 /**
- * An async function that provides a {@link GeoResource}
- *
- * @async
- * @typedef {function():(GeoResource)} georesourceByIdProvider
+ * A function that returns a {@link GeoResourceFuture}.
+ * @param {string} id Id of the requested GeoResource
+ * @typedef {function(id) : (GeoResourceFuture|null)} geoResourceByIdProvider
  */
 
 import { $injector } from '../injection';
@@ -22,18 +20,6 @@ export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
 export const FALLBACK_GEORESOURCE_ID_1 = 'atkis_sw';
 export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Layer 1';
 export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Layer 2';
-
-/**
-* A function that returns a promise with an Array of GeoResources.
-*
-* @typedef {function() : (Promise<Array<GeoResource>>)} geoResourceProvider
-*/
-
-/**
- * A function that returns a promise with a GeoResource.
- * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (Promise<GeoResource|null>)} geoResourceByIdProvider
- */
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -116,15 +102,18 @@ export class GeoResourceService {
 	}
 
 	/**
-	 * Loads a {@link GeoResource} by calling all registered {@link georesourceByIdProvider} in the order of their registration.
-	 * The loaded GeoResource can be addded to the internal cache by calling {@link GeoResourceService#addOrReplace}.
+	 * Returns a {@link GeoResourceFuture} by calling all registered {@link geoResourceByIdProvider} in the order of their registration.
+	 * without checking the internal cache.
+	 * The GeoResourceFuture will be addded to the internal cache and can be replaced later
+	 * by the real GeoResource by calling {@link GeoResourceService#addOrReplace}.
 	 * @param {string} id Id of the desired {@link GeoResource}
-	 * @returns {GeoResource | null} returns the loaded GeoResource or `null` when no byIdProvider could fulfill
+	 * @returns {GeoResourceFuture | null} returns a GeoResourceFuture or `null` when no byIdProvider could fulfill
 	 */
-	async loadById(id) {
+	asyncById(id) {
 		for (const byIdProvider of this._byIdProvider) {
-			const geoResouce = await byIdProvider(id);
+			const geoResouce = byIdProvider(id);
 			if (geoResouce?.id === id) {
+				this.addOrReplace(geoResouce);
 				return geoResouce;
 			}
 		}

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 
@@ -181,30 +181,32 @@ describe('GeoResourceService', () => {
 		});
 	});
 
-	describe('loadById', () => {
+	describe('asyncById', () => {
 
-		it('loads a Georesouce by its id', async () => {
-			const customByIdProvider0 = async () => null;
-			const customByIdProvider1 = async id => {
-				if (id === wmtsGeoResource.id) {
-					return wmtsGeoResource;
-				}
-			};
+		it('adds a GeoResourceFuture to the internal cache and returns it', async () => {
+			const id = 'id';
+			const expectedFuture = new GeoResourceFuture(id, () => { });
+			const customByIdProvider0 = () => null;
+			const customByIdProvider1 = () => expectedFuture;
 			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+			await instanceUnderTest.init();
 
-			const geoResources = await instanceUnderTest.loadById(wmtsGeoResource.id);
+			const future = instanceUnderTest.asyncById(id);
 
-			expect(geoResources).toEqual(wmtsGeoResource);
+			expect(future).toEqual(expectedFuture);
+			expect(instanceUnderTest._georesources[0]).toEqual(expectedFuture);
 		});
 
 		it('returns null when no byIdProvider can fulfill', async () => {
 			const customByIdProvider0 = async () => null;
 			const customByIdProvider1 = async () => null;
 			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+			await instanceUnderTest.init();
 
-			const geoResources = await instanceUnderTest.loadById('foo');
+			const future = instanceUnderTest.asyncById('foo');
 
-			expect(geoResources).toBeNull();
+			expect(future).toBeNull();
+			expect(instanceUnderTest._georesources).toHaveSize(0);
 		});
 	});
 });
