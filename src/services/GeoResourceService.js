@@ -14,6 +14,7 @@
 
 import { $injector } from '../injection';
 import { WMTSGeoResource } from './domain/geoResources';
+import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
@@ -38,7 +39,7 @@ export class GeoResourceService {
 	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
 	 * @param {georesourceByIdProvider} [georesourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
 	 */
-	constructor(provider = loadBvvGeoResources, byIdProvider = [loadBvvGeoResourceById]) {
+	constructor(provider = loadBvvGeoResources, byIdProvider = [loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;
 		this._georesources = null;

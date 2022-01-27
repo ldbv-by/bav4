@@ -3,6 +3,7 @@ import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceServic
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
+import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 
 describe('GeoResourceService', () => {
 
@@ -37,7 +38,7 @@ describe('GeoResourceService', () => {
 
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
-			expect(instanceUnderTest._byIdProvider).toEqual([loadBvvGeoResourceById]);
+			expect(instanceUnderTest._byIdProvider).toEqual([loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
 		});
 
 		it('initializes the service with custom provider', async () => {
