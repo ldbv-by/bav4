@@ -14,7 +14,7 @@ export const _newLoader = id => {
 			const { data, type, srid } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
-				const vgr = new VectorGeoResource(id, translationService.translate('layersPlugin_store_layer_default_layer_name'), VectorSourceType.KML);
+				const vgr = new VectorGeoResource(id, translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), VectorSourceType.KML);
 				vgr.setSource(data, srid);
 				return vgr;
 			}
@@ -33,12 +33,12 @@ export const _newLoader = id => {
  */
 export const loadBvvFileStorageResourceById = id => {
 
-	const { FileStorageService: fileStorageService }
+	const { FileStorageService: fileStorageService, TranslationService: translationService }
 		= $injector.inject('FileStorageService', 'TranslationService');
 
 	if (fileStorageService.isAdminId(id) || fileStorageService.isFileId(id)) {
 
-		return new GeoResourceFuture(id, _newLoader(id));
+		return new GeoResourceFuture(id, _newLoader(id), translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
 	}
 	return null;
 };
