@@ -7,6 +7,7 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 
 window.customElements.define(Modal.tag, Modal);
@@ -82,6 +83,10 @@ describe('Modal', () => {
 
 				expect(element.shadowRoot.querySelector('.modal__container').classList).not.toContain('is-landscape');
 				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-portrait');
+
+				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
+				expect(element.shadowRoot.querySelector('#close_modal').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#back_modal').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 		});
 
