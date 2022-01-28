@@ -290,13 +290,14 @@ export class OlMap extends MvuElement {
 			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
 				// eslint-disable-next-line promise/prefer-await-to-then
 				geoResource.get().then(lazyLoadedGeoResource => {
-					// replace the future GeoResource by the real GeoResource
+					// replace the future GeoResource by the real GeoResource in the chache
 					this._geoResourceService.addOrReplace(lazyLoadedGeoResource);
-					// replace the placeholder olLayer by the real the ollayer
+					// replace the placeholder olLayer by the real the olLayer
 					const layer = layers.find(layer => layer.geoResourceId === id);
-					const olLayer = this._layerService.toOlLayer(lazyLoadedGeoResource, this._map);
+					const realOlLayer = this._layerService.toOlLayer(lazyLoadedGeoResource, this._map);
+					updateOlLayer(realOlLayer, layer);
 					this._map.getLayers().remove(getLayerById(this._map, id));
-					this._map.getLayers().insertAt(layer.zIndex, olLayer);
+					this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
 				})
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.catch(error => {

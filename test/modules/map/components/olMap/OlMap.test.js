@@ -7,7 +7,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
-import { GeoResourceFuture, WmsGeoResource } from '../../../../../src/services/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
 import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from './mapTestUtils';
@@ -683,7 +683,7 @@ describe('OlMap', () => {
 			expect(layer0.get('id')).toBe('id0');
 		});
 
-		it('adds a layer for a resolveable GeoResourceFuture', async (done) => {
+		it('adds an olLayer resolving a GeoResourceFuture', async (done) => {
 			const element = await setup();
 			const map = element._map;
 			const id = 'id';
@@ -709,6 +709,72 @@ describe('OlMap', () => {
 				const layer = map.getLayers().item(0);
 				expect(map.getLayers().getLength()).toBe(1);
 				expect(layer).toEqual(olRealLayer);
+				done();
+			});
+		});
+
+		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async (done) => {
+			const element = await setup();
+			const map = element._map;
+			const id = 'id';
+			const geoResource = new VectorGeoResource(id, 'label', VectorSourceType.GEOJSON);
+			const olPlaceHolderLayer = new Layer({ id: id, render: () => { } });
+			const olRealLayer = new VectorLayer({ id: id });
+			const future = new GeoResourceFuture(id, async () => geoResource);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			spyOn(geoResourceServiceStub, 'byId').withArgs(id).and.returnValue(future);
+
+			addLayer(id, { visible: false, opacity: .5 });
+
+			setTimeout(() => {
+				const layer = map.getLayers().item(0);
+				expect(map.getLayers().getLength()).toBe(1);
+				expect(layer).toEqual(olRealLayer);
+				expect(layer.getOpacity()).toBe(.5);
+				expect(layer.getVisible()).toBeFalse();
+				done();
+			});
+		});
+
+		it('adds an olLayer resolving a GeoResourceFuture with custom index', async (done) => {
+			const element = await setup();
+			const map = element._map;
+			const underTestLayerId = 'id';
+			const nonAsyncLayerId = 'non-async-id';
+			const geoResource = new VectorGeoResource(underTestLayerId, 'label', VectorSourceType.GEOJSON);
+			const olPlaceHolderLayer = new Layer({ id: underTestLayerId, render: () => { } });
+			const olRealLayer = new VectorLayer({ id: underTestLayerId });
+			const future = new GeoResourceFuture(underTestLayerId, async () => geoResource);
+			const nonAsyncOlLayer = new VectorLayer({ id: nonAsyncLayerId });
+			const nonAsyncGeoResouce = new VectorGeoResource(nonAsyncLayerId, 'label', VectorSourceType.GEOJSON);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), map).and.callFake(geoResource => {
+				if (geoResource.id === underTestLayerId) {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
+					}
+					return olRealLayer;
+				}
+				return nonAsyncOlLayer;
+			});
+			spyOn(geoResourceServiceStub, 'byId').withArgs(jasmine.anything()).and.callFake(id => {
+				if (id === underTestLayerId) {
+					return future;
+				}
+				return nonAsyncGeoResouce;
+			});
+
+			addLayer(nonAsyncLayerId);
+			addLayer(underTestLayerId, { zIndex: 0 });
+
+			setTimeout(() => {
+				expect(map.getLayers().getLength()).toBe(2);
+				expect(map.getLayers().item(0)).toEqual(olRealLayer);
+				expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 				done();
 			});
 		});
