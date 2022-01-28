@@ -30,5 +30,5 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	const name = olFeature.get('name') ? `${olFeature.get('name')} - ${layerProperties.label}` : `${layerProperties.label}`;
 	const content = getContent();
 	const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
-	return { title: name, content: content || null, geometry: geometry };
+	return { title: name, content: content, geometry: geometry };
 };

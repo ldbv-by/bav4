@@ -7,7 +7,11 @@ import { MvuElement } from '../../MvuElement';
 const Update_Statistics = 'update_statistics';
 
 export const EMPTY_GEOMETRY_STATISTICS = { coordinate: null, azimuth: null, length: null, area: null };
-
+/**
+ * Component to display geometry-informations
+ * @class
+ * @author thiloSchlemmer
+ */
 export class GeometryInfo extends MvuElement {
 	constructor() {
 		super({ statistics: EMPTY_GEOMETRY_STATISTICS });
@@ -34,7 +38,7 @@ export class GeometryInfo extends MvuElement {
 
 		const getContent = statistics => {
 			if (statistics.coordinate) {
-				// TODO: future implementations should render the coordinate in the current srid of the view, which is defined globally by the user,
+				// TODO: future implementations should render the coordinate in the current srid of the view, which is defined globally by the user
 				// As long as there is no possibility to specify this in user-settings etc., the coordinate will not be displayed.
 				const title = translate('geometryInfo_title_coordinate');
 				return html`<div class='stats-point stats-content' title=${title}></div>`;
