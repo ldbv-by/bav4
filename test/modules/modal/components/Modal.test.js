@@ -63,7 +63,7 @@ describe('Modal', () => {
 
 		describe('modal.portrait', () => {
 
-			it('adds the corresponding css class', async () => {
+			it('adds the corresponding css class and ids', async () => {
 
 				const state = {
 					media: {
@@ -165,7 +165,6 @@ describe('Modal', () => {
 				openModal('title', 'content');
 
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
-				expect(closeBtn.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				closeBtn.click();
 
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
@@ -188,7 +187,6 @@ describe('Modal', () => {
 				openModal('title', 'content');
 
 				const backIcon = element.shadowRoot.querySelector('ba-icon');
-				expect(backIcon.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				backIcon.click();
 
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
