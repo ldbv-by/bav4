@@ -85,8 +85,8 @@ describe('Modal', () => {
 				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-portrait');
 
 				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
-				expect(element.shadowRoot.querySelector('#close_modal').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-				expect(element.shadowRoot.querySelector('#back_modal').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#close_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#back_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 		});
 
@@ -165,7 +165,31 @@ describe('Modal', () => {
 				openModal('title', 'content');
 
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
+				expect(closeBtn.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				closeBtn.click();
+
+				const elementModal = element.shadowRoot.querySelector('.modal__container');
+				elementModal.dispatchEvent(new Event('animationend'));
+
+				expect(store.getState().modal.active).toBeFalse();
+			});
+		});
+
+		describe('when back button clicked', () => {
+
+			it('closes the modal', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
+				openModal('title', 'content');
+
+				const backIcon = element.shadowRoot.querySelector('ba-icon');
+				expect(backIcon.hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				backIcon.click();
 
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
 				elementModal.dispatchEvent(new Event('animationend'));
