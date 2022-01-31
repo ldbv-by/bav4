@@ -11,7 +11,7 @@
     "@playwright/test": "^1.17.2",
     "css-loader": "^6.5.1",
     "dotenv-webpack": "^7.1.0",
-    "es-check": "^6.1.1",
+    "es-check": "^6.2.1",
     "eslint": "^8.7.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
