@@ -226,6 +226,15 @@ describe('BvvFileStorageService', () => {
 			expect(result).toBe(fileId);
 		});
 
+		it('returns the id if it is already a fileId', async () => {
+			const fileId = 'f_Id';
+			const instanceUnderTest = new BvvFileStorageService();
+
+			const result = await instanceUnderTest.getFileId(fileId);
+
+			expect(result).toBe(fileId);
+		});
+
 		it('throws an error when result contains no fileId', async () => {
 			const adminId = 'a_Id';
 			const backendUrl = 'https://backend.url/';
