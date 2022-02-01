@@ -142,15 +142,6 @@ describe('IconsService', () => {
 			expect(instanceUnderTest.getIconResult(iconResult2.base64)).toBe(iconResult2);
 		});
 
-		it('provides NO IconResult, when icons-arrray is empty/nuuĺl', async () => {
-			const instanceUnderTest = setup();
-
-			expect(instanceUnderTest.getIconResult('foo1')).toBeNull();
-
-			await instanceUnderTest.all();
-			expect(instanceUnderTest.getIconResult('foo1')).toBe(iconResult1);
-		});
-
 		it('provides the default-IconResult for the base64-string', async () => {
 			const instanceUnderTest = setup();
 			await instanceUnderTest.all();

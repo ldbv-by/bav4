@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
-import { finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
+import { clearDescription, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
@@ -78,28 +78,40 @@ export class DrawToolContent extends AbstractToolContent {
 			active: false,
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
-			activate: () => setType('marker')
+			activate: () => {
+				clearDescription();
+				setType('marker');
+			}
 		}, {
 			id: 2,
 			name: 'text',
 			active: false,
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
-			activate: () => setType('text')
+			activate: () => {
+				clearDescription();
+				setType('text');
+			}
 		}, {
 			id: 3,
 			name: 'line',
 			active: false,
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
-			activate: () => setType('line')
+			activate: () => {
+				clearDescription();
+				setType('line');
+			}
 		}, {
 			id: 4,
 			name: 'polygon',
 			active: false,
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
-			activate: () => setType('polygon')
+			activate: () => {
+				clearDescription();
+				setType('polygon');
+			}
 		}];
 	}
 
@@ -216,11 +228,10 @@ export class DrawToolContent extends AbstractToolContent {
 					const getSymbolSrc = () => {
 						const { IconService: iconService } = $injector.inject('IconService');
 						const iconResult = iconService.getIconResult(style.symbolSrc);
-						return iconResult.getUrl(color);
+						return iconResult.getUrl(hexToRgb(e.target.value));
 					};
 
-					const color = hexToRgb(e.target.value);
-					return { ...style, symbolSrc: type === 'marker' ? getSymbolSrc() : null, color: e.target.value };
+					return { ...style, symbolSrc: getSymbolSrc(), color: e.target.value };
 				};
 				const changedStyle = getStyle();
 				setStyle(changedStyle);

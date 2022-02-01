@@ -60,8 +60,10 @@ describe('DrawToolContent', () => {
 	const setup = async (drawState = drawDefaultState, config = {}) => {
 		const state = {
 			draw: drawState,
-			shared: { termsOfUseAcknowledged: false,
-				fileSaveResult: null }
+			shared: {
+				termsOfUseAcknowledged: false,
+				fileSaveResult: null
+			}
 		};
 
 		const { embed = false, isTouch = false } = config;
@@ -233,7 +235,8 @@ describe('DrawToolContent', () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
 			const newColor = '#ffffff';
 			const element = await setup({ ...drawDefaultState, style });
-
+			const iconResultMock = { getUrl: () => 'https://some.url/foo/bar/255,255,255/foobar' };
+			spyOn(iconServiceMock, 'getIconResult').and.callFake(() => iconResultMock);
 			setType('line');
 			const colorInput = element.shadowRoot.querySelector('#style_color');
 			expect(colorInput).toBeTruthy();
@@ -243,7 +246,7 @@ describe('DrawToolContent', () => {
 			colorInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.color).toBe(newColor);
-			expect(store.getState().draw.style.symbolSrc).toBeNull();
+			expect(store.getState().draw.style.symbolSrc).toBe('https://some.url/foo/bar/255,255,255/foobar');
 		});
 
 		it('sets the style, after scale changes in scale-input', async () => {

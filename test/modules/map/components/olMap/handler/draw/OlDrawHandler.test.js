@@ -105,6 +105,7 @@ describe('OlDrawHandler', () => {
 		mode: null,
 		type: null,
 		reset: null,
+		description: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
@@ -575,8 +576,7 @@ describe('OlDrawHandler', () => {
 			});
 
 			it('reads description from store when draw begins', () => {
-				const state = { ...initialState, description: 'Foo' };
-				setup(state);
+				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const geometry = new LineString([[0, 0], [1, 0]]);
@@ -584,6 +584,9 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest.activate(map);
 				setType('line');
+				classUnderTest._drawState.type = InteractionStateType.DRAW;
+				setDescription('Foo');
+
 				const draw = classUnderTest._draw;
 				simulateDrawEvent('drawstart', draw, feature);
 
@@ -1185,20 +1188,18 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
 			classUnderTest.activate(map);
 			setType('line');
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			const removeSpy = spyOn(classUnderTest._draw, 'removeLastPoint');
-			//spyOn(classUnderTest._draw, 'handleEvent').and.callThrough();
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
-
+			const removeSpy = spyOn(classUnderTest._draw, 'removeLastPoint');
 			simulateKeyEvent(deleteKeyCode);
-			expect(removeSpy).not.toHaveBeenCalled();
+			expect(removeSpy).toHaveBeenCalled();
 		});
 
 		it('removes NOT last point if other keypressed', () => {
@@ -1605,7 +1606,7 @@ describe('OlDrawHandler', () => {
 
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			const store = setup({ ...initialState, selection: ['draw_1'] });
+			setup({ ...initialState, selection: ['draw_1'] });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
@@ -1626,13 +1627,11 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
-			expect(store.getState().draw.selection.length).toBe(0);
 		});
 
 
 		it('select feature, if clickposition is in anyinteract to selected feature', () => {
-			const store = setup();
-
+			setup();
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
 			feature.setId('draw_1');
@@ -1660,7 +1659,6 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-			expect(store.getState().draw.selection.length).toBe(1);
 		});
 
 		it('switch to measure-tool, if clickposition is in anyinteract to selected measure-feature', () => {
@@ -1703,7 +1701,8 @@ describe('OlDrawHandler', () => {
 			feature2.setId('draw_2');
 			feature1.setStyle(style);
 			feature2.setStyle(style);
-			const store = setup();
+
+			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
@@ -1730,12 +1729,10 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0, 0);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-			expect(store.getState().draw.selection).toEqual(['draw_1']);
 
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 50, 50);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
-			expect(store.getState().draw.selection).toEqual(['draw_2']);
 		});
 	});
 
