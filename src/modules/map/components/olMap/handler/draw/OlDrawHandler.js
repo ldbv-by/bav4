@@ -200,7 +200,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			};
 
 
-			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
+			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
 
 			clickAction(selectableFeatures);
@@ -275,7 +275,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		};
 		this._unreg(this._listeners);
-		setStyle(null);
+		setStyle(INITIAL_STYLE);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
 		olMap.removeInteraction(this._snap);
@@ -367,7 +367,6 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (description) {
 					this._sketchHandler.active.set('description', description);
 				}
-
 				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
@@ -472,7 +471,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		const source = this._vectorLayer.getSource();
 		const snapTolerance = getSnapTolerancePerDevice();
-
 		switch (type) {
 			case StyleTypes.MARKER:
 			case StyleTypes.TEXT:
