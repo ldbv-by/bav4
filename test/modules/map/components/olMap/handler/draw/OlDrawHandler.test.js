@@ -740,29 +740,6 @@ describe('OlDrawHandler', () => {
 				expect(styleSpy).toHaveBeenCalledTimes(1);
 			});
 
-			it('updates NOT selected unstyled feature (modify) with new style, when store changes', () => {
-				setup();
-				const classUnderTest = new OlDrawHandler();
-				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
-				const feature = new Feature({ geometry: new Point([0, 0]) });
-				feature.setId('draw_Symbol_1234');
-				feature.setStyle([]);
-				const drawStateFake = {
-					type: InteractionStateType.MODIFY
-				};
-				classUnderTest.activate(map);
-				classUnderTest._drawState = drawStateFake;
-				spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
-				setStyle({ symbolSrc: 'something' });
-				setType('marker');
-
-				const styleSpy = spyOn(feature, 'setStyle').and.callThrough();
-				setStyle(style);
-
-				expect(styleSpy).not.toHaveBeenCalled();
-			});
-
 
 		});
 
