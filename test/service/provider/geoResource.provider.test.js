@@ -1,15 +1,93 @@
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
-import { loadBvvGeoResources, loadExampleGeoResources, parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
 
-describe('GeoResource provider', () => {
+describe('BVV GeoResource provider', () => {
+	const configService = {
+		getValueAsPath() { }
+	};
+
+	const httpService = {
+		async get() { }
+	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
+	});
+
+	const basicAttribution = {
+		copyright: 'copyright'
+	};
+
+	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', background: false, opacity: 0.5, url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
+	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', background: true, opacity: 1.0, url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
+	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', background: false, opacity: 1.0, url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
+	const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', background: true, opacity: 1.0, geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
+
+	const vadlidateGeoResourceProperties = (georesource, definition) => {
+		expect(georesource.id).toBe(definition.id);
+		expect(georesource.label).toBe(definition.label);
+		expect(georesource.background).toBe(definition.background);
+		expect(georesource.opacity).toBe(definition.opacity);
+		expect(Symbol.keyFor(georesource.getType())).toBe(definition.type);
+	};
+
+	describe('_definitionToGeoResource', () => {
+
+		it('maps a unknown BVV definition to a corresponding GeoResource instance', () => {
+
+			expect(_definitionToGeoResource({ type: 'unknown' })).toBeNull();
+		});
+
+		it('maps a WMS BVV definition to a corresponding GeoResource instance', () => {
+			const wmsGeoResource = _definitionToGeoResource(wmsDefinition);
+
+			vadlidateGeoResourceProperties(wmsGeoResource, wmsDefinition);
+			expect(wmsGeoResource.url).toBe(wmsDefinition.url);
+			expect(wmsGeoResource.layers).toBe(wmsDefinition.layers);
+			expect(wmsGeoResource.format).toBe(wmsDefinition.format);
+			expect(wmsGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(wmsGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a WMTS BVV definition to a corresponding GeoResource instance', () => {
+			const wmtsGeoResource = _definitionToGeoResource(wmtsDefinition);
+
+			vadlidateGeoResourceProperties(wmtsGeoResource, wmtsDefinition);
+			expect(wmtsGeoResource.url).toBe(wmtsGeoResource.url);
+			expect(wmtsGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(wmtsGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', () => {
+			const vectorGeoResource = _definitionToGeoResource(vectorDefinition);
+
+			vadlidateGeoResourceProperties(vectorGeoResource, vectorDefinition);
+			expect(vectorGeoResource.url).toBe(vectorDefinition.url);
+			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+			expect(vectorGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(vectorGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a aggregate BVV definition to a corresponding GeoResource instance', () => {
+			const aggregateGeoResource = _definitionToGeoResource(aggregateDefinition);
+
+			vadlidateGeoResourceProperties(aggregateGeoResource, aggregateDefinition);
+			expect(aggregateGeoResource.geoResourceIds).toEqual(aggregateDefinition.geoResourceIds);
+			expect(aggregateGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(aggregateGeoResource._attribution).not.toBeNull();
+		});
+	});
 
 
-	describe('parseBvvAttributionDefinition', () => {
+	describe('_parseBvvAttributionDefinition', () => {
 
 		it('it returns null when basic attribution definition is missing', () => {
 
-			const result = parseBvvAttributionDefinition({});
+			const result = _parseBvvAttributionDefinition({});
 
 			expect(result).toBeNull();
 		});
@@ -30,7 +108,7 @@ describe('GeoResource provider', () => {
 					description: attribution.description
 				}
 			};
-			const result = parseBvvAttributionDefinition(attributionDefinition);
+			const result = _parseBvvAttributionDefinition(attributionDefinition);
 
 			expect(result).toEqual([attribution]);
 		});
@@ -59,7 +137,7 @@ describe('GeoResource provider', () => {
 
 				]
 			};
-			const result = parseBvvAttributionDefinition(attributionDefinition);
+			const result = _parseBvvAttributionDefinition(attributionDefinition);
 
 			//completely from basic attribution definition
 			expect(result[0]).toEqual({
@@ -89,51 +167,16 @@ describe('GeoResource provider', () => {
 	});
 
 
-	describe('Bvv GeoResource provider', () => {
-
-
-		const configService = {
-			getValueAsPath: () => { }
-		};
-
-		const httpService = {
-			get: async () => { }
-		};
-
-		beforeAll(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('HttpService', httpService);
-		});
-
-		const basicAttribution = {
-			copyright: 'copyright'
-		};
-
-		const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', background: false, opacity: 0.5, url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
-		const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', background: true, opacity: 1.0, url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
-		const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', background: false, opacity: 1.0, url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
-		const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', background: true, opacity: 1.0, geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
-
-
-		const vadlidateGeoResourceProperties = (georesource, definition) => {
-			expect(georesource.id).toBe(definition.id);
-			expect(georesource.label).toBe(definition.label);
-			expect(georesource.background).toBe(definition.background);
-			expect(georesource.opacity).toBe(definition.opacity);
-			expect(Symbol.keyFor(georesource.getType())).toBe(definition.type);
-		};
-
-
+	describe('loadBvvGeoResources', () => {
 
 		it('loads GeoResources', async () => {
 
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = backendUrl + 'georesources/all';
+			const expectedArgs0 = `${backendUrl}/georesources/all`;
 			const expectedArgs1 = {
 				timeout: 2000
 			};
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl + '/');
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify([
@@ -141,7 +184,6 @@ describe('GeoResource provider', () => {
 					])
 				)
 			));
-
 
 			const georesources = await loadBvvGeoResources();
 
@@ -151,34 +193,18 @@ describe('GeoResource provider', () => {
 
 			const wmsGeoResource = georesources[0];
 			vadlidateGeoResourceProperties(wmsGeoResource, wmsDefinition);
-			expect(wmsGeoResource.url).toBe(wmsDefinition.url);
-			expect(wmsGeoResource.layers).toBe(wmsDefinition.layers);
-			expect(wmsGeoResource.format).toBe(wmsDefinition.format);
-			expect(wmsGeoResource._attributionProvider).toBe(getBvvAttribution);
-			expect(wmsGeoResource._attribution).not.toBeNull();
 
 			const wmtsGeoResource = georesources[1];
 			vadlidateGeoResourceProperties(wmtsGeoResource, wmtsDefinition);
-			expect(wmtsGeoResource.url).toBe(wmtsGeoResource.url);
-			expect(wmtsGeoResource._attributionProvider).toBe(getBvvAttribution);
-			expect(wmtsGeoResource._attribution).not.toBeNull();
 
 			const vectorGeoResource = georesources[2];
 			vadlidateGeoResourceProperties(vectorGeoResource, vectorDefinition);
-			expect(vectorGeoResource.url).toBe(vectorDefinition.url);
-			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
-			expect(vectorGeoResource._attributionProvider).toBe(getBvvAttribution);
-			expect(vectorGeoResource._attribution).not.toBeNull();
 
 			const aggregateGeoResource = georesources[3];
 			vadlidateGeoResourceProperties(aggregateGeoResource, aggregateDefinition);
-			expect(aggregateGeoResource.geoResourceIds).toEqual(aggregateDefinition.geoResourceIds);
-			expect(aggregateGeoResource._attributionProvider).toBe(getBvvAttribution);
-			expect(aggregateGeoResource._attribution).not.toBeNull();
-
 		});
 
-		it('logs a war statememt when GeoResource type cannot be resolved', async () => {
+		it('logs a warn statement when GeoResource type cannot be resolved', async () => {
 
 			const warnSpy = spyOn(console, 'warn');
 			const backendUrl = 'https://backend.url';
@@ -221,12 +247,76 @@ describe('GeoResource provider', () => {
 		});
 	});
 
-	describe('Example GeoResource provider', () => {
+	describe('loadExampleGeoResources', () => {
+
 		it('loads GeoResources', async () => {
 			const georesources = await loadExampleGeoResources();
 
 			expect(georesources.length).toBe(6);
 		});
+	});
+
+	describe('loadBvvGeoResourceById', () => {
+
+		it('loads a GeoResource by id', async () => {
+			const backendUrl = 'https://backend.url';
+			const expectedArgs0 = `${backendUrl}/georesources/byId/${wmsDefinition.id}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl + '/');
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(wmsDefinition)
+				)
+			));
+
+			const future = loadBvvGeoResourceById(wmsDefinition.id);
+			const geoResource = await future.get();
+
+			expect(future.id).toBe(wmsDefinition.id);
+			expect(future.label).toBe('layersPlugin_store_layer_default_layer_name_future');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(geoResource.id).toBe(wmsDefinition.id);
+		});
+
+		it('rejects when type is unknwon', async () => {
+			const id = 'foo';
+			const backendUrl = 'https://backend.url';
+			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
+			spyOn(httpService, 'get').and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify({ id: id, type: 'somethingUnknown' })
+				)
+			));
+
+			try {
+				const future = loadBvvGeoResourceById(id);
+				await future.get();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
+			}
+		});
+
+		it('rejects when backend request cannot be fulfilled', async () => {
+			const id = 'foo';
+			const backendUrl = 'https://backend.url';
+			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
+			spyOn(httpService, 'get').and.returnValue(Promise.resolve(
+				new Response(null, { status: 404 })
+			));
+
+
+			try {
+				const future = loadBvvGeoResourceById(id);
+				await future.get();
+				throw new Error('Promise should not be resolved');
+			}
+			catch (error) {
+				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
+			}
+		});
+
 	});
 });
 
