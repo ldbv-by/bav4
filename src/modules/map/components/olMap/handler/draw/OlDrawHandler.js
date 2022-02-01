@@ -629,8 +629,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				currentStyles[0] = newStyles[0];
 			}
 			feature.setStyle(currentStyles);
-			setSelection([]);
-			setSelection([feature.getId()]);
+			this._setSelected(feature);
 		}
 
 		if (this._drawState.type === InteractionStateType.DRAW) {
