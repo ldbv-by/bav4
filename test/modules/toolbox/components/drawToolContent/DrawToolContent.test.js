@@ -10,6 +10,7 @@ import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
 import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(Icon.tag, Icon);
 window.customElements.define(IconSelect.tag, IconSelect);
@@ -61,12 +62,15 @@ describe('DrawToolContent', () => {
 		const state = {
 			draw: drawState,
 			shared: { termsOfUseAcknowledged: false,
-				fileSaveResult: null }
+				fileSaveResult: null },
+			media: {
+				portrait: false
+			}
 		};
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer, shared: sharedReducer });
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer, shared: sharedReducer, media: createNoInitialStateMediaReducer() });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
