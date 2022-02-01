@@ -33,7 +33,6 @@ li:before {
 
 .example {
 	padding: 2em;
-	background: var(--primary-bg-color);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	background: var(--tertiary-bg-color);
 }
@@ -42,6 +41,6 @@ li:before {
 	padding: 1em;
 }
 
-#copyurlbutton{
-	width:25em;
+#copyurlbutton {
+	width: 25em;
 }

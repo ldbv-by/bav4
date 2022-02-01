@@ -19,11 +19,11 @@
 }
 
 .select-coordinate {
-    font-size: .7rem;
-    font-weight: bold;
-    width: min-content;
-    position: absolute;
-    bottom: .3em;
+	font-size: .7rem;
+	font-weight: bold;
+	width: min-content;
+	position: absolute;
+	bottom: .3em;
 } 
 
 .select-coordinate-option {

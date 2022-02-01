@@ -41,13 +41,13 @@ input, textarea {
 	background: var(--primary-bg-color);
 }
 select {
-    width: 100%;
-    font-size: 1rem;
-    padding: .2em 1.4em .3em .1em;
-    border: none;
-    border-bottom: 1px solid var(--text1);
-    box-shadow: none;
-    appearance: none;
+	width: 100%;
+	font-size: 1rem;
+	padding: .2em 1.4em .3em .1em;
+	border: none;
+	border-bottom: 1px solid var(--text1);
+	box-shadow: none;
+	appearance: none;
 	background: var(--primary-bg--color);
 	background-image: url('./assets/caret-down-fill.svg');
 	background-repeat: no-repeat;
@@ -55,23 +55,21 @@ select {
 	background-size: .7em;
 	cursor: pointer;
 }
-select:focus{
-    border-bottom: 1px solid var(--primary-color);
+select:focus {
+	border-bottom: 1px solid var(--primary-color);
 }
 select option {
 	background-color: var(--primary-bg-color);
 	color: var(--text1);
 	border: none;
 }
-input[readonly], textarea[readonly], select[disabled]{
- 	background: var(--secondary-bg-color);
- 	opacity: 0.7;
-}
-input[type="range"]{
-	border:none;
-	padding:0;
+input[readonly], textarea[readonly], select[disabled] {
+	background: var(--secondary-bg-color);
+	opacity: 0.7;
 }
 input[type="range"] {
+	border: none;
+	padding: 0;
 	--track-height: .3em;
 	--track-fill: 0%;
 	--thumb-size: 1.5em;
@@ -178,15 +176,15 @@ input[type="range"]:focus {
 	box-shadow: none;
 }
 
-.fieldset select{
-	border-bottom:0;
+.fieldset select {
+	border-bottom: 0;
 }
 
 .fieldset select ~ .control-label,
 .fieldset input:focus ~ .control-label,
 .fieldset input:valid ~ .control-label,
 .fieldset textarea:focus ~ .control-label,
-.fieldset textarea:valid ~ .control-label{
+.fieldset textarea:valid ~ .control-label {
 	font-size: 0.8rem;
 	color: gray;
 	top: -1rem;
