@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../../src/injection';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { DRAW_LAYER_ID } from '../../../../../../../src/plugins/DrawPlugin';
-import { drawReducer } from '../../../../../../../src/store/draw/draw.reducer';
+import { drawReducer, INITIAL_STYLE } from '../../../../../../../src/store/draw/draw.reducer';
 import { layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Icon, Style } from 'ol/style';
@@ -104,6 +104,7 @@ describe('OlDrawHandler', () => {
 		active: false,
 		mode: null,
 		type: null,
+		style: INITIAL_STYLE,
 		reset: null,
 		description: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }

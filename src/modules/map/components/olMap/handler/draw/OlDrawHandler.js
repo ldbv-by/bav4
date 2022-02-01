@@ -27,6 +27,7 @@ import { acknowledgeTermsOfUse } from '../../../../../../store/shared/shared.act
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../../../store/measurement/measurement.action';
+import { INITIAL_STYLE } from '../../../../../../store/draw/draw.reducer';
 
 
 
@@ -545,7 +546,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		if (this._storeService.getStore().getState().draw.style == null) {
+		if (this._storeService.getStore().getState().draw.style === INITIAL_STYLE) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
 			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc });

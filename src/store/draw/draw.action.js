@@ -2,7 +2,7 @@
  * Action creators to activate/deactive the draw tool
  * @module draw/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED, SELECTION_CHANGED, CLEAR_DESCRIPTION } from './draw.reducer';
+import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED, SELECTION_CHANGED, CLEAR_DESCRIPTION, CLEAR_TEXT } from './draw.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -133,6 +133,12 @@ export const clearDescription = () => {
 	});
 };
 
+
+export const clearText = () => {
+	getStore().dispatch({
+		type: CLEAR_TEXT
+	});
+};
 
 /**
  * Set the {@link FileSaveResult}

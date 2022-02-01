@@ -5,7 +5,7 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
-import { clearDescription, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
+import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
 
@@ -80,6 +80,7 @@ export class DrawToolContent extends AbstractToolContent {
 			icon: 'symbol',
 			activate: () => {
 				setType('marker');
+				clearText();
 				clearDescription();
 			}
 		}, {
@@ -90,6 +91,7 @@ export class DrawToolContent extends AbstractToolContent {
 			icon: 'text',
 			activate: () => {
 				setType('text');
+				clearText();
 				clearDescription();
 			}
 		}, {
@@ -100,6 +102,7 @@ export class DrawToolContent extends AbstractToolContent {
 			icon: 'line',
 			activate: () => {
 				setType('line');
+				clearText();
 				clearDescription();
 			}
 		}, {
@@ -110,6 +113,7 @@ export class DrawToolContent extends AbstractToolContent {
 			icon: 'polygon',
 			activate: () => {
 				setType('polygon');
+				clearText();
 				clearDescription();
 			}
 		}];
