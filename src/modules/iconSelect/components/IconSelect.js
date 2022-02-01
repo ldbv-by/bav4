@@ -4,7 +4,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../MvuElement';
 import css from './iconselect.css';
 import { $injector } from '../../../injection';
-import { IconResult } from '../../../services/IconService';
 
 const Update_Title = 'update_title';
 const Update_Icons = 'update_icons';
@@ -120,15 +119,10 @@ export class IconSelect extends MvuElement {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
-		const currentIcon = model.value instanceof IconResult ? model.value.base64 : model.value;
-
 		return html`
 		<style>${css}</style>
 		<div class='iconselect__container ${getOrientationClass()}'>
-			<div class='catalog_header'>			
-				<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>				
-			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>			
-				<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>				
+			<div class='catalog_header'>							
 				<button class='iconselect__toggle-button' @click=${onClick}  .title=${model.title} .disabled=${!iconsAvailable}>Symbol auswählen</button>	
 			</div>
 			<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>

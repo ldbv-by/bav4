@@ -293,7 +293,7 @@ describe('DrawToolContent', () => {
 			// wait to get icons loaded....
 			setTimeout(() => {
 				// ..then perform ui-actions
-				const iconButton = iconSelect.shadowRoot.querySelector('ba-icon');
+				const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
 				iconButton.click();
 
 				const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');

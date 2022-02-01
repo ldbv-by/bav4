@@ -3,7 +3,6 @@ import { IconSelect } from '../../../../src/modules/iconSelect/components/IconSe
 import { IconResult } from '../../../../src/services/IconService';
 import { TestUtils } from '../../../test-utils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { setIsPortrait } from '../../../../src/store/media/media.action';
 
 window.customElements.define(IconSelect.tag, IconSelect);
 
@@ -11,7 +10,7 @@ describe('IconSelect', () => {
 
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
 
-	const setup = (state = {}) => {
+	const setup = (state = {}, attributes = {}) => {
 
 		const initialState = {
 			media: {
@@ -27,7 +26,7 @@ describe('IconSelect', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('IconService', iconServiceMock);
-		return TestUtils.render(IconSelect.tag);
+		return TestUtils.render(IconSelect.tag, attributes);
 	};
 
 	describe('when initialized', () => {
@@ -55,45 +54,44 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			const element = await setup(state, {});
 			element.title = 'foo';
 
 			//view
 			expect(element.shadowRoot.querySelector('.catalog_header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba_catalog_container.iscollapsed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('ba-icon').title).toBe('foo');
-			expect(element.shadowRoot.querySelector('ba-icon').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').title).toBe('foo');
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(0);
 
 		});
-	});
 
+		it('check portrait', async () => {
 
-	describe('when Media changes', () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 
-		describe('modal.portrait', () => {
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-landscape');
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-portrait');
+		});
 
-			it('adds the corresponding css class and ids', async () => {
+		it('check landscape', async () => {
 
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
-				const element = await setup(state);
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, {});
 
-				expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-landscape');
-				expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-portrait');
-
-				setIsPortrait(true);
-
-				// expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-landscape');
-				// expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-portrait');
-
-			});
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-landscape');
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-portrait');
 		});
 	});
-
 
 	describe('when property\'title\' changes', () => {
 
@@ -104,8 +102,8 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const element = await setup(state, {});
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 
 			expect(iconButton.title).toBe('');
 
@@ -119,50 +117,6 @@ describe('IconSelect', () => {
 		});
 	});
 
-	describe('when property\'color\' changes', () => {
-
-		it('updates the view', async () => {
-
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
-			const element = await setup(state);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
-
-			expect(iconButton.color).toBe(null);
-
-			element.color = '#00ff00';
-
-			expect(iconButton.color).toBe('#00ff00');
-
-			element.color = '#ff0000';
-
-			expect(iconButton.color).toBe('#ff0000');
-		});
-	});
-
-	describe('when property\'value\' changes', () => {
-
-		it('updates the view', async () => {
-
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
-			const element = await setup(state);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
-
-			expect(iconButton.icon).not.toBe('data:image/svg+xml;base64,foo');
-
-			element.value = 'data:image/svg+xml;base64,foo';
-
-			expect(iconButton.icon).toBe('data:image/svg+xml;base64,foo');
-		});
-	});
-
 	describe('when property\'icons\' changes', () => {
 
 		it('updates the view', async (done) => {
@@ -173,7 +127,7 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			const element = await setup(state, {});
 
 			setTimeout(() => {
 				expect(element.icons.length).toBe(2);
@@ -191,9 +145,9 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			const element = await setup(state, {});
 
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			const iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
 
 			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
@@ -203,7 +157,6 @@ describe('IconSelect', () => {
 			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
 		});
 	});
-
 
 	describe('when icon is selected (event handling) ', () => {
 		it('calls the onSelect callback via property callback', async () => {
@@ -215,9 +168,9 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			const element = await setup(state, {});
 			const selectSpy = spyOn(element, 'onSelect');
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			iconButton.click();
 
 			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
@@ -227,20 +180,26 @@ describe('IconSelect', () => {
 			expect(selectSpy).toHaveBeenCalledWith(jasmine.any(IconResult));
 		});
 
-		// it('calls the onSelect callback via attribute callback', async () => {
-		// 	spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-		// 		new IconResult('bar', '42')]));
+		it('calls the onSelect callback via attribute callback', async () => {
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
+				new IconResult('bar', '42')]));
 
-		// 	spyOn(window, 'alert');
-		// 	const element = await TestUtils.render(IconSelect.tag, { onSelect: 'alert(\'called\')' });
-		// 	const iconButton = element.shadowRoot.querySelector('ba-icon');
-		// 	iconButton.click();
+			spyOn(window, 'alert');
 
-		// 	const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, { onSelect: 'alert(\'called\')' });
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
+			iconButton.click();
 
-		// 	selectableIcon.click();
+			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
 
-		// 	expect(window.alert).toHaveBeenCalledWith('called');
-		// });
+			selectableIcon.click();
+
+			expect(window.alert).toHaveBeenCalledWith('called');
+		});
 	});
 });
