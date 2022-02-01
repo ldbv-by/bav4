@@ -633,6 +633,23 @@ describe('OlDrawHandler', () => {
 				expect(feature.get('description')).toBe('Foo');
 			});
 
+			it('updates description in store when feature changes', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const geometry = new LineString([[0, 0], [1, 0]]);
+				const feature = new Feature({ geometry: geometry });
+				feature.setId('draw_line_1');
+				feature.set('description', 'foo');
+
+				classUnderTest.activate(map);
+				setType('line');
+				simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+				simulateDrawEvent('drawend', classUnderTest._draw, feature);
+
+				expect(store.getState().draw.description).toEqual('foo');
+			});
+
 			it('switches to modify after finish-request on not-present sketch', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
