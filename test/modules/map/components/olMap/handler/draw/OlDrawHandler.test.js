@@ -885,6 +885,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest.activate(map);
 
 				expect(classUnderTest._createDrawByType('marker', defaultStyleOption)).toEqual(jasmine.any(Draw));
+				expect(classUnderTest._createDrawByType('marker', { ...defaultStyleOption, symbolSrc: null })).toBeNull();
 				expect(classUnderTest._createDrawByType('text', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('line', defaultStyleOption)).toEqual(jasmine.any(Draw));
 				expect(classUnderTest._createDrawByType('polygon', defaultStyleOption)).toEqual(jasmine.any(Draw));
