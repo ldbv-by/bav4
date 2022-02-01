@@ -11,7 +11,7 @@ const Update_Icons = 'update_icons';
 const Update_Value = 'update_value';
 const Update_Color = 'update_color';
 const Update_IsCollapsed = 'update_is_collapsed';
-
+const Update_IsPortrait_Value = 'update_isportrait_value';
 /**
  * Component to select a Icon from a List of available Icons
  *
@@ -24,6 +24,7 @@ const Update_IsCollapsed = 'update_is_collapsed';
  * - `color`
  * @class
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class IconSelect extends MvuElement {
 
@@ -33,12 +34,17 @@ export class IconSelect extends MvuElement {
 			icons: [],
 			color: null,
 			value: null,
-			isCollapsed: true
+			isCollapsed: true,
+			portrait: false
 		});
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
 		this._translationService = translationService;
 		this._onSelect = () => { };
+	}
+
+	onInitialize() {
+		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
 	}
 
 	async _loadIcons() {
@@ -47,7 +53,6 @@ export class IconSelect extends MvuElement {
 			this.signal(Update_Icons, icons);
 		}
 	}
-
 
 	update(type, data, model) {
 
@@ -62,6 +67,8 @@ export class IconSelect extends MvuElement {
 				return { ...model, color: data };
 			case Update_IsCollapsed:
 				return { ...model, isCollapsed: data };
+			case Update_IsPortrait_Value:
+				return { ...model, portrait: data };
 		}
 	}
 
@@ -70,6 +77,7 @@ export class IconSelect extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
+		const { portrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const iconsAvailable = model.icons.length > 0;
 
@@ -87,6 +95,7 @@ export class IconSelect extends MvuElement {
 					}
 				}));
 				this._onSelect(selectedIconResult);
+				this.signal(Update_IsCollapsed, !model.isCollapsed);
 			};
 
 			const getIcon = (iconResult) => {
@@ -107,15 +116,24 @@ export class IconSelect extends MvuElement {
 			iscollapsed: model.isCollapsed
 		};
 
+		const getOrientationClass = () => {
+			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		const currentIcon = model.value instanceof IconResult ? model.value.base64 : model.value;
 
 		return html`
 		<style>${css}</style>
-		<div class='catalog_header'>		
+		<div class='iconselect__container ${getOrientationClass()}'>
+			<div class='catalog_header'>			
+				<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>				
 			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>			
-		</div>
-		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
-		    ${getIcons()}
+				<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>				
+				<button class='iconselect__toggle-button' @click=${onClick}  .title=${model.title} .disabled=${!iconsAvailable}>Symbol auswählen</button>	
+			</div>
+			<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
+				${getIcons()}
+			</div>
 		</div>
 		`;
 	}
