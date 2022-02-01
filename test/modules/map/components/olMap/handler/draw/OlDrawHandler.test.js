@@ -533,6 +533,20 @@ describe('OlDrawHandler', () => {
 				expect(abortSpy).toHaveBeenCalled();
 			});
 
+			it('deactivates active modify after type-change', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const initSpy = spyOn(classUnderTest, '_init').and.callThrough();
+
+				classUnderTest.activate(map);
+				classUnderTest._modify.setActive(true);
+				setType('marker');
+				expect(initSpy).toHaveBeenCalledTimes(1);
+				expect(classUnderTest._modify.getActive()).toBeFalse();
+			});
+
 
 			it('aborts current drawing with additional warning after errornous type-change', () => {
 				setup();
