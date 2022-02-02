@@ -64,6 +64,9 @@ describe('DrawToolContent', () => {
 			shared: {
 				termsOfUseAcknowledged: false,
 				fileSaveResult: null
+			},
+			media: {
+				portrait: false
 			}
 		};
 
