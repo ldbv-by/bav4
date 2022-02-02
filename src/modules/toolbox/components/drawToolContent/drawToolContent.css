@@ -147,11 +147,6 @@ ba-checkbox:focus {
 	background-size: 4em;
 }
 
-.color-input-container:hover {
-	/* transform: scale(1.05); */
-	z-index: 1;
-}
-
 .color-input {
 	background: var(--primary-color);
 	cursor: pointer;
@@ -164,6 +159,11 @@ ba-checkbox:focus {
 	-webkit-mask-size: cover !important;
 }
 
+input[color]{
+	cursor: pointer;
+}
+
+
 .color-input__text {
 	mask: url('assets/textAA.svg');
 	-webkit-mask-image: url('assets/textAA.svg');
@@ -171,12 +171,12 @@ ba-checkbox:focus {
 .color-input__line {
 	mask: url('assets/line.svg');
 	-webkit-mask-image: url('assets/line.svg');
-	transform: scale(.5);
+	transform: scale(.6);
 }
 .color-input__polygon {
 	mask: url('assets/polygon.svg');
 	-webkit-mask-image: url('assets/polygon.svg');
-	transform: scale(.5);
+	transform: scale(.6);
 }
 
 	
