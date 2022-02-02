@@ -66,6 +66,42 @@ const Provider_Metric = {
 	}
 };
 
+const Provider_BvvMetric = {
+
+	/**
+    * Appends the metric unit of distance to the specified number
+    * @param {number} distance the distance value
+	* @param {number} decimals the number of digits after the decimal point
+    * @returns {String} the formatted value
+    */
+	// eslint-disable-next-line no-unused-vars
+	distance(distance, decimals) {
+		const asKilometer = (distanceValue) => {
+			return (Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toFixed(1) + ' ' + 'km';
+		};
+		const asMeter = (distanceValue) => {
+			return distance !== 0 ? (Math.round(distanceValue * 100) / 100).toFixed(1) + ' ' + 'm' : '0 m';
+		};
+		return distance > Kilometer_In_Meters - 1 ? asKilometer(distance) : asMeter(distance);
+	},
+	/**
+    * Appends the metric unit of area to the specified number
+    * @param {number} area the area value
+	* @param {number} decimals the number of digits after the decimal point
+    * @returns {String} the formatted value
+    */
+	// eslint-disable-next-line no-unused-vars
+	area(area, decimals) {
+		const asSquaredKilometer = (areaValue) => {
+			return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(3) + ' ' + 'km&sup2;';
+		};
+		const asSquaredMeter = (areaValue) => {
+			return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toFixed(0) + ' ' + 'm&sup2;' : areaValue > 0.5 ? '1 m&sup2;' : '0.5 m&sup2;';
+		};
+		return area >= Squaredkilometer_In_Squaredmeters ? asSquaredKilometer(area) : asSquaredMeter(area);
+	}
+};
+
 /**
  *  Service for formatting numbers with their respective unit of measurement
  * @class
@@ -87,6 +123,8 @@ export class UnitsService {
     */
 	formatDistance(distance, decimals = 2) {
 		switch (this._systemOfUnits) {
+			case 'bvv_metric':
+				return Provider_BvvMetric.distance(distance, decimals);
 			case 'metric':
 			default:
 				return Provider_Metric.distance(distance, decimals);
@@ -101,6 +139,8 @@ export class UnitsService {
     */
 	formatArea(area, decimals = 2) {
 		switch (this._systemOfUnits) {
+			case 'bvv_metric':
+				return Provider_BvvMetric.area(area, decimals);
 			case 'metric':
 			default:
 				return Provider_Metric.area(area, decimals);
