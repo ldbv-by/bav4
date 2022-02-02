@@ -143,10 +143,12 @@ ba-checkbox:focus {
 	border-radius: 2em;
 	cursor: pointer;
 	transition: transform var(--animation-duration-small-close) var(--animation-easing-open);  
+	background-image: url('assets/chess.svg');
+	background-size: 4em;
 }
 
 .color-input-container:hover {
-	transform: scale(1.05);
+	/* transform: scale(1.05); */
 	z-index: 1;
 }
 
