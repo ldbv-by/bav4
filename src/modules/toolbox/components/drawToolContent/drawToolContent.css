@@ -159,10 +159,9 @@ ba-checkbox:focus {
 	-webkit-mask-size: cover !important;
 }
 
-input[color]{
+input[color] {
 	cursor: pointer;
 }
-
 
 .color-input__text {
 	mask: url('assets/textAA.svg');
