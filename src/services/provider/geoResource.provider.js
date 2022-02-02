@@ -1,20 +1,46 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType } from '../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
 /**
- * A function that returns a promise with an array of geoResources.
- *
- * @typedef {function(coordinate) : (Promise<Array<GeoResource>>)} geoResourceProvider
+ * Maps a BVV geoResource definition to a corresponding GeoResource instance
+ * @param {object} definition Configuration object for a GeoResource
  */
+export const _definitionToGeoResource = definition => {
+
+	const toGeoResource = def => {
+		switch (def.type) {
+			case 'wms':
+				return new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format);
+			case 'wmts':
+				return new WMTSGeoResource(def.id, def.label, def.url);
+			case 'vector':
+				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType)).setUrl(def.url);
+			case 'aggregate':
+				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
+			default:
+				return null;
+		}
+	};
+	const geoResource = toGeoResource(definition);
+	if (geoResource) {
+		geoResource.setAttributionProvider(getBvvAttribution);
+		geoResource.attribution = _parseBvvAttributionDefinition(definition);
+		geoResource.background = definition.background;
+		geoResource.opacity = definition.opacity;
+		return geoResource;
+	}
+	return null;
+};
 
 
 /**
  * Uses the BVV endpoint to load geoResources.
  * @function
+ * @implements geoResourceProvider
  * @returns {Promise<Array<GeoResource>>}
  */
 export const loadBvvGeoResources = async () => {
@@ -22,7 +48,7 @@ export const loadBvvGeoResources = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 
-	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources';
+	const url = configService.getValueAsPath('BACKEND_URL') + 'georesources/all';
 
 	const result = await httpService.get(url, {
 		timeout: 2000
@@ -32,27 +58,8 @@ export const loadBvvGeoResources = async () => {
 		const geoResources = [];
 		const georesourceDefinitions = await result.json();
 		georesourceDefinitions.forEach(definition => {
-			let geoResource = null;
-			switch (definition.type) {
-				case 'wms':
-					geoResource = new WmsGeoResource(definition.id, definition.label, definition.url, definition.layers, definition.format);
-					break;
-				case 'wmts':
-					geoResource = new WMTSGeoResource(definition.id, definition.label, definition.url);
-					break;
-				case 'vector':
-					geoResource = new VectorGeoResource(definition.id, definition.label, Symbol.for(definition.sourceType)).setUrl(definition.url);
-					break;
-				case 'aggregate':
-					geoResource = new AggregateGeoResource(definition.id, definition.label, definition.geoResourceIds);
-					break;
-
-			}
+			const geoResource = _definitionToGeoResource(definition);
 			if (geoResource) {
-				geoResource.setAttributionProvider(getBvvAttribution);
-				geoResource.attribution = parseBvvAttributionDefinition(definition);
-				geoResource.background = definition.background;
-				geoResource.opacity = definition.opacity;
 				geoResources.push(geoResource);
 			}
 			else {
@@ -69,7 +76,7 @@ export const loadBvvGeoResources = async () => {
  * @param {object} definition BVV geoResouce definition
  * @returns  {Array<Attribution>|null} an array of attributions or `null`
  */
-export const parseBvvAttributionDefinition = (definition) => {
+export const _parseBvvAttributionDefinition = (definition) => {
 
 	if (!definition.attribution) {
 		return null;
@@ -117,4 +124,39 @@ export const loadExampleGeoResources = async () => {
 	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['wmts0', 'wms0']);
 
 	return [wms0, wms1, wms2, wmts0, vector0, aggregate0];
+};
+
+
+
+/**
+ * Uses the BVV endpoint to load a GeoResource by id
+ * @function
+ * @implements geoResourceByIdProvider
+ * @returns {GeoResourceFuture|null}
+ */
+export const loadBvvGeoResourceById = id => {
+
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		TranslationService: translationService
+	}
+		= $injector.inject('HttpService', 'ConfigService', 'TranslationService');
+
+	const loader = async id => {
+		const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
+
+		const result = await httpService.get(url);
+
+		if (result.ok) {
+			const geoResourceDefinition = await result.json();
+			const geoResource = _definitionToGeoResource(geoResourceDefinition);
+			if (geoResource) {
+				return geoResource;
+			}
+		}
+		throw new Error(`GeoResource for id '${id}' could not be loaded`);
+	};
+
+	return new GeoResourceFuture(id, loader, translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
 };

@@ -7,6 +7,7 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 
 window.customElements.define(Modal.tag, Modal);
@@ -62,7 +63,7 @@ describe('Modal', () => {
 
 		describe('modal.portrait', () => {
 
-			it('adds the corresponding css class', async () => {
+			it('adds the corresponding css class and ids', async () => {
 
 				const state = {
 					media: {
@@ -82,6 +83,10 @@ describe('Modal', () => {
 
 				expect(element.shadowRoot.querySelector('.modal__container').classList).not.toContain('is-landscape');
 				expect(element.shadowRoot.querySelector('.modal__container').classList).toContain('is-portrait');
+
+				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
+				expect(element.shadowRoot.querySelector('#close_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+				expect(element.shadowRoot.querySelector('#back_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 		});
 
@@ -161,6 +166,28 @@ describe('Modal', () => {
 
 				const closeBtn = element.shadowRoot.querySelector('ba-button');
 				closeBtn.click();
+
+				const elementModal = element.shadowRoot.querySelector('.modal__container');
+				elementModal.dispatchEvent(new Event('animationend'));
+
+				expect(store.getState().modal.active).toBeFalse();
+			});
+		});
+
+		describe('when back button clicked', () => {
+
+			it('closes the modal', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				const element = await setup(state);
+				openModal('title', 'content');
+
+				const backIcon = element.shadowRoot.querySelector('ba-icon');
+				backIcon.click();
 
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
 				elementModal.dispatchEvent(new Event('animationend'));
