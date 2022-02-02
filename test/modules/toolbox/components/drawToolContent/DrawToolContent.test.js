@@ -213,6 +213,112 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
 
+		it('sets the style, after color changes in ColorPalette (with LOCAL icon-asset)', async () => {
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
+
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+			const colorInput = element.shadowRoot.querySelector('#style_color');
+
+			const redButton = element.shadowRoot.querySelector('.red');
+			expect(redButton).toBeTruthy();
+			redButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#FF0000');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FF0000');
+
+			const yellowButton = element.shadowRoot.querySelector('.yellow');
+			expect(yellowButton).toBeTruthy();
+			yellowButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#FFFF00');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFF00');
+
+			const limeButton = element.shadowRoot.querySelector('.lime');
+			expect(limeButton).toBeTruthy();
+			limeButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#00FF00');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#00FF00');
+
+			const aquaButton = element.shadowRoot.querySelector('.aqua');
+			expect(aquaButton).toBeTruthy();
+			aquaButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#00FFFF');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#00FFFF');
+
+			const blueButton = element.shadowRoot.querySelector('.blue');
+			expect(blueButton).toBeTruthy();
+			blueButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#0000FF');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#0000FF');
+
+			const fuchsiaButton = element.shadowRoot.querySelector('.fuchsia');
+			expect(fuchsiaButton).toBeTruthy();
+			fuchsiaButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#FF00FF');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FF00FF');
+
+			const whiteButton = element.shadowRoot.querySelector('.white');
+			expect(whiteButton).toBeTruthy();
+			whiteButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#FFFFFF');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#FFFFFF');
+
+			const greyButton = element.shadowRoot.querySelector('.grey');
+			expect(greyButton).toBeTruthy();
+			greyButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#808080');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#808080');
+
+			const maroonButton = element.shadowRoot.querySelector('.maroon');
+			expect(maroonButton).toBeTruthy();
+			maroonButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#800000');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#800000');
+
+			const oliveButton = element.shadowRoot.querySelector('.olive');
+			expect(oliveButton).toBeTruthy();
+			oliveButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#808000');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#808000');
+
+			const greenButton = element.shadowRoot.querySelector('.green');
+			expect(greenButton).toBeTruthy();
+			greenButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#008000');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#008000');
+
+			const tealButton = element.shadowRoot.querySelector('.teal');
+			expect(tealButton).toBeTruthy();
+			tealButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#008080');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#008080');
+
+			const navyButton = element.shadowRoot.querySelector('.navy');
+			expect(navyButton).toBeTruthy();
+			navyButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#000080');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#000080');
+
+			const purpleButton = element.shadowRoot.querySelector('.purple');
+			expect(purpleButton).toBeTruthy();
+			purpleButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#800080');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#800080');
+
+			const silverButton = element.shadowRoot.querySelector('.silver');
+			expect(silverButton).toBeTruthy();
+			silverButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#C0C0C0');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#C0C0C0');
+
+			const blackButton = element.shadowRoot.querySelector('.black');
+			expect(blackButton).toBeTruthy();
+			blackButton.click();
+			expect(colorInput.value.toUpperCase()).toBe('#000000');
+			expect(store.getState().draw.style.color.toUpperCase()).toBe('#000000');
+
+		});
+
 		it('sets the style, after color changes in color-input (with REMOTE icon-asset)', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'https://some.url/foo/bar/0,0,0/foobar' };
 			const getIconResultSpy = spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {
