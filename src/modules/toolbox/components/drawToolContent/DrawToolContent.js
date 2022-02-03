@@ -30,7 +30,9 @@ export class DrawToolContent extends AbstractToolContent {
 			mode: null,
 			fileSaveResult: { adminId: 'init', fileId: 'init' },
 			validGeometry: null,
-			tools: null
+			tools: null,
+			collapsedInfo: null,
+			collapsedStyle: null
 		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
@@ -43,7 +45,6 @@ export class DrawToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.draw, data => this.signal(Update, data));
-		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {

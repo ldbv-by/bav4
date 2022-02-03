@@ -213,6 +213,39 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
 
+		it('collaps container', async () => {
+
+			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
+
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('marker');
+			const sections = element.shadowRoot.querySelectorAll('.tool-section');
+			expect(sections.length).toBe(2);
+
+			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			expect(collapseButton.length).toBe(2);
+
+			const iscollapse = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(iscollapse.length).toBe(2);
+
+			collapseButton[0].click();
+
+			const iscollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(iscollapse1.length).toBe(1);
+
+			collapseButton[1].click();
+
+			const iscollapse2 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(iscollapse2.length).toBe(0);
+
+			collapseButton[0].click();
+			collapseButton[1].click();
+
+			const iscollapse3 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(iscollapse3.length).toBe(2);
+		});
+
 		it('sets the style, after color changes in ColorPalette (with LOCAL icon-asset)', async () => {
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 
