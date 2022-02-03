@@ -1,9 +1,9 @@
-import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription } from '../../../src/store/draw/draw.action';
+import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription, clearDescription } from '../../../src/store/draw/draw.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { StyleTypes } from '../../../src/modules/map/components/olMap/services/StyleService';
 import { StyleSizeTypes } from '../../../src/services/domain/styles';
-import { drawReducer } from '../../../src/store/draw/draw.reducer';
+import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
 
 
 
@@ -20,7 +20,7 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.active).toBeFalse();
 		expect(store.getState().draw.mode).toBeNull();
 		expect(store.getState().draw.type).toBeNull();
-		expect(store.getState().draw.style).toBeNull();
+		expect(store.getState().draw.style).toBe(INITIAL_STYLE);
 		expect(store.getState().draw.selectedStyle).toBeNull();
 		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
@@ -86,6 +86,18 @@ describe('drawReducer', () => {
 		setDescription('some description');
 
 		expect(store.getState().draw.description).toBe('some description');
+	});
+
+	it('clears the description property', () => {
+		const store = setup();
+
+		setDescription('some description');
+
+		expect(store.getState().draw.description).toBe('some description');
+
+		clearDescription();
+
+		expect(store.getState().draw.description).toBeNull();
 	});
 
 	it('updates the fileSaveResult property', () => {

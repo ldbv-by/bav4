@@ -48,6 +48,10 @@
 	mask-image: url('assets/share.svg');
 	-webkit-mask-image: url('assets/share.svg');
 }
+.link {
+	mask-image: url('assets/link.svg');
+	-webkit-mask-image: url('assets/link.svg');
+}
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__background {
 	height: 3.4em;
 	width: 3.4em;

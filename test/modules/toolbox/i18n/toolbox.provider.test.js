@@ -47,6 +47,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share).toBe('Teilen');
 		expect(map.toolbox_shareTool_button_modal).toBe('Link generieren');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
+		expect(map.toolbox_shareTool_link).toBe('Link');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
@@ -129,6 +130,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_share).toBe('Share');
 		expect(map.toolbox_shareTool_button_modal).toBe('Generate URL');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
+		expect(map.toolbox_shareTool_link).toBe('Link');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');

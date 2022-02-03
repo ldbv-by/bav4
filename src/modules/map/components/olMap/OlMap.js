@@ -13,6 +13,7 @@ import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../.
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
+import { GeoResourceTypes } from '../../../../services/domain/geoResources';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -268,18 +269,44 @@ export class OlMap extends MvuElement {
 		});
 
 		toBeAdded.forEach(id => {
-			const resource = this._geoResourceService.byId(id);
-			const olLayer = resource ? this._layerService.toOlLayer(resource, this._map) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
 
-			if (olLayer) {
-				const layer = layers.find(layer => layer.geoResourceId === id);
-				updateOlLayer(olLayer, layer);
-				this._map.getLayers().insertAt(layer.zIndex, olLayer);
+			const toOlLayer = (geoResource, id) => {
+				const olLayer = geoResource ? this._layerService.toOlLayer(geoResource, this._map) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+
+				if (olLayer) {
+					const layer = layers.find(layer => layer.geoResourceId === id);
+					updateOlLayer(olLayer, layer);
+					this._map.getLayers().insertAt(layer.zIndex, olLayer);
+				}
+				else {
+					console.warn('Could not add an olLayer for id \'' + id + '\'');
+					//Todo: we should also inform the user by a notification
+					removeLayer(id);
+				}
+			};
+
+			const geoResource = this._geoResourceService.byId(id);
+			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
+			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
+				// eslint-disable-next-line promise/prefer-await-to-then
+				geoResource.get().then(lazyLoadedGeoResource => {
+					// replace the future GeoResource by the real GeoResource in the chache
+					this._geoResourceService.addOrReplace(lazyLoadedGeoResource);
+					// replace the placeholder olLayer by the real the olLayer
+					const layer = layers.find(layer => layer.geoResourceId === id);
+					const realOlLayer = this._layerService.toOlLayer(lazyLoadedGeoResource, this._map);
+					updateOlLayer(realOlLayer, layer);
+					this._map.getLayers().remove(getLayerById(this._map, id));
+					this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
+				})
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.catch(error => {
+						console.warn(error);
+						//Todo: we should also inform the user by a notification
+						removeLayer(id);
+					});
 			}
-			else {
-				console.warn('Could not add an olLayer for id \'' + id + '\'');
-				removeLayer(id);
-			}
+			toOlLayer(geoResource, id);
 		});
 
 		toBeUpdated.forEach(id => {

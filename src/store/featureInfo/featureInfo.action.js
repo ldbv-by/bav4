@@ -24,7 +24,6 @@ const getStore = () => {
  * @typedef {Object} FeatureInfoGeometry
  * @property {object|string} data Geometry (e.g. geoJson, WKT)
  * @property {FeatureInfoType} geometryType the type of the geometry
- */
 
 /**
  * Type of a {@link FeatureInfoGeometry}

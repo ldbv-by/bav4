@@ -33,8 +33,8 @@ export class ShareToolContent extends AbstractToolContent {
 		const shareApi = {
 			id: 1,
 			name: 'share-api',
-			title: translate('toolbox_shareTool_share'),
-			icon: 'share'
+			title: (this._isShareApiAvailable()) ? translate('toolbox_shareTool_share') : translate('toolbox_shareTool_link'),
+			icon: (this._isShareApiAvailable()) ? 'share' : 'link'
 		};
 
 		const mail = {
