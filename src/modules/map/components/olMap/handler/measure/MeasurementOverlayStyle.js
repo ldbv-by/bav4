@@ -24,6 +24,12 @@ export const saveManualOverlayPosition = (feature) => {
 	});
 };
 
+const SectorsOfPlacement = [
+	{ name: 'top', isSector: (angle) => (angle <= 60 || 300 < angle) },
+	{ name: 'right', isSector: (angle) => (60 < angle && angle <= 120) },
+	{ name: 'bottom', isSector: (angle) => (120 < angle && angle <= 210) },
+	{ name: 'left', isSector: (angle) => (210 < angle && angle <= 300) }];
+
 export class MeasurementOverlayStyle extends OverlayStyle {
 
 	constructor() {
@@ -303,14 +309,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			return [Math.sin(lot) * distance, -Math.cos(lot) * distance];
 		};
 
-		const offset = getOffset(angle, distance);
-		const sectorFunction = [
-			(angle) => angle <= 60 || 300 < angle ? 'top' : false,
-			(angle) => 60 < angle && angle <= 120 ? 'right' : false,
-			(angle) => 120 < angle && angle <= 210 ? 'bottom' : false,
-			(angle) => 210 < angle && angle <= 300 ? 'left' : false
-		].find(isSector => isSector(angle));
+		const getSector = (angle) => {
+			return SectorsOfPlacement.find((s) => s.isSector(angle));
+		};
 
-		return sectorFunction ? { sector: sectorFunction(angle), positioning: 'center-center', offset: offset } : null;
+		const sector = getSector(angle);
+		return sector ? { sector: sector.name, positioning: 'center-center', offset: getOffset(angle, distance) } : null;
 	}
 }
