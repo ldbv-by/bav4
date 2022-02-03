@@ -295,12 +295,22 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_getPlacement(angle) {
+		const distance = -25;
+		const getOffset = (degree, distance) => {
+			const rad = (degree / 180) * Math.PI;
+			const point = [Math.sin(rad) * distance, -Math.cos(rad) * distance];
+			const lot = Math.atan2(point[1], point[0]);
+			return [Math.sin(lot) * distance, -Math.cos(lot) * distance];
+		};
+
+		const offset = getOffset(angle, distance);
 		const sectorFunction = [
-			(angle) => angle <= 60 || 300 < angle ? { sector: 'top', positioning: 'center-right', offset: [-25, 0] } : false,
-			(angle) => 60 < angle && angle <= 120 ? { sector: 'right', positioning: 'top-center', offset: [0, -25] } : false,
-			(angle) => 120 < angle && angle <= 210 ? { sector: 'bottom', positioning: 'center-left', offset: [10, 0] } : false,
-			(angle) => 210 < angle && angle <= 300 ? { sector: 'left', positioning: 'bottom-center', offset: [0, 25] } : false
+			(angle) => angle <= 60 || 300 < angle ? 'top' : false,
+			(angle) => 60 < angle && angle <= 120 ? 'right' : false,
+			(angle) => 120 < angle && angle <= 210 ? 'bottom' : false,
+			(angle) => 210 < angle && angle <= 300 ? 'left' : false
 		].find(isSector => isSector(angle));
-		return sectorFunction ? sectorFunction(angle) : null;
+
+		return sectorFunction ? { sector: sectorFunction(angle), positioning: 'center-center', offset: offset } : null;
 	}
 }

@@ -137,7 +137,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
-		expect(partition.placement).toEqual({ sector: 'right', positioning: 'top-center', offset: [0, -25] });
+		expect(partition.placement).toEqual({ sector: 'right', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
 	});
 
 
@@ -160,7 +160,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
-		expect(partition.placement).toEqual({ sector: 'left', positioning: 'bottom-center', offset: [0, 25] });
+		expect(partition.placement).toEqual({ sector: 'left', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
 	});
 
 	it('creates partition tooltips for line in bottom-sector', () => {
@@ -182,7 +182,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
-		expect(partition.placement).toEqual({ sector: 'bottom', positioning: 'center-left', offset: [10, 0] });
+		expect(partition.placement).toEqual({ sector: 'bottom', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
 	});
 
 	it('creates partition tooltips for line in top-sector', () => {
@@ -204,7 +204,7 @@ describe('MeasurementOverlayStyle', () => {
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		const partition = getPartition(feature);
 
-		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-right', offset: [-25, 0] });
+		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
 	});
 
 	it('creates partition tooltips for line big zoom', () => {
