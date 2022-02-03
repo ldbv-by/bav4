@@ -78,12 +78,15 @@ describe('ImportToolContent', () => {
 	});
 
 	describe('when uploading a file', () => {
-		xit('emits a notification', async (done) => {
+		it('emits a notification', async (done) => {
 			const element = await setup();
+
+
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
 
-			fileUploadInput.value = 'someThing';
 			fileUploadInput.dispatchEvent(new Event('change'));
+			expect(fileUploadInput).toBeTruthy();
+
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_data_sucess_notification');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
