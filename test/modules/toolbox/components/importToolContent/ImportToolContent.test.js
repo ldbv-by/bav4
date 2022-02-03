@@ -47,36 +47,6 @@ describe('ImportToolContent', () => {
 		});
 	});
 
-	describe('when initialized', () => {
-
-		it('shows Drag&Drop-Background on mouseover on text-to-search', async () => {
-			const element = await setup();
-			const textToSearchElement = element.shadowRoot.querySelector('.text-to-search');
-			const dragDropBgElement = element.shadowRoot.querySelector('#dragDropBg');
-
-			expect(dragDropBgElement.style.display).toBeFalsy();
-			textToSearchElement.dispatchEvent(new Event('mouseover'));
-
-			expect(dragDropBgElement.style.display).toBe('flex');
-		});
-
-		it('hides Drag&Drop-Background on mouseleave on text-to-search', async () => {
-			const element = await setup();
-			const textToSearchElement = element.shadowRoot.querySelector('.text-to-search');
-			const dragDropBgElement = element.shadowRoot.querySelector('#dragDropBg');
-
-			expect(dragDropBgElement.style.display).toBeFalsy();
-			textToSearchElement.dispatchEvent(new Event('mouseover'));
-
-			expect(dragDropBgElement.style.display).toBe('flex');
-
-			textToSearchElement.dispatchEvent(new Event('mouseleave'));
-
-			expect(dragDropBgElement.style.display).toBe('none');
-		});
-
-	});
-
 	describe('when uploading a file', () => {
 		it('emits a notification', async (done) => {
 			const element = await setup();

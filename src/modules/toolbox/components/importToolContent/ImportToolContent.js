@@ -23,21 +23,6 @@ export class ImportToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 
 
-		const onTextHoverFocusSearch = () => {
-			// not working
-			document.getElementById('input').focus();
-		};
-
-		const onTextEnterShowDragAndDropBG = () => {
-			const dragDropBg = this.shadowRoot.getElementById('dragDropBg');
-			dragDropBg.style.display = 'flex';
-		};
-
-		const onTextMouseLeaveShowDragAndDropBG = () => {
-			const dragDropBg = this.shadowRoot.getElementById('dragDropBg');
-			dragDropBg.style.display = 'none';
-		};
-
 		const onUpload = () => {
 			emitNotification(translate('toolbox_import_data_sucess_notification'), LevelTypes.INFO);
 		};
@@ -66,7 +51,7 @@ export class ImportToolContent extends AbstractToolContent {
 						</label>
 					</div>
 					<div  class='drag-drop-preview'>
-						<div class='text-to-search' @mouseover=${onTextEnterShowDragAndDropBG}  @mouseleave=${onTextMouseLeaveShowDragAndDropBG}>
+						<div class='text-to-search'>
 							${translate('toolbox_import_data_draganddrop')}								
 						</div>
 						<div>
@@ -83,7 +68,7 @@ export class ImportToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__content ba-tool-container__url-import">      	
 					${translate('toolbox_import_url_search_before')}				                  																			
 				<span  class='text-to-search-icon'></span> 
-				<span @mouseover=${onTextHoverFocusSearch} class='text-to-search' ">
+				<span class='text-to-search' ">
 					${translate('toolbox_import_url_search')}
 				</span> 
 					${translate('toolbox_import_url_search_after')}
