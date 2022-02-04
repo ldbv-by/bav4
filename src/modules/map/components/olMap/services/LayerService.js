@@ -69,10 +69,10 @@ export class LayerService {
 				});
 				let vectorSource;
 				if (geoResource.url) {
-					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
+					vectorSource = vectorImportService.vectorSourceForUrl(geoResource);
 				}
 				else {
-					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
+					vectorSource = vectorImportService.vectorSourceForData(geoResource);
 				}
 				vectorLayer.setSource(vectorSource);
 				return vectorImportService.applyStyles(vectorLayer, olMap);
