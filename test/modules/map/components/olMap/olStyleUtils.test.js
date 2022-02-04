@@ -1,6 +1,11 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
-import { Point, LineString, Polygon } from 'ol/geom';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
+
+proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+register(proj4);
 import markerIcon from '../../../../../src/modules/map/components/olMap/assets/marker.svg';
 import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
 import { TestUtils } from '../../../../test-utils';
@@ -75,32 +80,22 @@ describe('markerScaleToKeyword', () => {
 describe('measureStyleFunction', () => {
 	const geometry = new LineString([[0, 0], [1, 0]]);
 	const feature = new Feature({ geometry: geometry });
+	const resolution = 1;
 	it('should create styles', () => {
-
-
-		const styles = measureStyleFunction(feature);
+		const styles = measureStyleFunction(feature, resolution);
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(2);
 	});
 
-	it('should query the featureGeometry', () => {
-		const geometrySpy = spyOn(feature, 'getGeometry');
-
-		const styles = measureStyleFunction(feature);
-
-		expect(styles).toBeTruthy();
-		expect(geometrySpy).toHaveBeenCalled();
-	});
-
 	it('should have a style which creates circle for Lines', () => {
-		const styles = measureStyleFunction(feature);
+		const styles = measureStyleFunction(feature, resolution);
 
 
 		const circleStyle = styles.find(style => {
 			const geometryFunction = style.getGeometryFunction();
 			if (geometryFunction) {
-				const renderObject = geometryFunction(feature);
+				const renderObject = geometryFunction(feature, resolution);
 				return renderObject.getType() === 'Circle';
 			}
 			else {
@@ -119,6 +114,81 @@ describe('measureStyleFunction', () => {
 		expect(circle).toBeTruthy();
 		expect(nonCircle).toBeFalsy();
 		expect(circleStyle).toBeTruthy();
+	});
+
+	it('should have a ruler-style with renderer-function', () => {
+		const styles = measureStyleFunction(feature, resolution);
+
+		const rulerStyle = styles.find(style => style.getRenderer != null);
+
+		expect(rulerStyle).toBeDefined();
+	});
+
+
+	it('should draw to context with ruler-style', () => {
+		const pixelCoordinates = [[0, 0], [1, 1]];
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => {}, moveTo: () => {}, lineTo: () => {} };
+		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
+		const styles = measureStyleFunction(feature, resolution);
+		const rulerStyle = styles.find(style => style.getRenderer());
+
+		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
+		const cunstomRenderer = rulerStyle.getRenderer();
+		cunstomRenderer(pixelCoordinates, stateMock);
+
+		expect(contextMoveToSpy).toHaveBeenCalled();
+	});
+});
+
+describe('renderRulerSegments', () => {
+	const geometry = new LineString([[0, 0], [1, 0]]);
+	const feature = new Feature({ geometry: geometry });
+	const resolution = 1;
+	it('should call contextRenderer', () => {
+		const contextRenderer = jasmine.createSpy();
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
+		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
+		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
+	});
+
+	it('should call contextRenderer with subTickStroke', () => {
+		const expectedSubStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 5,
+			lineCap: 'butt',
+			lineDash: [2, -1.8],
+			lineDashOffset: 2
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualStrokes).toContain(expectedSubStroke);
+	});
+
+	it('should call contextRenderer with mainTickStroke', () => {
+		const expectedMainStroke = new Stroke({
+			color: [255, 0, 0, 1],
+			width: 8,
+			lineCap: 'butt',
+			lineDash: [3, -2],
+			lineDashOffset: 3
+		});
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualStrokes).toContain(expectedMainStroke);
 	});
 });
 
