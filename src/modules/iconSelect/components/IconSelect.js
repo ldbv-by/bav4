@@ -101,11 +101,11 @@ export class IconSelect extends MvuElement {
 				const isSelectedClass = {
 					isselected: model.value === iconResult.base64
 				};
-				return html`<style>svg{fill:${model.color}}</style>
+				return html`
 				<div id=svg_${iconResult.id} class='ba_catalog_item ${classMap(isSelectedClass)}' title=${translate('iconSelect_icon_hint')} @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
 			};
 
-			return html`${model.icons.map(iconResult => getIcon(iconResult))}`;
+			return html`<style>svg{fill:${model.color}}</style>${model.icons.map(iconResult => getIcon(iconResult))}`;
 		};
 		const onClick = () => {
 			this.signal(Update_IsCollapsed, !model.isCollapsed);

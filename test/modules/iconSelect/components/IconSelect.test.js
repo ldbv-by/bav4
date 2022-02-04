@@ -62,7 +62,7 @@ describe('IconSelect', () => {
 			expect(element.shadowRoot.querySelector('.ba_catalog_container.iscollapsed')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(1);
 
 		});
 
@@ -116,6 +116,26 @@ describe('IconSelect', () => {
 			expect(iconButton.title).toBe('bar');
 		});
 	});
+
+	describe('when property\'color\' changes', () => {
+
+		it('updates the view', async () => {
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+
+			expect(element.getModel().color).toBe(null);
+
+			element.color = '#00ff00';
+
+			expect(element.getModel().color).toBe('#00ff00');
+		});
+	});
+
 
 	describe('when property\'icons\' changes', () => {
 
