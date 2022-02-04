@@ -18,8 +18,8 @@ export class LayerService {
 
 		const {
 			GeoResourceService: georesourceService,
-			VectorImportService: vectorImportService
-		} = $injector.inject('GeoResourceService', 'VectorImportService');
+			VectorLayerService: vectorLayerService
+		} = $injector.inject('GeoResourceService', 'VectorLayerService');
 
 		switch (geoResource.getType()) {
 
@@ -64,7 +64,7 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR: {
 
-				return vectorImportService.createVectorLayer(geoResource, olMap);
+				return vectorLayerService.createVectorLayer(geoResource, olMap);
 			}
 
 			case GeoResourceTypes.AGGREGATE: {

@@ -9,7 +9,7 @@ import VectorLayer from 'ol/layer/Vector';
 
 describe('LayerService', () => {
 
-	const vectorImportService = {
+	const vectorLayerService = {
 		createVectorLayer: () => { }
 	};
 	const georesourceService = {
@@ -25,7 +25,7 @@ describe('LayerService', () => {
 			network: networkReducer
 		});
 		$injector
-			.registerSingleton('VectorImportService', vectorImportService)
+			.registerSingleton('VectorLayerService', vectorLayerService)
 			.registerSingleton('GeoResourceService', georesourceService);
 
 		instanceUnderTest = new LayerService();
@@ -55,7 +55,7 @@ describe('LayerService', () => {
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML);
-				const vectorSourceForUrlSpy = spyOn(vectorImportService, 'createVectorLayer').and.returnValue(olLayer);
+				const vectorSourceForUrlSpy = spyOn(vectorLayerService, 'createVectorLayer').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(vectorGeoresource, olMap);
 

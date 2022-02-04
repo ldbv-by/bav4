@@ -38,7 +38,7 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
  * @class
  * @author taulinger
  */
-export class VectorImportService {
+export class VectorLayerService {
 
 	_updateStyle(olFeature, olLayer, olMap) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
