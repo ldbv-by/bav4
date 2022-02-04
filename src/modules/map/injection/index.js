@@ -1,7 +1,7 @@
 import { OlMeasurementHandler } from '../components/olMap/handler/measure/OlMeasurementHandler';
 import { OlGeolocationHandler } from '../components/olMap/handler/geolocation/OlGeolocationHandler';
 import { OlHighlightLayerHandler } from '../components/olMap/handler/highlight/OlHighlightLayerHandler';
-import { VectorLayerService } from '../components/olMap/services/VectorImportService';
+import { VectorLayerService } from '../components/olMap/services/VectorLayerService';
 import { LayerService } from '../components/olMap/services/LayerService';
 import { StyleService } from '../components/olMap/services/StyleService';
 import { OverlayService } from '../components/olMap/services/OverlayService';

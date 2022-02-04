@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../src/services/domain/geoResources';
 import { load } from '../../../../../../src/modules/map/components/olMap/utils/feature.provider';
-import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorLayerService } from '../../../../../../src/modules/map/components/olMap/services/VectorImportService';
+import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorLayerService } from '../../../../../../src/modules/map/components/olMap/services/VectorLayerService';
 import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
