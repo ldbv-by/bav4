@@ -1,4 +1,3 @@
-import { isPromise } from '../../utils/checks';
 import { getDefaultAttribution } from '../provider/attribution.provider';
 
 
@@ -289,18 +288,8 @@ export class VectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	/**
-	 * Gets the data of this 'internal' GeoResource.
-	 * If the data object is a Promise, it will be resolved
-	 * and the resolved data will be cached internally.
-	 * @returns {Promise<string>} data
-	 */
-	async getData() {
-		if (!isPromise(this._data)) {
-			return this._data;
-		}
-		//cache the data
-		return this._data = await Promise.resolve(this._data);
+	get data() {
+		return this._data;
 	}
 
 	get srid() {
