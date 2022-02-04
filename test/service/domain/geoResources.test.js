@@ -320,50 +320,6 @@ describe('GeoResource', () => {
 				expect(error).toBe('somethingGotWrong');
 			}
 		});
-
-		it('sets the source of an internal VectorGeoResource by a loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.resolve({
-					data: 'someData',
-					srid: 1234,
-					sourceType: VectorSourceType.KML
-				}));
-
-			const data = await vectorGeoResource.getData();
-			expect(data).toBe('someData');
-			expect(vectorGeoResource.srid).toBe(1234);
-			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
-			expect(vectorGeoResource.url).toBeNull();
-		});
-
-		it('caches the data resolved by a loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.resolve({
-					data: 'someData',
-					srid: 1234,
-					sourceType: VectorSourceType.KML
-				}));
-
-			await vectorGeoResource.getData();
-			expect(vectorGeoResource._data).toBe('someData');
-		});
-
-		it('passes the reason of a rejected loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.reject('somethingGotWrong'));
-
-			try {
-				await vectorGeoResource.getData();
-				throw new Error('Promise should not be resolved');
-
-			}
-			catch (error) {
-				expect(error).toBe('somethingGotWrong');
-			}
-		});
 	});
 
 	describe('AggregateResource', () => {

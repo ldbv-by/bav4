@@ -266,18 +266,6 @@ export const VectorSourceType = Object.freeze({
 });
 
 
-/**
- * Loads the data for VectorGeoResources.
- * @callback VectorGeoResourceLoader
- * @returns {Promise<VectorGeoResourceLoadResult>} load result
- */
-
-/**
- * @typedef {Object} VectorGeoResourceLoadResult
- * @property {string} data The raw data of a VectorGeoResource
- * @property {VectorSourceType} sourceType The source type of the data
- * @property {number} srid The srid of the data
- */
 
 /**
  * GeoResource for vector data.
@@ -302,33 +290,12 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Loads and caches the data, additionally updates the source type and srid of this Georesource
-	 * based on the result of the loader.
-	 * @returns {Promise<string>}
-	 * @private
-	 */
-	async _load() {
-		if (!this._data) {
-			const { sourceType, data, srid } = await this._loader();
-			this._sourceType = sourceType;
-			this._data = data;
-			this._srid = srid;
-		}
-		return this._data;
-	}
-
-	/**
 	 * Gets the data of this 'internal' GeoResource.
-	 * If the GeoResource has a loader, it will be used to load the data and determine the source type.
 	 * If the data object is a Promise, it will be resolved
 	 * and the resolved data will be cached internally.
 	 * @returns {Promise<string>} data
 	 */
 	async getData() {
-		if (this._loader) {
-			return await this._load();
-		}
-
 		if (!isPromise(this._data)) {
 			return this._data;
 		}
@@ -362,21 +329,6 @@ export class VectorGeoResource extends GeoResource {
 		this._url = null;
 		this._data = data;
 		this._srid = srid;
-		return this;
-	}
-
-
-	/**
-	 * Sets the loader of this 'internal' GeoResource.
-	 * @param {VectorGeoResourceLoader} loader
-	 * @returns `this` for chaining
-	 */
-	setLoader(loader) {
-		this._sourceType = null;
-		this._url = null;
-		this._data = null;
-		this._srid = null;
-		this._loader = loader;
 		return this;
 	}
 
