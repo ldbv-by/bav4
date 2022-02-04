@@ -68,19 +68,47 @@ describe('VectorImportService', () => {
 			instanceUnderTest = new VectorImportService();
 		});
 
-		describe('vectorSourceForData', () => {
+		describe('createVectorSource', () => {
+
+			it('returns an ol vector source for an data based VectorGeoResource ', () => {
+				const expectedResult = 'foo';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(expectedResult);
+				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
+
+				const olVectorSource = instanceUnderTest.createVectorSource(vectorGeoresource);
+
+				expect(olVectorSource).toEqual(expectedResult);
+				expect(vectorSourceForUrlSpy).not.toHaveBeenCalled();
+			});
+
+			it('returns an ol vector source for an URL based VectorGeoResource ', () => {
+				const expectedResult = 'foo';
+				const geoResourceLabel = 'geoResourceLabel';
+				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
+				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(expectedResult);
+				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
+
+				const olVectorSource = instanceUnderTest.createVectorSource(vectorGeoresource);
+
+				expect(olVectorSource).toEqual(expectedResult);
+				expect(vectorSourceForDataSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('_vectorSourceForData', () => {
 
 			it('builds an olVectorSource for an internal VectorGeoresource', () => {
-				const olMap = new Map();
 				const srid = 3857;
 				const kmlName = '';
 				const geoResourceLabel = 'geoResourceLabel';
 				spyOn(mapService, 'getSrid').and.returnValue(srid);
 				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-				const olLayer = new VectorLayer();
 
-				const olVectorSource = instanceUnderTest.vectorSourceForData(vectorGeoresource, olLayer, olMap);
+				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoresource);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
@@ -95,22 +123,20 @@ describe('VectorImportService', () => {
 				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 
-				instanceUnderTest.vectorSourceForData(vectorGeoresource, new VectorLayer(), new Map());
+				instanceUnderTest._vectorSourceForData(vectorGeoresource);
 
 				expect(vectorGeoresource.label).toBe(kmlName);
 			});
 		});
 
-		describe('vectorSourceForUrl', () => {
+		describe('_vectorSourceForUrl', () => {
 
 			it('builds an olVectorSource for an external VectorGeoresource', () => {
-				const olMap = new Map();
 				const url = 'https://some.url';
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
-				const olLayer = new VectorLayer();
 
-				const olVectorSource = instanceUnderTest.vectorSourceForUrl(vectorGeoresource, olLayer, olMap);
+				const olVectorSource = instanceUnderTest._vectorSourceForUrl(vectorGeoresource);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getUrl()).toBe('https://proxy.url?' + url);

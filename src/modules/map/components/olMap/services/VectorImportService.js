@@ -109,12 +109,24 @@ export class VectorImportService {
 	}
 
 	/**
-	 * Builds an ol VectorSource from an internal VectorGeoResource
+	 * Builds an ol VectorSource from an VectorGeoResource
+	 * @param {VectorGeoResource} vectorGeoResource
+	 * @returns olVectorSource
+	 */
+	createVectorSource(vectorGeoResource) {
+		if (vectorGeoResource.url) {
+			return this._vectorSourceForUrl(vectorGeoResource);
+		}
+		return this._vectorSourceForData(vectorGeoResource);
+	}
+
+	/**
+	 * Builds an ol VectorSource from an VectorGeoResource
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceForData(geoResource) {
+	_vectorSourceForData(geoResource) {
 
 		const {
 			MapService: mapService
@@ -143,12 +155,12 @@ export class VectorImportService {
 
 	/**
 	 *
-	 * Builds an ol VectorSource from an external VectorGeoResource
+	 * Builds an ol VectorSource from an  VectorGeoResource
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceForUrl(geoResource) {
+	_vectorSourceForUrl(geoResource) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),
