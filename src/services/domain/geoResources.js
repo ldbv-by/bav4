@@ -311,7 +311,7 @@ export class VectorGeoResource extends GeoResource {
 	/**
 	 * Sets the source of this 'internal' GeoResource.
 	 * @param {Promise<string>|string} data
-	 * @param {number} srid
+	 * @param {number} srid of the data
 	 * @returns `this` for chaining
 	 */
 	setSource(data, srid) {
