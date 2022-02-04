@@ -144,7 +144,7 @@ ba-checkbox:focus {
 	cursor: pointer;
 	transition: transform var(--animation-duration-small-close) var(--animation-easing-open);  
 	background-image: url('assets/chess.svg');
-	background-size: 4em;
+	background-size: 1em;
 }
 
 .color-input {
