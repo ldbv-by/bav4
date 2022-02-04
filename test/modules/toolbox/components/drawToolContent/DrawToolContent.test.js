@@ -96,6 +96,26 @@ describe('DrawToolContent', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+
+		it('has a model with default values', async () => {
+			const element = await setup();
+			const model = element.getModel();
+			expect(model).toEqual({
+				type: null,
+				style: null,
+				description: null,
+				selectedStyle: null,
+				mode: null,
+				fileSaveResult: null,
+				validGeometry: null,
+				tools: jasmine.any(Array),
+				collapsedInfo: null,
+				collapsedStyle: null
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 
 		it('builds list of tools', async () => {

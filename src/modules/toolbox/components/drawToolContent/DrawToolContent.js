@@ -25,14 +25,14 @@ export class DrawToolContent extends AbstractToolContent {
 		super({
 			type: null,
 			style: null,
+			collapsedInfo: null,
+			collapsedStyle: null,
 			description: null,
 			selectedStyle: null,
 			mode: null,
 			fileSaveResult: { adminId: 'init', fileId: 'init' },
 			validGeometry: null,
-			tools: null,
-			collapsedInfo: null,
-			collapsedStyle: null
+			tools: null
 		});
 
 		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
@@ -45,6 +45,7 @@ export class DrawToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.draw, data => this.signal(Update, data));
+		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
 	}
 
 	update(type, data, model) {
@@ -58,12 +59,12 @@ export class DrawToolContent extends AbstractToolContent {
 			case Update:
 				return {
 					...model,
-					type: data.type,
-					style: data.style,
-					description: data.description,
-					selectedStyle: data.selectedStyle,
-					mode: data.mode,
-					validGeometry: data.validGeometry,
+					type: data.type ? data.type : null,
+					style: data.style ? data.style : null,
+					description: data.description ? data.description : null,
+					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
+					mode: data.mode ? data.mode : null,
+					validGeometry: data.validGeometry ? data.validGeometry : null,
 					tools: setActiveToolByType(model.tools, data.type)
 				};
 			case Update_Tools:
