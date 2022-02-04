@@ -131,7 +131,11 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (vgr) {
 
 					this._storageHandler.setStorageId(oldLayer.get('id'));
-					const data = await vgr.getData();
+					/**
+					 * Note: vgr.data does not return a Promise anymore.
+					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
+					 */
+					const data = await vgr.data;
 					const oldFeatures = readFeatures(data);
 					const onFeatureChange = (event) => {
 						const geometry = event.target.getGeometry();
