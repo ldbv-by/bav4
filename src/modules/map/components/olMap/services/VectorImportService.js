@@ -4,6 +4,7 @@ import { $injector } from '../../../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON } from 'ol/format';
 import { unByKey } from 'ol/Observable';
+import VectorLayer from 'ol/layer/Vector';
 
 
 
@@ -32,8 +33,8 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 
 
 /**
- * Service that imports vector data from internal and external geoResources.
- * Specific stylings will be applied if required.
+ * Service that creates an ol VectorLayer from a VectorGeoResource
+ * and applies specific stylings if required.
  * @class
  * @author taulinger
  */
@@ -86,7 +87,7 @@ export class VectorImportService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	applyStyles(olVectorLayer, olMap) {
+	_applyStyles(olVectorLayer, olMap) {
 
 		/**
 		 * We check if an added features needs a specifig styling,
@@ -109,15 +110,21 @@ export class VectorImportService {
 	}
 
 	/**
-	 * Builds an ol VectorSource from an VectorGeoResource
+	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {VectorGeoResource} vectorGeoResource
-	 * @returns olVectorSource
+	 * @param {OlMap} olMap
+	 * @returns olVectorLayer
 	 */
-	createVectorSource(vectorGeoResource) {
-		if (vectorGeoResource.url) {
-			return this._vectorSourceForUrl(vectorGeoResource);
-		}
-		return this._vectorSourceForData(vectorGeoResource);
+	createVectorLayer(vectorGeoResource, olMap) {
+
+		const vectorLayer = new VectorLayer({
+			id: vectorGeoResource.id
+		});
+		const vectorSource = vectorGeoResource.url
+			? this._vectorSourceForUrl(vectorGeoResource)
+			: this._vectorSourceForData(vectorGeoResource);
+		vectorLayer.setSource(vectorSource);
+		return this._applyStyles(vectorLayer, olMap);
 	}
 
 	/**

@@ -68,32 +68,42 @@ describe('VectorImportService', () => {
 			instanceUnderTest = new VectorImportService();
 		});
 
-		describe('createVectorSource', () => {
+		describe('createVectorLayer', () => {
 
-			it('returns an ol vector source for an data based VectorGeoResource ', () => {
-				const expectedResult = 'foo';
+			it('returns an ol vector layer for an data based VectorGeoResource ', () => {
+				const id = 'someId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const sourceAsString = 'kml';
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(expectedResult);
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
 
-				const olVectorSource = instanceUnderTest.createVectorSource(vectorGeoresource);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
-				expect(olVectorSource).toEqual(expectedResult);
+				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForUrlSpy).not.toHaveBeenCalled();
 			});
 
-			it('returns an ol vector source for an URL based VectorGeoResource ', () => {
-				const expectedResult = 'foo';
+			it('returns an ol vector layer for an URL based VectorGeoResource ', () => {
+				const id = 'someId';
 				const geoResourceLabel = 'geoResourceLabel';
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
-				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(expectedResult);
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
+				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
 
-				const olVectorSource = instanceUnderTest.createVectorSource(vectorGeoresource);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
-				expect(olVectorSource).toEqual(expectedResult);
+				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForDataSpy).not.toHaveBeenCalled();
 			});
 		});
@@ -259,14 +269,14 @@ describe('VectorImportService', () => {
 			});
 		});
 
-		describe('applyStyles', () => {
+		describe('_applyStyles', () => {
 
 			it('returns the olLayer ', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
 
-				const result = instanceUnderTest.applyStyles(olLayer, olMap);
+				const result = instanceUnderTest._applyStyles(olLayer, olMap);
 
 				expect(result).toBe(olLayer);
 			});
@@ -282,7 +292,7 @@ describe('VectorImportService', () => {
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyStyles(olLayer, olMap);
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
 					expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap);
@@ -302,7 +312,7 @@ describe('VectorImportService', () => {
 					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
-					instanceUnderTest.applyStyles(olLayer, olMap);
+					instanceUnderTest._applyStyles(olLayer, olMap);
 					//we dispatch two events in order to check if the listener is unregistered after the first event
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
