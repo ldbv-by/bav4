@@ -70,7 +70,7 @@ describe('VectorImportService', () => {
 
 		describe('vectorSourceFromInternalData', () => {
 
-			it('builds an olVectorSource for an internal VectorGeoresource', (done) => {
+			it('builds an olVectorSource for an internal VectorGeoresource', () => {
 				const olMap = new Map();
 				const srid = 3857;
 				const kmlName = '';
@@ -83,15 +83,11 @@ describe('VectorImportService', () => {
 				const olVectorSource = instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, olLayer, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
-				//features are loaded from a promise
-				setTimeout(() => {
-					expect(olVectorSource.getFeatures().length).toBe(1);
-					expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
-					done();
-				});
+				expect(olVectorSource.getFeatures().length).toBe(1);
+				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
 			});
 
-			it('updates the label of an internal VectorGeoresource if possible', (done) => {
+			it('updates the label of an internal VectorGeoresource if possible', () => {
 				const srid = 3857;
 				const kmlName = 'kmlName';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -101,27 +97,11 @@ describe('VectorImportService', () => {
 
 				instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, new VectorLayer(), new Map());
 
-				setTimeout(() => {
-					expect(vectorGeoresource.label).toBe(kmlName);
-					done();
-				});
-			});
-
-			it('logs a warn statement when source can not be resolved', (done) => {
-				const warnSpy = spyOn(console, 'warn');
-				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 4326);
-
-				instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, new VectorLayer(), new Map());
-
-				//features are loaded from a promise
-				setTimeout(() => {
-					expect(warnSpy).toHaveBeenCalledWith('somethingGotWrong');
-					done();
-				});
+				expect(vectorGeoresource.label).toBe(kmlName);
 			});
 		});
 
-		describe('vectorSourceFromInternalData', () => {
+		describe('vectorSourceFromExternalData', () => {
 
 			it('builds an olVectorSource for an external VectorGeoresource', () => {
 				const olMap = new Map();
