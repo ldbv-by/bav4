@@ -30,6 +30,10 @@ const SectorsOfPlacement = [
 	{ name: 'bottom', isSector: (angle) => (120 < angle && angle <= 210) },
 	{ name: 'left', isSector: (angle) => (210 < angle && angle <= 300) }];
 
+
+/**
+ * @author thiloSchlemmer
+ */
 export class MeasurementOverlayStyle extends OverlayStyle {
 
 	constructor() {

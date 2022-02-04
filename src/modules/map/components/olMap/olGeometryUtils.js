@@ -203,6 +203,13 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	return result ? true : false;
 };
 
+/**
+ * Creates a LineString, which is parallel to the two given points with the given distance.
+ * @param {Coordinate} fromPoint the first coordinate of a hypotetic source-line
+ * @param {Coordinate} toPoint the last coordinate of a hypotetic source-line
+ * @param {number} distance the distance for which the destination line is moved parallel from the hypotetic source-line
+ * @returns {LineString} the resulting line
+ */
 export const moveParallel = (fromPoint, toPoint, distance) => {
 
 	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
@@ -218,6 +225,12 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 
 };
 
+/**
+ * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
+ * @param {Geometry} geometry the source geometry
+ * @param {number} partition the partition-value
+ * @returns {Array<number>} the residuals for all segments of the geometry
+ */
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
