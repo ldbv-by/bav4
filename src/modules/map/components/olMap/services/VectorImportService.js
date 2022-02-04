@@ -114,7 +114,7 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromInternalData(geoResource) {
+	vectorSourceForData(geoResource) {
 
 		const {
 			MapService: mapService
@@ -148,7 +148,7 @@ export class VectorImportService {
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromExternalData(geoResource) {
+	vectorSourceForUrl(geoResource) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),

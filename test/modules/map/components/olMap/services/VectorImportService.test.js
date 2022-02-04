@@ -68,7 +68,7 @@ describe('VectorImportService', () => {
 			instanceUnderTest = new VectorImportService();
 		});
 
-		describe('vectorSourceFromInternalData', () => {
+		describe('vectorSourceForData', () => {
 
 			it('builds an olVectorSource for an internal VectorGeoresource', () => {
 				const olMap = new Map();
@@ -80,7 +80,7 @@ describe('VectorImportService', () => {
 				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				const olLayer = new VectorLayer();
 
-				const olVectorSource = instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, olLayer, olMap);
+				const olVectorSource = instanceUnderTest.vectorSourceForData(vectorGeoresource, olLayer, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
@@ -95,13 +95,13 @@ describe('VectorImportService', () => {
 				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
 				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 
-				instanceUnderTest.vectorSourceFromInternalData(vectorGeoresource, new VectorLayer(), new Map());
+				instanceUnderTest.vectorSourceForData(vectorGeoresource, new VectorLayer(), new Map());
 
 				expect(vectorGeoresource.label).toBe(kmlName);
 			});
 		});
 
-		describe('vectorSourceFromExternalData', () => {
+		describe('vectorSourceForUrl', () => {
 
 			it('builds an olVectorSource for an external VectorGeoresource', () => {
 				const olMap = new Map();
@@ -110,7 +110,7 @@ describe('VectorImportService', () => {
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
 				const olLayer = new VectorLayer();
 
-				const olVectorSource = instanceUnderTest.vectorSourceFromExternalData(vectorGeoresource, olLayer, olMap);
+				const olVectorSource = instanceUnderTest.vectorSourceForUrl(vectorGeoresource, olLayer, olMap);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getUrl()).toBe('https://proxy.url?' + url);
