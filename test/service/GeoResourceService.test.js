@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
-import { loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
+import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 
 describe('GeoResourceService', () => {
 
@@ -15,8 +16,8 @@ describe('GeoResourceService', () => {
 			.registerSingleton('EnvironmentService', environmentService);
 	});
 
-	const setup = (provider = loadExampleGeoResources) => {
-		return new GeoResourceService(provider);
+	const setup = (provider = loadExampleGeoResources, byIdProviders) => {
+		return new GeoResourceService(provider, byIdProviders);
 	};
 	const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'wmtsLabel', 'wmtsUrl');
 
@@ -33,18 +34,21 @@ describe('GeoResourceService', () => {
 			expect(georesources.length).toBe(6);
 		});
 
-		it('initializes the service with default provider', async () => {
+		it('initializes the service with default providers', async () => {
 
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
+			expect(instanceUnderTest._byIdProvider).toEqual([loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
 		});
 
 		it('initializes the service with custom provider', async () => {
 
 			const customProvider = async () => { };
-			const instanceUnderTest = setup(customProvider);
-			expect(instanceUnderTest._provider).toBeDefined();
+			const customByIdProvider0 = async () => { };
+			const customByIdProvider1 = async () => { };
+			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1]);
 			expect(instanceUnderTest._provider).toEqual(customProvider);
+			expect(instanceUnderTest._byIdProvider).toEqual([customByIdProvider0, customByIdProvider1]);
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
@@ -175,6 +179,35 @@ describe('GeoResourceService', () => {
 			instanceUnderTest.addOrReplace(geoResource2);
 			expect(instanceUnderTest._georesources.length).toBe(1);
 			expect(instanceUnderTest._georesources[0]).toEqual(geoResource2);
+		});
+	});
+
+	describe('asyncById', () => {
+
+		it('adds a GeoResourceFuture to the internal cache and returns it', async () => {
+			const id = 'id';
+			const expectedFuture = new GeoResourceFuture(id, () => { });
+			const customByIdProvider0 = () => null;
+			const customByIdProvider1 = () => expectedFuture;
+			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+			await instanceUnderTest.init();
+
+			const future = instanceUnderTest.asyncById(id);
+
+			expect(future).toEqual(expectedFuture);
+			expect(instanceUnderTest._georesources[0]).toEqual(expectedFuture);
+		});
+
+		it('returns null when no byIdProvider can fulfill', async () => {
+			const customByIdProvider0 = async () => null;
+			const customByIdProvider1 = async () => null;
+			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
+			await instanceUnderTest.init();
+
+			const future = instanceUnderTest.asyncById('foo');
+
+			expect(future).toBeNull();
+			expect(instanceUnderTest._georesources).toHaveSize(0);
 		});
 	});
 });

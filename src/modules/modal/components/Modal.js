@@ -70,13 +70,13 @@ export class Modal extends MvuElement {
 					<div class='modal '>
 						<div class='modal__title' @click="${hide}">
 							<span class="ba-list-item__pre back-icon" >
-								<ba-icon  .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
+								<ba-icon id='back_button' data-test-id .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
 							</span>	
 							<span class='modal__title-text'>${title}</span>
 						</div>
 						<div class='modal__content'>${content}</div>
 						<div class='modal__actions'>
-							<ba-button .label=${translate('modal_close_button')} @click=${hide}></ba-button>
+							<ba-button id='close_button' data-test-id .label=${translate('modal_close_button')} @click=${hide}></ba-button>
 						</div>
 					</div>
 				</div>

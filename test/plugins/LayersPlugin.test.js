@@ -2,13 +2,11 @@ import { LayersPlugin } from '../../src/plugins/LayersPlugin';
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
-import { GeoResourceTypes, VectorGeoResource, VectorSourceType, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { GeoResourceFuture, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { QueryParameters } from '../../src/services/domain/queryParameters';
 import { Topic } from '../../src/services/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { FileStorageServiceDataTypes } from '../../src/services/FileStorageService';
-import { addLayer } from '../../src/store/layers/layers.action';
 import { provide } from '../../src/plugins/i18n/layersPlugin.provider';
 
 
@@ -18,6 +16,7 @@ describe('LayersPlugin', () => {
 		async init() { },
 		all() { },
 		byId() { },
+		asyncById() { },
 		addOrReplace() { }
 	};
 	const topicsServiceMock = {
@@ -176,30 +175,35 @@ describe('LayersPlugin', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 
-			it('adds layer', () => {
-				const queryParam = QueryParameters.LAYER + '=some0,some1';
+			it('adds layers for existing and on-demand geoResources', () => {
+				const queryParam = QueryParameters.LAYER + '=some0,some1,some2';
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				const registerUnkownGeoResourceSpy = spyOn(instanceUnderTest, '_registerUnkownGeoResource').and.callThrough();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
 							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
-						case 'some1':
+						case 'some2':
 							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+					}
+				});
+				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
+					switch (id) {
+						case 'some1':
+							return new GeoResourceFuture(id, () => { });
 					}
 				});
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active.length).toBe(2);
+				expect(store.getState().layers.active.length).toBe(3);
 				expect(store.getState().layers.active[0].id).toBe('some0');
 				expect(store.getState().layers.active[1].id).toBe('some1');
-				expect(registerUnkownGeoResourceSpy).toHaveBeenCalledTimes(2);
+				expect(store.getState().layers.active[2].id).toBe('some2');
 			});
 
-			it('adds layer considering visibility', () => {
+			it('adds layers for existing geoResources considering visibility', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -307,168 +311,27 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('some0');
 			});
-		});
-
-		describe('_registerUnkownGeoResource', () => {
-
-			it('registers unknown geoResources', () => {
-				let registeredGeoResource = null;
-				const id = 'unknownId';
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(instanceUnderTest, '_newVectorGeoResourceLoader').and.returnValue({});
-				const newLabelUpdateHandlerSpy = spyOn(instanceUnderTest, '_newLabelUpdateHandler').and.returnValue({});
-				const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake(geoResource => {
-					registeredGeoResource = geoResource;
-				});
-				const byIdSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
-
-				const value = instanceUnderTest._registerUnkownGeoResource(id);
-
-				expect(registeredGeoResource.id).toBe(id);
-				expect(registeredGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
-				expect(registeredGeoResource.sourceType).toBeNull();
-				expect(registeredGeoResource._loader).not.toBeNull();
-				expect(registeredGeoResource.label).toBe('layersPlugin_store_layer_default_layer_name');
-				expect(newLabelUpdateHandlerSpy).toHaveBeenCalledWith(id);
-				expect(byIdSpy).toHaveBeenCalledTimes(1);
-				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
-				expect(value).toBe(id);
-			});
-
-			it('does nothing when geoResource is well known', () => {
-				const id = 'unknownId';
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				const newVectorGeoResourceLoaderSpy = spyOn(instanceUnderTest, '_newVectorGeoResourceLoader').and.returnValue({});
-				const newLabelUpdateHandlerSpy = spyOn(instanceUnderTest, '_newLabelUpdateHandler').and.returnValue({});
-				const addOrReplaceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
-				const byIdSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(new WMTSGeoResource('some0', 'someLabel0', 'someUrl0'));
-
-				const value = instanceUnderTest._registerUnkownGeoResource('unknownId');
-
-				expect(newVectorGeoResourceLoaderSpy).not.toHaveBeenCalled();
-				expect(newLabelUpdateHandlerSpy).not.toHaveBeenCalled();
-				expect(addOrReplaceSpy).not.toHaveBeenCalled();
-				expect(byIdSpy).toHaveBeenCalledTimes(1);
-				expect(value).toBe(id);
-			});
-		});
-
-		describe('_newVectorGeoResourceLoader', () => {
-
-			it('returns a loader for KML VectorGeoResources', async () => {
-				const id = 'id';
-				const fileId = 'f_id';
-				const data = 'data';
-				const type = FileStorageServiceDataTypes.KML;
-				const srid = 1234;
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(instanceUnderTest, '_getFileId').withArgs(id).and.returnValue(fileId);
-				spyOn(fileStorageServiceMock, 'get').withArgs(fileId).and.returnValue(
-					Promise.resolve({ data: data, type: type, srid: srid })
-				);
 
 
-				const loader = instanceUnderTest._newVectorGeoResourceLoader(id);
-				expect(typeof loader === 'function').toBeTrue();
-
-
-				const result = await loader();
-				expect(result.data).toBe(data);
-				expect(result.sourceType).toBe(VectorSourceType.KML);
-				expect(result.srid).toBe(srid);
-			});
-
-			it('throws an error when source type is not supported', async () => {
-				const id = 'id';
-				const fileId = 'f_id';
-				const data = 'data';
-				const type = 'unsupported';
-				const srid = 1234;
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(instanceUnderTest, '_getFileId').withArgs(id).and.returnValue(fileId);
-				spyOn(fileStorageServiceMock, 'get').withArgs(fileId).and.returnValue(
-					Promise.resolve({ data: data, type: type, srid: srid })
-				);
-
-
-				const loader = instanceUnderTest._newVectorGeoResourceLoader(id);
-				expect(typeof loader === 'function').toBeTrue();
-
-				try {
-					await loader();
-					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
-					expect(error.message).toBe('No VectorGeoResourceLoader available for ' + type);
-				}
-			});
-		});
-
-		describe('_newLabelUpdateHandler', () => {
-
-			it('returns a proxy handler which updates the label property of a layer', async () => {
-				const id = 'id';
+			it('updates the layers label for on-demand geoResources', async () => {
+				const queryParam = `${QueryParameters.LAYER}=some0`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				const layer0 = { label: 'label0' };
-				addLayer(id, layer0);
+				const id = 'id';
+				const labelBefore = 'labelBefore';
+				const labelAfter = 'labelAfter';
+				const geoResource0 = new WMTSGeoResource(id, labelAfter, 'someUrl0');
+				const future0 = new GeoResourceFuture('some0', async () => geoResource0);
+				future0.label = labelBefore;
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(geoResourceServiceMock, 'asyncById').and.returnValue(future0);
 
-				const handler = instanceUnderTest._newLabelUpdateHandler(id);
-				const vgr = new VectorGeoResource(id, 'new Layer', null);
-				const proxifiedVgr = new Proxy(vgr, handler);
-				proxifiedVgr.label = 'updatedLabel';
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active[0].label).toBe('updatedLabel');
-			});
-		});
-
-		describe('_getFileId', () => {
-
-			it('returns the fileId for an adminId', async () => {
-				const adminId = 'a_id';
-				const fileId = 'f_id';
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(adminId).and.returnValue(true);
-				spyOn(fileStorageServiceMock, 'getFileId').withArgs(adminId).and.returnValue(
-					Promise.resolve(fileId)
-				);
-
-				const result = await instanceUnderTest._getFileId(adminId);
-
-				expect(result).toBe(fileId);
-			});
-
-			it('returns the fileId', async () => {
-				const fileId = 'f_id';
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(fileId).and.returnValue(false);
-				spyOn(fileStorageServiceMock, 'isFileId').withArgs(fileId).and.returnValue(true);
-
-				const result = await instanceUnderTest._getFileId(fileId);
-
-				expect(result).toBe(fileId);
-			});
-
-			it('throws an error when a fileId could not be determined', async () => {
-				const id = 'foo';
-				setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOn(fileStorageServiceMock, 'isAdminId').withArgs(id).and.returnValue(false);
-				spyOn(fileStorageServiceMock, 'isFileId').withArgs(id).and.returnValue(false);
-
-				try {
-					await instanceUnderTest._getFileId(id);
-					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
-					expect(error.message).toBe(`${id} is not a valid fileId or adminId`);
-				}
+				expect(store.getState().layers.active[0].label).toBe(labelBefore);
+				//Let's resolve the future
+				await future0.get();
+				expect(store.getState().layers.active[0].label).toBe(labelAfter);
 			});
 		});
 	});

@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../../src/injection';
-import { AggregateGeoResource, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
+import { AggregateGeoResource, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { LayerService } from '../../../../../../src/modules/map/components/olMap/services/LayerService';
 import { TestUtils } from '../../../../../test-utils';
@@ -34,6 +34,22 @@ describe('LayerService', () => {
 	});
 
 	describe('toOlLayer', () => {
+
+		describe('GeoResourceFuture', () => {
+
+			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
+				const id = 'id';
+				const wmsGeoresource = new GeoResourceFuture(id, () => { });
+
+				const placeholderOlLayer = instanceUnderTest.toOlLayer(wmsGeoresource);
+
+				expect(placeholderOlLayer.get('id')).toBe(id);
+				expect(placeholderOlLayer.get('placeholder')).toBeTrue();
+				expect(placeholderOlLayer.getSource()).toBeNull();
+				expect(placeholderOlLayer.render()).toBeUndefined();
+				expect(placeholderOlLayer.constructor.name).toBe('Layer');
+			});
+		});
 
 		describe('VectorGeoresource', () => {
 

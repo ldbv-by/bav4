@@ -26,7 +26,8 @@ export const GeoResourceTypes = Object.freeze({
 	WMTS: Symbol.for('wmts'),
 	VECTOR: Symbol.for('vector'),
 	VECTOR_TILES: Symbol.for('vector_tiles'),
-	AGGREGATE: Symbol.for('aggregate')
+	AGGREGATE: Symbol.for('aggregate'),
+	FUTURE: Symbol.for('future')
 });
 
 /**
@@ -133,6 +134,72 @@ export class GeoResource {
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
 	}
 
+}
+
+/**
+ * An async function that loads a  {@link GeoResource}.
+ *
+ * @param {string} id Id of the requested GeoResource
+ * @typedef {function(id) : (Promise<GeoResource>)} asyncGeoResourceLoader
+ */
+
+/**
+ * Wrapper for a GeoResource that can be loaded from an external source by calling `get()`.
+ */
+export class GeoResourceFuture extends GeoResource {
+
+	/**
+	 *
+	 * @param {string} id
+	 * @param {asyncGeoResourceLoader} loader
+	 */
+	constructor(id, loader, label = '') {
+		super(id, label);
+		this._loader = loader;
+		this._onResolve = () => { };
+		this._onReject = () => { };
+	}
+
+	/**
+	 * Register a function called when the loader function resolved.
+	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`
+	 * @param {function (GeoResouce, GeoResourceFuture)} callback
+	 */
+	onResolve(callback) {
+		this._onResolve = callback;
+	}
+
+	/**
+	 * Register a function called when the loader function rejected.
+	 * @param {function (GeoResourceFuture)} callback
+	 */
+	onReject(callback) {
+		this._onReject = callback;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.FUTURE;
+	}
+
+	/**
+	 * Calls the loader function and returns the real GeoResource.
+	 * Will be typically called by map implementations.
+	 * @returns GeoResource
+	 */
+	async get() {
+		try {
+			const realGeoResource = await this._loader(this.id);
+			this._onResolve(realGeoResource, this);
+			return realGeoResource;
+		}
+		catch (error) {
+			this._onReject(this);
+			throw error;
+		}
+	}
 }
 
 /**
