@@ -1,11 +1,32 @@
 import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
 
+
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 
 	if (fromProjection && toProjection) {
 		return geometry.clone().transform(fromProjection, toProjection);
 	}
 	return geometry;
+};
+
+/**
+ * Coerce the provided geometry to a LineString or null,
+ * if the geometry is not a LineString,LinearRing or Polygon
+ *
+ * @param {Geometry} geometry the geometry to coerce to LineString
+ * @return {Geometry | null} the coerced LineString or null
+ */
+export const getLineString = (geometry) => {
+	if (geometry instanceof LineString) {
+		return geometry;
+	}
+	else if (geometry instanceof LinearRing) {
+		return new LineString(geometry.getCoordinates());
+	}
+	else if (geometry instanceof Polygon) {
+		return new LineString(geometry.getCoordinates(false)[0]);
+	}
+	return null;
 };
 
 /**
@@ -41,17 +62,6 @@ export const getArea = (geometry, calculationHints = {}) => {
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
 		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		const getLineString = (lineStringCandidate) => {
-			if (lineStringCandidate instanceof LineString) {
-				return lineStringCandidate;
-			}
-			else if (lineStringCandidate instanceof LinearRing) {
-				return new LineString(lineStringCandidate.getCoordinates());
-			}
-			else if (lineStringCandidate instanceof Polygon) {
-				return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
-			}
-		};
 		const lineString = getLineString(calculationGeometry);
 
 
@@ -71,17 +81,6 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  * @returns {Array.<number>} the calculated coordinate or null if the geometry is not linear or area-like
  */
 export const getCoordinateAt = (geometry, fraction) => {
-	const getLineString = (lineStringCandidate) => {
-		if (lineStringCandidate instanceof LineString) {
-			return lineStringCandidate;
-		}
-		else if (lineStringCandidate instanceof LinearRing) {
-			return new LineString(lineStringCandidate.getCoordinates());
-		}
-		else if (lineStringCandidate instanceof Polygon) {
-			return new LineString(lineStringCandidate.getLinearRing(0).getCoordinates());
-		}
-	};
 	const lineString = getLineString(geometry);
 
 	if (lineString) {
@@ -89,6 +88,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 	}
 	return null;
 };
+
 
 /**
  * Determines whether or not the geometry has the property of a azimuth-angle
@@ -118,7 +118,7 @@ export const getAzimuth = (geometry) => {
 		!(geometry instanceof LinearRing)) {
 		return null;
 	}
-	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates()[0] : geometry.getCoordinates();
+	const coordinates = geometry instanceof Polygon ? geometry.getCoordinates(false)[0] : geometry.getCoordinates();
 
 	if (coordinates.length < 2) {
 		return null;
@@ -155,7 +155,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 	};
 
 	const stepFactor = 10;
-	const minDelta = 0.01; // results in max 100 allowed partitions
+	const minDelta = 0.02; // results in max 50 allowed partitions
 	const maxDelta = 1;
 	const minPartitionLength = 10;
 	const findBestFittingDelta = (partitionLength) => {
@@ -190,7 +190,7 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	const vertexCoordinate = vertexCandidate.getCoordinates();
 	const getCoordinates = (geometry) => {
 		if (geometry instanceof Polygon) {
-			return geometry.getCoordinates()[0];
+			return geometry.getCoordinates(false)[0];
 		}
 		if (geometry instanceof Point) {
 			return [geometry.getCoordinates()];
@@ -203,6 +203,51 @@ export const isVertexOfGeometry = (geometry, vertexCandidate) => {
 	return result ? true : false;
 };
 
+/**
+ * Creates a LineString, which is parallel to the two given points with the given distance.
+ * @param {Coordinate} fromPoint the first coordinate of a hypotetic source-line
+ * @param {Coordinate} toPoint the last coordinate of a hypotetic source-line
+ * @param {number} distance the distance for which the destination line is moved parallel from the hypotetic source-line
+ * @returns {LineString} the resulting line
+ */
+export const moveParallel = (fromPoint, toPoint, distance) => {
+
+	const angle = Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+	const movedFrom = [
+		Math.sin(angle) * distance + fromPoint[0],
+		-Math.cos(angle) * distance + fromPoint[1]
+	];
+	const movedTo = [
+		Math.sin(angle) * distance + toPoint[0],
+		-Math.cos(angle) * distance + toPoint[1]
+	];
+	return new LineString([movedFrom, movedTo]);
+
+};
+
+/**
+ * Calculates the residuals that occurs when the partitions are distributed over the individual segments of the geometry
+ * @param {Geometry} geometry the source geometry
+ * @param {number} partition the partition-value
+ * @returns {Array<number>} the residuals for all segments of the geometry
+ */
+export const calculatePartitionResidualOfSegments = (geometry, partition) => {
+	const residuals = [];
+	const lineString = getLineString(geometry);
+	if (lineString) {
+		const partitionLength = getGeometryLength(lineString) * partition;
+		let currentLength = 0;
+		let lastResidual = 0;
+		lineString.forEachSegment((from, to) => {
+			const segmentGeometry = new LineString([from, to]);
+			currentLength = currentLength + segmentGeometry.getLength();
+			residuals.push(lastResidual);
+			lastResidual = (currentLength % partitionLength) / partitionLength;
+		});
+	}
+
+	return residuals;
+};
 /**
  * Checks whether or not the geometry is valid for mapping purposes
  * @param {Geometry|null} geometry the geometry supported GeometryTypes are Point, LineString, Polygon

@@ -30,20 +30,185 @@
 	background: var(--secondary-bg-color);
 }
 
-input[type=text] {
-	background: var(--primary-bg-color);
-	border: 1px solid var(--text1);    
-	border-radius: var(--border-radius-button);
-	overflow: hidden;
-	font-size: 1.25rem;
-	padding: 0.25em .6em;
-	width: var(--width);
+input, textarea {
+	padding: 0.1em  0.5em;
+	font-size: 1rem;
+	border: 1px solid var(--text2);
+	line-height: 1.8;
+	width: 100%;
 	color: var(--text1);
+	box-shadow: none;
+	background: var(--primary-bg-color);
 }
-input[type=text]:focus {
-	border: 1px solid var(--primary-color);   
+select {
+	width: 100%;
+	font-size: 1rem;
+	padding: .2em 1.4em .3em .1em;
+	border: none;
+	border-bottom: 1px solid var(--text1);
+	box-shadow: none;
+	appearance: none;
+	background: var(--primary-bg--color);
+	background-image: url('./assets/caret-down-fill.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - .5em) center;
+	background-size: .7em;
+	cursor: pointer;
 }
-input[readonly] {
-	border: 1px solid var(--secondary-bg-color);    
+select:focus {
+	border-bottom: 1px solid var(--primary-color);
+}
+select option {
+	background-color: var(--primary-bg-color);
+	color: var(--text1);
+	border: none;
+}
+input[readonly], textarea[readonly], select[disabled] {
 	background: var(--secondary-bg-color);
+	opacity: 0.7;
+}
+input[type="range"] {
+	border: none;
+	padding: 0;
+	--track-height: .3em;
+	--track-fill: 0%;
+	--thumb-size: 1.5em;
+	--thumb-offset: -.6em;
+	--thumb-highlight-size: 0px;
+	--primary-color-light: var(--primary-color-lighter);
+	appearance: none;         
+	display: block;
+	inline-size: 100%;        
+	margin: 1em 0;            
+	background: transparent;  
+	outline-offset: 5px;      
+}
+input[type="range"]::-webkit-slider-runnable-track {
+	appearance: none; 
+	block-size: var(--track-height);
+	border-radius: .5em;
+	background: linear-gradient(
+		to right,
+		var(--primary-color) var(--track-fill),
+		var(--secondary-bg-color) 0%
+	);
+}
+input[type="range"]::-moz-range-track {
+	appearance: none; 
+	block-size: var(--track-height);
+	border-radius: .5em;
+	background: linear-gradient(
+		to right,
+		var(--primary-color) var(--track-fill),
+		var(--secondary-bg-color) 0%
+	);
+}
+input[type="range"]::-webkit-slider-thumb {
+	appearance: none; 
+	cursor: ew-resize; 
+	border: 3px solid var(--primary-bg-color);
+	block-size: var(--thumb-size);
+	inline-size: var(--thumb-size);
+	margin-top: var(--thumb-offset);
+	border-radius: 50%;
+	background: var(--primary-color) fixed;
+	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
+	transition: box-shadow .1s ease;
+}
+input[type="range"]::-moz-range-thumb {
+	appearance: none; 
+	cursor: ew-resize; 
+	border: 3px solid var(--primary-bg-color);
+	block-size: var(--thumb-size);
+	inline-size: var(--thumb-size);
+	margin-top: var(--thumb-offset);
+	border-radius: 50%;
+	background: var(--primary-color) fixed;
+	box-shadow: 0 0 0 var(--thumb-highlight-size) var(--primary-color-lighter);
+	transition: box-shadow .1s ease;
+}
+input[type="range"]:focus {
+	--thumb-highlight-size: .3em;
+}
+
+/* label */
+.fieldset .control-label {
+	position: absolute;
+	top: 0.25rem;
+	pointer-events: none;
+	padding-left: 0.125rem;
+	z-index: 1;
+	color: var(--text2);
+	font-size: 1rem;
+	font-weight: normal;
+	-webkit-transition: all 0.28s ease;
+	transition: all 0.28s ease;
+}
+.fieldset .bar {
+	position: relative;
+	border-bottom: 1px solid var(--text2);
+	display: block;
+}
+.fieldset .bar::before {
+	content: '';
+	height: 0.125rem;
+	width: 0;
+	left: 0%;
+	bottom: -0.0625rem;
+	position: absolute;
+	background: #337ab7;
+	background: var(--primary-color);
+	-webkit-transition: left 0.28s ease, width 0.28s ease;
+	transition: left 0.28s ease, width 0.28s ease;
+	z-index: 2;
+}
+.fieldset input, .fieldset textarea {
+	display: block;
+	background: none;
+	padding: 0.125rem 0.125rem 0.0625rem;
+	font-size: 1rem;
+	border-width: 0;
+	border-color: transparent;
+	line-height: 1.9;
+	width: 100%;
+	color: transparent;
+	color: var(--text1);
+	box-shadow: none;
+}
+
+.fieldset select {
+	border-bottom: 0;
+}
+
+.fieldset select ~ .control-label,
+.fieldset input:focus ~ .control-label,
+.fieldset input:valid ~ .control-label,
+.fieldset textarea:focus ~ .control-label,
+.fieldset textarea:valid ~ .control-label {
+	font-size: 0.8rem;
+	color: gray;
+	top: -1rem;
+	left: 0;
+}
+.fieldset select:focus,
+.fieldset input:focus,
+.fieldset textarea:focus {
+	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+}
+.fieldset select:focus ~ .control-label,
+.fieldset input:focus ~ .control-label,
+.fieldset textarea:focus ~ .control-label {
+	color: var(--text2); 
+}
+.fieldset select:focus ~ .bar::before,
+.fieldset input:focus ~ .bar::before,
+.fieldset textarea:focus ~ .bar::before {
+	width: 100%;
+	left: 0;
+}
+
+.fieldset {
+	position: relative;
+	margin-top: 1.5em;
+	width: 100%;
 }

@@ -34,6 +34,7 @@ export const MeasurementOverlayTypes = {
  * - `static`
  * - `geometry`
  * - `position`
+ * - `placement`
  * - `projectionHints`
  * @class
  * @author thiloSchlemmer
@@ -48,6 +49,7 @@ export class MeasurementOverlay extends BaOverlay {
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = false;
 		this._isDraggable = false;
+		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 	}
 
 	/**
@@ -55,7 +57,6 @@ export class MeasurementOverlay extends BaOverlay {
 	 */
 	createView() {
 		const content = this._getContent(this._type);
-
 		const classes = {
 			help: this._type === MeasurementOverlayTypes.HELP,
 			area: this._type === MeasurementOverlayTypes.AREA,
@@ -63,7 +64,12 @@ export class MeasurementOverlay extends BaOverlay {
 			partition: this._type === MeasurementOverlayTypes.DISTANCE_PARTITION,
 			static: this._static && this._type !== MeasurementOverlayTypes.HELP,
 			floating: !this._static && this._type !== MeasurementOverlayTypes.HELP,
-			draggable: this._isDraggable
+			draggable: this._isDraggable,
+			top: this.placement.sector === 'top',
+			right: this.placement.sector === 'right',
+			bottom: this.placement.sector === 'bottom',
+			left: this.placement.sector === 'left',
+			init: this.placement.sector === 'init'
 		};
 
 		return html`
@@ -75,6 +81,7 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_updatePosition() {
+
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
 				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
@@ -112,6 +119,17 @@ export class MeasurementOverlay extends BaOverlay {
 			case MeasurementOverlayTypes.TEXT:
 				return this._value;
 		}
+	}
+
+	set placement(value) {
+		if (value !== this.placement) {
+			this._placement = value;
+			this.render();
+		}
+	}
+
+	get placement() {
+		return this._placement;
 	}
 
 	static get tag() {
