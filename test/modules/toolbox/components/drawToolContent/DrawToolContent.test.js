@@ -213,7 +213,7 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.color).toBe(newColor);
 		});
 
-		it('collaps container', async () => {
+		it('collapse container', async () => {
 
 			const style = { ...StyleOptionTemplate, color: '#f00ba3', symbolSrc: 'data:image/svg+xml;base64,foobar' };
 
@@ -226,24 +226,24 @@ describe('DrawToolContent', () => {
 			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
 			expect(collapseButton.length).toBe(2);
 
-			const iscollapse = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(iscollapse.length).toBe(2);
+			const isCollapse = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse.length).toBe(2);
 
 			collapseButton[0].click();
 
-			const iscollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(iscollapse1.length).toBe(1);
+			const isCollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse1.length).toBe(1);
 
 			collapseButton[1].click();
 
-			const iscollapse2 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(iscollapse2.length).toBe(0);
+			const isCollapse2 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse2.length).toBe(0);
 
 			collapseButton[0].click();
 			collapseButton[1].click();
 
-			const iscollapse3 = element.shadowRoot.querySelectorAll('.iscollapse');
-			expect(iscollapse3.length).toBe(2);
+			const isCollapse3 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse3.length).toBe(2);
 		});
 
 		it('sets the style, after color changes in ColorPalette (with LOCAL icon-asset)', async () => {
