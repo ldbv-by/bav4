@@ -1,21 +1,32 @@
 .ba_catalog_container {
 	display: flex;
-	justify-content: flex-start; 
 	flex-wrap: wrap;
-	background-color: var(--tertiary-bg-color);
-	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);	
-	padding: 0.3em;
-	max-width: 50vw;
-	max-height: 10em;
+	background-color: var(--primary-bg-color);
+	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+	max-height: 19em;
 	overflow: auto;
+	width: auto;
+	right: 2em;
+	left: 7em;
+	padding: .8em;
+	background-image: url('assets/chess.svg');
+	background-size: 1em;
+}
+
+.is-portrait .ba_catalog_container {
+	position: inherit;
+}
+
+.is-landscape .ba_catalog_container {
+	position: absolute;
 }
 
 .ba_catalog_item {
-	margin: 0.3em;
+	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);  
 }
 
 .ba_catalog_item:hover {
-	background: var(--primary-color);
+	transform: scale(1.1);
 }
 
 .isselected {
@@ -24,5 +35,25 @@
 }
 
 .iscollapsed {
+	display: none;
+}
+
+.iconselect__toggle-button {
+	width: 100%;
+	padding: .2em 1.4em .3em .1em;
+	border: 0;
+	border-bottom: 1px solid var(--text1);
+	text-align: left;	
+	font-size: 1rem;	
+	box-shadow: none;
+	opacity: .9;
+	background: transparent;
+	background-image: url('./assets/caret-down-fill.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - .5em) center;
+	background-size: .7em;
+}
+
+ba-icon {
 	display: none;
 }

@@ -21,9 +21,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
 		expect(map.toolbox_drawTool_style_size).toBe('Größe');
-		expect(map.toolbox_drawTool_style_size_small).toBe('klein');
-		expect(map.toolbox_drawTool_style_size_medium).toBe('mittel');
-		expect(map.toolbox_drawTool_style_size_large).toBe('groß');
+		expect(map.toolbox_drawTool_style_size_small).toBe('Klein');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('Mittel');
+		expect(map.toolbox_drawTool_style_size_large).toBe('Groß');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_drawTool_style_desc).toBe('Beschreibung');
 		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
@@ -90,9 +90,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
-		expect(map.toolbox_drawTool_style_size_small).toBe('small');
-		expect(map.toolbox_drawTool_style_size_medium).toBe('medium');
-		expect(map.toolbox_drawTool_style_size_large).toBe('large');
+		expect(map.toolbox_drawTool_style_size_small).toBe('Small');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('Medium');
+		expect(map.toolbox_drawTool_style_size_large).toBe('Large');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_drawTool_style_desc).toBe('Description');
 		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
@@ -142,7 +142,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 63;
+		const expectedSize = 65;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
