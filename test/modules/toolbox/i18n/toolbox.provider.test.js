@@ -77,7 +77,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
 		expect(map.toolbox_import_data_draganddrop_target).toBe('in die Karte');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Daten konnten erfolgreich geladen werden');
-		expect(map.toolbox_import_draganddrop_bg_message).toBe('KML, GPX, GeoJSON Datei hierhin ziehen');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
 		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
@@ -160,7 +159,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
 		expect(map.toolbox_import_data_draganddrop_target).toBe('into the Map');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Data transferred succeeded');
-		expect(map.toolbox_import_draganddrop_bg_message).toBe('KML, GPX, GeoJSON drop data here');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
 		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
@@ -170,7 +168,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 77;
+		const expectedSize = 76;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

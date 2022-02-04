@@ -74,17 +74,7 @@ export class ImportToolContent extends AbstractToolContent {
 					${translate('toolbox_import_url_search_after')}
 				</div>
             </div>
-		</div>	  
-
-		<div id='dragDropBg' class='drag-drop-bg'>
-			<div>
-				<div class='drag-drop-bg-icon'>
-				</div>	
-					<div class='drag-drop-bg-text'>
-						${translate('toolbox_import_draganddrop_bg_message')}									
-					</div>
-				</div>
-			</div>
+		</div>
         `;
 
 	}

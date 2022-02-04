@@ -75,24 +75,6 @@
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-.drag-drop-bg {
-	display: none;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	position: fixed;
-	height: auto;
-	width: auto;
-	outline: 10px dashed var(--text3);
-	outline-offset: -20px;
-	top: 0;
-	right: 0;
-	left: 0em;
-	bottom: 0;
-	z-index: calc(var(--z-toolbox) + 20);
-	background-color: var(--modal-background-color);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-}
 
 .search-bg {
 	display: none;
@@ -107,28 +89,11 @@
 	background-color: var(--modal-background-color);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-.drag-drop-bg-text {
-	font-weight: bold;
-	text-align: center;
-	font-size: 1.6rem;
-	color: var(--text3);
-	margin-top: .8em;
-}
-.drag-drop-bg-icon {
-	mask-image: url('assets/upload.svg');
-	-webkit-mask-image: url('assets/upload.svg');
-	background: var(--text3);
-	height: 15em;
-	width: 15em;
-	margin: auto;
-	mask-size: cover;
-	-webkit-mask-size: cover;	
-}
 .text-to-search {
 	display: inline-block;
 	font-weight: bold;
 	color: var(--primary-color);
-	cursor: pointer;
+	cursor: default;
 }
 .text-to-search-icon {
 	display: inline-block;
