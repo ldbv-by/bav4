@@ -47,6 +47,18 @@ describe('ImportToolContent', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+
+		it('has a model with default values', async () => {
+			const element = await setup();
+			const model = element.getModel();
+
+			expect(model).toEqual({
+				mode: null
+			});
+		});
+	});
+
 	describe('when uploading a file', () => {
 		it('emits a notification', async (done) => {
 			const element = await setup();
