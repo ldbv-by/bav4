@@ -3,6 +3,7 @@ import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';
 import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
+import { ImportToolContent } from '../importToolContent/ImportToolContent';
 import css from './toolContainer.css';
 import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -71,6 +72,8 @@ export class ToolContainer extends MvuElement {
 					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
 				case ToolId.SHARING:
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
+				case ToolId.IMPORT:
+					return html`${unsafeHTML(`<${ImportToolContent.tag}/>`)}`;
 				default:
 					return nothing;
 			}
