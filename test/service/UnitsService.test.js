@@ -70,9 +70,9 @@ describe('UnitsService', () => {
 		expect(instanceUnderTest.formatArea(1000000, 0)).toBe('1 km&sup2;');
 		expect(instanceUnderTest.formatArea(1234567, 0)).toBe('1.23 km&sup2;');
 		expect(instanceUnderTest.formatArea(1234567, 2)).toBe('1.23 km&sup2;');
-		expect(instanceUnderTest.formatArea(100000, 0)).toBe('10 ha');
-		expect(instanceUnderTest.formatArea(12345, 0)).toBe('1.23 ha');
-		expect(instanceUnderTest.formatArea(12345, 2)).toBe('1.23 ha');
+		expect(instanceUnderTest.formatArea(100000, 0)).toBe('100000 m&sup2;');
+		expect(instanceUnderTest.formatArea(12345, 0)).toBe('12345 m&sup2;');
+		expect(instanceUnderTest.formatArea(12345, 2)).toBe('12345.00 m&sup2;');
 		expect(instanceUnderTest.formatArea(10000000, 0)).toBe('10 km&sup2;');
 	});
 
