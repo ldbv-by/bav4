@@ -1,3 +1,6 @@
+.ba-tool-container {
+	min-width: 26em
+}
 .ba-tool-container__title {
 	padding: .8em 1.5em;
 	font-weight: bold;   

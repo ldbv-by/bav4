@@ -426,11 +426,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createSelect() {
 		const select = new Select(getSelectOptions(this._vectorLayer));
+		const getResolution = () => this._map.getView().getResolution();
 		select.getFeatures().on('change:length', this._updateStatistics);
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
 			const styleFunction = selectStyleFunction();
-			const styles = styleFunction(feature);
+			const styles = styleFunction(feature, getResolution());
 			e.element.setStyle(styles);
 		});
 		select.getFeatures().on('remove', (e) => {
@@ -501,7 +502,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createMeasureGeometry(feature, isDrawing = false) {
 		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
+			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
 
 			if (!this._sketchHandler.isFinishOnFirstPoint) {
 				return new LineString(lineCoordinates);

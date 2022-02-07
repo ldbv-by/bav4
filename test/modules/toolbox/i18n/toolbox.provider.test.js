@@ -21,9 +21,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
 		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
 		expect(map.toolbox_drawTool_style_size).toBe('Größe');
-		expect(map.toolbox_drawTool_style_size_small).toBe('klein');
-		expect(map.toolbox_drawTool_style_size_medium).toBe('mittel');
-		expect(map.toolbox_drawTool_style_size_large).toBe('groß');
+		expect(map.toolbox_drawTool_style_size_small).toBe('Klein');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('Mittel');
+		expect(map.toolbox_drawTool_style_size_large).toBe('Groß');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_drawTool_style_desc).toBe('Beschreibung');
 		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
@@ -70,6 +70,19 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 		expect(map.toolbox_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.toolbox_measureTool_share_link).toBe('Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten');
+		expect(map.toolbox_import_data_header).toBe('Datei Import');
+		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_data_button).toBe('Datei Auswählen');
+		expect(map.toolbox_import_data_seperator).toBe('oder');
+		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
+		expect(map.toolbox_import_data_draganddrop_target).toBe('in die Karte');
+		expect(map.toolbox_import_data_sucess_notification).toBe('Daten konnten erfolgreich geladen werden');
+		expect(map.toolbox_import_url_header).toBe('URL Import');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
+		expect(map.toolbox_import_url_search).toBe('Suchfeld');
+		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
+		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
 	it('provides translation for en', () => {
@@ -90,9 +103,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_info).toBe('Your drawing will be automatically saved. By using this service you agree to the terms of use.');
 		expect(map.toolbox_drawTool_style_color).toBe('Color');
 		expect(map.toolbox_drawTool_style_size).toBe('Size');
-		expect(map.toolbox_drawTool_style_size_small).toBe('small');
-		expect(map.toolbox_drawTool_style_size_medium).toBe('medium');
-		expect(map.toolbox_drawTool_style_size_large).toBe('large');
+		expect(map.toolbox_drawTool_style_size_small).toBe('Small');
+		expect(map.toolbox_drawTool_style_size_medium).toBe('Medium');
+		expect(map.toolbox_drawTool_style_size_large).toBe('Large');
 		expect(map.toolbox_drawTool_style_text).toBe('Text');
 		expect(map.toolbox_drawTool_style_desc).toBe('Description');
 		expect(map.toolbox_drawTool_style_symbol).toBe('Symbol');
@@ -139,10 +152,23 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
 		expect(map.toolbox_copy_icon).toBe('Copy to clipboard');
 		expect(map.toolbox_measureTool_share_link).toBe('Anyone, who has this link, can edit this drawing');
+		expect(map.toolbox_import_data_header).toBe('Data Import');
+		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_data_button).toBe('Choose a file');
+		expect(map.toolbox_import_data_seperator).toBe('or');
+		expect(map.toolbox_import_data_draganddrop).toBe('Drag and Drop');
+		expect(map.toolbox_import_data_draganddrop_target).toBe('into the Map');
+		expect(map.toolbox_import_data_sucess_notification).toBe('Data transferred succeeded');
+		expect(map.toolbox_import_url_header).toBe('URL Import');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
+		expect(map.toolbox_import_url_search).toBe('Search Bar');
+		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
+		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 63;
+		const expectedSize = 78;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

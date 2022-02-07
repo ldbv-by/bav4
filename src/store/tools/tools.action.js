@@ -17,7 +17,8 @@ const getStore = () => {
 export const ToolId = Object.freeze({
 	MEASURING: 'measuring',
 	DRAWING: 'drawing',
-	SHARING: 'sharing'
+	SHARING: 'sharing',
+	IMPORT: 'import'
 });
 
 

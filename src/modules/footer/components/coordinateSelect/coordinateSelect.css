@@ -19,20 +19,9 @@
 }
 
 .select-coordinate {
-	background-color: var(--secondary-bg-color);
-	color: var(--text1);
-	border: 1px solid transparent;
-	border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-	cursor: pointer;
-	user-select: none;
-	font-family: var(--font-family);
 	font-size: .7rem;
 	font-weight: bold;
-	border-radius: 10%;
 	width: min-content;
-	height: min-content;
-	outline: none;
-	margin: auto;
 	position: absolute;
 	bottom: .3em;
 } 
