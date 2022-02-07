@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../injection';
 import { GeoResourceTypes } from '../../../../../services/domain/geoResources';
-import { Image as ImageLayer, Vector as VectorLayer, Group as LayerGroup, Layer } from 'ol/layer';
+import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
@@ -18,14 +18,14 @@ export class LayerService {
 
 		const {
 			GeoResourceService: georesourceService,
-			VectorImportService: vectorImportService
-		} = $injector.inject('GeoResourceService', 'VectorImportService');
+			VectorLayerService: vectorLayerService
+		} = $injector.inject('GeoResourceService', 'VectorLayerService');
 
 		switch (geoResource.getType()) {
 
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer ({ id: geoResource.id, render: () => {}, properties: { placeholder: true } });
+				return new Layer({ id: geoResource.id, render: () => { }, properties: { placeholder: true } });
 			}
 
 			case GeoResourceTypes.WMS: {
@@ -64,18 +64,7 @@ export class LayerService {
 
 			case GeoResourceTypes.VECTOR: {
 
-				const vectorLayer = new VectorLayer({
-					id: geoResource.id
-				});
-				let vectorSource;
-				if (geoResource.url) {
-					vectorSource = vectorImportService.vectorSourceFromExternalData(geoResource);
-				}
-				else {
-					vectorSource = vectorImportService.vectorSourceFromInternalData(geoResource);
-				}
-				vectorLayer.setSource(vectorSource);
-				return vectorImportService.applyStyles(vectorLayer, olMap);
+				return vectorLayerService.createVectorLayer(geoResource, olMap);
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
