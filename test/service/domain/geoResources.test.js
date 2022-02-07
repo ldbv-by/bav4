@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable } from '../../../src/services/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
@@ -319,6 +319,23 @@ describe('GeoResource', () => {
 			expect(aggregateGeoResource.geoResourceIds.length).toBe(2);
 			expect(aggregateGeoResource.geoResourceIds[0].id).toBe('wmsId');
 			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
+		});
+
+	});
+	describe('observableGeoResource', () => {
+
+		it('observes changes', () => {
+
+			const modifiedLabel = 'modified';
+			const callback = jasmine.createSpy();
+			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
+
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.unknown = modifiedLabel;
+
+			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(wmtsGeoResource.label).toBe(modifiedLabel);
 		});
 
 	});

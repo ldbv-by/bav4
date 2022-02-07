@@ -350,3 +350,24 @@ export class AggregateGeoResource extends GeoResource {
 		return GeoResourceTypes.AGGREGATE;
 	}
 }
+
+
+/**
+ * Returns an observable GeoResource.
+ * All of its accessible fields (fields that have a setter)
+ * can be observed.
+ * @param {GeoResource} geoResource
+ * @param {function (property, value)} onChange callback function
+ * @returns proxified GeoResource
+ */
+export const observable = (geoResource, onChange) => {
+
+	return new Proxy(geoResource, {
+		set: function (target, prop, value) {
+			if (Object.keys(target).includes(prop) && target[prop] !== value) {
+				onChange(prop, value);
+			}
+			return Reflect.set(...arguments);
+		}
+	});
+};
