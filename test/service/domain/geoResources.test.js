@@ -322,6 +322,7 @@ describe('GeoResource', () => {
 		});
 
 	});
+
 	describe('observableGeoResource', () => {
 
 		it('observes changes', () => {
@@ -337,6 +338,5 @@ describe('GeoResource', () => {
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
 			expect(wmtsGeoResource.label).toBe(modifiedLabel);
 		});
-
 	});
 });
