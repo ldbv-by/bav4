@@ -161,8 +161,9 @@ export class GeoResourceFuture extends GeoResource {
 
 	/**
 	 * Register a function called when the loader function resolved.
-	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`
-	 * @param {function (GeoResouce, GeoResourceFuture)} callback
+	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`.
+	 * if the callback wants to modify the GeoResource, it can return it afterwards.
+	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
 		this._onResolve = callback;
@@ -190,9 +191,9 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	async get() {
 		try {
-			const realGeoResource = await this._loader(this.id);
-			this._onResolve(realGeoResource, this);
-			return realGeoResource;
+			const resolvedGeoResource = await this._loader(this.id);
+			const modifiedResolvedGeoResource = this._onResolve(resolvedGeoResource, this);
+			return modifiedResolvedGeoResource ?? resolvedGeoResource;
 		}
 		catch (error) {
 			this._onReject(this);

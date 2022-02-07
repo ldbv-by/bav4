@@ -162,13 +162,13 @@ describe('GeoResource', () => {
 
 		it('returns the real GeoResource by calling loader', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
 
 			const geoResource = await future.get();
 
-			expect(geoResource).toEqual(expectdGeoResource);
+			expect(geoResource).toEqual(expectedGeoResource);
 		});
 
 		it('rejects when the loader rejects', async () => {
@@ -188,16 +188,34 @@ describe('GeoResource', () => {
 
 		it('calls the onResolve callback', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
 			const future = new GeoResourceFuture(id, loader);
 			future.onResolve(onResolveCallback);
 
 			await future.get();
 
-			expect(onResolveCallback).toHaveBeenCalledWith(expectdGeoResource, future);
+			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
+
+		it('calls the onResolve callback und uses its result', async () => {
+			const id = 'id';
+			const modifiedLabel = 'modifiedLabel';
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
+			const onResolveCallback = jasmine.createSpy().and.callFake(geoResource => {
+				geoResource.label = modifiedLabel;
+				return geoResource;
+			});
+			const future = new GeoResourceFuture(id, loader);
+			future.onResolve(onResolveCallback);
+
+			const geoResource = await future.get();
+
+			expect(geoResource.label).toBe(modifiedLabel);
+		});
+
 
 		it('calls the onReject callback', async () => {
 			const id = 'id';
