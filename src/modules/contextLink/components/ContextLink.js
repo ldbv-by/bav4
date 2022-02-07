@@ -79,7 +79,7 @@ export class ContextLink extends MvuElement {
 						<i class='context-link__link-icon'></i>
 						<span class="context-link__link-text">${translate('contextlink_feedback')}</span>
 					</a>						
-				</div>
+				</div>		
 			</div>		
 		` ;
 

@@ -9,6 +9,19 @@
 }
 
 .is-portrait .context-link__container{
+    top: unset;
+    left: 0em;
+    bottom: 4em;
+    justify-content: right;
+    padding: 1em;
+    z-index: calc(var(--z-footer) + 10);
+	font-size:.7rem;
+}
+
+.is-portrait .context-link__link{
+	/* font-size:.7rem; */
+}
+.is-portrait .context-link__link-text{
 	display:none;
 }
 
@@ -18,16 +31,18 @@
 }
 
 .context-link__link{
+	font-size:.9rem;
 	display:flex;
-	font-size: 1rem;
 	border: none;
 	border-radius: 2em;
 	padding: .5em 0.9em;
 	background: var(--info-color);
+	background: var(--primary-bg-color);
 	cursor: pointer;
 	text-decoration: none;
 	margin-right:1em;
 	margin:auto;
+	margin-right: 6em;
 	
 }
 
@@ -42,6 +57,7 @@
 .context-link__link-text{
 	font-weight: bold;
 	color: #fff;
+	color: var(--primary-color);
 	margin: auto .5em;
 }
 
@@ -50,9 +66,10 @@
 	height:1.1em;
 	width:1.1em;
 	background: #fff;
+	background: var(--primary-color);
 	mask: url('assets/chatdots.svg');
 	-webkit-mask-image: url('assets/chatdots.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	left: 0.7em;
+	left: 0.7em;	
 }
