@@ -296,9 +296,9 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			/**
-			 *  VGA-Palette with 16 Colors.
+			 *  Helper-Function to create a VGA-Palette with 16 Colors.
 			 *
-			 * @returns
+			 * @returns {TemplateResult} the ColorPalette
 			 */
 			const getColorPalette = () => {
 				return html`
