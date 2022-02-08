@@ -4,12 +4,11 @@ import { $injector } from '../../../../injection';
 import { changeZoomAndCenter } from '../../../../store/position/position.action';
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
-import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { addLayer } from '../../../../store/layers/layers.action';
-import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
+import { importVectorDataFromUrl } from '../../../../utils/import';
 
 
 
@@ -45,27 +44,11 @@ export class ShowCase extends BaElement {
 	createView() {
 
 		const onClick0 = async () => {
-			// changeZoomAndCenter({
-			// 	zoom: 13,
-			// 	center: this._coordinateService.fromLonLat([11.57245, 48.14021])
-			// });
 
-			//Example for persisting vector data and displaying a layer based on a vector georesource
-			const label = 'Created internally';
-			const data = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Zeichnung</name><Placemark id="line_1617969798001"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.968330802417738,49.3941869069271 10.69854759276084,49.193499720494586 10.9540963604254,49.0671870322957 11.576172631724711,49.24609082578446 11.300121343937633,49.37365261732256 11.136210305450561,49.473824574763526</coordinates></LineString></Placemark></Document></kml>';
-			try {
-				//persist the data, so we can load it later by a fileId
-				const { fileId } = await this._fileStorageService.save(null, data, FileStorageServiceDataTypes.KML);
-				//create a georesource and set the data as source
-				const vgr = new VectorGeoResource(fileId, label, VectorSourceType.KML).setSource(data, 4326);
-				//register georesource
-				this._geoResourceService.addOrReplace(vgr);
-				//add a layer that displays the georesource in the map
-				addLayer(fileId, { label: label });
-			}
-			catch (ex) {
-				console.error(ex);
-			}
+			const geoResourceFuture = importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			geoResourceFuture.onReject(() => console.warn('Oops, something got wrong'));
+			const { id, label } = geoResourceFuture;
+			addLayer(id, { label: label });
 		};
 
 		const onClick1 = () => {
