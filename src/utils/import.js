@@ -76,7 +76,12 @@ export const importVectorDataFromUrl = (url, options = {}) => {
 			const data = await result.text();
 			const resultingSourceType = sourceType ?? detectVectorSourceTypeFunction(data, result.headers.get('Content-Type'));
 			if (resultingSourceType) {
-				const vgr = new VectorGeoResource(id, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType);
+				const vgr = observable(new VectorGeoResource(id, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
+					(prop, value) => {
+						if (prop === '_label') {
+							modifyLayer(id, { label: value });
+						}
+					});
 				vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 				return vgr;
 			}
@@ -85,13 +90,6 @@ export const importVectorDataFromUrl = (url, options = {}) => {
 	};
 
 	const geoResource = new GeoResourceFuture(id, loader, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
-	geoResource.onResolve(geoResource => {
-		return observable(geoResource, (prop, value) => {
-			if (prop === '_label') {
-				modifyLayer(id, { label: value });
-			}
-		});
-	});
 	geoResourceService.addOrReplace(geoResource);
 	return geoResource;
 };
