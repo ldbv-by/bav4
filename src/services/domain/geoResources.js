@@ -155,8 +155,8 @@ export class GeoResourceFuture extends GeoResource {
 	constructor(id, loader, label = '') {
 		super(id, label);
 		this._loader = loader;
-		this._onResolve = () => { };
-		this._onReject = () => { };
+		this._onResolve = [];
+		this._onReject = [];
 	}
 
 	/**
@@ -166,7 +166,7 @@ export class GeoResourceFuture extends GeoResource {
 	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
-		this._onResolve = callback;
+		this._onResolve.push(callback);
 	}
 
 	/**
@@ -174,7 +174,7 @@ export class GeoResourceFuture extends GeoResource {
 	 * @param {function (GeoResourceFuture)} callback
 	 */
 	onReject(callback) {
-		this._onReject = callback;
+		this._onReject.push(callback);
 	}
 
 	/**
@@ -192,11 +192,11 @@ export class GeoResourceFuture extends GeoResource {
 	async get() {
 		try {
 			const resolvedGeoResource = await this._loader(this.id);
-			const modifiedResolvedGeoResource = this._onResolve(resolvedGeoResource, this);
-			return modifiedResolvedGeoResource ?? resolvedGeoResource;
+			this._onResolve.forEach(f => f(resolvedGeoResource, this));
+			return resolvedGeoResource;
 		}
 		catch (error) {
-			this._onReject(this);
+			this._onReject.forEach(f => f(this));
 			throw error;
 		}
 	}

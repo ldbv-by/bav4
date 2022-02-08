@@ -199,24 +199,6 @@ describe('GeoResource', () => {
 			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
 
-		it('calls the onResolve callback und uses its result', async () => {
-			const id = 'id';
-			const modifiedLabel = 'modifiedLabel';
-			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
-			const onResolveCallback = jasmine.createSpy().and.callFake(geoResource => {
-				geoResource.label = modifiedLabel;
-				return geoResource;
-			});
-			const future = new GeoResourceFuture(id, loader);
-			future.onResolve(onResolveCallback);
-
-			const geoResource = await future.get();
-
-			expect(geoResource.label).toBe(modifiedLabel);
-		});
-
-
 		it('calls the onReject callback', async () => {
 			const id = 'id';
 			const loader = jasmine.createSpy().withArgs(id).and.rejectWith('error');
