@@ -127,10 +127,14 @@
 	bottom: 0em;
 	right: 0em;
 	border-radius: 2em 2em 0 0;
+	border-radius: 2em;
 	width: 4em;
 	margin-left: -2em;
-	height: 2.5em;
-	background: var(--secondary-color);
+	margin-top: -2em;
+	height: 4em;
+	bottom:-1.2em;
+	bottom:-2em;
+	background: var(--header-background-color);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
@@ -138,6 +142,7 @@
 .is-portrait .is-open {
 	transform: translate(0, 65vh);
 	height: calc(65vh + 6.6em);
+	overflow: visible;
 }
 .is-portrait .main-menu__container {
 	overflow-y: auto;
@@ -403,5 +408,5 @@ input[type="range"]:focus {
 	position: relative;
 	top: .1em;
 	left: -.1em;
-	background: var(--primary-bg-color);
+	/* background: var(--primary-bg-color); */
 }

@@ -30,4 +30,4 @@ import './modules/examples';
 import './modules/featureInfo';
 import './modules/iconSelect';
 import './modules/geoResourceInfo';
-import './modules/contextLink';
+import './modules/survey';

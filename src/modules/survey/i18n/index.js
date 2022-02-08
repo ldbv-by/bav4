@@ -1,7 +1,7 @@
 
-import { contextLinkProvide } from './contextLink.provider';
+import { surveyProvide } from './survey.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('contextLinkProvide', contextLinkProvide);
+translationService.register('surveyProvide', surveyProvide);
 
 

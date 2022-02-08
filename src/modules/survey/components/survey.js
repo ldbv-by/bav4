@@ -1,23 +1,26 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './contextLink.css';
+import css from './survey.css';
 import { MvuElement } from '../../MvuElement';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
+const Update_HasBeenVisible = 'update_hasBeenVisible';
 /**
  * @class
  * @author alsturm
  */
-export class ContextLink extends MvuElement {
+export class Survey extends MvuElement {
 
 	constructor() {
 		super({
 			isPortrait: false,
 			hasMinWidth: false,
 			isOpen: false,
-			toolId: null
+			hasBeenVisible: false,
+			timeout: 3000
 		});
 
 		const {
@@ -40,6 +43,8 @@ export class ContextLink extends MvuElement {
 				return { ...model, ...data };
 			case Update_IsOpen_TabIndex:
 				return { ...model, ...data };
+			case Update_HasBeenVisible:
+				return { ...model, hasBeenVisible: data };
 		}
 	}
 
@@ -55,7 +60,8 @@ export class ContextLink extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isPortrait, hasMinWidth, isOpen } = model;
+		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible, timeout } = model;
+
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -71,16 +77,43 @@ export class ContextLink extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+
+		const onClickEmitCustom = () => {
+			const getContent = () => {
+				return html`
+						<style>${css}</style>	
+						<div class='survey__notification'>					
+							<div class='survey__notification-section'>
+								<i class='survey__notification-icon'></i>
+								<div>
+									<div class='survey__notification-primary-text' >Umfrage</div>
+									<div class='survey__notification-secondary-text' >Weleche Funktionen wünschen Sie sich für den neuen Bayernatlas?</div>
+								</div>
+							</div>
+							<div class='survey__notification-section space-evenly'>							
+								<ba-button id='button1' .label=${'Nein Danke'} ></ba-button>
+								<ba-button id='button0' .label=${'Mitmachen'}  ></ba-button>
+							</div>
+						</div>`;
+			};
+			emitNotification(getContent(), LevelTypes.CUSTOM);
+		};
+		if (!hasBeenVisible) {
+			window.setTimeout(() => onClickEmitCustom(), timeout);
+			this.signal(Update_HasBeenVisible, true);
+		}
+
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='context-link__container ${getOverlayClass()}'>				
-					<a target='_blank' href='#' class="context-link__link">
-						<i class='context-link__link-icon'></i>
-						<span class="context-link__link-text">${translate('contextlink_feedback')}</span>
+				<div class='survey__button ${getOverlayClass()}'>				
+					<i class='survey__button-icon'></i>
+					<a target='_blank' href='#' class="survey__link">
+						<span class="survey__button-text">${translate('survey_feedback')}</span>
 					</a>						
 				</div>		
 			</div>		
+
 		` ;
 
 	}
@@ -90,6 +123,6 @@ export class ContextLink extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-context-link';
+		return 'ba-survey';
 	}
 }

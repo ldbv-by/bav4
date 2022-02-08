@@ -1,27 +1,27 @@
-import { contextLinkProvide } from '../../../../src/modules/contextLink/i18n/contextLink.provider';
+import { surveyProvide } from '../../../../src/modules/survey/i18n/survey.provider';
 
 
 describe('i18n for baseLayer info', () => {
 
 	it('provides translation for en', () => {
 
-		const map = contextLinkProvide('en');
+		const map = surveyProvide('en');
 
-		expect(map.contextlink_feedback).toBe('Feedback');
+		expect(map.survey_feedback).toBe('Feedback');
 	});
 
 
 	it('provides translation for de', () => {
 
-		const map = contextLinkProvide('de');
+		const map = surveyProvide('de');
 
-		expect(map.contextlink_feedback).toBe('Feedback');
+		expect(map.survey_feedback).toBe('Feedback');
 	});
 
 	it('have the expected amount of translations', () => {
 		const expectedSize = 1;
-		const deMap = contextLinkProvide('de');
-		const enMap = contextLinkProvide('en');
+		const deMap = surveyProvide('de');
+		const enMap = surveyProvide('en');
 
 		const actualSize = (o) => Object.keys(o).length;
 
@@ -31,7 +31,7 @@ describe('i18n for baseLayer info', () => {
 
 	it('provides an empty map for a unknown lang', () => {
 
-		const map = contextLinkProvide('unknown');
+		const map = surveyProvide('unknown');
 
 		expect(map).toEqual({});
 	});
