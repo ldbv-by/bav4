@@ -7,7 +7,7 @@ describe('i18n for baseLayer info', () => {
 
 		const map = surveyProvide('en');
 
-		expect(map.survey_feedback).toBe('Feedback');
+		expect(map.survey_feedback).toBe('Survey');
 	});
 
 
@@ -15,7 +15,7 @@ describe('i18n for baseLayer info', () => {
 
 		const map = surveyProvide('de');
 
-		expect(map.survey_feedback).toBe('Feedback');
+		expect(map.survey_feedback).toBe('Umfrage');
 	});
 
 	it('have the expected amount of translations', () => {
