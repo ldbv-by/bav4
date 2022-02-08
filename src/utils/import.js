@@ -60,7 +60,7 @@ export const defaultImportVectorDataOptions = () => ({
 
 /**
  * Imports vector data from an URL and returns a {@link GeoResourceFuture}.
- * The returned geoResource is already registered on the {@link GeoResourceService}.
+ * The GeoResourceFuture is registered on the {@link GeoResourceService}.
  * @param {string} url
  * @param {VectorDataImportOptions} [options]
  * @returns VectorGeoresouce
@@ -89,8 +89,9 @@ export const importVectorDataFromUrl = (url, options = {}) => {
 				vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 				return vgr;
 			}
+			throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
 		}
-		throw new Error(`GeoResource for '${url}' could not be loaded`);
+		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 	};
 
 	const geoResource = new GeoResourceFuture(id, loader, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
@@ -99,11 +100,11 @@ export const importVectorDataFromUrl = (url, options = {}) => {
 };
 
 /**
- * Imports vector data and returns a {@link VectorGeoresouce}.
- * The returned geoResource is already registered on the {@link GeoResourceService}.
+ * Creates a {@link VectorGeoresouce} containing the given data.
+ * The VectorGeoresouce is registered on the {@link GeoResourceService}.
  * @param {string} data
  * @param {VectorDataImportOptions} [options]
- * @returns VectorGeoresouce or `null`
+ * @returns VectorGeoresouce or `null` when no VectorGeoresouce could be created
  */
 export const importVectorData = (data, options) => {
 	const { id, label, sourceType, detectVectorSourceTypeFunction } = { ...defaultImportVectorDataOptions(), ...options };
@@ -121,6 +122,6 @@ export const importVectorData = (data, options) => {
 		geoResourceService.addOrReplace(vgr);
 		return vgr;
 	}
-	console.warn('SourceType could not be detected');
+	console.warn(`SourceType for '${id}' could not be detected`);
 	return null;
 };

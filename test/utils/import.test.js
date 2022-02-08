@@ -143,6 +143,7 @@ describe('provides util fuctions for importing data or services', () => {
 
 			it('throws an error when response is not ok', async (done) => {
 				const url = 'http://my.url';
+				const status = 404;
 				const options = {
 					id: 'id',
 					label: 'label',
@@ -150,7 +151,7 @@ describe('provides util fuctions for importing data or services', () => {
 				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
-					new Response(null, { status: 404 })
+					new Response(null, { status: status })
 				));
 				const geoResourceFuture = importVectorDataFromUrl(url, options);
 
@@ -159,7 +160,7 @@ describe('provides util fuctions for importing data or services', () => {
 					throw new Error('Promise should not be resolved');
 				}
 				catch (error) {
-					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded`);
+					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: Http-Status ${status}`);
 					done();
 				}
 			});
@@ -182,7 +183,7 @@ describe('provides util fuctions for importing data or services', () => {
 					throw new Error('Promise should not be resolved');
 				}
 				catch (error) {
-					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded`);
+					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
 					done();
 				}
 			});
@@ -252,13 +253,14 @@ describe('provides util fuctions for importing data or services', () => {
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const warnSpy = spyOn(console, 'warn');
 			const options = {
+				id: 'id',
 				detectVectorSourceType: () => null
 			};
 
 			const vgr = importVectorData(data, options);
 
 			expect(vgr).toBeNull();
-			expect(warnSpy).toHaveBeenCalledWith('SourceType could not be detected');
+			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 		});
 	});
