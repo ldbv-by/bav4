@@ -1,6 +1,7 @@
 import { $injector } from '../injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../services/domain/geoResources';
+import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../services/domain/geoResources';
 import { MediaType } from '../services/HttpService';
+import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from './numberUtils';
 
 /**
@@ -70,6 +71,14 @@ export const importVectorDataFromUrl = (url, id = createUniqueId().toString(), l
 	};
 
 	const geoResource = new GeoResourceFuture(id, loader, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+
+	geoResource.onResolve(geoResource => {
+		return observable(geoResource, (prop, value) => {
+			if (prop === '_label') {
+				modifyLayer(id, { label: value });
+			}
+		});
+	});
 	geoResourceService.addOrReplace(geoResource);
 	return geoResource;
 };
@@ -90,7 +99,11 @@ export const importVectorData = (data, id = createUniqueId().toString(), label =
 
 	sourceType = sourceType ?? detectVectorSourceTypeFunction(data);
 	if (sourceType) {
-		const vgr = new VectorGeoResource(id, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), sourceType);
+		const vgr = observable(new VectorGeoResource(id, label ?? translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), sourceType), (prop, value) => {
+			if (prop === '_label') {
+				modifyLayer(id, { label: value });
+			}
+		});
 		vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 		geoResourceService.addOrReplace(vgr);
 		return vgr;

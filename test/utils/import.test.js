@@ -1,7 +1,10 @@
 import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
 import { MediaType } from '../../src/services/HttpService';
+import { addLayer } from '../../src/store/layers/layers.action';
+import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { detectVectorSourceType, importVectorData, importVectorDataFromUrl } from '../../src/utils/import';
+import { TestUtils } from '../test-utils';
 
 
 
@@ -17,9 +20,12 @@ describe('provides util fuctions for importing data or services', () => {
 	const urlService = {
 		proxifyInstant() { }
 	};
+	let store;
 
-
-	beforeAll(() => {
+	beforeEach(() => {
+		store = TestUtils.setupStoreAndDi({}, {
+			layers: layersReducer
+		});
 		$injector
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
@@ -76,7 +82,29 @@ describe('provides util fuctions for importing data or services', () => {
 				expect(vgr.srid).toBe(4326);
 			});
 
-			it('loads the data and returns a VectorGeoresouce automatically setting id, label and sourceType', async () => {
+			it('updates the label property of a layer', async () => {
+				const url = 'http://my.url';
+				const id = 'id';
+				const initialLabel = 'first';
+				const changedLabel = 'now';
+				const data = 'data';
+				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
+				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
+					new Response(data, { status: 200 })
+				));
+				const geoResourceFuture = importVectorDataFromUrl(url, id, initialLabel, MediaType.GeoJSON);
+				const vgr = await geoResourceFuture.get();
+				const layer = { label: initialLabel };
+				addLayer(id, layer);
+
+				vgr.opacity = .5;
+				expect(store.getState().layers.active[0].label).toBe(initialLabel);
+				vgr.label = changedLabel;
+				expect(store.getState().layers.active[0].label).toBe(changedLabel);
+			});
+
+
+			it('updates the label property of a layer after geoResouce has been loaded', async () => {
 				const url = 'http://my.url';
 				const id = undefined;
 				const label = undefined;
@@ -182,6 +210,21 @@ describe('provides util fuctions for importing data or services', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(detectVectorSourceTypeFunction).toHaveBeenCalled();
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
+		});
+
+		it('updates the label property of a layer', async () => {
+			const data = 'data';
+			const id = 'id';
+			const initialLabel = 'first';
+			const changedLabel = 'now';
+			const layer = { label: initialLabel };
+			addLayer(id, layer);
+			const vgr = importVectorData(data, id, initialLabel, VectorSourceType.KML);
+
+			vgr.opacity = .5;
+			expect(store.getState().layers.active[0].label).toBe(initialLabel);
+			vgr.label = changedLabel;
+			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 
 		it('logs a warning and returns Null when sourceType is not available', async () => {
