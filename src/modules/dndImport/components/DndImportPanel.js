@@ -22,8 +22,8 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
-    * @override
-    */
+	* @override
+	*/
 	update(type, data, model) {
 		switch (type) {
 			case Update_Drag_Active:
@@ -32,8 +32,8 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
-    *@override
-    */
+	*@override
+	*/
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const getActiveClass = () => {
@@ -41,9 +41,7 @@ export class DndImportPanel extends MvuElement {
 		};
 
 		const stopRedirectAndDefaultHandler = (e) => {
-			if (e.stopPropagation) {
-				e.stopPropagation();
-			}
+			e.stopPropagation();
 			e.preventDefault();
 		};
 
@@ -83,7 +81,13 @@ export class DndImportPanel extends MvuElement {
 		};
 
 		return html`<style>${css}</style>
-		<div class='dropzone ${getActiveClass()}' @dragenter=${onDragEnter} @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>${translate('dndImport_import_textcontent')}</div>`;
+		<div class='droppanel' @dragenter=${onDragEnter} @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>
+			<div class='dropzone ${getActiveClass()}' >${translate('dndImport_import_textcontent')}</div>
+		</div>`;
+	}
+
+	static get tag() {
+		return 'ba-dnd-import-panel';
 	}
 
 	_importFile(dataTransfer) {
