@@ -3,7 +3,7 @@ import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/g
 import { MediaType } from '../../src/services/HttpService';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { detectVectorSourceType, importVectorData, importVectorDataFromUrl } from '../../src/utils/import';
+import { defaultImportVectorDataOptions, detectVectorSourceType, importVectorData, importVectorDataFromUrl } from '../../src/utils/import';
 import { TestUtils } from '../test-utils';
 
 
@@ -37,14 +37,17 @@ describe('provides util fuctions for importing data or services', () => {
 
 		it('returns a GeoResourceFuture', () => {
 			const url = 'http://my.url';
-			const id = 'id';
-			const label = 'label';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const geoResourceFuture = importVectorDataFromUrl(url, id, label, VectorSourceType.KML);
+			const geoResourceFuture = importVectorDataFromUrl(url, options);
 
-			expect(geoResourceFuture.id).toBe(id);
-			expect(geoResourceFuture.label).toBe(label);
+			expect(geoResourceFuture.id).toBe(options.id);
+			expect(geoResourceFuture.label).toBe(options.label);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -63,55 +66,60 @@ describe('provides util fuctions for importing data or services', () => {
 
 			it('loads the data and returns a VectorGeoresouce', async () => {
 				const url = 'http://my.url';
-				const id = 'id';
-				const label = 'label';
+				const options = {
+					id: 'id',
+					label: 'label',
+					sourceType: VectorSourceType.KML
+				};
 				const data = 'data';
-				const sourceType = VectorSourceType.KML;
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = importVectorDataFromUrl(url, id, label, sourceType);
+				const geoResourceFuture = importVectorDataFromUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
 
 				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.KML);
-				expect(vgr.label).toBe(label);
+				expect(vgr.label).toBe(options.label);
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 			});
 
 			it('updates the label property of a layer', async () => {
 				const url = 'http://my.url';
-				const id = 'id';
-				const initialLabel = 'first';
 				const changedLabel = 'now';
 				const data = 'data';
+				const options = {
+					id: 'id',
+					label: 'label',
+					sourceType: VectorSourceType.KML
+				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = importVectorDataFromUrl(url, id, initialLabel, MediaType.GeoJSON);
+				const geoResourceFuture = importVectorDataFromUrl(url, options);
 				const vgr = await geoResourceFuture.get();
-				const layer = { label: initialLabel };
-				addLayer(id, layer);
+				const layer = { label: options.label };
+				addLayer(options.id, layer);
 
 				vgr.opacity = .5;
-				expect(store.getState().layers.active[0].label).toBe(initialLabel);
+				expect(store.getState().layers.active[0].label).toBe(options.label);
 				vgr.label = changedLabel;
 				expect(store.getState().layers.active[0].label).toBe(changedLabel);
 			});
 
 
-			it('updates the label property of a layer after geoResouce has been loaded', async () => {
+			it('loads the data and returns a VectorGeoresouce automatically setting id, label and sourceType', async () => {
 				const url = 'http://my.url';
-				const id = undefined;
-				const label = undefined;
 				const data = 'data';
-				const sourceType = undefined;
 				const mediaType = MediaType.GeoJSON;
 				const detectVectorSourceTypeFunction = jasmine.createSpy().withArgs(data, mediaType).and.returnValue(VectorSourceType.GEOJSON);
+				const options = {
+					detectVectorSourceTypeFunction: detectVectorSourceTypeFunction
+				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -120,7 +128,7 @@ describe('provides util fuctions for importing data or services', () => {
 						})
 					})
 				));
-				const geoResourceFuture = importVectorDataFromUrl(url, id, label, sourceType, detectVectorSourceTypeFunction);
+				const geoResourceFuture = importVectorDataFromUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -135,14 +143,16 @@ describe('provides util fuctions for importing data or services', () => {
 
 			it('throws an error when response is not ok', async (done) => {
 				const url = 'http://my.url';
-				const id = 'id';
-				const label = 'label';
-				const sourceType = VectorSourceType.KML;
+				const options = {
+					id: 'id',
+					label: 'label',
+					sourceType: VectorSourceType.KML
+				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(null, { status: 404 })
 				));
-				const geoResourceFuture = importVectorDataFromUrl(url, id, label, sourceType);
+				const geoResourceFuture = importVectorDataFromUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();
@@ -156,15 +166,16 @@ describe('provides util fuctions for importing data or services', () => {
 
 			it('throws an error when sourceType is not available', async (done) => {
 				const url = 'http://my.url';
-				const id = 'id';
-				const label = 'label';
 				const data = 'data';
-				const sourceType = null;
+				const options = {
+					id: 'id',
+					label: 'label'
+				};
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = importVectorDataFromUrl(url, id, label, sourceType);
+				const geoResourceFuture = importVectorDataFromUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();
@@ -182,14 +193,17 @@ describe('provides util fuctions for importing data or services', () => {
 
 		it('returns a VectorGeoResource', () => {
 			const data = 'data';
-			const id = 'id';
-			const label = 'label';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const vgr = importVectorData(data, id, label, VectorSourceType.KML);
+			const vgr = importVectorData(data, options);
 
-			expect(vgr.id).toBe(id);
-			expect(vgr.label).toBe(label);
+			expect(vgr.id).toBe(options.id);
+			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
@@ -199,8 +213,11 @@ describe('provides util fuctions for importing data or services', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const detectVectorSourceTypeFunction = jasmine.createSpy().withArgs(data).and.returnValue(VectorSourceType.GEOJSON);
+			const options = {
+				detectVectorSourceTypeFunction: detectVectorSourceTypeFunction
+			};
 
-			const vgr = importVectorData(data, undefined, undefined, undefined, detectVectorSourceTypeFunction);
+			const vgr = importVectorData(data, options);
 
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
@@ -214,15 +231,18 @@ describe('provides util fuctions for importing data or services', () => {
 
 		it('updates the label property of a layer', async () => {
 			const data = 'data';
-			const id = 'id';
-			const initialLabel = 'first';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: VectorSourceType.KML
+			};
 			const changedLabel = 'now';
-			const layer = { label: initialLabel };
-			addLayer(id, layer);
-			const vgr = importVectorData(data, id, initialLabel, VectorSourceType.KML);
+			const layer = { label: options.label };
+			addLayer(options.id, layer);
+			const vgr = importVectorData(data, options);
 
 			vgr.opacity = .5;
-			expect(store.getState().layers.active[0].label).toBe(initialLabel);
+			expect(store.getState().layers.active[0].label).toBe(options.label);
 			vgr.label = changedLabel;
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
@@ -231,8 +251,11 @@ describe('provides util fuctions for importing data or services', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const warnSpy = spyOn(console, 'warn');
+			const options = {
+				detectVectorSourceType: () => null
+			};
 
-			const vgr = importVectorData(data, undefined, undefined, undefined, () => null);
+			const vgr = importVectorData(data, options);
 
 			expect(vgr).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('SourceType could not be detected');
@@ -258,10 +281,20 @@ describe('provides util fuctions for importing data or services', () => {
 
 		});
 
-
 		it('returns null when type can not be detected', async () => {
 			expect(detectVectorSourceType('foo')).toBeNull();
 			expect(detectVectorSourceType(JSON.stringify({ some: 'foo' }))).toBeNull();
+		});
+	});
+
+	describe('defaultImportVectorDataOptions', () => {
+
+		it('contains following properties', async () => {
+			expect(Object.keys(defaultImportVectorDataOptions)).toHaveSize(4);
+			expect(defaultImportVectorDataOptions.id).toEqual(jasmine.any(String));
+			expect(defaultImportVectorDataOptions.detectVectorSourceTypeFunction).toEqual(detectVectorSourceType);
+			expect(defaultImportVectorDataOptions.label).toBeNull();
+			expect(defaultImportVectorDataOptions.sourceType).toBeNull();
 		});
 	});
 });
