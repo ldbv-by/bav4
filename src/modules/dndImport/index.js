@@ -1,6 +1,6 @@
 import './i18n';
-import { DnDImportPanel } from './components/DndImportPanel';
+import { DndImportPanel } from './components/DndImportPanel';
 
-if (!window.customElements.get(DnDImportPanel.tag)) {
-    window.customElements.define(DnDImportPanel.tag, DnDImportPanel);
+if (!window.customElements.get(DndImportPanel.tag)) {
+	window.customElements.define(DndImportPanel.tag, DndImportPanel);
 }

@@ -11,33 +11,33 @@ const Update_Drag_Active = 'update_drag_active';
  */
 export class DndImportPanel extends MvuElement {
 
-    constructor() {
-        super({
-            isDragActive: false
-        });
-        const { TranslationService } = $injector.inject('TranslationService');
-        this._translationService = TranslationService;
-    }
+	constructor() {
+		super({
+			isDragActive: false
+		});
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
+	}
 
-    /**
+	/**
  * @override
  */
-    update(type, data, model) {
-        switch (type) {
-            case Update_Drag_Active:
-                return { ...model, isDragActive: data };
-        }
-    }
+	update(type, data, model) {
+		switch (type) {
+			case Update_Drag_Active:
+				return { ...model, isDragActive: data };
+		}
+	}
 
-    /**
+	/**
  *@override
  */
-    createView(model) {
+	createView(model) {
 
-        const getActiveClass = () => {
-            return model.isDragActive ? 'is-active' : 'is-hidden';
-        };
-        return html`<style>${css}</style>
+		const getActiveClass = () => {
+			return model.isDragActive ? 'is-active' : 'is-hidden';
+		};
+		return html`<style>${css}</style>
 		<div class='dropzone ${getActiveClass()}' ></div>`;
-    }
+	}
 }
