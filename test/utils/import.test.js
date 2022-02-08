@@ -290,11 +290,11 @@ describe('provides util fuctions for importing data or services', () => {
 	describe('defaultImportVectorDataOptions', () => {
 
 		it('contains following properties', async () => {
-			expect(Object.keys(defaultImportVectorDataOptions)).toHaveSize(4);
-			expect(defaultImportVectorDataOptions.id).toEqual(jasmine.any(String));
-			expect(defaultImportVectorDataOptions.detectVectorSourceTypeFunction).toEqual(detectVectorSourceType);
-			expect(defaultImportVectorDataOptions.label).toBeNull();
-			expect(defaultImportVectorDataOptions.sourceType).toBeNull();
+			expect(Object.keys(defaultImportVectorDataOptions())).toHaveSize(4);
+			expect(defaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
+			expect(defaultImportVectorDataOptions().detectVectorSourceTypeFunction).toEqual(detectVectorSourceType);
+			expect(defaultImportVectorDataOptions().label).toBeNull();
+			expect(defaultImportVectorDataOptions().sourceType).toBeNull();
 		});
 	});
 });
