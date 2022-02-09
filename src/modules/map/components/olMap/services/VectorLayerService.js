@@ -4,6 +4,7 @@ import { $injector } from '../../../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON } from 'ol/format';
 import { unByKey } from 'ol/Observable';
+import VectorLayer from 'ol/layer/Vector';
 
 
 
@@ -32,12 +33,12 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 
 
 /**
- * Service that imports vector data from internal and external geoResources.
- * Specific stylings will be applied if required.
+ * Service that creates an ol VectorLayer from a VectorGeoResource
+ * and applies specific stylings if required.
  * @class
  * @author taulinger
  */
-export class VectorImportService {
+export class VectorLayerService {
 
 	_updateStyle(olFeature, olLayer, olMap) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
@@ -86,7 +87,7 @@ export class VectorImportService {
 	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	applyStyles(olVectorLayer, olMap) {
+	_applyStyles(olVectorLayer, olMap) {
 
 		/**
 		 * We check if an added features needs a specifig styling,
@@ -109,12 +110,30 @@ export class VectorImportService {
 	}
 
 	/**
-	 * Builds an ol VectorSource from an internal VectorGeoResource
+	 * Builds an ol VectorLayer from an VectorGeoResource
+	 * @param {VectorGeoResource} vectorGeoResource
+	 * @param {OlMap} olMap
+	 * @returns olVectorLayer
+	 */
+	createVectorLayer(vectorGeoResource, olMap) {
+
+		const vectorLayer = new VectorLayer({
+			id: vectorGeoResource.id
+		});
+		const vectorSource = vectorGeoResource.url
+			? this._vectorSourceForUrl(vectorGeoResource)
+			: this._vectorSourceForData(vectorGeoResource);
+		vectorLayer.setSource(vectorSource);
+		return this._applyStyles(vectorLayer, olMap);
+	}
+
+	/**
+	 * Builds an ol VectorSource from an VectorGeoResource
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromInternalData(geoResource) {
+	_vectorSourceForData(geoResource) {
 
 		const {
 			MapService: mapService
@@ -123,37 +142,32 @@ export class VectorImportService {
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
 
-		// here we use the Promise API for loading the source in an async manner
-		// eslint-disable-next-line promise/prefer-await-to-then
-		geoResource.getData().then(data => {
-			const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
-			const features = format.readFeatures(data);
+		const data = geoResource.data;
+		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
+		const features = format.readFeatures(data);
 
-			// If we know a better name for the geoResource now, we update the label
-			switch (geoResource.sourceType) {
-				case VectorSourceType.KML:
-					geoResource.label = format.readName(data) || geoResource.label;
-					break;
-			}
-			features.forEach(f => {
-				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid);
-				f.set('srid', destinationSrid, true);
-			});
-			vectorSource.addFeatures(features);
-		}, reason => {
-			console.warn(reason);
+		// If we know a better name for the geoResource now, we update the label
+		switch (geoResource.sourceType) {
+			case VectorSourceType.KML:
+				geoResource.label = format.readName(data) || geoResource.label;
+				break;
+		}
+		features.forEach(f => {
+			f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid);
+			f.set('srid', destinationSrid, true);
 		});
+		vectorSource.addFeatures(features);
 		return vectorSource;
 	}
 
 	/**
 	 *
-	 * Builds an ol VectorSource from an external VectorGeoResource
+	 * Builds an ol VectorSource from an  VectorGeoResource
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
 	 */
-	vectorSourceFromExternalData(geoResource) {
+	_vectorSourceForUrl(geoResource) {
 		const { UrlService: urlService } = $injector.inject('UrlService');
 		const source = new VectorSource({
 			url: urlService.proxifyInstant(geoResource.url),

@@ -8,6 +8,7 @@ import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
 
 
+
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
@@ -206,19 +207,21 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 
 const getRulerStyle = () => {
 
-	return new Style({ renderer: (pixelCoordinates, state) => {
-		const renderContext = toContext(state.context, { pixelRatio: 1 });
-		const renderToContext = (geometry, fill, stroke) => {
-			renderContext.setFillStrokeStyle(fill, stroke);
-			renderContext.drawGeometry(geometry);
-		};
-		renderRulerSegments(pixelCoordinates, state, renderToContext);
-	} });
+	return new Style({
+		renderer: (pixelCoordinates, state) => {
+			const renderContext = toContext(state.context, { pixelRatio: 1 });
+			const renderToContext = (geometry, fill, stroke) => {
+				renderContext.setFillStrokeStyle(fill, stroke);
+				renderContext.drawGeometry(geometry);
+			};
+			renderRulerSegments(pixelCoordinates, state, renderToContext);
+		}
+	});
 };
 
 export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) => {
 	const geometry = state.geometry.clone();
-	const resolution = 	state.resolution;
+	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
 
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
@@ -231,7 +234,8 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
 		color: Red_Color.concat([1]),
-		width: 3 * pixelRatio });
+		width: 3 * pixelRatio
+	});
 
 	const getMainTickStroke = (residual, partitionTickDistance) => {
 		return new Stroke({
@@ -281,10 +285,12 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 
 
 /**
+ * StyleFunction for measurement-feature
+ *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {*} feature
- * @param {*} resolution
- * @returns
+ * @param {Feature} feature the feature to be styled
+ * @param {number} resolution the resolution of the Map-View
+ * @returns {Array<Style>} the measurement styles for the specified feature
  */
 export const measureStyleFunction = (feature, resolution) => {
 
@@ -294,13 +300,14 @@ export const measureStyleFunction = (feature, resolution) => {
 	});
 
 	const getFallbackStyle = () => {
-		return	new Style({
+		return new Style({
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				fill: new Fill({
 					color: Red_Color.concat([0.4])
 				}),
-				width: 2 })
+				width: 2
+			})
 		});
 	};
 	const styles = [

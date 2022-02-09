@@ -1,4 +1,3 @@
-import { isPromise } from '../../utils/checks';
 import { getDefaultAttribution } from '../provider/attribution.provider';
 
 
@@ -156,25 +155,25 @@ export class GeoResourceFuture extends GeoResource {
 	constructor(id, loader, label = '') {
 		super(id, label);
 		this._loader = loader;
-		this._onResolve = () => { };
-		this._onReject = () => { };
+		this._onResolve = [];
+		this._onReject = [];
 	}
 
 	/**
-	 * Register a function called when the loader function resolved.
-	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`
-	 * @param {function (GeoResouce, GeoResourceFuture)} callback
+	 * Registers a function called when the loader resolves.
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
+	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
-		this._onResolve = callback;
+		this._onResolve.push(callback);
 	}
 
 	/**
-	 * Register a function called when the loader function rejected.
+	 * Registers a function called when the loader function rejected.
 	 * @param {function (GeoResourceFuture)} callback
 	 */
 	onReject(callback) {
-		this._onReject = callback;
+		this._onReject.push(callback);
 	}
 
 	/**
@@ -191,12 +190,12 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	async get() {
 		try {
-			const realGeoResource = await this._loader(this.id);
-			this._onResolve(realGeoResource, this);
-			return realGeoResource;
+			const resolvedGeoResource = await this._loader(this.id);
+			this._onResolve.forEach(f => f(resolvedGeoResource, this));
+			return resolvedGeoResource;
 		}
 		catch (error) {
-			this._onReject(this);
+			this._onReject.forEach(f => f(this));
 			throw error;
 		}
 	}
@@ -266,18 +265,6 @@ export const VectorSourceType = Object.freeze({
 });
 
 
-/**
- * Loads the data for VectorGeoResources.
- * @callback VectorGeoResourceLoader
- * @returns {Promise<VectorGeoResourceLoadResult>} load result
- */
-
-/**
- * @typedef {Object} VectorGeoResourceLoadResult
- * @property {string} data The raw data of a VectorGeoResource
- * @property {VectorSourceType} sourceType The source type of the data
- * @property {number} srid The srid of the data
- */
 
 /**
  * GeoResource for vector data.
@@ -301,39 +288,8 @@ export class VectorGeoResource extends GeoResource {
 		return this._sourceType;
 	}
 
-	/**
-	 * Loads and caches the data, additionally updates the source type and srid of this Georesource
-	 * based on the result of the loader.
-	 * @returns {Promise<string>}
-	 * @private
-	 */
-	async _load() {
-		if (!this._data) {
-			const { sourceType, data, srid } = await this._loader();
-			this._sourceType = sourceType;
-			this._data = data;
-			this._srid = srid;
-		}
+	get data() {
 		return this._data;
-	}
-
-	/**
-	 * Gets the data of this 'internal' GeoResource.
-	 * If the GeoResource has a loader, it will be used to load the data and determine the source type.
-	 * If the data object is a Promise, it will be resolved
-	 * and the resolved data will be cached internally.
-	 * @returns {Promise<string>} data
-	 */
-	async getData() {
-		if (this._loader) {
-			return await this._load();
-		}
-
-		if (!isPromise(this._data)) {
-			return this._data;
-		}
-		//cache the data
-		return this._data = await Promise.resolve(this._data);
 	}
 
 	get srid() {
@@ -355,28 +311,13 @@ export class VectorGeoResource extends GeoResource {
 	/**
 	 * Sets the source of this 'internal' GeoResource.
 	 * @param {Promise<string>|string} data
-	 * @param {number} srid
+	 * @param {number} srid of the data
 	 * @returns `this` for chaining
 	 */
 	setSource(data, srid) {
 		this._url = null;
 		this._data = data;
 		this._srid = srid;
-		return this;
-	}
-
-
-	/**
-	 * Sets the loader of this 'internal' GeoResource.
-	 * @param {VectorGeoResourceLoader} loader
-	 * @returns `this` for chaining
-	 */
-	setLoader(loader) {
-		this._sourceType = null;
-		this._url = null;
-		this._data = null;
-		this._srid = null;
-		this._loader = loader;
 		return this;
 	}
 
@@ -408,3 +349,23 @@ export class AggregateGeoResource extends GeoResource {
 		return GeoResourceTypes.AGGREGATE;
 	}
 }
+
+
+/**
+ * Returns an observable GeoResource.
+ * All of its fields can be observed for changes.
+ * @param {GeoResource} geoResource
+ * @param {function (property, value)} onChange callback function
+ * @returns proxified GeoResource
+ */
+export const observable = (geoResource, onChange) => {
+
+	return new Proxy(geoResource, {
+		set: function (target, prop, value) {
+			if (Object.keys(target).includes(prop) && target[prop] !== value) {
+				onChange(prop, value);
+			}
+			return Reflect.set(...arguments);
+		}
+	});
+};
