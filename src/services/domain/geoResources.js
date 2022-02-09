@@ -155,25 +155,25 @@ export class GeoResourceFuture extends GeoResource {
 	constructor(id, loader, label = '') {
 		super(id, label);
 		this._loader = loader;
-		this._onResolve = () => { };
-		this._onReject = () => { };
+		this._onResolve = [];
+		this._onReject = [];
 	}
 
 	/**
-	 * Register a function called when the loader function resolved.
-	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`
-	 * @param {function (GeoResouce, GeoResourceFuture)} callback
+	 * Registers a function called when the loader resolves.
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
+	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
-		this._onResolve = callback;
+		this._onResolve.push(callback);
 	}
 
 	/**
-	 * Register a function called when the loader function rejected.
+	 * Registers a function called when the loader function rejected.
 	 * @param {function (GeoResourceFuture)} callback
 	 */
 	onReject(callback) {
-		this._onReject = callback;
+		this._onReject.push(callback);
 	}
 
 	/**
@@ -190,12 +190,12 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	async get() {
 		try {
-			const realGeoResource = await this._loader(this.id);
-			this._onResolve(realGeoResource, this);
-			return realGeoResource;
+			const resolvedGeoResource = await this._loader(this.id);
+			this._onResolve.forEach(f => f(resolvedGeoResource, this));
+			return resolvedGeoResource;
 		}
 		catch (error) {
-			this._onReject(this);
+			this._onReject.forEach(f => f(this));
 			throw error;
 		}
 	}
@@ -349,3 +349,23 @@ export class AggregateGeoResource extends GeoResource {
 		return GeoResourceTypes.AGGREGATE;
 	}
 }
+
+
+/**
+ * Returns an observable GeoResource.
+ * All of its fields can be observed for changes.
+ * @param {GeoResource} geoResource
+ * @param {function (property, value)} onChange callback function
+ * @returns proxified GeoResource
+ */
+export const observable = (geoResource, onChange) => {
+
+	return new Proxy(geoResource, {
+		set: function (target, prop, value) {
+			if (Object.keys(target).includes(prop) && target[prop] !== value) {
+				onChange(prop, value);
+			}
+			return Reflect.set(...arguments);
+		}
+	});
+};
