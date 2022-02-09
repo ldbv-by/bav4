@@ -111,10 +111,7 @@ describe('OlMap', () => {
 		}
 	};
 
-	const vectorImportServiceMock = {
-		vectorSourceFromInternalData: () => { },
-		vectorSourceFromExternalData: () => { }
-	};
+	const vectorLayerServiceMock = {};
 
 	let store;
 
@@ -150,7 +147,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
-			.registerSingleton('VectorImportService', vectorImportServiceMock)
+			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
 		return TestUtils.render(OlMap.tag);
