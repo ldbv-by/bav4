@@ -90,14 +90,14 @@ export class Survey extends MvuElement {
 							<div class='survey__notification-section'>
 								<i class='survey__notification-icon'></i>
 								<div>
-									<div class='survey__notification-primary-text' >Umfrage</div>
-									<div class='survey__notification-secondary-text' >Weleche Funktionen wünschen Sie sich für den neuen Bayernatlas?</div>
+									<div class='survey__notification-primary-text' >${translate('survey_notification_header')}</div>
+									<div class='survey__notification-secondary-text' >${translate('survey_notification_text')}</div>
 								</div>
 							</div>
 							<div class='survey__notification-section space-evenly'>							
 								<ba-button id='button1' .label=${'Nein Danke'} @click=${onClose}></ba-button>
-								<a target='_blank' href='https://www.ldbv.bayern.de/vermessung/bvv.html' @click=${onClose} class="survey__notification-link ">
-									Mitmachen
+								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link ">
+									${translate('survey_notification_open')}
 								</a>
 							</div>
 						</div>`;
@@ -114,8 +114,8 @@ export class Survey extends MvuElement {
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
 				<div class='survey__button ${getOverlayClass()}'>				
 					<i class='survey__button-icon'></i>
-					<a target='_blank' href='https://www.ldbv.bayern.de/vermessung/bvv.html' class="survey__link">
-						<span class="survey__button-text">${translate('survey_feedback')}</span>
+					<a target='_blank' href='${translate('survey_link')}' class="survey__link">
+						<span class="survey__button-text">${translate('survey_button')}</span>
 					</a>						
 				</div>		
 			</div>		
