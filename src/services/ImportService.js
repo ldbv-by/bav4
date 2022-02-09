@@ -101,6 +101,5 @@ export class ImportService {
 		console.warn(`SourceType for '${id}' could not be detected`);
 		return null;
 	}
-
 }
 
