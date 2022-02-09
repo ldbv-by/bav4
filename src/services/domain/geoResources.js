@@ -160,9 +160,8 @@ export class GeoResourceFuture extends GeoResource {
 	}
 
 	/**
-	 * Register a function called when the loader function resolved.
-	 * The callback function will be called with two arguments: the loaded `GeoResource`, and the current `GeoResourceFuture`.
-	 * if the callback wants to modify the GeoResource, it can return it afterwards.
+	 * Registers a function called when the loader resolves.
+	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
 	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
@@ -170,7 +169,7 @@ export class GeoResourceFuture extends GeoResource {
 	}
 
 	/**
-	 * Register a function called when the loader function rejected.
+	 * Registers a function called when the loader function rejected.
 	 * @param {function (GeoResourceFuture)} callback
 	 */
 	onReject(callback) {
