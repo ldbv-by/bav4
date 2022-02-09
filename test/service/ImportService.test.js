@@ -132,14 +132,11 @@ describe('ImportService', () => {
 			});
 
 			it('loads the data and returns a VectorGeoresouce automatically setting id, label and sourceType', async () => {
-				const instanceUnderTest = setup();
 				const url = 'http://my.url';
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
 				const detectVectorSourceTypeFunction = jasmine.createSpy().withArgs(data, mediaType).and.returnValue(VectorSourceType.GEOJSON);
-				const options = {
-					detectVectorSourceTypeFunction: detectVectorSourceTypeFunction
-				};
+				const instanceUnderTest = setup(detectVectorSourceTypeFunction);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -148,7 +145,7 @@ describe('ImportService', () => {
 						})
 					})
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -233,15 +230,12 @@ describe('ImportService', () => {
 		});
 
 		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
-			const instanceUnderTest = setup();
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const detectVectorSourceTypeFunction = jasmine.createSpy().withArgs(data).and.returnValue(VectorSourceType.GEOJSON);
-			const options = {
-				detectVectorSourceTypeFunction: detectVectorSourceTypeFunction
-			};
+			const instanceUnderTest = setup(detectVectorSourceTypeFunction);
 
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.importVectorData(data);
 
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
@@ -294,9 +288,8 @@ describe('ImportService', () => {
 
 		it('contains following properties', async () => {
 			const instanceUnderTest = setup();
-			expect(Object.keys(instanceUnderTest._newDefaultImportVectorDataOptions())).toHaveSize(4);
+			expect(Object.keys(instanceUnderTest._newDefaultImportVectorDataOptions())).toHaveSize(3);
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
-			expect(instanceUnderTest._newDefaultImportVectorDataOptions().detectVectorSourceTypeFunction).toEqual(detectVectorSourceType);
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().label).toBeNull();
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
 		});

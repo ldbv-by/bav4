@@ -29,8 +29,7 @@ export class ImportService {
 		return {
 			id: createUniqueId().toString(),
 			label: null,
-			sourceType: null,
-			detectVectorSourceTypeFunction: this._vectorSourceTypeProvider
+			sourceType: null
 		};
 	}
 
@@ -42,7 +41,7 @@ export class ImportService {
 	* @returns VectorGeoresouce
 	*/
 	importVectorDataFromUrl(url, options = {}) {
-		const { id, label, sourceType, detectVectorSourceTypeFunction } = { ...this._newDefaultImportVectorDataOptions(), ...options };
+		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const loader = async id => {
 
@@ -51,7 +50,7 @@ export class ImportService {
 
 			if (result.ok) {
 				const data = await result.text();
-				const resultingSourceType = sourceType ?? detectVectorSourceTypeFunction(data, result.headers.get('Content-Type'));
+				const resultingSourceType = sourceType ?? this._vectorSourceTypeProvider(data, result.headers.get('Content-Type'));
 				if (resultingSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
 						(prop, value) => {
@@ -80,9 +79,9 @@ export class ImportService {
 	 * @returns VectorGeoresouce or `null` when no VectorGeoresouce could be created
 	 */
 	importVectorData(data, options) {
-		const { id, label, sourceType, detectVectorSourceTypeFunction } = { ...this._newDefaultImportVectorDataOptions(), ...options };
+		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = sourceType ?? detectVectorSourceTypeFunction(data);
+		const resultingSourceType = sourceType ?? this._vectorSourceTypeProvider(data);
 		if (resultingSourceType) {
 			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
 				if (prop === '_label') {
