@@ -22,7 +22,7 @@ export class ImportService {
 	}
 
 	/**
-    * Returns default vector data import options
+    * Returns default vector data import options.
     * @returns VectorDataImportOptions
     */
 	_newDefaultImportVectorDataOptions() {
