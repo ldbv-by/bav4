@@ -8,11 +8,6 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
-import { importVectorDataFromUrl } from '../../../../utils/import';
-
-
-
-
 
 /**
  * Displays a showcase of common and reusable components or
@@ -25,11 +20,11 @@ export class ShowCase extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, ShareService, UrlService, GeoResourceService, FileStorageService }
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'GeoResourceService', 'FileStorageService');
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportService }
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'FileStorageService', 'ImportService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
-		this._geoResourceService = GeoResourceService;
+		this._importService = ImportService;
 		this._urlService = UrlService;
 		this._shareService = ShareService;
 		this._icons = [];
@@ -45,7 +40,7 @@ export class ShowCase extends BaElement {
 
 		const onClick0 = async () => {
 
-			const geoResourceFuture = importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			const geoResourceFuture = this._importService.importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			geoResourceFuture.onReject(() => console.warn('Oops, something got wrong'));
 			const { id, label } = geoResourceFuture;
 			addLayer(id, { label: label });
