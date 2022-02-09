@@ -20,7 +20,6 @@ describe('ImportService', () => {
 	};
 	let store;
 
-
 	const setup = (detectVectorSourceTypeProvider) => {
 		store = TestUtils.setupStoreAndDi({}, {
 			layers: layersReducer
@@ -32,8 +31,6 @@ describe('ImportService', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return new ImportService(detectVectorSourceTypeProvider);
 	};
-
-
 
 	describe('constructor', () => {
 
@@ -304,5 +301,4 @@ describe('ImportService', () => {
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
 		});
 	});
-
 });
