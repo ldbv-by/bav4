@@ -1,9 +1,11 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import css from './dndImportPanel.css';
+import { classMap } from 'lit-html/directives/class-map.js';
 
-const Update_Drag_Active = 'update_drag_active';
+const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
 const DragAndDropTypesMimeTypeText = 'text/plain';
 
@@ -15,7 +17,8 @@ export class DndImportPanel extends MvuElement {
 
 	constructor() {
 		super({
-			isDragActive: false
+			dropzoneContent: null,
+			isActive: false
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
@@ -26,8 +29,8 @@ export class DndImportPanel extends MvuElement {
 	*/
 	update(type, data, model) {
 		switch (type) {
-			case Update_Drag_Active:
-				return { ...model, isDragActive: data };
+			case Update_DropZone_Content:
+				return { ...model, dropzoneContent: data, isActive: data !== null };
 		}
 	}
 
@@ -36,10 +39,6 @@ export class DndImportPanel extends MvuElement {
 	*/
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const getActiveClass = () => {
-			return model.isDragActive ? 'is-active' : 'is-hidden';
-		};
-
 		const stopRedirectAndDefaultHandler = (e) => {
 			e.stopPropagation();
 			e.preventDefault();
@@ -48,20 +47,24 @@ export class DndImportPanel extends MvuElement {
 		const onDragEnter = (e) => {
 			stopRedirectAndDefaultHandler(e);
 			const types = e.dataTransfer.types || [];
-			const isImport = (types) => types.some(t => /(files|text\/plain)/i.test(t));
-			if (isImport(types)) {
-				this.signal(Update_Drag_Active, true);
-			}
+			const importType = types.find(t => /(files|text\/plain)/i.test(t));
 
+			if (importType) {
+				const content = importType === DragAndDropTypesMimeTypeText ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
+				this.signal(Update_DropZone_Content, content);
+			}
 		};
+
 		const onDragOver = (e) => {
 			stopRedirectAndDefaultHandler(e);
 		};
 		const onDragLeave = (e) => {
 			stopRedirectAndDefaultHandler(e);
-			this.signal(Update_Drag_Active, false);
+			this.signal(Update_DropZone_Content, null);
 		};
+
 		const onDrop = (e) => {
+			stopRedirectAndDefaultHandler(e);
 			const types = e.dataTransfer.types || [];
 			types.forEach(type => {
 				switch (type) {
@@ -72,18 +75,21 @@ export class DndImportPanel extends MvuElement {
 						this._importText(e.dataTransfer);
 						break;
 					default:
-						console.warn('No valid data in drop-object');
+						emitNotification(translate('dndImport_import_unknown'), LevelTypes.WARN);
 				}
-
 			});
+			this.signal(Update_DropZone_Content, null);
+		};
 
-			this.signal(Update_Drag_Active, false);
+		document.addEventListener('dragenter', onDragEnter);
+
+		const activeClass = {
+			is_active: model.isActive
 		};
 
 		return html`<style>${css}</style>
-		<div class='droppanel' @dragenter=${onDragEnter} @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>
-			<div class='dropzone ${getActiveClass()}' >${translate('dndImport_import_textcontent')}</div>
-		</div>`;
+		<div id='dropzone' class='dropzone ${classMap(activeClass)}' @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>${model.dropzoneContent ? model.dropzoneContent : nothing}</div>
+		`;
 	}
 
 	static get tag() {
@@ -91,16 +97,29 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importFile(dataTransfer) {
+		const translate = (key) => this._translationService.translate(key);
 		const files = dataTransfer.files;
+		const readHead = async (file) => {
+			const textContent = await file.text();
+			return textContent.slice(0, 100);
+		};
 		if (files && 0 < files.length) {
-			Array.from(files).forEach(f => {
-				console.log('importing File', f);
+			Array.from(files).forEach(async f => {
+				try {
+					const textContent = await readHead(f) + '...';
+					emitNotification(html`<b>Importing File:</b><br> 
+					<i>${textContent}</i>`, LevelTypes.INFO);
+				}
+				catch (error) {
+					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
+				}
+
 			});
 		}
 	}
 
 	_importText(dataTransfer) {
 		const textData = dataTransfer.getData(DragAndDropTypesMimeTypeText);
-		console.log('importing Text-Content:', textData);
+		emitNotification(html`<b>Importing Text-Content:</b> <i>'${textData}'</i>`, LevelTypes.INFO);
 	}
 }
