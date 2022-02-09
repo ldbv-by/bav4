@@ -3,6 +3,7 @@ import { $injector } from '../../../injection';
 import css from './survey.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { NotificationItem } from '../../notifications/components/NotificationItem';
 
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -20,7 +21,7 @@ export class Survey extends MvuElement {
 			hasMinWidth: false,
 			isOpen: false,
 			hasBeenVisible: false,
-			timeout: 3000
+			timeout: 10000
 		});
 
 		const {
@@ -78,8 +79,11 @@ export class Survey extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 
-		const onClickEmitCustom = () => {
+		const showNotification = () => {
 			const getContent = () => {
+				const onClose = (e) => {
+					e.path.find(element => element instanceof NotificationItem).close();
+				};
 				return html`
 						<style>${css}</style>	
 						<div class='survey__notification'>					
@@ -91,15 +95,17 @@ export class Survey extends MvuElement {
 								</div>
 							</div>
 							<div class='survey__notification-section space-evenly'>							
-								<ba-button id='button1' .label=${'Nein Danke'} ></ba-button>
-								<ba-button id='button0' .label=${'Mitmachen'}  ></ba-button>
+								<ba-button id='button1' .label=${'Nein Danke'} @click=${onClose}></ba-button>
+								<a target='_blank' href='https://www.ldbv.bayern.de/vermessung/bvv.html' @click=${onClose} class="survey__notification-link ">
+									Mitmachen
+								</a>
 							</div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
 		if (!hasBeenVisible) {
-			window.setTimeout(() => onClickEmitCustom(), timeout);
+			window.setTimeout(() => showNotification(), timeout);
 			this.signal(Update_HasBeenVisible, true);
 		}
 
@@ -108,7 +114,7 @@ export class Survey extends MvuElement {
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
 				<div class='survey__button ${getOverlayClass()}'>				
 					<i class='survey__button-icon'></i>
-					<a target='_blank' href='#' class="survey__link">
+					<a target='_blank' href='https://www.ldbv.bayern.de/vermessung/bvv.html' class="survey__link">
 						<span class="survey__button-text">${translate('survey_feedback')}</span>
 					</a>						
 				</div>		

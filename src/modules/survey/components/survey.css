@@ -73,3 +73,20 @@
 .space-evenly {
 	justify-content: space-evenly;
 }
+
+a.survey__notification-link {
+    background-color: var(--primary-bg-color);
+	color:var(--primary-color);
+	cursor: pointer;
+	padding: .8em 1em;
+	background: transparent;
+	border: none;
+	font-weight: bold;   
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
+    text-decoration: none;
+}
+
+a.survey__notification-link:hover {
+	background-color: var(--primary-color);
+	color: var(--primary-bg-color);
+}

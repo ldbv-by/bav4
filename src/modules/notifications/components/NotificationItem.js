@@ -110,4 +110,8 @@ export class NotificationItem extends MvuElement {
 		return this._onClose;
 	}
 
+	get close() {
+		return this._hide();
+	}
+
 }
