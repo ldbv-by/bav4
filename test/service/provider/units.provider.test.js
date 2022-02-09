@@ -7,6 +7,7 @@ describe('Units provider', () => {
 		expect(distanceUnitsProvider(0, 0)).toBe('0 m');
 		expect(distanceUnitsProvider(0, 2)).toBe('0 m');
 		expect(distanceUnitsProvider(42, 0)).toBe('42 m');
+		expect(distanceUnitsProvider(42, 2)).toBe('42.00 m');
 		expect(distanceUnitsProvider(999, 0)).toBe('999 m');
 		expect(distanceUnitsProvider(1000, 0)).toBe('1 km');
 		expect(distanceUnitsProvider(1000, 2)).toBe('1.00 km');
@@ -33,6 +34,7 @@ describe('Units provider', () => {
 		expect(bvvDistanceUnitsProvider(0, 0)).toBe('0 m');
 		expect(bvvDistanceUnitsProvider(0, 2)).toBe('0 m');
 		expect(bvvDistanceUnitsProvider(42, 0)).toBe('42.0 m');
+		expect(bvvDistanceUnitsProvider(42, 2)).toBe('42.0 m');
 		expect(bvvDistanceUnitsProvider(999, 0)).toBe('999.0 m');
 		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1.0 km');
 		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1.0 km');
@@ -44,6 +46,8 @@ describe('Units provider', () => {
 
 	it('provides formatted area for bvv-metric system', () => {
 
+		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0.5 m&sup2;');
+		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
 		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m&sup2;');
 		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m&sup2;');
 		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1.000 km&sup2;');
