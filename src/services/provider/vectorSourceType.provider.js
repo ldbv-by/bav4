@@ -7,7 +7,7 @@ import { MediaType } from '../HttpService';
 /**
  * A function that tries to detect the source type for currently loaded vector data.
  *
- * @typedef {function(string, [string]) : (VectorSourceType|null)} vectorSourceType
+ * @typedef {function(string, string) : (VectorSourceType|null)} vectorSourceType
  */
 
 
