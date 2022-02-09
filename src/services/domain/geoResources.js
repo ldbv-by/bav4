@@ -353,8 +353,7 @@ export class AggregateGeoResource extends GeoResource {
 
 /**
  * Returns an observable GeoResource.
- * All of its accessible fields (fields that have a setter)
- * can be observed.
+ * All of its fields can be observed for changes.
  * @param {GeoResource} geoResource
  * @param {function (property, value)} onChange callback function
  * @returns proxified GeoResource
