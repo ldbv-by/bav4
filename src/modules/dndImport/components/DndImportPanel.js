@@ -49,10 +49,16 @@ export class DndImportPanel extends MvuElement {
 			const types = e.dataTransfer.types || [];
 			const importType = types.find(t => /(files|text\/plain)/i.test(t));
 
-			if (importType) {
+			const signalImport = (importType) => {
 				const content = importType === DragAndDropTypesMimeTypeText ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
 				this.signal(Update_DropZone_Content, content);
-			}
+			};
+			const signalNoImport = () => {
+				this.signal(Update_DropZone_Content, translate('dndImport_import_unknown'));
+			};
+
+			const importAction = importType ? signalImport : signalNoImport;
+			importAction(importType);
 		};
 
 		const onDragOver = (e) => {
@@ -74,8 +80,6 @@ export class DndImportPanel extends MvuElement {
 					case DragAndDropTypesMimeTypeText:
 						this._importText(e.dataTransfer);
 						break;
-					default:
-						emitNotification(translate('dndImport_import_unknown'), LevelTypes.WARN);
 				}
 			});
 			this.signal(Update_DropZone_Content, null);
@@ -103,19 +107,25 @@ export class DndImportPanel extends MvuElement {
 			const textContent = await file.text();
 			return textContent.slice(0, 100);
 		};
-		if (files && 0 < files.length) {
+		const handleFiles = (files) => {
 			Array.from(files).forEach(async f => {
 				try {
 					const textContent = await readHead(f) + '...';
 					emitNotification(html`<b>Importing File:</b><br> 
-					<i>${textContent}</i>`, LevelTypes.INFO);
+			<i>${textContent}</i>`, LevelTypes.INFO);
 				}
 				catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
 				}
-
 			});
-		}
+		};
+
+		const warnNoFileFound = () => {
+			emitNotification(translate('dndImport_import_no_file_found'), LevelTypes.WARN);
+		};
+
+		const importAction = files && 0 < files.length ? handleFiles : warnNoFileFound;
+		importAction(files);
 	}
 
 	_importText(dataTransfer) {
