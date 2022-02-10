@@ -13,6 +13,7 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 /**
 * Service for managing map related meta data.
 * @class
+* @author taulinger
 */
 export class MapService {
 

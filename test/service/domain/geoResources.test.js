@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable } from '../../../src/services/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
@@ -162,13 +162,13 @@ describe('GeoResource', () => {
 
 		it('returns the real GeoResource by calling loader', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
 
 			const geoResource = await future.get();
 
-			expect(geoResource).toEqual(expectdGeoResource);
+			expect(geoResource).toEqual(expectedGeoResource);
 		});
 
 		it('rejects when the loader rejects', async () => {
@@ -188,15 +188,15 @@ describe('GeoResource', () => {
 
 		it('calls the onResolve callback', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
 			const future = new GeoResourceFuture(id, loader);
 			future.onResolve(onResolveCallback);
 
 			await future.get();
 
-			expect(onResolveCallback).toHaveBeenCalledWith(expectdGeoResource, future);
+			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
 
 		it('calls the onReject callback', async () => {
@@ -303,5 +303,22 @@ describe('GeoResource', () => {
 			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
 		});
 
+	});
+
+	describe('observableGeoResource', () => {
+
+		it('observes changes', () => {
+
+			const modifiedLabel = 'modified';
+			const callback = jasmine.createSpy();
+			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
+
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.unknown = modifiedLabel;
+
+			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(wmtsGeoResource.label).toBe(modifiedLabel);
+		});
 	});
 });
