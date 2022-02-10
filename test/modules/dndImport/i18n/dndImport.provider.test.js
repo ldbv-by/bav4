@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/dndImport/i18n/featureInfo.provider';
+import { provide } from '../../../../src/modules/dndImport/i18n/dndImport.provider';
 
 
 describe('i18n for dndImport module', () => {

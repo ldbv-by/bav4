@@ -142,7 +142,6 @@ describe('FeatureInfoPanel', () => {
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
-
 				simulateDragDropEvent('dragover', dataTransferMock, dropZone, preventDefaultSpy, stopPropagationSpy);
 
 				expect(preventDefaultSpy).toHaveBeenCalled();
