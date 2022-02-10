@@ -4,10 +4,12 @@ import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { MediaType } from '../../../services/HttpService';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
-const DragAndDropTypesMimeTypeText = 'text/plain';
+
+const DragAndDropSupportedMimeTypes = [MediaType.TEXT_PLAIN, MediaType.GPX, MediaType.GeoJSON, MediaType.KML];
 
 /**
  * @class
@@ -50,7 +52,7 @@ export class DndImportPanel extends MvuElement {
 			const importType = types.find(t => /(files|text\/plain)/i.test(t));
 
 			const signalImport = (importType) => {
-				const content = importType === DragAndDropTypesMimeTypeText ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
+				const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
 				this.signal(Update_DropZone_Content, content);
 			};
 			const signalNoImport = () => {
@@ -77,7 +79,7 @@ export class DndImportPanel extends MvuElement {
 					case DragAndDropTypesMimeTypeFiles:
 						this._importFile(e.dataTransfer);
 						break;
-					case DragAndDropTypesMimeTypeText:
+					case MediaType.TEXT_PLAIN:
 						this._importText(e.dataTransfer);
 						break;
 				}
@@ -110,9 +112,18 @@ export class DndImportPanel extends MvuElement {
 		const handleFiles = (files) => {
 			Array.from(files).forEach(async f => {
 				try {
-					const textContent = await readHead(f) + '...';
-					emitNotification(html`<b>Importing File:</b><br> 
-			<i>${textContent}</i>`, LevelTypes.INFO);
+					const mimeType = f.type;
+					if (DragAndDropSupportedMimeTypes.includes(mimeType)) {
+						const textContent = await readHead(f) + '...';
+						emitNotification(html`<b>Importing File:</b><br><i>${textContent}</i>`, LevelTypes.INFO);
+					}
+					else if (!mimeType) {
+						emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
+					}
+					else {
+						emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+					}
+
 				}
 				catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
@@ -129,7 +140,7 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importText(dataTransfer) {
-		// todo: extract to utils or UrlService
+		// todo: extract to /utils/checks
 		// based on https://stackoverflow.com/a/43467144
 		const isValidHttpUrl = (urlCandidate) => {
 			const getUrl = (string) => {
@@ -145,7 +156,7 @@ export class DndImportPanel extends MvuElement {
 			return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
 		};
 
-		const textData = dataTransfer.getData(DragAndDropTypesMimeTypeText);
+		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 		const content = isValidHttpUrl(textData)
 			? html`<b>Importing File-Content:</b> <a href='${textData}' >'${textData}'</i>`
 			: html`<b>Importing Text-Content:</b> <i>'${textData}'</i>`;

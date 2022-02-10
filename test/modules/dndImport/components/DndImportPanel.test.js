@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
+import { MediaType } from '../../../../src/services/HttpService';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
@@ -132,6 +133,16 @@ describe('FeatureInfoPanel', () => {
 				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
 				expect(element.getModel().isActive).toBeTrue();
 			});
+
+			it('updates the model for a dragged but undefined types', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
+				const element = await setup();
+
+				simulateDragDropEvent('dragenter', dataTransferMock);
+
+				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
+				expect(element.getModel().isActive).toBeTrue();
+			});
 		});
 
 		describe('on dragover', () => {
@@ -221,8 +232,8 @@ describe('FeatureInfoPanel', () => {
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
-			it('emits a notification for a dropped file', async () => {
-				const fileMock = { text: () => 'foo' };
+			it('emits a notification for a dropped text-file', async () => {
+				const fileMock = { type: MediaType.TEXT_PLAIN, text: () => 'foo' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
@@ -234,8 +245,49 @@ describe('FeatureInfoPanel', () => {
 				});
 			});
 
+
+			it('emits a notification for a dropped kml-file', async () => {
+				const fileMock = { type: MediaType.KML, text: () => '<kml>foo</kml>' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<kml>foo</kml>...');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				});
+			});
+
+			it('emits a notification for a dropped gpx-file', async () => {
+				const fileMock = { type: MediaType.GPX, text: () => '<gpx>foo</gpx>' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<gpx>foo</gpx>...');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				});
+			});
+
+
+			it('emits a notification for a dropped geojson-file', async () => {
+				const fileMock = { type: MediaType.GeoJSON, text: () => '{type:foo}' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('{type:foo}...');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				});
+			});
+
 			it('emits a notification for a unreadable dropped file', async () => {
-				const fileMock = { text: () => {
+				const fileMock = { type: MediaType.KML, text: () => {
 					throw new Error('some') ;
 				} };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
@@ -260,6 +312,17 @@ describe('FeatureInfoPanel', () => {
 				});
 			});
 
+			it('does nothing for a empty dropped type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest).toBeUndefined();
+				});
+			});
+
 			it('emits a notification for a dropped but empty file', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [] };
 				const element = await setup();
@@ -269,6 +332,32 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+			});
+
+			it('emits a notification for a dropped but unsupported file', async () => {
+				const fileMock = { type: MediaType.TEXT_HTML, text: () => 'foo' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				});
+			});
+
+			it('emits a notification for a dropped but unknown file', async () => {
+				const fileMock = { type: '', text: () => 'foo' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 				});
 			});
 
