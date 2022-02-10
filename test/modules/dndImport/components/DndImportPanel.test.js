@@ -210,6 +210,18 @@ describe('FeatureInfoPanel', () => {
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
+			it('emits a notification for a dropped file as URL', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/baz' };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content.strings[0]).toContain('Importing File-Content');
+				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('https://foo.bar/baz');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			});
+
 			it('emits a notification for a dropped file', async () => {
 				const fileMock = { text: () => 'foo' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };

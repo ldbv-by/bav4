@@ -129,7 +129,27 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importText(dataTransfer) {
+		// todo: extract to utils or UrlService
+		// based on https://stackoverflow.com/a/43467144
+		const isValidHttpUrl = (urlCandidate) => {
+			const getUrl = (string) => {
+				try {
+					return new URL(string);
+				}
+				catch (_) {
+					return null;
+				}
+			};
+
+			const url = getUrl(urlCandidate);
+			return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
+		};
+
 		const textData = dataTransfer.getData(DragAndDropTypesMimeTypeText);
-		emitNotification(html`<b>Importing Text-Content:</b> <i>'${textData}'</i>`, LevelTypes.INFO);
+		const content = isValidHttpUrl(textData)
+			? html`<b>Importing File-Content:</b> <a href='${textData}' >'${textData}'</i>`
+			: html`<b>Importing Text-Content:</b> <i>'${textData}'</i>`;
+		emitNotification(content, LevelTypes.INFO);
 	}
+
 }
