@@ -117,9 +117,7 @@ export class DndImportPanel extends MvuElement {
 					const mimeType = f.type;
 					if (DragAndDropSupportedMimeTypes.includes(mimeType)) {
 						const data = await read(f);
-						const textContent = data.slice(0, 100) + '...';
 						setImportData(data, mimeType);
-						emitNotification(html`<b>Importing File:</b><br><i>${textContent}</i>`, LevelTypes.INFO);
 					}
 					else if (!mimeType) {
 						emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
@@ -147,13 +145,9 @@ export class DndImportPanel extends MvuElement {
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 		const importAsLocalData = (data) => {
 			setImportData(data, MediaType.TEXT_PLAIN);
-			const content = html`<b>Importing Text-Content:</b> <i>'${data}'</i>`;
-			emitNotification(content, LevelTypes.INFO);
 		};
 		const importAsUrl = (url) => {
 			setImportUrl(url);
-			const content = html`<b>Importing File-Content:</b> <a href='${url}' >'${url}'</i>`;
-			emitNotification(content, LevelTypes.INFO);
 		};
 
 		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;

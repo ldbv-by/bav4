@@ -213,36 +213,31 @@ describe('FeatureInfoPanel', () => {
 				expect(stopPropagationSpy).toHaveBeenCalled();
 			});
 
-			it('emits a notification for a dropped text', async () => {
+			it('updates the import-store with a dropped text', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('foo');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(store.getState().import.data).toBe('foo');
 				expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
 				expect(store.getState().import.url).toBeNull();
 			});
 
-			it('emits a notification for a dropped file as URL', async () => {
+			it('updates the import-store with a dropped file as URL', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/baz' };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().notifications.latest.payload.content.strings[0]).toContain('Importing File-Content');
-				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('https://foo.bar/baz');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 				expect(store.getState().import.data).toBeNull();
 				expect(store.getState().import.mimeType).toBeNull();
 				expect(store.getState().import.url).toBe('https://foo.bar/baz');
 			});
 
-			it('emits a notification for a dropped text-file', async () => {
+			it('updates the import-store with a dropped text-file', async () => {
 				const fileMock = { type: MediaType.TEXT_PLAIN, text: () => 'foo' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
@@ -250,8 +245,6 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('foo...');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					expect(store.getState().import.data).toBe('foo');
 					expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
 					expect(store.getState().import.url).toBeNull();
@@ -259,7 +252,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 
-			it('emits a notification for a dropped kml-file', async () => {
+			it('updates the import-store with a dropped kml-file', async () => {
 				const fileMock = { type: MediaType.KML, text: () => '<kml>foo</kml>' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
@@ -267,15 +260,13 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<kml>foo</kml>...');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					expect(store.getState().import.data).toBe('<kml>foo</kml>');
 					expect(store.getState().import.mimeType).toBe(MediaType.KML);
 					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
-			it('emits a notification for a dropped gpx-file', async () => {
+			it('updates the import-store with a dropped gpx-file', async () => {
 				const fileMock = { type: MediaType.GPX, text: () => '<gpx>foo</gpx>' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
@@ -283,8 +274,6 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<gpx>foo</gpx>...');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					expect(store.getState().import.data).toBe('<gpx>foo</gpx>');
 					expect(store.getState().import.mimeType).toBe(MediaType.GPX);
 					expect(store.getState().import.url).toBeNull();
@@ -292,7 +281,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 
-			it('emits a notification for a dropped geojson-file', async () => {
+			it('updates the import-storewith a dropped geojson-file', async () => {
 				const fileMock = { type: MediaType.GeoJSON, text: () => '{type:foo}' };
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
@@ -300,8 +289,6 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('{type:foo}...');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 					expect(store.getState().import.data).toBe('{type:foo}');
 					expect(store.getState().import.mimeType).toBe(MediaType.GeoJSON);
 					expect(store.getState().import.url).toBeNull();
