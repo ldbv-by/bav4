@@ -33,6 +33,7 @@ import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 import { ImportService } from '../services/ImportService';
+import { SourceTypeService } from '../services/SourceTypeService';
 
 
 $injector
@@ -56,6 +57,7 @@ $injector
 	.register('FeatureInfoService', FeatureInfoService)
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportService', ImportService)
+	.register('SourceTypeService', SourceTypeService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
