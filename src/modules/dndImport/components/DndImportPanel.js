@@ -5,6 +5,7 @@ import { emitNotification, LevelTypes } from '../../../store/notifications/notif
 import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../services/HttpService';
+import { setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
@@ -105,16 +106,18 @@ export class DndImportPanel extends MvuElement {
 	_importFile(dataTransfer) {
 		const translate = (key) => this._translationService.translate(key);
 		const files = dataTransfer.files;
-		const readHead = async (file) => {
+		const read = async (file) => {
 			const textContent = await file.text();
-			return textContent.slice(0, 100);
+			return textContent;
 		};
 		const handleFiles = (files) => {
 			Array.from(files).forEach(async f => {
 				try {
 					const mimeType = f.type;
 					if (DragAndDropSupportedMimeTypes.includes(mimeType)) {
-						const textContent = await readHead(f) + '...';
+						const data = await read(f);
+						const textContent = data.slice(0, 100) + '...';
+						setImportData(data, mimeType);
 						emitNotification(html`<b>Importing File:</b><br><i>${textContent}</i>`, LevelTypes.INFO);
 					}
 					else if (!mimeType) {
