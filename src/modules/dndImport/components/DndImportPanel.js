@@ -6,6 +6,7 @@ import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../services/HttpService';
 import { setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
+import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
@@ -143,22 +144,6 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importText(dataTransfer) {
-		// todo: extract to /utils/checks
-		// based on https://stackoverflow.com/a/43467144
-		const isValidHttpUrl = (urlCandidate) => {
-			const getUrl = (string) => {
-				try {
-					return new URL(string);
-				}
-				catch (_) {
-					return null;
-				}
-			};
-
-			const url = getUrl(urlCandidate);
-			return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
-		};
-
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 		const importAsLocalData = (data) => {
 			setImportData(data, MediaType.TEXT_PLAIN);
@@ -171,7 +156,7 @@ export class DndImportPanel extends MvuElement {
 			emitNotification(content, LevelTypes.INFO);
 		};
 
-		const importAction = isValidHttpUrl(textData) ? importAsUrl : importAsLocalData;
+		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;
 		importAction(textData);
 	}
 
