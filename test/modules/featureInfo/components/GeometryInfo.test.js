@@ -25,7 +25,8 @@ describe('GeometryInfo', () => {
 
 				formatArea: (area) => {
 					return area + ' m²';
-				} });
+				}
+			});
 		return TestUtils.render(GeometryInfo.tag);
 	};
 
@@ -50,7 +51,8 @@ describe('GeometryInfo', () => {
 					coordinate: null,
 					azimuth: null,
 					length: null,
-					area: null }
+					area: null
+				}
 			});
 		});
 	});
@@ -67,7 +69,7 @@ describe('GeometryInfo', () => {
 		});
 
 		it('renders point stats', async () => {
-			const pointStats = { coordinate: [21, 42], azimuth: null, length: null, area: null } ;
+			const pointStats = { coordinate: [21, 42], azimuth: null, length: null, area: null };
 
 			const element = await setup();
 			element.statistics = pointStats;
@@ -78,7 +80,7 @@ describe('GeometryInfo', () => {
 
 		it('renders the items with line stats', async () => {
 			const element = await setup();
-			element.statistics = { coordinate: null, azimuth: null, length: 42, area: null } ;
+			element.statistics = { coordinate: null, azimuth: null, length: 42, area: null };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-line-azimuth')).toBeFalsy();
@@ -95,7 +97,18 @@ describe('GeometryInfo', () => {
 		it('renders the items with polygon stats', async () => {
 
 			const element = await setup();
-			element.statistics = { coordinate: null, azimuth: null, length: 42, area: 42 } ;
+			element.statistics = { coordinate: null, azimuth: null, length: 42, area: 42 };
+
+			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.stats-polygon-length')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.stats-polygon-area')).toBeTruthy();
+		});
+
+
+		it('renders the items with smallest polygon stats', async () => {
+
+			const element = await setup();
+			element.statistics = { coordinate: null, azimuth: null, length: 0.001, area: 0 };
 
 			expect(element.shadowRoot.querySelector('.stats-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.stats-polygon-length')).toBeTruthy();
