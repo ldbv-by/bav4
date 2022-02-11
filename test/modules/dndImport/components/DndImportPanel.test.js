@@ -1,6 +1,7 @@
 import { $injector } from '../../../../src/injection';
 import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
 import { MediaType } from '../../../../src/services/HttpService';
+import { importReducer } from '../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
@@ -24,6 +25,7 @@ describe('FeatureInfoPanel', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
+			import: importReducer,
 			notifications: notificationReducer,
 			media: createNoInitialStateMediaReducer()
 		});
@@ -64,10 +66,12 @@ describe('FeatureInfoPanel', () => {
 	});
 
 	describe('when drag&drop elements', () => {
-		const defaultDataTransferMock = { files: [],
+		const defaultDataTransferMock = {
+			files: [],
 			types: [],
-			getData: () => {} };
-		const simulateDragDropEvent = (type, dataTransfer, eventSource = document, preventDefaultFunction = () => { }, stopPropagationFunction = () => {}) => {
+			getData: () => { }
+		};
+		const simulateDragDropEvent = (type, dataTransfer, eventSource = document, preventDefaultFunction = () => { }, stopPropagationFunction = () => { }) => {
 
 			const eventType = type;
 			const event = new Event(eventType);
@@ -218,6 +222,9 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('foo');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				expect(store.getState().import.data).toBe('foo');
+				expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
+				expect(store.getState().import.url).toBeNull();
 			});
 
 			it('emits a notification for a dropped file as URL', async () => {
@@ -230,6 +237,9 @@ describe('FeatureInfoPanel', () => {
 				expect(store.getState().notifications.latest.payload.content.strings[0]).toContain('Importing File-Content');
 				expect(store.getState().notifications.latest.payload.content.values[0]).toBe('https://foo.bar/baz');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+				expect(store.getState().import.data).toBeNull();
+				expect(store.getState().import.mimeType).toBeNull();
+				expect(store.getState().import.url).toBe('https://foo.bar/baz');
 			});
 
 			it('emits a notification for a dropped text-file', async () => {
@@ -242,6 +252,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('foo...');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(store.getState().import.data).toBe('foo');
+					expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -256,6 +269,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<kml>foo</kml>...');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(store.getState().import.data).toBe('<kml>foo</kml>');
+					expect(store.getState().import.mimeType).toBe(MediaType.KML);
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -269,6 +285,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('<gpx>foo</gpx>...');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(store.getState().import.data).toBe('<gpx>foo</gpx>');
+					expect(store.getState().import.mimeType).toBe(MediaType.GPX);
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -283,13 +302,18 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content.values[0]).toBe('{type:foo}...');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+					expect(store.getState().import.data).toBe('{type:foo}');
+					expect(store.getState().import.mimeType).toBe(MediaType.GeoJSON);
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
 			it('emits a notification for a unreadable dropped file', async () => {
-				const fileMock = { type: MediaType.KML, text: () => {
-					throw new Error('some') ;
-				} };
+				const fileMock = {
+					type: MediaType.KML, text: () => {
+						throw new Error('some');
+					}
+				};
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
@@ -298,6 +322,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_file_error');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -309,6 +336,9 @@ describe('FeatureInfoPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().notifications.latest).toBeUndefined();
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -320,6 +350,9 @@ describe('FeatureInfoPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().notifications.latest).toBeUndefined();
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -332,6 +365,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -345,6 +381,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 
@@ -358,6 +397,9 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+					expect(store.getState().import.data).toBeNull();
+					expect(store.getState().import.mimeType).toBeNull();
+					expect(store.getState().import.url).toBeNull();
 				});
 			});
 

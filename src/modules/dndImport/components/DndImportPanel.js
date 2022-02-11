@@ -160,10 +160,19 @@ export class DndImportPanel extends MvuElement {
 		};
 
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
-		const content = isValidHttpUrl(textData)
-			? html`<b>Importing File-Content:</b> <a href='${textData}' >'${textData}'</i>`
-			: html`<b>Importing Text-Content:</b> <i>'${textData}'</i>`;
-		emitNotification(content, LevelTypes.INFO);
+		const importAsLocalData = (data) => {
+			setImportData(data, MediaType.TEXT_PLAIN);
+			const content = html`<b>Importing Text-Content:</b> <i>'${data}'</i>`;
+			emitNotification(content, LevelTypes.INFO);
+		};
+		const importAsUrl = (url) => {
+			setImportUrl(url);
+			const content = html`<b>Importing File-Content:</b> <a href='${url}' >'${url}'</i>`;
+			emitNotification(content, LevelTypes.INFO);
+		};
+
+		const importAction = isValidHttpUrl(textData) ? importAsUrl : importAsLocalData;
+		importAction(textData);
 	}
 
 }
