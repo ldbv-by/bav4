@@ -63,9 +63,9 @@ export const isTemplateResult = (val) => {
 };
 
 /**
- * Checks if a value is a URL.
+ * Checks if a value is a valid string for a http(s) URL.
  * based on https://stackoverflow.com/a/43467144
- * @param {*} val
+ * @param {string} val
  * @returns {boolean} true if it is a URL
  */
 export const isHttpUrl = (val) => {
@@ -78,6 +78,6 @@ export const isHttpUrl = (val) => {
 		}
 	};
 
-	const url = val instanceof URL ? val : getUrl(val);
+	const url = isString(val) ? getUrl(val) : null;
 	return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
 };
