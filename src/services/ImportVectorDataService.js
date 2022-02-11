@@ -1,7 +1,8 @@
 import { $injector } from '../injection';
 import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource } from './domain/geoResources';
+import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from './domain/geoResources';
+import { SourceTypeName } from './SourceTypeService';
 
 /**
  *
@@ -59,7 +60,7 @@ export class ImportVectorDataService {
 
 			if (result.ok) {
 				const data = await result.text();
-				const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data, result.headers.get('Content-Type'));
+				const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data, result.headers.get('Content-Type')));
 				if (resultingSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
 						(prop, value) => {
@@ -90,7 +91,7 @@ export class ImportVectorDataService {
 	importVectorData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data);
+		const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));
 		if (resultingSourceType) {
 			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
 				if (prop === '_label') {
@@ -102,6 +103,25 @@ export class ImportVectorDataService {
 			return vgr;
 		}
 		console.warn(`SourceType for '${id}' could not be detected`);
+		return null;
+	}
+
+	/**
+	 * Maps a {@link SourceType} to a {@link VectorSourceType}
+	 */
+	_mapSourceTypetoVectorSourceType(sourceType) {
+		if (sourceType) {
+			switch (sourceType.name) {
+				case SourceTypeName.KML:
+					return VectorSourceType.KML;
+
+				case SourceTypeName.GPX:
+					return VectorSourceType.GPX;
+
+				case SourceTypeName.GeoJSON:
+					return VectorSourceType.GEOJSON;
+			}
+		}
 		return null;
 	}
 }

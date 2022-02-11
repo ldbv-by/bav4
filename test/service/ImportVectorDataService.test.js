@@ -2,6 +2,7 @@ import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
+import { SourceType, SourceTypeName } from '../../src/services/SourceTypeService';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { TestUtils } from '../test-utils';
@@ -122,7 +123,9 @@ describe('ImportVectorDataService', () => {
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
 				const instanceUnderTest = setup();
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(VectorSourceType.GEOJSON);
+				const sourceType = new SourceType(SourceTypeName.GeoJSON, mediaType);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(sourceType);
+				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -142,6 +145,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalled();
 			});
 
 			it('throws an error when response is not ok', async (done) => {
@@ -177,6 +181,7 @@ describe('ImportVectorDataService', () => {
 					id: 'id',
 					label: 'label'
 				};
+				spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').and.returnValue(null);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
@@ -194,6 +199,20 @@ describe('ImportVectorDataService', () => {
 			});
 		});
 	});
+
+	describe('_mapSourceTypetoVectorSourceType', () => {
+
+		it('maps a SourceType to a  VectorSourceType', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType()).toBeNull();
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GeoJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType('foo'))).toBeNull();
+		});
+	});
+
 	describe('importVectorData', () => {
 
 		it('returns a VectorGeoResource', () => {
@@ -218,8 +237,10 @@ describe('ImportVectorDataService', () => {
 		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(VectorSourceType.GEOJSON);
 			const instanceUnderTest = setup();
+			const sourceType = new SourceType(SourceTypeName.GeoJSON);
+			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
+			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 
 			const vgr = instanceUnderTest.importVectorData(data);
 
@@ -231,6 +252,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
+			expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalled();
 		});
 
 		it('updates the label property of a layer', async () => {
