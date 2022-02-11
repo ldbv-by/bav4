@@ -68,7 +68,7 @@ export const isTemplateResult = (val) => {
  * @param {*} val
  * @returns {boolean} true if it is a URL
  */
-export const isUrl = (val) => {
+export const isHttpUrl = (val) => {
 	const getUrl = (string) => {
 		try {
 			return new URL(string);
@@ -78,6 +78,6 @@ export const isUrl = (val) => {
 		}
 	};
 
-	const url = getUrl(val);
+	const url = val instanceof URL ? val : getUrl(val);
 	return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
 };
