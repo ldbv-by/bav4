@@ -89,18 +89,18 @@ describe('sourceType provider', () => {
 	describe('defaultDataSourceTypeProvider', () => {
 
 		it('tries to detect the source type for KML sources', () => {
-			expect(defaultDataSourceTypeProvider('foo', MediaType.KML)).toEqual({ name: SourceTypeName.KML });
-			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>')).toEqual({ name: SourceTypeName.KML });
+			expect(defaultDataSourceTypeProvider('foo', MediaType.KML)).toEqual(new SourceType(SourceTypeName.KML));
+			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>')).toEqual(new SourceType(SourceTypeName.KML));
 		});
 
 		it('tries to detect the source type for GPX sources', () => {
-			expect(defaultDataSourceTypeProvider('foo', MediaType.GPX)).toEqual({ name: SourceTypeName.GPX });
-			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>')).toEqual({ name: SourceTypeName.GPX });
+			expect(defaultDataSourceTypeProvider('foo', MediaType.GPX)).toEqual(new SourceType(SourceTypeName.GPX));
+			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>')).toEqual(new SourceType(SourceTypeName.GPX));
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
-			expect(defaultDataSourceTypeProvider('foo', MediaType.GeoJSON)).toEqual({ name: SourceTypeName.GeoJSON });
-			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' }))).toEqual({ name: SourceTypeName.GeoJSON });
+			expect(defaultDataSourceTypeProvider('foo', MediaType.GeoJSON)).toEqual(new SourceType(SourceTypeName.GeoJSON));
+			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' }))).toEqual(new SourceType(SourceTypeName.GeoJSON));
 		});
 
 		it('returns null when type can not be detected', () => {

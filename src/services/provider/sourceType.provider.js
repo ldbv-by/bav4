@@ -10,16 +10,15 @@ import { SourceType, SourceTypeName } from '../SourceTypeService';
  *
  * @typedef {function(string) : (Promise<SourceType>)} urlSourceTypeProvider
  */
+
 /**
  * A function that tries to detect the source type for a url
  *
  * @typedef {function(string, MediaType) : (SourceType|null)} dataSourceTypeProvider
  */
 
-
-
 /**
- * Uses a BVV endpoint to detect the source type.
+ * Uses a BVV endpoint to detect the source type for a url.
  * @function
  * @param {string} url
  * @returns {SourceType|null}
@@ -48,28 +47,28 @@ export const bvvUrlSourceTypeProvider = async (url) => {
  * @function
  * @param {string} data
  * @param {string} [mediaType]
- * @returns VectorSourceType or `null`
+ * @returns SourceType or `null`
  */
 export const defaultDataSourceTypeProvider = (data, mediaType = null) => {
 	if (isString(data)) {
 		switch (mediaType) {
 			case MediaType.KML:
-				return { name: SourceTypeName.KML };
+				return new SourceType(SourceTypeName.KML);
 			case MediaType.GPX:
-				return { name: SourceTypeName.GPX };
+				return new SourceType(SourceTypeName.GPX);
 			case MediaType.GeoJSON:
-				return { name: SourceTypeName.GeoJSON };
+				return new SourceType(SourceTypeName.GeoJSON);
 		}
 		// alternatively, we check the content in a naive manner
 		if (data.includes('<kml') && data.includes('</kml>')) {
-			return { name: SourceTypeName.KML };
+			return new SourceType(SourceTypeName.KML);
 		}
 		if (data.includes('<gpx') && data.includes('</gpx>')) {
-			return { name: SourceTypeName.GPX };
+			return new SourceType(SourceTypeName.GPX);
 		}
 		try {
 			if (JSON.parse(data).type) {
-				return { name: SourceTypeName.GeoJSON };
+				return new SourceType(SourceTypeName.GeoJSON);
 			}
 		}
 		catch {
