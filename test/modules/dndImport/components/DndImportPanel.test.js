@@ -21,6 +21,9 @@ describe('FeatureInfoPanel', () => {
 			notifications: {
 				notification: null
 			},
+			import: {
+				latest: null
+			},
 			...state
 		};
 
@@ -220,9 +223,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().import.data).toBe('foo');
-				expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
-				expect(store.getState().import.url).toBeNull();
+				expect(store.getState().import.latest.payload.data).toBe('foo');
+				expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
+				expect(store.getState().import.latest.payload.url).toBeUndefined();
 			});
 
 			it('updates the import-store with a dropped file as URL', async () => {
@@ -232,9 +235,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().import.data).toBeNull();
-				expect(store.getState().import.mimeType).toBeNull();
-				expect(store.getState().import.url).toBe('https://foo.bar/baz');
+				expect(store.getState().import.latest.payload.data).toBeUndefined();
+				expect(store.getState().import.latest.payload.mimeType).toBeUndefined();
+				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
 			});
 
 			it('updates the import-store with a dropped text-file', async () => {
@@ -245,9 +248,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().import.data).toBe('foo');
-					expect(store.getState().import.mimeType).toBe(MediaType.TEXT_PLAIN);
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest.payload.data).toBe('foo');
+					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
+					expect(store.getState().import.latest.payload.url).toBeUndefined();
 				});
 			});
 
@@ -260,9 +263,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().import.data).toBe('<kml>foo</kml>');
-					expect(store.getState().import.mimeType).toBe(MediaType.KML);
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.KML);
+					expect(store.getState().import.latest.payload.url).toBeUndefined();
 				});
 			});
 
@@ -274,9 +277,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().import.data).toBe('<gpx>foo</gpx>');
-					expect(store.getState().import.mimeType).toBe(MediaType.GPX);
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest.payload.data).toBe('<gpx>foo</gpx>');
+					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GPX);
+					expect(store.getState().import.latest.payload.url).toBeUndefined();
 				});
 			});
 
@@ -289,9 +292,9 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
-					expect(store.getState().import.data).toBe('{type:foo}');
-					expect(store.getState().import.mimeType).toBe(MediaType.GeoJSON);
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest.payload.data).toBe('{type:foo}');
+					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GeoJSON);
+					expect(store.getState().import.latest.payload.url).toBeUndefined();
 				});
 			});
 
@@ -309,9 +312,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_file_error');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 
@@ -323,9 +324,7 @@ describe('FeatureInfoPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().notifications.latest).toBeUndefined();
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 
@@ -337,9 +336,7 @@ describe('FeatureInfoPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().notifications.latest).toBeUndefined();
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 
@@ -352,9 +349,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 
@@ -368,9 +363,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 
@@ -384,9 +377,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
 					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-					expect(store.getState().import.data).toBeNull();
-					expect(store.getState().import.mimeType).toBeNull();
-					expect(store.getState().import.url).toBeNull();
+					expect(store.getState().import.latest).toBeNull();
 				});
 			});
 

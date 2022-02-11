@@ -18,5 +18,4 @@
 .is_active {
 	display: flex;	
 	z-index: var(--z-dragndrop);
-
 }
