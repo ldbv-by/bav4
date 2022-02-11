@@ -20,11 +20,11 @@ export class ShowCase extends BaElement {
 	constructor() {
 		super();
 
-		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportService }
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'FileStorageService', 'ImportService');
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService }
+			= $injector.inject('CoordinateService', 'EnvironmentService', 'ShareService', 'UrlService', 'FileStorageService', 'ImportVectorDataService');
 		this._coordinateService = CoordinateService;
 		this._environmentService = EnvironmentService;
-		this._importService = ImportService;
+		this._importVectorDataService = ImportVectorDataService;
 		this._urlService = UrlService;
 		this._shareService = ShareService;
 		this._icons = [];
@@ -41,7 +41,7 @@ export class ShowCase extends BaElement {
 		const onClick0 = async () => {
 
 			//create a GeoResource
-			const geoResourceFuture = this._importService.importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			const geoResourceFuture = this._importVectorDataService.importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			// optional exception handling for this GeoResourceFuture
 			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
 			const { id, label } = geoResourceFuture;

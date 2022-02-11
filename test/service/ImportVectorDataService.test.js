@@ -1,12 +1,12 @@
 import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
 import { MediaType } from '../../src/services/HttpService';
-import { ImportService } from '../../src/services/ImportService';
+import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { TestUtils } from '../test-utils';
 
-describe('ImportService', () => {
+describe('ImportVectorDataService', () => {
 
 	const httpService = {
 		get() { }
@@ -32,7 +32,7 @@ describe('ImportService', () => {
 			.registerSingleton('UrlService', urlService)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SourceTypeService', sourceTypeService);
-		return new ImportService();
+		return new ImportVectorDataService();
 	};
 
 	describe('importVectorDataFromUrl', () => {

@@ -17,7 +17,7 @@ import { GeoResourceFuture, observable, VectorGeoResource } from './domain/geoRe
 * @class
 * @author taulinger
 */
-export class ImportService {
+export class ImportVectorDataService {
 
 	constructor() {
 		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService, TranslationService: translationService,

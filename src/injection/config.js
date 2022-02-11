@@ -32,7 +32,7 @@ import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
-import { ImportService } from '../services/ImportService';
+import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 
 
@@ -56,7 +56,7 @@ $injector
 	.register('AdministrationService', AdministrationService)
 	.register('FeatureInfoService', FeatureInfoService)
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
-	.register('ImportService', ImportService)
+	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
