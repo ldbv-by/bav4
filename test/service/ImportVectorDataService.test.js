@@ -123,7 +123,7 @@ describe('ImportVectorDataService', () => {
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
 				const instanceUnderTest = setup();
-				const sourceType = new SourceType(SourceTypeName.GeoJSON, mediaType);
+				const sourceType = new SourceType(SourceTypeName.GEOJSON, mediaType);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(sourceType);
 				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
@@ -208,7 +208,7 @@ describe('ImportVectorDataService', () => {
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GeoJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType('foo'))).toBeNull();
 		});
 	});
@@ -238,7 +238,7 @@ describe('ImportVectorDataService', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
-			const sourceType = new SourceType(SourceTypeName.GeoJSON);
+			const sourceType = new SourceType(SourceTypeName.GEOJSON);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
 			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 

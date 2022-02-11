@@ -118,7 +118,7 @@ export class ImportVectorDataService {
 				case SourceTypeName.GPX:
 					return VectorSourceType.GPX;
 
-				case SourceTypeName.GeoJSON:
+				case SourceTypeName.GEOJSON:
 					return VectorSourceType.GEOJSON;
 			}
 		}

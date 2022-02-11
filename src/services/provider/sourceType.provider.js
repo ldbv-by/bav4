@@ -57,7 +57,7 @@ export const defaultDataSourceTypeProvider = (data, mediaType = null) => {
 			case MediaType.GPX:
 				return new SourceType(SourceTypeName.GPX);
 			case MediaType.GeoJSON:
-				return new SourceType(SourceTypeName.GeoJSON);
+				return new SourceType(SourceTypeName.GEOJSON);
 		}
 		// alternatively, we check the content in a naive manner
 		if (data.includes('<kml') && data.includes('</kml>')) {
@@ -68,7 +68,7 @@ export const defaultDataSourceTypeProvider = (data, mediaType = null) => {
 		}
 		try {
 			if (JSON.parse(data).type) {
-				return new SourceType(SourceTypeName.GeoJSON);
+				return new SourceType(SourceTypeName.GEOJSON);
 			}
 		}
 		catch {

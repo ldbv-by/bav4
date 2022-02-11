@@ -52,7 +52,7 @@ export class SourceTypeService {
 export const SourceTypeName = Object.freeze({
 	KML: 'kml',
 	GPX: 'gpx',
-	GeoJSON: 'geojson',
+	GEOJSON: 'geojson',
 	WMS: 'wms'
 });
 

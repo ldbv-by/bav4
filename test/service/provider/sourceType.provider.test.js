@@ -99,8 +99,8 @@ describe('sourceType provider', () => {
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
-			expect(defaultDataSourceTypeProvider('foo', MediaType.GeoJSON)).toEqual(new SourceType(SourceTypeName.GeoJSON));
-			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' }))).toEqual(new SourceType(SourceTypeName.GeoJSON));
+			expect(defaultDataSourceTypeProvider('foo', MediaType.GeoJSON)).toEqual(new SourceType(SourceTypeName.GEOJSON));
+			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' }))).toEqual(new SourceType(SourceTypeName.GEOJSON));
 		});
 
 		it('returns null when type can not be detected', () => {
