@@ -328,6 +328,18 @@ describe('FeatureInfoPanel', () => {
 				});
 			});
 
+			it('does nothing for a dropped but empty type', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: null };
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+				setTimeout(() => {
+					expect(store.getState().notifications.latest).toBeUndefined();
+					expect(store.getState().import.latest).toBeNull();
+				});
+			});
+
 			it('does nothing for a empty dropped type', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock };
 				const element = await setup();

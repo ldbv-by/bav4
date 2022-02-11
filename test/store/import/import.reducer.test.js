@@ -12,9 +12,7 @@ describe('importReducer', () => {
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().import.url).toBeNull();
-		expect(store.getState().import.data).toBeNull();
-		expect(store.getState().import.mimeType).toBeNull();
+		expect(store.getState().import.latest).toBeNull();
 	});
 
 	it('updates the url property', () => {
@@ -22,7 +20,9 @@ describe('importReducer', () => {
 
 		setUrl('some');
 
-		expect(store.getState().import.url).toBe('some');
+		expect(store.getState().import.latest.payload.url).toBe('some');
+		expect(store.getState().import.latest.payload.data).toBeUndefined();
+		expect(store.getState().import.latest.payload.mimeType).toBeUndefined();
 	});
 
 	it('updates the data property', () => {
@@ -30,8 +30,9 @@ describe('importReducer', () => {
 
 		setData('someData', 'text/some');
 
-		expect(store.getState().import.data).toBe('someData');
-		expect(store.getState().import.mimeType).toBe('text/some');
+		expect(store.getState().import.latest.payload.data).toBe('someData');
+		expect(store.getState().import.latest.payload.mimeType).toBe('text/some');
+		expect(store.getState().import.latest.payload.url).toBeUndefined();
 	});
 
 });
