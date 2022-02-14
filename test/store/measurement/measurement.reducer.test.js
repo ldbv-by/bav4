@@ -16,7 +16,7 @@ describe('measurementReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().measurement.active).toBeFalse();
-		expect(store.getState().measurement.statistic).toEqual({ length: 0, area: 0 });
+		expect(store.getState().measurement.statistic).toEqual({ length: null, area: null });
 		expect(store.getState().measurement.reset).toBeNull();
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
 	});
