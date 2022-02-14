@@ -27,7 +27,7 @@ export const bvvAreaUnitsProvider = (area) => {
 		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(3) + ' ' + 'km&sup2;';
 	};
 	const asSquaredMeter = (areaValue) => {
-		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toFixed(0) + ' ' + 'm&sup2;' : areaValue > 0.5 ? '1 m&sup2;' : '0.5 m&sup2;';
+		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toFixed(0) + ' ' + 'm&sup2;' : '1 m&sup2;';
 	};
 	if (area < 0.5) {
 		return '0 m&sup2;';

@@ -11,6 +11,7 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { isString } from '../../../../../src/utils/checks';
 
 window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
@@ -60,7 +61,7 @@ describe('MeasureToolContent', () => {
 			}
 
 			formatDistance(distance, decimals) {
-				if (Object.prototype.toString.call(distance) === '[object String]') {
+				if (isString(distance)) {
 					return distance;
 				}
 				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + ' m';
