@@ -29,6 +29,9 @@ export const bvvAreaUnitsProvider = (area) => {
 	const asSquaredMeter = (areaValue) => {
 		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toFixed(0) + ' ' + 'm&sup2;' : areaValue > 0.5 ? '1 m&sup2;' : '0.5 m&sup2;';
 	};
+	if (area < 0.5) {
+		return '0 m&sup2;';
+	}
 	return area >= Squaredkilometer_In_Squaredmeters ? asSquaredKilometer(area) : asSquaredMeter(area);
 };
 

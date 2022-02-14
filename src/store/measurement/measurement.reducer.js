@@ -16,7 +16,7 @@ export const initialState = {
 	/**
 	   * @type {MeasureStatistic}
 	   */
-	statistic: { length: 0, area: 0 },
+	statistic: { length: null, area: null },
 	/**
 	 * @type {String}
 	 */
