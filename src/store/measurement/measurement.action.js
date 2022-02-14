@@ -9,8 +9,8 @@ import { EventLike } from '../../utils/storeUtils';
 /**
  * Statistic-data of a measurement.
  * @typedef {Object} MeasureStatistic
- * @property {string} length the length in meter of the feature(s)
- * @property {string} area the area in squaremeter of the feature(s)
+ * @property {number} length the length in meter of the feature(s)
+ * @property {number} area the area in squaremeter of the feature(s)
  */
 
 /**

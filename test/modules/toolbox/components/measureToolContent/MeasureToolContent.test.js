@@ -11,6 +11,7 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { isString } from '../../../../../src/utils/checks';
 
 window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
@@ -26,13 +27,15 @@ describe('MeasureToolContent', () => {
 	const defaultState = {
 		measurement: {
 			active: true,
-			statistic: { length: 0, area: 0 },
+			statistic: { length: null, area: null },
 			fileSaveResult: null,
 			reset: null,
 			remove: null
 		},
-		shared: { termsOfUseAcknowledged: false,
-			fileSaveResult: null }
+		shared: {
+			termsOfUseAcknowledged: false,
+			fileSaveResult: null
+		}
 	};
 	const shareServiceMock = {
 		copyToClipboard() {
@@ -58,6 +61,9 @@ describe('MeasureToolContent', () => {
 			}
 
 			formatDistance(distance, decimals) {
+				if (isString(distance)) {
+					return distance;
+				}
 				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(distance) + ' m';
 			}
 
@@ -190,13 +196,54 @@ describe('MeasureToolContent', () => {
 				}
 			};
 			const element = await setup(state);
-			const valueSpan = element.shadowRoot.querySelector('.prime-text-value');
-			const unitSpan = element.shadowRoot.querySelector('.prime-text-unit');
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
 
-			expect(valueSpan).toBeTruthy();
-			expect(unitSpan).toBeTruthy();
-			expect(valueSpan.textContent).toBe('42');
-			expect(unitSpan.textContent).toBe('m');
+			expect(valueSpans.length).toBe(2);
+			expect(unitSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('42');
+			expect(unitSpans[0].textContent).toBe('m');
+			expect(valueSpans[1].textContent).toBe('0');
+			expect(unitSpans[1].textContent).toBe('m²');
+		});
+
+		it('shows only the lenght measurement statistics', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: null },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+			const areaElement = element.shadowRoot.querySelector('.is-area');
+
+			expect(valueSpans.length).toBe(2);
+			expect(unitSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('42');
+			expect(unitSpans[0].textContent).toBe('m');
+			expect(areaElement).toBeFalsy();
+		});
+
+		it('shows question mark on ambigues unit-strings', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: '42 m m', area: null },
+					reset: null,
+					remove: null
+				}
+			};
+
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+			const unitSpans = element.shadowRoot.querySelectorAll('.prime-text-unit');
+
+			expect(valueSpans.length).toBe(2);
+			expect(unitSpans.length).toBe(2);
+			expect(valueSpans[0].textContent).toBe('42');
+			expect(unitSpans[0].textContent).toBe('?');
 		});
 
 		it('copies the measurement length value to the clipboard', async (done) => {
