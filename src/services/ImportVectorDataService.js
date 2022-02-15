@@ -48,7 +48,7 @@ export class ImportVectorDataService {
 	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
 	* @param {string} url
 	* @param {ImportVectorDataOptions} [options]
-	* @returns VectorGeoresouce
+	* @returns VectorGeoresource
 	*/
 	importVectorDataFromUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
