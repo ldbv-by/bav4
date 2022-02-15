@@ -5,7 +5,7 @@ import { changeZoomAndCenter } from '../../../../store/position/position.action'
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
-import { emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
 
@@ -94,13 +94,14 @@ export class ShowCase extends BaElement {
 		let firstVersion = false;
 		const onClickEmitFixed = () => {
 			const toggleVersion = () => firstVersion = !firstVersion;
+			const onDismiss = () => clearFixedNotification();
 			const getContent = () => {
 				if (firstVersion) {
 					return html`<div>
 							<h3>Feature-Info</h3>
 							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
-							<div style="color: white;background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
-							<div style="display:flex"><ba-button .label=${'start routing here'}></ba-button><ba-button .label=${'finish routing here'}></ba-button></div>
+							<div style="color: var(--text2);background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
+							<div style="display:flex"><ba-button .label=${'start something'}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
 						</div>`;
 				}
 				return html`<div>
