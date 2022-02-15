@@ -5,7 +5,7 @@ import { changeZoomAndCenter } from '../../../../store/position/position.action'
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
 
@@ -92,7 +92,7 @@ export class ShowCase extends BaElement {
 		};
 
 		let firstVersion = false;
-		const onClickEmitCustom = () => {
+		const onClickEmitFixed = () => {
 			const toggleVersion = () => firstVersion = !firstVersion;
 			const getContent = () => {
 				if (firstVersion) {
@@ -110,7 +110,7 @@ export class ShowCase extends BaElement {
 							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>dragging map</span></ba-checkbox></div>
 						</div>`;
 			};
-			emitNotification(getContent(), LevelTypes.CUSTOM);
+			emitFixedNotification(getContent());
 			toggleVersion();
 		};
 
@@ -163,7 +163,7 @@ export class ShowCase extends BaElement {
 				<ba-button id='notification0' .label=${'Info Notification'} .type=${'primary'} @click=${onClickEmitInfo}></ba-button>
 				<ba-button id='notification1' .label=${'Warn Notification'} .type=${'primary'} @click=${onClickEmitWarn}></ba-button>
 				<ba-button id='notification2' .label=${'Error Notification'} .type=${'primary'} @click=${onClickEmitError}></ba-button>
-				<ba-button id='notification3' .label=${'Custom Notification'} .type=${'primary'} @click=${onClickEmitCustom}></ba-button>			
+				<ba-button id='notification3' .label=${'Fixed Notification'} .type=${'primary'} @click=${onClickEmitFixed}></ba-button>			
 			</div>	
 
 			</div>	

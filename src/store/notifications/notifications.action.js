@@ -14,8 +14,7 @@ import { EventLike } from '../../utils/storeUtils';
 export const LevelTypes = Object.freeze({
 	INFO: Symbol.for('info'),
 	WARN: Symbol.for('warn'),
-	ERROR: Symbol.for('error'),
-	CUSTOM: Symbol.for('custom')
+	ERROR: Symbol.for('error')
 });
 
 const getStore = () => {
@@ -26,10 +25,7 @@ const getStore = () => {
 /**
 * @typedef {Object} Notification
 * @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
-* @property {'info'|'warn'|'error'|'custom'} level the notification level (@see {@link LevelTypes})
-* @property {Boolean} permanent whether the notification invalidates after
-* a specific amount of time or stays relevant until the user decides to dismiss
-* the message
+* @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
  */
 
 /**
@@ -41,7 +37,7 @@ const getStore = () => {
 export const emitNotification = (content, level) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
-		payload: new EventLike({ content: content, level: level, permanent: false })
+		payload: new EventLike({ content: content, level: level })
 	});
 };
 
@@ -54,6 +50,16 @@ export const emitNotification = (content, level) => {
 export const emitFixedNotification = (content) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,
-		payload: new EventLike({ content: content, level: LevelTypes.CUSTOM, permanent: true })
+		payload: new EventLike({ content: content })
+	});
+};
+
+/**
+ * Clears the fixed notification
+ */
+export const clearFixedNotification = () => {
+	getStore().dispatch({
+		type: NOTIFICATION_ADDED,
+		payload: new EventLike({ content: null })
 	});
 };
