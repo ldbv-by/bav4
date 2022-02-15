@@ -23,12 +23,6 @@ describe('LayersPlugin', () => {
 		default() { },
 		byId() { }
 	};
-	const fileStorageServiceMock = {
-		get() { },
-		getFileId() { },
-		isFileId() { },
-		isAdminId() { }
-	};
 	const windowMock = {
 		location: {
 			get search() {
@@ -50,7 +44,6 @@ describe('LayersPlugin', () => {
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TopicsService', topicsServiceMock)
-			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 			.registerSingleton('TranslationService', translationService);
 
