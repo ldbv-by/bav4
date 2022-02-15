@@ -21,7 +21,6 @@ export class LayersPlugin extends BaPlugin {
 	_addLayersFromQueryParams(queryParams) {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
-		//layer
 		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue) => {
 
 			//Todo: parse KML and WMS layer from query params like layerIdOrType||layerLabel||layerUrl||layerOptions
@@ -60,7 +59,6 @@ export class LayersPlugin extends BaPlugin {
 				//remove undefined 'layer'
 				.filter(l => !!l);
 		};
-
 
 		const parsedLayers = parseLayer(
 			queryParams.get(QueryParameters.LAYER),
