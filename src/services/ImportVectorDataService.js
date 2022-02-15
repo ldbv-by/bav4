@@ -14,7 +14,7 @@ import { SourceTypeName } from './SourceTypeService';
 
 
 /**
-* Service for importing data. Usually returns a {@link GeoResouce}.
+* Service for importing data. Usually returns a {@link GeoResource}.
 * @class
 * @author taulinger
 */
@@ -82,11 +82,11 @@ export class ImportVectorDataService {
 	}
 
 	/**
-	 * Creates a {@link VectorGeoresouce} containing the given data.
-	 * The VectorGeoresouce is registered on the {@link GeoResourceService}.
+	 * Creates a {@link VectorGeoresource} containing the given data.
+	 * The VectorGeoresource is registered on the {@link GeoResourceService}.
 	 * @param {string} data
 	 * @param {ImportVectorDataOptions} [options]
-	 * @returns VectorGeoresouce or `null` when no VectorGeoresouce could be created
+	 * @returns VectorGeoresource or `null` when no VectorGeoresource could be created
 	 */
 	importVectorData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
