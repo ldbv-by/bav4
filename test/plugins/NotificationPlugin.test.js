@@ -17,8 +17,14 @@ describe('NotificationPlugin', () => {
 		});
 		return store;
 	};
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
 
-
+	afterEach(function () {
+		jasmine.clock().uninstall();
+	});
+	const afterDebounceDelay = 500;
 	it('when dragging the pointer on the map, sets latest notification to null', async () => {
 		const store = setup();
 		const instanceUnderTest = new NotificationPlugin();
@@ -28,6 +34,8 @@ describe('NotificationPlugin', () => {
 		expect(store.getState().notifications.latest.payload.content).not.toBeNull();
 
 		setBeingDragged(true);
+		jasmine.clock().tick(afterDebounceDelay);
+
 		expect(store.getState().notifications.latest.payload.content).toBeNull();
 
 	});
@@ -41,6 +49,7 @@ describe('NotificationPlugin', () => {
 		expect(store.getState().notifications.latest.payload.content).not.toBeNull();
 
 		setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+		jasmine.clock().tick(afterDebounceDelay);
 		expect(store.getState().notifications.latest.payload.content).toBeNull();
 
 	});
@@ -54,6 +63,7 @@ describe('NotificationPlugin', () => {
 		expect(store.getState().notifications.latest.payload.content).not.toBeNull();
 
 		setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+		jasmine.clock().tick(afterDebounceDelay);
 		expect(store.getState().notifications.latest.payload.content).toBeNull();
 
 	});
