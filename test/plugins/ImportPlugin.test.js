@@ -7,7 +7,7 @@ import { ImportPlugin } from '../../src/plugins/ImportPlugin';
 
 describe('ImportPlugin', () => {
 
-	const importServiceMock = {
+	const importVectorDataServiceMock = {
 		importVectorDataFromUrl: async () => {},
 		importVectorData: () => {}
 	};
@@ -29,7 +29,7 @@ describe('ImportPlugin', () => {
 			notifications: notificationReducer
 		});
 		$injector
-			.registerSingleton('ImportService', importServiceMock)
+			.registerSingleton('ImportVectorDataService', importVectorDataServiceMock)
 			.registerSingleton('SourceTypeService', sourceTypeServiceMock)
 			.registerSingleton('TranslationService', translationServiceMock);
 		return store;

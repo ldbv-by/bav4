@@ -12,8 +12,8 @@ import { BaPlugin } from './BaPlugin';
 export class ImportPlugin extends BaPlugin {
 	constructor() {
 		super();
-		const { ImportService: importService, SourceTypeService: sourceTypeService, TranslationService: translationService } = $injector.inject('ImportService', 'SourceTypeService', 'TranslationService');
-		this._importService = importService;
+		const { ImportVectorDataService: importVectorDataService, SourceTypeService: sourceTypeService, TranslationService: translationService } = $injector.inject('ImportVectorDataService', 'SourceTypeService', 'TranslationService');
+		this._importVectorDataService = importVectorDataService;
 		this._sourceTypeService = sourceTypeService;
 		this._translationService = translationService;
 		translationService.register('importPluginProvider', provider);
@@ -29,13 +29,13 @@ export class ImportPlugin extends BaPlugin {
 			try {
 				const importByUrl = (url) => {
 					const sourceType = this._sourceTypeService.forURL(url);
-					const vectorGeoResource = this._importService.importVectorDataFromUrl(url, { sourceType: sourceType });
+					const vectorGeoResource = this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: sourceType });
 					vectorGeoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
 					return vectorGeoResource;
 				};
 				const importByData = (data, mimeType) => {
 					const sourceType = this._sourceTypeService.forData(data, mimeType);
-					const vectorGeoResource = this._importService.importVectorData(latestImport.data, { sourceType: sourceType });
+					const vectorGeoResource = this._importVectorDataService.importVectorData(latestImport.data, { sourceType: sourceType });
 					if (vectorGeoResource) {
 						return vectorGeoResource;
 					}
