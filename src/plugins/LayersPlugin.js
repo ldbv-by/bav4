@@ -30,28 +30,31 @@ export class LayersPlugin extends BaPlugin {
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
 			return layer
-				.map((l, i) => {
-					const geoResource = geoResourceService.byId(l) ?? geoResourceService.asyncById(l);
+				.map((layerId, index) => {
+					if (layerId) {
 
-					if (geoResource) {
-						//if we have a GeoResource future, we update the label property after we know it
-						if (geoResource.getType() === GeoResourceTypes.FUTURE) {
-							geoResource.onResolve((geoResource) => {
-								modifyLayer(l, { label: geoResource.label });
-							});
+						const geoResource = geoResourceService.byId(layerId) ?? geoResourceService.asyncById(layerId);
+
+						if (geoResource) {
+							//if we have a GeoResource future, we update the label property after we know it
+							if (geoResource.getType() === GeoResourceTypes.FUTURE) {
+								geoResource.onResolve((geoResource) => {
+									modifyLayer(layerId, { label: geoResource.label });
+								});
+							}
+
+							const layerProperties = {};
+							layerProperties.label = geoResource.label;
+
+							if (layerVisibility[index] === 'false') {
+								layerProperties.visible = false;
+							}
+							if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
+								layerProperties.opacity = parseFloat(layerOpacity[index]);
+							}
+
+							return { id: layerId, layerProperties };
 						}
-
-						const layerProperties = {};
-						layerProperties.label = geoResource.label;
-
-						if (layerVisibility[i] === 'false') {
-							layerProperties.visible = false;
-						}
-						if (isFinite(layerOpacity[i]) && layerOpacity[i] >= 0 && layerOpacity[i] <= 1) {
-							layerProperties.opacity = parseFloat(layerOpacity[i]);
-						}
-
-						return { id: l, layerProperties };
 					}
 				})
 				//remove undefined 'layer'
@@ -67,10 +70,6 @@ export class LayersPlugin extends BaPlugin {
 		parsedLayers.forEach(l => {
 			addLayer(l.id, l.layerProperties);
 		});
-		//fallback
-		if (parsedLayers.length === 0) {
-			this._addLayersFromConfig();
-		}
 	}
 
 	_addLayersFromConfig() {

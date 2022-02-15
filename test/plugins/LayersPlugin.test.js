@@ -175,7 +175,7 @@ describe('LayersPlugin', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 
-			it('adds layers for existing and on-demand geoResources', () => {
+			it('adds layers loading existing and on-demand geoResources', () => {
 				const queryParam = QueryParameters.LAYER + '=some0,some1,some2';
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -226,7 +226,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('adds layer considering unuseable visibility params', () => {
+			it('adds layers considering unuseable visibility params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -249,7 +249,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
-			it('adds layer considering opacity', () => {
+			it('adds layers considering opacity', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -272,7 +272,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('adds layer considering unuseable opacity params', () => {
+			it('adds layers considering unuseable opacity params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -295,23 +295,28 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
-
-			it('adds layer by calling #_addLayersFromConfig as fallback', () => {
+			it('does NOT add a layer when geoResourceService cannot fullfill', () => {
 				const queryParam = QueryParameters.LAYER + '=unknown';
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'all').and.returnValue([
-					new WMTSGeoResource('some0', 'someLabel0', 'someUrl0')
-				]);
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', ['some0']));
+				spyOn(geoResourceServiceMock, 'all').and.returnValue(null);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
-				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe('some0');
+				expect(store.getState().layers.active.length).toBe(0);
 			});
 
+			it('does NOT add a layer when id is not present', () => {
+				const queryParam = QueryParameters.LAYER + '=';
+				const store = setup();
+				const instanceUnderTest = new LayersPlugin();
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+
+				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().layers.active.length).toBe(0);
+			});
 
 			it('updates the layers label for on-demand geoResources', async () => {
 				const queryParam = `${QueryParameters.LAYER}=some0`;
