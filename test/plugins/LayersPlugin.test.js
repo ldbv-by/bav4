@@ -320,7 +320,7 @@ describe('LayersPlugin', () => {
 				const labelAfter = 'labelAfter';
 				const geoResource0 = new WMTSGeoResource(id, labelAfter, 'someUrl0');
 				const future0 = new GeoResourceFuture('some0', async () => geoResource0);
-				future0.label = labelBefore;
+				future0.setLabel(labelBefore);
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'asyncById').and.returnValue(future0);
 

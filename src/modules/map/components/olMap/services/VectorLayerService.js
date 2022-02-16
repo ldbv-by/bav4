@@ -149,7 +149,7 @@ export class VectorLayerService {
 		// If we know a better name for the geoResource now, we update the label
 		switch (geoResource.sourceType) {
 			case VectorSourceType.KML:
-				geoResource.label = format.readName(data) || geoResource.label;
+				geoResource.setLabel(format.readName(data) ?? geoResource.label);
 				break;
 		}
 		features.forEach(f => {
