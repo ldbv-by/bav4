@@ -30,6 +30,9 @@ export const GeoResourceTypes = Object.freeze({
 });
 
 /**
+* Parent class of all GeoResource types.
+* Obligatory fields are set in the constructor.
+* Optional fields have a setter method which returns the GeoResource instance for chaining.
 * @abstract
 * @class
 */
@@ -81,20 +84,24 @@ export class GeoResource {
 		return this._attribution;
 	}
 
-	set label(label) {
+	setLabel(label) {
 		this._label = label;
+		return this;
 	}
 
-	set background(background) {
+	setBackground(background) {
 		this._background = background;
+		return this;
 	}
 
-	set opacity(opacity) {
+	setOpacity(opacity) {
 		this._opacity = opacity;
+		return this;
 	}
 
-	set attribution(attribution) {
+	setAttribution(attribution) {
 		this._attribution = attribution;
+		return this;
 	}
 
 	/**
