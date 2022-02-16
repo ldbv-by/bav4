@@ -21,8 +21,8 @@ describe('importReducer', () => {
 		setUrl('some');
 
 		expect(store.getState().import.latest.payload.url).toBe('some');
-		expect(store.getState().import.latest.payload.data).toBeUndefined();
-		expect(store.getState().import.latest.payload.mimeType).toBeUndefined();
+		expect(store.getState().import.latest.payload.data).toBeNull();
+		expect(store.getState().import.latest.payload.mimeType).toBeNull();
 	});
 
 	it('updates the data property', () => {
@@ -32,7 +32,7 @@ describe('importReducer', () => {
 
 		expect(store.getState().import.latest.payload.data).toBe('someData');
 		expect(store.getState().import.latest.payload.mimeType).toBe('text/some');
-		expect(store.getState().import.latest.payload.url).toBeUndefined();
+		expect(store.getState().import.latest.payload.url).toBeNull();
 	});
 
 });
