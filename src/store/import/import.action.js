@@ -4,7 +4,7 @@ import { IMPORT_ADDED } from './import.reducer';
 
 
 /**
- * Properties for a import of vectorDataResources
+ * Properties for a import of GeoResources
  * @typedef {Object} ImportProperties
  * @property {String|null} data the data to import
  * @property {String|null} mimeType the mimeType of the data-property
