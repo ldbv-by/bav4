@@ -91,7 +91,8 @@ export class OlMap extends MvuElement {
 		this._view = new View({
 			center: center,
 			zoom: zoom,
-			rotation: rotation
+			rotation: rotation,
+			maxZoom: this._mapService.getMaxZoomLevel()
 		});
 
 		this._view.on('change:rotation', (evt) => {
