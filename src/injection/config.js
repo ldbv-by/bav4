@@ -27,7 +27,6 @@ import { DrawPlugin } from '../plugins/DrawPlugin';
 import { MeasurementPlugin } from '../plugins/MeasurementPlugin';
 import { ContextClickPlugin } from '../plugins/ContextClickPlugin';
 import { GeolocationPlugin } from '../plugins/GeolocationPlugin';
-import { NotificationPlugin } from '../plugins/NotificationPlugin';
 import { FeatureInfoPlugin } from '../plugins/FeatureInfoPlugin';
 import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
@@ -66,7 +65,6 @@ $injector
 	.registerSingleton('HighlightPlugin', new HighlightPlugin())
 	.registerSingleton('MediaPlugin', new MediaPlugin())
 	.registerSingleton('MeasurementPlugin', new MeasurementPlugin())
-	.registerSingleton('NotificationPlugin', new NotificationPlugin())
 	.registerSingleton('GeolocationPlugin', new GeolocationPlugin())
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())

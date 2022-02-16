@@ -8,6 +8,7 @@ import { addLayer } from '../../../../store/layers/layers.action';
 import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
+import { observe } from '../../../../utils/storeUtils';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -91,28 +92,47 @@ export class ShowCase extends BaElement {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
 		};
 
-		let firstVersion = false;
+		let version = 1;
 		const onClickEmitFixed = () => {
-			const toggleVersion = () => firstVersion = !firstVersion;
+
+			const onCloseAfterWait = () => setTimeout(() => clearFixedNotification(), 2000);
 			const onDismiss = () => clearFixedNotification();
-			const getContent = () => {
-				if (firstVersion) {
-					return html`<div>
+			const nextVersion = (before, min, max) => {
+				return before === min ? before + 1 : (before === max ? min : before + 1);
+			};
+			const getVersionForDragging = () => {
+				const unsubscribe = observe(this._storeService.getStore(), state => state.pointer.beingDragged, () => {
+					clearFixedNotification();
+					unsubscribe();
+				});
+				return html`<div>
+					<h3>Fixed Notifications autoclose with...</h3>
+					<div style="color: white;background-color: var(--warning-color);">observing store... </div>
+					<div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>					
+				</div>`;
+			};
+			const getContent = (version) => {
+				switch (version) {
+					case 1:
+						return html`<div>
 							<h3>Feature-Info</h3>
 							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
 							<div style="color: var(--text2);background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
-							<div style="display:flex"><ba-button .label=${'start something'}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
+							<div style="display:flex"><ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
 						</div>`;
+					case 2:
+						return html`<div>
+							<h3>Fixed Notifications ...</h3>
+							<div style="color: white;background-color: var(--warning-color);">waiting forever... </div>
+							<div style="color: white;background-color: var(--error-color);">until a new fixed Notification comes</div>							
+						</div>`;
+					case 3:
+						return getVersionForDragging();
+
 				}
-				return html`<div>
-							<h3>Fixed Notifications autoclose with...</h3>
-							<div style="color: white;background-color: var(--warning-color);">click... </div>
-							<div style="color: white;background-color: var(--error-color);">contextClick or...</div>
-							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>dragging map</span></ba-checkbox></div>
-						</div>`;
 			};
-			emitFixedNotification(getContent());
-			toggleVersion();
+			emitFixedNotification(getContent(version));
+			version = nextVersion(version, 1, 3);
 		};
 
 		return html`
