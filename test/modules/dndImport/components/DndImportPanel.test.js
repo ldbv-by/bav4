@@ -10,7 +10,7 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
-describe('FeatureInfoPanel', () => {
+describe('DndImportPanel', () => {
 	let store;
 	const setup = (state) => {
 
@@ -131,24 +131,24 @@ describe('FeatureInfoPanel', () => {
 				expect(element.getModel().isActive).toBeTrue();
 			});
 
-			it('updates the model for a dragged but empty type', async () => {
+			it('updates NOT the model for a dragged but empty type', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock };
 				const element = await setup();
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
-				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().isActive).toBeFalse();
 			});
 
-			it('updates the model for a dragged but undefined types', async () => {
+			it('updates NOT the model for a dragged but undefined types', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
 				const element = await setup();
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
-				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().isActive).toBeFalse();
 			});
 		});
 
@@ -394,7 +394,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 			it('updates the model', async () => {
-				const dataTransferMock = { ...defaultDataTransferMock };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
