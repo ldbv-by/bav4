@@ -5,7 +5,7 @@ export const IMPORT_ADDED = 'import/added';
 export const initialState = {
 
 	/**
-	 * @property {ImportProperties|null}
+	 * @property {EventLike<ImportProperties>|null}
 	 */
 	latest: null
 };
