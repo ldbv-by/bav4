@@ -153,6 +153,39 @@ describe('BaseLayerSwitcher', () => {
 				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 
+			it('do not remove baseLayer with index > 0 and adds the new layer on index 0', async () => {
+
+				const topicsId = 'topicId';
+				const geoResoureceId0 = 'geoRsId0';
+				const geoResoureceId1 = 'geoRsId1';
+				const geoResoureceId2 = 'geoRsId2';
+				const baseLayer0 = createDefaultLayer(geoResoureceId0);
+				const otherLayer = createDefaultLayer(geoResoureceId1);
+				const state = {
+					topics: {
+						current: topicsId
+					},
+					layers: {
+						ready: true,
+						active: [otherLayer, baseLayer0]
+					}
+				};
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+					return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
+				});
+				const element = await setup(state);
+				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
+
+				//let's add the second baseLayer
+				buttons[1].click();
+
+				expect(store.getState().layers.active.length).toBe(3);
+				expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
+				expect(store.getState().layers.active[0].label).toBe(geoResoureceId2 + 'Label');
+				expect(store.getState().layers.active[0].zIndex).toBe(0);
+			});
+
 			it('does nothing when layer is already on map', async () => {
 
 				const topicsId = 'topicId';

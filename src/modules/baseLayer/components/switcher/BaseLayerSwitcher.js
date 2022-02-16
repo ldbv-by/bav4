@@ -49,7 +49,9 @@ export class BaseLayerSwitcher extends BaElement {
 					if (activeLayers[0].geoResourceId !== geoR.id) {
 						//Remove existing
 						geoRs.forEach(geoR => {
-							removeLayer(geoR.id);
+							if (activeLayers[0].geoResourceId === geoR.id) {
+								removeLayer(geoR.id);
+							}
 						});
 						//add selected layer
 						add();
