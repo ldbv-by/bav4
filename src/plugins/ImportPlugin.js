@@ -33,7 +33,7 @@ export class ImportPlugin extends BaPlugin {
 			try {
 				const importByUrl = async (url) => {
 					const sourceType = await this._sourceTypeService.forURL(url);
-					const importByService = (url, sourceType) => {
+					const createGeoResource = (url, sourceType) => {
 						if (sourceType) {
 							switch (sourceType.name) {
 								case SourceTypeName.KML:
@@ -44,9 +44,10 @@ export class ImportPlugin extends BaPlugin {
 									emitNotification(`${this._translationService.translate('importPlugin_url_not_supported')}:${sourceType.name}`, LevelTypes.ERROR);
 							}
 						}
+						return null;
 					};
 
-					const geoResource = importByService(url, sourceType);
+					const geoResource = createGeoResource(url, sourceType);
 					if (geoResource) {
 						geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
 						return geoResource;
