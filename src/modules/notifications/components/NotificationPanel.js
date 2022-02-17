@@ -4,7 +4,6 @@ import { $injector } from '../../../injection';
 import { NOTIFICATION_AUTOCLOSE_TIME_NEVER } from './NotificationItem';
 import css from './notificationPanel.css';
 import { MvuElement } from '../../MvuElement';
-import { LevelTypes } from '../../../store/notifications/notifications.action';
 
 
 const Notification_Autoclose_Time = 10000;
@@ -35,17 +34,8 @@ export class NotificationPanel extends MvuElement {
 	onInitialize() {
 		const onLatestChanged = (notification) => {
 			if (notification) {
-				const level = notification.payload.level;
-				switch (level) {
-					case LevelTypes.CUSTOM:
-						this.signal(Update_Fixed_Notification, notification);
-						break;
-					case LevelTypes.INFO:
-					case LevelTypes.WARN:
-					case LevelTypes.ERROR:
-						this.signal(Update_Notifications, notification);
-						break;
-				}
+				const signal = notification.payload.level ? Update_Notifications : Update_Fixed_Notification;
+				this.signal(signal, notification);
 			}
 
 		};
