@@ -93,7 +93,7 @@ describe('ImportPlugin', () => {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => Promise.resolve(sourceType));
+			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
 			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
@@ -102,11 +102,9 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url');
-				setTimeout(() => {
-					expect(store.getState().layers.active.length).toBe(1);
-					expect(store.getState().layers.active[0].id).toBe('idFoo');
-					expect(store.getState().layers.active[0].label).toBe('labelBar');
-				});
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('idFoo');
+				expect(store.getState().layers.active[0].label).toBe('labelBar');
 			});
 
 		});
