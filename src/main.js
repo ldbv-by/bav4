@@ -31,3 +31,4 @@ import './modules/featureInfo';
 import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/survey';
+import './modules/dndImport';

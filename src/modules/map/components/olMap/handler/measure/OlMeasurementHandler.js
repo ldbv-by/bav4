@@ -282,7 +282,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
 		setSelection([]);
-		setStatistic({ length: 0, area: 0 });
+		setStatistic({ length: null, area: null });
 
 		this._draw = false;
 		this._modify = false;
@@ -483,7 +483,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateStatistics() {
-		const startStatistic = { length: 0, area: 0 };
+		const startStatistic = { length: null, area: null };
 		const sumStatistic = (before, feature) => {
 			const stats = getStats(feature.getGeometry(), this._projectionHints);
 			return {

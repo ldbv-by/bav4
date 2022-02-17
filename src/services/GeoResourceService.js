@@ -149,8 +149,7 @@ export class GeoResourceService {
 			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}'),
 			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}')
 		].map(gr => {
-			gr.attribution = 'Bayerische Vermessungsverwaltung';
-			return gr;
+			return gr.setAttribution('Bayerische Vermessungsverwaltung');
 		});
 	}
 }

@@ -61,3 +61,23 @@ export const isPromise = (val) => {
 export const isTemplateResult = (val) => {
 	return isObject(val) ? '_$litType$' in val : false;
 };
+
+/**
+ * Checks if a value is a string and represents an HTTP URL.
+ * based on https://stackoverflow.com/a/43467144
+ * @param {string} val
+ * @returns {boolean} true if the value is a string and represents an HTTP URL
+ */
+export const isHttpUrl = (val) => {
+	const getUrl = (string) => {
+		try {
+			return new URL(string);
+		}
+		catch (_) {
+			return null;
+		}
+	};
+
+	const url = isString(val) ? getUrl(val) : null;
+	return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
+};

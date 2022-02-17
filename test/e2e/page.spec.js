@@ -91,5 +91,9 @@ test.describe('page', () => {
 		test('should contain a <ba-map-context-menu> component', async ({ page }) => {
 			expect(await page.$$('ba-map-context-menu')).toHaveLength(1);
 		});
+
+		test('should contain a <ba-dnd-import-panel> component', async ({ page }) => {
+			expect(await page.$$('ba-dnd-import-panel')).toHaveLength(1);
+		});
 	});
 });

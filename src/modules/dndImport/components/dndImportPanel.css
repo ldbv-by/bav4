@@ -1,0 +1,21 @@
+.dropzone {
+	z-index: -1;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	background-color: black;
+	opacity: 0.7;
+	border: 5px dashed #ccc;	
+	justify-content: center;
+	align-items: center;
+	font-weight: bold;
+	font-size: 3rem;
+}
+
+.is_active {
+	display: flex;	
+	z-index: var(--z-dragndrop);
+}

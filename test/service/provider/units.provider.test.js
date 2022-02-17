@@ -45,8 +45,8 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted area for bvv-metric system', () => {
-
-		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0.5 m&sup2;');
+		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m&sup2;');
+		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m&sup2;');
 		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
 		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m&sup2;');
 		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m&sup2;');

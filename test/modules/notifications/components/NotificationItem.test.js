@@ -4,6 +4,7 @@ import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { html } from 'lit-html';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
 window.customElements.define(NotificationItem.tag, NotificationItem);
 
@@ -40,6 +41,8 @@ describe('NotificationItem', () => {
 			const contentElement = element.shadowRoot.querySelector('.notification_content');
 
 			expect(contentElement.innerText).toContain('FooBar');
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#notification-info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('displays the notification content from a lit-html template-result', async () => {
