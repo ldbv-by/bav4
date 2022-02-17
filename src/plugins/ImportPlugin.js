@@ -31,54 +31,62 @@ export class ImportPlugin extends BaPlugin {
 		const onChange = async (latestImport) => {
 			const { payload: { url, data, mimeType } } = latestImport;
 			try {
-				const importByUrl = async (url) => {
-					const sourceType = await this._sourceTypeService.forURL(url);
-					const createGeoResource = (url, sourceType) => {
-						if (sourceType) {
-							switch (sourceType.name) {
-								case SourceTypeName.KML:
-								case SourceTypeName.GPX:
-								case SourceTypeName.GEOJSON:
-									return this._importVectorDataService.importVectorDataFromUrl(url);
-								default:
-									emitNotification(`${this._translationService.translate('importPlugin_url_not_supported')}:${sourceType.name}`, LevelTypes.ERROR);
-							}
-						}
-						return null;
-					};
-
-					const geoResource = createGeoResource(url, sourceType);
-					if (geoResource) {
-						geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
-						return geoResource;
-					}
-
-				};
-				const importByData = (data, mimeType) => {
-					const sourceType = this._mapMimeTypeToVectorSourceType(mimeType);
-					const vectorGeoResource = this._importVectorDataService.importVectorData(data, { sourceType: sourceType });
-					if (vectorGeoResource) {
-						return vectorGeoResource;
-					}
-					emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
-				};
-
-				const vectorGeoResource = url ? await importByUrl(url) : importByData(data, mimeType);
+				const vectorGeoResource = url ? await this._importByUrl(url) : this._importByData(data, mimeType);
 				if (vectorGeoResource) {
 					const { id, label } = vectorGeoResource;
 					addLayer(id, { label: label });
 				}
-
 			}
 			catch (error) {
 				emitNotification(error, LevelTypes.ERROR);
 			}
-
-
 		};
 
 		observe(store, state => state.import.latest, onChange);
+	}
 
+	/**
+	 * Imports the data as remote {@link GeoResource}
+	 * @param {string} url the url to the data
+	 * @returns {Promise<GeoResource>} the imported GeoResource
+	 */
+	async _importByUrl(url) {
+		const sourceType = await this._sourceTypeService.forURL(url);
+		const createGeoResource = (url, sourceType) => {
+			if (sourceType) {
+				switch (sourceType.name) {
+					case SourceTypeName.KML:
+					case SourceTypeName.GPX:
+					case SourceTypeName.GEOJSON:
+						return this._importVectorDataService.importVectorDataFromUrl(url);
+					default:
+						emitNotification(`${this._translationService.translate('importPlugin_url_not_supported')}:${sourceType.name}`, LevelTypes.ERROR);
+				}
+			}
+			return null;
+		};
+
+		const geoResource = createGeoResource(url, sourceType);
+		if (geoResource) {
+			geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
+			return geoResource;
+		}
+
+	}
+
+	/**
+	 * Imports the data as local {@link GeoResource}
+	 * @param {string} data the local data
+	 * @param {string} mimeType the mimeType of the data
+	 * @returns {GeoResource|null} the imported GeoResource or null on failure
+	 */
+	_importByData(data, mimeType) {
+		const sourceType = this._mapMimeTypeToVectorSourceType(mimeType);
+		const vectorGeoResource = this._importVectorDataService.importVectorData(data, { sourceType: sourceType });
+		if (vectorGeoResource) {
+			return vectorGeoResource;
+		}
+		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
 	}
 
 	/**
