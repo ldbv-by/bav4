@@ -1,32 +1,57 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
-import { BaElement } from '../../../BaElement';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import css from './baseLayerSwitcher.css';
+import { MvuElement } from '../../../MvuElement';
 
+
+const Update_Topic_Id = 'update_topic_id';
+const Update_Layers = 'update_layers';
+const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
 /**
  * Component for managing base layers.
  * @class
  * @author taulinger
  */
-export class BaseLayerSwitcher extends BaElement {
+export class BaseLayerSwitcher extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			currentTopicId: null,
+			activeLayers: [],
+			layersStoreReady: false
+		});
 
 		const { TopicsService: topicsService, GeoResourceService: geoResourceService }
 			= $injector.inject('TopicsService', 'GeoResourceService');
 
 		this._topicsService = topicsService;
 		this._geoResourceService = geoResourceService;
-	}
 
+		this.observe(store => store.topics.current, topicId => this.signal(Update_Topic_Id, topicId));
+		this.observe(store => store.layers.active, layers => this.signal(Update_Layers, [...layers]));
+		this.observe(store => store.layers.ready, ready => this.signal(Update_Is_Layers_Store_Ready, ready));
+	}
 
 	/**
 	 * @override
 	 */
-	createView(state) {
-		const { currentTopicId, activeLayers, layersStoreReady } = state;
+	update(type, data, model) {
+		switch (type) {
+			case Update_Topic_Id:
+				return { ...model, currentTopicId: data };
+			case Update_Layers:
+				return { ...model, activeLayers: [...data] };
+			case Update_Is_Layers_Store_Ready:
+				return { ...model, layersStoreReady: data };
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	createView(model) {
+		const { currentTopicId, activeLayers, layersStoreReady } = model;
 
 		if (layersStoreReady) {
 
@@ -80,14 +105,6 @@ export class BaseLayerSwitcher extends BaElement {
 		}
 		//Todo: in this case we should render a placeholder
 		return nothing;
-	}
-
-	/**
-	 * @override
-	 */
-	extractState(globalState) {
-		const { topics: { current: currentTopicId }, layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
-		return { currentTopicId, activeLayers, layersStoreReady };
 	}
 
 	static get tag() {

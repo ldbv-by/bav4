@@ -35,6 +35,20 @@ describe('BaseLayerSwitcher', () => {
 		return TestUtils.render(BaseLayerSwitcher.tag);
 	};
 
+	describe('when instantiated', () => {
+
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new BaseLayerSwitcher().getModel();
+
+			expect(model).toEqual({
+				currentTopicId: null,
+				activeLayers: [],
+				layersStoreReady: false
+			});
+		});
+	});
+
 	describe('when initialized ', () => {
 
 		it('renders nothing when layers state not yet set ready', async () => {
