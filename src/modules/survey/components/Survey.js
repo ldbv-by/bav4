@@ -3,7 +3,7 @@ import { $injector } from '../../../injection';
 import css from './survey.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import { NotificationItem } from '../../notifications/components/NotificationItem';
+import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -81,8 +81,8 @@ export class Survey extends MvuElement {
 
 		const showNotification = () => {
 			const getContent = () => {
-				const onClose = (e) => {
-					e.path.find(element => element instanceof NotificationItem).close();
+				const onClose = () => {
+					clearFixedNotification();
 				};
 				return html`
 						<style>${css}</style>	
