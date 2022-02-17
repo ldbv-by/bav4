@@ -1,9 +1,12 @@
 import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { VectorSourceType } from '../services/domain/geoResources';
 import { observe } from '../utils/storeUtils';
 import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
+import { MediaType } from '../services/HttpService';
+import { SourceTypeName } from '../services/SourceTypeService';
 
 /**
  * @class
@@ -30,12 +33,25 @@ export class ImportPlugin extends BaPlugin {
 			try {
 				const importByUrl = (url) => {
 					const sourceType = this._sourceTypeService.forURL(url);
-					const vectorGeoResource = this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: sourceType });
-					vectorGeoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
-					return vectorGeoResource;
+					const importByService = (url, sourceType) => {
+						if (sourceType) {
+							switch (sourceType.name) {
+								case SourceTypeName.KML:
+								case SourceTypeName.GPX:
+								case SourceTypeName.GEOJSON:
+									return this._importVectorDataService.importVectorDataFromUrl(url);
+								default:
+									emitNotification(`${this._translationService.translate('importPlugin_url_not_supported')}:${sourceType.name}`, LevelTypes.ERROR);
+							}
+						}
+					};
+
+					const geoResource = importByService(url, sourceType);
+					geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
+					return geoResource;
 				};
 				const importByData = (data, mimeType) => {
-					const sourceType = this._sourceTypeService.forData(data, mimeType);
+					const sourceType = this._mapMimeTypeToVectorSourceType(mimeType);
 					const vectorGeoResource = this._importVectorDataService.importVectorData(data, { sourceType: sourceType });
 					if (vectorGeoResource) {
 						return vectorGeoResource;
@@ -57,5 +73,21 @@ export class ImportPlugin extends BaPlugin {
 
 		observe(store, state => state.import.latest, onChange);
 
+	}
+
+	/**
+	 * Maps a mimeType as {@link MediaType} to a {@link VectorSourceType}
+	 */
+	_mapMimeTypeToVectorSourceType(mimeType) {
+		switch (mimeType) {
+			case MediaType.GPX:
+				return VectorSourceType.GPX;
+			case MediaType.GeoJSON:
+				return VectorSourceType.GEOJSON;
+			case MediaType.KML:
+				return VectorSourceType.KML;
+			default:
+				return null;
+		}
 	}
 }
