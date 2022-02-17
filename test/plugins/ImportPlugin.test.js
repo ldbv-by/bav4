@@ -147,6 +147,22 @@ describe('ImportPlugin', () => {
 			});
 
 		});
+
+		it('does NOT add a layer, emits notification on error', async () => {
+			const store = setup();
+
+			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => Promise.reject('some Error'));
+			const instanceUnderTest = new ImportPlugin();
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().layers.active.length).toBe(0);
+			setUrl('http://some.url');
+			setTimeout(() => {
+				expect(store.getState().notifications.latest.payload.content).toBe('some Error');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			});
+
+		});
 	});
 
 	describe('when import.data property changes', () => {
@@ -190,6 +206,21 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().layers.active[0].label).toBe('labelBar');
+		});
+	});
+
+	describe('_mapMimeTypeToVectorSourceType', () => {
+
+		it('maps a mimeType to a  VectorSourceType', () => {
+			setup();
+			const instanceUnderTest = new ImportPlugin();
+
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType()).toBeNull();
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.KML)).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.GPX)).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.GeoJSON)).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.TEXT_PLAIN)).toBeNull();
+			expect(instanceUnderTest._mapMimeTypeToVectorSourceType('some')).toBeNull();
 		});
 	});
 
