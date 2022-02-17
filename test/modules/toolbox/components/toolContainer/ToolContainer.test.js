@@ -85,7 +85,7 @@ describe('ToolContainer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#close_icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#close-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('opens the toolcontainer with draw-content', async () => {

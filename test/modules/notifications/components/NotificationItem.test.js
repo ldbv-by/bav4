@@ -42,7 +42,7 @@ describe('NotificationItem', () => {
 
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#notification_info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#notification-info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('displays the notification content from a lit-html template-result', async () => {
