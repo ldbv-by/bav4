@@ -33,8 +33,23 @@ describe('AbstractToolContent', () => {
 	describe('expected errors', () => {
 
 		describe('constructor', () => {
+
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new AbstractToolContent()).toThrowError(TypeError, 'Can not construct abstract class.');
+			});
+
+			it('calls the parent constructor with model', () => {
+				const model = { foo: 'bar' };
+				class MyToolContent extends AbstractToolContent {
+					constructor() {
+						super(model);
+					}
+				}
+				window.customElements.define('ba-mytoolcontent', MyToolContent);
+
+				const instance = new MyToolContent();
+
+				expect(instance.getModel()).toEqual(model);
 			});
 		});
 	});

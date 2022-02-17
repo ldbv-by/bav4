@@ -11,8 +11,8 @@ import toolContentCss from './abstractToolContent.css';
  */
 export class AbstractToolContent extends MvuElement {
 
-	constructor() {
-		super();
+	constructor(model = {}) {
+		super(model);
 		if (this.constructor === AbstractToolContent) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
@@ -20,8 +20,8 @@ export class AbstractToolContent extends MvuElement {
 	}
 
 	/**
-    * @override
-    */
+	* @override
+	*/
 	defaultCss() {
 		return html`
 		${super.defaultCss()}

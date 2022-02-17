@@ -3,23 +3,43 @@ import { IconSelect } from '../../../../src/modules/iconSelect/components/IconSe
 import { IconResult } from '../../../../src/services/IconService';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(IconSelect.tag, IconSelect);
 
 describe('IconSelect', () => {
 
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
-	beforeEach(async () => {
-		TestUtils.setupStoreAndDi({});
+
+	const setup = (state = {}, attributes = {}) => {
+
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+
+		};
+
+		TestUtils.setupStoreAndDi(initialState, {
+			media: createNoInitialStateMediaReducer()
+		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('IconService', iconServiceMock);
-	});
+		return TestUtils.render(IconSelect.tag, attributes);
+	};
+
 	describe('when initialized', () => {
 
 		it('contains default values in the model', async () => {
 
-			const element = await TestUtils.render(IconSelect.tag);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
 
 			//model
 			expect(element.title).toBe('');
@@ -30,18 +50,49 @@ describe('IconSelect', () => {
 
 		it('renders the view', async () => {
 
-			const element = await TestUtils.render(IconSelect.tag);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 			element.title = 'foo';
 
 			//view
 			expect(element.shadowRoot.querySelector('.catalog_header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.ba_catalog_container.iscollapsed')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('ba-icon').title).toBe('foo');
-			expect(element.shadowRoot.querySelector('ba-icon').disabled).toBeTrue();
-			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').title).toBe('foo');
+			expect(element.shadowRoot.querySelector('.iconselect__toggle-button').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(1);
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#symbol_icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 
+		});
+
+		it('check portrait', async () => {
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-landscape');
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-portrait');
+		});
+
+		it('check landscape', async () => {
+
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, {});
+
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).not.toContain('is-landscape');
+			expect(element.shadowRoot.querySelector('.iconselect__container').classList).toContain('is-portrait');
 		});
 	});
 
@@ -49,8 +100,13 @@ describe('IconSelect', () => {
 
 		it('updates the view', async () => {
 
-			const element = await TestUtils.render(IconSelect.tag);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 
 			expect(iconButton.title).toBe('');
 
@@ -68,42 +124,33 @@ describe('IconSelect', () => {
 
 		it('updates the view', async () => {
 
-			const element = await TestUtils.render(IconSelect.tag);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 
-			expect(iconButton.color).toBe(null);
+			expect(element.getModel().color).toBe(null);
 
 			element.color = '#00ff00';
 
-			expect(iconButton.color).toBe('#00ff00');
-
-			element.color = '#ff0000';
-
-			expect(iconButton.color).toBe('#ff0000');
+			expect(element.getModel().color).toBe('#00ff00');
 		});
 	});
 
-	describe('when property\'value\' changes', () => {
-
-		it('updates the view', async () => {
-
-			const element = await TestUtils.render(IconSelect.tag);
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
-
-			expect(iconButton.icon).not.toBe('data:image/svg+xml;base64,foo');
-
-			element.value = 'data:image/svg+xml;base64,foo';
-
-			expect(iconButton.icon).toBe('data:image/svg+xml;base64,foo');
-		});
-	});
 
 	describe('when property\'icons\' changes', () => {
 
 		it('updates the view', async (done) => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
 				new IconResult('bar', '42')]));
-			const element = await TestUtils.render(IconSelect.tag);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 
 			setTimeout(() => {
 				expect(element.icons.length).toBe(2);
@@ -116,9 +163,14 @@ describe('IconSelect', () => {
 		it('expands and collapse the container', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
 				new IconResult('bar', '42')]));
-			const element = await TestUtils.render(IconSelect.tag);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			const iconContainer = element.shadowRoot.querySelector('.ba_catalog_container');
 
 			expect(iconContainer.classList.contains('iscollapsed')).toBeTrue();
@@ -129,15 +181,19 @@ describe('IconSelect', () => {
 		});
 	});
 
-
 	describe('when icon is selected (event handling) ', () => {
 		it('calls the onSelect callback via property callback', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
 				new IconResult('bar', '42')]));
 
-			const element = await TestUtils.render(IconSelect.tag);
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
 			const selectSpy = spyOn(element, 'onSelect');
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			iconButton.click();
 
 			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
@@ -152,8 +208,14 @@ describe('IconSelect', () => {
 				new IconResult('bar', '42')]));
 
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(IconSelect.tag, { onSelect: 'alert(\'called\')' });
-			const iconButton = element.shadowRoot.querySelector('ba-icon');
+
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, { onSelect: 'alert(\'called\')' });
+			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			iconButton.click();
 
 			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');

@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../../injection';
 import { OverlayStyle } from '../../OverlayStyle';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
-import { getPartitionDelta } from '../../olGeometryUtils';
+import { getAzimuth, getLineString, getPartitionDelta } from '../../olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -24,6 +24,16 @@ export const saveManualOverlayPosition = (feature) => {
 	});
 };
 
+const SectorsOfPlacement = [
+	{ name: 'top', isSector: (angle) => (angle <= 60 || 300 < angle) },
+	{ name: 'right', isSector: (angle) => (60 < angle && angle <= 120) },
+	{ name: 'bottom', isSector: (angle) => (120 < angle && angle <= 210) },
+	{ name: 'left', isSector: (angle) => (210 < angle && angle <= 300) }];
+
+
+/**
+ * @author thiloSchlemmer
+ */
 export class MeasurementOverlayStyle extends OverlayStyle {
 
 	constructor() {
@@ -156,13 +166,23 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+
+		const getPartitions = () => {
+			const partitions = olFeature.get('partitions') || [];
+			if (simplifiedGeometry) {
+				return partitions;
+			}
+			partitions.forEach(p => this._remove(p, olFeature, olMap));
+			return [];
+		};
+		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
 			simplifiedGeometry = olFeature.getGeometry();
 			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates()[0]);
+				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
 			}
 		}
-		const partitions = olFeature.get('partitions') || [];
+
 		const resolution = olMap.getView().getResolution();
 		let delta;
 		if (partitions.length === 0) {
@@ -189,6 +209,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				partitions.pop();
 			}
 		}
+
+		this._justifyPlacement(simplifiedGeometry, partitions);
+
 		olFeature.set('partitions', partitions);
 		if (delta !== 1) {
 			olFeature.set('partition_delta', delta);
@@ -208,6 +231,31 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					overlay.setPosition([posX, posY]);
 				}
 			}
+		});
+	}
+
+	_justifyPlacement(geometry, partitions) {
+		const lineString = getLineString(geometry);
+		const collectedSegments = { minPartition: 0, length: 0 };
+
+		lineString.forEachSegment((from, to) => {
+			const segment = new LineString([from, to]);
+
+			const currentLength = collectedSegments.length + segment.getLength();
+			const currentMinPartition = currentLength / lineString.getLength();
+			const azimuth = getAzimuth(segment);
+			partitions.forEach(overlay => {
+				const element = overlay.getElement();
+				const partition = element.value;
+				if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
+					element.placement = this._getPlacement(azimuth);
+					overlay.setOffset(element.placement.offset);
+					overlay.setPositioning(element.placement.positioning);
+				}
+			});
+
+			collectedSegments.minPartition = currentMinPartition;
+			collectedSegments.length = currentLength;
 		});
 	}
 
@@ -254,5 +302,22 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			element.addEventListener('mouseleave', handleMouseLeave);
 		}
 
+	}
+
+	_getPlacement(angle) {
+		const distance = -25;
+		const getOffset = (degree, distance) => {
+			const rad = (degree / 180) * Math.PI;
+			const point = [Math.sin(rad) * distance, -Math.cos(rad) * distance];
+			const lot = Math.atan2(point[1], point[0]);
+			return [Math.sin(lot) * distance, -Math.cos(lot) * distance];
+		};
+
+		const getSector = (angle) => {
+			return SectorsOfPlacement.find((s) => s.isSector(angle));
+		};
+
+		const sector = getSector(angle);
+		return sector ? { sector: sector.name, positioning: 'center-center', offset: getOffset(angle, distance) } : null;
 	}
 }

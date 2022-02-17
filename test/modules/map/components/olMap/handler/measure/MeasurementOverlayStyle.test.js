@@ -112,6 +112,101 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('partitions').length).toBe(1);
 	});
 
+	const getPartition = (feature) => {
+		const partitionOverlays = feature.get('partitions');
+		const overlay = partitionOverlays[0];
+		return overlay.getElement();
+	};
+
+	it('creates partition tooltips for line in right-sector', () => {
+		const addOverlaySpy = jasmine.createSpy();
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		const partition = getPartition(feature);
+
+		expect(partition.placement).toEqual({ sector: 'right', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
+	});
+
+
+	it('creates partition tooltips for line in left-sector', () => {
+		const addOverlaySpy = jasmine.createSpy();
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[12345, 0], [0, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		const partition = getPartition(feature);
+
+		expect(partition.placement).toEqual({ sector: 'left', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
+	});
+
+	it('creates partition tooltips for line in bottom-sector', () => {
+		const addOverlaySpy = jasmine.createSpy();
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 12345], [0, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		const partition = getPartition(feature);
+
+		expect(partition.placement).toEqual({ sector: 'bottom', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
+	});
+
+	it('creates partition tooltips for line in top-sector', () => {
+		const addOverlaySpy = jasmine.createSpy();
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 0], [0, 12345]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
+		const partition = getPartition(feature);
+
+		expect(partition.placement).toEqual({ sector: 'top', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
+	});
+
 	it('creates partition tooltips for line big zoom', () => {
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
@@ -178,7 +273,7 @@ describe('MeasurementOverlayStyle', () => {
 		geometry.setCoordinates([[0, 0], [12345, 0]]);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
-		expect(feature.get('partitions').length).toBe(1);
+		expect(feature.get('partitions').length).toBe(12);
 	});
 
 	it('removes area overlay after change from polygon to line', () => {

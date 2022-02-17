@@ -6,6 +6,7 @@
 	font-weight: bold;   
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 	color: var(--primary-color);
+	width: 100%;
 }
 .primary {
 	background-color: var(--primary-color);

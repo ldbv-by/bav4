@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable } from '../../../src/services/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
@@ -162,13 +162,13 @@ describe('GeoResource', () => {
 
 		it('returns the real GeoResource by calling loader', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
 
 			const geoResource = await future.get();
 
-			expect(geoResource).toEqual(expectdGeoResource);
+			expect(geoResource).toEqual(expectedGeoResource);
 		});
 
 		it('rejects when the loader rejects', async () => {
@@ -188,15 +188,15 @@ describe('GeoResource', () => {
 
 		it('calls the onResolve callback', async () => {
 			const id = 'id';
-			const expectdGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectdGeoResource);
+			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
 			const future = new GeoResourceFuture(id, loader);
 			future.onResolve(onResolveCallback);
 
 			await future.get();
 
-			expect(onResolveCallback).toHaveBeenCalledWith(expectdGeoResource, future);
+			expect(onResolveCallback).toHaveBeenCalledWith(expectedGeoResource, future);
 		});
 
 		it('calls the onReject callback', async () => {
@@ -256,7 +256,7 @@ describe('GeoResource', () => {
 
 	describe('VectorGeoResource', () => {
 
-		it('instantiates a VectorGeoResource', async () => {
+		it('instantiates a VectorGeoResource', () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
@@ -266,103 +266,25 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.url).toBeNull();
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
-			const data = await vectorGeoResource.getData();
-			expect(data).toBeNull();
+			expect(vectorGeoResource.data).toBeNull();
 		});
 
-		it('sets the url of an external VectorGeoResource', async () => {
+		it('sets the url of an external VectorGeoResource', () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
 
 			expect(vectorGeoResource.url).toBe('someUrl');
 			expect(vectorGeoResource.srid).toBeNull();
-			const data = await vectorGeoResource.getData();
-			expect(data).toBeNull();
+			expect(vectorGeoResource.data).toBeNull();
 		});
 
-		it('sets the source of an internal VectorGeoResource by a string', async () => {
+		it('sets the source of an internal VectorGeoResource by a string', () => {
 
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
-			const data = await vectorGeoResource.getData();
-			expect(data).toBe('someData');
+			expect(vectorGeoResource.data).toBe('someData');
 			expect(vectorGeoResource.srid).toBe(1234);
 			expect(vectorGeoResource.url).toBeNull();
-		});
-
-		it('sets the source of an internal VectorGeoResource by a promise', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
-
-			const data = await vectorGeoResource.getData();
-			expect(data).toBe('someData');
-			expect(vectorGeoResource.srid).toBe(1234);
-			expect(vectorGeoResource.url).toBeNull();
-		});
-
-		it('caches the data resolved by a source promise', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.resolve('someData'), 1234);
-
-			await vectorGeoResource.getData();
-			expect(vectorGeoResource._data).toBe('someData');
-		});
-
-		it('passes the reason of a rejected source promise', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource(Promise.reject('somethingGotWrong'), 1234);
-
-			try {
-				await vectorGeoResource.getData();
-				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
-				expect(error).toBe('somethingGotWrong');
-			}
-		});
-
-		it('sets the source of an internal VectorGeoResource by a loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.resolve({
-					data: 'someData',
-					srid: 1234,
-					sourceType: VectorSourceType.KML
-				}));
-
-			const data = await vectorGeoResource.getData();
-			expect(data).toBe('someData');
-			expect(vectorGeoResource.srid).toBe(1234);
-			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
-			expect(vectorGeoResource.url).toBeNull();
-		});
-
-		it('caches the data resolved by a loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.resolve({
-					data: 'someData',
-					srid: 1234,
-					sourceType: VectorSourceType.KML
-				}));
-
-			await vectorGeoResource.getData();
-			expect(vectorGeoResource._data).toBe('someData');
-		});
-
-		it('passes the reason of a rejected loader', async () => {
-
-			const vectorGeoResource = new VectorGeoResource('id', 'label', null)
-				.setLoader(() => Promise.reject('somethingGotWrong'));
-
-			try {
-				await vectorGeoResource.getData();
-				throw new Error('Promise should not be resolved');
-
-			}
-			catch (error) {
-				expect(error).toBe('somethingGotWrong');
-			}
 		});
 	});
 
@@ -381,5 +303,22 @@ describe('GeoResource', () => {
 			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
 		});
 
+	});
+
+	describe('observableGeoResource', () => {
+
+		it('observes changes', () => {
+
+			const modifiedLabel = 'modified';
+			const callback = jasmine.createSpy();
+			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
+
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.unknown = modifiedLabel;
+
+			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(wmtsGeoResource.label).toBe(modifiedLabel);
+		});
 	});
 });

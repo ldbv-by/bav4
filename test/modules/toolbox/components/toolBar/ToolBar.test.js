@@ -74,10 +74,11 @@ describe('ToolBarElement', () => {
 
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.action-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelectorAll('.tool-bar__button').length).toBe(3);
+			expect(element.shadowRoot.querySelectorAll('.tool-bar__button').length).toBe(4);
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.measure')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.pencil')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.share')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.import')).toBeTruthy();
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -112,7 +113,7 @@ describe('ToolBarElement', () => {
 			const element = await setup();
 			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
-			expect(toolButtons).toHaveSize(3);
+			expect(toolButtons).toHaveSize(4);
 
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
@@ -125,10 +126,14 @@ describe('ToolBarElement', () => {
 			expect(store.getState().tools.current).toBeNull();
 
 			toolButtons[2].click();
-			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBeNull();
 
+			toolButtons[3].click();
+			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			toolButtons[3].click();
+			expect(store.getState().tools.current).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
 			expect(element.shadowRoot.querySelector('#measure_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#draw_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
@@ -140,13 +145,15 @@ describe('ToolBarElement', () => {
 			const element = await setup();
 			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
-			expect(toolButtons).toHaveSize(3);
+			expect(toolButtons).toHaveSize(4);
 
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
 			toolButtons[2].click();
+			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
+			toolButtons[3].click();
 			expect(store.getState().tools.current).toBe(ToolId.SHARING);
 		});
 	});

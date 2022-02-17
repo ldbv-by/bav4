@@ -21,6 +21,7 @@ export class IconService {
 		this._iconColorProvider = iconColorProvider;
 		this._default = this._createDefault();
 		this._icons = null;
+		this._load();
 	}
 
 	_createDefault() {
@@ -70,14 +71,10 @@ export class IconService {
 	}
 
 	/**
- *
- * @param {*} idOrUrlOrBase64
- */
+	  *
+	  * @param {*} idOrUrlOrBase64
+	*/
 	getIconResult(idOrUrlOrBase64) {
-		if (this._icons === null) {
-			return null;
-		}
-
 		if (idOrUrlOrBase64 === this._default.base64) {
 			return this._icons.find(iconResult => iconResult.matches(Svg_Marker_Name));
 		}

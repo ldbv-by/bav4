@@ -1,5 +1,5 @@
-
-import { getGeometryLength, canShowAzimuthCircle } from './olGeometryUtils';
+import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
+import { toContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import { $injector } from '../../../../injection';
@@ -8,8 +8,7 @@ import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
 
 
-const Z_Polygon = 10;
-const Z_Line = 20;
+
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
@@ -206,29 +205,112 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 };
 
 
+const getRulerStyle = () => {
 
-export const measureStyleFunction = (feature) => {
+	return new Style({
+		renderer: (pixelCoordinates, state) => {
+			const renderContext = toContext(state.context, { pixelRatio: 1 });
+			const renderToContext = (geometry, fill, stroke) => {
+				renderContext.setFillStrokeStyle(fill, stroke);
+				renderContext.drawGeometry(geometry);
+			};
+			renderRulerSegments(pixelCoordinates, state, renderToContext);
+		}
+	});
+};
+
+export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) => {
+	const geometry = state.geometry.clone();
+	const resolution = state.resolution;
+	const pixelRatio = state.pixelRatio;
+
+	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+	const partition = getPartitionDelta(geometry, resolution, calculationHints);
+	const partitionLength = partition * getGeometryLength(geometry);
+	const partitionTickDistance = partitionLength / resolution;
+	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
+
+	const fill = new Fill({ color: Red_Color.concat([0.4]) });
+	const baseStroke = new Stroke({
+		color: Red_Color.concat([1]),
+		width: 3 * pixelRatio
+	});
+
+	const getMainTickStroke = (residual, partitionTickDistance) => {
+		return new Stroke({
+			color: Red_Color.concat([1]),
+			width: 8 * pixelRatio,
+			lineCap: 'butt',
+			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
+			lineDashOffset: 3 * pixelRatio + (partitionTickDistance * residual)
+		});
+	};
+
+	const getSubTickStroke = (residual, partitionTickDistance) => {
+		return new Stroke({
+			color: Red_Color.concat([1]),
+			width: 5 * pixelRatio,
+			lineCap: 'butt',
+			lineDash: [2 * pixelRatio, ((partitionTickDistance / 5) - 2) * pixelRatio],
+			lineDashOffset: 2 * pixelRatio + (partitionTickDistance * residual)
+		});
+	};
+
+	const drawTicks = (contextRenderer, segment, residual, tickDistance) => {
+		const draw = () => {
+			const mainTickSegment = moveParallel(segment[0], segment[1], -4);
+			const subTickSegment = moveParallel(segment[0], segment[1], -2);
+			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
+			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
+
+			return true;
+		};
+		const cancel = () => false;
+		return segment[1] ? draw() : cancel();
+	};
+
+	// baseLine
+	geometry.setCoordinates(pixelCoordinates);
+	contextRenderer(geometry, fill, baseStroke);
+
+	// per segment
+	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+
+	segmentCoordinates.every((coordinate, index, coordinates) => {
+		return drawTicks(contextRenderer, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+	});
+
+};
+
+
+/**
+ * StyleFunction for measurement-feature
+ *
+ * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
+ * @param {Feature} feature the feature to be styled
+ * @param {number} resolution the resolution of the Map-View
+ * @returns {Array<Style>} the measurement styles for the specified feature
+ */
+export const measureStyleFunction = (feature, resolution) => {
+
 	const stroke = new Stroke({
 		color: Red_Color.concat([1]),
 		width: 3
 	});
 
-	const dashedStroke = new Stroke({
-		color: Red_Color.concat([1]),
-		width: 3,
-		lineDash: [8]
-	});
-
-	const zIndex = (feature.getGeometry() instanceof LineString) ? Z_Line : Z_Polygon;
-
+	const getFallbackStyle = () => {
+		return new Style({
+			stroke: new Stroke({
+				color: Red_Color.concat([1]),
+				fill: new Fill({
+					color: Red_Color.concat([0.4])
+				}),
+				width: 2
+			})
+		});
+	};
 	const styles = [
-		new Style({
-			fill: new Fill({
-				color: Red_Color.concat([0.4])
-			}),
-			stroke: dashedStroke,
-			zIndex: zIndex
-		}),
 		new Style({
 			stroke: stroke,
 			geometry: feature => {
@@ -241,9 +323,8 @@ export const measureStyleFunction = (feature) => {
 				}
 			},
 			zIndex: 0
-		})
-	];
-
+		}),
+		resolution ? getRulerStyle() : getFallbackStyle()];
 	return styles;
 };
 

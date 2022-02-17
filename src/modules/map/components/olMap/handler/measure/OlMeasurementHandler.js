@@ -112,7 +112,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (vgr) {
 
 					this._storageHandler.setStorageId(oldLayer.get('id'));
-					const data = await vgr.getData();
+					/**
+					 * Note: vgr.data does not return a Promise anymore.
+					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
+					 */
+					const data = await vgr.data;
 					const oldFeatures = readFeatures(data);
 					const onFeatureChange = (event) => {
 						const measureGeometry = this._createMeasureGeometry(event.target);
@@ -278,7 +282,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
 		setSelection([]);
-		setStatistic({ length: 0, area: 0 });
+		setStatistic({ length: null, area: null });
 
 		this._draw = false;
 		this._modify = false;
@@ -426,11 +430,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createSelect() {
 		const select = new Select(getSelectOptions(this._vectorLayer));
+		const getResolution = () => this._map.getView().getResolution();
 		select.getFeatures().on('change:length', this._updateStatistics);
 		select.getFeatures().on('add', (e) => {
 			const feature = e.element;
 			const styleFunction = selectStyleFunction();
-			const styles = styleFunction(feature);
+			const styles = styleFunction(feature, getResolution());
 			e.element.setStyle(styles);
 		});
 		select.getFeatures().on('remove', (e) => {
@@ -478,7 +483,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_updateStatistics() {
-		const startStatistic = { length: 0, area: 0 };
+		const startStatistic = { length: null, area: null };
 		const sumStatistic = (before, feature) => {
 			const stats = getStats(feature.getGeometry(), this._projectionHints);
 			return {
@@ -501,7 +506,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createMeasureGeometry(feature, isDrawing = false) {
 		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates()[0];
+			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
 
 			if (!this._sketchHandler.isFinishOnFirstPoint) {
 				return new LineString(lineCoordinates);

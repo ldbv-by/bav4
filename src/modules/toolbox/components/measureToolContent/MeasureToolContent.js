@@ -21,7 +21,7 @@ export class MeasureToolContent extends AbstractToolContent {
 
 	constructor() {
 		super({
-			statistic: { length: 0, area: 0 },
+			statistic: { length: null, area: null },
 			fileSaveResult: null,
 			mode: null
 		});
@@ -56,7 +56,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const { statistic } = model;
 
-		const areaClasses = { 'is-area': statistic.area > 0 };
+		const areaClasses = { 'is-area': statistic.area != null };
 
 		const buttons = this._getButtons(model);
 		const subText = this._getSubText(model);
@@ -68,6 +68,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			return { value: splitted[0], unit: '?' };
 		};
 		const formattedDistance = this._unitsService.formatDistance(statistic.length, 2);
+
 		const formattedArea = this._unitsService.formatArea(statistic.area, 2);
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
