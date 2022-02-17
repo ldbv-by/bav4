@@ -66,8 +66,10 @@ describe('ImportPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
+			setTimeout(() => {
+				expect(spy).toHaveBeenCalledWith('http://some.url');
+			});
 
-			expect(spy).toHaveBeenCalledWith('http://some.url');
 		});
 
 		it('calls the ImportVectorDataService for vector-url', async () => {
@@ -79,8 +81,10 @@ describe('ImportPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
+			setTimeout(() => {
+				expect(spy).toHaveBeenCalledWith('http://some.url');
+			});
 
-			expect(spy).toHaveBeenCalledWith('http://some.url');
 		});
 
 		it('adds a layer', async () => {
@@ -89,17 +93,22 @@ describe('ImportPlugin', () => {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
-			spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
+			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => Promise.resolve(sourceType));
+			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
+			setTimeout(() => {
+				expect(spy).toHaveBeenCalledWith('http://some.url');
+				setTimeout(() => {
+					expect(store.getState().layers.active.length).toBe(1);
+					expect(store.getState().layers.active[0].id).toBe('idFoo');
+					expect(store.getState().layers.active[0].label).toBe('labelBar');
+				});
+			});
 
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
 		});
 
 		it('does NOT calls the ImportVectorDataService for unsupported URLs', async () => {
@@ -111,10 +120,11 @@ describe('ImportPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
-
-			expect(spy).not.toHaveBeenCalled();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_not_supported:wms');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			setTimeout(() => {
+				expect(spy).not.toHaveBeenCalled();
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_not_supported:wms');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			});
 		});
 
 
@@ -133,9 +143,10 @@ describe('ImportPlugin', () => {
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
-
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed:http://some.url');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			setTimeout(() => {
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed:http://some.url');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			});
 
 		});
 	});

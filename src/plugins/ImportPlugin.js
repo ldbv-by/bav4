@@ -28,11 +28,11 @@ export class ImportPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
-		const onChange = (latestImport) => {
+		const onChange = async (latestImport) => {
 			const { payload: { url, data, mimeType } } = latestImport;
 			try {
-				const importByUrl = (url) => {
-					const sourceType = this._sourceTypeService.forURL(url);
+				const importByUrl = async (url) => {
+					const sourceType = await this._sourceTypeService.forURL(url);
 					const importByService = (url, sourceType) => {
 						if (sourceType) {
 							switch (sourceType.name) {
@@ -62,7 +62,7 @@ export class ImportPlugin extends BaPlugin {
 					emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
 				};
 
-				const vectorGeoResource = url ? importByUrl(url) : importByData(data, mimeType);
+				const vectorGeoResource = url ? await importByUrl(url) : importByData(data, mimeType);
 				if (vectorGeoResource) {
 					const { id, label } = vectorGeoResource;
 					addLayer(id, { label: label });
