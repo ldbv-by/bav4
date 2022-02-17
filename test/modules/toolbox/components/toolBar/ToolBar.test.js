@@ -8,6 +8,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { ToolId } from '../../../../../src/store/tools/tools.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -133,6 +134,11 @@ describe('ToolBarElement', () => {
 			expect(store.getState().tools.current).toBe(ToolId.SHARING);
 			toolButtons[3].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
+			expect(element.shadowRoot.querySelector('#measure-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#draw-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#share-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#import-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('switches a tool', async () => {
