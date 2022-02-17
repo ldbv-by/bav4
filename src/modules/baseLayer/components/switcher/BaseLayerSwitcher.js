@@ -56,14 +56,13 @@ export class BaseLayerSwitcher extends MvuElement {
 
 		if (layersStoreReady) {
 
+			// Carefully differentiate between layer ids and geoResource ids!
+
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerGeoResourceId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
-
-
 			const geoRs = baseGeoRIds
 				.map(grId => this._geoResourceService.byId(grId))
 				.filter(geoR => !!geoR);
-
 
 			const onClick = (geoR) => {
 
@@ -75,9 +74,8 @@ export class BaseLayerSwitcher extends MvuElement {
 				if (activeLayers.length > 0) {
 					//noting todo when requested base GeoResource already on index=0
 					if (activeLayers[0].geoResourceId !== geoR.id) {
-						//if we have a base GeoResource on index=0, we remove it
+						//if we have a layer referencing a base GeoResource on index=0, we remove it
 						if (baseGeoRIds.includes(activeLayers[0].geoResourceId)) {
-							//Remove existing
 							removeLayer(activeLayers[0].id);
 						}
 						//add selected layer
