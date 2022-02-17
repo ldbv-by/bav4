@@ -147,13 +147,17 @@ describe('BaseLayerSwitcher', () => {
 				//let's add the second baseLayer
 				buttons[1].click();
 
+				//check disabled
+				buttons[0].disabled = false;
+				buttons[1].disabled = false;
+
 				expect(store.getState().layers.active.length).toBe(2);
 				expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);
 				expect(store.getState().layers.active[0].label).toBe(geoResoureceId2 + 'Label');
 				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 
-			it('do not remove baseLayer with index > 0 and adds the new layer on index 0', async () => {
+			it('does NOT remove an existing baseLayer with index > 0 and adds the new layer on index 0', async () => {
 
 				const topicsId = 'topicId';
 				const geoResoureceId0 = 'geoRsId0';
@@ -179,6 +183,10 @@ describe('BaseLayerSwitcher', () => {
 
 				//let's add the second baseLayer
 				buttons[1].click();
+
+				//check disabled
+				buttons[0].disabled = true;
+				buttons[1].disabled = false;
 
 				expect(store.getState().layers.active.length).toBe(3);
 				expect(store.getState().layers.active[0].id).toBe(geoResoureceId2);

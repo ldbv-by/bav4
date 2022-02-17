@@ -88,3 +88,24 @@
 .atkis_sw {
 	background-image: url('assets/5.webp');
 }
+
+.baselayer__button[disabled] {
+	transform: scale(0.9);
+	filter: grayscale(1);	
+	opacity: 0.7;
+	cursor: not-allowed;
+	z-index: 0;
+}
+
+.baselayer__button[disabled]:hover {
+	scale: none;
+}
+.baselayer__button[disabled] .baselayer__label {
+	display: block;
+	background: var(--primary-color);
+	color: var(--text3);
+}
+.baselayer__button[disabled] .baselayer__label:after {
+	display: block;
+	border-color: transparent transparent var(--primary-color) transparent;
+}

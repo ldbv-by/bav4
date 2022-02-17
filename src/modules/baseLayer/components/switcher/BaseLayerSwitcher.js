@@ -32,6 +32,7 @@ export class BaseLayerSwitcher extends BaElement {
 
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
+			const currentActiveLayerIds = activeLayers.map(layer => layer.geoResourceId);
 
 
 			const geoRs = baseGeoRIds
@@ -67,6 +68,10 @@ export class BaseLayerSwitcher extends BaElement {
 				return (geoR.id === currentBaseLayerId) ? 'primary' : 'secondary';
 			};
 
+			const getDisabled = (geoR) => {
+				return (currentActiveLayerIds.includes(geoR.id) && activeLayers[0].geoResourceId !== geoR.id) ? true : false;
+			};
+
 			return html`
 				<style>${css}</style>
 				<div class="title">
@@ -74,7 +79,7 @@ export class BaseLayerSwitcher extends BaElement {
 				</div>
 				<div class="baselayer__container">
 					${geoRs.map((geoR) => html`
-							<button class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
+							<button class="baselayer__button ${geoR.id}" ?disabled=${getDisabled(geoR)}   @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
 								<div class="baselayer__label">${geoR.label}</div>
 							</button>`)}
 				</div>
