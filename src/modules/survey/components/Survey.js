@@ -21,7 +21,7 @@ export class Survey extends MvuElement {
 			hasMinWidth: false,
 			isOpen: false,
 			hasBeenVisible: false,
-			timeout: 10000
+			timeout: 3000
 		});
 
 		const {
