@@ -94,7 +94,7 @@ export class ToolContainer extends MvuElement {
 			<div class="tool-container"> 			
 				<div class="tool-container__content is-open">    
 					<div class="tool-container__tools-nav">                         
-						<ba-icon class='tool-container__close-button' .icon='${closeIcon}' .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${close}>						
+						<ba-icon id="close_icon" data-test-id class='tool-container__close-button' .icon='${closeIcon}' .size=${1.5} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${close}>						
                 	</div>		
 					${getContentPanel(toolId)}    				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		

@@ -112,7 +112,7 @@ export class IconSelect extends MvuElement {
 		return html`
 		<style>${css}</style>
 		<div class='catalog_header'>		
-			<ba-icon .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>			
+			<ba-icon id="symbol_icon" data-test-id .icon=${currentIcon} .title=${model.title} .color=${model.color} .disabled=${!iconsAvailable} @click=${onClick}></ba-icon>			
 		</div>
 		<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
 		    ${getIcons()}

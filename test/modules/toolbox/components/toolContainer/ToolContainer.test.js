@@ -9,6 +9,7 @@ import { ShareToolContent } from '../../../../../src/modules/toolbox/components/
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { setCurrentTool, ToolId } from '../../../../../src/store/tools/tools.action';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -83,6 +84,8 @@ describe('ToolContainer', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelectorAll('.tool-container__content.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#close_icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('opens the toolcontainer with draw-content', async () => {

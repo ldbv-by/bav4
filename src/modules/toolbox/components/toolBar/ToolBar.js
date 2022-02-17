@@ -103,21 +103,21 @@ export class ToolBar extends MvuElement {
 					</div>	
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button  @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
+					<button  id='measure_button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
-					<button  @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
+					<button id="draw_button" data-test-id @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
+					<button  id="share_button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">

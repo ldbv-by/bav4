@@ -128,7 +128,7 @@ export class DrawToolContent extends AbstractToolContent {
 		const { mode, validGeometry } = model;
 
 		const getButton = (id, title, onClick) => {
-			return html`<ba-button id=${id} 
+			return html`<ba-button id=${id + '_button'} data-test-id
 								class="tool-container__button" 
 								.label=${title}
 								@click=${onClick}></ba-button>`;
@@ -193,7 +193,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			return html`
-            <button id=${tool.name}
+            <button id=${tool.name + '_button'} data-test-id
                 class="tool-container__button ${classMap(classes)}" 
                 title=${tool.title}
                 @click=${toggle}>

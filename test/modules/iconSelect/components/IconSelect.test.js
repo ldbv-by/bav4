@@ -1,6 +1,7 @@
 import { $injector } from '../../../../src/injection';
 import { IconSelect } from '../../../../src/modules/iconSelect/components/IconSelect';
 import { IconResult } from '../../../../src/services/IconService';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(IconSelect.tag, IconSelect);
@@ -38,6 +39,8 @@ describe('IconSelect', () => {
 			expect(element.shadowRoot.querySelector('ba-icon').title).toBe('foo');
 			expect(element.shadowRoot.querySelector('ba-icon').disabled).toBeTrue();
 			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#symbol_icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 
 		});
 	});
