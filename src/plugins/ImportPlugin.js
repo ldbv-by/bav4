@@ -47,8 +47,11 @@ export class ImportPlugin extends BaPlugin {
 					};
 
 					const geoResource = importByService(url, sourceType);
-					geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
-					return geoResource;
+					if (geoResource) {
+						geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
+						return geoResource;
+					}
+
 				};
 				const importByData = (data, mimeType) => {
 					const sourceType = this._mapMimeTypeToVectorSourceType(mimeType);
@@ -60,9 +63,11 @@ export class ImportPlugin extends BaPlugin {
 				};
 
 				const vectorGeoResource = url ? importByUrl(url) : importByData(data, mimeType);
+				if (vectorGeoResource) {
+					const { id, label } = vectorGeoResource;
+					addLayer(id, { label: label });
+				}
 
-				const { id, label } = vectorGeoResource;
-				addLayer(id, { label: label });
 			}
 			catch (error) {
 				emitNotification(error, LevelTypes.ERROR);

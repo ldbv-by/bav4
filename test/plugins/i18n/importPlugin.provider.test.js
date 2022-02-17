@@ -8,6 +8,7 @@ describe('i18n for FeatureInfoPlugin', () => {
 		const map = provide('en');
 
 		expect(map.importPlugin_url_failed).toBe('Import failed');
+		expect(map.importPlugin_url_not_supported).toBe('This import-type is currently not supported');
 		expect(map.importPlugin_data_failed).toBe('Importing data failed');
 	});
 
@@ -16,12 +17,13 @@ describe('i18n for FeatureInfoPlugin', () => {
 		const map = provide('de');
 
 		expect(map.importPlugin_url_failed).toBe('Import schlug fehl');
+		expect(map.importPlugin_url_not_supported).toBe('Dieser Import-Typ wird aktuell nicht unterstützt');
 		expect(map.importPlugin_data_failed).toBe('Import der Daten schlug fehl');
 	});
 
 	it('have the expected amount of translations', () => {
 
-		const expectedSize = 2;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
