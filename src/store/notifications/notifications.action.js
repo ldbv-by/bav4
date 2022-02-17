@@ -43,8 +43,7 @@ export const emitNotification = (content, level) => {
 
 /**
  * Emits a new fixed notification to the system
- * @param {TemplateResult|null} content The notification content as a lit-html TemplateResult.
- * content === null signals to close the existing fixedNotification
+ * @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
  * @function
 */
 export const emitFixedNotification = (content) => {
