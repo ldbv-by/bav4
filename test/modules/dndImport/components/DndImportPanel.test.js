@@ -131,7 +131,7 @@ describe('DndImportPanel', () => {
 				expect(element.getModel().isActive).toBeTrue();
 			});
 
-			it('updates NOT the model for a dragged but empty type', async () => {
+			it('does NOT update the model for a dragged but empty type', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock };
 				const element = await setup();
 
@@ -141,7 +141,7 @@ describe('DndImportPanel', () => {
 				expect(element.getModel().isActive).toBeFalse();
 			});
 
-			it('updates NOT the model for a dragged but undefined types', async () => {
+			it('does NOT update the model for a dragged but undefined types', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
 				const element = await setup();
 
