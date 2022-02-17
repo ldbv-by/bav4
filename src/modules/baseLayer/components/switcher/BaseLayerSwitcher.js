@@ -56,7 +56,9 @@ export class BaseLayerSwitcher extends MvuElement {
 
 		if (layersStoreReady) {
 
-			// Carefully differentiate between layer ids and geoResource ids!
+			/**
+			 * carefully differentiate between layer ids and geoResource ids!
+			 */
 
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerGeoResourceId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
@@ -67,18 +69,18 @@ export class BaseLayerSwitcher extends MvuElement {
 			const onClick = (geoR) => {
 
 				const add = () => {
-					//we create always a unique layer id
+					// we create always a unique layer id
 					addLayer(`${geoR.id}_${createUniqueId()}`, { label: geoR.label, zIndex: 0, geoResourceId: geoR.id });
 				};
 
 				if (activeLayers.length > 0) {
-					//noting todo when requested base GeoResource already on index=0
+					// noting todo when requested base GeoResource already on index=0
 					if (activeLayers[0].geoResourceId !== geoR.id) {
-						//if we have a layer referencing a base GeoResource on index=0, we remove it
+						// if we have a layer referencing a base GeoResource on index=0, we remove it
 						if (baseGeoRIds.includes(activeLayers[0].geoResourceId)) {
 							removeLayer(activeLayers[0].id);
 						}
-						//add selected layer
+						// add selected layer
 						add();
 					}
 				}
@@ -104,7 +106,7 @@ export class BaseLayerSwitcher extends MvuElement {
 				</div>
 			`;
 		}
-		//Todo: in this case we should render a placeholder
+		// should we render a placeholder for that case?
 		return nothing;
 	}
 
