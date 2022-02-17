@@ -21,6 +21,7 @@ import { LayersPlugin } from '../plugins/LayersPlugin';
 import { PositionPlugin } from '../plugins/PositionPlugin';
 import { TopicsPlugin } from '../plugins/TopicsPlugin';
 import { HighlightPlugin } from '../plugins/HighlightPlugin';
+import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SearchResultService } from '../modules/search/services/SearchResultService';
 import { MediaPlugin } from '../plugins/MediaPlugin';
 import { DrawPlugin } from '../plugins/DrawPlugin';
@@ -71,6 +72,7 @@ $injector
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
+	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
