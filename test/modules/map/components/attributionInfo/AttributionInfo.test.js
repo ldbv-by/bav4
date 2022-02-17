@@ -43,7 +43,7 @@ describe('AttributionInfo', () => {
 
 			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const attribution = [42, 21];
-			wmts.attribution = attribution;
+			wmts.setAttribution(attribution);
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
 
@@ -149,9 +149,9 @@ describe('AttributionInfo', () => {
 			const arrayAttribution2 = ['foo', 'baz'];
 
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			wmts.attribution = arrayAttribution1;
+			wmts.setAttribution(arrayAttribution1);
 			const wmts2 = new WMTSGeoResource('someId2', 'someLabel2', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			wmts2.attribution = arrayAttribution2;
+			wmts2.setAttribution(arrayAttribution2);
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
 			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
@@ -202,7 +202,7 @@ describe('AttributionInfo', () => {
 			const arrayAttribution = ['LDBV', 'Ref42'];
 
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			wmts.attribution = arrayAttribution;
+			wmts.setAttribution(arrayAttribution);
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
 			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
@@ -369,7 +369,7 @@ describe('AttributionInfo', () => {
 			};
 			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const attribution = [42, 21];
-			wmts.attribution = attribution;
+			wmts.setAttribution(attribution);
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();

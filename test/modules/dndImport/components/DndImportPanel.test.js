@@ -10,7 +10,7 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
-describe('FeatureInfoPanel', () => {
+describe('DndImportPanel', () => {
 	let store;
 	const setup = (state) => {
 
@@ -131,24 +131,24 @@ describe('FeatureInfoPanel', () => {
 				expect(element.getModel().isActive).toBeTrue();
 			});
 
-			it('updates the model for a dragged but empty type', async () => {
+			it('does NOT update the model for a dragged but empty type', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock };
 				const element = await setup();
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
-				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().isActive).toBeFalse();
 			});
 
-			it('updates the model for a dragged but undefined types', async () => {
+			it('does NOT update the model for a dragged but undefined types', async () => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: undefined };
 				const element = await setup();
 
 				simulateDragDropEvent('dragenter', dataTransferMock);
 
-				expect(element.getModel().dropzoneContent).toBe('dndImport_import_unknown');
-				expect(element.getModel().isActive).toBeTrue();
+				expect(element.getModel().dropzoneContent).toBeNull();
+				expect(element.getModel().isActive).toBeFalse();
 			});
 		});
 
@@ -225,7 +225,7 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().import.latest.payload.data).toBe('foo');
 				expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
-				expect(store.getState().import.latest.payload.url).toBeUndefined();
+				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
 
 			it('updates the import-store with a dropped file as URL', async () => {
@@ -235,8 +235,8 @@ describe('FeatureInfoPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().import.latest.payload.data).toBeUndefined();
-				expect(store.getState().import.latest.payload.mimeType).toBeUndefined();
+				expect(store.getState().import.latest.payload.data).toBeNull();
+				expect(store.getState().import.latest.payload.mimeType).toBeNull();
 				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
 			});
 
@@ -250,7 +250,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('foo');
 					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
-					expect(store.getState().import.latest.payload.url).toBeUndefined();
+					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
 
@@ -265,7 +265,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
 					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.KML);
-					expect(store.getState().import.latest.payload.url).toBeUndefined();
+					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
 
@@ -279,7 +279,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<gpx>foo</gpx>');
 					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GPX);
-					expect(store.getState().import.latest.payload.url).toBeUndefined();
+					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
 
@@ -294,7 +294,7 @@ describe('FeatureInfoPanel', () => {
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('{type:foo}');
 					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GeoJSON);
-					expect(store.getState().import.latest.payload.url).toBeUndefined();
+					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
 
@@ -394,7 +394,7 @@ describe('FeatureInfoPanel', () => {
 			});
 
 			it('updates the model', async () => {
-				const dataTransferMock = { ...defaultDataTransferMock };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 

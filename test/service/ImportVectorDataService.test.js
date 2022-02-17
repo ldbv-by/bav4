@@ -112,9 +112,9 @@ describe('ImportVectorDataService', () => {
 				const layer = { label: options.label };
 				addLayer(options.id, layer);
 
-				vgr.opacity = .5;
+				vgr.setOpacity(.5);
 				expect(store.getState().layers.active[0].label).toBe(options.label);
-				vgr.label = changedLabel;
+				vgr.setLabel(changedLabel);
 				expect(store.getState().layers.active[0].label).toBe(changedLabel);
 			});
 
@@ -268,9 +268,9 @@ describe('ImportVectorDataService', () => {
 			addLayer(options.id, layer);
 			const vgr = instanceUnderTest.importVectorData(data, options);
 
-			vgr.opacity = .5;
+			vgr.setOpacity(.5);
 			expect(store.getState().layers.active[0].label).toBe(options.label);
-			vgr.label = changedLabel;
+			vgr.setLabel(changedLabel);
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 

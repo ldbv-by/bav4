@@ -4,12 +4,15 @@ import { IMPORT_ADDED } from './import.reducer';
 
 
 /**
- * Request for fitting a map to a geographic extent
- * @typedef {Object} ImportOption
+ * Properties for a import of GeoResources
+ * @typedef {Object} ImportProperties
  * @property {String|null} data the data to import
  * @property {String|null} mimeType the mimeType of the data-property
  * @property {String|null} url the url to a file-like resource
  */
+
+const defaultImportProperties = { url: null, data: null, mimeType: null };
+
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -19,13 +22,13 @@ const getStore = () => {
 export const setUrl = (url) => {
 	getStore().dispatch({
 		type: IMPORT_ADDED,
-		payload: new EventLike({ url: url })
+		payload: new EventLike({ ...defaultImportProperties, url: url })
 	});
 };
 
 export const setData = (data, mimeType) => {
 	getStore().dispatch({
 		type: IMPORT_ADDED,
-		payload: new EventLike({ data: data, mimeType: mimeType })
+		payload: new EventLike({ ...defaultImportProperties, data: data, mimeType: mimeType })
 	});
 };
