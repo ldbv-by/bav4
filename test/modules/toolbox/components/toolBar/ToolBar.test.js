@@ -134,10 +134,11 @@ describe('ToolBarElement', () => {
 			expect(store.getState().tools.current).toBe(ToolId.SHARING);
 			toolButtons[3].click();
 			expect(store.getState().tools.current).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#measure_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#draw_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#share_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#import_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('switches a tool', async () => {
