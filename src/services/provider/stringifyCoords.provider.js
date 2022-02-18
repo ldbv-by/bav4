@@ -31,8 +31,7 @@ export const bvvStringifyFunction = (srid, options = {}) => {
 	if (srid !== 4326) {
 		return createStringUTM(srid, options.digits || 0);
 	}
-	return createStringXY(options.digits || 3);
-
+	return (coordinate) => createStringXY(options.digits || 3)(coordinate.reverse());
 };
 
 const createStringUTM = (srid, digits) => {

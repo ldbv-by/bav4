@@ -14,7 +14,7 @@ describe('StringifyCoord provider', () => {
 			expect(formatedString).toBe('11.572, 48.140');
 		});
 	});
-	describe('BVV specifiv provider', () => {
+	describe('BVV specific provider', () => {
 
 		const coordinateService = {
 			transform() { }
@@ -31,8 +31,9 @@ describe('StringifyCoord provider', () => {
 
 			const formatedString = bvvStringifyFunction(4326)(coord4326, { digits: 3 });
 
-			expect(formatedString).toBe('11.572, 48.140');
+			expect(formatedString).toBe('48.140, 11.572');
 		});
+
 
 		it('stringifies a 25832 zone U coordinate', () => {
 
