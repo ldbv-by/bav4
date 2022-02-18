@@ -9,6 +9,7 @@ import { clearFixedNotification } from '../../../store/notifications/notificatio
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_HasBeenVisible = 'update_hasBeenVisible';
+const Survey_Notification_Delay_Time = 3000;
 /**
  * @class
  * @author alsturm
@@ -20,8 +21,7 @@ export class Survey extends MvuElement {
 			isPortrait: false,
 			hasMinWidth: false,
 			isOpen: false,
-			hasBeenVisible: false,
-			timeout: 3000
+			hasBeenVisible: false
 		});
 
 		const {
@@ -61,7 +61,7 @@ export class Survey extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible, timeout } = model;
+		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible } = model;
 
 
 		const getOrientationClass = () => {
@@ -95,17 +95,15 @@ export class Survey extends MvuElement {
 								</div>
 							</div>
 							<div class='survey__notification-section space-evenly'>							
-								<ba-button id='button1' .label=${'Nein Danke'} @click=${onClose}></ba-button>
-								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link ">
-									${translate('survey_notification_open')}
-								</a>
+								<ba-button id='closeButton' .label=${'Nein Danke'} @click=${onClose}></ba-button>
+								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link">${translate('survey_notification_open')}</a>
 							</div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
 		if (!hasBeenVisible) {
-			window.setTimeout(() => showNotification(), timeout);
+			window.setTimeout(() => showNotification(), Survey_Notification_Delay_Time);
 			this.signal(Update_HasBeenVisible, true);
 		}
 

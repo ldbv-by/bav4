@@ -9,7 +9,7 @@ describe('i18n for coordinate select', () => {
 
 		expect(map.survey_button).toBe('Survey');
 		expect(map.survey_notification_header).toBe('Survey');
-		expect(map.survey_notification_text).toBe('Some Text make you participate');
+		expect(map.survey_notification_text).toBe('What functions would you like to see in the new BayernAtlas');
 		expect(map.survey_notification_close).toBe('no Thanks');
 		expect(map.survey_notification_open).toBe('Sure');
 		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
@@ -22,7 +22,7 @@ describe('i18n for coordinate select', () => {
 
 		expect(map.survey_button).toBe('Umfrage');
 		expect(map.survey_notification_header).toBe('Umfrage');
-		expect(map.survey_notification_text).toBe('Weleche Funktionen wünschen Sie sich für den neuen Bayernatlas?');
+		expect(map.survey_notification_text).toBe('Welche Funktionen wünschen Sie sich für den neuen BayernAtlas?');
 		expect(map.survey_notification_close).toBe('Nein Danke');
 		expect(map.survey_notification_open).toBe('Mitmachen');
 		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');

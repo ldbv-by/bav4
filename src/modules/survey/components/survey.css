@@ -87,5 +87,5 @@ a.survey__notification-link {
 
 a.survey__notification-link:hover {
 	background-color: var(--primary-color);
-	color: var(--primary-bg-color);
+	color: var(--text3);
 }
