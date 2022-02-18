@@ -66,8 +66,8 @@ export class ImportPlugin extends BaPlugin {
 		const geoResource = createGeoResource(url, sourceType);
 		if (geoResource) {
 			geoResource.onReject(() => {
-				console.warn(`Import failed for ${url}`);
-				emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.WARN);
+				console.warn('URL-Import failed');
+				emitNotification(this._translationService.translate('importPlugin_url_failed'), LevelTypes.WARN);
 			});
 			return geoResource;
 		}

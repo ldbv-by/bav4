@@ -113,6 +113,7 @@ describe('ImportPlugin', () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.WMS);
 			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
+			const warnSpy = spyOn(console, 'warn');
 			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
@@ -120,6 +121,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 			setTimeout(() => {
 				expect(spy).not.toHaveBeenCalled();
+				expect(warnSpy).toHaveBeenCalledWith('Import aborted. WMS is currently not supported');
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
@@ -136,13 +138,15 @@ describe('ImportPlugin', () => {
 			const sourceType = new SourceType(SourceTypeName.KML);
 			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
 			spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
+			const warnSpy = spyOn(console, 'warn');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
 			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed:http://some.url');
+				expect(warnSpy).toHaveBeenCalledWith('URL-Import failed');
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
