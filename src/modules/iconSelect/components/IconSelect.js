@@ -123,7 +123,7 @@ export class IconSelect extends MvuElement {
 		<style>${css}</style>
 		<div class='iconselect__container ${getOrientationClass()}'>
 			<div class='catalog_header'>							
-				<button class='iconselect__toggle-button' @click=${onClick}  .title=${model.title} .disabled=${!iconsAvailable}>Symbol auswählen</button>	
+				<button id="symbol-icon" data-test-id class='iconselect__toggle-button' @click=${onClick}  .title=${model.title} .disabled=${!iconsAvailable}>Symbol auswählen</button>	
 			</div>
 			<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
 				${getIcons()}
