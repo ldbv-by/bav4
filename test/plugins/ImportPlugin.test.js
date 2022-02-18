@@ -82,7 +82,7 @@ describe('ImportPlugin', () => {
 
 			setUrl('http://some.url');
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('http://some.url');
+				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
 			});
 
 		});
@@ -101,7 +101,7 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('http://some.url');
+				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('idFoo');
 				expect(store.getState().layers.active[0].label).toBe('labelBar');
@@ -120,8 +120,8 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 			setTimeout(() => {
 				expect(spy).not.toHaveBeenCalled();
-				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_not_supported:wms');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
 
@@ -143,7 +143,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed:http://some.url');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
 		});
@@ -159,7 +159,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('some Error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
 		});
@@ -221,6 +221,20 @@ describe('ImportPlugin', () => {
 			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.GeoJSON)).toBe(VectorSourceType.GEOJSON);
 			expect(instanceUnderTest._mapMimeTypeToVectorSourceType(MediaType.TEXT_PLAIN)).toBeNull();
 			expect(instanceUnderTest._mapMimeTypeToVectorSourceType('some')).toBeNull();
+		});
+	});
+
+	describe('_mapSourceTypeToVectorSourceType', () => {
+
+		it('maps a SourceType to a VectorSourceType', () => {
+			setup();
+			const instanceUnderTest = new ImportPlugin();
+
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType()).toBeNull();
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.WMS))).toBeNull();
 		});
 	});
 

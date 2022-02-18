@@ -38,7 +38,7 @@ export class ImportPlugin extends BaPlugin {
 				}
 			}
 			catch (error) {
-				emitNotification(error, LevelTypes.ERROR);
+				emitNotification(error, LevelTypes.WARN);
 			}
 		};
 
@@ -53,45 +53,45 @@ export class ImportPlugin extends BaPlugin {
 	async _importByUrl(url) {
 		const sourceType = await this._sourceTypeService.forURL(url);
 		const createGeoResource = (url, sourceType) => {
+			const warnOnRasterSourceType = () => {
+				console.warn('Import aborted. WMS is currently not supported');
+				emitNotification(`${this._translationService.translate('importPlugin_url_wms_not_supported')}`, LevelTypes.WARN);
+			};
 			if (sourceType) {
-				switch (sourceType.name) {
-					case SourceTypeName.KML:
-					case SourceTypeName.GPX:
-					case SourceTypeName.GEOJSON:
-						return this._importVectorDataService.importVectorDataFromUrl(url);
-					default:
-						emitNotification(`${this._translationService.translate('importPlugin_url_not_supported')}:${sourceType.name}`, LevelTypes.ERROR);
-				}
+				return sourceType.name === SourceTypeName.WMS ? warnOnRasterSourceType() : this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
 			}
 			return null;
 		};
 
 		const geoResource = createGeoResource(url, sourceType);
 		if (geoResource) {
-			geoResource.onReject(() => emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.ERROR));
+			geoResource.onReject(() => {
+				console.warn(`Import failed for ${url}`);
+				emitNotification(`${this._translationService.translate('importPlugin_url_failed')}:${url}`, LevelTypes.WARN);
+			});
 			return geoResource;
 		}
 
 	}
 
 	/**
-	 * Imports the data as local {@link GeoResource}
-	 * @param {string} data the local data
-	 * @param {string} mimeType the mimeType of the data
-	 * @returns {GeoResource|null} the imported GeoResource or null on failure
-	 */
+	  * Imports the data as local {@link GeoResource}
+	  * @param {string} data the local data
+	  * @param {string} mimeType the mimeType of the data
+	  * @returns {GeoResource|null} the imported GeoResource or null on failure
+	  */
 	_importByData(data, mimeType) {
 		const sourceType = this._mapMimeTypeToVectorSourceType(mimeType);
 		const vectorGeoResource = this._importVectorDataService.importVectorData(data, { sourceType: sourceType });
 		if (vectorGeoResource) {
 			return vectorGeoResource;
 		}
-		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
+		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.WARN);
 	}
 
 	/**
-	 * Maps a mimeType as {@link MediaType} to a {@link VectorSourceType}
-	 */
+	  * Maps a mimeType as {@link MediaType} to a {@link VectorSourceType}
+	*/
 	_mapMimeTypeToVectorSourceType(mimeType) {
 		switch (mimeType) {
 			case MediaType.GPX:
@@ -103,5 +103,22 @@ export class ImportPlugin extends BaPlugin {
 			default:
 				return null;
 		}
+	}
+
+	/**
+	  * Maps a {@link SourceType} to a {@link VectorSourceType}
+	*/
+	_mapSourceTypeToVectorSourceType(sourceType) {
+		if (sourceType) {
+			switch (sourceType.name) {
+				case SourceTypeName.GEOJSON:
+					return VectorSourceType.GEOJSON;
+				case SourceTypeName.GPX:
+					return VectorSourceType.GPX;
+				case SourceTypeName.KML:
+					return VectorSourceType.KML;
+			}
+		}
+		return null;
 	}
 }
