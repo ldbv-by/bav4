@@ -18,7 +18,6 @@ import { $injector } from '../../injection';
  * @returns {stringifyCoordProvider}
  */
 export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
-
 	return srid === 4326 ? createStringLatLong(options.digits) : createStringXY(options.digits);
 };
 
