@@ -121,18 +121,16 @@
 }
 
 .is-portrait .main-menu__close-button {
-	position: absolute;
-	top: unset;
-	left: 50%;
-	right: 0em;
-	border-radius: 2em 2em 0 0;
-	border-radius: 2em;
-	width: 4em;
-	margin-left: -2em;
-	margin-top: -2em;
-	height: 4em;
-	bottom: -2em;
-	background: var(--header-background-color);
+    position: absolute;
+    top: unset;
+    left: 50%;
+    bottom: 0em;
+    right: 0em;
+    border-radius: 2em 2em 0 0;
+    width: 4em;
+    margin-left: -2em;
+    height: 2.5em;
+    background: var(--secondary-color);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
@@ -402,9 +400,9 @@ input[type="range"]:focus {
 }
 
 .is-portrait .resize-icon {
-	transform: rotate(270deg);
-	position: relative;
-	top: .1em;
-	left: -.1em;
-	/* background: var(--primary-bg-color); */
+    transform: rotate(270deg);
+    position: relative;
+    top: .1em;
+    left: -.1em;
+    background: var(--primary-bg-color);
 }
