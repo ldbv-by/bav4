@@ -35,8 +35,12 @@ Next-generation web-map viewer based on web standards.
 
 ### Prerequisites
 
-- Node.js 14
-- npm 6
+- Node.js 16
+- npm 8
+
+Using [nvm](https://github.com/nvm-sh/nvm) simply run:
+
+`nvm install && nvm use`
 
 ### Install
 
