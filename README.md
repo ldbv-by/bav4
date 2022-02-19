@@ -38,9 +38,7 @@ Next-generation web-map viewer based on web standards.
 - Node.js 16
 - npm 8
 
-Using [nvm](https://github.com/nvm-sh/nvm) simply run:
-
-`nvm install && nvm use`
+With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 
 ### Install
 
