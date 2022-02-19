@@ -5,16 +5,25 @@ describe('StringifyCoord provider', () => {
 
 	describe('default provider', () => {
 
-		it('stringifies a coordinate', () => {
+		it('stringifies a 4326 coordinate', () => {
 
 			const coord4326 = [11.57245, 48.14021];
 
 			const formatedString = defaultStringifyFunction(4326)(coord4326, { digits: 3 });
 
-			expect(formatedString).toBe('11.572, 48.140');
+			expect(formatedString).toBe('48.140, 11.572');
+		});
+
+		it('stringifies a coordinate', () => {
+
+			const coord = [1234.5678, 9876.54321];
+			const srid = 1234;
+			const formatedString = defaultStringifyFunction(srid)(coord, { digits: 3 });
+
+			expect(formatedString).toBe('1234.568, 9876.543');
 		});
 	});
-	describe('BVV specifiv provider', () => {
+	describe('BVV specific provider', () => {
 
 		const coordinateService = {
 			transform() { }
@@ -31,8 +40,9 @@ describe('StringifyCoord provider', () => {
 
 			const formatedString = bvvStringifyFunction(4326)(coord4326, { digits: 3 });
 
-			expect(formatedString).toBe('11.572, 48.140');
+			expect(formatedString).toBe('48.140, 11.572');
 		});
+
 
 		it('stringifies a 25832 zone U coordinate', () => {
 
