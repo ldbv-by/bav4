@@ -25,7 +25,7 @@ describe('sourceType provider', () => {
 
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const type = 'name';
+			const name = 'name';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
@@ -43,7 +43,7 @@ describe('sourceType provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(sourceTypeResult).toBeInstanceOf(SourceType);
-			expect(sourceTypeResult.name).toBe(type);
+			expect(sourceTypeResult.name).toBe(name);
 			expect(sourceTypeResult.version).toBe(version);
 		});
 
