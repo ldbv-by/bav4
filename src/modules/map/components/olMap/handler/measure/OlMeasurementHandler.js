@@ -342,7 +342,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (this._modify && this._modify.getActive()) {
 			const additionalRemoveAction = (f) => this._overlayService.remove(f, this._map);
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer, additionalRemoveAction);
-			setSelection([]);
+			this._setSelection([]);
 			this._updateStatistics();
 			this._updateMeasureState();
 		}
