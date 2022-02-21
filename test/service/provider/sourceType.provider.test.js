@@ -28,8 +28,8 @@ describe('sourceType provider', () => {
 			const type = 'name';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const expectedArgs0 = backendUrl + `sourceType?url=${url}`;
-			const sourceTypeResultPayload = { type: 'name', version: 'version' };
+			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
+			const sourceTypeResultPayload = { name: 'name', version: 'version' };
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -52,7 +52,7 @@ describe('sourceType provider', () => {
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const expectedArgs0 = backendUrl + `sourceType?url=${url}`;
+			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 204 })
 			));
@@ -69,7 +69,7 @@ describe('sourceType provider', () => {
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const expectedArgs0 = backendUrl + `sourceType?url=${url}`;
+			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(null, { status: 500 })
 			));
