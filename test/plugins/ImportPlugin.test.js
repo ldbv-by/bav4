@@ -140,7 +140,7 @@ describe('ImportPlugin', () => {
 			setTimeout(() => {
 				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			});
 		});
 
@@ -180,7 +180,7 @@ describe('ImportPlugin', () => {
 
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			});
 		});
 	});
@@ -225,7 +225,7 @@ describe('ImportPlugin', () => {
 
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			});
 		});
 	});
