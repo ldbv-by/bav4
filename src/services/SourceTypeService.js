@@ -21,25 +21,21 @@ export class SourceTypeService {
 	/**
      *
      * @param {string} url
+	 * @throws Error of the underlying provider
      * @returns {SourceType|null} sourceType or `null` when no source type was detected
      */
 	async forUrl(url) {
 		if (!isHttpUrl(url)) {
 			throw new TypeError('Parameter <url> must represent an Http URL');
 		}
-		try {
-			return await this._urlSourceTypeProvider(url);
-		}
-		catch (e) {
-			throw new Error(`Could not detect a SourceType: ${e}`);
-		}
+		return await this._urlSourceTypeProvider(url);
 	}
 
 	/**
      *
-     * @param {string} data
-     * @param {string} [mediaType]
-     * @returns {SourceType|null} sourceType or `null` when no source type was detected
+	 * @param {string} data
+	 * @param {string} [mediaType]
+	 * @returns {SourceType|null} sourceType or `null` when no source type was detected
      */
 	forData(data, mediaType = null) {
 		return this._dataSourceTypeProvider(data, mediaType);

@@ -63,7 +63,7 @@ describe('SourceTypeService', () => {
 				throw new Error('Promise should not be resolved');
 			}
 			catch (e) {
-				expect(e.message).toBe(`Could not detect a SourceType: ${errorMessage}`);
+				expect(e).toBe(`${errorMessage}`);
 				expect(providerSpy).toHaveBeenCalled();
 			}
 		});
