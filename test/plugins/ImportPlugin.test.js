@@ -59,7 +59,7 @@ describe('ImportPlugin', () => {
 
 	describe('when import.url property changes', () => {
 
-		it('calls the sourceTypeService', async () => {
+		it('calls the sourceTypeService', async (done) => {
 			const store = setup();
 			const spy = spyOn(sourceTypeServiceMock, 'forUrl');
 			const instanceUnderTest = new ImportPlugin();
@@ -69,10 +69,11 @@ describe('ImportPlugin', () => {
 
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url');
+				done();
 			});
 		});
 
-		it('calls the ImportVectorDataService for vector-url', async () => {
+		it('calls the ImportVectorDataService for vector-url', async (done) => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
 			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
@@ -84,11 +85,12 @@ describe('ImportPlugin', () => {
 
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
+				done();
 			});
 
 		});
 
-		it('adds a layer', async () => {
+		it('adds a layer', async (done) => {
 			const store = setup();
 			const geoResourceFutureMock = {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
@@ -109,11 +111,12 @@ describe('ImportPlugin', () => {
 				expect(store.getState().layers.active[0].id).toBe('idFoo');
 				expect(store.getState().layers.active[0].label).toBe('labelBar');
 				expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledWith(sourceType);
+				done();
 			});
 
 		});
 
-		it('emits a notification and logs a warning when sourceTypeService returns NULL', async () => {
+		it('emits a notification and logs a warning when sourceTypeService returns NULL', async (done) => {
 			const store = setup();
 			spyOn(sourceTypeServiceMock, 'forUrl').and.returnValue(null);
 			const instanceUnderTest = new ImportPlugin();
@@ -124,10 +127,11 @@ describe('ImportPlugin', () => {
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				done();
 			});
 		});
 
-		it('emits a notification and logs a warning when sourceTypeService throws an error', async () => {
+		it('emits a notification and logs a warning when sourceTypeService throws an error', async (done) => {
 			const store = setup();
 			const errorMessage = 'oops';
 			spyOn(sourceTypeServiceMock, 'forUrl').and.rejectWith(errorMessage);
@@ -141,10 +145,11 @@ describe('ImportPlugin', () => {
 				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				done();
 			});
 		});
 
-		it('emits a notification for unsupported WMS urls', async () => {
+		it('emits a notification for unsupported WMS urls', async (done) => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.WMS);
 			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
@@ -158,11 +163,12 @@ describe('ImportPlugin', () => {
 				expect(spy).not.toHaveBeenCalled();
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				done();
 			});
 		});
 
 
-		it('emits a notification when GeoResourceFuture rejects', async () => {
+		it('emits a notification when GeoResourceFuture rejects', async (done) => {
 			const store = setup();
 			const geoResourceFutureMock = {
 				id: 'idFoo', label: 'labelBar', onReject: (f) => {
@@ -181,6 +187,7 @@ describe('ImportPlugin', () => {
 			setTimeout(() => {
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				done();
 			});
 		});
 	});
