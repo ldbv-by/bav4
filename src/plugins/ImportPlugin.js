@@ -57,7 +57,7 @@ export class ImportPlugin extends BaPlugin {
 						return this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
 				}
 			}
-			emitNotification(`${this._translationService.translate('importPlugin_url_wms_not_supported')}`, LevelTypes.WARN);
+			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
 			return null;
 		};
 

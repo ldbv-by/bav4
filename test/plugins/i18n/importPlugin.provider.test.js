@@ -8,8 +8,8 @@ describe('i18n for FeatureInfoPlugin', () => {
 		const map = provide('en');
 
 		expect(map.importPlugin_url_failed).toBe('URL-Import failed');
-		expect(map.importPlugin_url_wms_not_supported).toBe('WMS-Import is currently not supported');
 		expect(map.importPlugin_data_failed).toBe('Importing data failed');
+		expect(map.importPlugin_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
 	});
 
 	it('provides translation for de', () => {
@@ -17,8 +17,8 @@ describe('i18n for FeatureInfoPlugin', () => {
 		const map = provide('de');
 
 		expect(map.importPlugin_url_failed).toBe('URL-Import schlug fehl');
-		expect(map.importPlugin_url_wms_not_supported).toBe('WMS-Import wird aktuell nicht unterstützt');
 		expect(map.importPlugin_data_failed).toBe('Import der Daten schlug fehl');
+		expect(map.importPlugin_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
 	});
 
 	it('have the expected amount of translations', () => {

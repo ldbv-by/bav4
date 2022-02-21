@@ -122,7 +122,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url');
 
 			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
@@ -156,7 +156,7 @@ describe('ImportPlugin', () => {
 
 			setTimeout(() => {
 				expect(spy).not.toHaveBeenCalled();
-				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
