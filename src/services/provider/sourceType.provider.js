@@ -31,8 +31,8 @@ export const bvvUrlSourceTypeProvider = async (url) => {
 
 	switch (result.status) {
 		case 200: {
-			const { name, version } = await result.json();
-			return new SourceType(name, version);
+			const { type, version } = await result.json();
+			return new SourceType(type, version);
 		}
 		case 204: {
 			return null;
