@@ -11,6 +11,7 @@ import { SourceTypeName } from '../services/SourceTypeService';
 /**
  * @class
  * @author thiloSchlemmer
+ * @author taulinger
  */
 export class ImportPlugin extends BaPlugin {
 	constructor() {
@@ -30,15 +31,11 @@ export class ImportPlugin extends BaPlugin {
 
 		const onChange = async (latestImport) => {
 			const { payload: { url, data, mimeType } } = latestImport;
-			try {
-				const vectorGeoResource = url ? await this._importByUrl(url) : this._importByData(data, mimeType);
-				if (vectorGeoResource) {
-					const { id, label } = vectorGeoResource;
-					addLayer(id, { label: label });
-				}
-			}
-			catch (error) {
-				emitNotification(error, LevelTypes.WARN);
+
+			const geoResource = url ? await this._importByUrl(url) : this._importByData(data, mimeType);
+			if (geoResource) {
+				const { id, label } = geoResource;
+				addLayer(id, { label: label });
 			}
 		};
 
@@ -51,27 +48,35 @@ export class ImportPlugin extends BaPlugin {
 	 * @returns {Promise<GeoResource>} the imported GeoResource
 	 */
 	async _importByUrl(url) {
-		const sourceType = await this._sourceTypeService.forURL(url);
 		const createGeoResource = (url, sourceType) => {
-			const warnOnRasterSourceType = () => {
-				console.warn('Import aborted. WMS is currently not supported');
-				emitNotification(`${this._translationService.translate('importPlugin_url_wms_not_supported')}`, LevelTypes.WARN);
-			};
 			if (sourceType) {
-				return sourceType.name === SourceTypeName.WMS ? warnOnRasterSourceType() : this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+				switch (sourceType.name) {
+					case SourceTypeName.KML:
+					case SourceTypeName.GPX:
+					case SourceTypeName.GEOJSON:
+						return this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+				}
 			}
+			emitNotification(`${this._translationService.translate('importPlugin_url_wms_not_supported')}`, LevelTypes.WARN);
 			return null;
 		};
 
-		const geoResource = createGeoResource(url, sourceType);
-		if (geoResource) {
-			geoResource.onReject(() => {
-				console.warn('URL-Import failed');
-				emitNotification(this._translationService.translate('importPlugin_url_failed'), LevelTypes.WARN);
-			});
-			return geoResource;
+		try {
+			const sourceType = await this._sourceTypeService.forUrl(url);
+			const geoResource = createGeoResource(url, sourceType);
+			if (geoResource) {
+				geoResource.onReject(() => {
+					emitNotification(this._translationService.translate('importPlugin_url_failed'), LevelTypes.WARN);
+				});
+				return geoResource;
+			}
+		}
+		catch (error) {
+			console.warn(error);
+			emitNotification(this._translationService.translate('importPlugin_url_failed'), LevelTypes.WARN);
 		}
 
+		return null;
 	}
 
 	/**
@@ -87,6 +92,7 @@ export class ImportPlugin extends BaPlugin {
 			return vectorGeoResource;
 		}
 		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.WARN);
+		return null;
 	}
 
 	/**

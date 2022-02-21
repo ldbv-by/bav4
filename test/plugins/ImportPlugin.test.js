@@ -19,7 +19,7 @@ describe('ImportPlugin', () => {
 	};
 
 	const sourceTypeServiceMock = {
-		forURL: () => false,
+		forUrl: () => false,
 		forData: () => false
 	};
 
@@ -61,26 +61,27 @@ describe('ImportPlugin', () => {
 
 		it('calls the sourceTypeService', async () => {
 			const store = setup();
-			const spy = spyOn(sourceTypeServiceMock, 'forURL');
+			const spy = spyOn(sourceTypeServiceMock, 'forUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
+
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url');
 			});
-
 		});
 
 		it('calls the ImportVectorDataService for vector-url', async () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
+			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
 			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
+
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
 			});
@@ -93,42 +94,75 @@ describe('ImportPlugin', () => {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
+			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
 			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
+			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.returnValue(VectorSourceType.KML);
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
+
 			setTimeout(() => {
 				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('idFoo');
 				expect(store.getState().layers.active[0].label).toBe('labelBar');
+				expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledWith(sourceType);
 			});
 
 		});
 
-		it('does NOT calls the ImportVectorDataService for unsupported URLs', async () => {
+		it('emits a notification and logs a warning when sourceTypeService returns NULL', async () => {
+			const store = setup();
+			spyOn(sourceTypeServiceMock, 'forUrl').and.returnValue(null);
+			const instanceUnderTest = new ImportPlugin();
+			await instanceUnderTest.register(store);
+
+			setUrl('http://some.url');
+
+			setTimeout(() => {
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
+		});
+
+		it('emits a notification and logs a warning when sourceTypeService throws an error', async () => {
+			const store = setup();
+			const errorMessage = 'oops';
+			spyOn(sourceTypeServiceMock, 'forUrl').and.rejectWith(errorMessage);
+			const warnSpy = spyOn(console, 'warn');
+			const instanceUnderTest = new ImportPlugin();
+			await instanceUnderTest.register(store);
+
+			setUrl('http://some.url');
+
+			setTimeout(() => {
+				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
+		});
+
+		it('emits a notification for unsupported WMS urls', async () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.WMS);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
-			const warnSpy = spyOn(console, 'warn');
+			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
 			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			setUrl('http://some.url');
+
 			setTimeout(() => {
 				expect(spy).not.toHaveBeenCalled();
-				expect(warnSpy).toHaveBeenCalledWith('Import aborted. WMS is currently not supported');
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_wms_not_supported');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
 
 
-		it('does NOT add a layer, emits notification on failure', async () => {
+		it('emits a notification when GeoResourceFuture rejects', async () => {
 			const store = setup();
 			const geoResourceFutureMock = {
 				id: 'idFoo', label: 'labelBar', onReject: (f) => {
@@ -136,53 +170,22 @@ describe('ImportPlugin', () => {
 				}
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => sourceType);
+			spyOn(sourceTypeServiceMock, 'forUrl').and.callFake(() => sourceType);
 			spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
-			const warnSpy = spyOn(console, 'warn');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url');
+
 			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('URL-Import failed');
 				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
-
-		});
-
-		it('does NOT add a layer, emits notification on error', async () => {
-			const store = setup();
-
-			spyOn(sourceTypeServiceMock, 'forURL').and.callFake(() => Promise.reject('some Error'));
-			const instanceUnderTest = new ImportPlugin();
-			await instanceUnderTest.register(store);
-
-			expect(store.getState().layers.active.length).toBe(0);
-			setUrl('http://some.url');
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('some Error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			});
-
 		});
 	});
 
 	describe('when import.data property changes', () => {
-
-		it('does NOT calls the sourceTypeService', async () => {
-			const store = setup();
-			const spy = spyOn(sourceTypeServiceMock, 'forData');
-
-			const instanceUnderTest = new ImportPlugin();
-			await instanceUnderTest.register(store);
-
-			setData('<kml some=thing></kml>', MediaType.KML);
-
-
-			expect(spy).not.toHaveBeenCalled();
-		});
 
 		it('calls the ImportVectorDataService', async () => {
 			const store = setup();
@@ -192,16 +195,15 @@ describe('ImportPlugin', () => {
 
 			setData('<kml some=thing></kml>', MediaType.KML);
 
-
 			expect(spy).toHaveBeenCalledWith('<kml some=thing></kml>', { sourceType: VectorSourceType.KML });
 		});
 
 		it('adds a layer', async () => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
-
 			spyOn(importVectorDataServiceMock, 'importVectorData').and.callFake(() => geoResourceStub);
 			const instanceUnderTest = new ImportPlugin();
+			const mapMimeTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapMimeTypeToVectorSourceType').and.returnValue(VectorSourceType.KML);
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
@@ -210,6 +212,21 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().layers.active[0].label).toBe('labelBar');
+			expect(mapMimeTypeToVectorSourceTypeSpy).toHaveBeenCalledWith(MediaType.KML);
+		});
+
+		it('emits a notification when importVectorDataService returns NULL', async () => {
+			const store = setup();
+			spyOn(importVectorDataServiceMock, 'importVectorData').and.returnValue(null);
+			const instanceUnderTest = new ImportPlugin();
+			await instanceUnderTest.register(store);
+
+			setData('<kml some=thing></kml>', MediaType.KML);
+
+			setTimeout(() => {
+				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
 		});
 	});
 
