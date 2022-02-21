@@ -27,7 +27,7 @@ export const bvvUrlSourceTypeProvider = async (url) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
-	const result = await httpService.get(`${endpointUrl}?url=${url}`);
+	const result = await httpService.get(`${endpointUrl}?url=${encodeURIComponent(url)}`);
 
 	switch (result.status) {
 		case 200: {
