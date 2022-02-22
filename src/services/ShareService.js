@@ -105,8 +105,9 @@ export class ShareService {
 	*/
 	_extractLayers() {
 		const {
-			StoreService: storeService
-		} = $injector.inject('StoreService');
+			StoreService: storeService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
 
@@ -118,6 +119,7 @@ export class ShareService {
 		let layer_opacity = [];
 		activeLayers
 			.filter(l => !l.constraints.hidden)
+			.filter(l => !geoResourceService.byId(l.geoResourceId).hidden)
 			.forEach(l => {
 				layer.push(l.id);
 				layer_visibility.push(l.visible);

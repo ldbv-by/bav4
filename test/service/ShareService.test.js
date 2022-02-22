@@ -20,6 +20,9 @@ describe('ShareService', () => {
 		getDefaultSridForView: () => { },
 		getSrid: () => { }
 	};
+	const geoResourceService = {
+		byId: () => { }
+	};
 
 	const setup = (state) => {
 
@@ -30,7 +33,8 @@ describe('ShareService', () => {
 		});
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
-			.registerSingleton('MapService', mapService);
+			.registerSingleton('MapService', mapService)
+			.registerSingleton('GeoResourceService', geoResourceService);
 
 		return store;
 	};
@@ -79,10 +83,11 @@ describe('ShareService', () => {
 
 	describe('encode current state to url', () => {
 
-		describe('_extractLayersState', () => {
+		describe('_extractLayers', () => {
 			it('extracts the current layers state', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
+				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer');
 				addLayer('anotherLayer');
 
@@ -92,10 +97,26 @@ describe('ShareService', () => {
 				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
 			});
 
-			it('extracts the current layers state ignoring hidden layer', () => {
+			it('extracts the current layers state ignoring hidden layers', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
+				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { constraints: { hidden: true } });
+				addLayer('anotherLayer');
+
+				const extract = instanceUnderTest._extractLayers();
+				expect(extract[QueryParameters.LAYER]).toEqual(['anotherLayer']);
+				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+			});
+
+			it('extracts the current layers state ignoring hidden geoResources', () => {
+				setup();
+				const instanceUnderTest = new ShareService();
+				spyOn(geoResourceService, 'byId').and.callFake(id => {
+					return id === 'someLayer' ? { hidden: true } : { };
+				});
+				addLayer('someLayer');
 				addLayer('anotherLayer');
 
 				const extract = instanceUnderTest._extractLayers();
@@ -107,6 +128,7 @@ describe('ShareService', () => {
 			it('extracts the current layers state considering non default values', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
+				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
 				addLayer('someLayer', { opacity: 0.5 });
 				addLayer('anotherLayer', { visible: false });
 
@@ -117,32 +139,32 @@ describe('ShareService', () => {
 			});
 		});
 
-		describe('_extractLayersState', () => {
-			it('extracts the current layers state', () => {
-				setup();
-				const instanceUnderTest = new ShareService();
-				addLayer('someLayer');
-				addLayer('anotherLayer');
+		// describe('_extractLayersState', () => {
+		// 	it('extracts the current layers state', () => {
+		// 		setup();
+		// 		const instanceUnderTest = new ShareService();
+		// 		addLayer('someLayer');
+		// 		addLayer('anotherLayer');
 
-				const extract = instanceUnderTest._extractLayers();
-				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
-				expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
-				expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
-			});
+		// 		const extract = instanceUnderTest.c();
+		// 		expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
+		// 		expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
+		// 		expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
+		// 	});
 
-			it('extracts the current layers state considering non default values', () => {
-				setup();
-				const instanceUnderTest = new ShareService();
-				addLayer('someLayer', { opacity: 0.5 });
-				addLayer('anotherLayer', { visible: false });
+		// 	it('extracts the current layers state considering non default values', () => {
+		// 		setup();
+		// 		const instanceUnderTest = new ShareService();
+		// 		addLayer('someLayer', { opacity: 0.5 });
+		// 		addLayer('anotherLayer', { visible: false });
 
-				const extract = instanceUnderTest._extractLayers();
+		// 		const extract = instanceUnderTest._extractLayers();
 
-				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
-				expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0]);
-				expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false]);
-			});
-		});
+		// 		expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
+		// 		expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0]);
+		// 		expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false]);
+		// 	});
+		// });
 
 		describe('_extractPosition', () => {
 
