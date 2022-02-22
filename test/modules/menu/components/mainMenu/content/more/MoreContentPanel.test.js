@@ -34,9 +34,7 @@ describe('MoreContentPanel', () => {
 
 		it('checks the list ', async () => {
 			const element = await setup();
-
-			expect(element.shadowRoot.querySelectorAll('ul')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('li').length).toBe(13);
+			expect(element.shadowRoot.querySelectorAll('a').length).toBe(8);
 		});
 	});
 });

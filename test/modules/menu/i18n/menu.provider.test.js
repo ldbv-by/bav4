@@ -18,6 +18,7 @@ describe('i18n for menu module', () => {
 		expect(map.more_content_panel_github).toBe('GitHub');
 		expect(map.more_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
 		expect(map.more_content_panel_privacy_policy).toBe('Datenschutzerklärung');
+		expect(map.more_content_panel_imprint).toBe('Impressum');
 		expect(map.more_content_panel_more_links).toBe('weitere Links');
 		expect(map.more_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.more_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden');
@@ -40,6 +41,7 @@ describe('i18n for menu module', () => {
 		expect(map.more_content_panel_github).toBe('GitHub');
 		expect(map.more_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.more_content_panel_privacy_policy).toBe('Privacy Policy');
+		expect(map.more_content_panel_imprint).toBe('Imprint');
 		expect(map.more_content_panel_more_links).toBe('more Links');
 		expect(map.more_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.more_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden');
@@ -49,7 +51,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 16;
+		const expectedSize = 17;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -43,8 +43,16 @@
 	-webkit-mask-image: url('assets/git.svg');
 	transform: scale(.7);
 }
+.imprint {
+	mask-image: url('assets/imprint.svg');
+	-webkit-mask-image: url('assets/imprint.svg');
+	transform: scale(.7);
+}
 .gb {
 	background: url('assets/gb.svg');
+}
+.de {
+	background: url('assets/de.svg');
 }
 .geoportal {
 	background-color: transparent;

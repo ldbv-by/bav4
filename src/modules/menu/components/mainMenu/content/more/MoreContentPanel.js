@@ -40,31 +40,31 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 
 		return html`
 		<style>${css}</style>
-        <ul class="ba-list">	
-			<li class="ba-list-item  ba-list-item__header">
+        <div class="ba-list">	
+			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">
 						${translate('more_content_panel_settings')}						
 					</span>
 				</span>
-			</li>		
-			<li  class="ba-list-item">
+			</div>		
+			<div  class="ba-list-item">
 				<span class="ba-list-item__text vertical-center">   
 					${translate('more_content_panel_dark_mode')}		                            
 				</span>
 				<span class="ba-list-item__after">
 					<ba-theme-toggle></ba-theme-toggle>
 				</span>
-			</li>
-			<li  class="ba-list-item">
+			</div>
+			<div  class="ba-list-item">
 				<span class="ba-list-item__text vertical-center">            
 					${translate('more_content_panel_fullscreen')}	                  
 				</span>
 				<span class="ba-list-item__after">
 					<ba-toggle id='toggleFullScreen' .title=${'Toggle'}   @toggle=${onToggleFullScreen} ></ba-toggle>
 				</span>
-			</li>
-			<li  class="ba-list-item divider">
+			</div>
+			<div  class="ba-list-item divider">
 				<span class="ba-list-item__text vertical-center">            
 					${translate('more_content_panel_language')}	                   
 				</span>
@@ -72,15 +72,19 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 					<div class='flag gb'>
 					</div>
 				</span>
-			</li>
-			<li class="ba-list-item  ba-list-item__header">
+				<span class="ba-list-item__after">
+					<div class='flag de'>
+					</div>
+				</span>
+			</div>
+			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">
 						${translate('more_content_panel_information')}	
 					</span>
 				</span>
-			</li>		
-			<li class="ba-list-item" >
+			</div>		
+			<a class="ba-list-item" href='https://www.ldbv.bayern.de/hilfe.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon help">				
 					</span>
@@ -88,8 +92,8 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 				<span class="ba-list-item__text vertical-center">				
 					${translate('more_content_panel_help')}		            
 				</span>
-			</li>  
-			<li class="ba-list-item" >
+			</a>  
+			<a class="ba-list-item"  href='https://www.ldbv.bayern.de/service/kontakt.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon contact">
 					</span>
@@ -97,8 +101,8 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 				<span class="ba-list-item__text vertical-center">				
 					${translate('more_content_panel_Contact')}		            	            
 				</span>
-			</li>  
-			<li class="ba-list-item" >
+			</a>  
+			<a class="ba-list-item"  href='https://github.com/ldbv-by/bav4-nomigration' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon git">
 					</span>
@@ -106,8 +110,8 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 				<span class="ba-list-item__text vertical-center">				
 					${translate('more_content_panel_github')}		            	            		            
 				</span>
-			</li>  
-			<li class="ba-list-item" >
+			</a>  
+			<a class="ba-list-item"  href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon checklist">					
 					</span>
@@ -115,25 +119,33 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 				<span class="ba-list-item__text vertical-center">				
 					${translate('more_content_panel_terms_of_use')}		            	            		            	            
 				</span>
-			</li>  
-			<li class="ba-list-item divider" >
+			</a>  
+			<a class="ba-list-item"  href='https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html' target='_blank'>
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon icon lock">
-					
+					<span class="ba-list-item__icon icon lock">				
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
 					${translate('more_content_panel_privacy_policy')}			            
 				</span>
-			</li>  
-			<li class="ba-list-item  ba-list-item__header">
+			</a>  
+			<a class="ba-list-item divider"  href='https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' target='_blank'>
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon icon imprint">				
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_imprint')}			            
+				</span>
+			</a>  
+			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">
 						${translate('more_content_panel_more_links')}
 					</span>
 				</span>
-			</li>	
-			<li class="ba-list-item">
+			</div>	
+			<a class="ba-list-item" href='https://geodatenonline.bayern.de/geodatenonline' target='_blank'>
 				<span class="ba-list-item__pre ">
 					<span class="ba-list-item__image image gdo">
 					</span>
@@ -146,8 +158,8 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 						${translate('more_content_panel_gdo_text')}
 					</span>
 				</span>
-			</li>             
-			<li class="ba-list-item">
+			</a>             
+			<a class="ba-list-item" href='https://www.geoportal.bayern.de/geoportalbayern' target='_blank'>
 				<span class="ba-list-item__pre ">
 					<span class="ba-list-item__image image geoportal">
 					</span>
@@ -160,8 +172,8 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 						${translate('more_content_panel_gp_text')}	
 					</span>
 				</span>
-			</li>             		          
-		</ul>
+			</a>             		          
+		</div>
     `;
 	}
 
