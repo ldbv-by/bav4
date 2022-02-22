@@ -1,3 +1,4 @@
+
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './moreContentPanel.css';
@@ -69,11 +70,9 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 					${translate('more_content_panel_language')}	                   
 				</span>
 				<span class="ba-list-item__after">
-					<div class='flag gb'>
-					</div>
-				</span>
-				<span class="ba-list-item__after">
 					<div class='flag de'>
+					</div>
+					<div class='flag gb'>
 					</div>
 				</span>
 			</div>
