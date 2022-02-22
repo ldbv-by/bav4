@@ -84,12 +84,12 @@ describe('ShareService', () => {
 	describe('encode current state to url', () => {
 
 		describe('_extractLayers', () => {
-			it('extracts the current layers state', () => {
+			it('extracts the current layers state using the GeoResource id', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.returnValue({ hidden: false });
-				addLayer('someLayer');
-				addLayer('anotherLayer');
+				addLayer('someLayer_123', { geoResourceId: 'someLayer' });
+				addLayer('anotherLayer_123', { geoResourceId: 'anotherLayer' });
 
 				const extract = instanceUnderTest._extractLayers();
 				expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
