@@ -358,11 +358,15 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
-				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-					expect(store.getState().import.latest).toBeNull();
-				});
+				// setTimeout(() => {
+				// 	expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
+				// 	expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				// 	expect(store.getState().import.latest).toBeNull();
+				// 	done();
+				// });
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_no_file_found');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
 			});
 
 			it('emits a notification for a dropped but unsupported file', async () => {
@@ -372,11 +376,15 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
-				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-					expect(store.getState().import.latest).toBeNull();
-				});
+				// setTimeout(() => {
+				// 	expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				// 	expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				// 	expect(store.getState().import.latest).toBeNull();
+				// });
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
 			});
 
 			it('emits a notification for a dropped but unknown file', async () => {
@@ -386,11 +394,14 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
-				setTimeout(() => {
-					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
-					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-					expect(store.getState().import.latest).toBeNull();
-				});
+				// setTimeout(() => {
+				// 	expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				// 	expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				// 	expect(store.getState().import.latest).toBeNull();
+				// });
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
 			});
 
 			it('updates the model', async () => {
