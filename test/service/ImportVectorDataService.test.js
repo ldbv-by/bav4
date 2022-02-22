@@ -1,8 +1,8 @@
 import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
+import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { SourceType, SourceTypeName } from '../../src/services/SourceTypeService';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { TestUtils } from '../test-utils';

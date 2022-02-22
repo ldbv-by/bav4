@@ -1,7 +1,7 @@
 import { $injector } from '../../../src/injection';
+import { SourceType, SourceTypeName } from '../../../src/services/domain/sourceType';
 import { MediaType } from '../../../src/services/HttpService';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider } from '../../../src/services/provider/sourceType.provider';
-import { SourceType, SourceTypeName } from '../../../src/services/SourceTypeService';
 
 describe('sourceType provider', () => {
 

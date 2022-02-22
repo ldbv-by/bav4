@@ -2,8 +2,8 @@
 
 import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
+import { SourceType, SourceTypeName } from '../domain/sourceType';
 import { MediaType } from '../HttpService';
-import { SourceType, SourceTypeName } from '../SourceTypeService';
 
 /**
  * A function that tries to detect the source type for a url

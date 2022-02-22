@@ -1,5 +1,6 @@
+import { SourceType } from '../../src/services/domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
-import { SourceType, SourceTypeService } from '../../src/services/SourceTypeService';
+import { SourceTypeService } from '../../src/services/SourceTypeService';
 
 describe('SourceTypeService', () => {
 
@@ -121,25 +122,6 @@ describe('SourceTypeService', () => {
 			const sourceTypeResult = instanceUnderTest.forData(data);
 
 			expect(sourceTypeResult).toBeNull();
-		});
-	});
-
-	describe('SourceType', () => {
-
-		it('provides getter for properties', () => {
-
-			const sourceType = new SourceType('name', 'version');
-
-			expect(sourceType.name).toBe('name');
-			expect(sourceType.version).toBe('version');
-		});
-
-		it('provides default properties', () => {
-
-			const sourceType = new SourceType('name', undefined);
-
-			expect(sourceType.name).toBe('name');
-			expect(sourceType.version).toBeNull();
 		});
 	});
 });
