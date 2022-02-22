@@ -150,7 +150,7 @@ export class DndImportPanel extends MvuElement {
 			setImportData(data, MediaType.TEXT_PLAIN);
 		};
 		const importAsUrl = (url) => {
-			setImportUrl(url);
+			setImportUrl(url, null);
 		};
 
 		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;

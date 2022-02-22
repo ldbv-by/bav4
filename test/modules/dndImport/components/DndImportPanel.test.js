@@ -224,7 +224,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(store.getState().import.latest.payload.data).toBe('foo');
-				expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
+				expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.TEXT_PLAIN);
 				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
 
@@ -236,7 +236,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(store.getState().import.latest.payload.data).toBeNull();
-				expect(store.getState().import.latest.payload.mimeType).toBeNull();
+				expect(store.getState().import.latest.payload.sourceType).toBeNull();
 				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
 			});
 
@@ -249,7 +249,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('foo');
-					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.TEXT_PLAIN);
+					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.TEXT_PLAIN);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
@@ -264,7 +264,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
-					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.KML);
+					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.KML);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
@@ -278,7 +278,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<gpx>foo</gpx>');
-					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GPX);
+					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.GPX);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
@@ -293,7 +293,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('{type:foo}');
-					expect(store.getState().import.latest.payload.mimeType).toBe(MediaType.GeoJSON);
+					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.GeoJSON);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 				});
 			});
