@@ -1,5 +1,8 @@
 import { isHttpUrl } from '../utils/checks';
-import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider } from './provider/sourceType.provider';
+import { SourceTypeMaxFileSize } from './domain/sourceType';
+import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
+
+
 
 /**
  * Determines the source type of an Url or given data.
@@ -12,10 +15,12 @@ export class SourceTypeService {
      *
      * @param {urlSourceTypeProvider} [urlSourceTypeProvider=bvvUrlSourceTypeProvider]
      * @param {dataSourceTypeProvider} [dataSourceTypeProvider=defaultDataSourceTypeProvider]
+	 * @param {mediaSourceTypeProvider} [mediaSourceTypeProvider=defaultMediaSourceTypeProvider]
      */
-	constructor(urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider) {
+	constructor(urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider, mediaSourceTypeProvider = defaultMediaSourceTypeProvider) {
 		this._urlSourceTypeProvider = urlSourceTypeProvider;
 		this._dataSourceTypeProvider = dataSourceTypeProvider;
+		this._mediaSourceTypeProvider = mediaSourceTypeProvider;
 	}
 
 	/**
@@ -42,6 +47,20 @@ export class SourceTypeService {
      * @returns {SourceType|null} sourceType or `null` when no source type was detected
      */
 	forData(data, mediaType = null) {
-		return this._dataSourceTypeProvider(data, mediaType);
+		const sourceType = mediaType ? this._mediaSourceTypeProvider(mediaType) : null;
+		return sourceType ? sourceType : this._dataSourceTypeProvider(data);
+	}
+
+	/**
+	 *
+	 * @param {Blob} blob the blob
+	 * @returns {SourceType|null} sourceType or `null` when no source type was detected or 'null'
+	 * when blob is too large
+	 */
+	forBlob(blob) {
+		if (blob instanceof Blob && blob.size <= SourceTypeMaxFileSize) {
+			return this._mediaSourceTypeProvider(blob.type);
+		}
+		return null;
 	}
 }

@@ -9,6 +9,12 @@ export const SourceTypeName = Object.freeze({
 });
 
 /**
+ * Maximum FileSize for supported SourceTypes
+ * 120000000 bytes => 120 MB
+ */
+export const SourceTypeMaxFileSize = 120000000;
+
+/**
  * Describes the type of a geodata source.
  */
 export class SourceType {

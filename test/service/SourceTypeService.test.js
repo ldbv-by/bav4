@@ -1,11 +1,25 @@
-import { SourceType } from '../../src/services/domain/sourceType';
-import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
+import { SourceType, SourceTypeMaxFileSize } from '../../src/services/domain/sourceType';
+import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
+
+export class TestableBlob extends Blob {
+
+	constructor(mimeType = '', size = 0) {
+		super([], { type: mimeType });
+		this._size = size;
+	}
+
+	get size() {
+		return this._size;
+	}
+
+
+}
 
 describe('SourceTypeService', () => {
 
-	const setup = (urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider) => {
-		return new SourceTypeService(urlSourceTypeProvider, dataSourceTypeProvider);
+	const setup = (urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider, mediaSourceTypeProvider = defaultMediaSourceTypeProvider) => {
+		return new SourceTypeService(urlSourceTypeProvider, dataSourceTypeProvider, mediaSourceTypeProvider);
 	};
 
 	describe('constructor', () => {
@@ -15,15 +29,18 @@ describe('SourceTypeService', () => {
 			const instanceUnderTest = new SourceTypeService();
 			expect(instanceUnderTest._urlSourceTypeProvider).toEqual(bvvUrlSourceTypeProvider);
 			expect(instanceUnderTest._dataSourceTypeProvider).toEqual(defaultDataSourceTypeProvider);
+			expect(instanceUnderTest._mediaSourceTypeProvider).toEqual(defaultMediaSourceTypeProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 
 			const customUrlSourceTypeProvider = async () => { };
 			const customDataSourceTypeProvider = async () => { };
-			const instanceUnderTest = setup(customUrlSourceTypeProvider, customDataSourceTypeProvider);
+			const customMediaSourceTypeProvider = async () => { };
+			const instanceUnderTest = setup(customUrlSourceTypeProvider, customDataSourceTypeProvider, customMediaSourceTypeProvider);
 			expect(instanceUnderTest._urlSourceTypeProvider).toEqual(customUrlSourceTypeProvider);
 			expect(instanceUnderTest._dataSourceTypeProvider).toEqual(customDataSourceTypeProvider);
+			expect(instanceUnderTest._mediaSourceTypeProvider).toEqual(customMediaSourceTypeProvider);
 		});
 	});
 
@@ -93,8 +110,8 @@ describe('SourceTypeService', () => {
 			const data = 'data';
 			const mediaType = 'mediatype';
 			const sourceTypeResultMock = new SourceType('name', 'version');
-			const providerSpy = jasmine.createSpy().withArgs(data, mediaType).and.returnValue(sourceTypeResultMock);
-			const instanceUnderTest = setup(null, providerSpy);
+			const mediaProviderSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(sourceTypeResultMock);
+			const instanceUnderTest = setup(null, null, mediaProviderSpy);
 
 			const sourceTypeResult = instanceUnderTest.forData(data, mediaType);
 
@@ -105,7 +122,7 @@ describe('SourceTypeService', () => {
 
 			const data = 'data';
 			const sourceTypeResultMock = new SourceType('name', 'version');
-			const providerSpy = jasmine.createSpy().withArgs(data, null).and.returnValue(sourceTypeResultMock);
+			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(sourceTypeResultMock);
 			const instanceUnderTest = setup(null, providerSpy);
 
 			const sourceTypeResult = instanceUnderTest.forData(data);
@@ -116,10 +133,62 @@ describe('SourceTypeService', () => {
 		it('returns Null when SourceType was not detectable', () => {
 
 			const data = 'data';
-			const providerSpy = jasmine.createSpy().withArgs(data, null).and.returnValue(null);
-			const instanceUnderTest = setup(providerSpy);
+			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(null);
+			const instanceUnderTest = setup(null, providerSpy);
 
 			const sourceTypeResult = instanceUnderTest.forData(data);
+
+			expect(sourceTypeResult).toBeNull();
+		});
+	});
+
+	describe('forBlob', () => {
+
+
+		const getBlob = (mimeType = null, size = 10) => {
+			return new TestableBlob(mimeType, size);
+		};
+		it('provides a SourceType result given <blob>', () => {
+
+			const mediaType = 'mediatype';
+			const blobMock = getBlob(mediaType);
+			const sourceTypeResultMock = new SourceType('name', 'version');
+			const providerSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(sourceTypeResultMock);
+			const instanceUnderTest = setup(null, null, providerSpy);
+
+			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
+
+			expect(sourceTypeResult).toEqual(sourceTypeResultMock);
+		});
+
+		it('returns Null when SourceType was not detectable', () => {
+
+			const blobMock = getBlob('some');
+			const providerSpy = jasmine.createSpy().withArgs(jasmine.any(String)).and.returnValue(null);
+			const instanceUnderTest = setup(providerSpy);
+
+			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
+
+			expect(sourceTypeResult).toBeNull();
+		});
+
+
+		it('returns Null when blob is not a Blob', () => {
+
+			const blobFake = { type: 'some', size: 0 };
+			const instanceUnderTest = setup();
+
+			const sourceTypeResult = instanceUnderTest.forBlob(blobFake);
+
+			expect(sourceTypeResult).toBeNull();
+		});
+
+		it('returns Null when blob-size is too large', () => {
+
+			const blobMock = getBlob('some', SourceTypeMaxFileSize + 1);
+			const instanceUnderTest = setup();
+
+			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
 
 			expect(sourceTypeResult).toBeNull();
 		});

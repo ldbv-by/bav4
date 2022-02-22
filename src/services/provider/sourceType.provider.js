@@ -49,17 +49,9 @@ export const bvvUrlSourceTypeProvider = async (url) => {
  * @param {string} [mediaType]
  * @returns SourceType or `null`
  */
-export const defaultDataSourceTypeProvider = (data, mediaType = null) => {
+export const defaultDataSourceTypeProvider = (data) => {
 	if (isString(data)) {
-		switch (mediaType) {
-			case MediaType.KML:
-				return new SourceType(SourceTypeName.KML);
-			case MediaType.GPX:
-				return new SourceType(SourceTypeName.GPX);
-			case MediaType.GeoJSON:
-				return new SourceType(SourceTypeName.GEOJSON);
-		}
-		// alternatively, we check the content in a naive manner
+		// we check the content in a naive manner
 		if (data.includes('<kml') && data.includes('</kml>')) {
 			return new SourceType(SourceTypeName.KML);
 		}
@@ -74,6 +66,18 @@ export const defaultDataSourceTypeProvider = (data, mediaType = null) => {
 		catch {
 			return null;
 		}
+	}
+	return null;
+};
+
+export const defaultMediaSourceTypeProvider = (mediaType) => {
+	switch (mediaType) {
+		case MediaType.KML:
+			return new SourceType(SourceTypeName.KML);
+		case MediaType.GPX:
+			return new SourceType(SourceTypeName.GPX);
+		case MediaType.GeoJSON:
+			return new SourceType(SourceTypeName.GEOJSON);
 	}
 	return null;
 };
