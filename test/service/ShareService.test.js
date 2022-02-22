@@ -139,33 +139,6 @@ describe('ShareService', () => {
 			});
 		});
 
-		// describe('_extractLayersState', () => {
-		// 	it('extracts the current layers state', () => {
-		// 		setup();
-		// 		const instanceUnderTest = new ShareService();
-		// 		addLayer('someLayer');
-		// 		addLayer('anotherLayer');
-
-		// 		const extract = instanceUnderTest.c();
-		// 		expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
-		// 		expect(extract[QueryParameters.LAYER_OPACITY]).not.toBeDefined();
-		// 		expect(extract[QueryParameters.LAYER_VISIBILITY]).not.toBeDefined();
-		// 	});
-
-		// 	it('extracts the current layers state considering non default values', () => {
-		// 		setup();
-		// 		const instanceUnderTest = new ShareService();
-		// 		addLayer('someLayer', { opacity: 0.5 });
-		// 		addLayer('anotherLayer', { visible: false });
-
-		// 		const extract = instanceUnderTest._extractLayers();
-
-		// 		expect(extract[QueryParameters.LAYER]).toEqual(['someLayer', 'anotherLayer']);
-		// 		expect(extract[QueryParameters.LAYER_OPACITY]).toEqual([0.5, 1.0]);
-		// 		expect(extract[QueryParameters.LAYER_VISIBILITY]).toEqual([true, false]);
-		// 	});
-		// });
-
 		describe('_extractPosition', () => {
 
 			describe('and rotation = 0', () => {
