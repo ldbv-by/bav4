@@ -69,7 +69,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 					${translate('more_content_panel_language')}	                   
 				</span>
 				<span class="ba-list-item__after">
-					<div class='gb'>
+					<div class='flag gb'>
 					</div>
 				</span>
 			</li>
@@ -82,7 +82,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>		
 			<li class="ba-list-item" >
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon help">				
+					<span class="ba-list-item__icon icon help">				
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
@@ -91,7 +91,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>  
 			<li class="ba-list-item" >
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon contact">
+					<span class="ba-list-item__icon icon contact">
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
@@ -100,7 +100,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>  
 			<li class="ba-list-item" >
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon git">
+					<span class="ba-list-item__icon icon git">
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
@@ -109,7 +109,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>  
 			<li class="ba-list-item" >
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon checklist">					
+					<span class="ba-list-item__icon icon checklist">					
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
@@ -118,7 +118,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>  
 			<li class="ba-list-item divider" >
 				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon lock">
+					<span class="ba-list-item__icon icon lock">
 					
 					</span>
 				</span>
@@ -135,7 +135,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>	
 			<li class="ba-list-item">
 				<span class="ba-list-item__pre ">
-					<span class="ba-list-item__image gdo">
+					<span class="ba-list-item__image image gdo">
 					</span>
 				</span>
 				<span class="ba-list-item__text ">
@@ -149,7 +149,7 @@ export class MoreContentPanel extends AbstractMvuContentPanel {
 			</li>             
 			<li class="ba-list-item">
 				<span class="ba-list-item__pre ">
-					<span class="ba-list-item__image geoportal">
+					<span class="ba-list-item__image image geoportal">
 					</span>
 				</span>
 				<span class="ba-list-item__text ">
