@@ -12,9 +12,15 @@ import { MediaType } from '../HttpService';
  */
 
 /**
- * A function that tries to detect the source type for a url
+ * A function that tries to detect the source type for given data
  *
- * @typedef {function(string, MediaType) : (SourceType|null)} dataSourceTypeProvider
+ * @typedef {function(string) : (SourceType|null)} dataSourceTypeProvider
+ */
+
+/**
+ * A function that tries to detect the source by given media type
+ *
+ * @typedef {function(String) : (SourceType|null)} mediaSourceTypeProvider
  */
 
 /**
@@ -46,7 +52,6 @@ export const bvvUrlSourceTypeProvider = async (url) => {
  * Currently only character data are supported.
  * @function
  * @param {string} data
- * @param {string} [mediaType]
  * @returns SourceType or `null`
  */
 export const defaultDataSourceTypeProvider = (data) => {
@@ -70,6 +75,12 @@ export const defaultDataSourceTypeProvider = (data) => {
 	return null;
 };
 
+/**
+ * Default source type provider for a given MediaType.
+ * @function
+ * @param {string} mediaType
+ * @returns SourceType or `null`
+ */
 export const defaultMediaSourceTypeProvider = (mediaType) => {
 	switch (mediaType) {
 		case MediaType.KML:
