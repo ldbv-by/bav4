@@ -24,7 +24,8 @@ describe('Survey', () => {
 				latest: null
 			},
 			media: {
-				portrait: false
+				portrait: false,
+				minWidth: true
 			},
 			...state
 		};
@@ -46,13 +47,31 @@ describe('Survey', () => {
 		afterEach(function () {
 			jasmine.clock().uninstall();
 		});
-		it('adds survey for landscape mode', async () => {
+
+		it('adds survey for landscape desktop', async () => {
 			const state = {
 				media: {
-					portrait: false
+					portrait: false,
+					minWidth: true
 				}
 			};
 			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
+		});
+
+		it('adds survey for landscape tablet', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
 		});
@@ -108,8 +127,6 @@ describe('Survey', () => {
 			expect(store.getState().notifications.latest.payload.content).toBeNull();
 		});
 	});
-
-
 
 	describe('responsive layout ', () => {
 

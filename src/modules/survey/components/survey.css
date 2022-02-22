@@ -16,6 +16,11 @@
 	font-size: .9rem;
 	text-decoration: none;
 }
+
+.is-tablet .survey__button {
+	margin-left: -1.5em;
+}
+
 .is-portrait .survey__button {
 	display: none;
 }
