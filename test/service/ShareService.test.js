@@ -273,7 +273,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.includes(window.location.href)).toBeTrue();
+				expect(encoded.startsWith(window.location.origin)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -292,7 +292,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState(extraParam);
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.includes(window.location.href)).toBeTrue();
+				expect(encoded.startsWith(window.location.origin)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');

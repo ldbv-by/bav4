@@ -76,14 +76,15 @@ export class ShareToolContent extends AbstractToolContent {
 	 */
 	async _generateShortUrl() {
 		const url = this._shareService.encodeState();
-		try {
-			const shortenUrl = await this._urlService.shorten(url);
-			return shortenUrl;
-		}
-		catch (e) {
-			console.warn('Could not shorten url: ' + e);
-			return url;
-		}
+		return url;
+		// try {
+		// 	const shortenUrl = await this._urlService.shorten(url);
+		// 	return shortenUrl;
+		// }
+		// catch (e) {
+		// 	console.warn('Could not shorten url: ' + e);
+		// 	return url;
+		// }
 	}
 
 	/**
