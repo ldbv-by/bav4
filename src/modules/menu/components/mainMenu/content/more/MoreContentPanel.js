@@ -1,100 +1,167 @@
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
+import css from './moreContentPanel.css';
+import { $injector } from '../../../../../../injection';
+
 
 /**
 * Container for more contents.
 * @class
 * @author costa_gi
+* @author alsturm
 */
 export class MoreContentPanel extends AbstractMvuContentPanel {
 
+
+	constructor() {
+		super({});
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
+	}
+
+
 	createView() {
+
+		const translate = (key) => this._translationService.translate(key);
+
+		const onToggleFullScreen = () => {
+			const doc = window.document;
+			const docEl = doc.documentElement;
+			const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+			const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+			if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+				requestFullScreen.call(docEl);
+			}
+			else {
+				cancelFullScreen.call(doc);
+			}
+		};
+
 		return html`
-       <ul class="ba-list">	
-		<li class="ba-list-item  ba-list-item__header">
-            <span class="ba-list-item__text ">
-                <span class="ba-list-item__primary-text">
-                    Settings
-                </span>
-            </span>
-	    </li>		
-		<li  class="ba-list-item">
-            <span class="ba-list-item__text vertical-center">
-                <span class="ba-list-item__primary-text">
-                Dark mode
-                </span>              
-	        </span>
-	        <span class="ba-list-item__after">
-	            <ba-theme-toggle></ba-theme-toggle>
-	        </span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
+		<style>${css}</style>
+        <ul class="ba-list">	
+			<li class="ba-list-item  ba-list-item__header">
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">
+						${translate('more_content_panel_settings')}						
+					</span>
 				</span>
-			</span>
-		</li>
-		<li  class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
+			</li>		
+			<li  class="ba-list-item">
+				<span class="ba-list-item__text vertical-center">   
+					${translate('more_content_panel_dark_mode')}		                            
 				</span>
-			</span>
-		</li>
-		<li class="ba-list-item  ba-list-item__header">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-					Links
+				<span class="ba-list-item__after">
+					<ba-theme-toggle></ba-theme-toggle>
 				</span>
-			</span>
-		</li>
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum
+			</li>
+			<li  class="ba-list-item">
+				<span class="ba-list-item__text vertical-center">            
+					${translate('more_content_panel_fullscreen')}	                  
 				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+				<span class="ba-list-item__after">
+					<ba-toggle id='toggleFullScreen' .title=${'Toggle'}   @toggle=${onToggleFullScreen} ></ba-toggle>
 				</span>
-			</span>
-		</li>             
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum 
+			</li>
+			<li  class="ba-list-item divider">
+				<span class="ba-list-item__text vertical-center">            
+					${translate('more_content_panel_language')}	                   
 				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+				<span class="ba-list-item__after">
+					<div class='gb'>
+					</div>
 				</span>
-			</span>
-		</li>             
-		<li class="ba-list-item">
-			<span class="ba-list-item__text ">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum 
+			</li>
+			<li class="ba-list-item  ba-list-item__header">
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">
+						${translate('more_content_panel_information')}	
+					</span>
 				</span>
-				<span class="ba-list-item__secondary-text">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+			</li>		
+			<li class="ba-list-item" >
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon help">				
+					</span>
 				</span>
-			</span>
-		</li>          
-		<li class="ba-list-item" style="display:none">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon">
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_help')}		            
 				</span>
-			</span>
-			<span class="ba-list-item__text vertical-center">
-				<span class="ba-list-item__primary-text">
-				Lorem ipsum dolor
-				</span>              
-			</span>
-			<span class="ba-list-item__after">
-                <span class="ba-list-item__icon-info">                                
-                </span>
-		    </span>
-		</li>  		          
-	</ul>
+			</li>  
+			<li class="ba-list-item" >
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon contact">
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_Contact')}		            	            
+				</span>
+			</li>  
+			<li class="ba-list-item" >
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon git">
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_github')}		            	            		            
+				</span>
+			</li>  
+			<li class="ba-list-item" >
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon checklist">					
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_terms_of_use')}		            	            		            	            
+				</span>
+			</li>  
+			<li class="ba-list-item divider" >
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon lock">
+					
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('more_content_panel_privacy_policy')}			            
+				</span>
+			</li>  
+			<li class="ba-list-item  ba-list-item__header">
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">
+						${translate('more_content_panel_more_links')}
+					</span>
+				</span>
+			</li>	
+			<li class="ba-list-item">
+				<span class="ba-list-item__pre ">
+					<span class="ba-list-item__image gdo">
+					</span>
+				</span>
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">			
+						${translate('more_content_panel_gdo_header')}					
+					</span>
+					<span class="ba-list-item__secondary-text">
+						${translate('more_content_panel_gdo_text')}
+					</span>
+				</span>
+			</li>             
+			<li class="ba-list-item">
+				<span class="ba-list-item__pre ">
+					<span class="ba-list-item__image geoportal">
+					</span>
+				</span>
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">					
+						${translate('more_content_panel_gp_header')}											
+					</span>
+					<span class="ba-list-item__secondary-text">
+						${translate('more_content_panel_gp_text')}	
+					</span>
+				</span>
+			</li>             		          
+		</ul>
     `;
 	}
 

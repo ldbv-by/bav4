@@ -1,0 +1,87 @@
+.geoportal {
+	background-color: transparent;
+	min-width: 4em;
+	width: 4em;
+	min-height: 4em;
+	height: 4em;
+	background-size: contain;
+	height: auto;
+	background-image: url('assets/geoportal.webp');
+}
+
+.gdo {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/gdo.svg');
+	-webkit-mask-image: url('assets/gdo.svg');
+	background: linear-gradient(90deg, rgba(8,131,181,1) 0%, rgba(43,91,148,1) 100%);
+	min-width: 4em;
+	width: 4em;
+	min-height: 4em;
+	height: 4em;
+	border-radius: 0;
+}
+.help {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/help.svg');
+	-webkit-mask-image: url('assets/help.svg');
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+}
+
+.contact {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/contact.svg');
+	-webkit-mask-image: url('assets/contact.svg');
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+	transform: scale(.6);
+	border-radius: 0;
+}
+.checklist {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/checklist.svg');
+	-webkit-mask-image: url('assets/checklist.svg');
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+	transform: scale(.7);
+	border-radius: 0;
+}
+
+.lock {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/lock.svg');
+	-webkit-mask-image: url('assets/lock.svg');
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+	transform: scale(.7);
+	border-radius: 0;
+}
+
+.git {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/git.svg');
+	-webkit-mask-image: url('assets/git.svg');
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+	transform: scale(.7);
+	border-radius: 0;
+}
+
+.gb {
+	background: url('assets/gb.svg');
+	width: 1.6em;
+	height: 1.2em;
+	border-radius: 0;
+	border: none;
+}
