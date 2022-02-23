@@ -10,11 +10,10 @@ describe('i18n for coordinate select', () => {
 		expect(map.survey_button).toBe('Survey');
 		expect(map.survey_notification_header).toBe('Survey');
 		expect(map.survey_notification_text).toBe('What functions would you like to see in the new BayernAtlas');
-		expect(map.survey_notification_close).toBe('no Thanks');
+		expect(map.survey_notification_close).toBe('no thanks');
 		expect(map.survey_notification_open).toBe('Sure');
 		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
-
 
 	it('provides translation for de', () => {
 
@@ -27,7 +26,6 @@ describe('i18n for coordinate select', () => {
 		expect(map.survey_notification_open).toBe('Mitmachen');
 		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
-
 
 	it('have the expected amount of translations', () => {
 		const expectedSize = 6;

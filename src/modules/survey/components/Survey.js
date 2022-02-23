@@ -95,7 +95,7 @@ export class Survey extends MvuElement {
 								</div>
 							</div>
 							<div class='survey__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${'Nein Danke'} @click=${onClose}></ba-button>
+								<ba-button id='closeButton' .label=${translate('survey_notification_close')} @click=${onClose}></ba-button>
 								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link">${translate('survey_notification_open')}</a>
 							</div>
 						</div>`;

@@ -48,30 +48,14 @@ describe('Survey', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('adds survey for landscape desktop', async () => {
+		it('adds survey for landscape move', async () => {
 			const state = {
 				media: {
-					portrait: false,
-					minWidth: true
+					portrait: false
 				}
 			};
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
-		});
-
-		it('adds survey for landscape tablet', async () => {
-			const state = {
-				media: {
-					portrait: false,
-					minWidth: false
-				}
-			};
-			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
 		});
@@ -83,8 +67,35 @@ describe('Survey', () => {
 				}
 			};
 			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('none');
+		});
+
+		it('adds survey for desktop move', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
+		});
+
+		it('adds survey for tablet mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
 		});
 
 		it('emits a notification', async () => {
