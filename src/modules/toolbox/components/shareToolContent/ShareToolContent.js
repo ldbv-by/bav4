@@ -77,8 +77,7 @@ export class ShareToolContent extends AbstractToolContent {
 	async _generateShortUrl() {
 		const url = this._shareService.encodeState();
 		try {
-			const shortenUrl = await this._urlService.shorten(url);
-			return shortenUrl;
+			return await this._urlService.shorten(url);
 		}
 		catch (e) {
 			console.warn('Could not shorten url: ' + e);

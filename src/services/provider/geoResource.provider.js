@@ -32,6 +32,7 @@ export const _definitionToGeoResource = definition => {
 		//set optional values
 		geoResource.setBackground(definition.background ?? geoResource.background);
 		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
+		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
 		return geoResource;
 	}
 	return null;
