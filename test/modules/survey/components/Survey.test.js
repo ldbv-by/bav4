@@ -1,4 +1,4 @@
-import { Survey } from '../../../../src/modules/survey/components/Survey';
+import { Survey, SURVEY_NOTIFICATION_DELAY_TIME } from '../../../../src/modules/survey/components/Survey';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
@@ -122,7 +122,7 @@ describe('Survey', () => {
 			};
 
 			const element = await setup(state, {});
-			jasmine.clock().tick(3100);
+			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();

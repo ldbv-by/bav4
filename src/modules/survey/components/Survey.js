@@ -5,11 +5,11 @@ import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 
+export const SURVEY_NOTIFICATION_DELAY_TIME = 3000;
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_HasBeenVisible = 'update_hasBeenVisible';
-const Survey_Notification_Delay_Time = 3000;
 /**
  * @class
  * @author alsturm
@@ -103,7 +103,7 @@ export class Survey extends MvuElement {
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
 		if (!hasBeenVisible) {
-			window.setTimeout(() => showNotification(), Survey_Notification_Delay_Time);
+			window.setTimeout(() => showNotification(), SURVEY_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
 
