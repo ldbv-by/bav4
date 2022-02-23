@@ -68,6 +68,10 @@ test.describe('page', () => {
 			expect(await page.$$('ba-footer')).toHaveLength(1);
 		});
 
+		test('should contain a <ba-survey> component', async ({ page }) => {
+			expect(await page.$$('ba-survey')).toHaveLength(1);
+		});
+
 		test('should contain a <ba-tool-container> component', async ({ page }) => {
 			expect(await page.$$('ba-tool-container')).toHaveLength(1);
 		});

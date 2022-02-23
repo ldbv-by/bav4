@@ -121,16 +121,16 @@
 }
 
 .is-portrait .main-menu__close-button {
-	position: absolute;
-	top: unset;
-	left: 50%;
-	bottom: 0em;
-	right: 0em;
-	border-radius: 2em 2em 0 0;
-	width: 4em;
-	margin-left: -2em;
-	height: 2.5em;
-	background: var(--secondary-color);
+    position: absolute;
+    top: unset;
+    left: 50%;
+    bottom: 0em;
+    right: 0em;
+    border-radius: 2em 2em 0 0;
+    width: 4em;
+    margin-left: -2em;
+    height: 2.5em;
+    background: var(--secondary-color);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
@@ -138,6 +138,7 @@
 .is-portrait .is-open {
 	transform: translate(0, 65vh);
 	height: calc(65vh + 6.6em);
+	overflow: visible;
 }
 .is-portrait .main-menu__container {
 	overflow-y: auto;
@@ -399,9 +400,9 @@ input[type="range"]:focus {
 }
 
 .is-portrait .resize-icon {
-	transform: rotate(270deg);
-	position: relative;
-	top: .1em;
-	left: -.1em;
-	background: var(--primary-bg-color);
+    transform: rotate(270deg);
+    position: relative;
+    top: .1em;
+    left: -.1em;
+    background: var(--primary-bg-color);
 }

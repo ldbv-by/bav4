@@ -1,0 +1,96 @@
+.survey__button {
+	position: absolute;
+	top: .8em;
+	left: 7.5em;
+	display: flex;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20);
+	border-radius: 2em;
+	padding: .5em 0.9em;
+	background: var(--info-color);
+	background: var(--primary-bg-color);
+	cursor: pointer;
+}
+.survey__link {
+	font-size: .9rem;
+	text-decoration: none;
+}
+
+.is-tablet .survey__button {
+	margin-left: -1.5em;
+}
+
+.is-portrait .survey__button {
+	display: none;
+}
+.is-desktop .is-open, .is-tablet .is-open {
+	transform: translate(28em, 0);
+	margin-left: -6.5em;
+}
+.survey__button-text {
+	font-weight: bold;
+	color: #fff;
+	color: var(--primary-color);
+	margin: auto .5em;
+}
+.survey__button-icon {
+	display: inline-block;
+	height: 1.1em;
+	width: 1.1em;
+	font-size: .9rem;
+	background: #fff;
+	background: var(--primary-color);
+	mask: url('assets/chatdots.svg');
+	-webkit-mask-image: url('assets/chatdots.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	left: 0.7em;	
+}
+
+.survey__notification {
+	height: 10em;
+}
+.survey__notification-section {
+	display: flex
+}
+.survey__notification-icon {
+	display: inline-block;
+	margin: auto;
+	height: 5em;
+	width: 10em;
+	background: #fff;
+	background: var(--primary-color);
+	mask: url('assets/chatdots.svg');
+	-webkit-mask-image: url('assets/chatdots.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	left: 0.7em;	
+}
+.survey__notification-primary-text {
+	font-size: 1.5rem;
+	margin: .5em .6em;
+}
+.survey__notification-secondary-text {
+	font-size: 1rem;
+	margin: .5em 1em;
+}
+.space-evenly {
+	justify-content: space-evenly;
+}
+
+a.survey__notification-link {
+	color: var(--primary-color);
+	cursor: pointer;
+	padding: .8em 1em;
+	background: transparent;
+	border: none;
+	font-weight: bold;   
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
+	text-decoration: none;
+}
+
+a.survey__notification-link:hover {
+	background-color: var(--primary-color);
+	color: var(--text3);
+}
