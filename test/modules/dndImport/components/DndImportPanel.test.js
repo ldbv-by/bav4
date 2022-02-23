@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
-import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
 import { MediaType } from '../../../../src/services/HttpService';
 import { importReducer } from '../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
@@ -273,6 +273,35 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
 			});
 
+			it('emits a notification for a dropped but unsupported text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>unsupported</foo>' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
+				spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for failing while detecting sourceType of a dropped text', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<foo>some</foo>' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
+				spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+
 			it('updates the import-store with a dropped text-file', async (done) => {
 				const textFileMock = new TestableBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
@@ -427,6 +456,21 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+				expect(store.getState().import.latest).toBeNull();
+			});
+
+			it('emits a notification for a dropped but too large file', async () => {
+				const bigFileMock = new TestableBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [bigFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});

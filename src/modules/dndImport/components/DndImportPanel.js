@@ -157,9 +157,6 @@ export class DndImportPanel extends MvuElement {
 				case SourceTypeResultStatus.OK:
 					setImportData(data, sourceTypeResult.sourceType);
 					break;
-				case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
-					emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
-					break;
 				case SourceTypeResultStatus.UNSUPPORTED_TYPE:
 					emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
 					break;
