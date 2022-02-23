@@ -6,13 +6,6 @@
 	height: 2em;
 	border-radius: 0;
 }
-.flag {
-	width: 1.6em;
-	height: 1.2em;
-	border-radius: 0;
-	border: none;
-	margin-left: .2em;
-}
 .image {
 	min-width: 4em;
 	width: 4em;
@@ -48,12 +41,6 @@
 	mask-image: url('assets/imprint.svg');
 	-webkit-mask-image: url('assets/imprint.svg');
 	transform: scale(.7);
-}
-.gb {
-	background: url('assets/gb.svg');
-}
-.de {
-	background: url('assets/de.svg');
 }
 .geoportal {
 	background-color: transparent;
