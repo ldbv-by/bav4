@@ -96,7 +96,7 @@ describe('VectorLayerService', () => {
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
 				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(olSource);
-				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
+				const applyStylesSyp = spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
 
 				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
@@ -105,6 +105,7 @@ describe('VectorLayerService', () => {
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForDataSpy).not.toHaveBeenCalled();
+				expect(applyStylesSyp).toHaveBeenCalled();
 			});
 		});
 
@@ -300,12 +301,13 @@ describe('VectorLayerService', () => {
 				});
 			});
 
-			describe('when a feature needs a specific styling', () => {
+			describe('checks if a feature needs a specific styling', () => {
 
 				it('adds a style and registers style event listeners', () => {
 					const olMap = new Map();
-					const olFeature = new Feature();
-					const olSource = new VectorSource();
+					const olFeature0 = new Feature();
+					const olFeature1 = new Feature();
+					const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
 					const olLayer = new VectorLayer({ source: olSource });
 					spyOn(styleService, 'isStyleRequired').and.returnValue(true);
 					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
@@ -313,12 +315,54 @@ describe('VectorLayerService', () => {
 					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
 
 					instanceUnderTest._applyStyles(olLayer, olMap);
-					//we dispatch two events in order to check if the listener is unregistered after the first event
-					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
-					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-					expect(styleServiceAddSpy).toHaveBeenCalledOnceWith(olFeature, olMap);
-					expect(updateStyleSpy).toHaveBeenCalledOnceWith(olFeature, olLayer, olMap);
+					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap);
+					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap);
+					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature0, olLayer, olMap);
+					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature1, olLayer, olMap);
+					expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
+				});
+
+				it('does NOT add a style and does NOT registers style event listeners', () => {
+					const olMap = new Map();
+					const olFeature0 = new Feature();
+					const olFeature1 = new Feature();
+					const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
+					const olLayer = new VectorLayer({ source: olSource });
+					spyOn(styleService, 'isStyleRequired').and.returnValue(false);
+					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
+					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
+					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
+
+					instanceUnderTest._applyStyles(olLayer, olMap);
+
+					expect(styleServiceAddSpy).not.toHaveBeenCalled();
+					expect(updateStyleSpy).not.toHaveBeenCalled();
+					expect(registerStyleEventListenersSpy).not.toHaveBeenCalled();
+				});
+
+				it('does NOT apply style to features when they don\'t need them', () => {
+					const olMap = new Map();
+					const olFeature0 = new Feature();
+					const olFeature1 = new Feature();
+					const olSource = new VectorSource({ features: [olFeature0, olFeature1] });
+					const olLayer = new VectorLayer({ source: olSource });
+					let firstTimeCall = true;
+					spyOn(styleService, 'isStyleRequired').and.callFake(() => {
+						if (firstTimeCall) {
+							firstTimeCall = false;
+							return true;
+						}
+						return false;
+					});
+					const registerStyleEventListenersSpy = spyOn(instanceUnderTest, '_registerStyleEventListeners');
+					const styleServiceAddSpy = spyOn(styleService, 'addStyle');
+					const updateStyleSpy = spyOn(instanceUnderTest, '_updateStyle');
+
+					instanceUnderTest._applyStyles(olLayer, olMap);
+
+					expect(styleServiceAddSpy).not.toHaveBeenCalled();
+					expect(updateStyleSpy).not.toHaveBeenCalled();
 					expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);
 				});
 			});
