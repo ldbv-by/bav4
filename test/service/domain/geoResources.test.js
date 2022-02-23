@@ -124,6 +124,7 @@ describe('GeoResource', () => {
 				expect(georesource.label).toBe('');
 				expect(georesource.background).toBeFalse();
 				expect(georesource.opacity).toBe(1);
+				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 			});
@@ -134,12 +135,14 @@ describe('GeoResource', () => {
 				georesource
 					.setOpacity(.5)
 					.setBackground(true)
+					.setHidden(true)
 					.setLabel('some label')
 					.setAttribution('some attribution');
 
 
 				expect(georesource.background).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
+				expect(georesource.hidden).toBeTrue();
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
 			});
