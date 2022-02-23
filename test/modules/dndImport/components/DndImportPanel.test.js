@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
+import { SourceType, SourceTypeName, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
 import { MediaType } from '../../../../src/services/HttpService';
 import { importReducer } from '../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
@@ -10,8 +11,35 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
+class TestableBlob extends Blob {
+
+	constructor(data = null, mimeType = '', size = 0) {
+		super([data], { type: mimeType });
+		this._size = size;
+		this._data = data;
+	}
+
+	get size() {
+		return this._size;
+	}
+
+	/**
+	 * @override
+	 * @returns {string}
+	 */
+	text() {
+		return this._data;
+	}
+}
+
 describe('DndImportPanel', () => {
 	let store;
+
+	const sourceTypeService = {
+		forUrl() { },
+		forData() { },
+		forBlob() { }
+	};
 	const setup = (state) => {
 
 		const initialState = {
@@ -19,7 +47,7 @@ describe('DndImportPanel', () => {
 				portrait: false
 			},
 			notifications: {
-				notification: null
+				latest: null
 			},
 			import: {
 				latest: null
@@ -33,7 +61,8 @@ describe('DndImportPanel', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('SourceTypeService', sourceTypeService);
 		return TestUtils.render(DndImportPanel.tag);
 	};
 
@@ -217,14 +246,18 @@ describe('DndImportPanel', () => {
 			});
 
 			it('updates the import-store with a dropped text', async () => {
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'foo' };
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => '<kml>foo</kml>' };
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				const dataSpy = spyOn(sourceTypeService, 'forData').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().import.latest.payload.data).toBe('foo');
-				expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.TEXT_PLAIN);
+				expect(dataSpy).toHaveBeenCalledWith('<kml>foo</kml>', 'text/plain');
+				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
 
@@ -241,46 +274,58 @@ describe('DndImportPanel', () => {
 			});
 
 			it('updates the import-store with a dropped text-file', async (done) => {
-				const fileMock = { type: MediaType.TEXT_PLAIN, text: () => 'foo' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const textFileMock = new TestableBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [textFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
+				expect(store.getState().import.latest).toBeNull();
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
 				setTimeout(() => {
-					expect(store.getState().import.latest.payload.data).toBe('foo');
-					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.TEXT_PLAIN);
+					expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+					expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 					done();
 				});
+
 			});
 
 
 			it('updates the import-store with a dropped kml-file', async (done) => {
-				const fileMock = { type: MediaType.KML, text: () => '<kml>foo</kml>' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const kmlFileMock = new TestableBlob('<kml>foo</kml>', MediaType.KML);
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [kmlFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
-					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.KML);
+					expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 					done();
 				});
 			});
 
 			it('updates the import-store with a dropped gpx-file', async (done) => {
-				const fileMock = { type: MediaType.GPX, text: () => '<gpx>foo</gpx>' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const gpxFileMock = new TestableBlob('<gpx>foo</gpx>', MediaType.GPX);
+				const sourceTypeGpx = new SourceType(SourceTypeName.GPX);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [gpxFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGpx };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('<gpx>foo</gpx>');
-					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.GPX);
+					expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeGpx);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 					done();
 				});
@@ -289,15 +334,18 @@ describe('DndImportPanel', () => {
 
 
 			it('updates the import-store with a dropped geojson-file', async (done) => {
-				const fileMock = { type: MediaType.GeoJSON, text: () => '{type:foo}' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const geoJSONFileMock = new TestableBlob('{type:foo}', MediaType.GeoJSON);
+				const sourceTypeGeoJSON = new SourceType(SourceTypeName.GEOJSON);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [geoJSONFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGeoJSON };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				setTimeout(() => {
 					expect(store.getState().import.latest.payload.data).toBe('{type:foo}');
-					expect(store.getState().import.latest.payload.sourceType).toBe(MediaType.GeoJSON);
+					expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeGeoJSON);
 					expect(store.getState().import.latest.payload.url).toBeNull();
 					done();
 				});
@@ -330,7 +378,7 @@ describe('DndImportPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().notifications.latest).toBeUndefined();
+				expect(store.getState().notifications.latest).toBeNull();
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -341,7 +389,7 @@ describe('DndImportPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().notifications.latest).toBeUndefined();
+				expect(store.getState().notifications.latest).toBeNull();
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -351,7 +399,7 @@ describe('DndImportPanel', () => {
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
-				expect(store.getState().notifications.latest).toBeUndefined();
+				expect(store.getState().notifications.latest).toBeNull();
 				expect(store.getState().import.latest).toBeNull();
 
 			});
@@ -369,8 +417,10 @@ describe('DndImportPanel', () => {
 			});
 
 			it('emits a notification for a dropped but unsupported file', async () => {
-				const fileMock = { type: MediaType.TEXT_HTML, text: () => 'foo' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const htmlFileMock = new TestableBlob('foo', MediaType.TEXT_HTML);
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [htmlFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
@@ -382,8 +432,10 @@ describe('DndImportPanel', () => {
 			});
 
 			it('emits a notification for a dropped but unknown file', async () => {
-				const fileMock = { type: '', text: () => 'foo' };
-				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [fileMock] };
+				const unknownFileMock = new TestableBlob('foo', '');
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [unknownFileMock] };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
+				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 

@@ -5,13 +5,12 @@ import { emitNotification, LevelTypes } from '../../../store/notifications/notif
 import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../services/HttpService';
-import { setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
+import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
+import { SourceTypeResultStatus } from '../../../services/domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
-
-const DragAndDropSupportedMimeTypes = [MediaType.TEXT_PLAIN, MediaType.GPX, MediaType.GeoJSON, MediaType.KML];
 
 /**
  * @class
@@ -24,8 +23,9 @@ export class DndImportPanel extends MvuElement {
 			dropzoneContent: null,
 			isActive: false
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
 		this._translationService = TranslationService;
+		this._sourceTypeService = SourceTypeService;
 	}
 
 	/**
@@ -110,25 +110,29 @@ export class DndImportPanel extends MvuElement {
 	_importFile(dataTransfer) {
 		const translate = (key) => this._translationService.translate(key);
 		const files = dataTransfer.files;
-		const read = async (file) => {
-			const textContent = await file.text();
-			return textContent;
+
+		const importData = async (blob, sourceType) => {
+			const text = await blob.text();
+			setData(text, sourceType);
 		};
 		const handleFiles = (files) => {
-			Array.from(files).forEach(async f => {
-				try {
-					const mimeType = f.type;
-					if (DragAndDropSupportedMimeTypes.includes(mimeType)) {
-						const data = await read(f);
-						setImportData(data, mimeType);
-					}
-					else if (!mimeType) {
-						emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
-					}
-					else {
-						emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
-					}
 
+			Array.from(files).forEach(f => {
+				try {
+					const sourceTypeResult = this._sourceTypeService.forBlob(f);
+					switch (sourceTypeResult.status) {
+						case SourceTypeResultStatus.OK:
+							importData(f, sourceTypeResult.sourceType);
+							break;
+						case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
+							emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
+							break;
+						case SourceTypeResultStatus.UNSUPPORTED_TYPE:
+							emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+							break;
+						case SourceTypeResultStatus.OTHER:
+							emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
+					}
 				}
 				catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
@@ -145,9 +149,23 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importText(dataTransfer) {
+		const translate = (key) => this._translationService.translate(key);
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 		const importAsLocalData = (data) => {
-			setImportData(data, MediaType.TEXT_PLAIN);
+			const sourceTypeResult = this._sourceTypeService.forData(data, MediaType.TEXT_PLAIN);
+			switch (sourceTypeResult.status) {
+				case SourceTypeResultStatus.OK:
+					setImportData(data, sourceTypeResult.sourceType);
+					break;
+				case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
+					emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
+					break;
+				case SourceTypeResultStatus.UNSUPPORTED_TYPE:
+					emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+					break;
+				case SourceTypeResultStatus.OTHER:
+					emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
+			}
 		};
 		const importAsUrl = (url) => {
 			setImportUrl(url, null);
