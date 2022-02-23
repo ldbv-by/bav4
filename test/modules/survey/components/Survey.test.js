@@ -113,7 +113,6 @@ describe('Survey', () => {
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 		});
 
-
 		it('emits a notification with a close-Button and a open-Button', async () => {
 			const target = document.createElement('div');
 			const state = {
