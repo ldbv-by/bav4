@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { SourceType, SourceTypeName } from '../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
 import { MediaType } from '../../../src/services/HttpService';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../../src/services/provider/sourceType.provider';
 
@@ -21,7 +21,7 @@ describe('sourceType provider', () => {
 				.registerSingleton('HttpService', httpService);
 		});
 
-		it('loads a SourceType', async () => {
+		it('returns a SourceTypeServiceResult', async () => {
 
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
@@ -38,16 +38,17 @@ describe('sourceType provider', () => {
 				)
 			));
 
-			const sourceTypeResult = await bvvUrlSourceTypeProvider(url);
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(sourceTypeResult).toBeInstanceOf(SourceType);
-			expect(sourceTypeResult.name).toBe(name);
-			expect(sourceTypeResult.version).toBe(version);
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(name);
+			expect(sourceType.version).toBe(version);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
 		});
 
-		it('returns Null when no content is available', async () => {
+		it('returns SourceTypeServiceResultStatus.UNSUPPORTED_TYPE_ERROR when no content is available', async () => {
 
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
@@ -57,14 +58,15 @@ describe('sourceType provider', () => {
 				new Response(null, { status: 204 })
 			));
 
-			const sourceTypeResult = await bvvUrlSourceTypeProvider(url);
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(sourceTypeResult).toBeNull;
+			expect(sourceType).toBeNull();
+			expect(status).toEqual(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 		});
 
-		it('throws an exception when backend responds with other status codes', async () => {
+		it('returns SourceTypeServiceResultStatus.OTHER when backend responds with other status codes', async () => {
 
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
@@ -74,46 +76,46 @@ describe('sourceType provider', () => {
 				new Response(null, { status: 500 })
 			));
 
-			try {
-				await bvvUrlSourceTypeProvider(url);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (ex) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(ex.message).toBe('SourceType could not be retrieved');
-			}
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(sourceType).toBeNull();
+			expect(status).toEqual(SourceTypeResultStatus.OTHER);
 		});
 	});
 
 	describe('defaultDataSourceTypeProvider', () => {
 
 		it('tries to detect the source type for KML sources', () => {
-			//expect(defaultDataSourceTypeProvider('foo', MediaType.KML)).toEqual(new SourceType(SourceTypeName.KML));
-			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>')).toEqual(new SourceType(SourceTypeName.KML));
+			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 		});
 
 		it('tries to detect the source type for GPX sources', () => {
-			//expect(defaultDataSourceTypeProvider('foo', MediaType.GPX)).toEqual(new SourceType(SourceTypeName.GPX));
-			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>')).toEqual(new SourceType(SourceTypeName.GPX));
+			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX)));
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
-			//expect(defaultDataSourceTypeProvider('foo', MediaType.GeoJSON)).toEqual(new SourceType(SourceTypeName.GEOJSON));
-			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' }))).toEqual(new SourceType(SourceTypeName.GEOJSON));
+			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' })))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
 		});
 
-		it('returns null when type can not be detected', () => {
-			expect(defaultDataSourceTypeProvider(JSON.stringify({ some: 'foo' }))).toBeNull();
+		it('returns UNSUPPORTED_TYPE when type can not be detected', () => {
+			expect(defaultDataSourceTypeProvider(JSON.stringify({ some: 'foo' })))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 
-		it('returns null when data are non-parsable errornous ', () => {
+		it('returns UNSUPPORTED_TYPE when data are not parseable', () => {
 			const errornousJsonString = '({ some: [] )';
-			expect(defaultDataSourceTypeProvider(errornousJsonString)).toBeNull();
+			expect(defaultDataSourceTypeProvider(errornousJsonString))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 
-		it('returns null when data is not a string', () => {
-			expect(defaultDataSourceTypeProvider({})).toBeNull();
+		it('returns UNSUPPORTED_TYPE when data is NOT a string', () => {
+			expect(defaultDataSourceTypeProvider({}))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 	});
 
@@ -121,19 +123,23 @@ describe('sourceType provider', () => {
 	describe('defaultMediaSourceTypeProvider', () => {
 
 		it('tries to detect the source type for KML sources', () => {
-			expect(defaultMediaSourceTypeProvider(MediaType.KML)).toEqual(new SourceType(SourceTypeName.KML));
+			expect(defaultMediaSourceTypeProvider(MediaType.KML))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
 		});
 
 		it('tries to detect the source type for GPX sources', () => {
-			expect(defaultMediaSourceTypeProvider(MediaType.GPX)).toEqual(new SourceType(SourceTypeName.GPX));
+			expect(defaultMediaSourceTypeProvider(MediaType.GPX))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX)));
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
-			expect(defaultMediaSourceTypeProvider(MediaType.GeoJSON)).toEqual(new SourceType(SourceTypeName.GEOJSON));
+			expect(defaultMediaSourceTypeProvider(MediaType.GeoJSON))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
 		});
 
 		it('returns null when type can not be detected', () => {
-			expect(defaultMediaSourceTypeProvider('foo')).toBeNull();
+			expect(defaultMediaSourceTypeProvider('foo'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 	});
 });
