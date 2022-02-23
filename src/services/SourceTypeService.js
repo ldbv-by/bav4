@@ -28,7 +28,7 @@ export class SourceTypeService {
 	 *
 	 * @param {string} url
 	 * @returns {SourceTypeResult} the result of this request
-	 * @throws
+	 * @throws Will throw an error if parameter `url` is not an Http URL
 	 */
 	async forUrl(url) {
 		if (!isHttpUrl(url)) {
@@ -52,6 +52,7 @@ export class SourceTypeService {
 	 *
 	 * @param {Blob} blob the blob
 	 * @returns {SourceTypeResult} the result of this request
+	 * @throws Will throw an error if parameter `blob` is not an instance of Blob
 	 */
 	forBlob(blob) {
 		if (!(blob instanceof Blob)) {
