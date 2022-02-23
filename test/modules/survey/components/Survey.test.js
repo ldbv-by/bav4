@@ -48,52 +48,13 @@ describe('Survey', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('adds survey for landscape move', async () => {
+		it('renders Survey buttons', async () => {
 			const state = {
 				media: {
 					portrait: false
 				}
 			};
 			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
-		});
-
-		it('adds survey for portrait mode', async () => {
-			const state = {
-				media: {
-					portrait: true
-				}
-			};
-			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('none');
-		});
-
-		it('adds survey for desktop move', async () => {
-			const state = {
-				media: {
-					portrait: false,
-					minWidth: true
-				}
-			};
-			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
-		});
-
-		it('adds survey for tablet mode', async () => {
-			const state = {
-				media: {
-					portrait: false,
-					minWidth: false
-				}
-			};
-			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
 		});
@@ -140,7 +101,57 @@ describe('Survey', () => {
 
 	describe('responsive layout ', () => {
 
-		it('layouts with open main menu for landscape mode', async () => {
+		it('renders for landscape mode', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
+		});
+
+		it('renders for portrait mode', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('none');
+		});
+
+		it('renders for desktop mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: true
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
+		});
+
+		it('renders for tablet mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
+			const element = await setup(state, {});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.survey__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.survey__button')).display).toBe('flex');
+		});
+
+		it('renders with open main menu for landscape mode', async () => {
 			const state = {
 				mainMenu: {
 					open: true
@@ -150,7 +161,7 @@ describe('Survey', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-open')).toHaveSize(1);
 		});
 
-		it('layouts with open main menu for landscape mode', async () => {
+		it('renders with closed main menu for landscape mode', async () => {
 			const state = {
 				mainMenu: {
 					open: false
