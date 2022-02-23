@@ -1,17 +1,17 @@
 import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { MoreContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/more/MoreContentPanel';
+import { MiscContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/misc/MiscContentPanel';
 import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
 
-window.customElements.define(MoreContentPanel.tag, MoreContentPanel);
+window.customElements.define(MiscContentPanel.tag, MiscContentPanel);
 
-describe('MoreContentPanel', () => {
+describe('MiscContentPanel', () => {
 
 	const setup = () => {
 		TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(MoreContentPanel.tag);
+		return TestUtils.render(MiscContentPanel.tag);
 	};
 
 	describe('class', () => {

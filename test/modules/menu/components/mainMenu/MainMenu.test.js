@@ -13,7 +13,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
-import { MoreContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/more/MoreContentPanel';
+import { MiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/MiscContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -157,7 +157,7 @@ describe('MainMenu', () => {
 						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
 						break;
 					case TabId.MORE:
-						expect(contentPanels[i].innerHTML.toString().includes(MoreContentPanel.tag)).toBeTrue();
+						expect(contentPanels[i].innerHTML.toString().includes(MiscContentPanel.tag)).toBeTrue();
 						break;
 				}
 			}
