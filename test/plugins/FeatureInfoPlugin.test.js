@@ -13,6 +13,9 @@ import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { provide } from '../../src/plugins/i18n/featureInfoPlugin.provider.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { setCurrentTool } from '../../src/store/tools/tools.action.js';
+import { DRAW_TOOL_ID } from '../../src/plugins/DrawPlugin.js';
+import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 
 describe('FeatureInfoPlugin', () => {
@@ -46,7 +49,8 @@ describe('FeatureInfoPlugin', () => {
 			pointer: pointerReducer,
 			layers: layersReducer,
 			position: positionReducer,
-			notifications: notificationReducer
+			notifications: notificationReducer,
+			tools: toolsReducer
 		});
 		$injector
 			.registerSingleton('FeatureInfoService', featureInfoService)
@@ -234,5 +238,44 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 		});
+	});
+
+	describe('when tools.current property changes', () => {
+
+		describe('when tools.current is a toolId', () => {
+			it('resets the FeatureInfo', async () => {
+				const store = setup();
+				const instanceUnderTest = new FeatureInfoPlugin();
+				await instanceUnderTest.register(store);
+				addFeatureInfoItems({ title: 'title', content: 'content' });
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
+
+				setCurrentTool(DRAW_TOOL_ID);
+
+				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().featureInfo.queries).toHaveSize(0);
+				expect(store.getState().featureInfo.aborted).toBeTruthy();
+				expect(store.getState().featureInfo.querying).toBeFalse();
+			});
+		});
+
+		describe('when tools.current is a nullish', () => {
+			it('resets NOT the FeatureInfo on tools.current is null', async () => {
+				const store = setup({ tools: { current: 'some' } });
+				const instanceUnderTest = new FeatureInfoPlugin();
+				await instanceUnderTest.register(store);
+				addFeatureInfoItems({ title: 'title', content: 'content' });
+
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
+
+				setCurrentTool(null);
+
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.aborted).toBeNull();
+			});
+		});
+
 	});
 });
