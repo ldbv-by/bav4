@@ -1,14 +1,4 @@
 /**
- * Enum of all supported source types names.
- */
-export const SourceTypeName = Object.freeze({
-	KML: 'kml',
-	GPX: 'gpx',
-	GEOJSON: 'geojson',
-	WMS: 'wms'
-});
-
-/**
  * Currently maximum file size for supported SourceTypes: 128 Mebibyte
  */
 export const SourceTypeMaxFileSize = 2 ** 27;
@@ -18,6 +8,10 @@ export const SourceTypeMaxFileSize = 2 ** 27;
  */
 export class SourceType {
 
+	/**
+	 * @param {SourceTypeName} name
+	 * @param {string} version
+	 */
 	constructor(name, version = null) {
 		this._name = name;
 		this._version = version;
@@ -32,6 +26,16 @@ export class SourceType {
 	}
 }
 
+/**
+ * Enum of all supported source types names.
+ */
+export const SourceTypeName = Object.freeze({
+	KML: 'kml',
+	GPX: 'gpx',
+	GEOJSON: 'geojson',
+	WMS: 'wms'
+});
+
 
 /**
  * Result of a request for a SourceType.
@@ -40,6 +44,11 @@ export class SourceType {
  */
 export class SourceTypeResult {
 
+	/**
+	 *
+	 * @param {SourceTypeResultStatus} status
+	 * @param {SourceType} sourceType
+	 */
 	constructor(status, sourceType = null) {
 		this._status = status;
 		this._sourceType = sourceType;
