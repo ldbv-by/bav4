@@ -151,6 +151,7 @@ export class DndImportPanel extends MvuElement {
 	_importText(dataTransfer) {
 		const translate = (key) => this._translationService.translate(key);
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
+
 		const importAsLocalData = (data) => {
 			const sourceTypeResult = this._sourceTypeService.forData(data, MediaType.TEXT_PLAIN);
 			switch (sourceTypeResult.status) {
@@ -164,8 +165,23 @@ export class DndImportPanel extends MvuElement {
 					emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
 			}
 		};
-		const importAsUrl = (url) => {
-			setImportUrl(url, null);
+
+		const importAsUrl = async (url) => {
+			const sourceTypeResult = await this._sourceTypeService.forUrl(url);
+			switch (sourceTypeResult.status) {
+				case SourceTypeResultStatus.OK:
+					setImportUrl(url, sourceTypeResult.sourceType);
+					break;
+				case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
+					emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
+					break;
+				case SourceTypeResultStatus.UNSUPPORTED_TYPE:
+					emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+					break;
+				case SourceTypeResultStatus.OTHER:
+					emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
+			}
+
 		};
 
 		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;

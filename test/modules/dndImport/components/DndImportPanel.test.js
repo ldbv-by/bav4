@@ -261,16 +261,81 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
 
-			it('updates the import-store with a dropped file as URL', async () => {
+			it('updates the import-store with a dropped file as URL', async (done) => {
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/baz' };
+				const sourceTypeKml = new SourceType(SourceTypeName.KML);
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
+				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
 				const element = await setup();
 				const dropZone = element.shadowRoot.querySelector('#dropzone');
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(store.getState().import.latest.payload.data).toBeNull();
-				expect(store.getState().import.latest.payload.sourceType).toBeNull();
-				expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/baz');
+				setTimeout(() => {
+					expect(store.getState().import.latest.payload.data).toBeNull();
+					expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+					expect(store.getState().import.latest.payload.url).toBe('https://foo.bar/baz');
+					done();
+				});
+
+			});
+
+			it('emits a notification for a dropped but unsupported file as url', async (done) => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/unsupported' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE };
+				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/unsupported');
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().import.latest).toBeNull();
+					done();
+				});
+
+			});
+
+			it('emits a notification for a dropped but too large file as url', async (done) => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/too_large' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED };
+				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/too_large');
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+					expect(store.getState().import.latest).toBeNull();
+					done();
+				});
+
+			});
+
+			it('emits a notification for a dropped but unknown, errornous resource as url', async (done) => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'https://foo.bar/other_error' };
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER };
+				const urlSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/other_error');
+				setTimeout(() => {
+					expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unknown');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+					expect(store.getState().import.latest).toBeNull();
+					done();
+				});
+
 			});
 
 			it('emits a notification for a dropped but unsupported text', async () => {
