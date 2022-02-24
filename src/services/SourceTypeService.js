@@ -44,6 +44,10 @@ export class SourceTypeService {
 	 * @returns {SourceTypeResult} the result of this request
 	 */
 	forData(data, mediaType = null) {
+		const dataSize = new Blob([data]).size;
+		if (dataSize >= SourceTypeMaxFileSize) {
+			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
+		}
 		const result = mediaType ? this._mediaSourceTypeProvider(mediaType) : null;
 		return result ?? this._dataSourceTypeProvider(data);
 	}
