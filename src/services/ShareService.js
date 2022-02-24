@@ -105,21 +105,23 @@ export class ShareService {
 	*/
 	_extractLayers() {
 		const {
-			StoreService: storeService
-		} = $injector.inject('StoreService');
+			StoreService: storeService,
+			GeoResourceService: geoResourceService
+		} = $injector.inject('StoreService', 'GeoResourceService');
 
 		const state = storeService.getStore().getState();
 
 		const extractedState = {};
 
 		const { layers: { active: activeLayers } } = state;
-		const layer = [];
+		const geoResourceIds = [];
 		let layer_visibility = [];
 		let layer_opacity = [];
 		activeLayers
 			.filter(l => !l.constraints.hidden)
+			.filter(l => !geoResourceService.byId(l.geoResourceId).hidden)
 			.forEach(l => {
-				layer.push(l.id);
+				geoResourceIds.push(l.geoResourceId);
 				layer_visibility.push(l.visible);
 				layer_opacity.push(l.opacity);
 			});
@@ -131,7 +133,7 @@ export class ShareService {
 		if (layer_opacity.filter(lo => lo !== 1).length === 0) {
 			layer_opacity = null;
 		}
-		extractedState[QueryParameters.LAYER] = layer;
+		extractedState[QueryParameters.LAYER] = geoResourceIds;
 		if (layer_visibility) {
 			extractedState[QueryParameters.LAYER_VISIBILITY] = layer_visibility;
 		}
@@ -139,7 +141,6 @@ export class ShareService {
 			extractedState[QueryParameters.LAYER_OPACITY] = layer_opacity;
 		}
 		return extractedState;
-
 	}
 
 	/**

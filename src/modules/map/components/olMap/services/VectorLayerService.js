@@ -3,7 +3,6 @@ import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON } from 'ol/format';
-import { unByKey } from 'ol/Observable';
 import VectorLayer from 'ol/layer/Vector';
 
 
@@ -90,22 +89,24 @@ export class VectorLayerService {
 	_applyStyles(olVectorLayer, olMap) {
 
 		/**
-		 * We check if an added features needs a specifig styling,
-		 * apply the style and register the necessary event listeners in order to keep the style (and overlays)
+		 * We check if an currently present and possible future features needs a specific styling.
+		 * If so, we apply the style and register an event listeners in order to keep the style (and overlays)
 		 * up-to-date with the layer.
 		 */
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
-		const key = olVectorSource.on('addfeature', event => {
+		if (olVectorSource.getFeatures().filter(feature => styleService.isStyleRequired(feature)).length > 0) {
+			// if we have at least one style requiring feature, we register the styleEvent listener once
+			// and apply the style for all currently present features
+			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
+			olVectorSource.getFeatures().forEach(feature => {
+				if (styleService.isStyleRequired(feature)) {
+					styleService.addStyle(feature, olMap);
+					this._updateStyle(feature, olVectorLayer, olMap);
+				}
+			});
+		}
 
-			if (styleService.isStyleRequired(event.feature)) {
-				styleService.addStyle(event.feature, olMap);
-				this._updateStyle(event.feature, olVectorLayer, olMap);
-				this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
-				unByKey(key);
-			}
-
-		});
 		return olVectorLayer;
 	}
 

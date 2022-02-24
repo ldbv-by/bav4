@@ -49,6 +49,7 @@ export class GeoResource {
 		this._label = label;
 		this._background = false;
 		this._opacity = 1.0;
+		this._hidden = false;
 		this._attribution = null;
 		this._attributionProvider = getDefaultAttribution;
 	}
@@ -80,6 +81,10 @@ export class GeoResource {
 		return this._opacity;
 	}
 
+	get hidden() {
+		return this._hidden;
+	}
+
 	get attribution() {
 		return this._attribution;
 	}
@@ -96,6 +101,11 @@ export class GeoResource {
 
 	setOpacity(opacity) {
 		this._opacity = opacity;
+		return this;
+	}
+
+	setHidden(hidden) {
+		this._hidden = hidden;
 		return this;
 	}
 
