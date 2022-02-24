@@ -249,14 +249,10 @@ describe('FeatureInfoPlugin', () => {
 				await instanceUnderTest.register(store);
 				addFeatureInfoItems({ title: 'title', content: 'content' });
 				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().featureInfo.aborted).toBeNull();
 
 				setCurrentTool(DRAW_TOOL_ID);
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-				expect(store.getState().featureInfo.queries).toHaveSize(0);
-				expect(store.getState().featureInfo.aborted).toBeTruthy();
-				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});
 
@@ -268,12 +264,10 @@ describe('FeatureInfoPlugin', () => {
 				addFeatureInfoItems({ title: 'title', content: 'content' });
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().featureInfo.aborted).toBeNull();
 
 				setCurrentTool(null);
 
 				expect(store.getState().featureInfo.current).toHaveSize(1);
-				expect(store.getState().featureInfo.aborted).toBeNull();
 			});
 		});
 
