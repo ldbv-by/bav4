@@ -255,7 +255,7 @@ describe('DndImportPanel', () => {
 
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
-				expect(dataSpy).toHaveBeenCalledWith('<kml>foo</kml>', 'text/plain');
+				expect(dataSpy).toHaveBeenCalledWith('<kml>foo</kml>');
 				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
 				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 				expect(store.getState().import.latest.payload.url).toBeNull();

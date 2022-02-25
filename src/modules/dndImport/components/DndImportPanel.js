@@ -162,7 +162,7 @@ export class DndImportPanel extends MvuElement {
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 
 		const importAsLocalData = (data) => {
-			const sourceTypeResult = this._sourceTypeService.forData(data, MediaType.TEXT_PLAIN);
+			const sourceTypeResult = this._sourceTypeService.forData(data);
 			this._importOrNotify(sourceTypeResult, () => setImportData(data, sourceTypeResult.sourceType));
 		};
 
