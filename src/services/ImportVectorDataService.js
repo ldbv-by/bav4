@@ -88,7 +88,7 @@ export class ImportVectorDataService {
 	 * @param {ImportVectorDataOptions} [options]
 	 * @returns VectorGeoresource or `null` when no VectorGeoresource could be created
 	 */
-	importVectorData(data, options) {
+	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));

@@ -213,7 +213,7 @@ describe('ImportVectorDataService', () => {
 		});
 	});
 
-	describe('importVectorData', () => {
+	describe('forData', () => {
 
 		it('returns a VectorGeoResource', () => {
 			const instanceUnderTest = setup();
@@ -225,7 +225,7 @@ describe('ImportVectorDataService', () => {
 			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			expect(vgr.id).toBe(options.id);
 			expect(vgr.label).toBe(options.label);
@@ -242,7 +242,7 @@ describe('ImportVectorDataService', () => {
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
 			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 
-			const vgr = instanceUnderTest.importVectorData(data);
+			const vgr = instanceUnderTest.forData(data);
 
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
@@ -266,7 +266,7 @@ describe('ImportVectorDataService', () => {
 			const changedLabel = 'now';
 			const layer = { label: options.label };
 			addLayer(options.id, layer);
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			vgr.setOpacity(.5);
 			expect(store.getState().layers.active[0].label).toBe(options.label);
@@ -284,7 +284,7 @@ describe('ImportVectorDataService', () => {
 				detectVectorSourceType: () => null
 			};
 
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			expect(vgr).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);

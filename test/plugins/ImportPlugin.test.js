@@ -15,7 +15,7 @@ describe('ImportPlugin', () => {
 
 	const importVectorDataServiceMock = {
 		forUrl: async () => { },
-		importVectorData: () => { }
+		forData: () => { }
 	};
 
 	const translationServiceMock = {
@@ -153,7 +153,7 @@ describe('ImportPlugin', () => {
 
 		it('calls the ImportVectorDataService', async () => {
 			const store = setup();
-			const spy = spyOn(importVectorDataServiceMock, 'importVectorData');
+			const spy = spyOn(importVectorDataServiceMock, 'forData');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -165,7 +165,7 @@ describe('ImportPlugin', () => {
 		it('adds a layer', async () => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
-			spyOn(importVectorDataServiceMock, 'importVectorData').and.callFake(() => geoResourceStub);
+			spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -179,7 +179,7 @@ describe('ImportPlugin', () => {
 
 		it('emits a notification when importVectorDataService returns NULL', async () => {
 			const store = setup();
-			spyOn(importVectorDataServiceMock, 'importVectorData').and.returnValue(null);
+			spyOn(importVectorDataServiceMock, 'forData').and.returnValue(null);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 

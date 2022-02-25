@@ -79,7 +79,7 @@ export class ImportPlugin extends BaPlugin {
 	  * @returns {GeoResource|null} the imported GeoResource or null on failure
 	  */
 	_importByData(data, sourceType) {
-		const vectorGeoResource = this._importVectorDataService.importVectorData(data, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
 		if (vectorGeoResource) {
 			return vectorGeoResource;
 		}
