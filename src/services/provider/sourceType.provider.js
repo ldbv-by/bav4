@@ -38,7 +38,19 @@ export const bvvUrlSourceTypeProvider = async (url) => {
 	switch (result.status) {
 		case 200: {
 			const { name, version } = await result.json();
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(name, version));
+
+			const sourceTypeNameFor = name => {
+				switch (name) {
+					case 'KML':
+						return SourceTypeName.KML;
+					case 'GPX':
+						return SourceTypeName.GPX;
+					case 'GeoJSON':
+						return SourceTypeName.GEOJSON;
+				}
+			};
+
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(sourceTypeNameFor(name), version));
 		}
 		case 204: {
 			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);

@@ -21,15 +21,14 @@ describe('sourceType provider', () => {
 				.registerSingleton('HttpService', httpService);
 		});
 
-		it('returns a SourceTypeServiceResult', async () => {
+		it('returns a SourceTypeServiceResult for KML', async () => {
 
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
-			const name = 'name';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
-			const sourceTypeResultPayload = { name: 'name', version: 'version' };
+			const sourceTypeResultPayload = { name: 'KML', version: 'version' };
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -43,7 +42,59 @@ describe('sourceType provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(sourceType).toBeInstanceOf(SourceType);
-			expect(sourceType.name).toBe(name);
+			expect(sourceType.name).toBe(SourceTypeName.KML);
+			expect(sourceType.version).toBe(version);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
+		});
+
+		it('returns a SourceTypeServiceResult for GPX', async () => {
+
+			const backendUrl = 'https://backend.url/';
+			const url = 'http://foo.bar';
+			const version = 'version';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
+			const sourceTypeResultPayload = { name: 'GPX', version: 'version' };
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						sourceTypeResultPayload
+					)
+				)
+			));
+
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(SourceTypeName.GPX);
+			expect(sourceType.version).toBe(version);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
+		});
+
+		it('returns a SourceTypeServiceResult for GeoJSON', async () => {
+
+			const backendUrl = 'https://backend.url/';
+			const url = 'http://foo.bar';
+			const version = 'version';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const expectedArgs0 = backendUrl + `sourceType?url=${encodeURIComponent(url)}`;
+			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version' };
+			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						sourceTypeResultPayload
+					)
+				)
+			));
+
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(SourceTypeName.GEOJSON);
 			expect(sourceType.version).toBe(version);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 		});
