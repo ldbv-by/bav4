@@ -25,7 +25,7 @@ export class SourceTypeService {
 	}
 
 	/**
-	 *
+	 * Detects the SourceType for this url.
 	 * @param {string} url
 	 * @returns {SourceTypeResult} the result of this request
 	 * @throws Will throw an error if parameter `url` is not an Http URL
@@ -38,7 +38,9 @@ export class SourceTypeService {
 	}
 
 	/**
-	 *
+	 * Detects the SourceType for given data.
+	 * If the MediaType is available, it is used for SourceTpe detection,
+	 * otherwise, the data are analyzed
 	 * @param {string} data
 	 * @param {string} [mediaType]
 	 * @returns {SourceTypeResult} the result of this request
@@ -53,7 +55,7 @@ export class SourceTypeService {
 	}
 
 	/**
-	 *
+	 * Detects the SourceType for for a given Blob/File instance.
 	 * @param {Blob} blob the blob
 	 * @returns {SourceTypeResult} the result of this request
 	 * @throws Will throw an error if parameter `blob` is not an instance of Blob
