@@ -11,7 +11,10 @@ import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
 const DragAndDropTypesMimeTypeFiles = 'Files';
-
+const stopRedirectAndDefaultHandler = (e) => {
+	e.stopPropagation();
+	e.preventDefault();
+};
 /**
  * @class
  * @author thiloSchlemmer
@@ -29,6 +32,13 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
+	 * @override
+	 */
+	onInitialize() {
+		document.addEventListener('dragenter', (e) => this._onDragEnter(e));
+	}
+
+	/**
 	* @override
 	*/
 	update(type, data, model) {
@@ -42,32 +52,6 @@ export class DndImportPanel extends MvuElement {
 	*@override
 	*/
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const stopRedirectAndDefaultHandler = (e) => {
-			e.stopPropagation();
-			e.preventDefault();
-		};
-
-		const onDragEnter = (e) => {
-			stopRedirectAndDefaultHandler(e);
-			const types = e.dataTransfer.types || [];
-
-			if (types.length === 0) {
-				return;
-			}
-
-			const importType = types.find(t => /(files|text\/plain)/i.test(t));
-			const signalImport = (importType) => {
-				const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
-				this.signal(Update_DropZone_Content, content);
-			};
-			const signalNoImport = () => {
-				this.signal(Update_DropZone_Content, translate('dndImport_import_unknown'));
-			};
-			const importAction = importType ? signalImport : signalNoImport;
-			importAction(importType);
-		};
-
 		const onDragOver = (e) => {
 			stopRedirectAndDefaultHandler(e);
 		};
@@ -92,8 +76,6 @@ export class DndImportPanel extends MvuElement {
 			this.signal(Update_DropZone_Content, null);
 		};
 
-		document.addEventListener('dragenter', onDragEnter);
-
 		const activeClass = {
 			is_active: model.isActive
 		};
@@ -103,8 +85,49 @@ export class DndImportPanel extends MvuElement {
 		`;
 	}
 
-	static get tag() {
-		return 'ba-dnd-import-panel';
+	_onDragEnter(e) {
+		const translate = (key) => this._translationService.translate(key);
+
+		stopRedirectAndDefaultHandler(e);
+		const types = e.dataTransfer.types || [];
+
+		if (types.length === 0) {
+			return;
+		}
+
+		const importType = types.find(t => /(files|text\/plain)/i.test(t));
+		const signalImport = (importType) => {
+			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
+			this.signal(Update_DropZone_Content, content);
+		};
+		const signalNoImport = () => {
+			this.signal(Update_DropZone_Content, translate('dndImport_import_unknown'));
+		};
+		const importAction = importType ? signalImport : signalNoImport;
+		importAction(importType);
+	}
+
+	/**
+	  * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
+	  * other than {@link SourceTypeResultStatus.OK}
+	  * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
+	  * @param {function} importAction the importAction
+	  */
+	_importOrNotify(sourceTypeResult, importAction) {
+		const translate = (key) => this._translationService.translate(key);
+		switch (sourceTypeResult.status) {
+			case SourceTypeResultStatus.OK:
+				importAction();
+				break;
+			case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
+				emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
+				break;
+			case SourceTypeResultStatus.UNSUPPORTED_TYPE:
+				emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+				break;
+			case SourceTypeResultStatus.OTHER:
+				emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
+		}
 	}
 
 	_importFile(dataTransfer) {
@@ -116,23 +139,10 @@ export class DndImportPanel extends MvuElement {
 			setData(text, sourceType);
 		};
 		const handleFiles = (files) => {
-
 			Array.from(files).forEach(f => {
 				try {
 					const sourceTypeResult = this._sourceTypeService.forBlob(f);
-					switch (sourceTypeResult.status) {
-						case SourceTypeResultStatus.OK:
-							importData(f, sourceTypeResult.sourceType);
-							break;
-						case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
-							emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
-							break;
-						case SourceTypeResultStatus.UNSUPPORTED_TYPE:
-							emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
-							break;
-						case SourceTypeResultStatus.OTHER:
-							emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
-					}
+					this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
 				}
 				catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
@@ -149,43 +159,24 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	_importText(dataTransfer) {
-		const translate = (key) => this._translationService.translate(key);
 		const textData = dataTransfer.getData(MediaType.TEXT_PLAIN);
 
 		const importAsLocalData = (data) => {
 			const sourceTypeResult = this._sourceTypeService.forData(data, MediaType.TEXT_PLAIN);
-			switch (sourceTypeResult.status) {
-				case SourceTypeResultStatus.OK:
-					setImportData(data, sourceTypeResult.sourceType);
-					break;
-				case SourceTypeResultStatus.UNSUPPORTED_TYPE:
-					emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
-					break;
-				case SourceTypeResultStatus.OTHER:
-					emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
-			}
+			this._importOrNotify(sourceTypeResult, () => setImportData(data, sourceTypeResult.sourceType));
 		};
 
 		const importAsUrl = async (url) => {
 			const sourceTypeResult = await this._sourceTypeService.forUrl(url);
-			switch (sourceTypeResult.status) {
-				case SourceTypeResultStatus.OK:
-					setImportUrl(url, sourceTypeResult.sourceType);
-					break;
-				case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
-					emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
-					break;
-				case SourceTypeResultStatus.UNSUPPORTED_TYPE:
-					emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
-					break;
-				case SourceTypeResultStatus.OTHER:
-					emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
-			}
-
+			this._importOrNotify(sourceTypeResult, () => setImportUrl(url, sourceTypeResult.sourceType));
 		};
 
 		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;
 		importAction(textData);
+	}
+
+	static get tag() {
+		return 'ba-dnd-import-panel';
 	}
 
 }

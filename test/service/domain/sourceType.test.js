@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
 
 describe('SourceType', () => {
 
@@ -39,6 +39,19 @@ describe('SourceTypeResult', () => {
 	});
 });
 
+describe('SourceTypeName', () => {
+
+	it('provides an enum of all available types', () => {
+
+		expect(Object.keys(SourceTypeName).length).toBe(4);
+		expect(SourceTypeName.KML).toBe('kml');
+		expect(SourceTypeName.GPX).toBe('gpx');
+		expect(SourceTypeName.GEOJSON).toBe('geojson');
+		expect(SourceTypeName.WMS).toBe('wms');
+	});
+
+});
+
 describe('SourceTypeResultStatus', () => {
 
 	it('provides an enum of all available types', () => {
@@ -50,3 +63,11 @@ describe('SourceTypeResultStatus', () => {
 		expect(SourceTypeResultStatus.OTHER).toBe(3);
 	});
 });
+
+describe('SourceTypeMaxFileSize', () => {
+
+	it('provides a maximum file size', () => {
+		expect(SourceTypeMaxFileSize).toBe(134217728);
+	});
+});
+
