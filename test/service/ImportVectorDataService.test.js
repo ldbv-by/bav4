@@ -36,7 +36,7 @@ describe('ImportVectorDataService', () => {
 		return new ImportVectorDataService();
 	};
 
-	describe('importVectorDataFromUrl', () => {
+	describe('forUrl', () => {
 
 		it('returns a GeoResourceFuture', () => {
 			const instanceUnderTest = setup();
@@ -48,7 +48,7 @@ describe('ImportVectorDataService', () => {
 			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
 			expect(geoResourceFuture.label).toBe(options.label);
@@ -60,7 +60,7 @@ describe('ImportVectorDataService', () => {
 			const url = 'http://my.url';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url);
+			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
 			expect(geoResourceFuture.label).toBe('layersPlugin_store_layer_default_layer_name_future');
@@ -82,7 +82,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -107,7 +107,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 				const vgr = await geoResourceFuture.get();
 				const layer = { label: options.label };
 				addLayer(options.id, layer);
@@ -134,7 +134,7 @@ describe('ImportVectorDataService', () => {
 						})
 					})
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url);
+				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -161,7 +161,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(null, { status: status })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();
@@ -186,7 +186,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();

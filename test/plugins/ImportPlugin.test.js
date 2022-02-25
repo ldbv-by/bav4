@@ -14,7 +14,7 @@ import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType
 describe('ImportPlugin', () => {
 
 	const importVectorDataServiceMock = {
-		importVectorDataFromUrl: async () => { },
+		forUrl: async () => { },
 		importVectorData: () => { }
 	};
 
@@ -56,7 +56,7 @@ describe('ImportPlugin', () => {
 		it('calls the ImportVectorDataService for vector-url', async (done) => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
-			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl');
+			const spy = spyOn(importVectorDataServiceMock, 'forUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -75,7 +75,7 @@ describe('ImportPlugin', () => {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
+			const spy = spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.returnValue(VectorSourceType.KML);
 			await instanceUnderTest.register(store);
@@ -111,7 +111,7 @@ describe('ImportPlugin', () => {
 		it('emits a notification for unsupported WMS urls', async (done) => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.WMS);
-			const spy = spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl');
+			const spy = spyOn(importVectorDataServiceMock, 'forUrl');
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
@@ -134,7 +134,7 @@ describe('ImportPlugin', () => {
 				}
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
-			spyOn(importVectorDataServiceMock, 'importVectorDataFromUrl').and.callFake(() => geoResourceFutureMock);
+			spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 

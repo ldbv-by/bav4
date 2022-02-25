@@ -50,7 +50,7 @@ export class ImportVectorDataService {
 	* @param {ImportVectorDataOptions} [options]
 	* @returns VectorGeoresource
 	*/
-	importVectorDataFromUrl(url, options = {}) {
+	forUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const loader = async id => {

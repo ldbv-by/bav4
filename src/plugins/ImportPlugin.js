@@ -53,7 +53,7 @@ export class ImportPlugin extends BaPlugin {
 					case SourceTypeName.KML:
 					case SourceTypeName.GPX:
 					case SourceTypeName.GEOJSON:
-						return this._importVectorDataService.importVectorDataFromUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+						return this._importVectorDataService.forUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
 				}
 			}
 			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
