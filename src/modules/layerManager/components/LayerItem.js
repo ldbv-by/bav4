@@ -8,7 +8,7 @@ import arrowDownSvg from './assets/arrow-down-short.svg';
 import duplicate from './assets/duplicate.svg';
 import removeSvg from './assets/x-square.svg';
 import infoSvg from './assets/info.svg';
-import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
+import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 
@@ -20,7 +20,7 @@ import { createUniqueId } from '../../../utils/numberUtils';
  * @author alsturm
  * @author costa_gi
  */
-export class LayerItem extends AbstractContentPanel {
+export class LayerItem extends AbstractMvuContentPanel {
 
 	constructor() {
 		super();
