@@ -11,7 +11,9 @@ export const provide = (lang) => {
 				layerManager_expand: 'expand properties',
 				layerManager_move_up: 'move Layer up',
 				layerManager_move_down: 'move Layer down',
-				layerManager_remove: 'remove Layer'
+				layerManager_remove: 'remove Layer',
+				layerManager_duplicate: 'duplicate Layer',
+				layerManager_layer_copy: 'Copy'
 			};
 
 		case 'de':
@@ -24,7 +26,9 @@ export const provide = (lang) => {
 				layerManager_expand: 'Eigenschaften ausklappen',
 				layerManager_move_up: 'Ebene anheben',
 				layerManager_move_down: 'Ebene absenken',
-				layerManager_remove: 'Ebene entfernen'
+				layerManager_remove: 'Ebene entfernen',
+				layerManager_duplicate: 'Ebene duplizieren',
+				layerManager_layer_copy: 'Kopie'
 			};
 
 		default:

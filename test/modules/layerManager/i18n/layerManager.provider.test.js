@@ -14,7 +14,8 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_expand).toBe('Eigenschaften ausklappen');
 		expect(map.layerManager_move_up).toBe('Ebene anheben');
 		expect(map.layerManager_move_down).toBe('Ebene absenken');
-		expect(map.layerManager_remove).toBe('Ebene entfernen');
+		expect(map.layerManager_duplicate).toBe('Ebene duplizieren');
+		expect(map.layerManager_layer_copy).toBe('Kopie');
 	});
 
 	it('provides translation for en', () => {
@@ -29,10 +30,12 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_move_up).toBe('move Layer up');
 		expect(map.layerManager_move_down).toBe('move Layer down');
 		expect(map.layerManager_remove).toBe('remove Layer');
+		expect(map.layerManager_duplicate).toBe('duplicate Layer');
+		expect(map.layerManager_layer_copy).toBe('Copy');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

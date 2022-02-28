@@ -2,13 +2,15 @@ import { html } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
+import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
-import removeSvg from './assets/trash.svg';
+import duplicate from './assets/duplicate.svg';
+import removeSvg from './assets/x-square.svg';
 import infoSvg from './assets/info.svg';
 import { AbstractContentPanel } from '../../menu/components/mainMenu/content/AbstractContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
+import { createUniqueId } from '../../../utils/numberUtils';
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
@@ -91,6 +93,11 @@ export class LayerItem extends AbstractContentPanel {
 			}
 		};
 
+		const duplicateLayer = () => {
+			//state store change -> implicit call of #render()
+			addLayer(`${this._layer.id}_${createUniqueId()}`, { ...this._layer, label: `${this._layer.label} (${translate('layerManager_layer_copy')})`, zIndex: this._layer.zIndex - 1 });
+		};
+
 		const remove = () => {
 			//state store change -> implicit call of #render()
 			removeLayer(this._layer.id);
@@ -153,6 +160,9 @@ export class LayerItem extends AbstractContentPanel {
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
+					</div>                                                                                              
+					<div>                                                                                              
+						<ba-icon id='duplicate' .icon='${duplicate}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_duplicate')} @click=${duplicateLayer}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='info' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 

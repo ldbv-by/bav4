@@ -317,6 +317,32 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[2].id).toBe('id2');
 		});
 
+		it('click on duplicate icon adds a layer copy', async () => {
+			const layer0 = {
+				...createDefaultLayerProperties(),
+				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
+			};
+
+			const state = {
+				layers: {
+					active: [layer0],
+					background: 'bg0'
+				}
+			};
+			const store = setup(state);
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer0 };
+
+			expect(store.getState().layers.active[0].id).toBe('id0');
+
+			const duplicateButton = element.shadowRoot.querySelector('#duplicate');
+			duplicateButton.click();
+
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[1].id.startsWith('id0_')).toBeTrue();
+			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
+		});
+
 		it('click on remove-button change state in store', async () => {
 			const layer0 = {
 				...createDefaultLayerProperties(),
