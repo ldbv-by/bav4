@@ -95,7 +95,7 @@ describe('LayerItem', () => {
 
 			expect(layerBody.classList.contains('iscollapse')).toBeFalse();
 
-			element.layer = { ...element.layer, collapsed: true };
+			element.signal('update_layer_collapsed', true);
 			expect(layerBody.classList.contains('iscollapse')).toBeTrue();
 			expect(collapseButton.classList.contains('iconexpand')).toBeFalse();
 		});
@@ -188,7 +188,7 @@ describe('LayerItem', () => {
 			const collapseButton = element.shadowRoot.querySelector('button');
 			collapseButton.click();
 
-			expect(element._layer.collapsed).toBeFalse();
+			expect(element.getModel().layer.collapsed).toBeFalse();
 		});
 
 		it('click on info icon show georesourceinfo panel as modal', async () => {

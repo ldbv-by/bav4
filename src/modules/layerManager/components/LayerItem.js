@@ -12,6 +12,10 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 
+
+const Update_Layer = 'update_layer';
+const Update_Layer_Collapsed = 'update_layer_collapsed';
+
 /**
  * Child element of the LayerManager. Represents one layer and its state.
  * @class
@@ -23,10 +27,23 @@ import { createUniqueId } from '../../../utils/numberUtils';
 export class LayerItem extends AbstractMvuContentPanel {
 
 	constructor() {
-		super();
+		super({
+			layer: { id: '', label: '', visible: true, collapsed: true, opacity: 1 }
+		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._layer = { id: '', label: '', visible: true, collapsed: true, opacity: 1 };
+	}
+
+	/**
+	 * @override
+	 */
+	update(type, data, model) {
+		switch (type) {
+			case Update_Layer:
+				return { ...model, layer: { ...data } };
+			case Update_Layer_Collapsed:
+				return { ...model, layer: { ...model.layer, collapsed: data } };
+		}
 	}
 
 
@@ -60,47 +77,45 @@ export class LayerItem extends AbstractMvuContentPanel {
 	/**
 	 * @override
 	 */
-	createView() {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-
-		const currentLabel = this._layer.label === '' ? this._layer.id : this._layer.label;
+		const { layer } = model;
+		const currentLabel = layer.label === '' ? layer.id : layer.label;
 
 		const getCollapseTitle = () => {
-			return this._layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
+			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
 
 		const changeOpacity = (event) => {
 			//state store change -> implicit call of #render()
-			modifyLayer(this._layer.id, { opacity: parseInt(event.target.value) / 100 });
+			modifyLayer(layer.id, { opacity: parseInt(event.target.value) / 100 });
 		};
 		const toggleVisibility = (event) => {
 			//state store change -> implicit call of #render()
-			modifyLayer(this._layer.id, { visible: event.detail.checked });
+			modifyLayer(layer.id, { visible: event.detail.checked });
 		};
 		const toggleCollapse = () => {
-			//change of local state -> explicit call of #render()
-			this._layer.collapsed = !this._layer.collapsed;
-			this.render();
+			this.signal(Update_Layer_Collapsed, !layer.collapsed);
 		};
 		const increaseIndex = () => {
 			//state store change -> implicit call of #render()
-			modifyLayer(this._layer.id, { zIndex: this._layer.zIndex + 1 });
+			modifyLayer(layer.id, { zIndex: layer.zIndex + 1 });
 		};
 		const decreaseIndex = () => {
 			//state store change -> implicit call of #render()
-			if (this._layer.zIndex - 1 >= 0) {
-				modifyLayer(this._layer.id, { zIndex: this._layer.zIndex - 1 });
+			if (layer.zIndex - 1 >= 0) {
+				modifyLayer(layer.id, { zIndex: layer.zIndex - 1 });
 			}
 		};
 
 		const duplicateLayer = () => {
 			//state store change -> implicit call of #render()
-			addLayer(`${this._layer.id}_${createUniqueId()}`, { ...this._layer, label: `${this._layer.label} (${translate('layerManager_layer_copy')})`, zIndex: this._layer.zIndex - 1 });
+			addLayer(`${layer.id}_${createUniqueId()}`, { ...layer, label: `${layer.label} (${translate('layerManager_layer_copy')})`, zIndex: layer.zIndex - 1 });
 		};
 
 		const remove = () => {
 			//state store change -> implicit call of #render()
-			removeLayer(this._layer.id);
+			removeLayer(layer.id);
 		};
 
 		const getSlider = () => {
@@ -116,7 +131,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					min="1" 
 					title=${translate('layerManager_opacity')}
 					max="100" 
-					value=${this._layer.opacity * 100} 
+					value=${layer.opacity * 100} 
 					class='opacity-slider' 
 					draggable='true' 
 					@input=${changeOpacity} 
@@ -126,20 +141,20 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 
 		const getVisibilityTitle = () => {
-			return this._layer.label + ' - ' + translate('layerManager_change_visibility');
+			return layer.label + ' - ' + translate('layerManager_change_visibility');
 		};
 
 		const iconCollapseClass = {
-			iconexpand: !this._layer.collapsed
+			iconexpand: !layer.collapsed
 		};
 
 		const bodyCollapseClass = {
-			iscollapse: this._layer.collapsed
+			iscollapse: layer.collapsed
 		};
 
 		const openGeoResourceInfoPanel = async () => {
-			const content = html`<ba-georesourceinfo-panel .geoResourceId=${this._layer.id}></ba-georesourceinfo-panel>`;
-			openModal(this._layer.label, content);
+			const content = html`<ba-georesourceinfo-panel .geoResourceId=${layer.id}></ba-georesourceinfo-panel>`;
+			openModal(layer.label, content);
 		};
 
 		return html`
@@ -147,7 +162,7 @@ export class LayerItem extends AbstractMvuContentPanel {
         <div class='ba-section divider'>
             <div class='ba-list-item'>          
 
-                    <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${this._layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
+                    <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
                                        
                 <button id='button-detail' data-test-id class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
@@ -179,7 +194,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	set layer(value) {
-		this._layer = value;
-		this.render();
+		this.signal(Update_Layer, value);
+
 	}
 }
