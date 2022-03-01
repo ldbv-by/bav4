@@ -33,6 +33,7 @@ import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
+import { ImportPlugin } from '../plugins/ImportPlugin';
 
 
 $injector
@@ -69,6 +70,7 @@ $injector
 	.registerSingleton('ContextClickPlugin', new ContextClickPlugin())
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
+	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

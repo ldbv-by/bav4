@@ -9,7 +9,8 @@ export const provide = (lang) => {
 				dndImport_import_unknown: 'Cannot read import-data',
 				dndImport_import_unsupported: 'The file-type is not supported',
 				dndImport_import_file_error: 'File is not readable',
-				dndImport_import_no_file_found: 'File not found'
+				dndImport_import_no_file_found: 'File not found',
+				dndImport_import_max_size_exceeded: 'Filesize is too large'
 			};
 
 		case 'de':
@@ -20,7 +21,8 @@ export const provide = (lang) => {
 				dndImport_import_unknown: 'Die Import-Daten sind unbekannt',
 				dndImport_import_unsupported: 'Der Dateityp wird nicht unterstützt',
 				dndImport_import_file_error: 'Die Datei kann nicht gelesen werden',
-				dndImport_import_no_file_found: 'Die Datei ist leer'
+				dndImport_import_no_file_found: 'Die Datei ist leer',
+				dndImport_import_max_size_exceeded: 'Die Datei überschreitet die erlaubte Größe'
 			};
 
 		default:

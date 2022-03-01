@@ -2,7 +2,7 @@ import { $injector } from '../injection';
 import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from './domain/geoResources';
-import { SourceTypeName } from './SourceTypeService';
+import { SourceTypeName } from './domain/sourceType';
 
 /**
  *
@@ -50,7 +50,7 @@ export class ImportVectorDataService {
 	* @param {ImportVectorDataOptions} [options]
 	* @returns VectorGeoresource
 	*/
-	importVectorDataFromUrl(url, options = {}) {
+	forUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const loader = async id => {
@@ -88,7 +88,7 @@ export class ImportVectorDataService {
 	 * @param {ImportVectorDataOptions} [options]
 	 * @returns VectorGeoresource or `null` when no VectorGeoresource could be created
 	 */
-	importVectorData(data, options) {
+	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));

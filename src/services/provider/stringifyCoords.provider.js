@@ -18,7 +18,7 @@ import { $injector } from '../../injection';
  * @returns {stringifyCoordProvider}
  */
 export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
-	return createStringXY(options.digits);
+	return srid === 4326 ? createStringLatLong(options.digits) : createStringXY(options.digits);
 };
 
 /**
@@ -31,8 +31,16 @@ export const bvvStringifyFunction = (srid, options = {}) => {
 	if (srid !== 4326) {
 		return createStringUTM(srid, options.digits || 0);
 	}
-	return createStringXY(options.digits || 3);
+	return createStringLatLong(options.digits || 3);
+};
 
+/**
+ * A function that returns a function specific for the representation of geographic
+ * point location according to {@link https://en.wikipedia.org/wiki/ISO_6709|ISO 6709}
+ * @param {number} digits
+ */
+const createStringLatLong = (digits) => {
+	return (coordinate) => createStringXY(digits)(coordinate.reverse());
 };
 
 const createStringUTM = (srid, digits) => {
