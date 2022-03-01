@@ -13,9 +13,6 @@ describe('StoreService', () => {
 		const measurementPluginMock = {
 			register: () => { }
 		};
-		const notificationPluginMock = {
-			register: () => { }
-		};
 		const drawPluginMock = {
 			register: () => { }
 		};
@@ -40,6 +37,9 @@ describe('StoreService', () => {
 		const featureInfoPluginMock = {
 			register() { }
 		};
+		const importPluginMock = {
+			register: () => { }
+		};
 		const mainMenuPluginMock = {
 			register() { }
 		};
@@ -61,7 +61,6 @@ describe('StoreService', () => {
 				.registerSingleton('TopicsService', topicsServiceMock)
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
-				.registerSingleton('NotificationPlugin', notificationPluginMock)
 				.registerSingleton('DrawPlugin', drawPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
@@ -72,6 +71,7 @@ describe('StoreService', () => {
 				.registerSingleton('FeatureInfoPlugin', featureInfoPluginMock)
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
+				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.registerSingleton('ConfigService', configService)
 
@@ -86,7 +86,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(20);
+			expect(reducerKeys.length).toBe(21);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -107,12 +107,12 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('notifications')).toBeTrue();
 			expect(reducerKeys.includes('featureInfo')).toBeTrue();
 			expect(reducerKeys.includes('media')).toBeTrue();
+			expect(reducerKeys.includes('import')).toBeTrue();
 		});
 
 		it('registers all plugins', (done) => {
 
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
-			const notificationPluginSpy = spyOn(notificationPluginMock, 'register');
 			const drawPluginSpy = spyOn(drawPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
 			const layersPluginSpy = spyOn(layersPluginMock, 'register');
@@ -123,6 +123,7 @@ describe('StoreService', () => {
 			const featureInfoPluginSpy = spyOn(featureInfoPluginMock, 'register');
 			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
+			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -133,7 +134,6 @@ describe('StoreService', () => {
 				setTimeout(() => {
 
 					expect(measurementPluginSpy).toHaveBeenCalledWith(store);
-					expect(notificationPluginSpy).toHaveBeenCalledWith(store);
 					expect(drawPluginSpy).toHaveBeenCalledWith(store);
 					expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 					expect(layersPluginSpy).toHaveBeenCalledWith(store);
@@ -144,6 +144,7 @@ describe('StoreService', () => {
 					expect(featureInfoPluginSpy).toHaveBeenCalledWith(store);
 					expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
 					expect(mediaPluginSpy).toHaveBeenCalledWith(store);
+					expect(importPluginSpy).toHaveBeenCalledWith(store);
 					done();
 				});
 			});

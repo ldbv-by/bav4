@@ -37,7 +37,6 @@ describe('NotificationPanel', () => {
 		expect(element._model.notifications[0].id).toEqual(jasmine.any(Number));
 		expect(element._model.notifications[0].content).toBe('fooBar');
 		expect(element._model.notifications[0].level).toBe(LevelTypes.INFO);
-		expect(element._model.notifications[0].permanent).toBeFalse();
 
 		const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 		expect(notificationElement).toBeTruthy();
@@ -65,7 +64,7 @@ describe('NotificationPanel', () => {
 		expect(element._model.notifications.length).toBe(0);
 
 		emitNotification('fooBar', LevelTypes.INFO);
-		emitNotification('fooBar', LevelTypes.CUSTOM);
+		emitFixedNotification('fooBar');
 
 		expect(element._model.notifications.length).toBe(1);
 		expect(element._model.fixedNotification).toBeTruthy();
@@ -82,12 +81,12 @@ describe('NotificationPanel', () => {
 		expect(element._model.notifications.length).toBe(0);
 
 		emitNotification('fooBar', LevelTypes.INFO);
-		emitNotification('fooBar', LevelTypes.CUSTOM);
+		emitFixedNotification('fooBar');
 
 		expect(element._model.notifications.length).toBe(1);
 		expect(element._model.fixedNotification).toBeTruthy();
 
-		emitNotification('fooBarBaz', LevelTypes.CUSTOM);
+		emitFixedNotification('fooBarBaz');
 
 		expect(element._model.notifications.length).toBe(1);
 		expect(element._model.fixedNotification).toBeTruthy();

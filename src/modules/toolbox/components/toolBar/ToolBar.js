@@ -91,7 +91,7 @@ export class ToolBar extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button id='action-button' data-test-id class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 					</div>
 					<div class="action-button__icon">
@@ -103,28 +103,28 @@ export class ToolBar extends MvuElement {
 					</div>	
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button  @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
+					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
-					<button  @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
+					<button id="draw-button" data-test-id @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  @click="${() => toggleTool(ToolId.IMPORT)}" class="tool-bar__button">
+					<button  id="import-button" data-test-id @click="${() => toggleTool(ToolId.IMPORT)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon import">							
 						</div>
 						<div class="tool-bar__button-text">
 						${translate('toolbox_toolbar_import_button')}							
 						</div>  					
 					</button>  				               
-					<button  @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
+					<button  id="share-button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">

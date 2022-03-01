@@ -28,9 +28,11 @@ export const _definitionToGeoResource = definition => {
 	const geoResource = toGeoResource(definition);
 	if (geoResource) {
 		geoResource.setAttributionProvider(getBvvAttribution);
-		geoResource.attribution = _parseBvvAttributionDefinition(definition);
-		geoResource.background = definition.background;
-		geoResource.opacity = definition.opacity;
+		geoResource.setAttribution(_parseBvvAttributionDefinition(definition));
+		//set optional values
+		geoResource.setBackground(definition.background ?? geoResource.background);
+		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
+		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
 		return geoResource;
 	}
 	return null;

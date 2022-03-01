@@ -51,13 +51,12 @@ export class NotificationItem extends MvuElement {
 			notification_info: notification.level === LevelTypes.INFO,
 			notification_warn: notification.level === LevelTypes.WARN,
 			notification_error: notification.level === LevelTypes.ERROR,
-			notification_custom: notification.level === LevelTypes.CUSTOM,
 			notification_fixed: isFixed
 		};
 		const getLevelText = (level) => {
 			switch (level) {
 				case LevelTypes.INFO:
-					return html`<div class='notification_level'>${translate('notifications_item_info')}</div>`;
+					return html`<div id="notification-info" data-test-id class='notification_level'>${translate('notifications_item_info')}</div>`;
 				case LevelTypes.WARN:
 					return html`<div class='notification_level'>${translate('notifications_item_warn')}</div>`;
 				case LevelTypes.ERROR:
@@ -109,5 +108,4 @@ export class NotificationItem extends MvuElement {
 	get onClose() {
 		return this._onClose;
 	}
-
 }

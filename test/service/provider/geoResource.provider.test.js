@@ -22,16 +22,21 @@ describe('BVV GeoResource provider', () => {
 		copyright: 'copyright'
 	};
 
-	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', background: false, opacity: 0.5, url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
-	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', background: true, opacity: 1.0, url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
-	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', background: false, opacity: 1.0, url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
-	const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', background: true, opacity: 1.0, geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
+	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
+	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, ...wmsDefinition };
+	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
+	const wmtsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, ...wmtsDefinition };
+	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
+	const vectorDefinitionOptionaProperties = { background: true, opacity: 0.5, hidden: true, ...vectorDefinition };
+	const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
+	const aggregateDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, ...aggregateDefinition };
 
 	const vadlidateGeoResourceProperties = (georesource, definition) => {
 		expect(georesource.id).toBe(definition.id);
 		expect(georesource.label).toBe(definition.label);
-		expect(georesource.background).toBe(definition.background);
-		expect(georesource.opacity).toBe(definition.opacity);
+		expect(georesource.background).toBeFalse();
+		expect(georesource.opacity).toBe(1.0);
+		expect(georesource.hidden).toBeFalse();
 		expect(Symbol.keyFor(georesource.getType())).toBe(definition.type);
 	};
 
@@ -53,6 +58,14 @@ describe('BVV GeoResource provider', () => {
 			expect(wmsGeoResource._attribution).not.toBeNull();
 		});
 
+		it('maps a WMS BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const wmsGeoResource = _definitionToGeoResource(wmsDefinitionOptionalProperties);
+
+			expect(wmsGeoResource.background).toBeTrue();
+			expect(wmsGeoResource.opacity).toBe(0.5);
+			expect(wmsGeoResource.hidden).toBeTrue();
+		});
+
 		it('maps a WMTS BVV definition to a corresponding GeoResource instance', () => {
 			const wmtsGeoResource = _definitionToGeoResource(wmtsDefinition);
 
@@ -60,6 +73,14 @@ describe('BVV GeoResource provider', () => {
 			expect(wmtsGeoResource.url).toBe(wmtsGeoResource.url);
 			expect(wmtsGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(wmtsGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a WMTS BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const wmtsGeoResource = _definitionToGeoResource(wmtsDefinitionOptionalProperties);
+
+			expect(wmtsGeoResource.background).toBeTrue();
+			expect(wmtsGeoResource.opacity).toBe(0.5);
+			expect(wmtsGeoResource.hidden).toBeTrue();
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', () => {
@@ -72,6 +93,14 @@ describe('BVV GeoResource provider', () => {
 			expect(vectorGeoResource._attribution).not.toBeNull();
 		});
 
+		it('maps a VectorFile BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const vectorGeoResource = _definitionToGeoResource(vectorDefinitionOptionaProperties);
+
+			expect(vectorGeoResource.background).toBeTrue();
+			expect(vectorGeoResource.opacity).toBe(0.5);
+			expect(vectorGeoResource.hidden).toBeTrue();
+		});
+
 		it('maps a aggregate BVV definition to a corresponding GeoResource instance', () => {
 			const aggregateGeoResource = _definitionToGeoResource(aggregateDefinition);
 
@@ -79,6 +108,14 @@ describe('BVV GeoResource provider', () => {
 			expect(aggregateGeoResource.geoResourceIds).toEqual(aggregateDefinition.geoResourceIds);
 			expect(aggregateGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(aggregateGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a aggregate BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const aggregateGeoResource = _definitionToGeoResource(aggregateDefinitionOptionalProperties);
+
+			expect(aggregateGeoResource.background).toBeTrue();
+			expect(aggregateGeoResource.opacity).toBe(0.5);
+			expect(aggregateGeoResource.hidden).toBeTrue();
 		});
 	});
 

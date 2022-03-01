@@ -60,7 +60,7 @@ describe('GeoResource', () => {
 				const minimalAttribution = getMinimalAttribution();
 				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
 				const grs = new GeoResourceImpl('id');
-				grs.attribution = 'foo';
+				grs.setAttribution('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -73,7 +73,7 @@ describe('GeoResource', () => {
 				const minimalAttribution = getMinimalAttribution();
 				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
 				const grs = new GeoResourceImpl('id');
-				grs.attribution = 'foo';
+				grs.setAttribution ('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -85,7 +85,7 @@ describe('GeoResource', () => {
 			it('returns null when provider returns null', () => {
 				const spy = jasmine.createSpy().and.returnValue(null);
 				const grs = new GeoResourceImpl('id');
-				grs.attribution = 'foo';
+				grs.setAttribution ('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -97,7 +97,7 @@ describe('GeoResource', () => {
 			it('returns null when provider returns an empyt array', () => {
 				const spy = jasmine.createSpy().and.returnValue([]);
 				const grs = new GeoResourceImpl('id');
-				grs.attribution = 'foo';
+				grs.setAttribution ('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -108,7 +108,7 @@ describe('GeoResource', () => {
 
 			it('throws an error when no provider found', () => {
 				const grs = new GeoResourceImpl('id');
-				grs.attribution = 'foo';
+				grs.setAttribution ('foo');
 				grs._attributionProvider = null;
 
 				expect(() => {
@@ -124,21 +124,25 @@ describe('GeoResource', () => {
 				expect(georesource.label).toBe('');
 				expect(georesource.background).toBeFalse();
 				expect(georesource.opacity).toBe(1);
+				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 			});
 
-			it('provides setter and getters', () => {
+			it('provides set methods and getters', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
-				georesource.opacity = .5;
-				georesource.background = true;
-				georesource.label = 'some label';
-				georesource.label = 'some label';
-				georesource.attribution = 'some attribution';
+				georesource
+					.setOpacity(.5)
+					.setBackground(true)
+					.setHidden(true)
+					.setLabel('some label')
+					.setAttribution('some attribution');
+
 
 				expect(georesource.background).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
+				expect(georesource.hidden).toBeTrue();
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
 			});
@@ -313,8 +317,8 @@ describe('GeoResource', () => {
 			const callback = jasmine.createSpy();
 			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
 
-			wmtsGeoResource.label = modifiedLabel;
-			wmtsGeoResource.label = modifiedLabel;
+			wmtsGeoResource.setLabel(modifiedLabel);
+			wmtsGeoResource.setLabel(modifiedLabel);
 			wmtsGeoResource.unknown = modifiedLabel;
 
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);

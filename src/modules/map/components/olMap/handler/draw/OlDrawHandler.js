@@ -419,7 +419,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify && this._modify.getActive()) {
 			removeSelectedFeatures(this._select.getFeatures(), this._vectorLayer);
-			setSelection([]);
+			this._setSelection([]);
 			this._updateDrawState();
 		}
 

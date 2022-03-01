@@ -5,9 +5,10 @@ import { changeZoomAndCenter } from '../../../../store/position/position.action'
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal } from '../../../../store/modal/modal.action';
 import css from './showCase.css';
+import { observe } from '../../../../utils/storeUtils';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -41,7 +42,7 @@ export class ShowCase extends BaElement {
 		const onClick0 = async () => {
 
 			//create a GeoResource
-			const geoResourceFuture = this._importVectorDataService.importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			// optional exception handling for this GeoResourceFuture
 			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
 			const { id, label } = geoResourceFuture;
@@ -91,27 +92,47 @@ export class ShowCase extends BaElement {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
 		};
 
-		let firstVersion = false;
-		const onClickEmitCustom = () => {
-			const toggleVersion = () => firstVersion = !firstVersion;
-			const getContent = () => {
-				if (firstVersion) {
-					return html`<div>
+		let version = 1;
+		const onClickEmitFixed = () => {
+
+			const onCloseAfterWait = () => setTimeout(() => clearFixedNotification(), 2000);
+			const onDismiss = () => clearFixedNotification();
+			const nextVersion = (before, min, max) => {
+				return before === min ? before + 1 : (before === max ? min : before + 1);
+			};
+			const getVersionForDragging = () => {
+				const unsubscribe = observe(this._storeService.getStore(), state => state.pointer.beingDragged, () => {
+					clearFixedNotification();
+					unsubscribe();
+				});
+				return html`<div>
+					<h3>Fixed Notifications autoclose with...</h3>
+					<div style="color: white;background-color: var(--warning-color);">observing store... </div>
+					<div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>					
+				</div>`;
+			};
+			const getContent = (version) => {
+				switch (version) {
+					case 1:
+						return html`<div>
 							<h3>Feature-Info</h3>
 							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
-							<div style="color: white;background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
-							<div style="display:flex"><ba-button .label=${'start routing here'}></ba-button><ba-button .label=${'finish routing here'}></ba-button></div>
+							<div style="color: var(--text2);background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
+							<div style="display:flex"><ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
 						</div>`;
+					case 2:
+						return html`<div>
+							<h3>Fixed Notifications ...</h3>
+							<div style="color: white;background-color: var(--warning-color);">waiting forever... </div>
+							<div style="color: white;background-color: var(--error-color);">until a new fixed Notification comes</div>							
+						</div>`;
+					case 3:
+						return getVersionForDragging();
+
 				}
-				return html`<div>
-							<h3>Fixed Notifications autoclose with...</h3>
-							<div style="color: white;background-color: var(--warning-color);">click... </div>
-							<div style="color: white;background-color: var(--error-color);">contextClick or...</div>
-							<div><ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>dragging map</span></ba-checkbox></div>
-						</div>`;
 			};
-			emitNotification(getContent(), LevelTypes.CUSTOM);
-			toggleVersion();
+			emitFixedNotification(getContent(version));
+			version = nextVersion(version, 1, 3);
 		};
 
 		return html`
@@ -163,7 +184,7 @@ export class ShowCase extends BaElement {
 				<ba-button id='notification0' .label=${'Info Notification'} .type=${'primary'} @click=${onClickEmitInfo}></ba-button>
 				<ba-button id='notification1' .label=${'Warn Notification'} .type=${'primary'} @click=${onClickEmitWarn}></ba-button>
 				<ba-button id='notification2' .label=${'Error Notification'} .type=${'primary'} @click=${onClickEmitError}></ba-button>
-				<ba-button id='notification3' .label=${'Custom Notification'} .type=${'primary'} @click=${onClickEmitCustom}></ba-button>			
+				<ba-button id='notification3' .label=${'Fixed Notification'} .type=${'primary'} @click=${onClickEmitFixed}></ba-button>			
 			</div>	
 
 			</div>	
