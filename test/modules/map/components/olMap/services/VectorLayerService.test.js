@@ -99,6 +99,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
+					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
@@ -108,6 +109,7 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getOpacity()).toBe(.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
@@ -142,6 +144,7 @@ describe('VectorLayerService', () => {
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar')
+					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(olSource);
@@ -151,6 +154,7 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getOpacity()).toBe(.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
