@@ -21,6 +21,8 @@ export class LayerService {
 			VectorLayerService: vectorLayerService
 		} = $injector.inject('GeoResourceService', 'VectorLayerService');
 
+		const { id, minZoom, maxZoom } = geoResource;
+
 		switch (geoResource.getType()) {
 
 			case GeoResourceTypes.FUTURE: {
@@ -43,8 +45,10 @@ export class LayerService {
 				imageWmsSource.on(['imageloadend', 'imageloaderror'], () => setFetching(false));
 
 				return new ImageLayer({
-					id: geoResource.id,
-					source: imageWmsSource
+					id: id,
+					source: imageWmsSource,
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined
 				});
 			}
 
@@ -57,8 +61,10 @@ export class LayerService {
 				xyZsource.on(['tileloadend', 'tileloaderror'], () => setFetching(false));
 
 				return new TileLayer({
-					id: geoResource.id,
-					source: xyZsource
+					id: id,
+					source: xyZsource,
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined
 				});
 			}
 
@@ -69,8 +75,10 @@ export class LayerService {
 
 			case GeoResourceTypes.AGGREGATE: {
 				return new LayerGroup({
-					id: geoResource.id,
-					layers: geoResource.geoResourceIds.map(id => this.toOlLayer(georesourceService.byId(id)))
+					id: id,
+					layers: geoResource.geoResourceIds.map(id => this.toOlLayer(georesourceService.byId(id))),
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined
 				});
 			}
 		}
