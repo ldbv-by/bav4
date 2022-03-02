@@ -70,7 +70,7 @@ describe('VectorLayerService', () => {
 
 		describe('createVectorLayer', () => {
 
-			it('returns an ol vector layer for an data based VectorGeoResource ', () => {
+			it('returns an ol vector layer for an data based VectorGeoResource', () => {
 				const id = 'someId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const sourceAsString = 'kml';
@@ -84,12 +84,38 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
+
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForUrlSpy).not.toHaveBeenCalled();
 			});
 
-			it('returns an ol vector layer for an URL based VectorGeoResource ', () => {
+			it('returns an ol vector layer for an data based VectorGeoResource containing optional properties', () => {
+				const id = 'someId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const sourceAsString = 'kml';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
+					.setMinZoom(5)
+					.setMaxZoom(19);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
+				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
+
+				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+
+				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getMinZoom()).toBe(5);
+				expect(olVectorLayer.getMaxZoom()).toBe(19);
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
+				expect(vectorSourceForUrlSpy).not.toHaveBeenCalled();
+			});
+
+			it('returns an ol vector layer for an URL based VectorGeoResource', () => {
 				const id = 'someId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
@@ -102,6 +128,31 @@ describe('VectorLayerService', () => {
 				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
+				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
+				expect(olVectorLayer.getSource()).toEqual(olSource);
+				expect(vectorSourceForDataSpy).not.toHaveBeenCalled();
+				expect(applyStylesSyp).toHaveBeenCalled();
+			});
+
+			it('returns an ol vector layer for an URL based VectorGeoResource containing optional properties', () => {
+				const id = 'someId';
+				const geoResourceLabel = 'geoResourceLabel';
+				const olMap = new Map();
+				const olSource = new VectorSource();
+				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar')
+					.setMinZoom(5)
+					.setMaxZoom(19);
+				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(olSource);
+				const applyStylesSyp = spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
+				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
+
+				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+
+				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.getMinZoom()).toBe(5);
+				expect(olVectorLayer.getMaxZoom()).toBe(19);
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
 				expect(olVectorLayer.getSource()).toEqual(olSource);
 				expect(vectorSourceForDataSpy).not.toHaveBeenCalled();
