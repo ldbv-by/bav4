@@ -84,12 +84,14 @@ describe('LayerService', () => {
 
 			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
 				const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png')
+					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(wmsGeoresource);
 
 				expect(wmsOlLayer.get('id')).toBe('someId');
+				expect(wmsOlLayer.getOpacity()).toBe(.5);
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
 				const wmsSource = wmsOlLayer.getSource();
@@ -134,12 +136,14 @@ describe('LayerService', () => {
 
 			it('converts a WmtsGeoresource containing optional properties to a olLayer', () => {
 				const wmtsGeoresource = new WMTSGeoResource('someId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(wmtsGeoresource);
 
 				expect(wmtsOlLayer.get('id')).toBe('someId');
+				expect(wmtsOlLayer.getOpacity()).toBe(.5);
 				expect(wmtsOlLayer.getMinZoom()).toBe(5);
 				expect(wmtsOlLayer.getMaxZoom()).toBe(19);
 				const wmtsSource = wmtsOlLayer.getSource();
@@ -202,12 +206,14 @@ describe('LayerService', () => {
 				}
 			});
 			const aggreggateGeoResource = new AggregateGeoResource('someId', 'label', [wmtsGeoresource.id, wmtsGeoresource.id])
+				.setOpacity(.5)
 				.setMinZoom(5)
 				.setMaxZoom(19);
 
 			const olLayerGroup = instanceUnderTest.toOlLayer(aggreggateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe('someId');
+			expect(olLayerGroup.getOpacity()).toBe(.5);
 			expect(olLayerGroup.getMinZoom()).toBe(5);
 			expect(olLayerGroup.getMaxZoom()).toBe(19);
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
