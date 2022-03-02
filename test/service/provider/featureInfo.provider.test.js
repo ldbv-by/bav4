@@ -30,13 +30,12 @@ describe('FeatureInfoResult provider', () => {
 			const title = 'title';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
-				id: geoResourceId,
 				easting: coordinate3857[0], northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
+			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
 				new Response(
 					JSON.stringify(
 						featureInfoResultPayload
@@ -60,12 +59,11 @@ describe('FeatureInfoResult provider', () => {
 			const mapResolution = 5;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
-				id: geoResourceId,
 				easting: coordinate3857[0], northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
+			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
 				new Response(null, { status: 204 })
 			);
 
@@ -84,12 +82,11 @@ describe('FeatureInfoResult provider', () => {
 			const mapResolution = 5;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
-				id: geoResourceId,
 				easting: coordinate3857[0], northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
+			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
 				new Response(null, { status: 500 })
 			);
 
