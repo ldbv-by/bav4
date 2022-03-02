@@ -13,7 +13,10 @@ export const provide = (lang) => {
 				layerManager_move_down: 'move Layer down',
 				layerManager_remove: 'remove Layer',
 				layerManager_duplicate: 'duplicate Layer',
-				layerManager_layer_copy: 'Copy'
+				layerManager_layer_copy: 'Copy',
+				layerManager_expand_all: 'expand all',
+				layerManager_collapse_all: 'collapse all',
+				layerManager_remove_all: 'remove all'
 			};
 
 		case 'de':
@@ -28,7 +31,10 @@ export const provide = (lang) => {
 				layerManager_move_down: 'Ebene absenken',
 				layerManager_remove: 'Ebene entfernen',
 				layerManager_duplicate: 'Ebene duplizieren',
-				layerManager_layer_copy: 'Kopie'
+				layerManager_layer_copy: 'Kopie',
+				layerManager_expand_all: 'Alle ausklappen',
+				layerManager_collapse_all: 'Alle einklappen',
+				layerManager_remove_all: 'Alle löschen'
 			};
 
 		default:

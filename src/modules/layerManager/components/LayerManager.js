@@ -1,12 +1,13 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { modifyLayer } from './../../../store/layers/layers.action';
+import { modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import css from './layerManager.css';
 import { MvuElement } from '../../MvuElement';
 
 
 const Update_Draggable_Items = 'update_draggable_items';
+const Update_Collapse_Change = 'update_collapse_change';
 const Update_Dragged_Item = 'update_dragged_item';
 /**
  * Renders a list of layers representing their order on a map and provides
@@ -34,7 +35,11 @@ export class LayerManager extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Draggable_Items:
-				return { ...model, draggableItems: [...data] };
+				return {
+					...model, draggableItems: [...data]
+				};
+			case Update_Collapse_Change:
+				return { ...model, draggableItems: model.draggableItems.map(i => i.id === data.id ? data : i) };
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
 		}
@@ -46,8 +51,8 @@ export class LayerManager extends MvuElement {
 
 
 	/**
-	 * @private
-	 */
+ * @private
+ */
 	_buildDraggableItems(layers) {
 		const draggableItems = [{ zIndex: 0, isPlaceholder: true, listIndex: 0, isDraggable: false }];
 		this._layerCount = layers.length;
@@ -72,8 +77,8 @@ export class LayerManager extends MvuElement {
 	}
 
 	/**
-	 * @override
-	 */
+ * @override
+ */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { draggableItems, draggedItem } = model;
@@ -81,8 +86,12 @@ export class LayerManager extends MvuElement {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};
 
+		const onCollapseChanged = (e) => {
+			this.signal(Update_Collapse_Change, e.detail.layer);
+		};
+
 		const createLayerElement = (layerItem) => {
-			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable data-test-id>
+			return html`<ba-layer-item .layer=${layerItem} class='layer' draggable data-test-id @collapse=${onCollapseChanged}>
 					</ba-layer-item>`;
 		};
 
@@ -161,6 +170,9 @@ export class LayerManager extends MvuElement {
 			}
 		};
 
+
+		const buttons = this._getButtons(model);
+
 		return html`
 			<style>${css}</style>
 			<div class="layermanager overflow-container">
@@ -176,12 +188,38 @@ export class LayerManager extends MvuElement {
 						@dragleave=${onDragLeave}
 						index=${index}> ${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}						
 					</li>`)}
-                </ul>								
+                </ul>	
+				${buttons}				
 			</div>
 		`;
 	}
 
+	_getButtons(model) {
+		const translate = (key) => this._translationService.translate(key);
+		const { draggableItems } = model;
+		const expandAll = () => {
+			this.signal(Update_Draggable_Items, draggableItems.map(i => i.isPlaceholder ? i : { ...i, collapsed: false }));
+		};
 
+		const collapseAll = () => {
+			this.signal(Update_Draggable_Items, draggableItems.map(i => i.isPlaceholder ? i : { ...i, collapsed: true }));
+		};
+
+		const removeAll = () => {
+			draggableItems.filter(i => !i.isPlaceholder).forEach(i => removeLayer(i.id));
+		};
+
+		const draggableItemsExpandable = draggableItems.some(i => i.collapsed);
+		const expandOrCollapseLabel = draggableItemsExpandable ? translate('layerManager_expand_all') : translate('layerManager_collapse_all');
+		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
+
+		return draggableItems.filter(i => !i.isPlaceholder).length > 0
+			? html`<div class='layermanager__actions' style='display: flex; justify-content:space-evenly; margin-top:0em; font-size:.9em'>					
+					<ba-button class='layermanager__expandOrCollapse' .label=${expandOrCollapseLabel} .type=${'secondary'} @click=${expandOrCollapseAction} style='border-right: 1px dotted var(--header-background-color);' ></ba-button>							
+					<ba-button .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>	
+					<div>`
+			: nothing;
+	}
 
 	static get tag() {
 		return 'ba-layer-manager';
