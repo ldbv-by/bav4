@@ -180,7 +180,7 @@ describe('LayerItem', () => {
 			expect(actualLayer.opacity).toBe(0.66);
 		});
 
-		it('click on layer colapse button change collapsed property', async () => {
+		it('click on layer collapse button change collapsed property', async () => {
 			setup();
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer, collapsed: true };
@@ -374,6 +374,37 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active.length).toBe(2);
 			expect(store.getState().layers.active[0].id).toBe('id1');
 			expect(store.getState().layers.active[1].id).toBe('id2');
+		});
+	});
+
+	describe('event handling', () => {
+		const layer = {
+			...createDefaultLayerProperties(),
+			id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
+		};
+
+		const setup = () => {
+
+			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key });
+			return store;
+		};
+		describe('on collapse', () => {
+
+			it('calls the onCollapse callback via property callback', async () => {
+				setup();
+				const element = await TestUtils.render(LayerItem.tag);
+				element.layer = { ...layer, collapsed: true };
+				element.onCollapse = jasmine.createSpy();
+
+
+				const collapseButton = element.shadowRoot.querySelector('button');
+				collapseButton.click();
+
+				expect(element.onCollapse).toHaveBeenCalled();
+				expect(element.getModel().layer.collapsed).toBeFalse();
+			});
+
 		});
 	});
 });

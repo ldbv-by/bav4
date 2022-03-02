@@ -5,8 +5,8 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
-import duplicate from './assets/duplicate.svg';
-import removeSvg from './assets/x-square.svg';
+import duplicate from './assets/clone.svg';
+import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
@@ -18,6 +18,13 @@ const Update_Layer_Collapsed = 'update_layer_collapsed';
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
+ * Events:
+ * - onCollapse()
+ *
+ * Properties:
+ * - `layer`
+ *
+ *
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -32,6 +39,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+
+		this._onCollapse = () => { };
 	}
 
 	/**
@@ -94,8 +103,15 @@ export class LayerItem extends AbstractMvuContentPanel {
 			//state store change -> implicit call of #render()
 			modifyLayer(layer.id, { visible: event.detail.checked });
 		};
-		const toggleCollapse = () => {
-			this.signal(Update_Layer_Collapsed, !layer.collapsed);
+		const toggleCollapse = (e) => {
+			const collapsed = !layer.collapsed;
+			this.signal(Update_Layer_Collapsed, collapsed);
+			this.dispatchEvent(new CustomEvent('collapse', {
+				detail: {
+					layer: { ...layer, collapsed: collapsed }
+				}
+			}));
+			this._onCollapse(e);
 		};
 		const increaseIndex = () => {
 			//state store change -> implicit call of #render()
@@ -189,12 +205,23 @@ export class LayerItem extends AbstractMvuContentPanel {
         </div>`;
 	}
 
-	static get tag() {
-		return 'ba-layer-item';
-	}
-
 	set layer(value) {
 		this.signal(Update_Layer, value);
 
+	}
+
+	/**
+	 * @property {function} onCollapse - Callback function
+	  */
+	set onCollapse(callback) {
+		this._onCollapse = callback;
+	}
+
+	get onCollapse() {
+		return this._onCollapse;
+	}
+
+	static get tag() {
+		return 'ba-layer-item';
 	}
 }
