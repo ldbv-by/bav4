@@ -126,6 +126,7 @@ describe('LayerService', () => {
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(wmtsGeoresource);
 
 				expect(wmtsOlLayer.get('id')).toBe('someId');
+				expect(wmtsOlLayer.getPreload()).toBe(3);
 				expect(wmtsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmtsOlLayer.getMaxZoom()).toBePositiveInfinity();
 				const wmtsSource = wmtsOlLayer.getSource();
@@ -143,6 +144,7 @@ describe('LayerService', () => {
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(wmtsGeoresource);
 
 				expect(wmtsOlLayer.get('id')).toBe('someId');
+				expect(wmtsOlLayer.getPreload()).toBe(3);
 				expect(wmtsOlLayer.getOpacity()).toBe(.5);
 				expect(wmtsOlLayer.getMinZoom()).toBe(5);
 				expect(wmtsOlLayer.getMaxZoom()).toBe(19);
