@@ -33,6 +33,8 @@ export const _definitionToGeoResource = definition => {
 		geoResource.setBackground(definition.background ?? geoResource.background);
 		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
 		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
+		geoResource.setMinZoom(definition.minZoom ?? null);
+		geoResource.setMaxZoom(definition.maxZoom ?? null);
 		return geoResource;
 	}
 	return null;
