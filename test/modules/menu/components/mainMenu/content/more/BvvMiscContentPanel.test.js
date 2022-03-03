@@ -1,17 +1,17 @@
 import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { MiscContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/misc/MiscContentPanel';
+import { BvvMiscContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
 
-window.customElements.define(MiscContentPanel.tag, MiscContentPanel);
+window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 
 describe('MiscContentPanel', () => {
 
 	const setup = () => {
 		TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(MiscContentPanel.tag);
+		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
 
 	describe('class', () => {
@@ -66,7 +66,7 @@ describe('MiscContentPanel', () => {
 			expect(links[7].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
 			expect(links[7].target).toEqual('_blank');
 
-			expect(links[8].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
+			expect(links[8].href).toEqual('https://www.energieatlas.bayern.de/');
 			expect(links[8].target).toEqual('_blank');
 		});
 	});

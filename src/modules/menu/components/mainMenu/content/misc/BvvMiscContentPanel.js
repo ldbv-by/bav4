@@ -1,7 +1,7 @@
 
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
-import css from './miscContentPanel.css';
+import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
 
 
@@ -11,7 +11,7 @@ import { $injector } from '../../../../../../injection';
 * @author costa_gi
 * @author alsturm
 */
-export class MiscContentPanel extends AbstractMvuContentPanel {
+export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 
 
 	constructor() {
@@ -139,7 +139,7 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</span>
 			</a>             		          
-			<a class="ba-list-item" href='https://www.geoportal.bayern.de/geoportalbayern' target='_blank'>
+			<a class="ba-list-item" href='https://www.energieatlas.bayern.de/' target='_blank'>
 				<span class="ba-list-item__pre ">
 					<span class="ba-list-item__image image ea">
 					</span>
