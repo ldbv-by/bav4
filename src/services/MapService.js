@@ -78,6 +78,14 @@ export class MapService {
 	}
 
 	/**
+	 * Return the max. zoom level the map supports
+	 * @returns {Number} zoom level
+	 */
+	getMaxZoomLevel() {
+		return this._definitions.maxZoomLevel;
+	}
+
+	/**
 	 * Returns the minimal angle in radians when rotation of the map should be accepted and applied.
 	 * @returns threshold value for rotating the map in radians.
 	 */
