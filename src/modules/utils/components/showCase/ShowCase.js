@@ -42,7 +42,7 @@ export class ShowCase extends BaElement {
 		const onClick0 = async () => {
 
 			//create a GeoResource
-			const geoResourceFuture = this._importVectorDataService.importVectorDataFromUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			// optional exception handling for this GeoResourceFuture
 			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
 			const { id, label } = geoResourceFuture;

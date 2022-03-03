@@ -1,8 +1,8 @@
 import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
+import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { SourceType, SourceTypeName } from '../../src/services/SourceTypeService';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { TestUtils } from '../test-utils';
@@ -36,7 +36,7 @@ describe('ImportVectorDataService', () => {
 		return new ImportVectorDataService();
 	};
 
-	describe('importVectorDataFromUrl', () => {
+	describe('forUrl', () => {
 
 		it('returns a GeoResourceFuture', () => {
 			const instanceUnderTest = setup();
@@ -48,7 +48,7 @@ describe('ImportVectorDataService', () => {
 			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
 			expect(geoResourceFuture.label).toBe(options.label);
@@ -60,7 +60,7 @@ describe('ImportVectorDataService', () => {
 			const url = 'http://my.url';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url);
+			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
 			expect(geoResourceFuture.label).toBe('layersPlugin_store_layer_default_layer_name_future');
@@ -82,7 +82,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -107,7 +107,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 				const vgr = await geoResourceFuture.get();
 				const layer = { label: options.label };
 				addLayer(options.id, layer);
@@ -134,7 +134,7 @@ describe('ImportVectorDataService', () => {
 						})
 					})
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url);
+				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
 
@@ -161,7 +161,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(null, { status: status })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();
@@ -186,7 +186,7 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.importVectorDataFromUrl(url, options);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				try {
 					await geoResourceFuture.get();
@@ -213,7 +213,7 @@ describe('ImportVectorDataService', () => {
 		});
 	});
 
-	describe('importVectorData', () => {
+	describe('forData', () => {
 
 		it('returns a VectorGeoResource', () => {
 			const instanceUnderTest = setup();
@@ -225,7 +225,7 @@ describe('ImportVectorDataService', () => {
 			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			expect(vgr.id).toBe(options.id);
 			expect(vgr.label).toBe(options.label);
@@ -242,7 +242,7 @@ describe('ImportVectorDataService', () => {
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
 			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
 
-			const vgr = instanceUnderTest.importVectorData(data);
+			const vgr = instanceUnderTest.forData(data);
 
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
@@ -266,7 +266,7 @@ describe('ImportVectorDataService', () => {
 			const changedLabel = 'now';
 			const layer = { label: options.label };
 			addLayer(options.id, layer);
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			vgr.setOpacity(.5);
 			expect(store.getState().layers.active[0].label).toBe(options.label);
@@ -284,7 +284,7 @@ describe('ImportVectorDataService', () => {
 				detectVectorSourceType: () => null
 			};
 
-			const vgr = instanceUnderTest.importVectorData(data, options);
+			const vgr = instanceUnderTest.forData(data, options);
 
 			expect(vgr).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);

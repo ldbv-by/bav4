@@ -1,6 +1,6 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';
+import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { provide as provider } from './i18n/featureInfoPlugin.provider';
@@ -61,6 +61,12 @@ export class FeatureInfoPlugin extends BaPlugin {
 		};
 
 
+		const onToolChange = toolId => {
+			if (toolId) {
+				abortOrReset();
+			}
+		};
 		observe(store, state => state.pointer.click, onPointerClick);
+		observe(store, state => state.tools.current, onToolChange);
 	}
 }

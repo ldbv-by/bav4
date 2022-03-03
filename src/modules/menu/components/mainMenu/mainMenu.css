@@ -138,6 +138,7 @@
 .is-portrait .is-open {
 	transform: translate(0, 65vh);
 	height: calc(65vh + 6.6em);
+	overflow: visible;
 }
 .is-portrait .main-menu__container {
 	overflow-y: auto;

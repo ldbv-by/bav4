@@ -117,9 +117,12 @@ export class VectorLayerService {
 	 * @returns olVectorLayer
 	 */
 	createVectorLayer(vectorGeoResource, olMap) {
-
+		const { id, minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
-			id: vectorGeoResource.id
+			id: id,
+			opacity: opacity,
+			minZoom: minZoom ?? undefined,
+			maxZoom: maxZoom ?? undefined
 		});
 		const vectorSource = vectorGeoResource.url
 			? this._vectorSourceForUrl(vectorGeoResource)

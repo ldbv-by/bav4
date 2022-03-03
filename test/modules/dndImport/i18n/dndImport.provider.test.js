@@ -13,6 +13,7 @@ describe('i18n for dndImport module', () => {
 		expect(map.dndImport_import_unsupported).toBe('Der Dateityp wird nicht unterstützt');
 		expect(map.dndImport_import_file_error).toBe('Die Datei kann nicht gelesen werden');
 		expect(map.dndImport_import_no_file_found).toBe('Die Datei ist leer');
+		expect(map.dndImport_import_max_size_exceeded).toBe('Die Datei überschreitet die erlaubte Größe');
 	});
 
 	it('provides translation for en', () => {
@@ -25,10 +26,11 @@ describe('i18n for dndImport module', () => {
 		expect(map.dndImport_import_unsupported).toBe('The file-type is not supported');
 		expect(map.dndImport_import_file_error).toBe('File is not readable');
 		expect(map.dndImport_import_no_file_found).toBe('File not found');
+		expect(map.dndImport_import_max_size_exceeded).toBe('Filesize is too large');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 6;
+		const expectedSize = 7;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

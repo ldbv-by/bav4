@@ -73,7 +73,7 @@ describe('GeoResource', () => {
 				const minimalAttribution = getMinimalAttribution();
 				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
 				const grs = new GeoResourceImpl('id');
-				grs.setAttribution ('foo');
+				grs.setAttribution('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -85,7 +85,7 @@ describe('GeoResource', () => {
 			it('returns null when provider returns null', () => {
 				const spy = jasmine.createSpy().and.returnValue(null);
 				const grs = new GeoResourceImpl('id');
-				grs.setAttribution ('foo');
+				grs.setAttribution('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -97,7 +97,7 @@ describe('GeoResource', () => {
 			it('returns null when provider returns an empyt array', () => {
 				const spy = jasmine.createSpy().and.returnValue([]);
 				const grs = new GeoResourceImpl('id');
-				grs.setAttribution ('foo');
+				grs.setAttribution('foo');
 				grs._attributionProvider = spy;
 
 				const result = grs.getAttribution(42);
@@ -108,7 +108,7 @@ describe('GeoResource', () => {
 
 			it('throws an error when no provider found', () => {
 				const grs = new GeoResourceImpl('id');
-				grs.setAttribution ('foo');
+				grs.setAttribution('foo');
 				grs._attributionProvider = null;
 
 				expect(() => {
@@ -124,6 +124,9 @@ describe('GeoResource', () => {
 				expect(georesource.label).toBe('');
 				expect(georesource.background).toBeFalse();
 				expect(georesource.opacity).toBe(1);
+				expect(georesource.minZoom).toBeNull();
+				expect(georesource.maxZoom).toBeNull();
+				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 			});
@@ -132,14 +135,20 @@ describe('GeoResource', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
 				georesource
-					.setOpacity(.5)
 					.setBackground(true)
+					.setOpacity(.5)
+					.setMinZoom(5)
+					.setMaxZoom(19)
+					.setHidden(true)
 					.setLabel('some label')
 					.setAttribution('some attribution');
 
 
 				expect(georesource.background).toBeTrue();
+				expect(georesource.hidden).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
+				expect(georesource.minZoom).toBe(5);
+				expect(georesource.maxZoom).toBe(19);
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
 			});

@@ -91,7 +91,7 @@ export class ToolBar extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button id='action-button' data-test-id class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 					</div>
 					<div class="action-button__icon">
@@ -103,7 +103,7 @@ export class ToolBar extends MvuElement {
 					</div>	
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button  id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
+					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
