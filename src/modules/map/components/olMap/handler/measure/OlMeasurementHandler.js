@@ -480,6 +480,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	_setStatistics(feature) {
 		const stats = getStats(feature.getGeometry(), this._projectionHints);
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
+			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
+			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
 			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
 			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
