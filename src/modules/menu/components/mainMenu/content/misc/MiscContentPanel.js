@@ -28,21 +28,21 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 		return html`
 		<style>${css}</style>
         <div class="ba-list">	
-			<div class="ba-list-item  ba-list-item__header">
-				<span class="ba-list-item__text ">
-					<span class="ba-list-item__primary-text">
-						${translate('misc_content_panel_settings')}						
-					</span>
-				</span>
-			</div>		
-			<div  class="ba-list-item">
-				<span class="ba-list-item__text vertical-center">   
-					${translate('misc_content_panel_dark_mode')}		                            
-				</span>
-				<span class="ba-list-item__after">
-					<ba-theme-toggle></ba-theme-toggle>
-				</span>
-			</div>
+		<div class="ba-list-item  ba-list-item__header">
+		<span class="ba-list-item__text ">
+			<span class="ba-list-item__primary-text">
+				${translate('misc_content_panel_settings')}						
+			</span>
+		</span>
+	</div>		
+	<div  class="ba-list-item divider">
+		<span class="ba-list-item__text vertical-center">   
+			${translate('misc_content_panel_dark_mode')}		                            
+		</span>
+		<span class="ba-list-item__after">
+			<ba-theme-toggle></ba-theme-toggle>
+		</span>
+	</div>
 			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">
@@ -68,15 +68,6 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 					${translate('misc_content_panel_Contact')}		            	            
 				</span>
 			</a>  
-			<a class="ba-list-item"  href='https://github.com/ldbv-by/bav4-nomigration' target='_blank'>
-				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon icon git">
-					</span>
-				</span>
-				<span class="ba-list-item__text vertical-center">				
-					${translate('misc_content_panel_github')}		            	            		            
-				</span>
-			</a>  
 			<a class="ba-list-item"  href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon checklist">					
@@ -95,13 +86,22 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 					${translate('misc_content_panel_privacy_policy')}			            
 				</span>
 			</a>  
-			<a class="ba-list-item divider"  href='https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' target='_blank'>
+			<a class="ba-list-item "  href='https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon imprint">				
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">				
 					${translate('misc_content_panel_imprint')}			            
+				</span>
+			</a>  
+			<a class="ba-list-item divider"  href='https://github.com/ldbv-by/bav4-nomigration' target='_blank'>
+				<span class="ba-list-item__pre">
+					<span class="ba-list-item__icon icon git">
+					</span>
+				</span>
+				<span class="ba-list-item__text vertical-center">				
+					${translate('misc_content_panel_github')}		            	            		            
 				</span>
 			</a>  
 			<div class="ba-list-item  ba-list-item__header">
@@ -136,6 +136,20 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__secondary-text">
 						${translate('misc_content_panel_gp_text')}	
+					</span>
+				</span>
+			</a>             		          
+			<a class="ba-list-item" href='https://www.geoportal.bayern.de/geoportalbayern' target='_blank'>
+				<span class="ba-list-item__pre ">
+					<span class="ba-list-item__image image ea">
+					</span>
+				</span>
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">					
+						${translate('misc_content_panel_ea_header')}											
+					</span>
+					<span class="ba-list-item__secondary-text">
+						${translate('misc_content_panel_ea_text')}	
 					</span>
 				</span>
 			</a>             		          

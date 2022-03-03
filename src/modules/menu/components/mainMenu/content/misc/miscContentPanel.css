@@ -47,6 +47,11 @@
 	background-size: contain;
 	background-image: url('assets/geoportal.webp');
 }
+.ea {
+	background-color: transparent;
+	background-size: contain;
+	background-image: url('assets/ea.webp');
+}
 .gdo {
 	mask-size: cover;
 	-webkit-mask-size: cover;
