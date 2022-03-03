@@ -29,12 +29,11 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		= $injector.inject('HttpService', 'ConfigService');
 
 	const requestPayload = {
-		id: geoResourceId,
 		easting: coordinate3857[0], northing: coordinate3857[1],
 		srid: 3857,
 		resolution: mapResolution
 	};
-	const url = configService.getValueAsPath('BACKEND_URL') + 'getFeature';
+	const url = configService.getValueAsPath('BACKEND_URL') + `getFeature/${geoResourceId}`;
 
 	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 
