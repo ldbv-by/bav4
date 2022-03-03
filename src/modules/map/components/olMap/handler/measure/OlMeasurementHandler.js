@@ -479,7 +479,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_setStatistics(feature) {
 		const stats = getStats(feature.getGeometry(), this._projectionHints);
-		setStatistic({ length: stats.length, area: stats.area });
+		if (!this._sketchHandler.isFinishOnFirstPoint) {
+			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
+			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
+			setStatistic({ length: nonAreaStats.length, area: stats.area });
+		}
+		else {
+			setStatistic({ length: stats.length, area: stats.area });
+		}
+
 	}
 
 	_updateStatistics() {

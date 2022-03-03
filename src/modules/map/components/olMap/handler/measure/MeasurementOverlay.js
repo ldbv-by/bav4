@@ -110,7 +110,8 @@ export class MeasurementOverlay extends BaOverlay {
 					const azimuthValue = getAzimuth(this.geometry);
 					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
 
-					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
+					const length = getGeometryLength(this._geometry, this._projectionHints);
+					return azimuth + '°/' + this._unitsService.formatDistance(length, 2);
 				}
 				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:

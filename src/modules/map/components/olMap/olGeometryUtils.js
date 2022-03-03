@@ -280,14 +280,26 @@ export const getStats = (geometry, calculationHints) => {
 		area: null
 	};
 
+	const getLineStringStats = (geometry) => {
+		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+	};
+
+	const getPolygonStats = (geometry) => {
+		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
+	};
+
+	const reduceToLineString = (polygon) => {
+		return new LineString(polygon.getCoordinates()[0].slice(0, -1));
+	};
+
 	if (geometry instanceof Point) {
 		return { ...stats, coordinate: geometry.getCoordinates() };
 	}
 	if (geometry instanceof LineString) {
-		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+		return getLineStringStats(geometry);
 	}
 	if (geometry instanceof Polygon) {
-		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
+		return geometry.getArea() === 0 ? getLineStringStats(reduceToLineString(geometry)) : getPolygonStats(geometry);
 	}
 	return stats;
 };
