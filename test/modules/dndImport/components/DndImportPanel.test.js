@@ -11,27 +11,6 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
-class TestableBlob extends Blob {
-
-	constructor(data = null, mimeType = '', size = 0) {
-		super([data], { type: mimeType });
-		this._size = size;
-		this._data = data;
-	}
-
-	get size() {
-		return this._size;
-	}
-
-	/**
-	 * @override
-	 * @returns {string}
-	 */
-	text() {
-		return this._data;
-	}
-}
-
 describe('DndImportPanel', () => {
 	let store;
 
@@ -368,7 +347,7 @@ describe('DndImportPanel', () => {
 
 
 			it('updates the import-store with a dropped text-file', async (done) => {
-				const textFileMock = new TestableBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
+				const textFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [textFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
@@ -390,7 +369,7 @@ describe('DndImportPanel', () => {
 
 
 			it('updates the import-store with a dropped kml-file', async (done) => {
-				const kmlFileMock = new TestableBlob('<kml>foo</kml>', MediaType.KML);
+				const kmlFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.KML);
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [kmlFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
@@ -408,7 +387,7 @@ describe('DndImportPanel', () => {
 			});
 
 			it('updates the import-store with a dropped gpx-file', async (done) => {
-				const gpxFileMock = new TestableBlob('<gpx>foo</gpx>', MediaType.GPX);
+				const gpxFileMock = TestUtils.newBlob('<gpx>foo</gpx>', MediaType.GPX);
 				const sourceTypeGpx = new SourceType(SourceTypeName.GPX);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [gpxFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGpx };
@@ -428,7 +407,7 @@ describe('DndImportPanel', () => {
 
 
 			it('updates the import-store with a dropped geojson-file', async (done) => {
-				const geoJSONFileMock = new TestableBlob('{type:foo}', MediaType.GeoJSON);
+				const geoJSONFileMock = TestUtils.newBlob('{type:foo}', MediaType.GeoJSON);
 				const sourceTypeGeoJSON = new SourceType(SourceTypeName.GEOJSON);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [geoJSONFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeGeoJSON };
@@ -511,7 +490,7 @@ describe('DndImportPanel', () => {
 			});
 
 			it('emits a notification for a dropped but unsupported file', async () => {
-				const htmlFileMock = new TestableBlob('foo', MediaType.TEXT_HTML);
+				const htmlFileMock = TestUtils.newBlob('foo', MediaType.TEXT_HTML);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [htmlFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
 				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
@@ -526,7 +505,7 @@ describe('DndImportPanel', () => {
 			});
 
 			it('emits a notification for a dropped but too large file', async () => {
-				const bigFileMock = new TestableBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
+				const bigFileMock = TestUtils.newBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [bigFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
 				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
@@ -541,7 +520,7 @@ describe('DndImportPanel', () => {
 			});
 
 			it('emits a notification for a dropped but unknown file', async () => {
-				const unknownFileMock = new TestableBlob('foo', '');
+				const unknownFileMock = TestUtils.newBlob('foo', '');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['Files'], files: [unknownFileMock] };
 				const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
 				spyOn(sourceTypeService, 'forBlob').and.callFake(() => sourceTypeResultMock);
