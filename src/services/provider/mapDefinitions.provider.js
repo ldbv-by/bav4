@@ -11,6 +11,7 @@ import { $injector } from '../../injection';
  * @property {number} defaultSridForView default SRID in which coordinates should be displayed within the UI
  * @property {function(Coordinate):(Array<SridDefinition>)} sridDefinitionsForView function which can take a coordinate and returns an array of SridDefinition
  * @property {number} defaultGeodeticSrid default SRID for geodetic tasks
+ * @property {number} maxZoomLevel the max. zoom level the map should support
  */
 
 /**
@@ -32,7 +33,8 @@ export const getBvvMapDefinitions = () => {
 		srid: 3857,
 		defaultSridForView: 25832,
 		sridDefinitionsForView: getBvvSridDefinitionsForView,
-		defaultGeodeticSrid: 25832
+		defaultGeodeticSrid: 25832,
+		maxZoomLevel: 19
 	};
 };
 
