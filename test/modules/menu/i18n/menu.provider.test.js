@@ -8,8 +8,8 @@ describe('i18n for menu module', () => {
 		const map = provide('de');
 
 		expect(map.menu_main_open_button).toBe('Menü öffnen');
-		expect(map.misc_content_panel_settings).toBe('Einstellungen');
-		expect(map.misc_content_panel_dark_mode).toBe('Dark mode');
+		expect(map.misc_content_panel_settings).toBe('Darstellung');
+		expect(map.misc_content_panel_dark_mode).toBe('Dunkles Design');
 		expect(map.misc_content_panel_fullscreen).toBe('Vollbild');
 		expect(map.misc_content_panel_language).toBe('Sprache');
 		expect(map.misc_content_panel_information).toBe('Information');
@@ -19,11 +19,14 @@ describe('i18n for menu module', () => {
 		expect(map.misc_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
 		expect(map.misc_content_panel_privacy_policy).toBe('Datenschutzerklärung');
 		expect(map.misc_content_panel_imprint).toBe('Impressum');
-		expect(map.misc_content_panel_more_links).toBe('weitere Links');
+		expect(map.misc_content_panel_more_links).toBe('weitere Anwendungen');
 		expect(map.misc_content_panel_gdo_header).toBe('Geodaten Online');
-		expect(map.misc_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden');
+		expect(map.misc_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden.');
 		expect(map.misc_content_panel_gp_header).toBe('Geoportal Bayern');
-		expect(map.misc_content_panel_gp_text).toBe('Zentraler Zugang zu Geodaten und Geodatendiensten');
+		expect(map.misc_content_panel_gp_text).toBe('Zentraler Zugang zu Geodaten und Geodatendiensten.');
+		expect(map.misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
+		expect(map.misc_content_panel_ea_text).toBe('Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.');
+
 	});
 
 	it('provides translation for en', () => {
@@ -31,8 +34,8 @@ describe('i18n for menu module', () => {
 		const map = provide('en');
 
 		expect(map.menu_main_open_button).toBe('Open Menu');
-		expect(map.misc_content_panel_settings).toBe('Settings');
-		expect(map.misc_content_panel_dark_mode).toBe('Dark mode');
+		expect(map.misc_content_panel_settings).toBe('Appearance');
+		expect(map.misc_content_panel_dark_mode).toBe('Dark theme');
 		expect(map.misc_content_panel_fullscreen).toBe('Fullscreen');
 		expect(map.misc_content_panel_language).toBe('Language');
 		expect(map.misc_content_panel_information).toBe('Information');
@@ -42,16 +45,18 @@ describe('i18n for menu module', () => {
 		expect(map.misc_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.misc_content_panel_privacy_policy).toBe('Privacy Policy');
 		expect(map.misc_content_panel_imprint).toBe('Imprint');
-		expect(map.misc_content_panel_more_links).toBe('more Links');
+		expect(map.misc_content_panel_more_links).toBe('more Applications');
 		expect(map.misc_content_panel_gdo_header).toBe('Geodaten Online');
-		expect(map.misc_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden');
+		expect(map.misc_content_panel_gdo_text).toBe('Order digital Data online and download immediately.');
 		expect(map.misc_content_panel_gp_header).toBe('Geoportal Bayern');
-		expect(map.misc_content_panel_gp_text).toBe('Zentraler Zugang zu Geodaten und Geodatendiensten');
+		expect(map.misc_content_panel_gp_text).toBe('Central access to Geodata and Geodataservices.');
+		expect(map.misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
+		expect(map.misc_content_panel_ea_text).toBe('The central Internet-Portal for saving Energy, Energy efficiency and renewable Energies.');
 
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 17;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

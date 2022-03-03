@@ -28,21 +28,21 @@ export class MiscContentPanel extends AbstractMvuContentPanel {
 		return html`
 		<style>${css}</style>
         <div class="ba-list">	
-		<div class="ba-list-item  ba-list-item__header">
-		<span class="ba-list-item__text ">
-			<span class="ba-list-item__primary-text">
-				${translate('misc_content_panel_settings')}						
-			</span>
-		</span>
-	</div>		
-	<div  class="ba-list-item divider">
-		<span class="ba-list-item__text vertical-center">   
-			${translate('misc_content_panel_dark_mode')}		                            
-		</span>
-		<span class="ba-list-item__after">
-			<ba-theme-toggle></ba-theme-toggle>
-		</span>
-	</div>
+			<div class="ba-list-item  ba-list-item__header">
+				<span class="ba-list-item__text ">
+					<span class="ba-list-item__primary-text">
+						${translate('misc_content_panel_settings')}						
+					</span>
+				</span>
+			</div>		
+			<div  class="ba-list-item divider">
+				<span class="ba-list-item__text vertical-center">   
+					${translate('misc_content_panel_dark_mode')}		                            
+				</span>
+				<span class="ba-list-item__after">
+					<ba-theme-toggle></ba-theme-toggle>
+				</span>
+			</div>
 			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">
