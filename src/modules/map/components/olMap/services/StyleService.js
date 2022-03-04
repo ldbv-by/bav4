@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction } from '../olStyleUtils';
 
 /**
  * @enum
@@ -13,9 +13,12 @@ export const StyleTypes = Object.freeze({
 	MARKER: 'marker',
 	TEXT: 'text',
 	LINE: 'line',
-	POLYGON: 'polygon'
+	POLYGON: 'polygon',
+	GEOJSON: 'geojson'
 });
 
+
+const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
  * Adds or removes styles and overlays to ol.feature.
@@ -121,6 +124,8 @@ export class StyleService {
 				return textStyleFunction;
 			case StyleTypes.DRAW:
 				return nullStyleFunction;
+			case StyleTypes.GEOJSON:
+				return geojsonStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -204,6 +209,13 @@ export class StyleService {
 			return (regex.test(candidate));
 		};
 
+		const getStyleTypeFromProperties = (olFeature) => {
+			const featurePropertyKeys = olFeature.getKeys();
+			const hasGeoJSONSimpleStyleProperties = featurePropertyKeys.some(k => GeoJSON_SimpleStyle_Keys.includes(k));
+
+			return hasGeoJSONSimpleStyleProperties ? StyleTypes.GEOJSON : null;
+		};
+
 		const getStyleTypeFromId = (id) => {
 			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
 			if (drawingType) {
@@ -218,8 +230,9 @@ export class StyleService {
 
 		if (olFeature) {
 			const id = olFeature.getId();
+			const styleTypeFromId = getStyleTypeFromId(id);
 
-			return getStyleTypeFromId(id);
+			return styleTypeFromId ? styleTypeFromId : getStyleTypeFromProperties(olFeature);
 		}
 		return null;
 	}
