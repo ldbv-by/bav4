@@ -126,7 +126,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const duplicateLayer = () => {
 			//state store change -> implicit call of #render()
-			addLayer(`${layer.id}_${createUniqueId()}`, { ...layer, label: `${layer.label} (${translate('layerManager_layer_copy')})`, zIndex: layer.zIndex - 1 });
+			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, label: `${layer.label} (${translate('layerManager_layer_copy')})`, zIndex: layer.zIndex + 1 });
 		};
 
 		const remove = () => {

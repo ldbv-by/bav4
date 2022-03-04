@@ -320,7 +320,7 @@ describe('LayerItem', () => {
 		it('click on duplicate icon adds a layer copy', async () => {
 			const layer0 = {
 				...createDefaultLayerProperties(),
-				id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
+				id: 'id0', label: 'label0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1
 			};
 
 			const state = {
@@ -339,7 +339,7 @@ describe('LayerItem', () => {
 			duplicateButton.click();
 
 			expect(store.getState().layers.active[0].id).toBe('id0');
-			expect(store.getState().layers.active[1].id.startsWith('id0_')).toBeTrue();
+			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
 			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
 		});
 
