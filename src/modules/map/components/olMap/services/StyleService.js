@@ -53,6 +53,9 @@ export class StyleService {
 			case StyleTypes.LINE:
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
 				break;
+			case StyleTypes.GEOJSON:
+				this._addGeoJSONStyle(olFeature);
+				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
 				break;
@@ -159,6 +162,10 @@ export class StyleService {
 
 		olFeature.setStyle(measureStyleFunction);
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	}
+
+	_addGeoJSONStyle(olFeature) {
+		olFeature.setStyle(geojsonStyleFunction);
 	}
 
 	_addTextStyle(olFeature) {

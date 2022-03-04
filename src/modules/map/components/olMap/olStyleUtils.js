@@ -170,7 +170,7 @@ export const geojsonStyleFunction = (feature) => {
 	const geoJsonStyleProperties = { ...defaultStyleProperties, ...featureStyleProperties };
 
 	return [new Style({
-		image: new Circle({
+		image: new CircleStyle({
 			fill: new Fill({
 				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
 			}),
