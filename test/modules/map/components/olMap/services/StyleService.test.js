@@ -55,10 +55,10 @@ describe('StyleService', () => {
 		});
 
 		it('detects drawStyleTypes as type from olFeature', () => {
-			const markerFeature = { getId: () => 'draw_marker_123' };
-			const textFeature = { getId: () => 'draw_text_123' };
-			const lineFeature = { getId: () => 'draw_line_123' };
-			const polygonFeature = { getId: () => 'draw_polygon_123' };
+			const markerFeature = { getId: () => 'draw_marker_123', getKeys: () => [] };
+			const textFeature = { getId: () => 'draw_text_123', getKeys: () => [] };
+			const lineFeature = { getId: () => 'draw_line_123', getKeys: () => [] };
+			const polygonFeature = { getId: () => 'draw_polygon_123', getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(markerFeature)).toEqual(StyleTypes.MARKER);
 			expect(instanceUnderTest._detectStyleType(textFeature)).toEqual(StyleTypes.TEXT);
@@ -68,10 +68,10 @@ describe('StyleService', () => {
 
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123' };
-			const feature2 = { getId: () => '123_measure_123' };
-			const feature3 = { getId: () => ' measure_123' };
-			const feature4 = { getId: () => '123measure_123' };
+			const feature1 = { getId: () => 'mea_sure_123', getKeys: () => [] };
+			const feature2 = { getId: () => '123_measure_123', getKeys: () => [] };
+			const feature3 = { getId: () => ' measure_123', getKeys: () => [] };
+			const feature4 = { getId: () => '123measure_123', getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
