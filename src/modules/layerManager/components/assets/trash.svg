@@ -1,4 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="-4 -4 24 24"><!-- MIT License -->
-  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- MIT License -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="16"
+   height="16"
+   fill="currentColor"
+   class="bi bi-trash3"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg866">
+  <metadata
+     id="metadata872">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs870" />
+  <path
+     id="path864"
+     d="M 7.240847,3.6950984 C 6.6844358,3.6950983 6.2277759,4.1517581 6.2277759,4.7081695 V 4.9607862 H 5.2199132 c -0.00268,-2.31e-5 -0.00511,-1.65e-5 -0.00782,0 H 4.708169 c -0.147715,0 -0.2903114,0.06438 -0.3789251,0.1640707 -0.088613,0.09969 -0.1276105,0.2228862 -0.1276105,0.342465 0,0.1195787 0.038996,0.2427745 0.1276105,0.342465 0.088613,0.09969 0.2312101,0.1640706 0.3789251,0.1640706 h 0.039066 l 0.4127808,5.1656215 c 0.052587,0.655223 0.6045901,1.164887 1.2617815,1.165423 h 3.1564074 c 0.6571923,-5.36e-4 1.2091943,-0.510199 1.2617813,-1.165423 l 0.412781,-5.1656215 h 0.03906 c 0.147715,0 0.29031,-0.06438 0.378925,-0.1640706 0.08862,-0.09969 0.12761,-0.2228863 0.12761,-0.342465 0,-0.1195788 -0.039,-0.2427746 -0.12761,-0.342465 -0.08862,-0.09969 -0.231209,-0.1640707 -0.378923,-0.1640707 h -0.501327 c -0.0027,-2.27e-5 -0.0051,-1.54e-5 -0.0078,0 H 9.7722229 V 4.7081695 c 0,-0.5564115 -0.4566598,-1.0130712 -1.013071,-1.0130711 z m 0,0.7432726 H 8.7591519 V 4.9607862 H 7.240847 Z M 5.6326412,6.0001714 10.393672,5.9738575 10.000559,11.08506 c -0.010759,0.133913 -0.1169774,0.233113 -0.2513148,0.233084 0,0 -3.616902,0.01317 -3.4590182,0 -0.134338,2.9e-5 -0.2405675,-0.09917 -0.2513145,-0.233084 z m 0.032607,5.0989416 c 0.031463,0.392037 0.3633838,0.698663 0.7565478,0.699254 -0.3983727,8.1e-5 -0.7246783,-0.302159 -0.7565478,-0.699254 z m 4.6695028,0 c -0.03187,0.397095 -0.358175,0.699335 -0.7565475,0.699254 0.3931636,-5.91e-4 0.7250775,-0.307222 0.7565475,-0.699254 z"
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.50645131;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
 </svg>

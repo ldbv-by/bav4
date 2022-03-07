@@ -50,3 +50,13 @@ li {
 .isdragged {
 	background: var(--header-background-color);
 }
+
+.layermanager__actions {
+	display: flex;
+	justify-content: space-evenly; 
+	font-size: .9em;
+}
+
+.layermanager__actions ba-button {
+	width: 100%;
+}

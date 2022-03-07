@@ -214,7 +214,7 @@ export class LayerManager extends MvuElement {
 		const expandOrCollapseAction = draggableItemsExpandable ? expandAll : collapseAll;
 
 		return draggableItems.filter(i => !i.isPlaceholder).length > 0
-			? html`<div class='layermanager__actions' style='display: flex; justify-content:space-evenly; margin-top:0em; font-size:.9em'>					
+			? html`<div class='layermanager__actions'>					
 					<ba-button class='layermanager__expandOrCollapse' .label=${expandOrCollapseLabel} .type=${'secondary'} @click=${expandOrCollapseAction} style='border-right: 1px dotted var(--header-background-color);' ></ba-button>							
 					<ba-button .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>	
 					<div>`
