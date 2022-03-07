@@ -16,13 +16,13 @@ export const provide = (lang) => {
 				misc_content_panel_terms_of_use: 'Terms of Use',
 				misc_content_panel_privacy_policy: 'Privacy Policy',
 				misc_content_panel_imprint: 'Imprint',
-				misc_content_panel_more_links: 'more Applications',
+				misc_content_panel_more_links: 'More Applications',
 				misc_content_panel_gdo_header: 'Geodaten Online',
-				misc_content_panel_gdo_text: 'Order digital Data online and download immediately.',
+				misc_content_panel_gdo_text: 'Order digital data online and download them immediately.',
 				misc_content_panel_gp_header: 'Geoportal Bayern',
-				misc_content_panel_gp_text: 'Central access to Geodata and Geodataservices.',
+				misc_content_panel_gp_text: 'Central access to geospatial data and services.',
 				misc_content_panel_ea_header: 'Energie-Atlas Bayern',
-				misc_content_panel_ea_text: 'The central Internet-Portal for saving Energy, Energy efficiency and renewable Energies.'
+				misc_content_panel_ea_text: 'Central portal for saving energy, energy efficiency, and renewable energies.'
 			};
 
 		case 'de':

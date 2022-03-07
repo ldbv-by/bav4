@@ -45,13 +45,13 @@ describe('i18n for menu module', () => {
 		expect(map.misc_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.misc_content_panel_privacy_policy).toBe('Privacy Policy');
 		expect(map.misc_content_panel_imprint).toBe('Imprint');
-		expect(map.misc_content_panel_more_links).toBe('more Applications');
+		expect(map.misc_content_panel_more_links).toBe('More Applications');
 		expect(map.misc_content_panel_gdo_header).toBe('Geodaten Online');
-		expect(map.misc_content_panel_gdo_text).toBe('Order digital Data online and download immediately.');
+		expect(map.misc_content_panel_gdo_text).toBe('Order digital data online and download them immediately.');
 		expect(map.misc_content_panel_gp_header).toBe('Geoportal Bayern');
-		expect(map.misc_content_panel_gp_text).toBe('Central access to Geodata and Geodataservices.');
+		expect(map.misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
-		expect(map.misc_content_panel_ea_text).toBe('The central Internet-Portal for saving Energy, Energy efficiency and renewable Energies.');
+		expect(map.misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
 
 	});
 
