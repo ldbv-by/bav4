@@ -5,7 +5,7 @@ const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);
 
-window.baGenerateTestIds = new URLSearchParams(window.location.search).get('generate_test_ids') === 'true';
+window.enableTestIds = new URLSearchParams(window.location.search).get(QueryParameters.ENABLE_TEST_IDS) === 'true';
 
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
@@ -32,3 +32,4 @@ import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/survey';
 import './modules/dndImport';
+import { QueryParameters } from './services/domain/queryParameters';
