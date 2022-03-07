@@ -13,6 +13,6 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.LAYER_OPACITY).toBe('l_o');
 		expect(QueryParameters.TOPIC).toBe('t');
 
-		expect(QueryParameters.ENABLE_TEST_IDS).toBe('enable_test_ids');
+		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
 	});
 });

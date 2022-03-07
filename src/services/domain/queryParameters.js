@@ -12,5 +12,5 @@ export const QueryParameters = Object.freeze({
 	LAYER_OPACITY: 'l_o',
 	TOPIC: 't',
 	// technical parameters
-	ENABLE_TEST_IDS: 'enable_test_ids'
+	T_ENABLE_TEST_IDS: 't_enable-test-ids'
 });

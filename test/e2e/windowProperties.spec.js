@@ -22,7 +22,7 @@ test.describe('global properties', () => {
 
 		test.describe('when query parameter has value of `true`', () => {
 			test('property should be `true`', async ({ page }) => {
-				await page.goto(`${BASE_URL}?${QueryParameters.ENABLE_TEST_IDS}=true`);
+				await page.goto(`${BASE_URL}?${QueryParameters.T_ENABLE_TEST_IDS}=true`);
 
 				const aHandle = await page.evaluateHandle(() => window);
 				const resultHandle = await page.evaluateHandle(window => window.enableTestIds, aHandle);
@@ -35,7 +35,7 @@ test.describe('global properties', () => {
 
 		test.describe('when query parameter has value of something else', () => {
 			test('property should be `false`', async ({ page }) => {
-				await page.goto(`${BASE_URL}?${QueryParameters.ENABLE_TEST_IDS}=foo`);
+				await page.goto(`${BASE_URL}?${QueryParameters.T_ENABLE_TEST_IDS}=foo`);
 
 				const aHandle = await page.evaluateHandle(() => window);
 				const resultHandle = await page.evaluateHandle(window => window.enableTestIds, aHandle);
