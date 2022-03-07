@@ -14,6 +14,6 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.TOPIC).toBe('t');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');
-		expect(QueryParameters.T_DISABLE_OPTIONAL_HINTS).toBe('t_disable-optional-hints');
+		expect(QueryParameters.T_DISABLE_INITIAL_HINTS).toBe('t_disable-initial-hints');
 	});
 });

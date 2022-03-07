@@ -13,5 +13,5 @@ export const QueryParameters = Object.freeze({
 	TOPIC: 't',
 	// technical parameters
 	T_ENABLE_TEST_IDS: 't_enable-test-ids',
-	T_DISABLE_OPTIONAL_HINTS: 't_disable-optional-hints'
+	T_DISABLE_INITIAL_HINTS: 't_disable-initial-hints'
 });
