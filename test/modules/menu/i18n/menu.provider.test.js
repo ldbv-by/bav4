@@ -19,7 +19,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Datenschutzerklärung');
 		expect(map.menu_misc_content_panel_imprint).toBe('Impressum');
-		expect(map.menu_misc_content_panel_more_links).toBe('weitere Anwendungen');
+		expect(map.menu_misc_content_panel_misc_links).toBe('weitere Anwendungen');
 		expect(map.menu_misc_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.menu_misc_content_panel_gdo_text).toBe('Online digitale Daten bestellen und sofort downloaden.');
 		expect(map.menu_misc_content_panel_gp_header).toBe('Geoportal Bayern');
@@ -45,7 +45,7 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Privacy Policy');
 		expect(map.menu_misc_content_panel_imprint).toBe('Imprint');
-		expect(map.menu_misc_content_panel_more_links).toBe('Other Applications');
+		expect(map.menu_misc_content_panel_misc_links).toBe('Other Applications');
 		expect(map.menu_misc_content_panel_gdo_header).toBe('Geodaten Online');
 		expect(map.menu_misc_content_panel_gdo_text).toBe('Order digital data online and download them immediately.');
 		expect(map.menu_misc_content_panel_gp_header).toBe('Geoportal Bayern');
