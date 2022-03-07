@@ -14,7 +14,7 @@ window.customElements.define(Survey.tag, Survey);
 describe('Survey', () => {
 	let store;
 	const setup = (state = {}, config = {}) => {
-		const { embed = false } = config;
+		const { embed = false, urlParams = new URLSearchParams() } = config;
 
 		const initialState = {
 			mainMenu: {
@@ -32,7 +32,8 @@ describe('Survey', () => {
 
 		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), notifications: notificationReducer });
 		$injector.registerSingleton('EnvironmentService', {
-			isEmbedded: () => embed
+			isEmbedded: () => embed,
+			getUrlParams: () => urlParams
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -96,6 +97,20 @@ describe('Survey', () => {
 			closeButtonElement.click();
 
 			expect(store.getState().notifications.latest.payload.content).toBeNull();
+		});
+
+
+		it('supress a notification, when urlParameter \'survey=false\' is active ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, { urlParams: new URLSearchParams('?survey=false') });
+			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(store.getState().notifications.latest).toBeNull();
 		});
 	});
 
