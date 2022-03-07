@@ -60,7 +60,7 @@ With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 | `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled | 
 
-| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
+| E2E Test | E2E tests are based on Playwright and can be run against multiple browsers. Available browsers are `chromium`, `firefox`, `webkit`. |
 |----|----|
 | `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
 | `npx playwright test --help` | Shows information about all options |
@@ -69,7 +69,7 @@ With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 |----|----|
 | `npm run lint` | Lints and fixes js and css files |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
-| `npm run es-check` | Checks if source files use only allowed es-version language features. Currently up to es9 is allowed |
+| `npm run es-check` | Checks if source files use only allowed es-version language features|
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
 
