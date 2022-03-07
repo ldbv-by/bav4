@@ -156,7 +156,7 @@ describe('MainMenu', () => {
 					case TabId.MAPS:
 						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
 						break;
-					case TabId.MORE:
+					case TabId.MISC:
 						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBeTrue();
 						break;
 				}
