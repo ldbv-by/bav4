@@ -53,10 +53,11 @@ li {
 
 .layermanager__actions {
 	display: flex;
-	justify-content: space-evenly; 
+	justify-content: flex-start; 
 	font-size: .9em;
 }
 
-.layermanager__actions ba-button {
-	width: 100%;
+.layermanager__expandOrCollapse {
+	padding-left: .8em;
+
 }
