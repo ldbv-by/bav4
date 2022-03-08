@@ -1197,6 +1197,25 @@ describe('OlMeasurementHandler', () => {
 			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 5, dragging: jasmine.any(Boolean) });
 		});
 
+		it('change statistics with two-point geometry', () => {
+			const store = setup();
+			const classUnderTest = new OlMeasurementHandler();
+
+
+			const firstPointGeometry = new Polygon([[[0, 0]]]);
+			const feature = new Feature({ geometry: firstPointGeometry });
+			const map = setupMap();
+
+			classUnderTest.activate(map);
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+			firstPointGeometry.setCoordinates([[[0, 0], [500, 0], [0, 0]]]);
+			feature.getGeometry().dispatchEvent('change');
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(506, 0);
+			expect(store.getState().measurement.statistic.area).toBeCloseTo(0, 1);
+		});
+
 		it('change measureState, when mouse enters draggable overlay', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
