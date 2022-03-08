@@ -113,6 +113,20 @@ describe('Survey', () => {
 			expect(element).toBeTruthy();
 			expect(store.getState().notifications.latest).toBeNull();
 		});
+
+		it('does not supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' have invalid value ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=foo`) });
+			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+		});
 	});
 
 	describe('responsive layout ', () => {
