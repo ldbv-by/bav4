@@ -147,7 +147,7 @@ export const geojsonStyleFunction = (feature) => {
 		 * the width of the line component of a polygon, polyline, or multigeometry
  		 *@type {number}
  		 */
-		'stroke-width': 2,
+		'stroke-width': 3,
 		/**
 		 * the color of the interior of a polygon
 		 * as rgb-color string
