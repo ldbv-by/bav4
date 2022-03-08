@@ -1,0 +1,61 @@
+.icon {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	background: var(--text1);
+	width: 2em;
+	height: 2em;
+	border-radius: 0;
+}
+.image {
+	min-width: 4em;
+	width: 4em;
+	min-height: 4em;
+	height: 4em;
+	border-radius: 0;
+}
+.help {
+	mask-image: url('assets/help.svg');
+	-webkit-mask-image: url('assets/help.svg');
+}
+.contact {
+	mask-image: url('assets/contact.svg');
+	-webkit-mask-image: url('assets/contact.svg');
+	transform: scale(.7);
+}
+.checklist {
+	mask-image: url('assets/checklist.svg');
+	-webkit-mask-image: url('assets/checklist.svg');
+	transform: scale(.7);
+}
+.lock {
+	mask-image: url('assets/lock.svg');
+	-webkit-mask-image: url('assets/lock.svg');
+	transform: scale(.7);
+}
+.git {
+	mask-image: url('assets/git.svg');
+	-webkit-mask-image: url('assets/git.svg');
+	transform: scale(.7);
+}
+.imprint {
+	mask-image: url('assets/imprint.svg');
+	-webkit-mask-image: url('assets/imprint.svg');
+	transform: scale(.7);
+}
+.geoportal {
+	background-color: transparent;
+	background-size: contain;
+	background-image: url('assets/geoportal.webp');
+}
+.ea {
+	background-color: transparent;
+	background-size: contain;
+	background-image: url('assets/ea.webp');
+}
+.gdo {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/gdo.svg');
+	-webkit-mask-image: url('assets/gdo.svg');
+	background: linear-gradient(90deg, rgba(8,131,181,1) 0%, rgba(43,91,148,1) 100%);
+}
