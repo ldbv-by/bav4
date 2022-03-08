@@ -4,6 +4,7 @@ import css from './survey.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
+import { QueryParameters } from '../../../services/domain/queryParameters';
 
 export const SURVEY_NOTIFICATION_DELAY_TIME = 3000;
 
@@ -55,9 +56,8 @@ export class Survey extends MvuElement {
 	onInitialize() {
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
-		if (this._environmentService.getUrlParams().has('survey')) {
-			this.signal(Update_HasBeenVisible, (this._environmentService.getUrlParams().get('survey') === 'false'));
-		}
+
+		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
 	}
 
 	/**

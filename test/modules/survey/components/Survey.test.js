@@ -6,6 +6,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { render } from 'lit-html';
+import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
 window.customElements.define(Survey.tag, Survey);
@@ -100,13 +101,13 @@ describe('Survey', () => {
 		});
 
 
-		it('supress a notification, when urlParameter \'survey=false\' is active ', async () => {
+		it('supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
 			const state = {
 				media: {
 					portrait: true
 				}
 			};
-			const element = await setup(state, { urlParams: new URLSearchParams('?survey=false') });
+			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`) });
 			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
