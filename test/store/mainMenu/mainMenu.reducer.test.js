@@ -101,8 +101,8 @@ describe('mainMenuReducer', () => {
 
 			setTab(TabId.MAPS);
 			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-			setTab(TabId.MORE);
-			expect(store.getState().mainMenu.tab).toBe(TabId.MORE);
+			setTab(TabId.MISC);
+			expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
 		});
 	});
 });
