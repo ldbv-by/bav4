@@ -263,15 +263,14 @@ export class StyleService {
 			return null;
 		};
 
+		const defaultOrNull = () => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
+
 		if (olFeature) {
 			const id = olFeature.getId();
-
-			return getStyleTypeFromId(id);
+			const styleType = getStyleTypeFromId(id);
+			return styleType ? styleType : defaultOrNull();
 		}
 
-		if (olFeature.getStyle() === null) {
-			return StyleTypes.DEFAULT;
-		}
 		return null;
 	}
 }

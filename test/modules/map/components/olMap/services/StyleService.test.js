@@ -68,10 +68,10 @@ describe('StyleService', () => {
 
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123' };
-			const feature2 = { getId: () => '123_measure_123' };
-			const feature3 = { getId: () => ' measure_123' };
-			const feature4 = { getId: () => '123measure_123' };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {} };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => {} };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => {} };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => {} };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
@@ -504,6 +504,7 @@ describe('StyleService', () => {
 			featureToBeStyled.setId('measure_123');
 			const featureNotToBeStyled = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			featureNotToBeStyled.setId('foo_123');
+			featureNotToBeStyled.setStyle(new Style());
 
 			expect(instanceUnderTest.isStyleRequired(featureToBeStyled)).toBeTrue();
 			expect(instanceUnderTest.isStyleRequired(featureNotToBeStyled)).toBeFalse();
