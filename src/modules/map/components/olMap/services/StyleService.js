@@ -53,8 +53,7 @@ export class StyleService {
 			return this._defaultColorIndex;
 		};
 		const next = () => {
-			this._defaultColorIndex++;
-			return this._defaultColorIndex;
+			return this._defaultColorIndex++;
 		};
 
 		return this._defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
