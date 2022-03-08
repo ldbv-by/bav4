@@ -142,7 +142,9 @@ describe('ImportVectorDataService', () => {
 				const instanceUnderTest = setup();
 				const sourceType = new SourceType(SourceTypeName.GEOJSON, mediaType);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(sourceType);
-				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
+				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
+					.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
+
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -162,7 +164,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalled();
+				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('throws an error when response is not ok', async (done) => {
@@ -294,12 +296,8 @@ describe('ImportVectorDataService', () => {
 			const instanceUnderTest = setup();
 			const sourceType = new SourceType(SourceTypeName.GEOJSON);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
-			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').and.callFake(sourceType => {
-				if (!sourceType) {
-					return null;
-				}
-				return VectorSourceType.GEOJSON;
-			});
+			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
+				.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
 
 			const vgr = instanceUnderTest.forData(data);
 
