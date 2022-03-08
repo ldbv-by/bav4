@@ -205,9 +205,9 @@ describe('MainMenuPlugin', () => {
 			const instanceUnderTest = new MainMenuPlugin();
 			await instanceUnderTest.register(store);
 
-			setTab(TabId.MORE);
+			setTab(TabId.MISC);
 
-			expect(instanceUnderTest._previousTab).toBe(TabId.MORE);
+			expect(instanceUnderTest._previousTab).toBe(TabId.MISC);
 
 			setTab(TabId.FEATUREINFO);
 
