@@ -6,6 +6,13 @@ import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modu
 import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
 import { SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
 
+describe('MAX_QUERY_TERM_LENGTH', () => {
+
+	it('exports a constant defining the max query length for provider', () => {
+		expect(MAX_QUERY_TERM_LENGTH).toBe(140);
+	});
+});
+
 describe('SearchResultService', () => {
 
 	const environmentService = {

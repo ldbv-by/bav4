@@ -4,6 +4,9 @@ import { isHttpUrl } from '../../../utils/checks';
 import { SearchResult, SearchResultTypes } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
 
+/**
+ * Max query length for calling providers. If a term is above this size, providers won't be called.
+ */
 export const MAX_QUERY_TERM_LENGTH = 140;
 
 /**
