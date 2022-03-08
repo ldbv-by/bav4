@@ -160,6 +160,21 @@ export const geojsonStyleFunction = (feature) => {
 		 */
 		'fill-opacity': 0.6 };
 
+	const markerSizeToRadius = (markerSize) => {
+		if (typeof (markerSize) === 'number') {
+			return markerSize;
+		}
+		switch (markerSize) {
+			case 'large':
+				return 7;
+			case 'medium':
+				return 5;
+			case 'small':
+			default:
+				return 3;
+		}
+	};
+
 	const featureStyleProperties = {};
 	Object.keys(defaultStyleProperties).forEach(k => {
 		const styleValue = feature.get(k);
@@ -174,7 +189,7 @@ export const geojsonStyleFunction = (feature) => {
 			fill: new Fill({
 				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
 			}),
-			radius: 5 }),
+			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size']) }),
 		stroke: new Stroke({
 			color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
 			width: geoJsonStyleProperties['stroke-width']
