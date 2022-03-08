@@ -397,6 +397,55 @@ export const selectStyleFunction = () => {
 	};
 };
 
+/**
+ * returns the default styleFunction, based on the specified color
+ * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
+ * @returns {Array<Style>} the default styleFunction
+ */
+export const defaultStyleFunction = (color) => {
+	const colorRGBA = color;
+	const colorRGB = color.slice(0, -1);
+
+	return (feature) => {
+		const geometryType = feature.getGeometry().getType();
+		switch (geometryType) {
+			case 'Point':
+			case 'MultiPoint':
+				return [new Style({
+					image: new CircleStyle({
+						fill: new Fill({
+							color: colorRGBA
+						}),
+						radius: 5,
+						stoke: new Stroke({
+							color: colorRGB,
+							width: 1
+						})
+					})
+				})];
+			case 'LineString':
+			case 'MultiLineString':
+				return [new Style({
+					stroke: new Stroke({
+						color: colorRGB,
+						width: 3
+					})
+				})];
+			case 'Polygon':
+			case 'MultiPolygon':
+				return [new Style({
+					fill: new Fill({
+						color: colorRGBA
+					}),
+					stroke: new Stroke({
+						color: colorRGB,
+						width: 3
+					})
+				})];
+		}
+	};
+};
+
 export const createSketchStyleFunction = (styleFunction) => {
 	const sketchPolygon = new Style({
 		fill: new Fill({
