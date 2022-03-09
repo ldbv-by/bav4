@@ -400,7 +400,7 @@ export const selectStyleFunction = () => {
 /**
  * returns the default styleFunction, based on the specified color
  * @param {Array<number>} color the rgba-color An Array of numbers, defining a RGBA-Color with [Red{0,255},Green{0,255},Blue{0,255},Alpha{0,1}]
- * @returns {Array<Style>} the default styleFunction
+ * @returns {Function} the default styleFunction
  */
 export const defaultStyleFunction = (color) => {
 	const colorRGBA = color;
@@ -411,6 +411,7 @@ export const defaultStyleFunction = (color) => {
 	});
 
 	const getColoredStroke = (width) => new Stroke({ color: colorRGB, width: width });
+
 	return (feature) => {
 		const geometryType = feature.getGeometry().getType();
 		switch (geometryType) {
