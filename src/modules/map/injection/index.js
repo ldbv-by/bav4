@@ -11,7 +11,7 @@ import { OlFeatureInfoHandler } from '../components/olMap/handler/featureInfo/Ol
 
 export const mapModule = ($injector) => {
 	$injector
-		.registerSingleton('StyleService', StyleService)
+		.registerSingleton('StyleService', new StyleService())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlDrawHandler', OlDrawHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler)
