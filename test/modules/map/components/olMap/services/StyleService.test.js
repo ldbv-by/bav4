@@ -66,12 +66,18 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(polygonFeature)).toEqual(StyleTypes.POLYGON);
 		});
 
+		it('detects default as type from olFeature', () => {
+			const feature = { getId: () => 'some', getStyle: () => null };
+
+			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
+		});
+
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => {} };
-			const feature2 = { getId: () => '123_measure_123', getStyle: () => {} };
-			const feature3 = { getId: () => ' measure_123', getStyle: () => {} };
-			const feature4 = { getId: () => '123measure_123', getStyle: () => {} };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => { } };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => { } };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => { } };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => { } };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
@@ -253,6 +259,28 @@ describe('StyleService', () => {
 			};
 
 			instanceUnderTest.addStyle(feature, mapMock, 'draw');
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds default-style to feature without initial style', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
@@ -462,6 +490,7 @@ describe('StyleService', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.LINE)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.POLYGON)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.DEFAULT)).toEqual(jasmine.any(Function));
 		});
 
 		it('fails for a invalid StyleType', () => {
@@ -508,6 +537,19 @@ describe('StyleService', () => {
 
 			expect(instanceUnderTest.isStyleRequired(featureToBeStyled)).toBeTrue();
 			expect(instanceUnderTest.isStyleRequired(featureNotToBeStyled)).toBeFalse();
+		});
+	});
+
+	describe('nextColor', () => {
+
+		it('iterates through the predefined color-set', () => {
+			const expectedColors = [[255, 0, 0, 0.8], [255, 165, 0, 0.8], [0, 0, 255, 0.8], [0, 255, 255, 0.8], [0, 255, 0, 0.8], [128, 0, 128, 0.8], [0, 128, 0, 0.8]];
+			expectedColors.forEach(expectedColor => {
+				expect(instanceUnderTest._nextColor()).toEqual(expectedColor);
+			});
+
+			// restart, begin with first color again
+			expect(instanceUnderTest._nextColor()).toEqual(expectedColors[0]);
 		});
 	});
 });
