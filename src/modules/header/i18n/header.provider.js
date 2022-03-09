@@ -11,7 +11,8 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'More...',
 				header_tab_misc_title: 'Show more',
 				header_close_button_title: 'Close menu',
-				header_logo_badge: 'Beta'
+				header_logo_badge: 'Beta',
+				header_search_placeholder: 'Search'
 			};
 
 		case 'de':
@@ -24,7 +25,8 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'Mehr...',
 				header_tab_misc_title: 'Mehr anzeigen',
 				header_close_button_title: 'Menü schließen',
-				header_logo_badge: 'Beta'
+				header_logo_badge: 'Beta',
+				header_search_placeholder: 'Suchen'
 			};
 
 		default:

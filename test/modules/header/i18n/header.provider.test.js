@@ -32,7 +32,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 9;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

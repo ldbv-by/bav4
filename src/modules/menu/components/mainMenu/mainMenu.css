@@ -121,16 +121,16 @@
 }
 
 .is-portrait .main-menu__close-button {
-    position: absolute;
-    top: unset;
-    left: 50%;
-    bottom: -2em;
-    right: 0em;
-    border-radius: 2em;
-    width: 4em;
-    margin-left: -2em;
-    height: 4em;
-    background: var(--secondary-color);
+	position: absolute;
+	top: unset;
+	left: 50%;
+	bottom: -2em;
+	right: 0em;
+	border-radius: 2em;
+	width: 4em;
+	margin-left: -2em;
+	height: 4em;
+	background: var(--secondary-color);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
