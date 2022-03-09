@@ -40,7 +40,7 @@ export class SearchResultService {
 
 	_mapSourceTypeToLabel(sourceType) {
 		if (sourceType) {
-			switch (sourceType) {
+			switch (sourceType.name) {
 				case SourceTypeName.GEOJSON:
 					return 'GeoJSON Import';
 				case SourceTypeName.GPX:

@@ -4,7 +4,7 @@ import { SearchResult, SearchResultTypes } from '../../../../src/modules/search/
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
 import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
-import { SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
 
 describe('MAX_QUERY_TERM_LENGTH', () => {
 
@@ -302,9 +302,9 @@ describe('SearchResultService', () => {
 		it('provides fallback search results for geoResources', () => {
 			const instanceUnderTest = setup();
 
-			expect(instanceUnderTest._mapSourceTypeToLabel(SourceTypeName.KML)).toBe('KML Import');
-			expect(instanceUnderTest._mapSourceTypeToLabel(SourceTypeName.GPX)).toBe('GPX Import');
-			expect(instanceUnderTest._mapSourceTypeToLabel(SourceTypeName.GEOJSON)).toBe('GeoJSON Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GPX))).toBe('GPX Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GEOJSON))).toBe('GeoJSON Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypeToLabel('foo')).toBeNull();
 		});
