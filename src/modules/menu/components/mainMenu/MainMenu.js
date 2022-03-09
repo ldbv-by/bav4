@@ -119,7 +119,7 @@ export class MainMenu extends BaElement {
 		switch (index) {
 			case TabId.MAPS:
 				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
-			case TabId.MORE:
+			case TabId.MISC:
 				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag}/>`)}`;
 			case TabId.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
