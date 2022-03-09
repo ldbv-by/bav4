@@ -10,6 +10,11 @@ const Update_IsPortrait = 'update_isPortrait';
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
 
 /**
+ * Amount of time waiting before adding a layer in ms.
+ */
+export const LAYER_ADDING_DELAY_MS = 500;
+
+/**
  * Renders a search result item for a geoResource.
  *
  * Properties:
@@ -70,8 +75,11 @@ export class GeoResourceResultItem extends MvuElement {
 		const onClick = (result) => {
 			//remove the preview layer
 			removeLayer(GeoResourceResultItem._tmpLayerId(result.layerId));
-			//add the "real" layer
-			addLayer(result.layerId, { geoResourceId: result.id, label: this._geoResourceService.byId(result.id)?.label ?? result.label });
+			//add the "real" layer after some delay, which gives the user a better feedback
+			setTimeout(() => {
+				//we ask the GeoResourceService for an optionally updated label
+				addLayer(result.layerId, { geoResourceId: result.id, label: this._geoResourceService.byId(result.id)?.label ?? result.label });
+			}, LAYER_ADDING_DELAY_MS);
 
 			if (isPortrait) {
 				//close the main menu

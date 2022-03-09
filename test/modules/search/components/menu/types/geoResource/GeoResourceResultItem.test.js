@@ -1,6 +1,6 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultItem, LAYER_ADDING_DELAY_MS } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
@@ -8,6 +8,14 @@ import { TabId } from '../../../../../../../src/store/mainMenu/mainMenu.action';
 import { $injector } from '../../../../../../../src/injection';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
+
+describe('LAYER_ADDING_DELAY_MS', () => {
+
+	it('exports a const defining amount of time waiting before adding a layer', async () => {
+
+		expect(LAYER_ADDING_DELAY_MS).toBe(500);
+	});
+});
 
 describe('GeoResourceResultItem', () => {
 
@@ -105,6 +113,14 @@ describe('GeoResourceResultItem', () => {
 
 		describe('on click', () => {
 
+			beforeEach(() => {
+				jasmine.clock().install();
+			});
+
+			afterEach(() => {
+				jasmine.clock().uninstall();
+			});
+
 			const geoResourceId = 'geoResourceId';
 			const layerId = 'layerId';
 
@@ -131,9 +147,10 @@ describe('GeoResourceResultItem', () => {
 
 			it('removes the preview layer and adds the real layer', async () => {
 				const element = await setupOnClickTests();
-
 				const target = element.shadowRoot.querySelector('li');
+
 				target.click();
+				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(layerId);
@@ -143,9 +160,10 @@ describe('GeoResourceResultItem', () => {
 			it('optionally updates the real layers label', async () => {
 				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'updatedLabel' });
 				const element = await setupOnClickTests();
-
 				const target = element.shadowRoot.querySelector('li');
+
 				target.click();
+				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(layerId);
