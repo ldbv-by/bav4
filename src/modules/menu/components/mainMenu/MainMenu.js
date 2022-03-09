@@ -11,7 +11,9 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 
-
+const threshold = 150; //required min distance traveled to be considered swipe
+const restraint = 100; // maximum distance allowed at the same time in perpendicular direction
+const			allowedTime = 300; // maximum time allowed to travel that distance
 /**
  *
  * @class
@@ -26,6 +28,9 @@ export class MainMenu extends BaElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._activeTab = null;
+		this._swipedir = 'none';
+		this._startY = null;
+		this._startTime = null;
 	}
 
 	_activateTab(key) {
@@ -88,12 +93,41 @@ export class MainMenu extends BaElement {
 					></div>`;
 		};
 
+		const onTouchStart = (e) => {
+			const touchobj = e.changedTouches[0];
+			this._swipedir = 'none';
+
+			this._startY = touchobj.pageY;
+			this._startTime = new Date().getTime(); // record time when finger first makes contact with surface
+			e.preventDefault();
+
+		};
+		const onTouchMove = (e) => {
+			e.preventDefault();
+		};
+		const onTouchEnd = (e) => {
+			const touchobj = e.changedTouches[0];
+
+			const distY = touchobj.pageY - this._startY; // get vertical dist traveled by finger while in contact with surface
+			const elapsedTime = new Date().getTime() - this._startTime; // get time elapsed
+			if (elapsedTime <= allowedTime) { // first condition for awipe met
+				if (Math.abs(distY) >= threshold) { // 2nd condition for vertical swipe met
+					this._swipedir = (this._distY < 0) ? 'up' : 'down'; // if dist traveled is negative, it indicates up swipe
+				}
+			}
+			//e.preventDefault();
+			console.log(distY);
+			if (this._swipedir !== 'up') {
+				toggle();
+			}
+		};
+
 
 		return html`
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
-					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
+					<button id='test' @click="${toggle}" @touchstart=${onTouchStart} @touchmove=${onTouchMove} @touchend=${onTouchEnd} title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<i class='resize-icon'></i>	
 					</button>	
