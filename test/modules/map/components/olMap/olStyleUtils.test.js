@@ -190,6 +190,18 @@ describe('renderRulerSegments', () => {
 
 		expect(actualStrokes).toContain(expectedMainStroke);
 	});
+
+	it('should use exteriorRing of Polygon for segment-coordinates', () => {
+		const actualStrokes = [];
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualStrokes.push(stroke);
+		};
+		const stateMock = { geometry: new Polygon([[[0, 0], [0, 1], [1, 0]]]), resolution: resolution, pixelRatio: 1 };
+		const pixelCoordinates = [[0, 0], [0, 1]];
+		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualStrokes).toBeTruthy();
+	});
 });
 
 describe('nullStyleFunction', () => {
@@ -581,6 +593,20 @@ describe('selectStyleFunction', () => {
 
 	});
 
+	it('should append a style', () => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const featureWithStyle = new Feature({ geometry: geometry });
+		featureWithStyle.setStyle(defaultStyleFunction([0, 0, 0, 0]));
+		const featureWithEmptyFirstStyle = new Feature({ geometry: geometry });
+		const featureWithoutStyles = new Feature({ geometry: geometry });
+		featureWithEmptyFirstStyle.setStyle(() => []);
+		const styleFunction = selectStyleFunction();
+
+		expect(styleFunction(featureWithStyle).length).toBe(2);
+		expect(styleFunction(featureWithEmptyFirstStyle).length).toBe(2);
+		expect(styleFunction(featureWithoutStyles).length).toBe(1);
+	});
+
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
 		const geometry = new LineString([[0, 0], [1, 0]]);
 		const feature = new Feature({ geometry: geometry });
@@ -600,6 +626,8 @@ describe('selectStyleFunction', () => {
 		expect(geometryFunction(pointFeature)).toBeTruthy();
 		expect(geometryFunction(polygonFeature)).toBeTruthy();
 	});
+
+
 });
 
 describe('createSketchStyleFunction', () => {
