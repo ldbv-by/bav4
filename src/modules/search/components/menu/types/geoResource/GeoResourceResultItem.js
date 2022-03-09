@@ -4,6 +4,7 @@ import { addLayer, removeLayer } from '../../../../../../store/layers/layers.act
 import { close as closeMainMenu, setTab, TabId } from '../../../../../../store/mainMenu/mainMenu.action';
 import css from './geoResourceResultItem.css';
 import { MvuElement } from '../../../../../MvuElement';
+import { $injector } from '../../../../../../injection';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
@@ -24,6 +25,10 @@ export class GeoResourceResultItem extends MvuElement {
 			geoResourceSearchResult: null,
 			isPortrait: false
 		});
+
+		const { GeoResourceService: geoResourceService }
+			= $injector.inject('GeoResourceService');
+		this._geoResourceService = geoResourceService;
 	}
 
 	update(type, data, model) {
@@ -55,18 +60,18 @@ export class GeoResourceResultItem extends MvuElement {
 		 */
 		const onMouseEnter = (result) => {
 			//add a preview layer
-			addLayer(GeoResourceResultItem._tmpLayerId(result.id),
+			addLayer(GeoResourceResultItem._tmpLayerId(result.layerId),
 				{ label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
-			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.layerId));
 		};
 		const onClick = (result) => {
 			//remove the preview layer
-			removeLayer(GeoResourceResultItem._tmpLayerId(result.id));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.layerId));
 			//add the "real" layer
-			addLayer(result.id, { label: result.label });
+			addLayer(result.layerId, { geoResourceId: result.id, label: this._geoResourceService.byId(result.id)?.label ?? result.label });
 
 			if (isPortrait) {
 				//close the main menu
