@@ -64,7 +64,9 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(2);
 			expect(results[0].id).toBe('atkis');
+			expect(results[0].layerId).toBe('atkis');
 			expect(results[1].id).toBe('atkis_sw');
+			expect(results[1].layerId).toBe('atkis_sw');
 		});
 	});
 

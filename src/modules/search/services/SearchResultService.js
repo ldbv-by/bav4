@@ -129,8 +129,8 @@ export class SearchResultService {
 
 	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE),
-			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 1', SearchResultTypes.GEORESOURCE)
+			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, 'atkis'),
+			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, 'atkis_sw')
 		];
 	}
 
