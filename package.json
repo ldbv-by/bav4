@@ -9,7 +9,7 @@
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@playwright/test": "^1.19.1",
-    "css-loader": "^6.7.0",
+    "css-loader": "^6.7.1",
     "dotenv-webpack": "^7.1.0",
     "es-check": "^6.2.1",
     "eslint": "^8.10.0",
