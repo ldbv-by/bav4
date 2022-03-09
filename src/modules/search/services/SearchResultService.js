@@ -69,7 +69,9 @@ export class SearchResultService {
 			if (status === SourceTypeResultStatus.OK) {
 				const geoResource = this._importVectorDataService.forUrl(term, { sourceType: sourceType });
 				if (geoResource) {
-					return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType), SearchResultTypes.GEORESOURCE)];
+					// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
+					return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
+						SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
 				}
 			}
 		}
@@ -78,7 +80,9 @@ export class SearchResultService {
 			if (status === SourceTypeResultStatus.OK) {
 				const geoResource = this._importVectorDataService.forData(term, { sourceType: sourceType }); {
 					if (geoResource) {
-						return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType), SearchResultTypes.GEORESOURCE)];
+						// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
+						return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
+							SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
 					}
 				}
 			}

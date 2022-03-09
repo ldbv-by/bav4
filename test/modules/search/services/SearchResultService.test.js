@@ -124,6 +124,7 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(1);
 			expect(results[0].id).toBe(id);
+			expect(results[0].layerId).toBe(id);
 			expect(results[0].label).toBe(label);
 			expect(results[0].labelFormated).toBe(label);
 			expect(results[0].type).toBe(SearchResultTypes.GEORESOURCE);
@@ -170,6 +171,7 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(1);
 			expect(results[0].id).toBe(id);
+			expect(results[0].layerId).toBe(id);
 			expect(results[0].label).toBe(label);
 			expect(results[0].labelFormated).toBe(label);
 			expect(results[0].type).toBe(SearchResultTypes.GEORESOURCE);
