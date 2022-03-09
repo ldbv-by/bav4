@@ -78,17 +78,10 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_imprint')}</span>
-			</a>  
-			<a class="ba-list-item divider"  href='https://github.com/ldbv-by/bav4-nomigration' target='_blank'>
-				<span class="ba-list-item__pre">
-					<span class="ba-list-item__icon icon git">
-					</span>
-				</span>
-				<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_github')}</span>
-			</a>  
+			</a>   
 			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
-					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_more_links')}</span>
+					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 				</span>
 			</div>	
 			<a class="ba-list-item" href='https://geodatenonline.bayern.de/geodatenonline' target='_blank'>
