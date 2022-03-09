@@ -77,6 +77,10 @@
 	right: 0;
 	padding: .5em .5em .5em 1.2em;
 }
+.header input::placeholder {
+	color: var(--text2);
+}
+
 .header__button-container {
 	position: absolute;
 	display: flex
