@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -127,7 +127,7 @@ describe('measureStyleFunction', () => {
 
 	it('should draw to context with ruler-style', () => {
 		const pixelCoordinates = [[0, 0], [1, 1]];
-		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => {}, moveTo: () => {}, lineTo: () => {} };
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { } };
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
 		const styles = measureStyleFunction(feature, resolution);
 		const rulerStyle = styles.find(style => style.getRenderer());
@@ -201,6 +201,31 @@ describe('nullStyleFunction', () => {
 	});
 });
 
+describe('defaultStyleFunction', () => {
+	it('should return a style with color', () => {
+		const styleFunction = defaultStyleFunction([0, 0, 0, 0]);
+		const getFeatureMock = (geometryType) => {
+			const geometryMock = { getType: () => geometryType };
+			return { getGeometry: () => geometryMock };
+		};
+		const pointStyles = styleFunction(getFeatureMock('Point'));
+		const lineStyles = styleFunction(getFeatureMock('LineString'));
+		const polygonStyles = styleFunction(getFeatureMock('Polygon'));
+		expect(pointStyles.length).toBe(1);
+		expect(pointStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(pointStyles[0].getImage().getRadius()).toBe(5);
+
+
+		expect(lineStyles.length).toBe(1);
+		expect(lineStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
+		expect(lineStyles[0].getStroke().getWidth()).toBe(3);
+
+		expect(polygonStyles.length).toBe(1);
+		expect(polygonStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
+		expect(polygonStyles[0].getStroke().getWidth()).toBe(2);
+		expect(polygonStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
+	});
+});
 
 describe('highlightStyleFunction', () => {
 	it('should return a style', () => {

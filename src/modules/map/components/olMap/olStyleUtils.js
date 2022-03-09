@@ -406,6 +406,11 @@ export const defaultStyleFunction = (color) => {
 	const colorRGBA = color;
 	const colorRGB = color.slice(0, -1);
 
+	const fill = new Fill({
+		color: colorRGBA
+	});
+
+	const getColoredStroke = (width) => new Stroke({ color: colorRGB, width: width });
 	return (feature) => {
 		const geometryType = feature.getGeometry().getType();
 		switch (geometryType) {
@@ -413,34 +418,21 @@ export const defaultStyleFunction = (color) => {
 			case 'MultiPoint':
 				return [new Style({
 					image: new CircleStyle({
-						fill: new Fill({
-							color: colorRGBA
-						}),
+						fill: fill,
 						radius: 5,
-						stoke: new Stroke({
-							color: colorRGB,
-							width: 1
-						})
+						stoke: getColoredStroke(1)
 					})
 				})];
 			case 'LineString':
 			case 'MultiLineString':
 				return [new Style({
-					stroke: new Stroke({
-						color: colorRGB,
-						width: 3
-					})
+					stroke: getColoredStroke(3)
 				})];
 			case 'Polygon':
 			case 'MultiPolygon':
 				return [new Style({
-					fill: new Fill({
-						color: colorRGBA
-					}),
-					stroke: new Stroke({
-						color: colorRGB,
-						width: 3
-					})
+					fill: fill,
+					stroke: getColoredStroke(2)
 				})];
 		}
 	};
