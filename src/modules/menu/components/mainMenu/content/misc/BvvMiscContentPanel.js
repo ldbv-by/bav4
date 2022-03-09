@@ -88,7 +88,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 			</a>  
 			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
-					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_more_links')}</span>
+					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>
 				</span>
 			</div>	
 			<a class="ba-list-item" href='https://geodatenonline.bayern.de/geodatenonline' target='_blank'>
