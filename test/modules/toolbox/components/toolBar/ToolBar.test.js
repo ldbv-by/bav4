@@ -92,7 +92,7 @@ describe('ToolBarElement', () => {
 
 		it('open or closes the Toolbar', async () => {
 			const element = await setup();
-			const toolBarButton = element.shadowRoot.querySelector('.action-button');
+			const toolBarButton = element.shadowRoot.querySelector('.toolbar__button-tools');
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
 
