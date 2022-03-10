@@ -67,7 +67,7 @@ describe('StyleService', () => {
 		});
 
 		it('detects default as type from olFeature', () => {
-			const feature = { getId: () => 'some', getStyle: () => null };
+			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
 		});

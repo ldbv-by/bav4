@@ -282,11 +282,15 @@ export class StyleService {
 			return null;
 		};
 
-		const defaultOrNull = () => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
+		const defaultOrNull = (olFeature) => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
 
-		const styleTypeFunctions = [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull];
 		if (olFeature) {
-			return styleTypeFunctions.some(f => f(olFeature));
+			for (const f of [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull]) {
+				const styleType = f(olFeature);
+				if (styleType) {
+					return styleType;
+				}
+			}
 		}
 
 		return null;
