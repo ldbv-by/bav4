@@ -47,7 +47,6 @@ export class GeoResource {
 
 		this._id = id;
 		this._label = label;
-		this._background = false;
 		this._opacity = 1.0;
 		this._hidden = false;
 		this._minZoom = null;
@@ -75,10 +74,6 @@ export class GeoResource {
 		return this._label;
 	}
 
-	get background() {
-		return this._background;
-	}
-
 	get opacity() {
 		return this._opacity;
 	}
@@ -101,11 +96,6 @@ export class GeoResource {
 
 	setLabel(label) {
 		this._label = label;
-		return this;
-	}
-
-	setBackground(background) {
-		this._background = background;
 		return this;
 	}
 

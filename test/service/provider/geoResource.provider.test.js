@@ -34,7 +34,6 @@ describe('BVV GeoResource provider', () => {
 	const vadlidateGeoResourceProperties = (georesource, definition) => {
 		expect(georesource.id).toBe(definition.id);
 		expect(georesource.label).toBe(definition.label);
-		expect(georesource.background).toBeFalse();
 		expect(georesource.opacity).toBe(1.0);
 		expect(georesource.hidden).toBeFalse();
 		expect(Symbol.keyFor(georesource.getType())).toBe(definition.type);
@@ -61,7 +60,6 @@ describe('BVV GeoResource provider', () => {
 		it('maps a WMS BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const wmsGeoResource = _definitionToGeoResource(wmsDefinitionOptionalProperties);
 
-			expect(wmsGeoResource.background).toBeTrue();
 			expect(wmsGeoResource.opacity).toBe(0.5);
 			expect(wmsGeoResource.hidden).toBeTrue();
 			expect(wmsGeoResource.minZoom).toBe(5);
@@ -80,7 +78,6 @@ describe('BVV GeoResource provider', () => {
 		it('maps a WMTS BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const wmtsGeoResource = _definitionToGeoResource(wmtsDefinitionOptionalProperties);
 
-			expect(wmtsGeoResource.background).toBeTrue();
 			expect(wmtsGeoResource.opacity).toBe(0.5);
 			expect(wmtsGeoResource.hidden).toBeTrue();
 			expect(wmtsGeoResource.minZoom).toBe(5);
@@ -100,7 +97,6 @@ describe('BVV GeoResource provider', () => {
 		it('maps a VectorFile BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const vectorGeoResource = _definitionToGeoResource(vectorDefinitionOptionaProperties);
 
-			expect(vectorGeoResource.background).toBeTrue();
 			expect(vectorGeoResource.opacity).toBe(0.5);
 			expect(vectorGeoResource.hidden).toBeTrue();
 			expect(vectorGeoResource.minZoom).toBe(5);
@@ -119,7 +115,6 @@ describe('BVV GeoResource provider', () => {
 		it('maps a aggregate BVV definition with optional properties to a corresponding GeoResource instance', () => {
 			const aggregateGeoResource = _definitionToGeoResource(aggregateDefinitionOptionalProperties);
 
-			expect(aggregateGeoResource.background).toBeTrue();
 			expect(aggregateGeoResource.opacity).toBe(0.5);
 			expect(aggregateGeoResource.hidden).toBeTrue();
 			expect(aggregateGeoResource.minZoom).toBe(5);
