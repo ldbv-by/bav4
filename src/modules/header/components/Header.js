@@ -153,8 +153,8 @@ export class Header extends MvuElement {
 			openMainMenu();
 		};
 
-		const openMoreTab = () => {
-			setTab(TabId.MORE);
+		const openMiscTab = () => {
+			setTab(TabId.MISC);
 			openMainMenu();
 		};
 
@@ -216,9 +216,9 @@ export class Header extends MvuElement {
 							 	${layerCount}
 							</div>
 						</button>
-						<button id="more_button" data-test-id class="${getActiveClass(TabId.MORE)}" title=${translate('header_tab_more_title')}  @click="${openMoreTab}">
+						<button id="misc_button" data-test-id class="${getActiveClass(TabId.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
 							<span>
-								${translate('header_tab_more_button')}
+								${translate('header_tab_misc_button')}
 							</span>
 						</button>
 					</div>
