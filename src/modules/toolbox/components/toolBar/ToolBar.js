@@ -35,6 +35,7 @@ export class ToolBar extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._toolId = null;
+		this._zindex = 1;
 	}
 
 	update(type, data, model) {
@@ -88,10 +89,23 @@ export class ToolBar extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+		const fullScreen = () => {
+			if (!document.getElementById('JJJJJJJJJJJJJJJJJ')) {
+				const styleElement = document.createElement('style');
+				styleElement.id = 'JJJJJJJJJJJJJJJJJ';
+				document.head.appendChild(styleElement);
+			}
+			const style = document.getElementById('JJJJJJJJJJJJJJJJJ');
+
+			this._zindex = (this._zindex === 1) ? 601 : 1;
+			style.innerHTML = `*{--z-map: ${this._zindex};}`;
+		};
+
+
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button id='action-button' data-test-id class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button id='action-button' data-test-id class="action-button" @click="${fullScreen}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 					</div>
 					<div class="action-button__icon">
@@ -101,6 +115,10 @@ export class ToolBar extends MvuElement {
 					<div class='toolbar__logo-badge'>										
 						${translate('toolbox_toolbar_logo_badge')}
 					</div>	
+				</button>
+				<button class='toolbar__button-tools'  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+					<div class="wrench">							
+					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
 					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
