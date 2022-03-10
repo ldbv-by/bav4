@@ -82,11 +82,12 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 			});
 
-			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
+			fit('converts a WmsGeoresource containing optional properties to a olLayer', () => {
 				const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
 					.setMinZoom(5)
-					.setMaxZoom(19);
+					.setMaxZoom(19)
+					.setExtraParams({ STYLES: 'some' });
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(wmsGeoresource);
 
@@ -101,6 +102,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
+				expect(wmsSource.getParams().STYLES).toBe('some');
 			});
 
 			it('registers load listerners', () => {
