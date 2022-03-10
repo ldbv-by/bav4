@@ -8,7 +8,7 @@ describe('mainMenuAction', () => {
 
 		expect(TabId.TOPICS).toBe('topics');
 		expect(TabId.MAPS).toBe('maps');
-		expect(TabId.MORE).toBe('more');
+		expect(TabId.MISC).toBe('misc');
 		expect(TabId.ROUTING).toBe('routing');
 		expect(TabId.SEARCH).toBe('search');
 		expect(TabId.FEATUREINFO).toBe('featureinfo');

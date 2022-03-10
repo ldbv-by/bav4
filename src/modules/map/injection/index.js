@@ -11,13 +11,13 @@ import { OlFeatureInfoHandler } from '../components/olMap/handler/featureInfo/Ol
 
 export const mapModule = ($injector) => {
 	$injector
+		.registerSingleton('StyleService', new StyleService())
 		.register('OlMeasurementHandler', OlMeasurementHandler)
 		.register('OlDrawHandler', OlDrawHandler)
 		.register('OlGeolocationHandler', OlGeolocationHandler)
 		.register('OlHighlightLayerHandler', OlHighlightLayerHandler)
 		.register('VectorLayerService', VectorLayerService)
 		.register('LayerService', LayerService)
-		.register('StyleService', StyleService)
 		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler);

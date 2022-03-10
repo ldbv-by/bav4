@@ -156,7 +156,7 @@ describe('MainMenu', () => {
 					case TabId.MAPS:
 						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
 						break;
-					case TabId.MORE:
+					case TabId.MISC:
 						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBeTrue();
 						break;
 				}
@@ -174,7 +174,7 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
-			const activeTabIndex = TabId.MORE;
+			const activeTabIndex = TabId.MISC;
 			const state = {
 				mainMenu: {
 					open: true,
@@ -237,8 +237,8 @@ describe('MainMenu', () => {
 			setTab(TabId.MAPS);
 			check(TabId.MAPS, contentPanels);
 
-			setTab(TabId.MORE);
-			check(TabId.MORE, contentPanels);
+			setTab(TabId.MISC);
+			check(TabId.MISC, contentPanels);
 
 			setTab(TabId.ROUTING);
 			check(TabId.ROUTING, contentPanels);

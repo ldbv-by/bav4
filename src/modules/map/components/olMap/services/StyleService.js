@@ -1,11 +1,14 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, defaultStyleFunction, geojsonStyleFunction } from '../olStyleUtils';
+
+
 
 /**
  * @enum
  */
 export const StyleTypes = Object.freeze({
 	NULL: 'null',
+	DEFAULT: 'default',
 	MEASURE: 'measure',
 	HIGHLIGHT: 'highlight',
 	HIGHLIGHT_TEMP: 'highlight_temp',
@@ -17,6 +20,16 @@ export const StyleTypes = Object.freeze({
 	GEOJSON: 'geojson'
 });
 
+const Default_Colors = [
+	[255, 0, 0, 0.8],
+	[255, 165, 0, 0.8],
+	[0, 0, 255, 0.8],
+	[0, 255, 255, 0.8],
+	[0, 255, 0, 0.8],
+	[128, 0, 128, 0.8],
+	[0, 128, 0, 0.8]
+];
+
 
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
@@ -26,6 +39,29 @@ const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color'
  * @author thiloSchlemmer
  */
 export class StyleService {
+
+	/**
+	 *
+	 * @param {administrationProvider} [administrationProvider=loadBvvAdministration]
+	 */
+	constructor() {
+		this._defaultColorIndex = 0;
+	}
+
+	_nextColor() {
+		const getColor = (index) => Default_Colors[index];
+
+		const restart = () => {
+			this._defaultColorIndex = 0;
+			return this._defaultColorIndex;
+		};
+		const next = () => {
+			return this._defaultColorIndex++;
+		};
+
+		return this._defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
+	}
+
 	/**
 	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
@@ -55,6 +91,9 @@ export class StyleService {
 				break;
 			case StyleTypes.GEOJSON:
 				this._addGeoJSONStyle(olFeature);
+				break;
+			case StyleTypes.DEFAULT:
+				this._addDefaultStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -129,6 +168,8 @@ export class StyleService {
 				return nullStyleFunction;
 			case StyleTypes.GEOJSON:
 				return geojsonStyleFunction;
+			case StyleTypes.DEFAULT:
+				return defaultStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -206,7 +247,12 @@ export class StyleService {
 		olFeature.setStyle(nullStyleFunction);
 	}
 
+	_addDefaultStyle(olFeature) {
+		olFeature.setStyle(defaultStyleFunction(this._nextColor()));
+	}
+
 	_detectStyleType(olFeature) {
+
 		const isStyleType = (type, candidate) => {
 			const regex = new RegExp('^' + type + '_');
 			return (regex.test(candidate));
@@ -223,7 +269,8 @@ export class StyleService {
 			return hasGeoJSONSimpleStyleProperties ? StyleTypes.GEOJSON : null;
 		};
 
-		const getStyleTypeFromId = (id) => {
+		const getStyleTypeFromId = (olFeature) => {
+			const id = olFeature.getId();
 			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
 			if (drawingType) {
 				return StyleTypes[drawingType];
@@ -235,12 +282,13 @@ export class StyleService {
 			return null;
 		};
 
-		if (olFeature) {
-			const id = olFeature.getId();
-			const styleTypeFromId = getStyleTypeFromId(id);
+		const defaultOrNull = () => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
 
-			return styleTypeFromId ? styleTypeFromId : getStyleTypeFromProperties(olFeature);
+		const styleTypeFunctions = [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull];
+		if (olFeature) {
+			return styleTypeFunctions.some(f => f(olFeature));
 		}
+
 		return null;
 	}
 }
