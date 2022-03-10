@@ -64,9 +64,13 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(2);
 			expect(results[0].id).toBe('atkis');
-			expect(results[0].layerId).toBe('atkis');
+			expect(results[0].layerId).toContain('atkis_');
+			expect(results[0].label).toBe('Base Layer 1');
+			expect(results[0].labelFormated).toBe('Base Layer 1');
 			expect(results[1].id).toBe('atkis_sw');
-			expect(results[1].layerId).toBe('atkis_sw');
+			expect(results[1].layerId).toContain('atkis_sw_');
+			expect(results[1].label).toBe('Base Layer 2');
+			expect(results[1].labelFormated).toBe('Base Layer 2');
 		});
 	});
 
@@ -209,10 +213,12 @@ describe('SearchResultService', () => {
 			const term = 'term';
 			spyOn(environmentService, 'isStandalone').and.returnValue(true);
 			const instanceUnderTest = setup();
+			const newFallbackGeoResourceSearchResultsSpy = spyOn(instanceUnderTest, '_newFallbackGeoResourceSearchResults').and.callThrough();
 
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
 
-			expect(results).toEqual(instanceUnderTest._newFallbackGeoResourceSearchResults());
+			expect(results).toHaveSize(2);
+			expect(newFallbackGeoResourceSearchResultsSpy).toHaveBeenCalled();
 		});
 
 		it('provides an empty array as results when max query length is exceeded', async () => {
@@ -303,7 +309,7 @@ describe('SearchResultService', () => {
 
 	describe('_mapSourceTypeToLabel', () => {
 
-		it('provides fallback search results for geoResources', () => {
+		it('maps a SourceType to a label', () => {
 			const instanceUnderTest = setup();
 
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');

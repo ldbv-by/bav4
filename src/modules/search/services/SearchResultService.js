@@ -1,6 +1,7 @@
 import { $injector } from '../../../injection';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
+import { createUniqueId } from '../../../utils/numberUtils';
 import { SearchResult, SearchResultTypes } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
 
@@ -129,8 +130,8 @@ export class SearchResultService {
 
 	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, 'atkis'),
-			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, 'atkis_sw')
+			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
+			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
 		];
 	}
 
