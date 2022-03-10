@@ -30,7 +30,6 @@ export const _definitionToGeoResource = definition => {
 		geoResource.setAttributionProvider(getBvvAttribution);
 		geoResource.setAttribution(_parseBvvAttributionDefinition(definition));
 		//set optional values
-		geoResource.setBackground(definition.background ?? geoResource.background);
 		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
 		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
 		geoResource.setMinZoom(definition.minZoom ?? null);
