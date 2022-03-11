@@ -23,7 +23,7 @@ describe('BVV GeoResource provider', () => {
 	};
 
 	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
-	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, ...wmsDefinition };
+	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, extraParams: { 'foo': 'bar' }, ...wmsDefinition };
 	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
 	const wmtsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, ...wmtsDefinition };
 	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
@@ -64,6 +64,7 @@ describe('BVV GeoResource provider', () => {
 			expect(wmsGeoResource.hidden).toBeTrue();
 			expect(wmsGeoResource.minZoom).toBe(5);
 			expect(wmsGeoResource.maxZoom).toBe(19);
+			expect(wmsGeoResource.extraParams).toEqual({ 'foo': 'bar' });
 		});
 
 		it('maps a WMTS BVV definition to a corresponding GeoResource instance', () => {

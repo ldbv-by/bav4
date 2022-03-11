@@ -238,6 +238,7 @@ export class WmsGeoResource extends GeoResource {
 		this._url = url;
 		this._layers = layers;
 		this._format = format;
+		this._extraParams = {};
 	}
 
 	get url() {
@@ -250,6 +251,15 @@ export class WmsGeoResource extends GeoResource {
 
 	get format() {
 		return this._format;
+	}
+
+	get extraParams() {
+		return { ...this._extraParams };
+	}
+
+	setExtraParams(extraParams) {
+		this._extraParams = { ...extraParams };
+		return this;
 	}
 
 	/**
