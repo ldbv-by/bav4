@@ -82,7 +82,7 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 			});
 
-			fit('converts a WmsGeoresource containing optional properties to a olLayer', () => {
+			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
 				const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
 					.setMinZoom(5)
