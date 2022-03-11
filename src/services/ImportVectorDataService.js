@@ -2,14 +2,14 @@ import { $injector } from '../injection';
 import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from './domain/geoResources';
-import { SourceTypeName } from './domain/sourceType';
+import { SourceType, SourceTypeName } from './domain/sourceType';
 
 /**
  *
  * @typedef {Object} ImportVectorDataOptions
  * @property {string} [id] the id of the created VectorGeoResource. If not set, id will be created
  * @property {string} [label] the label of the created VectorGeoResource
- * @property {VectorSourceType} [sourceType] the VectorSourceType. If not set it will be tried to detect it
+ * @property {SourceType|VectorSourceType} [sourceType] the source type. Can be either a SourceType or a VectorSourceType instance. If not set it will be tried to detect it
  */
 
 
@@ -48,10 +48,16 @@ export class ImportVectorDataService {
 	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
 	* @param {string} url
 	* @param {ImportVectorDataOptions} [options]
-	* @returns VectorGeoresource
+	* @returns VectorGeoresource  or `null` when given source type is not supported
 	*/
 	forUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
+
+		// check if optional sourceType is supported
+		if (sourceType && !this._mapSourceTypetoVectorSourceType(sourceType)) {
+			console.warn(`SourceType '${sourceType}' for '${id}' is not supported`);
+			return null;
+		}
 
 		const loader = async id => {
 
@@ -60,7 +66,7 @@ export class ImportVectorDataService {
 
 			if (result.ok) {
 				const data = await result.text();
-				const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data, result.headers.get('Content-Type')));
+				const resultingSourceType = this._mapSourceTypetoVectorSourceType(sourceType) ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data, result.headers.get('Content-Type')));
 				if (resultingSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
 						(prop, value) => {
@@ -91,7 +97,7 @@ export class ImportVectorDataService {
 	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = sourceType ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));
+		const resultingSourceType = this._mapSourceTypetoVectorSourceType(sourceType) ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));
 		if (resultingSourceType) {
 			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
 				if (prop === '_label') {
@@ -110,16 +116,25 @@ export class ImportVectorDataService {
 	 * Maps a {@link SourceType} to a {@link VectorSourceType}
 	 */
 	_mapSourceTypetoVectorSourceType(sourceType) {
+
 		if (sourceType) {
-			switch (sourceType.name) {
-				case SourceTypeName.KML:
-					return VectorSourceType.KML;
+			// is it a SourceType instance?
+			if (sourceType instanceof SourceType) {
 
-				case SourceTypeName.GPX:
-					return VectorSourceType.GPX;
+				switch (sourceType.name) {
+					case SourceTypeName.KML:
+						return VectorSourceType.KML;
 
-				case SourceTypeName.GEOJSON:
-					return VectorSourceType.GEOJSON;
+					case SourceTypeName.GPX:
+						return VectorSourceType.GPX;
+
+					case SourceTypeName.GEOJSON:
+						return VectorSourceType.GEOJSON;
+				}
+			}
+			// is it a VectorSourceType enum value?
+			else if (Object.entries(VectorSourceType).map(arr => arr[1]).includes(sourceType)) {
+				return sourceType;
 			}
 		}
 		return null;

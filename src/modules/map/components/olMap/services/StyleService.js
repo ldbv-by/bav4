@@ -1,11 +1,14 @@
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, defaultStyleFunction } from '../olStyleUtils';
+
+
 
 /**
  * @enum
  */
 export const StyleTypes = Object.freeze({
 	NULL: 'null',
+	DEFAULT: 'default',
 	MEASURE: 'measure',
 	HIGHLIGHT: 'highlight',
 	HIGHLIGHT_TEMP: 'highlight_temp',
@@ -16,6 +19,16 @@ export const StyleTypes = Object.freeze({
 	POLYGON: 'polygon'
 });
 
+const Default_Colors = [
+	[255, 0, 0, 0.8],
+	[255, 165, 0, 0.8],
+	[0, 0, 255, 0.8],
+	[0, 255, 255, 0.8],
+	[0, 255, 0, 0.8],
+	[128, 0, 128, 0.8],
+	[0, 128, 0, 0.8]
+];
+
 
 /**
  * Adds or removes styles and overlays to ol.feature.
@@ -23,6 +36,29 @@ export const StyleTypes = Object.freeze({
  * @author thiloSchlemmer
  */
 export class StyleService {
+
+	/**
+	 *
+	 * @param {administrationProvider} [administrationProvider=loadBvvAdministration]
+	 */
+	constructor() {
+		this._defaultColorIndex = 0;
+	}
+
+	_nextColor() {
+		const getColor = (index) => Default_Colors[index];
+
+		const restart = () => {
+			this._defaultColorIndex = 0;
+			return this._defaultColorIndex;
+		};
+		const next = () => {
+			return this._defaultColorIndex++;
+		};
+
+		return this._defaultColorIndex === Default_Colors.length ? getColor(restart()) : getColor(next());
+	}
+
 	/**
 	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
@@ -49,6 +85,9 @@ export class StyleService {
 			case StyleTypes.POLYGON:
 			case StyleTypes.LINE:
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
+				break;
+			case StyleTypes.DEFAULT:
+				this._addDefaultStyle(olFeature);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -121,6 +160,8 @@ export class StyleService {
 				return textStyleFunction;
 			case StyleTypes.DRAW:
 				return nullStyleFunction;
+			case StyleTypes.DEFAULT:
+				return defaultStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
@@ -194,7 +235,12 @@ export class StyleService {
 		olFeature.setStyle(nullStyleFunction);
 	}
 
+	_addDefaultStyle(olFeature) {
+		olFeature.setStyle(defaultStyleFunction(this._nextColor()));
+	}
+
 	_detectStyleType(olFeature) {
+
 		const isStyleType = (type, candidate) => {
 			const regex = new RegExp('^' + type + '_');
 			return (regex.test(candidate));
@@ -216,11 +262,14 @@ export class StyleService {
 			return null;
 		};
 
+		const defaultOrNull = () => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
+
 		if (olFeature) {
 			const id = olFeature.getId();
-
-			return getStyleTypeFromId(id);
+			const styleType = getStyleTypeFromId(id);
+			return styleType ? styleType : defaultOrNull();
 		}
+
 		return null;
 	}
 }

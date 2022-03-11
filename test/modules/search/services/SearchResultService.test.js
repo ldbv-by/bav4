@@ -2,7 +2,16 @@
 import { $injector } from '../../../../src/injection';
 import { SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
-import { SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
+import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
+import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../../src/services/domain/sourceType';
+
+describe('MAX_QUERY_TERM_LENGTH', () => {
+
+	it('exports a constant defining the max query length for provider', () => {
+		expect(MAX_QUERY_TERM_LENGTH).toBe(140);
+	});
+});
 
 describe('SearchResultService', () => {
 
@@ -10,9 +19,21 @@ describe('SearchResultService', () => {
 		isStandalone: () => { }
 	};
 
+	const sourceTypeService = {
+		forData: () => { },
+		forUrl: () => { }
+	};
+
+	const importVectorDataService = {
+		forData: () => { },
+		forUrl: () => { }
+	};
+
 	beforeAll(() => {
 		$injector
-			.registerSingleton('EnvironmentService', environmentService);
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('SourceTypeService', sourceTypeService)
+			.registerSingleton('ImportVectorDataService', importVectorDataService);
 	});
 
 	const setup = (
@@ -39,11 +60,17 @@ describe('SearchResultService', () => {
 		it('provides fallback search results for geoResources', () => {
 			const instanceUnderTest = setup();
 
-			const results = instanceUnderTest._newFallbackGeoResouceSearchResults();
+			const results = instanceUnderTest._newFallbackGeoResourceSearchResults();
 
 			expect(results).toHaveSize(2);
 			expect(results[0].id).toBe('atkis');
+			expect(results[0].layerId).toContain('atkis_');
+			expect(results[0].label).toBe('Base Layer 1');
+			expect(results[0].labelFormated).toBe('Base Layer 1');
 			expect(results[1].id).toBe('atkis_sw');
+			expect(results[1].layerId).toContain('atkis_sw_');
+			expect(results[1].label).toBe('Base Layer 2');
+			expect(results[1].labelFormated).toBe('Base Layer 2');
 		});
 	});
 
@@ -73,9 +100,10 @@ describe('SearchResultService', () => {
 
 	describe('geoResourceByTerm', () => {
 
-		it('provides search results for geoGeoresources', async () => {
+		it('provides search results for geoGeoresources from the provider', async () => {
 			const term = 'term';
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 			const provider = jasmine.createSpy().and.resolveTo([
 				new SearchResult('foo', 'foo', 'foo', SearchResultTypes.GEORESOURCE),
 				new SearchResult('bar', 'bar', 'bar', SearchResultTypes.GEORESOURCE)
@@ -87,14 +115,121 @@ describe('SearchResultService', () => {
 			expect(results).toHaveSize(2);
 		});
 
-		it('provides fallback search results', async () => {
-			const term = 'term';
-			spyOn(environmentService, 'isStandalone').and.returnValue(true);
+		it('provides a search result for a URL providing a vector source', async () => {
+			const term = 'http://foo.bar';
+			const id = 'id';
+			const label = 'label';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forUrl').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
+			spyOn(importVectorDataService, 'forUrl').withArgs(term, { sourceType: SourceTypeName.GPX })
+				.and.returnValue(new GeoResourceFuture('id', () => { }, 'label'));
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, '_mapSourceTypeToLabel').withArgs(SourceTypeName.GPX).and.returnValue(label);
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(1);
+			expect(results[0].id).toBe(id);
+			expect(results[0].layerId).toBe(id);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormated).toBe(label);
+			expect(results[0].type).toBe(SearchResultTypes.GEORESOURCE);
+			expect(results[0].center).toBeNull();
+			expect(results[0].extent).toBeNull();
+		});
+
+		it('provides an empty array as result for a URL providing a vector source when georesource cannot be created', async () => {
+			const term = 'http://foo.bar';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forUrl').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
+			spyOn(importVectorDataService, 'forUrl').withArgs(term, { sourceType: SourceTypeName.GPX })
+				.and.returnValue(null);
 			const instanceUnderTest = setup();
 
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
 
-			expect(results).toEqual(instanceUnderTest._newFallbackGeoResouceSearchResults());
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides an empty array as result for a URL when source type cannot be detected', async () => {
+			const term = 'http://foo.bar';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forUrl').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides a search result for vector data', async () => {
+			const term = '<gpx>foo</gpx>';
+			const id = 'id';
+			const label = 'label';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
+			spyOn(importVectorDataService, 'forData').withArgs(term, { sourceType: SourceTypeName.GPX })
+				.and.returnValue(new GeoResourceFuture('id', () => { }, 'label'));
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, '_mapSourceTypeToLabel').withArgs(SourceTypeName.GPX).and.returnValue(label);
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(1);
+			expect(results[0].id).toBe(id);
+			expect(results[0].layerId).toBe(id);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormated).toBe(label);
+			expect(results[0].type).toBe(SearchResultTypes.GEORESOURCE);
+			expect(results[0].center).toBeNull();
+			expect(results[0].extent).toBeNull();
+		});
+
+		it('provides an empty array as result for vector data when georesource cannot be created', async () => {
+			const term = '<gpx>foo</gpx>';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
+			spyOn(importVectorDataService, 'forData').withArgs(term, { sourceType: SourceTypeName.GPX })
+				.and.returnValue(null);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides an empty array as result for vector data when source type cannot be detected', async () => {
+			const term = '<gpx>foo</gpx>'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides fallback search results', async () => {
+			const term = 'term';
+			spyOn(environmentService, 'isStandalone').and.returnValue(true);
+			const instanceUnderTest = setup();
+			const newFallbackGeoResourceSearchResultsSpy = spyOn(instanceUnderTest, '_newFallbackGeoResourceSearchResults').and.callThrough();
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(2);
+			expect(newFallbackGeoResourceSearchResultsSpy).toHaveBeenCalled();
+		});
+
+		it('provides an empty array as results when max query length is exceeded', async () => {
+			const term = 't'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.geoResourcesByTerm(term);
+
+			expect(results).toHaveSize(0);
 		});
 	});
 
@@ -123,6 +258,16 @@ describe('SearchResultService', () => {
 
 			expect(results).toEqual(instanceUnderTest._newFallbackLocationSearchResults());
 		});
+
+		it('provides an empty array as results when max query length is exceeded', async () => {
+			const term = 't'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.locationsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
 	});
 
 	describe('cadastralParcelsByTerm', () => {
@@ -149,6 +294,29 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
 
 			expect(results).toEqual(instanceUnderTest._newFallbackCadastralParcelSearchResults());
+		});
+
+		it('provides an empty array as results when max query length is exceeded', async () => {
+			const term = 't'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+	});
+
+	describe('_mapSourceTypeToLabel', () => {
+
+		it('maps a SourceType to a label', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GPX))).toBe('GPX Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GEOJSON))).toBe('GeoJSON Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel()).toBeNull();
+			expect(instanceUnderTest._mapSourceTypeToLabel('foo')).toBeNull();
 		});
 	});
 });

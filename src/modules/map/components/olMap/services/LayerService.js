@@ -38,7 +38,8 @@ export class LayerService {
 					params: {
 						'LAYERS': geoResource.layers,
 						'FORMAT': geoResource.format,
-						'VERSION': '1.1.1'
+						'VERSION': '1.1.1',
+						...geoResource.extraParams
 					}
 				});
 				imageWmsSource.on('imageloadstart', () => setFetching(true));

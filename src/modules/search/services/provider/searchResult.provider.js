@@ -1,5 +1,6 @@
 import { SearchResult, SearchResultTypes } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
+import { createUniqueId } from '../../../../utils/numberUtils';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -34,7 +35,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map(o => {
-			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.GEORESOURCE);
+			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.GEORESOURCE, null, null, `${o.id}_${createUniqueId()}`);
 		});
 		return data;
 	}
