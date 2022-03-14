@@ -4,12 +4,22 @@ import { importReducer } from '../../src/store/import/import.reducer';
 import { setUrl, setData } from '../../src/store/import/import.action';
 import { TestUtils } from '../test-utils';
 import { provide } from '../../src/plugins/i18n/importPlugin.provider.js';
-import { ImportPlugin } from '../../src/plugins/ImportPlugin';
+import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
 import { MediaType } from '../../src/services/HttpService';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { VectorSourceType } from '../../src/services/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
+import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
+import { TabId } from '../../src/store/mainMenu/mainMenu.action';
+
+describe('LAYER_ADDING_DELAY_MS', () => {
+
+	it('exports a const defining amount of time waiting before adding a layer', async () => {
+
+		expect(LAYER_ADDING_DELAY_MS).toBe(500);
+	});
+});
 
 describe('ImportPlugin', () => {
 
@@ -26,12 +36,16 @@ describe('ImportPlugin', () => {
 	const setup = (state) => {
 		const initialState = {
 			import: { latest: null },
+			mainMenu: {
+				tab: TabId.MISC
+			},
 			...state
 		};
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
 			import: importReducer,
-			notifications: notificationReducer
+			notifications: notificationReducer,
+			mainMenu: createNoInitialStateMainMenuReducer()
 		});
 		$injector
 			.registerSingleton('ImportVectorDataService', importVectorDataServiceMock)
@@ -69,7 +83,7 @@ describe('ImportPlugin', () => {
 
 		});
 
-		it('adds a layer', async (done) => {
+		it('adds a layer and set the correct MainMenu tab index', async (done) => {
 			const store = setup();
 			const geoResourceFutureMock = {
 				id: 'idFoo', label: 'labelBar', onReject: () => { }
@@ -89,8 +103,9 @@ describe('ImportPlugin', () => {
 				expect(store.getState().layers.active[0].id).toBe('idFoo');
 				expect(store.getState().layers.active[0].label).toBe('labelBar');
 				expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledWith(sourceType);
+				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
 				done();
-			});
+			}, LAYER_ADDING_DELAY_MS + 100);
 
 		});
 
@@ -162,7 +177,7 @@ describe('ImportPlugin', () => {
 			expect(spy).toHaveBeenCalledWith('<kml some=thing></kml>', { sourceType: VectorSourceType.KML });
 		});
 
-		it('adds a layer', async () => {
+		it('adds a layer  and set the correct MainMenu tab index', async (done) => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
 			spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
@@ -172,9 +187,13 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 			setData('<kml some=thing></kml>', MediaType.KML);
 
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('idFoo');
+				expect(store.getState().layers.active[0].label).toBe('labelBar');
+				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+				done();
+			}, LAYER_ADDING_DELAY_MS + 100);
 		});
 
 		it('emits a notification when importVectorDataService returns NULL', async () => {
