@@ -153,7 +153,7 @@ export class VectorLayerService {
 		/**
 		 * If we know a better name for the geoResource now, we update the the geoResource's label.
 		 * At this moment an olLayer and its source are about to be added to the map.
-		 * To avoid conflicts, we have to delay the update (and possible modifications of the connected layer).
+		 * To avoid conflicts, we have to delay the update of the geoResouece (and subsequent possible modifications of the connected layer).
 		 */
 		switch (geoResource.sourceType) {
 			case VectorSourceType.KML:
