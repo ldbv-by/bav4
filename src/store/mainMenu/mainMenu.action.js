@@ -52,7 +52,7 @@ export const toggle = () => {
 export const TabId = Object.freeze({
 	TOPICS: 'topics',
 	MAPS: 'maps',
-	MORE: 'more',
+	MISC: 'misc',
 	ROUTING: 'routing',
 	SEARCH: 'search',
 	FEATUREINFO: 'featureinfo'

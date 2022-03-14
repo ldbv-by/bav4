@@ -122,7 +122,6 @@ describe('GeoResource', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
 				expect(georesource.label).toBe('');
-				expect(georesource.background).toBeFalse();
 				expect(georesource.opacity).toBe(1);
 				expect(georesource.minZoom).toBeNull();
 				expect(georesource.maxZoom).toBeNull();
@@ -135,7 +134,6 @@ describe('GeoResource', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
 				georesource
-					.setBackground(true)
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
@@ -144,7 +142,6 @@ describe('GeoResource', () => {
 					.setAttribution('some attribution');
 
 
-				expect(georesource.background).toBeTrue();
 				expect(georesource.hidden).toBeTrue();
 				expect(georesource.opacity).toBe(.5);
 				expect(georesource.minZoom).toBe(5);
@@ -239,6 +236,19 @@ describe('GeoResource', () => {
 			expect(wmsGeoResource.url).toBe('url');
 			expect(wmsGeoResource.layers).toBe('layers');
 			expect(wmsGeoResource.format).toBe('format');
+		});
+
+		it('provides default properties', () => {
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format');
+
+			expect(wmsGeoResource.extraParams).toEqual({});
+		});
+
+		it('provides set methods and getters', () => {
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format')
+				.setExtraParams({ 'foo': 'bar' });
+
+			expect(wmsGeoResource.extraParams).toEqual({ 'foo': 'bar' });
 		});
 	});
 

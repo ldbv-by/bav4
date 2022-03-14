@@ -9,7 +9,7 @@ import { TabId, toggle } from '../../../../store/mainMenu/mainMenu.action';
 import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
-import { MoreContentPanel } from './content/more/MoreContentPanel';
+import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 
 
 /**
@@ -119,8 +119,8 @@ export class MainMenu extends BaElement {
 		switch (index) {
 			case TabId.MAPS:
 				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
-			case TabId.MORE:
-				return html`${unsafeHTML(`<${MoreContentPanel.tag}/>`)}`;
+			case TabId.MISC:
+				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag}/>`)}`;
 			case TabId.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
 			case TabId.TOPICS:

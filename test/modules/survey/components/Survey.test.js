@@ -6,6 +6,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { render } from 'lit-html';
+import { QueryParameters } from '../../../../src/services/domain/queryParameters';
 
 
 window.customElements.define(Survey.tag, Survey);
@@ -14,7 +15,7 @@ window.customElements.define(Survey.tag, Survey);
 describe('Survey', () => {
 	let store;
 	const setup = (state = {}, config = {}) => {
-		const { embed = false } = config;
+		const { embed = false, urlParams = new URLSearchParams() } = config;
 
 		const initialState = {
 			mainMenu: {
@@ -32,7 +33,8 @@ describe('Survey', () => {
 
 		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), notifications: notificationReducer });
 		$injector.registerSingleton('EnvironmentService', {
-			isEmbedded: () => embed
+			isEmbedded: () => embed,
+			getUrlParams: () => urlParams
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -96,6 +98,34 @@ describe('Survey', () => {
 			closeButtonElement.click();
 
 			expect(store.getState().notifications.latest.payload.content).toBeNull();
+		});
+
+
+		it('supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`) });
+			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(store.getState().notifications.latest).toBeNull();
+		});
+
+		it('does not supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' have invalid value ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=foo`) });
+			jasmine.clock().tick(SURVEY_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 		});
 	});
 

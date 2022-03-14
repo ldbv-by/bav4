@@ -13,7 +13,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
-import { MoreContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/more/MoreContentPanel';
+import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -156,8 +156,8 @@ describe('MainMenu', () => {
 					case TabId.MAPS:
 						expect(contentPanels[i].innerHTML.toString().includes(MapsContentPanel.tag)).toBeTrue();
 						break;
-					case TabId.MORE:
-						expect(contentPanels[i].innerHTML.toString().includes(MoreContentPanel.tag)).toBeTrue();
+					case TabId.MISC:
+						expect(contentPanels[i].innerHTML.toString().includes(BvvMiscContentPanel.tag)).toBeTrue();
 						break;
 				}
 			}
@@ -174,7 +174,7 @@ describe('MainMenu', () => {
 		});
 
 		it('displays the content panel for non default index', async () => {
-			const activeTabIndex = TabId.MORE;
+			const activeTabIndex = TabId.MISC;
 			const state = {
 				mainMenu: {
 					open: true,
@@ -237,8 +237,8 @@ describe('MainMenu', () => {
 			setTab(TabId.MAPS);
 			check(TabId.MAPS, contentPanels);
 
-			setTab(TabId.MORE);
-			check(TabId.MORE, contentPanels);
+			setTab(TabId.MISC);
+			check(TabId.MISC, contentPanels);
 
 			setTab(TabId.ROUTING);
 			check(TabId.ROUTING, contentPanels);
