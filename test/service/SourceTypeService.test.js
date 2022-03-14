@@ -1,19 +1,8 @@
 import { SourceType, SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../../src/services/domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
+import { TestUtils } from '../test-utils';
 
-
-class TestableBlob extends Blob {
-
-	constructor(mimeType = '', size = 0) {
-		super([], { type: mimeType });
-		this._size = size;
-	}
-
-	get size() {
-		return this._size;
-	}
-}
 
 describe('SourceTypeService', () => {
 
@@ -116,7 +105,7 @@ describe('SourceTypeService', () => {
 
 	describe('forBlob', () => {
 
-		const getBlob = (mimeType = null, size = 10) => new TestableBlob(mimeType, size);
+		const getBlob = (mimeType = null, size = 10) => TestUtils.newBlob(null, mimeType, size);
 
 		it('provides a SourceType result given <blob>', () => {
 
