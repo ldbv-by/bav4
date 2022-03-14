@@ -67,6 +67,6 @@ export class SourceTypeService {
 		if (blob.size >= SourceTypeMaxFileSize) {
 			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 		}
-		return this._mediaSourceTypeProvider(blob.type);
+		return this._dataSourceTypeProvider(blob.text());
 	}
 }

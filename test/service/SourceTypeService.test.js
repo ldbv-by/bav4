@@ -105,19 +105,22 @@ describe('SourceTypeService', () => {
 
 	describe('forBlob', () => {
 
-		const getBlob = (mimeType = null, size = 10) => TestUtils.newBlob(null, mimeType, size);
+		const getBlob = (data, size = 10) => TestUtils.newBlob(data, 'text/mimeType', size);
 
 		it('provides a SourceType result given <blob>', () => {
 
-			const mediaType = 'mediatype';
-			const blobMock = getBlob(mediaType);
+			const data = '<kml>some</kml>';
+			const blobMock = getBlob(data);
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const providerSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(result);
-			const instanceUnderTest = setup(null, null, providerSpy);
+			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
+			const instanceUnderTest = setup(null, providerSpy);
 
 			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
 
-			expect(sourceTypeResult).toEqual(result);
+			setTimeout(() => {
+				expect(sourceTypeResult).toEqual(result);
+			});
+
 		});
 
 		it('throws am exception when blob is not a Blob', () => {
