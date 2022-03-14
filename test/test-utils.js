@@ -1,7 +1,26 @@
 import { combineReducers, createStore } from 'redux';
 import { $injector } from '../src/injection';
 
+class TestableBlob extends Blob {
 
+	constructor(data, mimeType, size) {
+		super([data], { type: mimeType });
+		this._size = size;
+		this._data = data;
+	}
+
+	get size() {
+		return this._size;
+	}
+
+	/**
+	 * @override
+	 * @returns {string}
+	 */
+	text() {
+		return this._data;
+	}
+}
 export class TestUtils {
 	/**
 	 * Renders a given element with provided attributes
@@ -106,6 +125,18 @@ export class TestUtils {
 			removeEventListener() {},
 			matches: shouldMatch
 		};
+	}
+
+	/**
+	 * Returns a testable Blob-object with faked size and text()-method
+	 * @param {*} data the blob-data
+	 * @param {*} mimeType the MIMEtype of the returned Blob
+	 * @param {*} size the size
+	 * @returns {Blob}
+	 */
+	static newBlob(data = null, mimeType = '', size = 0) {
+
+		return new TestableBlob(data, mimeType, size);
 	}
 
 }
