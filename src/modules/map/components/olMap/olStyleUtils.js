@@ -110,8 +110,18 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 
 export const nullStyleFunction = () => [new Style({})];
 
+/**
+ * A StyleFunction which returns styles based on styling properties of the feature
+ * according to {@see https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0| simpleStyle spec 1.1.0}.
+ * If no or incomplete styling-information found on the feature, default values will be used.
+ *
+ * 'marker-symbol'-property is currently not supported
+ * @param {Feature} feature the olFeature to be styled
+ * @returns {Array<Style>}
+ */
 export const geojsonStyleFunction = (feature) => {
-	// default style properties based on {@see https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0| simpleStyle spec 1.1.0}
+	// default style properties based on simpleStyle spec
+	// hint: 'marker-symbol' is currently not supported
 	const defaultStyleProperties = {
 		/**
 		 * specify the size of the marker. sizes
@@ -120,12 +130,6 @@ export const geojsonStyleFunction = (feature) => {
 		 * @type {('small'|'medium'|'large')}
 		 */
 		'marker-size': 'medium',
-		/**
-		 * a symbol to position in the center of this icon
-		 * if not provided or "", no symbol is overlaid and only the marker is shown
-		 * @type {string}
-		 */
-		'marker-symbol': '',
 		/**
 		 * the marker's color as rgb-color string
 		 * @type {string}
@@ -147,7 +151,7 @@ export const geojsonStyleFunction = (feature) => {
 		 * the width of the line component of a polygon, polyline, or multigeometry
  		 *@type {number}
  		 */
-		'stroke-width': 2,
+		'stroke-width': 3,
 		/**
 		 * the color of the interior of a polygon
 		 * as rgb-color string
@@ -159,6 +163,21 @@ export const geojsonStyleFunction = (feature) => {
 		 * @type {number}
 		 */
 		'fill-opacity': 0.6 };
+
+	const markerSizeToRadius = (markerSize) => {
+		if (typeof (markerSize) === 'number') {
+			return markerSize;
+		}
+		switch (markerSize) {
+			case 'large':
+				return 7;
+			case 'medium':
+				return 5;
+			case 'small':
+			default:
+				return 3;
+		}
+	};
 
 	const featureStyleProperties = {};
 	Object.keys(defaultStyleProperties).forEach(k => {
@@ -174,7 +193,7 @@ export const geojsonStyleFunction = (feature) => {
 			fill: new Fill({
 				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
 			}),
-			radius: 5 }),
+			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size']) }),
 		stroke: new Stroke({
 			color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
 			width: geoJsonStyleProperties['stroke-width']
