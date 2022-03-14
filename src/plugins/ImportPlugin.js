@@ -40,12 +40,11 @@ export class ImportPlugin extends BaPlugin {
 			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
 			if (geoResource) {
 				const { id, label } = geoResource;
+				//switch to the main menu's maps tab
 				setTab(TabId.MAPS);
 				//add the layer after some delay, which gives the user a better feedback
 				setTimeout(() => {
-					//switch to "maps" tab in main menu
 					addLayer(id, { label: label });
-
 				}, LAYER_ADDING_DELAY_MS);
 			}
 		};
