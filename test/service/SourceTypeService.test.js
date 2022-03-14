@@ -107,7 +107,7 @@ describe('SourceTypeService', () => {
 
 		const getBlob = (data, size = 10) => TestUtils.newBlob(data, 'text/mimeType', size);
 
-		it('provides a SourceType result given <blob>', () => {
+		it('provides a SourceType result given <blob>', async () => {
 
 			const data = '<kml>some</kml>';
 			const blobMock = getBlob(data);
@@ -115,7 +115,7 @@ describe('SourceTypeService', () => {
 			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
 			const instanceUnderTest = setup(null, providerSpy);
 
-			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
+			const sourceTypeResult = await instanceUnderTest.forBlob(blobMock);
 
 			setTimeout(() => {
 				expect(sourceTypeResult).toEqual(result);
@@ -123,14 +123,14 @@ describe('SourceTypeService', () => {
 
 		});
 
-		it('throws am exception when blob is not a Blob', () => {
+		it('throws am exception when blob is not a Blob', async () => {
 
 			const providerSpy = jasmine.createSpy();
-			const instanceUnderTest = setup(undefined, undefined, providerSpy);
+			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
 
 			try {
-				instanceUnderTest.forBlob(blobFake);
+				await instanceUnderTest.forBlob(blobFake);
 				throw new Error('Promise should not be resolved');
 			}
 			catch (e) {
@@ -139,15 +139,17 @@ describe('SourceTypeService', () => {
 			}
 		});
 
-		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', () => {
+		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', async () => {
 
 			const blobMock = getBlob('some', SourceTypeMaxFileSize + 1);
 			const instanceUnderTest = setup();
 
-			const result = instanceUnderTest.forBlob(blobMock);
+			const result = await instanceUnderTest.forBlob(blobMock);
 
-			expect(result)
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+			setTimeout(() => {
+				expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+			});
+
 		});
 	});
 
