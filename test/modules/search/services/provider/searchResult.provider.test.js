@@ -49,6 +49,7 @@ describe('SearchResult provider', () => {
 
 
 			expect(searchResult.id).toBe('6f5a389c-4ef3-4b5a-9916-475fd5c5962b');
+			expect(searchResult.layerId).toContain('6f5a389c-4ef3-4b5a-9916-475fd5c5962b_');
 			expect(searchResult.label).toBe('Bodendenkmal');
 			expect(searchResult.labelFormated).toBe('<b>Bodendenkmal</b>');
 			expect(searchResult.type).toBe(SearchResultTypes.GEORESOURCE);

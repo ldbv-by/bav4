@@ -14,13 +14,14 @@ export const SearchResultTypes = Object.freeze({
  */
 export class SearchResult {
 
-	constructor(id = null, label, labelFormated, type, center = null, extent = null) {
+	constructor(id = null, label, labelFormated, type, center = null, extent = null, layerId = null) {
 		this._id = id;
 		this._label = label;
 		this._labelFormated = labelFormated;
 		this._type = type;
 		this._center = center;
 		this._extent = extent;
+		this._layerId = layerId;
 	}
 
 	get id() {
@@ -45,6 +46,10 @@ export class SearchResult {
 
 	get extent() {
 		return this._extent;
+	}
+
+	get layerId() {
+		return this._layerId;
 	}
 
 }

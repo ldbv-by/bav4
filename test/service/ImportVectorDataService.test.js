@@ -38,13 +38,30 @@ describe('ImportVectorDataService', () => {
 
 	describe('forUrl', () => {
 
-		it('returns a GeoResourceFuture', () => {
+		it('returns a GeoResourceFuture for given VectorSourceType', () => {
 			const instanceUnderTest = setup();
 			const url = 'http://my.url';
 			const options = {
 				id: 'id',
 				label: 'label',
 				sourceType: VectorSourceType.KML
+			};
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+
+			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
+
+			expect(geoResourceFuture.id).toBe(options.id);
+			expect(geoResourceFuture.label).toBe(options.label);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
+		});
+
+		it('returns a GeoResourceFuture for given SourceType', () => {
+			const instanceUnderTest = setup();
+			const url = 'http://my.url';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: new SourceType(SourceTypeName.KML)
 			};
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 
@@ -125,7 +142,9 @@ describe('ImportVectorDataService', () => {
 				const instanceUnderTest = setup();
 				const sourceType = new SourceType(SourceTypeName.GEOJSON, mediaType);
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(sourceType);
-				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
+				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
+					.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
+
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -145,7 +164,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalled();
+				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('throws an error when response is not ok', async (done) => {
@@ -197,25 +216,43 @@ describe('ImportVectorDataService', () => {
 					done();
 				}
 			});
+
+			it('returns NULL when source type is not supported', () => {
+				const instanceUnderTest = setup();
+				const url = 'http://my.url';
+				const warnSpy = spyOn(console, 'warn');
+				const options = {
+					id: 'id',
+					sourceType: 'foo'
+				};
+
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
+
+				expect(geoResourceFuture).toBeNull();
+				expect(warnSpy).toHaveBeenCalledWith(`SourceType '${options.sourceType}' for '${options.id}' is not supported`);
+			});
 		});
 	});
 
 	describe('_mapSourceTypetoVectorSourceType', () => {
 
-		it('maps a SourceType to a  VectorSourceType', () => {
+		it('maps a SourceType to a VectorSourceType', () => {
 			const instanceUnderTest = setup();
 
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.KML)).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.GPX)).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.GEOJSON)).toBe(VectorSourceType.GEOJSON);
 			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType('foo'))).toBeNull();
 		});
 	});
 
 	describe('forData', () => {
 
-		it('returns a VectorGeoResource', () => {
+		it('returns a VectorGeoResource for given VectorSourceType', () => {
 			const instanceUnderTest = setup();
 			const data = 'data';
 			const options = {
@@ -234,13 +271,33 @@ describe('ImportVectorDataService', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 		});
 
+		it('returns a VectorGeoResource for given SourceType', () => {
+			const instanceUnderTest = setup();
+			const data = 'data';
+			const options = {
+				id: 'id',
+				label: 'label',
+				sourceType: new SourceType(SourceTypeName.KML)
+			};
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+
+			const vgr = instanceUnderTest.forData(data, options);
+
+			expect(vgr.id).toBe(options.id);
+			expect(vgr.label).toBe(options.label);
+			expect(vgr.data).toBe(data);
+			expect(vgr.srid).toBe(4326);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
+		});
+
 		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
 			const sourceType = new SourceType(SourceTypeName.GEOJSON);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
-			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').withArgs(sourceType).and.returnValue(VectorSourceType.GEOJSON);
+			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
+				.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
 
 			const vgr = instanceUnderTest.forData(data);
 
@@ -252,7 +309,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalled();
+			expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('updates the label property of a layer', async () => {
@@ -282,6 +339,23 @@ describe('ImportVectorDataService', () => {
 			const options = {
 				id: 'id',
 				detectVectorSourceType: () => null
+			};
+
+			const vgr = instanceUnderTest.forData(data, options);
+
+			expect(vgr).toBeNull();
+			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
+			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
+		});
+
+		it('logs a warning and returns Null when sourceType is not is not supported', async () => {
+			const instanceUnderTest = setup();
+			const data = 'data';
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const warnSpy = spyOn(console, 'warn');
+			const options = {
+				id: 'id',
+				sourceType: 'foo'
 			};
 
 			const vgr = instanceUnderTest.forData(data, options);
