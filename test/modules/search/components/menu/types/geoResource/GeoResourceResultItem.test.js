@@ -1,14 +1,27 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { GeoResourceResultItem } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultItem, LAYER_ADDING_DELAY_MS } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../../../../src/store/mainMenu/mainMenu.action';
+import { $injector } from '../../../../../../../src/injection';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
+describe('LAYER_ADDING_DELAY_MS', () => {
+
+	it('exports a const defining amount of time waiting before adding a layer', async () => {
+
+		expect(LAYER_ADDING_DELAY_MS).toBe(500);
+	});
+});
+
 describe('GeoResourceResultItem', () => {
+
+	const geoResourceService = {
+		byId: () => { }
+	};
 
 	let store;
 	const setup = (state = {}) => {
@@ -25,6 +38,9 @@ describe('GeoResourceResultItem', () => {
 			mainMenu: createNoInitialStateMainMenuReducer(),
 			media: createNoInitialStateMediaReducer()
 		});
+
+		$injector
+			.registerSingleton('GeoResourceService', geoResourceService);
 
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
@@ -60,8 +76,9 @@ describe('GeoResourceResultItem', () => {
 		describe('on mouse enter', () => {
 
 			it('adds a preview layer', async () => {
-				const id = 'id';
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
+				const geoResourceId = 'geoResourceId';
+				const layerId = 'layerId';
+				const data = new SearchResult(geoResourceId, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE, null, null, layerId);
 				const element = await setup();
 				element.data = data;
 
@@ -69,16 +86,17 @@ describe('GeoResourceResultItem', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(id));
+				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(layerId));
 			});
 		});
 
 		describe('on mouse leave', () => {
 
 			it('removes the preview layer', async () => {
-				const id = 'id';
-				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
+				const geoResourceId = 'geoResourceId';
+				const layerId = 'layerId';
+				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(layerId), geoResourceId);
+				const data = new SearchResult(geoResourceId, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE, null, null, layerId);
 				const element = await setup({
 					layers: {
 						active: [previewLayer]
@@ -95,12 +113,21 @@ describe('GeoResourceResultItem', () => {
 
 		describe('on click', () => {
 
-			const id = 'id';
+			beforeEach(() => {
+				jasmine.clock().install();
+			});
+
+			afterEach(() => {
+				jasmine.clock().uninstall();
+			});
+
+			const geoResourceId = 'geoResourceId';
+			const layerId = 'layerId';
 
 			const setupOnClickTests = async (portraitOrientation) => {
 
-				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(id));
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE);
+				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(layerId), geoResourceId);
+				const data = new SearchResult(geoResourceId, 'label', 'labelFormated', SearchResultTypes.GEORESOURCE, null, null, layerId);
 				const element = await setup({
 					layers: {
 						active: [previewLayer]
@@ -120,12 +147,27 @@ describe('GeoResourceResultItem', () => {
 
 			it('removes the preview layer and adds the real layer', async () => {
 				const element = await setupOnClickTests();
-
 				const target = element.shadowRoot.querySelector('li');
+
 				target.click();
+				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe(id);
+				expect(store.getState().layers.active[0].id).toBe(layerId);
+				expect(store.getState().layers.active[0].label).toBe('label');
+			});
+
+			it('optionally updates the real layers label', async () => {
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'updatedLabel' });
+				const element = await setupOnClickTests();
+				const target = element.shadowRoot.querySelector('li');
+
+				target.click();
+				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
+
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(layerId);
+				expect(store.getState().layers.active[0].label).toBe('updatedLabel');
 			});
 
 			it('opens the "maps" tab of the main menu in landscape orientation', async () => {

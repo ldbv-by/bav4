@@ -237,6 +237,19 @@ describe('GeoResource', () => {
 			expect(wmsGeoResource.layers).toBe('layers');
 			expect(wmsGeoResource.format).toBe('format');
 		});
+
+		it('provides default properties', () => {
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format');
+
+			expect(wmsGeoResource.extraParams).toEqual({});
+		});
+
+		it('provides set methods and getters', () => {
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format')
+				.setExtraParams({ 'foo': 'bar' });
+
+			expect(wmsGeoResource.extraParams).toEqual({ 'foo': 'bar' });
+		});
 	});
 
 	describe('WmtsGeoResource', () => {
