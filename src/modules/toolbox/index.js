@@ -6,4 +6,5 @@ import './components/shareButton';
 import './components/shareToolContent';
 import './components/importToolContent';
 import './components/toolBar';
+import './components/importVectorFile';
 

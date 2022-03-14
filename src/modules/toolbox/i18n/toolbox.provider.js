@@ -81,7 +81,13 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'was copied to clipboard',
 				toolbox_copy_icon: 'Copy to clipboard',
 				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing',
-				toolbox_toolbar_logo_badge: 'Beta'
+				toolbox_toolbar_logo_badge: 'Beta',
+				toolbox_importWms_input_url: 'URL',
+				toolbox_importWms_input_user: 'Username',
+				toolbox_importWms_input_pwd: 'Password',
+				toolbox_importWms_textarea_layer: 'Layers',
+				toolbox_importWms_textarea_description: 'Description',
+				toolbox_importWms_button_connect: 'connect'
 			};
 
 		case 'de':
@@ -164,7 +170,13 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert',
 				toolbox_copy_icon: 'In die Zwischenablage kopieren',
 				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
-				toolbox_toolbar_logo_badge: 'Beta'
+				toolbox_toolbar_logo_badge: 'Beta',
+				toolbox_importWms_input_url: 'URL',
+				toolbox_importWms_input_user: 'Nutzername',
+				toolbox_importWms_input_pwd: 'Passwort',
+				toolbox_importWms_textarea_layer: 'Ebenen',
+				toolbox_importWms_textarea_description: 'Beschreibung',
+				toolbox_importWms_button_connect: 'verbinden'
 			};
 
 		default:

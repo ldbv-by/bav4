@@ -83,6 +83,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_url_search).toBe('Suchfeld');
 		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
+		expect(map.toolbox_importWms_input_url).toBe('URL');
+		expect(map.toolbox_importWms_input_user).toBe('Nutzername');
+		expect(map.toolbox_importWms_input_pwd).toBe('Passwort');
+		expect(map.toolbox_importWms_textarea_layer).toBe('Ebenen');
+		expect(map.toolbox_importWms_textarea_description).toBe('Beschreibung');
+		expect(map.toolbox_importWms_button_connect).toBe('verbinden');
 	});
 
 	it('provides translation for en', () => {
@@ -165,10 +171,16 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_url_search).toBe('Search Bar');
 		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
+		expect(map.toolbox_importWms_input_url).toBe('URL');
+		expect(map.toolbox_importWms_input_user).toBe('Username');
+		expect(map.toolbox_importWms_input_pwd).toBe('Password');
+		expect(map.toolbox_importWms_textarea_layer).toBe('Layers');
+		expect(map.toolbox_importWms_textarea_description).toBe('Description');
+		expect(map.toolbox_importWms_button_connect).toBe('connect');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 78;
+		const expectedSize = 84;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
