@@ -150,10 +150,14 @@ export class VectorLayerService {
 		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
 		const features = format.readFeatures(data);
 
-		// If we know a better name for the geoResource now, we update the label
+		/**
+		 * If we know a better name for the geoResource now, we update the the geoResource's label.
+		 * At this moment an olLayer and its source are about to be added to the map.
+		 * To avoid conflicts, we have to delay the update (and possible modifications of the connected layer).
+		 */
 		switch (geoResource.sourceType) {
 			case VectorSourceType.KML:
-				geoResource.setLabel(format.readName(data) ?? geoResource.label);
+				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
 				break;
 		}
 		features.forEach(f => {
