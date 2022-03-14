@@ -35,7 +35,9 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 	};
 	const url = configService.getValueAsPath('BACKEND_URL') + `getFeature/${geoResourceId}`;
 
-	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
+	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON, {
+		timeout: 5000
+	});
 
 	switch (result.status) {
 		case 200: {

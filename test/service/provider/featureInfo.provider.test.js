@@ -35,13 +35,15 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
-				new Response(
-					JSON.stringify(
-						featureInfoResultPayload
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.and.resolveTo(
+					new Response(
+						JSON.stringify(
+							featureInfoResultPayload
+						)
 					)
-				)
-			);
+				);
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 
@@ -63,9 +65,11 @@ describe('FeatureInfoResult provider', () => {
 				srid: 3857,
 				resolution: mapResolution
 			});
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
-				new Response(null, { status: 204 })
-			);
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.and.resolveTo(
+					new Response(null, { status: 204 })
+				);
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 
@@ -86,9 +90,11 @@ describe('FeatureInfoResult provider', () => {
 				srid: 3857,
 				resolution: mapResolution
 			});
-			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON).and.resolveTo(
-				new Response(null, { status: 500 })
-			);
+			const httpServiceSpy = spyOn(httpService, 'post')
+				.withArgs(`${backendUrl}getFeature/${geoResourceId}`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.and.resolveTo(
+					new Response(null, { status: 500 })
+				);
 
 			try {
 				await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
