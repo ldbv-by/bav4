@@ -55,10 +55,10 @@ describe('StyleService', () => {
 		});
 
 		it('detects drawStyleTypes as type from olFeature', () => {
-			const markerFeature = { getId: () => 'draw_marker_123' };
-			const textFeature = { getId: () => 'draw_text_123' };
-			const lineFeature = { getId: () => 'draw_line_123' };
-			const polygonFeature = { getId: () => 'draw_polygon_123' };
+			const markerFeature = { getId: () => 'draw_marker_123', getKeys: () => [] };
+			const textFeature = { getId: () => 'draw_text_123', getKeys: () => [] };
+			const lineFeature = { getId: () => 'draw_line_123', getKeys: () => [] };
+			const polygonFeature = { getId: () => 'draw_polygon_123', getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(markerFeature)).toEqual(StyleTypes.MARKER);
 			expect(instanceUnderTest._detectStyleType(textFeature)).toEqual(StyleTypes.TEXT);
@@ -66,18 +66,29 @@ describe('StyleService', () => {
 			expect(instanceUnderTest._detectStyleType(polygonFeature)).toEqual(StyleTypes.POLYGON);
 		});
 
+		it('detects geojson (simplestyle spec) as type from olFeature', () => {
+			const feature1 = { getId: () => 'some', getStyle: () => null, getKeys: () => ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'] };
+			const feature2 = { getId: () => 'some', getStyle: () => null, getKeys: () => ['marker-symbol', 'marker-size', 'marker-color'] };
+			const feature3 = { getId: () => 'some', getStyle: () => null, getKeys: () => ['marker-color'] };
+			const feature4 = { getId: () => 'some', getStyle: () => null, getKeys: () => ['stroke', 'stroke-width', 'fill'] };
+			expect(instanceUnderTest._detectStyleType(feature1)).toEqual(StyleTypes.GEOJSON);
+			expect(instanceUnderTest._detectStyleType(feature2)).toEqual(StyleTypes.GEOJSON);
+			expect(instanceUnderTest._detectStyleType(feature3)).toEqual(StyleTypes.GEOJSON);
+			expect(instanceUnderTest._detectStyleType(feature4)).toEqual(StyleTypes.GEOJSON);
+		});
+
 		it('detects default as type from olFeature', () => {
-			const feature = { getId: () => 'some', getStyle: () => null };
+			const feature = { getId: () => 'some', getStyle: () => null, getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(feature)).toEqual(StyleTypes.DEFAULT);
 		});
 
 
 		it('detects not the type from olFeature', () => {
-			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => { } };
-			const feature2 = { getId: () => '123_measure_123', getStyle: () => { } };
-			const feature3 = { getId: () => ' measure_123', getStyle: () => { } };
-			const feature4 = { getId: () => '123measure_123', getStyle: () => { } };
+			const feature1 = { getId: () => 'mea_sure_123', getStyle: () => { }, getKeys: () => [] };
+			const feature2 = { getId: () => '123_measure_123', getStyle: () => { }, getKeys: () => [] };
+			const feature3 = { getId: () => ' measure_123', getStyle: () => { }, getKeys: () => [] };
+			const feature4 = { getId: () => '123measure_123', getStyle: () => { }, getKeys: () => [] };
 
 			expect(instanceUnderTest._detectStyleType(undefined)).toBeNull();
 			expect(instanceUnderTest._detectStyleType(null)).toBeNull();
@@ -259,6 +270,29 @@ describe('StyleService', () => {
 			};
 
 			instanceUnderTest.addStyle(feature, mapMock, 'draw');
+
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds geojson-style to feature with simpleStyle spec properties', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			feature.set('fill', '#ff0000');
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			instanceUnderTest.addStyle(feature, mapMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
@@ -491,6 +525,7 @@ describe('StyleService', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.POLYGON)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DEFAULT)).toEqual(jasmine.any(Function));
+			expect(instanceUnderTest.getStyleFunction(StyleTypes.GEOJSON)).toEqual(jasmine.any(Function));
 		});
 
 		it('fails for a invalid StyleType', () => {
