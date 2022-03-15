@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction } from '../../../../../src/modules/map/components/olMap/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -210,6 +210,85 @@ describe('nullStyleFunction', () => {
 
 		expect(styles).toBeDefined();
 		expect(styles.length).toBe(1);
+	});
+});
+
+describe('geojsonStyleFunction', () => {
+	const getFeatureWithProperties = (properties) => {
+		const geometry = new LineString([[0, 0], [1, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		for (const [key, value] of Object.entries(properties)) {
+			feature.set(key, value);
+		}
+
+		return feature;
+	};
+
+	it('should return a default style', () => {
+		const styles = geojsonStyleFunction();
+
+		expect(styles).toBeDefined();
+		expect(styles.length).toBe(1);
+		expect(styles[0].getImage().getFill().getColor()).toEqual([255, 255, 255, 1]);
+		expect(styles[0].getImage().getRadius()).toBe(5);
+		expect(styles[0].getStroke().getColor()).toEqual([85, 85, 85, 1]);
+		expect(styles[0].getStroke().getWidth()).toBe(3);
+		expect(styles[0].getFill().getColor()).toEqual([85, 85, 85, 0.6]);
+	});
+
+	it('should return a image style', () => {
+		const smallPointFeature = getFeatureWithProperties({ 'marker-size': 'small', 'marker-color': '#ffff00' });
+		const mediumPointFeature = getFeatureWithProperties({ 'marker-size': 'medium', 'marker-color': '#00ff00' });
+		const largePointFeature = getFeatureWithProperties({ 'marker-size': 'large', 'marker-color': '#0000ff' });
+		const numberMarkerSizePointFeature = getFeatureWithProperties({ 'marker-size': 42, 'marker-color': '#0000ff' });
+
+		const smallPointStyles = geojsonStyleFunction(smallPointFeature);
+		const mediumPointStyles = geojsonStyleFunction(mediumPointFeature);
+		const largePointStyles = geojsonStyleFunction(largePointFeature);
+		const numberMarkerSizePointStyle = geojsonStyleFunction(numberMarkerSizePointFeature);
+
+		expect(smallPointStyles).toBeDefined();
+		expect(smallPointStyles.length).toBe(1);
+		expect(smallPointStyles[0].getImage().getFill().getColor()).toEqual([255, 255, 0, 1]);
+		expect(smallPointStyles[0].getImage().getRadius()).toBe(3);
+
+		expect(mediumPointStyles).toBeDefined();
+		expect(mediumPointStyles.length).toBe(1);
+		expect(mediumPointStyles[0].getImage().getFill().getColor()).toEqual([0, 255, 0, 1]);
+		expect(mediumPointStyles[0].getImage().getRadius()).toBe(5);
+
+		expect(largePointStyles).toBeDefined();
+		expect(largePointStyles.length).toBe(1);
+		expect(largePointStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 255, 1]);
+		expect(largePointStyles[0].getImage().getRadius()).toBe(7);
+
+		expect(numberMarkerSizePointStyle).toBeDefined();
+		expect(numberMarkerSizePointStyle.length).toBe(1);
+		expect(numberMarkerSizePointStyle[0].getImage().getFill().getColor()).toEqual([0, 0, 255, 1]);
+		expect(numberMarkerSizePointStyle[0].getImage().getRadius()).toBe(42);
+	});
+
+
+	it('should return a stroke style', () => {
+		const lineFeature = getFeatureWithProperties({ 'stroke-opacity': 0.42, 'stroke': '#ffff00', 'stroke-width': 4 });
+
+		const lineStyles = geojsonStyleFunction(lineFeature);
+
+		expect(lineStyles).toBeDefined();
+		expect(lineStyles.length).toBe(1);
+		expect(lineStyles[0].getStroke().getColor()).toEqual([255, 255, 0, 0.42]);
+		expect(lineStyles[0].getStroke().getWidth()).toBe(4);
+	});
+
+	it('should return a fill style', () => {
+		const lineFeature = getFeatureWithProperties({ 'fill-opacity': 0.21, 'fill': '#00ff00' });
+
+		const lineStyles = geojsonStyleFunction(lineFeature);
+
+		expect(lineStyles).toBeDefined();
+		expect(lineStyles.length).toBe(1);
+		expect(lineStyles[0].getFill().getColor()).toEqual([0, 255, 0, 0.21]);
 	});
 });
 

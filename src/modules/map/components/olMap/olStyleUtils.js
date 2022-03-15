@@ -179,13 +179,19 @@ export const geojsonStyleFunction = (feature) => {
 		}
 	};
 
-	const featureStyleProperties = {};
-	Object.keys(defaultStyleProperties).forEach(k => {
-		const styleValue = feature.get(k);
-		if (styleValue) {
-			featureStyleProperties[k] = styleValue;
-		}
-	});
+
+	const getSimpleStylePropertiesFrom = (feature) => {
+		const simpleStyleProperties = {};
+		Object.keys(defaultStyleProperties).forEach(k => {
+			const styleValue = feature.get(k);
+			if (styleValue) {
+				simpleStyleProperties[k] = styleValue;
+			}
+		});
+		return simpleStyleProperties;
+	};
+
+	const featureStyleProperties = feature ? getSimpleStylePropertiesFrom(feature) : {};
 	const geoJsonStyleProperties = { ...defaultStyleProperties, ...featureStyleProperties };
 
 	return [new Style({
