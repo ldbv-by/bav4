@@ -74,6 +74,10 @@ export class ToolBar extends MvuElement {
 			return isOpen ? 'is-open' : '';
 		};
 
+		const getButtonClass = () => {
+			return isOpen ? '' : 'showButton';
+		};
+
 		const toggleTool = (id) => {
 			if (this._toolId === id) {
 				setCurrentTool(null);
@@ -116,8 +120,8 @@ export class ToolBar extends MvuElement {
 						${translate('toolbox_toolbar_logo_badge')}
 					</div>	
 				</button>
-				<button class='toolbar__button-tools'  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
-					<div class="wrench">							
+				<button class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+					<div class="wrench">													
 					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
@@ -148,6 +152,10 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_share_button')}
 						</div>  
+					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
+					<button  class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+						<div class="tool-bar__button_icon close arrowright">							
+						</div>						
 					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
