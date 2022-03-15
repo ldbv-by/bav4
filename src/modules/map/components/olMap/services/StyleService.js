@@ -66,13 +66,10 @@ export class StyleService {
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
-	 * @param {StyleType|null} styleType the styletype, if not explicit specified (styletype==null|undefined),
-	 * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists,
-	 * no styles or overlays will be added.
 	 */
-	addStyle(olFeature, olMap, olLayer, styleType = null) {
-		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
-		switch (usingStyleType) {
+	addStyle(olFeature, olMap, olLayer) {
+		const styleType = this._detectStyleType(olFeature);
+		switch (styleType) {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
 				break;
@@ -93,7 +90,7 @@ export class StyleService {
 				this._addDefaultStyle(olFeature, olLayer);
 				break;
 			default:
-				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
+				console.warn('Could not provide a style for unknown style-type');
 				break;
 		}
 	}
