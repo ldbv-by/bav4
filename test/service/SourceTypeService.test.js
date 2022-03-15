@@ -117,13 +117,11 @@ describe('SourceTypeService', () => {
 
 			const sourceTypeResult = await instanceUnderTest.forBlob(blobMock);
 
-			setTimeout(() => {
-				expect(sourceTypeResult).toEqual(result);
-			});
+			expect(sourceTypeResult).toEqual(result);
 
 		});
 
-		it('throws am exception when blob is not a Blob', async () => {
+		it('throws an exception when blob is not a Blob', async () => {
 
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(undefined, providerSpy);
@@ -146,10 +144,7 @@ describe('SourceTypeService', () => {
 
 			const result = await instanceUnderTest.forBlob(blobMock);
 
-			setTimeout(() => {
-				expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
-			});
-
+			expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
 		});
 	});
 
