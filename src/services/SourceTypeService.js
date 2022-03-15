@@ -60,13 +60,14 @@ export class SourceTypeService {
 	 * @returns {SourceTypeResult} the result of this request
 	 * @throws Will throw an error if parameter `blob` is not an instance of Blob
 	 */
-	forBlob(blob) {
+	async forBlob(blob) {
 		if (!(blob instanceof Blob)) {
 			throw new TypeError('Parameter <blob> must be an instance of Blob');
 		}
 		if (blob.size >= SourceTypeMaxFileSize) {
 			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 		}
-		return this._mediaSourceTypeProvider(blob.type);
+		const dataSourceContent = await blob.text();
+		return this._dataSourceTypeProvider(dataSourceContent);
 	}
 }

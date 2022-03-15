@@ -14,7 +14,9 @@ export const _definitionToGeoResource = definition => {
 	const toGeoResource = def => {
 		switch (def.type) {
 			case 'wms':
-				return new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format);
+				return new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format)
+					//set specific optional values
+					.setExtraParams(def.extraParams ?? {});
 			case 'wmts':
 				return new WMTSGeoResource(def.id, def.label, def.url);
 			case 'vector':
@@ -29,8 +31,7 @@ export const _definitionToGeoResource = definition => {
 	if (geoResource) {
 		geoResource.setAttributionProvider(getBvvAttribution);
 		geoResource.setAttribution(_parseBvvAttributionDefinition(definition));
-		//set optional values
-		geoResource.setBackground(definition.background ?? geoResource.background);
+		//set common optional values
 		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
 		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
 		geoResource.setMinZoom(definition.minZoom ?? null);

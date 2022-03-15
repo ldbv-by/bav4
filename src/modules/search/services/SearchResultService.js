@@ -1,6 +1,14 @@
 import { $injector } from '../../../injection';
+import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
+import { isHttpUrl } from '../../../utils/checks';
+import { createUniqueId } from '../../../utils/numberUtils';
 import { SearchResult, SearchResultTypes } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
+
+/**
+ * Max query length for calling providers. If a term is above this size, providers won't be called.
+ */
+export const MAX_QUERY_TERM_LENGTH = 140;
 
 /**
  * Service that offers search results for different types.
@@ -24,23 +32,66 @@ export class SearchResultService {
 		this._georesourceResultProvider = georesourceResultProvider;
 		this._cadastralParcelResultProvider = cadastralParcelResultProvider;
 
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, SourceTypeService: sourceTypeService, ImportVectorDataService: importVectorDataService }
+			= $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService');
 		this._environmentService = environmentService;
+		this._sourceTypeService = sourceTypeService;
+		this._importVectorDataService = importVectorDataService;
 	}
 
+	_mapSourceTypeToLabel(sourceType) {
+		if (sourceType) {
+			switch (sourceType.name) {
+				case SourceTypeName.GEOJSON:
+					return 'GeoJSON Import';
+				case SourceTypeName.GPX:
+					return 'GPX Import';
+				case SourceTypeName.KML:
+					return 'KML Import';
+			}
+		}
+		return null;
+	}
 
 	/**
-	 * Provides search results for geoResouces.
+	 * Provides search results for geoResources.
 	 * Possible errors of the configured provider will be passed.
 	 * @param {string} term
 	 * @returns {Promise<Array.<SearchResult>>}
 	 * @throws Error of the underlying provider
 	 */
 	async geoResourcesByTerm(term) {
+
 		if (this._environmentService.isStandalone()) {
-			return this._newFallbackGeoResouceSearchResults();
+			return this._newFallbackGeoResourceSearchResults();
 		}
-		return this._georesourceResultProvider(term);
+		else if (isHttpUrl(term)) {
+			const { status, sourceType } = await this._sourceTypeService.forUrl(term);
+			if (status === SourceTypeResultStatus.OK) {
+				const geoResource = this._importVectorDataService.forUrl(term, { sourceType: sourceType });
+				if (geoResource) {
+					// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
+					return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
+						SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
+				}
+			}
+		}
+		else {
+			const { status, sourceType } = this._sourceTypeService.forData(term);
+			if (status === SourceTypeResultStatus.OK) {
+				const geoResource = this._importVectorDataService.forData(term, { sourceType: sourceType }); {
+					if (geoResource) {
+						// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
+						return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
+							SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
+					}
+				}
+			}
+			else if (term.length < MAX_QUERY_TERM_LENGTH) {
+				return this._georesourceResultProvider(term);
+			}
+		}
+		return [];
 	}
 
 	/**
@@ -54,7 +105,10 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackLocationSearchResults();
 		}
-		return this._locationResultProvider(term);
+		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+			return this._locationResultProvider(term);
+		}
+		return [];
 	}
 
 	/**
@@ -68,13 +122,16 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackCadastralParcelSearchResults();
 		}
-		return this._cadastralParcelResultProvider(term);
+		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+			return this._cadastralParcelResultProvider(term);
+		}
+		return [];
 	}
 
-	_newFallbackGeoResouceSearchResults() {
+	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE),
-			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 1', SearchResultTypes.GEORESOURCE)
+			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
+			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
 		];
 	}
 
