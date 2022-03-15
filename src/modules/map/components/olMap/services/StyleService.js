@@ -238,17 +238,17 @@ export class StyleService {
 		olFeature.setStyle(nullStyleFunction);
 	}
 
-	_addDefaultStyle(olFeature, olLayer) {
-		const id = getUid(olLayer);
-		const getDefaultColorByLayerId = (id) => {
-
+	_addDefaultStyle(olFeature, olLayer = null) {
+		const getColorByLayerId = (layer) => {
+			const id = getUid(layer);
 			if (this._defaultColorByLayerId[id] === undefined) {
 				this._defaultColorByLayerId[id] = this._nextColor();
 			}
 			return [...this._defaultColorByLayerId[id]];
 		};
 
-		olFeature.setStyle(defaultStyleFunction(getDefaultColorByLayerId(id)));
+		const color = olLayer ? getColorByLayerId(olLayer) : this._nextColor();
+		olFeature.setStyle(defaultStyleFunction(color));
 	}
 
 	_detectStyleType(olFeature) {
