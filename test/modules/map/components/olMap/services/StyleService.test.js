@@ -112,8 +112,9 @@ describe('StyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
+			const layerMock = {};
 
-			instanceUnderTest.addStyle(feature, mapMock);
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -143,7 +144,9 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.MEASURE);
+			const layerMock = {};
+
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, StyleTypes.MEASURE);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -172,14 +175,16 @@ describe('StyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
+			const layerMock = {};
+
 			let textStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f => textStyle = f()));
-			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, StyleTypes.TEXT);
+			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, layerMock, StyleTypes.TEXT);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f => textStyle = f()));
-			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, StyleTypes.TEXT);
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock, StyleTypes.TEXT);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
@@ -206,14 +211,16 @@ describe('StyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
+			const layerMock = {};
+
 			let markerStyle = null;
 			const styleSetterArraySpy = spyOn(featureWithStyleArray, 'setStyle').and.callFake((f => markerStyle = f()));
-			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, StyleTypes.MARKER);
+			instanceUnderTest.addStyle(featureWithStyleArray, mapMock, layerMock, StyleTypes.MARKER);
 			expect(styleSetterArraySpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 
 			const styleSetterFunctionSpy = spyOn(featureWithStyleFunction, 'setStyle').and.callFake((f => markerStyle = f()));
-			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, StyleTypes.MARKER);
+			instanceUnderTest.addStyle(featureWithStyleFunction, mapMock, layerMock, StyleTypes.MARKER);
 			expect(styleSetterFunctionSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
 		});
@@ -235,8 +242,10 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.LINE);
-			instanceUnderTest.addStyle(feature, mapMock, StyleTypes.POLYGON);
+			const layerMock = {};
+
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, StyleTypes.LINE);
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, StyleTypes.POLYGON);
 
 			expect(styleSetterSpy).not.toHaveBeenCalled();
 		});
@@ -258,7 +267,9 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock, 'draw');
+			const layerMock = {};
+
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, 'draw');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
@@ -280,7 +291,9 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock);
+			const layerMock = { ol_uid: 1 };
+
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
@@ -303,7 +316,9 @@ describe('StyleService', () => {
 				}
 			};
 
-			instanceUnderTest.addStyle(feature, mapMock, 'unknown');
+			const layerMock = {};
+
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, 'unknown');
 
 			expect(styleSetterSpy).not.toHaveBeenCalledWith(jasmine.any(Array));
 			expect(propertySetterSpy).not.toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -339,10 +354,12 @@ describe('StyleService', () => {
 				},
 				once() { }
 			};
+
+			const layerMock = { };
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
 
-			instanceUnderTest.addStyle(feature, mapMock, 'measure');
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, 'measure');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
@@ -375,8 +392,9 @@ describe('StyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
+			const layerMock = { };
 
-			instanceUnderTest.addStyle(feature, mapMock, 'measure');
+			instanceUnderTest.addStyle(feature, mapMock, layerMock, 'measure');
 
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));

@@ -1,3 +1,4 @@
+import { getUid } from 'ol';
 import { $injector } from '../../../../../injection';
 import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, defaultStyleFunction } from '../olStyleUtils';
 
@@ -43,6 +44,7 @@ export class StyleService {
 	 */
 	constructor() {
 		this._defaultColorIndex = 0;
+		this._defaultColorByLayerId = {};
 	}
 
 	_nextColor() {
@@ -63,11 +65,12 @@ export class StyleService {
 	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
-	 * @param {StyleType} styleType the styletype, if not explicit specified (styletype==null|undefined),
+	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
+	 * @param {StyleType|null} styleType the styletype, if not explicit specified (styletype==null|undefined),
 	 * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists,
 	 * no styles or overlays will be added.
 	 */
-	addStyle(olFeature, olMap, styleType = null) {
+	addStyle(olFeature, olMap, olLayer, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		switch (usingStyleType) {
 			case StyleTypes.MEASURE:
@@ -87,7 +90,7 @@ export class StyleService {
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
 				break;
 			case StyleTypes.DEFAULT:
-				this._addDefaultStyle(olFeature);
+				this._addDefaultStyle(olFeature, olLayer);
 				break;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
@@ -235,8 +238,17 @@ export class StyleService {
 		olFeature.setStyle(nullStyleFunction);
 	}
 
-	_addDefaultStyle(olFeature) {
-		olFeature.setStyle(defaultStyleFunction(this._nextColor()));
+	_addDefaultStyle(olFeature, olLayer) {
+		const id = getUid(olLayer);
+		const getDefaultColorByLayerId = (id) => {
+
+			if (this._defaultColorByLayerId[id] === undefined) {
+				this._defaultColorByLayerId[id] = this._nextColor();
+			}
+			return [...this._defaultColorByLayerId[id]];
+		};
+
+		olFeature.setStyle(defaultStyleFunction(getDefaultColorByLayerId(id)));
 	}
 
 	_detectStyleType(olFeature) {

@@ -55,7 +55,7 @@ export class VectorLayerService {
 
 
 		const addFeatureListenerKey = olVectorSource.on('addfeature', event => {
-			styleService.addStyle(event.feature, olMap);
+			styleService.addStyle(event.feature, olMap, olLayer);
 			this._updateStyle(event.feature, olLayer, olMap);
 		});
 		const removeFeatureListenerKey = olVectorSource.on('removefeature', event => {
@@ -101,7 +101,7 @@ export class VectorLayerService {
 			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
 			olVectorSource.getFeatures().forEach(feature => {
 				if (styleService.isStyleRequired(feature)) {
-					styleService.addStyle(feature, olMap);
+					styleService.addStyle(feature, olMap, olVectorLayer);
 					this._updateStyle(feature, olVectorLayer, olMap);
 				}
 			});
