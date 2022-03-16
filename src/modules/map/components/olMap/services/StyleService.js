@@ -1,6 +1,6 @@
 import { getUid } from 'ol';
 import { $injector } from '../../../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, defaultStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction, defaultStyleFunction } from '../olStyleUtils';
 
 
 
@@ -17,7 +17,8 @@ export const StyleTypes = Object.freeze({
 	MARKER: 'marker',
 	TEXT: 'text',
 	LINE: 'line',
-	POLYGON: 'polygon'
+	POLYGON: 'polygon',
+	GEOJSON: 'geojson'
 });
 
 const Default_Colors = [
@@ -30,6 +31,8 @@ const Default_Colors = [
 	[0, 128, 0, 0.8]
 ];
 
+
+const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
  * Adds or removes styles and overlays to ol.feature.
@@ -85,6 +88,9 @@ export class StyleService {
 			case StyleTypes.POLYGON:
 			case StyleTypes.LINE:
 				// Polygons and Lines comes with already defined styles (by KML etc.), no need to extra define a style
+				break;
+			case StyleTypes.GEOJSON:
+				this._addGeoJSONStyle(olFeature);
 				break;
 			case StyleTypes.DEFAULT:
 				this._addDefaultStyle(olFeature, olLayer);
@@ -160,6 +166,8 @@ export class StyleService {
 				return textStyleFunction;
 			case StyleTypes.DRAW:
 				return nullStyleFunction;
+			case StyleTypes.GEOJSON:
+				return geojsonStyleFunction;
 			case StyleTypes.DEFAULT:
 				return defaultStyleFunction;
 			default:
@@ -195,6 +203,10 @@ export class StyleService {
 
 		olFeature.setStyle(measureStyleFunction);
 		overlayService.add(olFeature, olMap, StyleTypes.MEASURE);
+	}
+
+	_addGeoJSONStyle(olFeature) {
+		olFeature.setStyle(geojsonStyleFunction);
 	}
 
 	_addTextStyle(olFeature) {
@@ -259,7 +271,15 @@ export class StyleService {
 			return (regex.test(candidate));
 		};
 
-		const getStyleTypeFromId = (id) => {
+		const getStyleTypeFromProperties = (olFeature) => {
+			const featurePropertyKeys = olFeature.getKeys();
+			const hasGeoJSONSimpleStyleProperties = featurePropertyKeys.some(k => GeoJSON_SimpleStyle_Keys.includes(k));
+
+			return hasGeoJSONSimpleStyleProperties ? StyleTypes.GEOJSON : null;
+		};
+
+		const getStyleTypeFromId = (olFeature) => {
+			const id = olFeature.getId();
 			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
 			if (drawingType) {
 				return StyleTypes[drawingType];
@@ -271,12 +291,15 @@ export class StyleService {
 			return null;
 		};
 
-		const defaultOrNull = () => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
+		const defaultOrNull = (olFeature) => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
 
 		if (olFeature) {
-			const id = olFeature.getId();
-			const styleType = getStyleTypeFromId(id);
-			return styleType ? styleType : defaultOrNull();
+			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull]) {
+				const styleType = styleTypeFunction(olFeature);
+				if (styleType) {
+					return styleType;
+				}
+			}
 		}
 
 		return null;

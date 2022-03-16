@@ -7,8 +7,6 @@ import markerIcon from './assets/marker.svg';
 import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
 
-
-
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
 const White_Color = [255, 255, 255];
@@ -111,6 +109,108 @@ export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 };
 
 export const nullStyleFunction = () => [new Style({})];
+
+/**
+ * A StyleFunction which returns styles based on styling properties of the feature
+ * according to {@see https://github.com/mapbox/simplestyle-spec/tree/master/1.1.0| simpleStyle spec 1.1.0}.
+ * If no or incomplete styling-information found on the feature, default values will be used.
+ *
+ * 'marker-symbol'-property is currently not supported
+ * @param {Feature} feature the olFeature to be styled
+ * @returns {Array<Style>}
+ */
+export const geojsonStyleFunction = (feature) => {
+	// default style properties based on simpleStyle spec
+	// hint: 'marker-symbol' is currently not supported
+	const defaultStyleProperties = {
+		/**
+		 * specify the size of the marker. sizes
+		 * can be different pixel sizes in different
+		 * implementations
+		 * @type {('small'|'medium'|'large')}
+		 */
+		'marker-size': 'medium',
+		/**
+		 * the marker's color as rgb-color string
+		 * @type {string}
+		 */
+		'marker-color': '#fff',
+		/**
+		 * the color of a line as part of a polygon, polyline, or
+		 * multigeometry as rgb-color string
+		 * @type {string}
+		 */
+		'stroke': '#555555',
+		/**
+		 * the opacity of the line component of a polygon, polyline, or
+		 * multigeometry
+		 * @type {number}
+		 */
+		'stroke-opacity': 1.0,
+		/**
+		 * the width of the line component of a polygon, polyline, or multigeometry
+ 		 *@type {number}
+ 		 */
+		'stroke-width': 3,
+		/**
+		 * the color of the interior of a polygon
+		 * as rgb-color string
+		 * @type {string}
+		 */
+		'fill': '#555555',
+		/**
+		 * the opacity of the interior of a polygon.
+		 * @type {number}
+		 */
+		'fill-opacity': 0.6 };
+
+	const markerSizeToRadius = (markerSize) => {
+		if (typeof (markerSize) === 'number') {
+			return markerSize;
+		}
+		switch (markerSize) {
+			case 'large':
+				return 7;
+			case 'medium':
+				return 5;
+			case 'small':
+			default:
+				return 3;
+		}
+	};
+
+
+	const getSimpleStylePropertiesFrom = (feature) => {
+		const simpleStyleProperties = {};
+		Object.keys(defaultStyleProperties).forEach(k => {
+			const styleValue = feature.get(k);
+			if (styleValue) {
+				simpleStyleProperties[k] = styleValue;
+			}
+		});
+		return simpleStyleProperties;
+	};
+
+	const featureStyleProperties = feature ? getSimpleStylePropertiesFrom(feature) : {};
+	const geoJsonStyleProperties = { ...defaultStyleProperties, ...featureStyleProperties };
+
+	return [new Style({
+		image: new CircleStyle({
+			fill: new Fill({
+				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
+			}),
+			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size']) }),
+		stroke: new Stroke({
+			color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
+			width: geoJsonStyleProperties['stroke-width']
+		}),
+		fill: new Fill({
+			color: hexToRgb(geoJsonStyleProperties['fill']).concat([geoJsonStyleProperties['fill-opacity']])
+		})
+	})
+	];
+
+};
 
 export const highlightStyleFunction = () => [new Style({
 	image: new Icon({
