@@ -95,7 +95,7 @@ export class VectorLayerService {
 		 */
 		const { StyleService: styleService } = $injector.inject('StyleService');
 		const olVectorSource = olVectorLayer.getSource();
-		if (olVectorSource.getFeatures().filter(feature => styleService.isStyleRequired(feature)).length > 0) {
+		if (olVectorSource.getFeatures().some(feature => styleService.isStyleRequired(feature))) {
 			// if we have at least one style requiring feature, we register the styleEvent listener once
 			// and apply the style for all currently present features
 			this._registerStyleEventListeners(olVectorSource, olVectorLayer, olMap);
@@ -150,10 +150,14 @@ export class VectorLayerService {
 		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
 		const features = format.readFeatures(data);
 
-		// If we know a better name for the geoResource now, we update the label
+		/**
+		 * If we know a better name for the geoResource now, we update the geoResource's label.
+		 * At this moment an olLayer and its source are about to be added to the map.
+		 * To avoid conflicts, we have to delay the update of the geoResouece (and subsequent possible modifications of the connected layer).
+		 */
 		switch (geoResource.sourceType) {
 			case VectorSourceType.KML:
-				geoResource.setLabel(format.readName(data) ?? geoResource.label);
+				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
 				break;
 		}
 		features.forEach(f => {

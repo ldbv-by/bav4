@@ -3,10 +3,13 @@ import css from './importToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { setData } from '../../../../store/import/import.action';
+import { SourceTypeResultStatus } from '../../../../services/domain/sourceType';
 
 /**
  * @class
  * @author alsturm
+ * @author thiloSchlemmer
  */
 export class ImportToolContent extends AbstractToolContent {
 	constructor() {
@@ -14,19 +17,40 @@ export class ImportToolContent extends AbstractToolContent {
 			mode: null
 		});
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
-		this._translationService = translationService;
+		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
+		this._translationService = TranslationService;
+		this._sourceTypeService = SourceTypeService;
 	}
 
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-
 		const onUpload = () => {
-			emitNotification(translate('toolbox_import_data_sucess_notification'), LevelTypes.INFO);
-		};
+			const inputElement = this._root.querySelector('input');
+			const files = inputElement?.files;
 
+			const importData = async (blob, sourceType) => {
+				const text = await blob.text();
+				setData(text, sourceType);
+			};
+			const handleFiles = (files) => {
+				Array.from(files).forEach(async f => {
+					try {
+
+						const sourceTypeResult = await this._sourceTypeService.forBlob(f);
+						this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
+					}
+					catch (error) {
+						emitNotification(translate('toolbox_import_file_error'), LevelTypes.ERROR);
+					}
+				});
+			};
+
+			if (files && 0 < files.length) {
+				handleFiles(files);
+			}
+		};
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -47,7 +71,7 @@ export class ImportToolContent extends AbstractToolContent {
 							<div class="tool-container__button-text" >
 								${translate('toolbox_import_data_button')}							
 							</div>
-							<input id='fileupload' type='file'  @change=${onUpload}></input>
+							<input id='fileupload' type='file' @change=${onUpload}></input>
 						</label>
 					</div>
 					<div  class='drag-drop-preview'>
@@ -78,6 +102,30 @@ export class ImportToolContent extends AbstractToolContent {
         `;
 
 	}
+
+	/**
+	  * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
+	  * other than {@link SourceTypeResultStatus.OK}
+	  * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
+	  * @param {function} importAction the importAction
+	  */
+	_importOrNotify(sourceTypeResult, importAction) {
+		const translate = (key) => this._translationService.translate(key);
+		switch (sourceTypeResult.status) {
+			case SourceTypeResultStatus.OK:
+				importAction();
+				break;
+			case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
+				emitNotification(translate('toolbox_import_max_size_exceeded'), LevelTypes.WARN);
+				break;
+			case SourceTypeResultStatus.UNSUPPORTED_TYPE:
+				emitNotification(translate('toolbox_import_unsupported'), LevelTypes.WARN);
+				break;
+			case SourceTypeResultStatus.OTHER:
+				emitNotification(translate('toolbox_import_unknown'), LevelTypes.ERROR);
+		}
+	}
+
 
 	static get tag() {
 		return 'ba-tool-import-content';

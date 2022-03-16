@@ -1,11 +1,16 @@
 import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { VectorSourceType } from '../services/domain/geoResources';
 import { observe } from '../utils/storeUtils';
 import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../services/domain/sourceType';
+import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
+
+/**
+ * Amount of time waiting before adding a layer in ms.
+ */
+export const LAYER_ADDING_DELAY_MS = 500;
 
 
 /**
@@ -34,7 +39,12 @@ export class ImportPlugin extends BaPlugin {
 			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
 			if (geoResource) {
 				const { id, label } = geoResource;
-				addLayer(id, { label: label });
+				//switch to the main menu's maps tab
+				setTab(TabId.MAPS);
+				//add the layer after some delay, which gives the user a better feedback
+				setTimeout(() => {
+					addLayer(id, { label: label });
+				}, LAYER_ADDING_DELAY_MS);
 			}
 		};
 
@@ -53,7 +63,7 @@ export class ImportPlugin extends BaPlugin {
 					case SourceTypeName.KML:
 					case SourceTypeName.GPX:
 					case SourceTypeName.GEOJSON:
-						return this._importVectorDataService.forUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 				}
 			}
 			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
@@ -79,28 +89,11 @@ export class ImportPlugin extends BaPlugin {
 	  * @returns {GeoResource|null} the imported GeoResource or null on failure
 	  */
 	_importByData(data, sourceType) {
-		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: sourceType });
 		if (vectorGeoResource) {
 			return vectorGeoResource;
 		}
 		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
-		return null;
-	}
-
-	/**
-	  * Maps a {@link SourceType} to a {@link VectorSourceType}
-	*/
-	_mapSourceTypeToVectorSourceType(sourceType) {
-		if (sourceType) {
-			switch (sourceType.name) {
-				case SourceTypeName.GEOJSON:
-					return VectorSourceType.GEOJSON;
-				case SourceTypeName.GPX:
-					return VectorSourceType.GPX;
-				case SourceTypeName.KML:
-					return VectorSourceType.KML;
-			}
-		}
 		return null;
 	}
 }

@@ -48,10 +48,11 @@ export const sort = (list) => {
  * Creates a {@link Layer} containing all required properties (bound to default values)
  * including `id` and `geoResourceId`.
  * @param {string} id The id of the layer
+ * @param {string} [geoResourceId] Optionally the geoResourceId of the layer. Will be the id if not set.
  * @returns a layer with default properties
  */
-export const createDefaultLayer = (id) => {
-	return { id: id, geoResourceId: id, ...createDefaultLayerProperties() };
+export const createDefaultLayer = (id, geoResourceId = id) => {
+	return { id: id, geoResourceId: geoResourceId, ...createDefaultLayerProperties() };
 };
 
 /**

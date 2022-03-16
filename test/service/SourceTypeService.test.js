@@ -1,19 +1,8 @@
 import { SourceType, SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../../src/services/domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
+import { TestUtils } from '../test-utils';
 
-
-class TestableBlob extends Blob {
-
-	constructor(mimeType = '', size = 0) {
-		super([], { type: mimeType });
-		this._size = size;
-	}
-
-	get size() {
-		return this._size;
-	}
-}
 
 describe('SourceTypeService', () => {
 
@@ -116,29 +105,30 @@ describe('SourceTypeService', () => {
 
 	describe('forBlob', () => {
 
-		const getBlob = (mimeType = null, size = 10) => new TestableBlob(mimeType, size);
+		const getBlob = (data, size = 10) => TestUtils.newBlob(data, 'text/mimeType', size);
 
-		it('provides a SourceType result given <blob>', () => {
+		it('provides a SourceType result given <blob>', async () => {
 
-			const mediaType = 'mediatype';
-			const blobMock = getBlob(mediaType);
+			const data = '<kml>some</kml>';
+			const blobMock = getBlob(data);
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const providerSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(result);
-			const instanceUnderTest = setup(null, null, providerSpy);
+			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
+			const instanceUnderTest = setup(null, providerSpy);
 
-			const sourceTypeResult = instanceUnderTest.forBlob(blobMock);
+			const sourceTypeResult = await instanceUnderTest.forBlob(blobMock);
 
 			expect(sourceTypeResult).toEqual(result);
+
 		});
 
-		it('throws am exception when blob is not a Blob', () => {
+		it('throws an exception when blob is not a Blob', async () => {
 
 			const providerSpy = jasmine.createSpy();
-			const instanceUnderTest = setup(undefined, undefined, providerSpy);
+			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
 
 			try {
-				instanceUnderTest.forBlob(blobFake);
+				await instanceUnderTest.forBlob(blobFake);
 				throw new Error('Promise should not be resolved');
 			}
 			catch (e) {
@@ -147,15 +137,14 @@ describe('SourceTypeService', () => {
 			}
 		});
 
-		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', () => {
+		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', async () => {
 
 			const blobMock = getBlob('some', SourceTypeMaxFileSize + 1);
 			const instanceUnderTest = setup();
 
-			const result = instanceUnderTest.forBlob(blobMock);
+			const result = await instanceUnderTest.forBlob(blobMock);
 
-			expect(result)
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+			expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
 		});
 	});
 

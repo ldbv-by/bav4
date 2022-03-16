@@ -82,6 +82,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
 		expect(map.toolbox_import_url_search).toBe('Suchfeld');
 		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
+		expect(map.toolbox_import_unsupported).toBe('Der Dateityp wird nicht unterstützt');
+		expect(map.toolbox_import_file_error).toBe('Die Datei kann nicht gelesen werden');
+		expect(map.toolbox_import_no_file_found).toBe('Die Datei ist leer');
+		expect(map.toolbox_import_max_size_exceeded).toBe('Die Datei überschreitet die erlaubte Größe');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
@@ -164,11 +168,15 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
 		expect(map.toolbox_import_url_search).toBe('Search Bar');
 		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
+		expect(map.toolbox_import_unsupported).toBe('The file-type is not supported');
+		expect(map.toolbox_import_file_error).toBe('File is not readable');
+		expect(map.toolbox_import_no_file_found).toBe('File not found');
+		expect(map.toolbox_import_max_size_exceeded).toBe('Filesize is too large');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 78;
+		const expectedSize = 82;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
