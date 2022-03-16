@@ -1,7 +1,6 @@
 import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { VectorSourceType } from '../services/domain/geoResources';
 import { observe } from '../utils/storeUtils';
 import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
@@ -64,7 +63,7 @@ export class ImportPlugin extends BaPlugin {
 					case SourceTypeName.KML:
 					case SourceTypeName.GPX:
 					case SourceTypeName.GEOJSON:
-						return this._importVectorDataService.forUrl(url, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 				}
 			}
 			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
@@ -90,28 +89,11 @@ export class ImportPlugin extends BaPlugin {
 	  * @returns {GeoResource|null} the imported GeoResource or null on failure
 	  */
 	_importByData(data, sourceType) {
-		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: this._mapSourceTypeToVectorSourceType(sourceType) });
+		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: sourceType });
 		if (vectorGeoResource) {
 			return vectorGeoResource;
 		}
 		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
-		return null;
-	}
-
-	/**
-	  * Maps a {@link SourceType} to a {@link VectorSourceType}
-	*/
-	_mapSourceTypeToVectorSourceType(sourceType) {
-		if (sourceType) {
-			switch (sourceType.name) {
-				case SourceTypeName.GEOJSON:
-					return VectorSourceType.GEOJSON;
-				case SourceTypeName.GPX:
-					return VectorSourceType.GPX;
-				case SourceTypeName.KML:
-					return VectorSourceType.KML;
-			}
-		}
 		return null;
 	}
 }
