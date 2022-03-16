@@ -6,6 +6,12 @@ import { observe } from '../utils/storeUtils';
 import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../services/domain/sourceType';
+import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
+
+/**
+ * Amount of time waiting before adding a layer in ms.
+ */
+export const LAYER_ADDING_DELAY_MS = 500;
 
 
 /**
@@ -34,7 +40,12 @@ export class ImportPlugin extends BaPlugin {
 			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
 			if (geoResource) {
 				const { id, label } = geoResource;
-				addLayer(id, { label: label });
+				//switch to the main menu's maps tab
+				setTab(TabId.MAPS);
+				//add the layer after some delay, which gives the user a better feedback
+				setTimeout(() => {
+					addLayer(id, { label: label });
+				}, LAYER_ADDING_DELAY_MS);
 			}
 		};
 

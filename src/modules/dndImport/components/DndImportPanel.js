@@ -139,9 +139,9 @@ export class DndImportPanel extends MvuElement {
 			setData(text, sourceType);
 		};
 		const handleFiles = (files) => {
-			Array.from(files).forEach(f => {
+			Array.from(files).forEach(async f => {
 				try {
-					const sourceTypeResult = this._sourceTypeService.forBlob(f);
+					const sourceTypeResult = await this._sourceTypeService.forBlob(f);
 					this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
 				}
 				catch (error) {

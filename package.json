@@ -3,7 +3,7 @@
   "dependencies": {
     "lit-html": "^2.2.0",
     "ol": "^6.13.0",
-    "proj4": "^2.7.5",
+    "proj4": "^2.8.0",
     "redux": "^4.1.2"
   },
   "devDependencies": {
@@ -12,7 +12,7 @@
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^7.1.0",
     "es-check": "^6.2.1",
-    "eslint": "^8.10.0",
+    "eslint": "^8.11.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
