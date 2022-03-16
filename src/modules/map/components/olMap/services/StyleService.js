@@ -76,9 +76,6 @@ export class StyleService {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
 				break;
-			case StyleTypes.DRAW:
-				this._addBaseStyle(olFeature);
-				break;
 			case StyleTypes.TEXT:
 				this._addTextStyle(olFeature);
 				break;
@@ -241,10 +238,6 @@ export class StyleService {
 		const newStyle = markerStyleFunction(getStyleOption(olFeature));
 
 		olFeature.setStyle(() => newStyle);
-	}
-
-	_addBaseStyle(olFeature) {
-		olFeature.setStyle(nullStyleFunction);
 	}
 
 	_addDefaultStyle(olFeature, olLayer = null) {

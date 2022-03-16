@@ -275,9 +275,61 @@ describe('StyleService', () => {
 			};
 
 			const layerMock = { ol_uid: 1 };
-
+			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
+			expect(addSpy).toHaveBeenCalledWith(feature, layerMock);
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+		});
+
+		it('adds default-style to feature without initial style and existing layer-color', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const styleSetterSpy = spyOn(feature, 'setStyle').and.callThrough();
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			const layerMock = { ol_uid: 'some' };
+			instanceUnderTest._defaultColorByLayerId['some'] = [0, 0, 0, 1];
+			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock, layerMock);
+
+			expect(addSpy).toHaveBeenCalledWith(feature, layerMock);
+			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(feature.getStyle()(feature)[0].getFill().getColor()).toEqual([0, 0, 0, 1]);
+		});
+
+		it('adds default-style to feature without initial style and layer', () => {
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const styleSetterSpy = spyOn(feature, 'setStyle');
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() { }
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+
+			const addSpy = spyOn(instanceUnderTest, '_addDefaultStyle').and.callThrough();
+			instanceUnderTest.addStyle(feature, mapMock);
+
+			expect(addSpy).toHaveBeenCalledWith(feature, undefined);
 			expect(styleSetterSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 
@@ -340,7 +392,7 @@ describe('StyleService', () => {
 				once() { }
 			};
 
-			const layerMock = { };
+			const layerMock = {};
 			const eventMock = { map: mapMock };
 			const onceOnMapSpy = spyOn(mapMock, 'once').and.callFake((eventName, callback) => callback(eventMock));
 
@@ -378,7 +430,7 @@ describe('StyleService', () => {
 					return { getArray: () => [] };
 				}
 			};
-			const layerMock = { };
+			const layerMock = {};
 
 			instanceUnderTest.addStyle(feature, mapMock, layerMock);
 
