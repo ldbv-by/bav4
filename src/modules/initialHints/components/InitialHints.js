@@ -1,12 +1,12 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './survey.css';
+import css from './initialHints.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
 
-export const SURVEY_NOTIFICATION_DELAY_TIME = 3000;
+export const INITIAL_HINTS_NOTIFICATION_DELAY_TIME = 3000;
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
@@ -15,7 +15,7 @@ const Update_HasBeenVisible = 'update_hasBeenVisible';
  * @class
  * @author alsturm
  */
-export class Survey extends MvuElement {
+export class InitialHints extends MvuElement {
 
 	constructor() {
 		super({
@@ -89,34 +89,34 @@ export class Survey extends MvuElement {
 				};
 				return html`
 						<style>${css}</style>	
-						<div class='survey__notification'>					
-							<div class='survey__notification-section'>
-								<i class='survey__notification-icon'></i>
+						<div class='initialHints__notification'>					
+							<div class='initialHints__notification-section'>
+								<i class='initialHints__notification-icon'></i>
 								<div>
-									<div class='survey__notification-primary-text' >${translate('survey_notification_header')}</div>
-									<div class='survey__notification-secondary-text' >${translate('survey_notification_text')}</div>
+									<div class='initialHints__notification-primary-text' >${translate('initialHints_notification_header')}</div>
+									<div class='initialHints__notification-secondary-text' >${translate('initialHints_notification_text')}</div>
 								</div>
 							</div>
-							<div class='survey__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${translate('survey_notification_close')} @click=${onClose}></ba-button>
-								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link">${translate('survey_notification_open')}</a>
+							<div class='initialHints__notification-section space-evenly'>							
+								<ba-button id='closeButton' .label=${translate('initialHints_notification_close')} @click=${onClose}></ba-button>
+								<a target='_blank' href='${translate('initialHints_link')}' @click=${onClose} class="initialHints__notification-link">${translate('initialHints_notification_open')}</a>
 							</div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
 		if (!hasBeenVisible) {
-			window.setTimeout(() => showNotification(), SURVEY_NOTIFICATION_DELAY_TIME);
+			window.setTimeout(() => showNotification(), INITIAL_HINTS_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
 
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='survey__button ${getOverlayClass()}'>				
-					<i class='survey__button-icon'></i>
-					<a target='_blank' href='${translate('survey_link')}' class="survey__link">
-						<span class="survey__button-text">${translate('survey_button')}</span>
+				<div class='initialHints__button ${getOverlayClass()}'>				
+					<i class='initialHints__button-icon'></i>
+					<a target='_blank' href='${translate('initialHints_link')}' class="initialHints__link">
+						<span class="initialHints__button-text">${translate('initialHints_button')}</span>
 					</a>						
 				</div>		
 			</div>		
@@ -130,6 +130,6 @@ export class Survey extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-survey';
+		return 'ba-initial-hints';
 	}
 }
