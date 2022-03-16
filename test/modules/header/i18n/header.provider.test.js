@@ -14,6 +14,7 @@ describe('i18n for header module', () => {
 		expect(map.header_tab_misc_button).toBe('Mehr...');
 		expect(map.header_tab_misc_title).toBe('Mehr anzeigen');
 		expect(map.header_close_button_title).toBe('Menü schließen');
+		expect(map.header_logo_badge).toBe('Beta');
 		expect(map.header_search_placeholder).toBe('Suchen');
 	});
 
