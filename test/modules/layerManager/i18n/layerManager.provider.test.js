@@ -18,7 +18,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
-		expect(map.layerManager_remove_all).toBe('Alle löschen');
+		expect(map.layerManager_remove_all).toBe('Alle entfernen');
 	});
 
 	it('provides translation for en', () => {

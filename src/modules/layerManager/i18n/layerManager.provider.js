@@ -34,7 +34,7 @@ export const provide = (lang) => {
 				layerManager_layer_copy: 'Kopie',
 				layerManager_expand_all: 'Alle ausklappen',
 				layerManager_collapse_all: 'Alle einklappen',
-				layerManager_remove_all: 'Alle löschen'
+				layerManager_remove_all: 'Alle entfernen'
 			};
 
 		default:
