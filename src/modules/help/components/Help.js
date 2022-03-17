@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './initialHints.css';
+import css from './help.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
 
-export const INITIAL_HINTS_NOTIFICATION_DELAY_TIME = 3000;
+export const HELP_NOTIFICATION_DELAY_TIME = 3000;
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
@@ -16,7 +16,7 @@ const Update_HasBeenVisible = 'update_hasBeenVisible';
  * @class
  * @author alsturm
  */
-export class InitialHints extends MvuElement {
+export class Help extends MvuElement {
 
 	constructor() {
 		super({
@@ -86,7 +86,7 @@ export class InitialHints extends MvuElement {
 		const showNotification = () => {
 			const getContent = () => {
 				const onOpen = () => {
-					openModal(translate('initialHints_notification_open'), html`<div>firstSteps</div>`);
+					openModal(translate('help_notification_open'), html`<div>firstSteps</div>`);
 					clearFixedNotification();
 				};
 				const onClose = () => {
@@ -94,35 +94,35 @@ export class InitialHints extends MvuElement {
 				};
 				return html`
 						<style>${css}</style>	
-						<div class='initialHints__notification'>					
-							<div class='initialHints__notification-section'>
-								<i class='initialHints__notification-icon'></i>
+						<div class='help__notification'>					
+							<div class='help__notification-section'>
+								<i class='help__notification-icon'></i>
 								<div>
-									<div class='initialHints__notification-primary-text' >${translate('initialHints_notification_header')}</div>
-									<div class='initialHints__notification-secondary-text' >${translate('initialHints_notification_text')}</div>
+									<div class='help__notification-primary-text' >${translate('help_notification_header')}</div>
+									<div class='help__notification-secondary-text' >${translate('help_notification_text')}</div>
 								</div>
 							</div>
-							<div class='initialHints__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${translate('initialHints_notification_close')} @click=${onClose}></ba-button>
-								<ba-button id='firstSteps' .label=${translate('initialHints_notification_first_steps')} @click=${onOpen}></ba-button>								
+							<div class='help__notification-section space-evenly'>							
+								<ba-button id='closeButton' .label=${translate('help_notification_close')} @click=${onClose}></ba-button>
+								<ba-button id='firstSteps' .label=${translate('help_notification_first_steps')} @click=${onOpen}></ba-button>								
 							</div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
 		if (!hasBeenVisible) {
-			window.setTimeout(() => showNotification(), INITIAL_HINTS_NOTIFICATION_DELAY_TIME);
+			window.setTimeout(() => showNotification(), HELP_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
 		const onOpenFirstSteps = () => {
-			openModal(translate('initialHints_notification_open'), html`<div>firstSteps</div>`);
+			openModal(translate('help_notification_open'), html`<div>firstSteps</div>`);
 		};
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='initialHints__button ${getOverlayClass()}'>				
-					<i class='initialHints__button-icon'></i>
-					<span class="initialHints__button-text" @click=${onOpenFirstSteps}>${translate('initialHints_button')}</span>					
+				<div class='help__button ${getOverlayClass()}'>				
+					<i class='help__button-icon'></i>
+					<span class="help__button-text" @click=${onOpenFirstSteps}>${translate('help_button')}</span>					
 				</div>		
 			</div>		
 

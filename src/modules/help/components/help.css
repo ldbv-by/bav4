@@ -1,4 +1,4 @@
-.initialHints__button {
+.help__button {
 	position: absolute;
 	top: .8em;
 	left: 7.5em;
@@ -12,29 +12,29 @@
 	background: var(--primary-bg-color);
 	cursor: pointer;
 }
-.initialHints__link {
+.help__link {
 	font-size: .9rem;
 	text-decoration: none;
 }
 
-.is-tablet .initialHints__button {
+.is-tablet .help__button {
 	margin-left: -1.5em;
 }
 
-.is-portrait .initialHints__button {
+.is-portrait .help__button {
 	display: none;
 }
 .is-desktop .is-open, .is-tablet .is-open {
 	transform: translate(28em, 0);
 	margin-left: -6.5em;
 }
-.initialHints__button-text {
+.help__button-text {
 	font-weight: bold;
 	color: #fff;
 	color: var(--primary-color);
 	margin: auto .5em;
 }
-.initialHints__button-icon {
+.help__button-icon {
 	display: inline-block;
 	height: 1.1em;
 	width: 1.1em;
@@ -48,13 +48,13 @@
 	left: 0.7em;	
 }
 
-.initialHints__notification {
+.help__notification {
 	height: 10em;
 }
-.initialHints__notification-section {
+.help__notification-section {
 	display: flex
 }
-.initialHints__notification-icon {
+.help__notification-icon {
 	display: inline-block;
 	margin: auto;
 	height: 5em;
@@ -67,11 +67,11 @@
 	-webkit-mask-size: cover;
 	left: 0.7em;	
 }
-.initialHints__notification-primary-text {
+.help__notification-primary-text {
 	font-size: 1.5rem;
 	margin: .5em .6em;
 }
-.initialHints__notification-secondary-text {
+.help__notification-secondary-text {
 	font-size: 1rem;
 	margin: .5em 1em;
 }
@@ -79,7 +79,7 @@
 	justify-content: space-evenly;
 }
 
-a.initialHints__notification-link {
+a.help__notification-link {
 	color: var(--primary-color);
 	cursor: pointer;
 	padding: .8em 1em;
@@ -90,7 +90,7 @@ a.initialHints__notification-link {
 	text-decoration: none;
 }
 
-a.initialHints__notification-link:hover {
+a.help__notification-link:hover {
 	background-color: var(--primary-color);
 	color: var(--text3);
 }
