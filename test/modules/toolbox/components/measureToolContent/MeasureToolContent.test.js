@@ -12,6 +12,7 @@ import { ShareButton } from '../../../../../src/modules/toolbox/components/share
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { isString } from '../../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(ShareButton.tag, ShareButton);
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
@@ -206,6 +207,26 @@ describe('MeasureToolContent', () => {
 			expect(valueSpans[1].textContent).toBe('0');
 			expect(unitSpans[1].textContent).toBe('m²');
 		});
+
+		it('contains test-id attributes', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(5);
+			expect(element.shadowRoot.querySelector('#span-distance-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#span-distance-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#span-area-value').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#span-area-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#span-area-unit').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#remove').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+		});
+
 
 		it('shows only the lenght measurement statistics', async () => {
 			const state = {
