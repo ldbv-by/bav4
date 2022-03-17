@@ -93,8 +93,8 @@ describe('InitialHints', () => {
 			const notificationContent = store.getState().notifications.latest.payload.content;
 			render(notificationContent, target);
 			const closeButtonElement = target.querySelector('#closeButton');
-			const openButtonElement = target.querySelector('.initialHints__notification-link');
-			expect(openButtonElement.innerText).toBe('initialHints_notification_open');
+			const openButtonElement = target.querySelector('#firstSteps');
+			expect(openButtonElement.label).toBe('initialHints_notification_first_steps');
 			closeButtonElement.click();
 
 			expect(store.getState().notifications.latest.payload.content).toBeNull();

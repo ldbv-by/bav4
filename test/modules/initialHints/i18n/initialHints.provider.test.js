@@ -11,7 +11,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.initialHints_notification_header).toBe('First steps');
 		expect(map.initialHints_notification_text).toBe('Need help recording?');
 		expect(map.initialHints_notification_close).toBe('No thanks');
-		expect(map.initialHints_notification_open).toBe('First steps');
+		expect(map.initialHints_notification_first_steps).toBe('First steps');
 		expect(map.initialHints_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
 
@@ -23,7 +23,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.initialHints_notification_header).toBe('Erste Schritte');
 		expect(map.initialHints_notification_text).toBe('Sie brauchen Hilfe bei der Erfassung?');
 		expect(map.initialHints_notification_close).toBe('Nein Danke');
-		expect(map.initialHints_notification_open).toBe('Erste Schritte');
+		expect(map.initialHints_notification_first_steps).toBe('Erste Schritte');
 		expect(map.initialHints_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
 

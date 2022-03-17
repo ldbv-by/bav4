@@ -5,6 +5,7 @@ import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
+import { openModal } from '../../../store/modal/modal.action';
 
 export const INITIAL_HINTS_NOTIFICATION_DELAY_TIME = 3000;
 
@@ -84,6 +85,10 @@ export class InitialHints extends MvuElement {
 
 		const showNotification = () => {
 			const getContent = () => {
+				const onOpen = () => {
+					openModal(translate('initialHints_notification_open'), html`<div>firstSteps</div>`);
+					clearFixedNotification();
+				};
 				const onClose = () => {
 					clearFixedNotification();
 				};
@@ -99,7 +104,7 @@ export class InitialHints extends MvuElement {
 							</div>
 							<div class='initialHints__notification-section space-evenly'>							
 								<ba-button id='closeButton' .label=${translate('initialHints_notification_close')} @click=${onClose}></ba-button>
-								<a target='_blank' href='${translate('initialHints_link')}' @click=${onClose} class="initialHints__notification-link">${translate('initialHints_notification_open')}</a>
+								<ba-button id='firstSteps' .label=${translate('initialHints_notification_first_steps')} @click=${onOpen}></ba-button>								
 							</div>
 						</div>`;
 			};
@@ -109,15 +114,15 @@ export class InitialHints extends MvuElement {
 			window.setTimeout(() => showNotification(), INITIAL_HINTS_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
-
+		const onOpenFirstSteps = () => {
+			openModal(translate('initialHints_notification_open'), html`<div>firstSteps</div>`);
+		};
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
 				<div class='initialHints__button ${getOverlayClass()}'>				
 					<i class='initialHints__button-icon'></i>
-					<a target='_blank' href='${translate('initialHints_link')}' class="initialHints__link">
-						<span class="initialHints__button-text">${translate('initialHints_button')}</span>
-					</a>						
+					<span class="initialHints__button-text" @click=${onOpenFirstSteps}>${translate('initialHints_button')}</span>					
 				</div>		
 			</div>		
 
