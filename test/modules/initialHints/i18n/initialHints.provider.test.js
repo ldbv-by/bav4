@@ -7,11 +7,11 @@ describe('i18n for coordinate select', () => {
 
 		const map = initialHintsProvide('en');
 
-		expect(map.initialHints_button).toBe('Survey');
-		expect(map.initialHints_notification_header).toBe('Survey');
-		expect(map.initialHints_notification_text).toBe('What functions would you like to see in the new BayernAtlas');
+		expect(map.initialHints_button).toBe('Help');
+		expect(map.initialHints_notification_header).toBe('First steps');
+		expect(map.initialHints_notification_text).toBe('Need help recording?');
 		expect(map.initialHints_notification_close).toBe('No thanks');
-		expect(map.initialHints_notification_open).toBe('Sure');
+		expect(map.initialHints_notification_open).toBe('First steps');
 		expect(map.initialHints_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
 
@@ -19,11 +19,11 @@ describe('i18n for coordinate select', () => {
 
 		const map = initialHintsProvide('de');
 
-		expect(map.initialHints_button).toBe('Umfrage');
-		expect(map.initialHints_notification_header).toBe('Umfrage');
-		expect(map.initialHints_notification_text).toBe('Welche Funktionen wünschen Sie sich für den neuen BayernAtlas?');
+		expect(map.initialHints_button).toBe('Hilfe');
+		expect(map.initialHints_notification_header).toBe('Erste Schritte');
+		expect(map.initialHints_notification_text).toBe('Sie brauchen Hilfe bei der Erfassung?');
 		expect(map.initialHints_notification_close).toBe('Nein Danke');
-		expect(map.initialHints_notification_open).toBe('Mitmachen');
+		expect(map.initialHints_notification_open).toBe('Erste Schritte');
 		expect(map.initialHints_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
 	});
 
