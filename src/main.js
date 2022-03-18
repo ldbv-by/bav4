@@ -5,13 +5,6 @@ const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);
 
-if (process.env.LOAD_EXTERNAL_CONFIG === 'true') {
-	//load external config that sets a global config object
-	const configScript = document.createElement('script');
-	configScript.src = './config.js';
-	document.head.appendChild(configScript);
-}
-
 window.enableTestIds = new URLSearchParams(window.location.search).get(QueryParameters.T_ENABLE_TEST_IDS) === 'true';
 
 // eslint-disable-next-line no-unused-vars
