@@ -2,7 +2,7 @@
 /**
  * Service provides all configuration properties.
  * Properties are loaded from the process.env object,
- * optionally from a global config object.
+ * optionally from a global config object (see `/src/assets/conig.js`).
  * @class
  * @author taulinger
  */
