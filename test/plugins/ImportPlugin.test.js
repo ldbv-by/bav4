@@ -8,7 +8,6 @@ import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlu
 import { MediaType } from '../../src/services/HttpService';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
-import { VectorSourceType } from '../../src/services/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabId } from '../../src/store/mainMenu/mainMenu.action';
@@ -77,7 +76,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', sourceType);
 
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
+				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
 				done();
 			});
 
@@ -91,18 +90,16 @@ describe('ImportPlugin', () => {
 			const sourceType = new SourceType(SourceTypeName.KML);
 			const spy = spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
-			const mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType').and.returnValue(VectorSourceType.KML);
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
 			setUrl('http://some.url', sourceType);
 
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: VectorSourceType.KML });
+				expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('idFoo');
 				expect(store.getState().layers.active[0].label).toBe('labelBar');
-				expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledWith(sourceType);
 				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
 				done();
 			}, LAYER_ADDING_DELAY_MS + 100);
@@ -170,14 +167,15 @@ describe('ImportPlugin', () => {
 			const store = setup();
 			const spy = spyOn(importVectorDataServiceMock, 'forData');
 			const instanceUnderTest = new ImportPlugin();
+			const sourceType = new SourceType(SourceTypeName.KML);
 			await instanceUnderTest.register(store);
 
-			setData('<kml some=thing></kml>', new SourceType(SourceTypeName.KML));
+			setData('<kml some=thing></kml>', sourceType);
 
-			expect(spy).toHaveBeenCalledWith('<kml some=thing></kml>', { sourceType: VectorSourceType.KML });
+			expect(spy).toHaveBeenCalledWith('<kml some=thing></kml>', { sourceType: sourceType });
 		});
 
-		it('adds a layer  and set the correct MainMenu tab index', async (done) => {
+		it('adds a layer and set the correct MainMenu tab index', async (done) => {
 			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
 			spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
@@ -210,19 +208,4 @@ describe('ImportPlugin', () => {
 			});
 		});
 	});
-
-	describe('_mapSourceTypeToVectorSourceType', () => {
-
-		it('maps a SourceType to a VectorSourceType', () => {
-			setup();
-			const instanceUnderTest = new ImportPlugin();
-
-			expect(instanceUnderTest._mapSourceTypeToVectorSourceType()).toBeNull();
-			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
-			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
-			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
-			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.WMS))).toBeNull();
-		});
-	});
-
 });

@@ -1,3 +1,4 @@
+import { getUid } from 'ol';
 import { $injector } from '../../../../../injection';
 import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction, defaultStyleFunction } from '../olStyleUtils';
 
@@ -46,6 +47,7 @@ export class StyleService {
 	 */
 	constructor() {
 		this._defaultColorIndex = 0;
+		this._defaultColorByLayerId = {};
 	}
 
 	_nextColor() {
@@ -66,18 +68,13 @@ export class StyleService {
 	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
-	 * @param {StyleType} styleType the styletype, if not explicit specified (styletype==null|undefined),
-	 * the styleType will be implicitly detect by the feature-id. If no matching to known styleTypes exists,
-	 * no styles or overlays will be added.
+	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
 	 */
-	addStyle(olFeature, olMap, styleType = null) {
-		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
-		switch (usingStyleType) {
+	addStyle(olFeature, olMap, olLayer) {
+		const styleType = this._detectStyleType(olFeature);
+		switch (styleType) {
 			case StyleTypes.MEASURE:
 				this._addMeasureStyle(olFeature, olMap);
-				break;
-			case StyleTypes.DRAW:
-				this._addBaseStyle(olFeature);
 				break;
 			case StyleTypes.TEXT:
 				this._addTextStyle(olFeature);
@@ -93,10 +90,10 @@ export class StyleService {
 				this._addGeoJSONStyle(olFeature);
 				break;
 			case StyleTypes.DEFAULT:
-				this._addDefaultStyle(olFeature);
+				this._addDefaultStyle(olFeature, olLayer);
 				break;
 			default:
-				console.warn('Could not provide a style for unknown style-type:', usingStyleType);
+				console.warn('Could not provide a style for unknown style-type');
 				break;
 		}
 	}
@@ -243,12 +240,17 @@ export class StyleService {
 		olFeature.setStyle(() => newStyle);
 	}
 
-	_addBaseStyle(olFeature) {
-		olFeature.setStyle(nullStyleFunction);
-	}
+	_addDefaultStyle(olFeature, olLayer = null) {
+		const getColorByLayerId = (layer) => {
+			const id = getUid(layer);
+			if (this._defaultColorByLayerId[id] === undefined) {
+				this._defaultColorByLayerId[id] = this._nextColor();
+			}
+			return [...this._defaultColorByLayerId[id]];
+		};
 
-	_addDefaultStyle(olFeature) {
-		olFeature.setStyle(defaultStyleFunction(this._nextColor()));
+		const color = olLayer ? getColorByLayerId(olLayer) : this._nextColor();
+		olFeature.setStyle(defaultStyleFunction(color));
 	}
 
 	_detectStyleType(olFeature) {
