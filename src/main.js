@@ -9,7 +9,6 @@ if (process.env.LOAD_EXTERNAL_CONFIG === 'true') {
 	//load external config, that set a global config object
 	const configScript = document.createElement('script');
 	configScript.src = './config.js';
-	configScript.defer = true;
 	document.head.appendChild(configScript);
 }
 
