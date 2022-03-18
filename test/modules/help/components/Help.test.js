@@ -12,8 +12,10 @@ import { QueryParameters } from '../../../../src/services/domain/queryParameters
 window.customElements.define(Help.tag, Help);
 
 
-describe('InitialHints', () => {
+describe('Help', () => {
 	let store;
+
+	const configServiceMock = { hasKey: () => true, getValue: () => 'http://some.url' };
 	const setup = (state = {}, config = {}) => {
 		const { embed = false, urlParams = new URLSearchParams() } = config;
 
@@ -37,6 +39,7 @@ describe('InitialHints', () => {
 			getUrlParams: () => urlParams
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('ConfigService', configServiceMock);
 
 		return TestUtils.render(Help.tag);
 	};

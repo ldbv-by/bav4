@@ -6,6 +6,7 @@ import { emitNotification, LevelTypes } from '../../../store/notifications/notif
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
+import { isHttpUrl } from '../../../utils/checks';
 
 export const HELP_NOTIFICATION_DELAY_TIME = 3000;
 
@@ -59,21 +60,23 @@ export class Help extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		const { ConfigService } = $injector.inject('ConfigService');
-		const configService = ConfigService;
-		const helpContentSource = configService.getValue('HELP_URL');
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
-		this.signal(Update_HelpContentSource, helpContentSource);
+
+		if (configService.hasKey('HELP_URL')) {
+			this.signal(Update_HelpContentSource, configService.getValue('HELP_URL'));
+		}
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible } = model;
+		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible, helpContentSource } = model;
 
 
 		const getOrientationClass = () => {
@@ -91,10 +94,18 @@ export class Help extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 
+		const openModalFirstSteps = () => {
+			openModal(translate('help_notification_first_steps'), html`<iframe title=${translate('help_notification_first_steps')} src=${helpContentSource} style="border:none;" width='100%' height='600px'></iframe`);
+		};
+
+		const openModalShowCase = () => {
+			openModal('Showcase', html`<ba-showcase>`);
+		};
+
 		const showNotification = () => {
 			const getContent = () => {
 				const onOpen = () => {
-					openModal(translate('help_notification_open'), html`<div>firstSteps</div>`);
+					openModalFirstSteps();
 					clearFixedNotification();
 				};
 				const onClose = () => {
@@ -118,19 +129,19 @@ export class Help extends MvuElement {
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
-		if (!hasBeenVisible) {
+
+		const helpAvailable = helpContentSource != null && isHttpUrl(helpContentSource);
+		if (!hasBeenVisible && helpAvailable) {
 			window.setTimeout(() => showNotification(), HELP_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
-		const onOpenFirstSteps = () => {
-			openModal(translate('help_notification_open'), html`<div>firstSteps</div>`);
-		};
+
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
 				<div class='help__button ${getOverlayClass()}'>				
 					<i class='help__button-icon'></i>
-					<span class="help__button-text" @click=${onOpenFirstSteps}>${translate('help_button')}</span>					
+					<span class="help__button-text" @click=${helpAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_button')}</span>					
 				</div>		
 			</div>		
 
