@@ -9,6 +9,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			}
 		};
 		window.process = process;
+		window.config = {};
 	});
 	describe('test _trailingSlash()', () => {
 		it('appends a trailing slash when needed', () => {
@@ -42,10 +43,34 @@ describe('tests for ProcessEnvConfigService', () => {
 
 	describe('getValue()', () => {
 
-		it('provides a value for required keys', () => {
+		it('provides a value for required keys from process.env', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
 			process.env = {
+				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
+				'DEFAULT_LANG': 'DEFAULT_LANG_value',
+				'PROXY_URL': 'PROXY_URL_value',
+				'BACKEND_URL': 'BACKEND_URL_value',
+				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value'
+			};
+
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService._properties.size).toBe(6);
+			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
+			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
+			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
+			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
+			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
+			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
+
+			expect(warnSpy).not.toHaveBeenCalled();
+		});
+
+		it('provides a value for required keys from window.config', () => {
+			const warnSpy = spyOn(console, 'warn');
+			// eslint-disable-next-line no-undef
+			window.config = {
 				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
