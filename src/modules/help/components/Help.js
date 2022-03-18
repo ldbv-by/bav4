@@ -12,6 +12,7 @@ export const HELP_NOTIFICATION_DELAY_TIME = 3000;
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_HasBeenVisible = 'update_hasBeenVisible';
+const Update_HelpContentSource = 'update_helpContentSource';
 /**
  * @class
  * @author alsturm
@@ -23,7 +24,8 @@ export class Help extends MvuElement {
 			isPortrait: false,
 			hasMinWidth: false,
 			isOpen: false,
-			hasBeenVisible: false
+			hasBeenVisible: false,
+			helpContentSource: null
 		});
 
 		const {
@@ -48,6 +50,8 @@ export class Help extends MvuElement {
 				return { ...model, ...data };
 			case Update_HasBeenVisible:
 				return { ...model, hasBeenVisible: data };
+			case Update_HelpContentSource:
+				return { ...model, helpContentSource: data };
 		}
 	}
 
@@ -55,10 +59,14 @@ export class Help extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
+		const { ConfigService } = $injector.inject('ConfigService');
+		const configService = ConfigService;
+		const helpContentSource = configService.getValue('HELP_URL');
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
+		this.signal(Update_HelpContentSource, helpContentSource);
 	}
 
 	/**
