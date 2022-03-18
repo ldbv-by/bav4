@@ -166,7 +166,7 @@ describe('Help', () => {
 		});
 
 		describe('when a notification with a open-Button is emitted', () => {
-			describe('when the open-button is clicked', () => {
+			describe('and when the open-button is clicked', () => {
 				it('opens the modal with the helpcontent', async () => {
 					const target = document.createElement('div');
 					const state = {
