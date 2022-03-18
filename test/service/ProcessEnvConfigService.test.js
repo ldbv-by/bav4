@@ -9,6 +9,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			}
 		};
 		window.process = process;
+		window.config = {};
 	});
 	describe('test _trailingSlash()', () => {
 		it('appends a trailing slash when needed', () => {
