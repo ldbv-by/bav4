@@ -7,6 +7,7 @@ import { notificationReducer } from '../../../../src/store/notifications/notific
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { render } from 'lit-html';
 import { QueryParameters } from '../../../../src/services/domain/queryParameters';
+import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 
 window.customElements.define(Help.tag, Help);
@@ -30,10 +31,13 @@ describe('Help', () => {
 				portrait: false,
 				minWidth: true
 			},
+			modal: {
+				data: null
+			},
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), notifications: notificationReducer });
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), notifications: notificationReducer, modal: modalReducer });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
 			getUrlParams: () => urlParams
@@ -53,7 +57,7 @@ describe('Help', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('renders InitialHints buttons', async () => {
+		it('renders Help buttons', async () => {
 			const state = {
 				media: {
 					portrait: false
@@ -62,6 +66,42 @@ describe('Help', () => {
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('flex');
+		});
+
+		describe('when help-button is clicked', () => {
+			it('opens the modal with the available help-content', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state, {});
+				const clickableHelpButtonText = element.shadowRoot.querySelector('.help__button-text');
+				clickableHelpButtonText.click();
+
+				expect(store.getState().modal.data.title).toBe('help_notification_first_steps');
+				//we expect a lit-html TemplateResult as content
+				expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
+				expect(store.getState().modal.data.content.values[1]).toBe('http://some.url');
+			});
+
+			it('opens the modal with showcase, when help-content is NOT available', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				spyOn(configServiceMock, 'getValue').and.callFake(() => null);
+				const element = await setup(state, {});
+				const clickableHelpButtonText = element.shadowRoot.querySelector('.help__button-text');
+				clickableHelpButtonText.click();
+
+				expect(store.getState().modal.data.title).toBe('Showcase');
+				//we expect a lit-html TemplateResult as content
+				expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
+			});
+
+
 		});
 
 		it('emits a notification', async () => {
@@ -79,7 +119,7 @@ describe('Help', () => {
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 		});
 
-		it('emits a notification with a close-Button and a open-Button', async () => {
+		it('emits a notification with a close-Button', async () => {
 			const target = document.createElement('div');
 			const state = {
 				media: {
@@ -96,13 +136,66 @@ describe('Help', () => {
 			const notificationContent = store.getState().notifications.latest.payload.content;
 			render(notificationContent, target);
 			const closeButtonElement = target.querySelector('#closeButton');
-			const openButtonElement = target.querySelector('#firstSteps');
-			expect(openButtonElement.label).toBe('help_notification_first_steps');
 			closeButtonElement.click();
 
 			expect(store.getState().notifications.latest.payload.content).toBeNull();
 		});
 
+		it('emits a notification with a open-Button', async () => {
+			const target = document.createElement('div');
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state, {});
+			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+
+			const notificationContent = store.getState().notifications.latest.payload.content;
+			render(notificationContent, target);
+
+			const openButtonElement = target.querySelector('#firstSteps');
+			expect(openButtonElement.label).toBe('help_notification_first_steps');
+			openButtonElement.click();
+
+			expect(store.getState().notifications.latest.payload.content).toBeNull();
+		});
+
+		describe('when a notification with a open-Button is emitted', () => {
+			describe('when the open-button is clicked', () => {
+				it('opens the modal with the helpcontent', async () => {
+					const target = document.createElement('div');
+					const state = {
+						media: {
+							portrait: true
+						}
+					};
+
+					const element = await setup(state, {});
+					jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+
+					expect(element).toBeTruthy();
+					expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+
+					const notificationContent = store.getState().notifications.latest.payload.content;
+					render(notificationContent, target);
+
+					const openButtonElement = target.querySelector('#firstSteps');
+					expect(openButtonElement.label).toBe('help_notification_first_steps');
+					openButtonElement.click();
+
+					expect(store.getState().notifications.latest.payload.content).toBeNull();
+					expect(store.getState().modal.data.title).toBe('help_notification_first_steps');
+					//we expect a lit-html TemplateResult as content
+					expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
+				});
+
+			});
+		});
 
 		it('supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
 			const state = {
@@ -111,6 +204,34 @@ describe('Help', () => {
 				}
 			};
 			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`) });
+			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(store.getState().notifications.latest).toBeNull();
+		});
+
+		it('supress a notification, when help-content is not available', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			spyOn(configServiceMock, 'getValue').and.callFake(() => null);
+			const element = await setup(state, {});
+			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+
+			expect(element).toBeTruthy();
+			expect(store.getState().notifications.latest).toBeNull();
+		});
+
+		it('supress a notification, when help-content is not a valid URL', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			spyOn(configServiceMock, 'getValue').and.callFake(() => 'some');
+			const element = await setup(state, {});
 			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
