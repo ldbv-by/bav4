@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = process.env.URL || 'http://localhost:8080';
+const BASE_URL = (process.env.URL || 'http://localhost:8080').replace(/\/$/, '');
 
 test.describe('entry points', () => {
 
