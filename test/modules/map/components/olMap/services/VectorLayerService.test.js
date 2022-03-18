@@ -239,7 +239,7 @@ describe('VectorLayerService', () => {
 
 				olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap);
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, olLayer);
 			});
 
 			it('calls StyleService#updateStyle on "addFeature" when layer is attached', () => {
@@ -253,7 +253,7 @@ describe('VectorLayerService', () => {
 
 				olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-				expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature, olMap);
+				expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature, olMap, olLayer);
 				expect(styleServiceUpdateSpy).toHaveBeenCalledWith(olFeature, olLayer, olMap);
 			});
 
@@ -354,7 +354,7 @@ describe('VectorLayerService', () => {
 					instanceUnderTest._applyStyles(olLayer, olMap);
 					olSource.dispatchEvent(new VectorSourceEvent('addfeature', olFeature));
 
-					expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap);
+					expect(styleServiceAddSpy).not.toHaveBeenCalledWith(olFeature, olMap, olLayer);
 					expect(registerStyleEventListenersSpy).not.toHaveBeenCalledWith(olSource, olMap);
 				});
 			});
@@ -374,8 +374,8 @@ describe('VectorLayerService', () => {
 
 					instanceUnderTest._applyStyles(olLayer, olMap);
 
-					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap);
-					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap);
+					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature0, olMap, olLayer);
+					expect(styleServiceAddSpy).toHaveBeenCalledWith(olFeature1, olMap, olLayer);
 					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature0, olLayer, olMap);
 					expect(updateStyleSpy).toHaveBeenCalledWith(olFeature1, olLayer, olMap);
 					expect(registerStyleEventListenersSpy).toHaveBeenCalledOnceWith(olSource, olLayer, olMap);

@@ -128,7 +128,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 						f.set('srid', this._mapService.getSrid(), true);
 						layer.getSource().addFeature(f);
 						this._styleService.removeStyle(f, olMap);
-						this._styleService.addStyle(f, olMap);
+						this._styleService.addStyle(f, olMap, layer);
 						f.on('change', onFeatureChange);
 					});
 					removeLayer(oldLayer.get('id'));
@@ -424,7 +424,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawend', event => {
 			finishDistanceOverlay(event);
-			this._styleService.addStyle(event.feature, this._map);
+			this._styleService.addStyle(event.feature, this._map, this._vectorLayer);
 			this._activateModify(event.feature);
 		}
 		);
