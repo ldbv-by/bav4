@@ -4,6 +4,8 @@ import css from './rotationButton.css';
 import { $injector } from '../../../../injection';
 import { changeRotation } from '../../../../store/position/position.action';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { throttled } from '../../../../utils/timer';
+
 
 const Update_Live_Rotation = 'update_live_rotation';
 
@@ -37,6 +39,11 @@ export class RotationButton extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
+
+		/**
+		 * The liveRotation value changes on a high frequency, therefore we throttle the view's update down to avoid a flickering icon
+		 */
+		const update = throttled(RotationButton.THROTTLE_DELAY_MS, liveRotation => this.signal(Update_Live_Rotation, liveRotation));
 		/**
 		 * When a user rotates the map, the icon button will be hidden when the maps rotation angle is below a threshold and
 		 * it will be shown again above this value.
@@ -48,12 +55,12 @@ export class RotationButton extends MvuElement {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;
 				}
-				this.signal(Update_Live_Rotation, liveRotation);
+				update(liveRotation);
 			}
 			else {
 				if (!this._timeoutId) {
 					this._timeoutId = setTimeout(() => {
-						this.signal(Update_Live_Rotation, liveRotation);
+						update(liveRotation);
 					}, RotationButton.HIDE_BUTTON_DELAY_MS);
 				}
 			}
@@ -95,5 +102,9 @@ export class RotationButton extends MvuElement {
 
 	static get HIDE_BUTTON_DELAY_MS() {
 		return 1000;
+	}
+
+	static get THROTTLE_DELAY_MS() {
+		return 100;
 	}
 }

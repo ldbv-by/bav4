@@ -37,6 +37,7 @@ describe('GeolocationButton', () => {
 		it('defines constant values', async () => {
 
 			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
+			expect(RotationButton.THROTTLE_DELAY_MS).toBe(100);
 		});
 	});
 
@@ -76,12 +77,17 @@ describe('GeolocationButton', () => {
 			jasmine.clock().uninstall();
 		});
 
-		it('rotates the button', async () => {
+		it('rotates the button throttled', async () => {
+			//throttle is based on Date
+			jasmine.clock().mockDate();
 			let liveRotationValue = .5;
 			const element = await setup({ liveRotation: liveRotationValue });
+
+			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS + 100);
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 
 			changeLiveRotation(liveRotationValue = 1);
+			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS) + 100;
 
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 		});
@@ -95,15 +101,15 @@ describe('GeolocationButton', () => {
 		});
 
 		it('avoids flickering', async () => {
+			//throttle is based on Date
+			jasmine.clock().mockDate();
 			const liveRotationValue = .5;
 			const element = await setup({ liveRotation: liveRotationValue });
 
 			expect(element.shadowRoot.children.length).not.toBe(0);
 
 			changeLiveRotation();
-			jasmine.clock().tick(200);
 			changeLiveRotation(liveRotationValue);
-			jasmine.clock().tick(200);
 			changeLiveRotation();
 			jasmine.clock().tick(RotationButton.HIDE_BUTTON_DELAY_MS + 100);
 
