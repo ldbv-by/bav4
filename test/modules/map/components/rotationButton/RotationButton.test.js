@@ -43,6 +43,15 @@ describe('GeolocationButton', () => {
 
 	describe('when initialized', () => {
 
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new RotationButton().getModel();
+
+			expect(model).toEqual({
+				liveRotation: 0
+			});
+		});
+
 		describe('liveRotation < threshold value', () => {
 
 			it('renders a geolocation button', async () => {
