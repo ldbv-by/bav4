@@ -2,7 +2,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { html } from 'lit-html';
 import { close, open } from '../store/mapContextMenu/mapContextMenu.action';
-import { emitFixedNotification } from '../store/notifications/notifications.action';
+import { emitFixedNotification, clearFixedNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
@@ -43,6 +43,7 @@ export class ContextClickPlugin extends BaPlugin {
 		const onMoveOrClick = () => {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
+				clearFixedNotification();
 			}
 			else {
 				close();
