@@ -55,7 +55,6 @@ export class RotationButton extends MvuElement {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;
 				}
-				update(liveRotation);
 			}
 			else {
 				if (!this._timeoutId) {
@@ -64,6 +63,7 @@ export class RotationButton extends MvuElement {
 					}, RotationButton.HIDE_BUTTON_DELAY_MS);
 				}
 			}
+			update(liveRotation);
 		}, true);
 	}
 
