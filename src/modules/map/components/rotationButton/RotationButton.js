@@ -41,7 +41,7 @@ export class RotationButton extends MvuElement {
 	onInitialize() {
 
 		/**
-		 * The liveRotation value changes on a high frequency, therefore we throttle the view's update down to avoid a flickering icon
+		 * liveRotation value changes on a high frequency, therefore we throttle the view's update down to avoid a flickering icon
 		 */
 		const update = throttled(RotationButton.THROTTLE_DELAY_MS, liveRotation => this.signal(Update_Live_Rotation, liveRotation));
 		/**
