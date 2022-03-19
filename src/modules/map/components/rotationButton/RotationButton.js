@@ -53,7 +53,7 @@ export class RotationButton extends MvuElement {
 			else {
 				if (!this._timeoutId) {
 					this._timeoutId = setTimeout(() => {
-						this.render();
+						this.signal(Update_Live_Rotation, liveRotation);
 					}, RotationButton.HIDE_BUTTON_DELAY_MS);
 				}
 			}
