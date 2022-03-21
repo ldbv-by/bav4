@@ -15,7 +15,6 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_help).toBe('Hilfe');
 		expect(map.menu_misc_content_panel_Contact).toBe('Kontakt');
-		expect(map.menu_misc_content_panel_github).toBe('GitHub');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Nutzungsbedingungen');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Datenschutzerklärung');
 		expect(map.menu_misc_content_panel_imprint).toBe('Impressum');
@@ -41,7 +40,6 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_information).toBe('Information');
 		expect(map.menu_misc_content_panel_help).toBe('Help');
 		expect(map.menu_misc_content_panel_Contact).toBe('Contact');
-		expect(map.menu_misc_content_panel_github).toBe('GitHub');
 		expect(map.menu_misc_content_panel_terms_of_use).toBe('Terms of Use');
 		expect(map.menu_misc_content_panel_privacy_policy).toBe('Privacy Policy');
 		expect(map.menu_misc_content_panel_imprint).toBe('Imprint');
@@ -56,7 +54,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 19;
+		const expectedSize = 18;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
