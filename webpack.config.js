@@ -42,7 +42,12 @@ module.exports = {
 			template: 'src/index.html'
 		}),
 		new Dotenv(),
-		new FaviconsWebpackPlugin('./src/assets/favicon.svg')
+		new FaviconsWebpackPlugin({
+			logo: './src/assets/logo.svg',
+			favicons: {
+				appName: 'BayernAtlas'
+			}
+		})
 	],
 
 	// OPTIONAL
