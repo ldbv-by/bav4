@@ -99,7 +99,6 @@ describe('FeatureInfoPlugin', () => {
 			expect(store.getState().featureInfo.coordinate.payload).toBe(firstCoordinate);
 		});
 
-
 		describe('calls the FeatureInfoService', () => {
 
 			it('adds FeatureInfo items ', async () => {
