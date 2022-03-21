@@ -9,7 +9,7 @@ export const surveyProvide = (lang) => {
 				survey_notification_text: 'What functions would you like to see in the new BayernAtlas',
 				survey_notification_close: 'No thanks',
 				survey_notification_open: 'Sure',
-				survey_link: 'https://github.com/ldbv-by/bav4-nomigration'
+				survey_link: 'https://bayernatlas.de'
 			};
 
 		case 'de':
@@ -20,7 +20,7 @@ export const surveyProvide = (lang) => {
 				survey_notification_text: 'Welche Funktionen wünschen Sie sich für den neuen BayernAtlas?',
 				survey_notification_close: 'Nein Danke',
 				survey_notification_open: 'Mitmachen',
-				survey_link: 'https://github.com/ldbv-by/bav4-nomigration'
+				survey_link: 'https://bayernatlas.de'
 			};
 
 		default:
