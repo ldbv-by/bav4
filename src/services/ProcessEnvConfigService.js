@@ -2,7 +2,7 @@
 /**
  * Service provides all configuration properties.
  * Properties are loaded from the process.env object,
- * optionally from a global config object (see `/src/assets/conig.js`).
+ * External config properties may be optionally set by the config.js resource  (see `/src/assets/config.js`).
  * @class
  * @author taulinger
  */
@@ -13,17 +13,17 @@ export class ProcessEnvConfigService {
 		this._properties = new Map();
 		// We cannot use the EnvironmentService for accessing the window object. It is not yet initialized at this moment.
 		// eslint-disable-next-line no-undef
-		this._properties.set('RUNTIME_MODE', window?.config?.NODE_ENV ?? process.env.NODE_ENV);
+		this._properties.set('RUNTIME_MODE', window?.ba_externalConfigProperties?.NODE_ENV ?? process.env.NODE_ENV);
 		// eslint-disable-next-line no-undef
-		this._properties.set('SOFTWARE_INFO', window?.config?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
+		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
-		this._properties.set('DEFAULT_LANG', window?.config?.DEFAULT_LANG ?? process.env.DEFAULT_LANG);
+		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG);
 		// eslint-disable-next-line no-undef
-		this._properties.set('PROXY_URL', window?.config?.PROXY_URL ?? process.env.PROXY_URL);
+		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('BACKEND_URL', window?.config?.BACKEND_URL ?? process.env.BACKEND_URL);
+		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? process.env.BACKEND_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('SHORTENING_SERVICE_URL', window?.config?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
+		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {
