@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
 
@@ -40,7 +41,8 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: 'src/index.html'
 		}),
-		new Dotenv()
+		new Dotenv(),
+		new FaviconsWebpackPlugin('./src/assets/favicon.svg')
 	],
 
 	// OPTIONAL
