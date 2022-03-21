@@ -78,7 +78,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 				</span>
 				<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_imprint')}</span>
-			</a>   
+			</a>  
 			<div class="ba-list-item  ba-list-item__header">
 				<span class="ba-list-item__text ">
 					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_misc_links')}</span>

@@ -32,11 +32,6 @@
 	-webkit-mask-image: url('assets/lock.svg');
 	transform: scale(.7);
 }
-.git {
-	mask-image: url('assets/git.svg');
-	-webkit-mask-image: url('assets/git.svg');
-	transform: scale(.7);
-}
 .imprint {
 	mask-image: url('assets/imprint.svg');
 	-webkit-mask-image: url('assets/imprint.svg');

@@ -7,10 +7,13 @@ const port = portFinderSync.getPort(8080);
 
 module.exports = {
 	mode: 'development',
-	entry: './src/main.js',
+	entry: {
+		config: './src/assets/config.js',
+		bundle: './src/main.js'
+	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'bundle.js',
+		filename: '[name].js',
 		clean: true
 	},
 	module: {
