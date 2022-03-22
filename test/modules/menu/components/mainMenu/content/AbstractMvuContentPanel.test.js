@@ -28,6 +28,19 @@ describe('AbstractMvuContentPanel', () => {
 		setupStoreAndDi();
 	});
 
+	it('calls the parent constructor with model', () => {
+		const model = { foo: 'bar' };
+		class MyContentPanel extends AbstractMvuContentPanel {
+			constructor() {
+				super(model);
+			}
+		}
+		window.customElements.define('ba-mycontent-panel', MyContentPanel);
+
+		const instance = new MyContentPanel();
+		expect(instance.getModel()).toEqual(model);
+	});
+
 	describe('expected errors', () => {
 
 		describe('constructor', () => {

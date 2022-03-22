@@ -14,7 +14,7 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_expand).toBe('Eigenschaften ausklappen');
 		expect(map.layerManager_move_up).toBe('Ebene anheben');
 		expect(map.layerManager_move_down).toBe('Ebene absenken');
-		expect(map.layerManager_duplicate).toBe('Ebene duplizieren');
+		expect(map.layerManager_clone).toBe('Ebene klonen');
 		expect(map.layerManager_layer_copy).toBe('Kopie');
 		expect(map.layerManager_expand_all).toBe('Alle ausklappen');
 		expect(map.layerManager_collapse_all).toBe('Alle einklappen');
@@ -30,11 +30,11 @@ describe('i18n for layer-manager', () => {
 		expect(map.layerManager_opacity).toBe('Opacity');
 		expect(map.layerManager_collapse).toBe('collapse properties');
 		expect(map.layerManager_expand).toBe('expand properties');
-		expect(map.layerManager_move_up).toBe('move Layer up');
-		expect(map.layerManager_move_down).toBe('move Layer down');
-		expect(map.layerManager_remove).toBe('remove Layer');
-		expect(map.layerManager_duplicate).toBe('duplicate Layer');
-		expect(map.layerManager_layer_copy).toBe('Copy');
+		expect(map.layerManager_move_up).toBe('move layer up');
+		expect(map.layerManager_move_down).toBe('move layer down');
+		expect(map.layerManager_remove).toBe('remove layer');
+		expect(map.layerManager_clone).toBe('clone layer');
+		expect(map.layerManager_layer_copy).toBe('copy');
 		expect(map.layerManager_expand_all).toBe('expand all');
 		expect(map.layerManager_collapse_all).toBe('collapse all');
 		expect(map.layerManager_remove_all).toBe('remove all');

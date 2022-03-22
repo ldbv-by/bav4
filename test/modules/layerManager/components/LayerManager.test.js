@@ -467,6 +467,79 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].visible).toBe(true);
 			expect(checkbox.checked).toBe(true);
 		});
+
+
+	});
+
+	describe('when layerItems are modified', () => {
+		it('updates draggableItems, when layerItem.collapsed changes', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const spy = spyOn(element, 'update').and.callThrough();
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			const detailButton = layerItem.shadowRoot.querySelector('#button-detail');
+			detailButton.click();
+
+			const model = element.getModel();
+			const actualDraggableItems = model.draggableItems;
+			expect(spy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
+			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+		});
+
+		it('updates draggableItems, when button for \'expand or collapse\' is clicked', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const spy = spyOn(element, 'update').and.callThrough();
+			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
+			buttonExpandOrCollapse.click();
+
+
+			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]), jasmine.anything());
+			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+
+			buttonExpandOrCollapse.click();
+
+			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]), jasmine.anything());
+			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]));
+		});
+
+
+		it('updates draggableItems, when button for \'remove all\' is clicked', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
+			buttonRemoveAll.click();
+
+			expect(store.getState().layers.active.length).toBe(0);
+		});
+
 	});
 
 

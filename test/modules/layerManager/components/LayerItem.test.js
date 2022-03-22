@@ -393,7 +393,7 @@ describe('LayerItem', () => {
 
 			it('calls the onCollapse callback via property callback', async () => {
 				setup();
-				const element = await TestUtils.render(LayerItem.tag);
+				const element = await TestUtils.render(LayerItem.tag, { onCollapse: 'alert(\'called\')' });
 				element.layer = { ...layer, collapsed: true };
 				element.onCollapse = jasmine.createSpy();
 
