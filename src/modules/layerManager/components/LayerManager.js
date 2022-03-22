@@ -86,6 +86,10 @@ export class LayerManager extends MvuElement {
 			return index === otherIndex || index - 1 === otherIndex || index + 1 === otherIndex;
 		};
 
+		const isValidDropTarget = (draggedItem, dropItemCandidate) => {
+			return dropItemCandidate.isPlaceholder && !isNeighbour(dropItemCandidate.listIndex, draggedItem.listIndex);
+		};
+
 		const onCollapseChanged = (e) => {
 			this.signal(Update_Collapse_Change, e.detail.layer);
 		};
@@ -130,12 +134,10 @@ export class LayerManager extends MvuElement {
 		};
 
 		const onDrop = (e, layerItem) => {
+			const getNewZIndex = (oldZIndex) => oldZIndex === this._layerCount - 1 ? oldZIndex - 1 : oldZIndex;
+
 			if (layerItem.isPlaceholder && draggedItem) {
-				let newZIndex = layerItem.zIndex;
-				if (layerItem.zIndex === this._layerCount - 1) {
-					newZIndex = layerItem.zIndex - 1;
-				}
-				modifyLayer(draggedItem.id, { zIndex: newZIndex });
+				modifyLayer(draggedItem.id, { zIndex: getNewZIndex(layerItem.zIndex) });
 			}
 			if (e.target.classList.contains('placeholder')) {
 				e.target.classList.remove('over');
@@ -144,29 +146,26 @@ export class LayerManager extends MvuElement {
 		};
 		const onDragOver = (e, layerItem) => {
 			e.preventDefault();
-			let dropEffect = 'none';
+			const defaultDropEffect = 'none';
 
-			if (draggedItem) {
-				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, draggedItem.listIndex)) {
-					dropEffect = 'all';
-				}
-			}
-			e.dataTransfer.dropEffect = dropEffect;
+			const getDropEffectFor = (draggedItem) => {
+				return isValidDropTarget(draggedItem, layerItem) ? 'all' : defaultDropEffect;
+			};
+
+			e.dataTransfer.dropEffect = draggedItem ? getDropEffectFor(draggedItem) : defaultDropEffect;
 		};
 
 		const onDragEnter = (e, layerItem) => {
-			if (draggedItem) {
-				if (layerItem.isPlaceholder && !isNeighbour(layerItem.listIndex, draggedItem.listIndex)) {
-					e.target.classList.add('over');
-				}
-			}
+			const doNothing = () => {};
+			const addClassName = () => isValidDropTarget(draggedItem, layerItem) ? e.target.classList.add('over') : doNothing();
+			const dragEnterAction = draggedItem ? addClassName : doNothing;
+			dragEnterAction();
 		};
+
 		const onDragLeave = (e) => {
 			e.stopPropagation();
-			if (e.target) {
-				if (e.target.classList.contains('over')) {
-					e.target.classList.remove('over');
-				}
+			if (e.target?.classList.contains('over')) {
+				e.target.classList.remove('over');
 			}
 		};
 

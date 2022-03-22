@@ -263,7 +263,7 @@ describe('LayerManager', () => {
 			expect(activePlaceholders[1].innerText).toBe('2');
 		});
 
-		it('on dragEnter of neighbouring placeholder no style changed', () => {
+		it('does NOT add style on dragEnter of neighbouring placeholder', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
 			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
@@ -276,7 +276,7 @@ describe('LayerManager', () => {
 
 		});
 
-		it('on dragEnter of not neighbouring placeholder add style class', () => {
+		it('add style class on dragEnter of not neighbouring placeholder', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
 			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
@@ -286,6 +286,19 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeTrue();
+
+		});
+
+		it('does not add style class on dragEnter of unknown element ', () => {
+
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element.signal('update_dragged_item', null);
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			neighbourPlaceholder.dispatchEvent(dragstartEvt);
+
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
 
 		});
 
@@ -336,6 +349,20 @@ describe('LayerManager', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
 			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			const dragoverEvt = document.createEvent('MouseEvents');
+			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragoverEvt.dataTransfer = createNewDataTransfer();
+			dragoverEvt.dataTransfer.dropEffect = 'foo';
+			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+
+			expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
+
+		});
+
+		it('on dragover of unknown element (null) dropEffect to \'none\'', () => {
+
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
+			element.signal('update_dragged_item', null);
 			const dragoverEvt = document.createEvent('MouseEvents');
 			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragoverEvt.dataTransfer = createNewDataTransfer();
