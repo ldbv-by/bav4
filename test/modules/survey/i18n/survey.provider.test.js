@@ -12,7 +12,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.survey_notification_text).toBe('What functions would you like to see in the new BayernAtlas');
 		expect(map.survey_notification_close).toBe('No thanks');
 		expect(map.survey_notification_open).toBe('Sure');
-		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
+		expect(map.survey_link).toBe('https://bayernatlas.de');
 	});
 
 	it('provides translation for de', () => {
@@ -24,7 +24,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.survey_notification_text).toBe('Welche Funktionen wünschen Sie sich für den neuen BayernAtlas?');
 		expect(map.survey_notification_close).toBe('Nein Danke');
 		expect(map.survey_notification_open).toBe('Mitmachen');
-		expect(map.survey_link).toBe('https://github.com/ldbv-by/bav4-nomigration');
+		expect(map.survey_link).toBe('https://bayernatlas.de');
 	});
 
 	it('have the expected amount of translations', () => {

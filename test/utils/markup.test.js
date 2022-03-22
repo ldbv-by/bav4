@@ -86,13 +86,13 @@ describe('markup utils', () => {
 		});
 
 		afterEach(() => {
-			window.enableTestIds = undefined;
+			window.ba_enableTestIds = undefined;
 		});
 
 		describe('generateTestIds for MvuElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
-				window.enableTestIds = true;
+				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
 
@@ -127,7 +127,7 @@ describe('markup utils', () => {
 		describe('generateTestIds for BaElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
-				window.enableTestIds = true;
+				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
 

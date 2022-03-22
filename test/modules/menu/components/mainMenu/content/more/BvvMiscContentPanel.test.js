@@ -34,8 +34,8 @@ describe('MiscContentPanel', () => {
 		it('checks the list ', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelectorAll('.ba-list-item__header').length).toBe(3);
-			expect(element.shadowRoot.querySelectorAll('a').length).toBe(9);
-			expect(element.shadowRoot.querySelectorAll('[href]').length).toBe(9);
+			expect(element.shadowRoot.querySelectorAll('a').length).toBe(8);
+			expect(element.shadowRoot.querySelectorAll('[href]').length).toBe(8);
 		});
 
 		it('checks all links', async () => {
@@ -63,24 +63,20 @@ describe('MiscContentPanel', () => {
 			expect(links[4].target).toEqual('_blank');
 			expect(links[4].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_imprint');
 
-			expect(links[5].href).toEqual('https://github.com/ldbv-by/bav4-nomigration');
+			expect(links[5].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
 			expect(links[5].target).toEqual('_blank');
-			expect(links[5].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_github');
+			expect(links[5].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gdo_header');
+			expect(links[5].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gdo_text');
 
-			expect(links[6].href).toEqual('https://geodatenonline.bayern.de/geodatenonline');
+			expect(links[6].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
 			expect(links[6].target).toEqual('_blank');
-			expect(links[6].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gdo_header');
-			expect(links[6].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gdo_text');
+			expect(links[6].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gp_header');
+			expect(links[6].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gp_text');
 
-			expect(links[7].href).toEqual('https://www.geoportal.bayern.de/geoportalbayern');
+			expect(links[7].href).toEqual('https://www.energieatlas.bayern.de/');
 			expect(links[7].target).toEqual('_blank');
-			expect(links[7].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_gp_header');
-			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_gp_text');
-
-			expect(links[8].href).toEqual('https://www.energieatlas.bayern.de/');
-			expect(links[8].target).toEqual('_blank');
-			expect(links[8].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_ea_header');
-			expect(links[8].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
+			expect(links[7].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_ea_header');
+			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
 		});
 	});
 });
