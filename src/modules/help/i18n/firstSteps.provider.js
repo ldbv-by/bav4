@@ -1,4 +1,4 @@
-export const helpProvide = (lang) => {
+export const firstStepsProvide = (lang) => {
 	switch (lang) {
 
 		case 'en':
@@ -9,7 +9,7 @@ export const helpProvide = (lang) => {
 				help_notification_text: 'Need help recording?',
 				help_notification_close: 'No thanks',
 				help_notification_first_steps: 'First steps',
-				help_link: 'https://github.com/ldbv-by/bav4-nomigration'
+				help_link: 'https://bayernatlas.de'
 			};
 
 		case 'de':
@@ -20,7 +20,7 @@ export const helpProvide = (lang) => {
 				help_notification_text: 'Sie brauchen Hilfe bei der Erfassung?',
 				help_notification_close: 'Nein Danke',
 				help_notification_first_steps: 'Erste Schritte',
-				help_link: 'https://github.com/ldbv-by/bav4-nomigration'
+				help_link: 'https://bayernatlas.de'
 			};
 
 		default:

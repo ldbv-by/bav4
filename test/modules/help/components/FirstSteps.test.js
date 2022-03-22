@@ -1,4 +1,4 @@
-import { Help, HELP_NOTIFICATION_DELAY_TIME } from '../../../../src/modules/help/components/Help';
+import { FirstSteps, FIRST_STEPS_NOTIFICATION_DELAY_TIME } from '../../../../src/modules/help/components/FirstSteps';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
@@ -10,7 +10,7 @@ import { QueryParameters } from '../../../../src/services/domain/queryParameters
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 
-window.customElements.define(Help.tag, Help);
+window.customElements.define(FirstSteps.tag, FirstSteps);
 
 
 describe('Help', () => {
@@ -45,7 +45,7 @@ describe('Help', () => {
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('ConfigService', configServiceMock);
 
-		return TestUtils.render(Help.tag);
+		return TestUtils.render(FirstSteps.tag);
 	};
 
 	describe('when initialized', () => {
@@ -64,8 +64,8 @@ describe('Help', () => {
 				}
 			};
 			const element = await setup(state, {});
-			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.first_steps__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.first_steps__button')).display).toBe('flex');
 		});
 
 		describe('when help-button is clicked', () => {
@@ -76,7 +76,7 @@ describe('Help', () => {
 					}
 				};
 				const element = await setup(state, {});
-				const clickableHelpButtonText = element.shadowRoot.querySelector('.help__button-text');
+				const clickableHelpButtonText = element.shadowRoot.querySelector('.first_steps__button-text');
 				clickableHelpButtonText.click();
 
 				expect(store.getState().modal.data.title).toBe('help_notification_first_steps');
@@ -93,7 +93,7 @@ describe('Help', () => {
 				};
 				spyOn(configServiceMock, 'getValue').and.callFake(() => null);
 				const element = await setup(state, {});
-				const clickableHelpButtonText = element.shadowRoot.querySelector('.help__button-text');
+				const clickableHelpButtonText = element.shadowRoot.querySelector('.first_steps__button-text');
 				clickableHelpButtonText.click();
 
 				expect(store.getState().modal.data.title).toBe('Showcase');
@@ -128,7 +128,7 @@ describe('Help', () => {
 			};
 
 			const element = await setup(state, {});
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
@@ -150,7 +150,7 @@ describe('Help', () => {
 			};
 
 			const element = await setup(state, {});
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
@@ -176,7 +176,7 @@ describe('Help', () => {
 					};
 
 					const element = await setup(state, {});
-					jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+					jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 					expect(element).toBeTruthy();
 					expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
@@ -204,7 +204,7 @@ describe('Help', () => {
 				}
 			};
 			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`) });
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(store.getState().notifications.latest).toBeNull();
@@ -218,7 +218,7 @@ describe('Help', () => {
 			};
 			spyOn(configServiceMock, 'getValue').and.callFake(() => null);
 			const element = await setup(state, {});
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(store.getState().notifications.latest).toBeNull();
@@ -232,7 +232,7 @@ describe('Help', () => {
 			};
 			spyOn(configServiceMock, 'getValue').and.callFake(() => 'some');
 			const element = await setup(state, {});
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(store.getState().notifications.latest).toBeNull();
@@ -246,7 +246,7 @@ describe('Help', () => {
 			};
 
 			const element = await setup(state, { urlParams: new URLSearchParams(`?${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=foo`) });
-			jasmine.clock().tick(HELP_NOTIFICATION_DELAY_TIME + 100);
+			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
@@ -263,8 +263,8 @@ describe('Help', () => {
 			};
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.first_steps__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.first_steps__button')).display).toBe('flex');
 		});
 
 		it('renders for portrait mode', async () => {
@@ -275,8 +275,8 @@ describe('Help', () => {
 			};
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.first_steps__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.first_steps__button')).display).toBe('none');
 		});
 
 		it('renders for desktop mode', async () => {
@@ -288,8 +288,8 @@ describe('Help', () => {
 			};
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.first_steps__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.first_steps__button')).display).toBe('flex');
 		});
 
 		it('renders for tablet mode', async () => {
@@ -301,8 +301,8 @@ describe('Help', () => {
 			};
 			const element = await setup(state, {});
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.help__button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.help__button')).display).toBe('flex');
+			expect(element.shadowRoot.querySelectorAll('.first_steps__button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.first_steps__button')).display).toBe('flex');
 		});
 
 		it('renders with open main menu for landscape mode', async () => {

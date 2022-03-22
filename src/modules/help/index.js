@@ -1,5 +1,5 @@
 import './i18n';
-import { Help } from './components/Help';
-if (!window.customElements.get(Help.tag)) {
-	window.customElements.define(Help.tag, Help);
+import { FirstSteps } from './components/FirstSteps';
+if (!window.customElements.get(FirstSteps.tag)) {
+	window.customElements.define(FirstSteps.tag, FirstSteps);
 }
