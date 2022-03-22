@@ -287,7 +287,7 @@ export const getStats = (geometry, calculationHints) => {
 		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
 	}
 	if (geometry instanceof MultiLineString) {
-		return { ...stats, length: geometry.getCoordinates().reduce((partialLength, coordinates) => partialLength + getGeometryLength(new LineString(coordinates), calculationHints), 0) };
+		return { ...stats, length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getGeometryLength(lineString, calculationHints), 0) };
 	}
 	if (geometry instanceof Polygon) {
 		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
