@@ -67,10 +67,12 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().notifications.latest.payload.content).not.toBeNull();
 
 					setMoveStart();
 
 					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().notifications.latest.payload.content).toBeNull();
 				});
 			});
 
@@ -83,10 +85,12 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
+					expect(store.getState().notifications.latest.payload.content).not.toBeNull();
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().notifications.latest.payload.content).toBeNull();
 				});
 			});
 		});

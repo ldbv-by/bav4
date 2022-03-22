@@ -9,7 +9,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			}
 		};
 		window.process = process;
-		window.config = {};
+		window.ba_externalConfigProperties = {};
 	});
 	describe('test _trailingSlash()', () => {
 		it('appends a trailing slash when needed', () => {
@@ -72,7 +72,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides a value for required keys from window.config', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
-			window.config = {
+			window.ba_externalConfigProperties = {
 				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',

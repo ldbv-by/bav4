@@ -5,7 +5,7 @@ const style = document.createElement('style');
 style.innerHTML = globalCss;
 document.head.appendChild(style);
 
-window.enableTestIds = new URLSearchParams(window.location.search).get(QueryParameters.T_ENABLE_TEST_IDS) === 'true';
+window.ba_enableTestIds = new URLSearchParams(window.location.search).get(QueryParameters.T_ENABLE_TEST_IDS) === 'true';
 
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
