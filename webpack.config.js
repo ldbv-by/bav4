@@ -5,6 +5,9 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
+// load local .env file
+require('dotenv').config({ path: '.env' });
+const templateParameters = require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`);
 
 module.exports = {
 	mode: 'development',
@@ -39,7 +42,8 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: 'src/index.html'
+			template: 'src/index.html',
+			templateParameters: templateParameters
 		}),
 		new FaviconsWebpackPlugin({
 			logo: './src/assets/logo.svg',
