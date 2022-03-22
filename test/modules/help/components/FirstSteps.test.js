@@ -57,6 +57,22 @@ describe('Help', () => {
 			jasmine.clock().uninstall();
 		});
 
+		it('updates the model with env-values', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+			const spy = spyOn(configServiceMock, 'getValue').and.callThrough();
+			const element = await setup(state, {});
+			const model = element.getModel();
+
+			// calling configService for a value for the key and provide a default-value(null)
+			expect(spy).toHaveBeenCalledWith('FIRST_STEPS_CONTENT_URL', null);
+			expect(model.firstStepsContentSource).toBe('http://some.url');
+		});
+
+
 		it('renders Help buttons', async () => {
 			const state = {
 				media: {

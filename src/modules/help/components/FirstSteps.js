@@ -67,7 +67,7 @@ export class FirstSteps extends MvuElement {
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
-		this.signal(Update_FirstStepsContentSource, configService.hasKey('FIRST_STEPS_CONTENT_URL') ? configService.getValue('FIRST_STEPS_CONTENT_URL') : null);
+		this.signal(Update_FirstStepsContentSource, configService.getValue('FIRST_STEPS_CONTENT_URL', null));
 	}
 
 	/**
