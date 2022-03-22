@@ -1,28 +1,33 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
-import css from './survey.css';
+import css from './firststeps.css';
 import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
+import { openModal } from '../../../store/modal/modal.action';
+import { isHttpUrl } from '../../../utils/checks';
 
-export const SURVEY_NOTIFICATION_DELAY_TIME = 3000;
+export const FIRST_STEPS_NOTIFICATION_DELAY_TIME = 3000;
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_HasBeenVisible = 'update_hasBeenVisible';
+const Update_FirstStepsContentSource = 'update_firstStepsContentSource';
 /**
  * @class
  * @author alsturm
+ * @author thiloSchlemmer
  */
-export class Survey extends MvuElement {
+export class FirstSteps extends MvuElement {
 
 	constructor() {
 		super({
 			isPortrait: false,
 			hasMinWidth: false,
 			isOpen: false,
-			hasBeenVisible: false
+			hasBeenVisible: false,
+			firstStepsContentSource: null
 		});
 
 		const {
@@ -47,6 +52,8 @@ export class Survey extends MvuElement {
 				return { ...model, ...data };
 			case Update_HasBeenVisible:
 				return { ...model, hasBeenVisible: data };
+			case Update_FirstStepsContentSource:
+				return { ...model, firstStepsContentSource: data };
 		}
 	}
 
@@ -54,17 +61,20 @@ export class Survey extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
+		this.signal(Update_FirstStepsContentSource, configService.getValue('FIRST_STEPS_CONTENT_URL', null));
 	}
 
 	/**
 	 * @override
 	 */
 	createView(model) {
-		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible } = model;
+		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible, firstStepsContentSource } = model;
 
 
 		const getOrientationClass = () => {
@@ -82,42 +92,54 @@ export class Survey extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 
+		const openModalFirstSteps = () => {
+			openModal(translate('help_firstSteps_notification_first_steps'), html`<iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} style="border:none;" width='100%' height='600px'></iframe`);
+		};
+
+		const openModalShowCase = () => {
+			openModal('Showcase', html`<ba-showcase>`);
+		};
+
 		const showNotification = () => {
 			const getContent = () => {
+				const onOpen = () => {
+					openModalFirstSteps();
+					clearFixedNotification();
+				};
 				const onClose = () => {
 					clearFixedNotification();
 				};
 				return html`
 						<style>${css}</style>	
-						<div class='survey__notification'>					
-							<div class='survey__notification-section'>
-								<i class='survey__notification-icon'></i>
+						<div class='first_steps__notification'>					
+							<div class='first_steps__notification-section'>
+								<i class='first_steps__notification-icon'></i>
 								<div>
-									<div class='survey__notification-primary-text' >${translate('survey_notification_header')}</div>
-									<div class='survey__notification-secondary-text' >${translate('survey_notification_text')}</div>
+									<div class='first_steps__notification-primary-text' >${translate('help_firstSteps_notification_header')}</div>
+									<div class='first_steps__notification-secondary-text' >${translate('help_firstSteps_notification_text')}</div>
 								</div>
 							</div>
-							<div class='survey__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${translate('survey_notification_close')} @click=${onClose}></ba-button>
-								<a target='_blank' href='${translate('survey_link')}' @click=${onClose} class="survey__notification-link">${translate('survey_notification_open')}</a>
+							<div class='first_steps__notification-section space-evenly'>							
+								<ba-button id='closeButton' .label=${translate('help_firstSteps_notification_close')} @click=${onClose}></ba-button>
+								<ba-button id='firstSteps' .label=${translate('help_firstSteps_notification_first_steps')} @click=${onOpen}></ba-button>								
 							</div>
 						</div>`;
 			};
 			emitNotification(getContent(), LevelTypes.CUSTOM);
 		};
-		if (!hasBeenVisible) {
-			window.setTimeout(() => showNotification(), SURVEY_NOTIFICATION_DELAY_TIME);
+
+		const contentAvailable = firstStepsContentSource != null && isHttpUrl(firstStepsContentSource);
+		if (!hasBeenVisible && contentAvailable) {
+			window.setTimeout(() => showNotification(), FIRST_STEPS_NOTIFICATION_DELAY_TIME);
 			this.signal(Update_HasBeenVisible, true);
 		}
 
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='survey__button ${getOverlayClass()}'>				
-					<i class='survey__button-icon'></i>
-					<a target='_blank' href='${translate('survey_link')}' class="survey__link">
-						<span class="survey__button-text">${translate('survey_button')}</span>
-					</a>						
+				<div class='first_steps__button ${getOverlayClass()}'>				
+					<i class='first_steps__button-icon'></i>
+					<span class="first_steps__button-text" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_firstSteps_button')}</span>					
 				</div>		
 			</div>		
 
@@ -130,6 +152,6 @@ export class Survey extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-survey';
+		return 'ba-first-steps';
 	}
 }

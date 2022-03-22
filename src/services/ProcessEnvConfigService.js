@@ -24,6 +24,8 @@ export class ProcessEnvConfigService {
 		this._properties.set('BACKEND_URL', window?.ba_externalConfigProperties?.BACKEND_URL ?? process.env.BACKEND_URL);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
+		// eslint-disable-next-line no-undef
+		this._properties.set('FIRST_STEPS_CONTENT_URL', window?.ba_externalConfigProperties?.FIRST_STEPS_CONTENT_URL ?? process.env.FIRST_STEPS_CONTENT_URL);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {
