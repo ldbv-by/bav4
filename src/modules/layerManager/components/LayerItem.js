@@ -217,9 +217,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		this._onCollapse = callback;
 	}
 
-	get onCollapse() {
-		return this._onCollapse;
-	}
 
 	static get tag() {
 		return 'ba-layer-item';

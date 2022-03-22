@@ -393,16 +393,15 @@ describe('LayerItem', () => {
 
 			it('calls the onCollapse callback via property callback', async () => {
 				setup();
+				spyOn(window, 'alert').and.callThrough();
 				const element = await TestUtils.render(LayerItem.tag, { onCollapse: 'alert(\'called\')' });
-				element.layer = { ...layer, collapsed: true };
-				element.onCollapse = jasmine.createSpy();
-
+				element.layer = { ...layer, collapsed: false };
 
 				const collapseButton = element.shadowRoot.querySelector('button');
 				collapseButton.click();
 
-				expect(element.onCollapse).toHaveBeenCalled();
-				expect(element.getModel().layer.collapsed).toBeFalse();
+				expect(window.alert).not.toHaveBeenCalledWith('called');
+				expect(element.getModel().layer.collapsed).toBeTrue();
 			});
 
 		});
