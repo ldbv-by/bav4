@@ -1,4 +1,4 @@
-.survey__button {
+.first_steps__button {
 	position: absolute;
 	top: .8em;
 	left: 7.5em;
@@ -12,29 +12,29 @@
 	background: var(--primary-bg-color);
 	cursor: pointer;
 }
-.survey__link {
+.first_steps__link {
 	font-size: .9rem;
 	text-decoration: none;
 }
 
-.is-tablet .survey__button {
+.is-tablet .first_steps__button {
 	margin-left: -1.5em;
 }
 
-.is-portrait .survey__button {
+.is-portrait .first_steps__button {
 	display: none;
 }
 .is-desktop .is-open, .is-tablet .is-open {
 	transform: translate(28em, 0);
 	margin-left: -6.5em;
 }
-.survey__button-text {
+.first_steps__button-text {
 	font-weight: bold;
 	color: #fff;
 	color: var(--primary-color);
 	margin: auto .5em;
 }
-.survey__button-icon {
+.first_steps__button-icon {
 	display: inline-block;
 	height: 1.1em;
 	width: 1.1em;
@@ -48,13 +48,13 @@
 	left: 0.7em;	
 }
 
-.survey__notification {
+.first_steps__notification {
 	height: 10em;
 }
-.survey__notification-section {
+.first_steps__notification-section {
 	display: flex
 }
-.survey__notification-icon {
+.first_steps__notification-icon {
 	display: inline-block;
 	margin: auto;
 	height: 5em;
@@ -67,11 +67,11 @@
 	-webkit-mask-size: cover;
 	left: 0.7em;	
 }
-.survey__notification-primary-text {
+.first_steps__notification-primary-text {
 	font-size: 1.5rem;
 	margin: .5em .6em;
 }
-.survey__notification-secondary-text {
+.first_steps__notification-secondary-text {
 	font-size: 1rem;
 	margin: .5em 1em;
 }
@@ -79,7 +79,7 @@
 	justify-content: space-evenly;
 }
 
-a.survey__notification-link {
+a.first_steps__notification-link {
 	color: var(--primary-color);
 	cursor: pointer;
 	padding: .8em 1em;
@@ -90,7 +90,7 @@ a.survey__notification-link {
 	text-decoration: none;
 }
 
-a.survey__notification-link:hover {
+a.first_steps__notification-link:hover {
 	background-color: var(--primary-color);
 	color: var(--text3);
 }
