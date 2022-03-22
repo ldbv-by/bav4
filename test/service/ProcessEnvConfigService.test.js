@@ -51,18 +51,20 @@ describe('tests for ProcessEnvConfigService', () => {
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
 				'BACKEND_URL': 'BACKEND_URL_value',
-				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value'
+				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value',
+				'FIRST_STEPS_CONTENT_URL': 'HFIRST_STEPS_CONTENT_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(6);
+			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
+			expect(configService.getValue('FIRST_STEPS_CONTENT_URL')).toBe('HFIRST_STEPS_CONTENT_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
@@ -75,18 +77,20 @@ describe('tests for ProcessEnvConfigService', () => {
 				'DEFAULT_LANG': 'DEFAULT_LANG_value',
 				'PROXY_URL': 'PROXY_URL_value',
 				'BACKEND_URL': 'BACKEND_URL_value',
-				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value'
+				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value',
+				'FIRST_STEPS_CONTENT_URL': 'FIRST_STEPS_CONTENT_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(6);
+			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
+			expect(configService.getValue('FIRST_STEPS_CONTENT_URL')).toBe('FIRST_STEPS_CONTENT_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
