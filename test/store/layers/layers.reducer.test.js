@@ -207,9 +207,9 @@ describe('layersReducer', () => {
 		const layer1 = { label: 'label1' };
 		const layer2 = { label: 'label2', zIndex: 1, constraints: { alwaysTop: true } };
 
+		addLayer('id2', layer2);
 		addLayer('id0', layer0);
 		addLayer('id1', layer1);
-		addLayer('id2', layer2);
 
 		expect(store.getState().layers.active.length).toBe(3);
 		expect(store.getState().layers.active[0].id).toBe('id0');
