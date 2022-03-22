@@ -202,15 +202,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			clickAction(selectableFeatures);
 		};
 
-		const pointerUpHandler = (event) => {
+		const pointerUpHandler = () => {
 			const draggingOverlay = getOverlays(this._vectorLayer).find(o => o.get('dragging') === true);
 			if (draggingOverlay) {
 				draggingOverlay.set('dragging', false);
 			}
-			const coordinate = event.coordinate;
-			const dragging = event.dragging;
-			const pixel = event.pixel;
-			this._updateMeasureState(coordinate, pixel, dragging);
 		};
 
 		const pointerMoveHandler = (event) => {
