@@ -317,7 +317,7 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[2].id).toBe('id2');
 		});
 
-		it('click on duplicate icon adds a layer copy', async () => {
+		it('click on \'copy\' icon adds a layer copy', async () => {
 			const layer0 = {
 				...createDefaultLayerProperties(),
 				id: 'id0', label: 'label0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1
@@ -335,8 +335,8 @@ describe('LayerItem', () => {
 
 			expect(store.getState().layers.active[0].id).toBe('id0');
 
-			const duplicateButton = element.shadowRoot.querySelector('#duplicate');
-			duplicateButton.click();
+			const copyButton = element.shadowRoot.querySelector('#copy');
+			copyButton.click();
 
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
