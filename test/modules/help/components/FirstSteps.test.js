@@ -79,7 +79,7 @@ describe('Help', () => {
 				const clickableHelpButtonText = element.shadowRoot.querySelector('.first_steps__button-text');
 				clickableHelpButtonText.click();
 
-				expect(store.getState().modal.data.title).toBe('help_notification_first_steps');
+				expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 				//we expect a lit-html TemplateResult as content
 				expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
 				expect(store.getState().modal.data.content.values[1]).toBe('http://some.url');
@@ -159,7 +159,7 @@ describe('Help', () => {
 			render(notificationContent, target);
 
 			const openButtonElement = target.querySelector('#firstSteps');
-			expect(openButtonElement.label).toBe('help_notification_first_steps');
+			expect(openButtonElement.label).toBe('help_firstSteps_notification_first_steps');
 			openButtonElement.click();
 
 			expect(store.getState().notifications.latest.payload.content).toBeNull();
@@ -185,11 +185,11 @@ describe('Help', () => {
 					render(notificationContent, target);
 
 					const openButtonElement = target.querySelector('#firstSteps');
-					expect(openButtonElement.label).toBe('help_notification_first_steps');
+					expect(openButtonElement.label).toBe('help_firstSteps_notification_first_steps');
 					openButtonElement.click();
 
 					expect(store.getState().notifications.latest.payload.content).toBeNull();
-					expect(store.getState().modal.data.title).toBe('help_notification_first_steps');
+					expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 					//we expect a lit-html TemplateResult as content
 					expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
 				});

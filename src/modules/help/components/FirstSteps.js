@@ -67,10 +67,7 @@ export class FirstSteps extends MvuElement {
 		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
-
-		if (configService.hasKey('FIRST_STEPS_CONTENT_URL')) {
-			this.signal(Update_FirstStepsContentSource, configService.getValue('FIRST_STEPS_CONTENT_URL'));
-		}
+		this.signal(Update_FirstStepsContentSource, configService.hasKey('FIRST_STEPS_CONTENT_URL') ? configService.getValue('FIRST_STEPS_CONTENT_URL') : null);
 	}
 
 	/**
@@ -96,7 +93,7 @@ export class FirstSteps extends MvuElement {
 
 
 		const openModalFirstSteps = () => {
-			openModal(translate('help_notification_first_steps'), html`<iframe title=${translate('help_notification_first_steps')} src=${firstStepsContentSource} style="border:none;" width='100%' height='600px'></iframe`);
+			openModal(translate('help_firstSteps_notification_first_steps'), html`<iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} style="border:none;" width='100%' height='600px'></iframe`);
 		};
 
 		const openModalShowCase = () => {
@@ -118,13 +115,13 @@ export class FirstSteps extends MvuElement {
 							<div class='first_steps__notification-section'>
 								<i class='first_steps__notification-icon'></i>
 								<div>
-									<div class='first_steps__notification-primary-text' >${translate('help_notification_header')}</div>
-									<div class='first_steps__notification-secondary-text' >${translate('help_notification_text')}</div>
+									<div class='first_steps__notification-primary-text' >${translate('help_firstSteps_notification_header')}</div>
+									<div class='first_steps__notification-secondary-text' >${translate('help_firstSteps_notification_text')}</div>
 								</div>
 							</div>
 							<div class='first_steps__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${translate('help_notification_close')} @click=${onClose}></ba-button>
-								<ba-button id='firstSteps' .label=${translate('help_notification_first_steps')} @click=${onOpen}></ba-button>								
+								<ba-button id='closeButton' .label=${translate('help_firstSteps_notification_close')} @click=${onClose}></ba-button>
+								<ba-button id='firstSteps' .label=${translate('help_firstSteps_notification_first_steps')} @click=${onOpen}></ba-button>								
 							</div>
 						</div>`;
 			};
@@ -142,7 +139,7 @@ export class FirstSteps extends MvuElement {
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
 				<div class='first_steps__button ${getOverlayClass()}'>				
 					<i class='first_steps__button-icon'></i>
-					<span class="first_steps__button-text" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_button')}</span>					
+					<span class="first_steps__button-text" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_firstSteps_button')}</span>					
 				</div>		
 			</div>		
 
