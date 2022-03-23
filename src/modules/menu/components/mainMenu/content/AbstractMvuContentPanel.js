@@ -11,8 +11,8 @@ import contentPanelCss from './abstractContentPanel.css';
  */
 export class AbstractMvuContentPanel extends MvuElement {
 
-	constructor() {
-		super();
+	constructor(model = {}) {
+		super(model);
 		if (this.constructor === AbstractMvuContentPanel) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');

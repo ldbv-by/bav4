@@ -95,7 +95,7 @@ describe('LayerItem', () => {
 
 			expect(layerBody.classList.contains('iscollapse')).toBeFalse();
 
-			element.layer = { ...element.layer, collapsed: true };
+			element.signal('update_layer_collapsed', true);
 			expect(layerBody.classList.contains('iscollapse')).toBeTrue();
 			expect(collapseButton.classList.contains('iconexpand')).toBeFalse();
 		});
@@ -180,7 +180,7 @@ describe('LayerItem', () => {
 			expect(actualLayer.opacity).toBe(0.66);
 		});
 
-		it('click on layer colapse button change collapsed property', async () => {
+		it('click on layer collapse button change collapsed property', async () => {
 			setup();
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer, collapsed: true };
@@ -188,7 +188,7 @@ describe('LayerItem', () => {
 			const collapseButton = element.shadowRoot.querySelector('button');
 			collapseButton.click();
 
-			expect(element._layer.collapsed).toBeFalse();
+			expect(element.getModel().layer.collapsed).toBeFalse();
 		});
 
 		it('click on info icon show georesourceinfo panel as modal', async () => {
@@ -317,6 +317,32 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[2].id).toBe('id2');
 		});
 
+		it('click on \'copy\' icon adds a layer copy', async () => {
+			const layer0 = {
+				...createDefaultLayerProperties(),
+				id: 'id0', label: 'label0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1
+			};
+
+			const state = {
+				layers: {
+					active: [layer0],
+					background: 'bg0'
+				}
+			};
+			const store = setup(state);
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer0 };
+
+			expect(store.getState().layers.active[0].id).toBe('id0');
+
+			const copyButton = element.shadowRoot.querySelector('#copy');
+			copyButton.click();
+
+			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
+			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
+		});
+
 		it('click on remove-button change state in store', async () => {
 			const layer0 = {
 				...createDefaultLayerProperties(),
@@ -348,6 +374,36 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active.length).toBe(2);
 			expect(store.getState().layers.active[0].id).toBe('id1');
 			expect(store.getState().layers.active[1].id).toBe('id2');
+		});
+	});
+
+	describe('event handling', () => {
+		const layer = {
+			...createDefaultLayerProperties(),
+			id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1
+		};
+
+		const setup = () => {
+
+			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key });
+			return store;
+		};
+		describe('on collapse', () => {
+
+			it('calls the onCollapse callback via property callback', async () => {
+				setup();
+				const element = await TestUtils.render(LayerItem.tag);
+
+				element.layer = { ...layer, collapsed: false };
+				element.onCollapse = jasmine.createSpy();
+				const collapseButton = element.shadowRoot.querySelector('button');
+				collapseButton.click();
+
+				expect(element.getModel().layer.collapsed).toBeTrue();
+				expect(element._onCollapse).toHaveBeenCalled();
+			});
+
 		});
 	});
 });
