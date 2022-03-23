@@ -226,7 +226,7 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			classUnderTest.activate(map);
 
-			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_measure_layer_label');
+			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
 		});
 
 		describe('when not TermsOfUseAcknowledged', () => {
@@ -1073,7 +1073,7 @@ describe('OlDrawHandler', () => {
 				expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 				expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
 					id: 'f_ooBarId',
-					label: 'map_olMap_handler_measure_layer_label'
+					label: 'map_olMap_handler_draw_layer_label'
 				}));
 				done();
 			});
@@ -1399,17 +1399,17 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			setType('line');
-			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
+			const drawStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]);
 			feature.getGeometry().dispatchEvent('change');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5, dragging: jasmine.any(Boolean) });
 		});
 
 		it('change drawState, when sketch is snapping to last point', () => {
@@ -1421,16 +1421,16 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			setType('line');
-			const measureStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
+			const drawStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]);
 			feature.getGeometry().dispatchEvent('change');
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
-			expect(measureStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 6, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 6, dragging: jasmine.any(Boolean) });
 		});
 
 
@@ -1728,6 +1728,38 @@ describe('OlDrawHandler', () => {
 
 			expect(store.getState().measurement.selection.length).toBe(1);
 			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+		});
+
+		it('does NOT switch to measure-tool, if clickposition is in anyinteract to selected unknown feature (not measure or draw)', () => {
+			const store = setup();
+
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('some_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().tools.current).not.toBe(ToolId.MEASURING);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
