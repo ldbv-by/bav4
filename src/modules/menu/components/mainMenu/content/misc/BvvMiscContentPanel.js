@@ -72,7 +72,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				</span>
 				<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_privacy_policy')}</span>
 			</a>  
-			<a class="ba-list-item "  href='https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' target='_blank'>
+			<a class="ba-list-item divider"  href='https://geoportal.bayern.de/geoportalbayern/seiten/impressum.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon imprint">				
 					</span>
