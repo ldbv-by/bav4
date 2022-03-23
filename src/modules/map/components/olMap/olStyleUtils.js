@@ -149,8 +149,8 @@ export const geojsonStyleFunction = (feature) => {
 		'stroke-opacity': 1.0,
 		/**
 		 * the width of the line component of a polygon, polyline, or multigeometry
- 		 *@type {number}
- 		 */
+			 *@type {number}
+			 */
 		'stroke-width': 3,
 		/**
 		 * the color of the interior of a polygon
@@ -162,7 +162,8 @@ export const geojsonStyleFunction = (feature) => {
 		 * the opacity of the interior of a polygon.
 		 * @type {number}
 		 */
-		'fill-opacity': 0.6 };
+		'fill-opacity': 0.6
+	};
 
 	const markerSizeToRadius = (markerSize) => {
 		if (typeof (markerSize) === 'number') {
@@ -199,7 +200,8 @@ export const geojsonStyleFunction = (feature) => {
 			fill: new Fill({
 				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
 			}),
-			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size']) }),
+			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size'])
+		}),
 		stroke: new Stroke({
 			color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
 			width: geoJsonStyleProperties['stroke-width']
@@ -323,7 +325,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
 
 	const partition = getPartitionDelta(geometry, resolution, calculationHints);
@@ -359,8 +360,8 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 
 	const drawTicks = (contextRenderer, segment, residual, tickDistance) => {
 		const draw = () => {
-			const mainTickSegment = moveParallel(segment[0], segment[1], -4);
-			const subTickSegment = moveParallel(segment[0], segment[1], -2);
+			const mainTickSegment = moveParallel(segment[0], segment[1], -4 * pixelRatio);
+			const subTickSegment = moveParallel(segment[0], segment[1], -2 * pixelRatio);
 			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
 			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
 
