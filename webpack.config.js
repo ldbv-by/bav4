@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
@@ -39,6 +40,12 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html'
+		}),
+		new FaviconsWebpackPlugin({
+			logo: './src/assets/logo.svg',
+			favicons: {
+				appName: 'BayernAtlas'
+			}
 		}),
 		new Dotenv()
 	],
