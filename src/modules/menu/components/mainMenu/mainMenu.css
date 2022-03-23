@@ -102,7 +102,7 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 2em;
+	top: .8em;
 }
 
 /*portrait */
@@ -408,4 +408,20 @@ input[type="range"]:focus {
 	top: .1em;
 	left: -.1em;
 	background: var(--text3);
+}
+
+.resize-icon {
+	background: var(--secondary-color);
+	background: var(--text2);
+	background: var(--primary-color);
+	display: block;
+	height: 2em;
+	width: 2em;
+	margin: .2em 0;
+	mask: url('assets/arrowBarRight.svg');
+	-webkit-mask: url('assets/arrowBarRight.svg');
+	mask: url('assets/list.svg');
+	-webkit-mask: url('assets/list.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
 }
