@@ -9,9 +9,14 @@ export const provide = (lang) => {
 				layerManager_opacity: 'Opacity',
 				layerManager_collapse: 'collapse properties',
 				layerManager_expand: 'expand properties',
-				layerManager_move_up: 'move Layer up',
-				layerManager_move_down: 'move Layer down',
-				layerManager_remove: 'remove Layer'
+				layerManager_move_up: 'move layer up',
+				layerManager_move_down: 'move layer down',
+				layerManager_remove: 'remove layer',
+				layerManager_to_copy: 'copy layer',
+				layerManager_layer_copy: 'copy',
+				layerManager_expand_all: 'expand all',
+				layerManager_collapse_all: 'collapse all',
+				layerManager_remove_all: 'remove all'
 			};
 
 		case 'de':
@@ -24,7 +29,12 @@ export const provide = (lang) => {
 				layerManager_expand: 'Eigenschaften ausklappen',
 				layerManager_move_up: 'Ebene anheben',
 				layerManager_move_down: 'Ebene absenken',
-				layerManager_remove: 'Ebene entfernen'
+				layerManager_remove: 'Ebene entfernen',
+				layerManager_to_copy: 'Ebene kopieren',
+				layerManager_layer_copy: 'Kopie',
+				layerManager_expand_all: 'Alle ausklappen',
+				layerManager_collapse_all: 'Alle einklappen',
+				layerManager_remove_all: 'Alle entfernen'
 			};
 
 		default:

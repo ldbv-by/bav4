@@ -50,3 +50,14 @@ li {
 .isdragged {
 	background: var(--header-background-color);
 }
+
+.layermanager__actions {
+	display: flex;
+	justify-content: flex-start; 
+	font-size: .9em;
+}
+
+.layermanager__expandOrCollapse {
+	padding-left: .8em;
+
+}

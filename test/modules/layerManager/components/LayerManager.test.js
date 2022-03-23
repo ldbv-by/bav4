@@ -197,7 +197,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			layerElement.dispatchEvent(dragstartEvt);
 
-			expect(element._draggedItem).toBeFalse();
+			expect(element.getModel().draggedItem).toBeFalse();
 
 		});
 
@@ -210,7 +210,7 @@ describe('LayerManager', () => {
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			layerElement.dispatchEvent(dragstartEvt);
 
-			expect(element._draggedItem).not.toBeFalse();
+			expect(element.getModel().draggedItem).not.toBeFalse();
 
 		});
 
@@ -263,10 +263,10 @@ describe('LayerManager', () => {
 			expect(activePlaceholders[1].innerText).toBe('2');
 		});
 
-		it('on dragEnter of neighbouring placeholder no style changed', () => {
+		it('does NOT add style on dragEnter of neighbouring placeholder', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -276,16 +276,29 @@ describe('LayerManager', () => {
 
 		});
 
-		it('on dragEnter of not neighbouring placeholder add style class', () => {
+		it('add style class on dragEnter of not neighbouring placeholder', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeTrue();
+
+		});
+
+		it('does not add style class on dragEnter of unknown element ', () => {
+
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+			element.signal('update_dragged_item', null);
+			const dragstartEvt = document.createEvent('MouseEvents');
+			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragstartEvt.dataTransfer = createNewDataTransfer();
+			neighbourPlaceholder.dispatchEvent(dragstartEvt);
+
+			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
 
 		});
 
@@ -306,7 +319,7 @@ describe('LayerManager', () => {
 		it('on dragleave of not neighbouring placeholder remove style class', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragleave', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -321,7 +334,7 @@ describe('LayerManager', () => {
 		it('on dragover of not neighbouring placeholder dropEffect to \'all\'', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
 			const dragoverEvt = document.createEvent('MouseEvents');
 			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -335,7 +348,21 @@ describe('LayerManager', () => {
 		it('on dragover of not neighbouring placeholder dropEffect to \'none\'', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			const dragoverEvt = document.createEvent('MouseEvents');
+			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
+			dragoverEvt.dataTransfer = createNewDataTransfer();
+			dragoverEvt.dataTransfer.dropEffect = 'foo';
+			neighbourPlaceholder.dispatchEvent(dragoverEvt);
+
+			expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
+
+		});
+
+		it('on dragover of unknown element (null) dropEffect to \'none\'', () => {
+
+			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
+			element.signal('update_dragged_item', null);
 			const dragoverEvt = document.createEvent('MouseEvents');
 			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -349,8 +376,8 @@ describe('LayerManager', () => {
 		it('drops firstlayer on placeholder to be penultimate layer', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 1)[0];
-			expect(element._draggedItem.id).toBe('id0');
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			expect(element.getModel().draggedItem.id).toBe('id0');
 			const dropEvt = document.createEvent('MouseEvents');
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
@@ -374,8 +401,8 @@ describe('LayerManager', () => {
 		it('drops last on placeholder to be penultimate layer', () => {
 
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-			element._draggedItem = element._draggableItems.filter(element => element.listIndex === 5)[0];
-			expect(element._draggedItem.id).toBe('id2');
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 5)[0]);
+			expect(element.getModel().draggedItem.id).toBe('id2');
 			const dropEvt = document.createEvent('MouseEvents');
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
@@ -467,6 +494,79 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[0].visible).toBe(true);
 			expect(checkbox.checked).toBe(true);
 		});
+
+
+	});
+
+	describe('when layerItems are modified', () => {
+		it('updates draggableItems, when layerItem.collapsed changes', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const spy = spyOn(element, 'update').and.callThrough();
+			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
+			const detailButton = layerItem.shadowRoot.querySelector('#button-detail');
+			detailButton.click();
+
+			const model = element.getModel();
+			const actualDraggableItems = model.draggableItems;
+			expect(spy).toHaveBeenCalledWith('update_collapse_change', jasmine.objectContaining({ collapsed: false }), jasmine.anything());
+			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+		});
+
+		it('updates draggableItems, when button for \'expand or collapse\' is clicked', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const spy = spyOn(element, 'update').and.callThrough();
+			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
+			buttonExpandOrCollapse.click();
+
+
+			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]), jasmine.anything());
+			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
+
+			buttonExpandOrCollapse.click();
+
+			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]), jasmine.anything());
+			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]));
+		});
+
+
+		it('updates draggableItems, when button for \'remove all\' is clicked', async () => {
+			const layer = {
+				...createDefaultLayerProperties(), id: 'id0', visible: false
+			};
+			const state = {
+				layers: {
+					active: [layer],
+					background: 'bg0'
+				}
+			};
+
+			const element = await setup(state);
+			const buttonRemoveAll = element.shadowRoot.querySelector('#button_remove_all');
+			buttonRemoveAll.click();
+
+			expect(store.getState().layers.active.length).toBe(0);
+		});
+
 	});
 
 
