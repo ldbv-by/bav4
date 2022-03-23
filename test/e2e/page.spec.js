@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const templateParameters = require('../..//src/assets/en.json');
+
 
 const BASE_URL = process.env.URL || 'http://localhost:8080';
 
@@ -12,11 +14,13 @@ test.describe('page', () => {
 
 	test.describe('when loaded', () => {
 
-		test('should contains correct lang attribute', async ({ page }) => {
-			expect(await page.$('html[lang=\'en\']')).toBeTruthy();
+		test('should contain correct lang attribute', async ({ page }) => {
+			const lang = await page.getAttribute('html', 'lang');
+
+			expect(lang).toBe(templateParameters.lang);
 		});
 
-		test('should contains correct translate attribute', async ({ page }) => {
+		test('should contain correct translate attribute', async ({ page }) => {
 			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
 
@@ -29,7 +33,7 @@ test.describe('page', () => {
 		test('should contain a title tag', async ({ page }) => {
 			const title = await page.title();
 
-			expect(title).toBe('BayernAtlas');
+			expect(title).toBe(templateParameters.title);
 		});
 
 		test('should contain a viewport meta tag', async ({ page }) => {
@@ -43,6 +47,12 @@ test.describe('page', () => {
 
 		test('should contain a charset meta tag', async ({ page }) => {
 			expect(await page.$('head > meta[charset=\'utf-8\']')).toBeTruthy();
+		});
+
+		test('should contain a description meta tag', async ({ page }) => {
+			const description = await page.getAttribute('head > meta[name=\'description\']', 'content');
+
+			expect(description).toBe(templateParameters.description);
 		});
 
 		test('should contain a <ba-header> component', async ({ page }) => {
