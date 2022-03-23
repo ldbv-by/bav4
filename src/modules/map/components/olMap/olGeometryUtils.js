@@ -1,4 +1,4 @@
-import { Point, LineString, Polygon, LinearRing, Circle } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString } from 'ol/geom';
 
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
@@ -285,6 +285,9 @@ export const getStats = (geometry, calculationHints) => {
 	}
 	if (geometry instanceof LineString) {
 		return { ...stats, azimuth: canShowAzimuthCircle(geometry) ? getAzimuth(geometry) : null, length: getGeometryLength(geometry, calculationHints) };
+	}
+	if (geometry instanceof MultiLineString) {
+		return { ...stats, length: geometry.getLineStrings().reduce((partialLength, lineString) => partialLength + getGeometryLength(lineString, calculationHints), 0) };
 	}
 	if (geometry instanceof Polygon) {
 		return { ...stats, length: getGeometryLength(geometry, calculationHints), area: getArea(geometry, calculationHints) };
