@@ -101,7 +101,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)
 			});
-			layer.label = translate('map_olMap_handler_measure_layer_label');
+			layer.label = translate('map_olMap_handler_draw_layer_label');
 			return layer;
 		};
 
@@ -629,7 +629,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
-		const label = translate('map_olMap_handler_measure_layer_label');
+		const label = translate('map_olMap_handler_draw_layer_label');
 
 		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
 		if (isEmpty) {
