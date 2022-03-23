@@ -183,3 +183,16 @@
 .animated-action-button__border__running {
 	animation-play-state: running;
 }
+.toolbar__logo-badge {
+	background: var(--error-color);
+	font-weight: bold;
+	color: #fff;
+	border-radius: 2em;
+	padding: .2EM 0.5em;
+	Z-INDEX: 999999999;
+	position: absolute;
+	top: -.5em;
+	left: 4.5em;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+	font-size: .6rem;
+}
