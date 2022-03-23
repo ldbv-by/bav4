@@ -343,6 +343,9 @@ input[type="search"]::-webkit-search-results-decoration {
 .is-tablet .header__logo {
 	display: none;
 }
+.is-tablet .header__emblem {
+	display: none;
+}
 .is-tablet .header {
 	padding: 2em 1em 2em 1em;
 }
