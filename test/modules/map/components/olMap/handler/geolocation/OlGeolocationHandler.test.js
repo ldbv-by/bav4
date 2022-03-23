@@ -55,6 +55,7 @@ describe('OlGeolocationHandler', () => {
 		expect(handler.id).toBe('geolocation_layer');
 		expect(handler._storeService.getStore()).toBeDefined();
 		expect(handler._unregister).not.toBeDefined();
+		expect(handler.options).toEqual({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 	});
 
 	describe('when activate', () => {
