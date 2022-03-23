@@ -417,8 +417,8 @@ describe('getStats', () => {
 
 		const statsForLineString = getStats(new LineString([[0, 0], [42, 42]]));
 		expect(statsForLineString.coordinate).toBeNull();
-		expect(statsForLineString.azimuth).toBeTruthy();
-		expect(statsForLineString.length).toBeTruthy();
+		expect(statsForLineString.azimuth).toBe(45);
+		expect(statsForLineString.length).toBeCloseTo(59.4, 1);
 		expect(statsForLineString.area).toBeNull();
 	});
 
@@ -427,7 +427,7 @@ describe('getStats', () => {
 		const statsForLineString = getStats(new LineString([[0, 0], [42, 42], [3, 5]]));
 		expect(statsForLineString.coordinate).toBeNull();
 		expect(statsForLineString.azimuth).toBeNull();
-		expect(statsForLineString.length).toBeTruthy();
+		expect(statsForLineString.length).toBeCloseTo(113.2, 1);
 		expect(statsForLineString.area).toBeNull();
 	});
 
@@ -435,7 +435,7 @@ describe('getStats', () => {
 		const statsForMultiLineString = getStats(new MultiLineString([new LineString([[0, 0], [42, 42], [3, 5]]), new LineString([[3, 5], [21, 21], [1, 1]])]));
 		expect(statsForMultiLineString.coordinate).toBeNull();
 		expect(statsForMultiLineString.azimuth).toBeNull();
-		expect(statsForMultiLineString.length).toBeTruthy();
+		expect(statsForMultiLineString.length).toBeCloseTo(165.5, 1);
 		expect(statsForMultiLineString.area).toBeNull();
 	});
 
