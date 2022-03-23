@@ -1,5 +1,5 @@
 import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats } from '../../../../../src/modules/map/components/olMap/olGeometryUtils';
-import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing } from 'ol/geom';
+import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
@@ -404,40 +404,48 @@ describe('getStats', () => {
 		expect(statsForNoGeometry.area).toBeNull();
 	});
 
-	it('returns a statistic-object for point', () => {
+	it('returns a statistic-object for Point', () => {
 
-		const statsForNoGeometry = getStats(new Point([42, 42]));
-		expect(statsForNoGeometry.coordinate).toEqual([42, 42]);
-		expect(statsForNoGeometry.azimuth).toBeNull();
-		expect(statsForNoGeometry.length).toBeNull();
-		expect(statsForNoGeometry.area).toBeNull();
+		const statsForPoint = getStats(new Point([42, 42]));
+		expect(statsForPoint.coordinate).toEqual([42, 42]);
+		expect(statsForPoint.azimuth).toBeNull();
+		expect(statsForPoint.length).toBeNull();
+		expect(statsForPoint.area).toBeNull();
 	});
 
-	it('returns a statistic-object for two-point lineString', () => {
+	it('returns a statistic-object for two-point LineString', () => {
 
-		const statsForNoGeometry = getStats(new LineString([[0, 0], [42, 42]]));
-		expect(statsForNoGeometry.coordinate).toBeNull();
-		expect(statsForNoGeometry.azimuth).toBeTruthy();
-		expect(statsForNoGeometry.length).toBeTruthy();
-		expect(statsForNoGeometry.area).toBeNull();
+		const statsForLineString = getStats(new LineString([[0, 0], [42, 42]]));
+		expect(statsForLineString.coordinate).toBeNull();
+		expect(statsForLineString.azimuth).toBe(45);
+		expect(statsForLineString.length).toBeCloseTo(59.4, 1);
+		expect(statsForLineString.area).toBeNull();
 	});
 
-	it('returns a statistic-object for n-point (2<n) lineString', () => {
+	it('returns a statistic-object for n-point (2<n) LineString', () => {
 
-		const statsForNoGeometry = getStats(new LineString([[0, 0], [42, 42], [3, 5]]));
-		expect(statsForNoGeometry.coordinate).toBeNull();
-		expect(statsForNoGeometry.azimuth).toBeNull();
-		expect(statsForNoGeometry.length).toBeTruthy();
-		expect(statsForNoGeometry.area).toBeNull();
+		const statsForLineString = getStats(new LineString([[0, 0], [42, 42], [3, 5]]));
+		expect(statsForLineString.coordinate).toBeNull();
+		expect(statsForLineString.azimuth).toBeNull();
+		expect(statsForLineString.length).toBeCloseTo(113.2, 1);
+		expect(statsForLineString.area).toBeNull();
 	});
 
-	it('returns a statistic-object for polygon', () => {
+	it('returns a statistic-object for MultiLineString', () => {
+		const statsForMultiLineString = getStats(new MultiLineString([new LineString([[0, 0], [42, 42], [3, 5]]), new LineString([[3, 5], [21, 21], [1, 1]])]));
+		expect(statsForMultiLineString.coordinate).toBeNull();
+		expect(statsForMultiLineString.azimuth).toBeNull();
+		expect(statsForMultiLineString.length).toBeCloseTo(165.5, 1);
+		expect(statsForMultiLineString.area).toBeNull();
+	});
 
-		const statsForNoGeometry = getStats(new Polygon([[[0, 0], [15, 0], [15, 15]]]));
-		expect(statsForNoGeometry.coordinate).toBeNull();
-		expect(statsForNoGeometry.azimuth).toBeNull();
-		expect(statsForNoGeometry.length).toBeTruthy();
-		expect(statsForNoGeometry.area).toBeTruthy();
+	it('returns a statistic-object for Polygon', () => {
+
+		const statsForPolygon = getStats(new Polygon([[[0, 0], [15, 0], [15, 15]]]));
+		expect(statsForPolygon.coordinate).toBeNull();
+		expect(statsForPolygon.azimuth).toBeNull();
+		expect(statsForPolygon.length).toBeTruthy();
+		expect(statsForPolygon.area).toBeTruthy();
 	});
 });
 

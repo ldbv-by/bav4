@@ -120,7 +120,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const layer = new VectorLayer({
 				source: source
 			});
-			layer.label = translate('map_olMap_handler_measure_layer_label');
+			layer.label = translate('map_olMap_handler_draw_layer_label');
 			return layer;
 		};
 
@@ -627,11 +627,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const styleFunction = this._getStyleFunctionFrom(feature);
 			const newStyles = styleFunction(feature);
 
-			const currentStyles = feature.getStyle();
-			if (currentStyles.length > 1) {
-				currentStyles[0] = newStyles[0];
-			}
-			feature.setStyle(currentStyles);
+			feature.setStyle([newStyles[0], ...feature.getStyle()]);
 			this._setSelected(feature);
 		}
 
@@ -739,7 +735,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
-		const label = translate('map_olMap_handler_measure_layer_label');
+		const label = translate('map_olMap_handler_draw_layer_label');
 
 		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
 		if (isEmpty) {
