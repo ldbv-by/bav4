@@ -86,6 +86,19 @@ describe('FeatureInfoPlugin', () => {
 			expect(store.getState().featureInfo.coordinate.payload).toBe(coordinate);
 		});
 
+		it('ignores pointer.click changes as long as query is running', async () => {
+			const firstCoordinate = [11, 22];
+			const secondCoordinate = [55, 66];
+			const store = setup();
+			const instanceUnderTest = new FeatureInfoPlugin();
+			await instanceUnderTest.register(store);
+
+			setClick({ coordinate: firstCoordinate, screenCoordinate: [33, 44] });
+			setClick({ coordinate: [secondCoordinate], screenCoordinate: [77, 88] });
+
+			expect(store.getState().featureInfo.coordinate.payload).toBe(firstCoordinate);
+		});
+
 		describe('calls the FeatureInfoService', () => {
 
 			it('adds FeatureInfo items ', async () => {

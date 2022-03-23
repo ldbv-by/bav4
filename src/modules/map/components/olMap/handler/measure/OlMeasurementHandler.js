@@ -169,6 +169,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			const dragging = event.dragging;
 			const pixel = event.pixel;
 
+			if (this._sketchHandler.isActive || this._measureState.type === InteractionStateType.DRAW) {
+				this._updateMeasureState(coordinate, pixel, dragging);
+				return;
+			}
 			const addToSelection = (features) => {
 				if ([InteractionStateType.MODIFY, InteractionStateType.SELECT].includes(this._measureState.type)) {
 					const ids = features.map(f => f.getId());

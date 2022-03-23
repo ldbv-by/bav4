@@ -1770,6 +1770,34 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 50, 50);
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 		});
+
+		it('updates the drawState, while pointerclick drawing', () => {
+			setup();
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]) });
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+
+			const updateDrawStateSpy = spyOn(classUnderTest, '_updateDrawState');
+
+			// initial Phase: the drawing will be activated after this click-event
+			classUnderTest._sketchHandler.activate(feature);
+			classUnderTest._drawState.type = InteractionStateType.ACTIVE;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+			updateDrawStateSpy.calls.reset();
+
+			// Phase 2: the drawing will be end after this click-event
+			classUnderTest._sketchHandler.deactivate();
+			classUnderTest._drawState.type = InteractionStateType.DRAW;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateDrawStateSpy).toHaveBeenCalled();
+		});
 	});
 
 	describe('_setDrawState', () => {

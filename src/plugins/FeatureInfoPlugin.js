@@ -31,33 +31,36 @@ export class FeatureInfoPlugin extends BaPlugin {
 	async register(store) {
 
 		const onPointerClick = async (evt, state) => {
-			const { payload: { coordinate } } = evt;
-			startRequest(coordinate);
-			const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
-			//use only visible and unhidden layers
-			const layerFilter = layerProperties => layerProperties.visible && !layerProperties.constraints.hidden;
 
-			// call FeatureInfoService
-			[...state.layers.active]
-				.filter(layerFilter)
-				.forEach(async layerProperties => {
-					const queryId = createUniqueId();
-					try {
-						registerQuery(queryId);
-						const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
-						if (featureInfoResult) {
-							const title = featureInfoResult.title || layerProperties.label;
-							addFeatureInfoItems({ title: title, content: featureInfoResult.content });
+			if (!state.featureInfo.querying) {
+				const { payload: { coordinate } } = evt;
+				startRequest(coordinate);
+				const resolution = this._mapService.calcResolution(state.position.zoom, coordinate);
+				//use only visible and unhidden layers
+				const layerFilter = layerProperties => layerProperties.visible && !layerProperties.constraints.hidden;
+
+				// call FeatureInfoService
+				[...state.layers.active]
+					.filter(layerFilter)
+					.forEach(async layerProperties => {
+						const queryId = createUniqueId();
+						try {
+							registerQuery(queryId);
+							const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
+							if (featureInfoResult) {
+								const title = featureInfoResult.title || layerProperties.label;
+								addFeatureInfoItems({ title: title, content: featureInfoResult.content });
+							}
 						}
-					}
-					catch (error) {
-						console.warn(error);
-						emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
-					}
-					finally {
-						resolveQuery(queryId);
-					}
-				});
+						catch (error) {
+							console.warn(error);
+							emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
+						}
+						finally {
+							resolveQuery(queryId);
+						}
+					});
+			}
 		};
 
 

@@ -91,7 +91,7 @@ const addLayer = (state, payload) => {
 	active.splice(insertIndex, 0, layer);
 	return {
 		...state,
-		active: index(active)
+		active: sort(index(active))
 	};
 };
 

@@ -1699,6 +1699,36 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().measurement.statistic.length).toBeCloseTo(8, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(1, 1);
 		});
+
+		it('updates the measureState while pointerclick the drawing', () => {
+			setup();
+			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]) });
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			const layer = classUnderTest.activate(map);
+			layer.getSource().addFeature(feature);
+
+			const updateMeasureStateSpy = spyOn(classUnderTest, '_updateMeasureState');
+
+			// initial Phase: the drawing will be activated after this click-event
+			classUnderTest._sketchHandler.activate(feature);
+			classUnderTest._measureState.type = InteractionStateType.ACTIVE;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateMeasureStateSpy).toHaveBeenCalled();
+			updateMeasureStateSpy.calls.reset();
+
+			// Phase 2: the drawing will be end after this click-event
+			classUnderTest._sketchHandler.deactivate();
+			classUnderTest._measureState.type = InteractionStateType.DRAW;
+
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 0.5, 0.5);
+
+			expect(updateMeasureStateSpy).toHaveBeenCalled();
+		});
+
+
 	});
 });
 
