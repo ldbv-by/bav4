@@ -70,11 +70,10 @@ export class ShareButton extends MvuElement {
 				const shareUrls = await generateShareUrls();
 				openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
 			};
-			return html`<ba-button id='share' 
-			class="tool-container__button" 
+			return html`<ba-button id='share'  
+			data-test-id class="tool-container__button" 
 			.label=${title}
 			@click=${onClick}></ba-button>`;
-
 		}
 		return html.nothing;
 	}

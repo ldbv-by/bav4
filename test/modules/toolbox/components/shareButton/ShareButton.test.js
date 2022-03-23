@@ -1,6 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ShareButton.tag, ShareButton);
@@ -90,6 +91,14 @@ describe('ShareButton', () => {
 
 		});
 
+		it('contains test-id attributes', async () => {
+			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
+			const element = await setup();
+			element.share = fileSaveResult;
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#share').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+		});
 
 	});
 });
