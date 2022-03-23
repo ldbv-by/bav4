@@ -25,7 +25,7 @@
 	left: 0;
 	border-radius: 0 1em 0 0;
 }
-.is-portrait .content , .is-tablet .content  {
+.is-portrait .content , .is-tablet .content {
 	display: none;
 }
 ba-attribution-info {
@@ -47,7 +47,7 @@ ba-attribution-info {
 	font-size: .7rem;
 }
 
-.is-portrait .scale , .is-tablet .scale  {
+.is-portrait .scale , .is-tablet .scale {
 	position: relative;
 	top: -2.8em;
 	left: 1.1em;

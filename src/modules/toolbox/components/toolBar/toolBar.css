@@ -2,10 +2,9 @@
 	position: fixed;
 	z-index: var(--z-toolbox);
 	bottom: .5em;
-	right: -20.5em;
+	right: 0em;
 	background-color: var(--primary-bg-color);
 	padding: 0.5em 6.2em 0.5em 0.5em;
-	max-width: 22em;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);   
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
@@ -105,10 +104,8 @@
 
 /* tablet */
 .is-tablet .tool-bar {
-
-	bottom: 0;
-	right: -21.5em;
-
+	bottom: -20em;	
+	right: 0;
 }
 /* desktop */
 .is-desktop .is-open {
@@ -134,7 +131,7 @@
 	width: auto;
 	max-width: unset;
 }     
-.is-portrait .is-open {
+.is-portrait .is-open, .is-tablet .is-open {
 	transform: translate(0,-20em);
 }
 .is-portrait .tool-bar__item {
