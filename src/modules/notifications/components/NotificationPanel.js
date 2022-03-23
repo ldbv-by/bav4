@@ -6,7 +6,7 @@ import css from './notificationPanel.css';
 import { MvuElement } from '../../MvuElement';
 
 
-const Notification_Autoclose_Time = 7000;
+const Notification_Autoclose_Time = 5000;
 const Update_Notifications = 'update_notifications';
 const Update_Fixed_Notification = 'update_fixed_notifications';
 const Update_Remove_Notification = 'update_remove_notification';
