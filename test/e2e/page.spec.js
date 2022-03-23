@@ -1,7 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const templateParameters = require('../..//src/assets/en.json');
-
-
+const templateParameters = require(`../../src/assets/${process.env.DEFAULT_LANG || 'en'}.json`);
 const BASE_URL = process.env.URL || 'http://localhost:8080';
 
 test.describe('page', () => {
