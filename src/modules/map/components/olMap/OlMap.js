@@ -74,7 +74,7 @@ export class OlMap extends MvuElement {
 	createView() {
 		return html`
 			<style>${olCss + css}</style>
-			<div id="ol-map"></div>
+			<div data-test-id id="ol-map"></div>
 		`;
 	}
 
