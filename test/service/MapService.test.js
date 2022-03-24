@@ -95,7 +95,7 @@ describe('MapService', () => {
 	it('provides minimal angle for rotation', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getMinimalRotation()).toBe(.05);
+		expect(instanceUnderTest.getMinimalRotation()).toBe(.3);
 	});
 
 	describe('calcResolution', () => {
