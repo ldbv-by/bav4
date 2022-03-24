@@ -19,6 +19,7 @@ import Event from 'ol/events/Event';
 import { Group as LayerGroup, Layer } from 'ol/layer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getDefaultLayerOptions } from '../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -185,6 +186,13 @@ describe('OlMap', () => {
 
 				expect(element._map.moveTolerance_).toBe(3);
 			});
+		});
+
+		it('contains test-id attributes', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#ol-map').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 	});
 
