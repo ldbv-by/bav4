@@ -30,7 +30,8 @@ describe('BaseLayerSwitcher', () => {
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('TopicsService', topicsServiceMock);
+			.registerSingleton('TopicsService', topicsServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(BaseLayerSwitcher.tag);
 	};

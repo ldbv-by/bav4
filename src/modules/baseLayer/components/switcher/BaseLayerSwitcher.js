@@ -29,6 +29,9 @@ export class BaseLayerSwitcher extends MvuElement {
 		this._topicsService = topicsService;
 		this._geoResourceService = geoResourceService;
 
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
+
 		this.observe(store => store.topics.current, topicId => this.signal(Update_Topic_Id, topicId));
 		this.observe(store => store.layers.active, layers => this.signal(Update_Layers, [...layers]));
 		this.observe(store => store.layers.ready, ready => this.signal(Update_Is_Layers_Store_Ready, ready));
@@ -53,6 +56,8 @@ export class BaseLayerSwitcher extends MvuElement {
 	 */
 	createView(model) {
 		const { currentTopicId, activeLayers, layersStoreReady } = model;
+
+		const translate = (key) => this._translationService.translate(key);
 
 		if (layersStoreReady) {
 
@@ -95,8 +100,8 @@ export class BaseLayerSwitcher extends MvuElement {
 
 			return html`
 				<style>${css}</style>
-				<div class="title">
-					Basiskarte
+				<div class="title">					
+					${translate('baselayer_switcher_header')}
 				</div>
 				<div class="baselayer__container">
 					${geoRs.map((geoR) => html`
