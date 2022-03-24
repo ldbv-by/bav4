@@ -30,4 +30,3 @@ import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
 import './modules/dndImport';
-import { QueryParameters } from './services/domain/queryParameters';
