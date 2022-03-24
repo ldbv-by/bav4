@@ -406,7 +406,7 @@ input[type="range"]:focus {
 .is-portrait .resize-icon {
 	transform: rotate(270deg);
 	position: relative;
-	top: .1em;
+	top: -.1em;
 	left: -.1em;
 	background: var(--primary-color);
 	mask: url('assets/chevron-right-small.svg');
