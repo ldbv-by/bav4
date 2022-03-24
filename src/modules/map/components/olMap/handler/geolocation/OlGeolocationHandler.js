@@ -20,7 +20,7 @@ import { GEOLOCATION_LAYER_ID } from '../../../../../../plugins/GeolocationPlugi
 export class OlGeolocationHandler extends OlLayerHandler {
 
 	constructor() {
-		super(GEOLOCATION_LAYER_ID);
+		super(GEOLOCATION_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		const { StoreService } = $injector.inject('StoreService');
 		this._storeService = StoreService;
 		this._geolocationLayer = null;
