@@ -93,6 +93,6 @@
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
-.hide{
-	display:none;
+.hide {
+	display: none;
 }

@@ -98,7 +98,7 @@
 	font-weight: bold;
 	position: relative;
 	z-index: 1;
-	min-width:6.5em;
+	min-width: 6.5em;
 }
 .header__button-container span {
 	color: var(--text3);
