@@ -170,21 +170,21 @@ export class ShareToolContent extends AbstractToolContent {
 				<div class="ba-tool-container__title">
 						${translate('toolbox_shareTool_header')}						
 				</div>
-				<div class="ba-tool-container__content divider">                						     				
+				<div class="ba-tool-container__content">                						     				
 					<div class="tool-container__buttons">                                    
 						${repeat(this._getToolsDefinitions(), (tool) => tool.id, (tool) => getToolTemplate(tool))}
 					</div>              
 				</div>  
-				<div class="ba-tool-container__title ">
+				<div class="ba-tool-container__title hide">
 				${translate('toolbox_shareTool_embed')}							
 				</div>
-				<div class="ba-tool-container__content">      					                  											
+				<div class="ba-tool-container__content hide">      					                  											
 						<ba-checkbox class="tool-container__checkbox" tabindex='0' @toggle=${onToggle} .checked=${false}> 
 							<span class="disclaimer-text">${unsafeHTML(`${translate('toolbox_shareTool_disclaimer')}`)}</span>
 						</ba-checkbox>						
 				</div>				
 				<div class="ba-tool-container__actions">           
-					<ba-button class="preview_button" .type=${'primary'} .label=${translate('toolbox_shareTool_preview')} .disabled=${true}></ba-button>
+					<ba-button class="preview_button hide" .type=${'primary'} .label=${translate('toolbox_shareTool_preview')} .disabled=${true}></ba-button>
 				</div>           
             </div>	  
         `;

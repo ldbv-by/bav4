@@ -273,6 +273,13 @@ describe('ShareToolContent', () => {
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
 
+			//temp hide iframe
+			expect(window.getComputedStyle(button).display).toBe('none');
+			const title = element.shadowRoot.querySelectorAll('.ba-tool-container__title');
+			expect(window.getComputedStyle(title[1]).display).toBe('none');
+			const content = element.shadowRoot.querySelectorAll('.ba-tool-container__content');
+			expect(window.getComputedStyle(content[1]).display).toBe('none');
+
 			expect(button.disabled).toBeTrue();
 			expect(checkbox.checked).toBeFalse();
 			expect(element.shadowRoot.querySelector('.disclaimer-text').innerText).toBe('toolbox_shareTool_disclaimer');
