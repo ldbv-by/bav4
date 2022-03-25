@@ -90,7 +90,7 @@ export class MapService {
 	 * @returns threshold value for rotating the map in radians.
 	 */
 	getMinimalRotation() {
-		return .05;
+		return .3;
 	}
 
 	/**
