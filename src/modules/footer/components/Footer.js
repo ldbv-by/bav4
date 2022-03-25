@@ -43,12 +43,15 @@ export class Footer extends BaElement {
 
 		return html`
 			<style>${css}</style>
-			<div class="preload ${getOrientationClass()}">
-			<div class="footer ${getOverlayClass()}">
-				<div class="scale"></div>
-				<ba-attribution-info></ba-attribution-info>
-					<div class="content">	
-						${this.createChildrenView()}
+			<div class="preload">
+				<div class="${getOrientationClass()}">
+					<div class="footer ${getOverlayClass()}">
+						<div class="scale"></div>
+							<ba-attribution-info></ba-attribution-info>
+							<div class="content">	
+								${this.createChildrenView()}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
