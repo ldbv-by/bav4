@@ -14,6 +14,7 @@ import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../../store/map/m
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceTypes } from '../../../../services/domain/geoResources';
+import { setFetching } from '../../../../store/network/network.action';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -172,6 +173,9 @@ export class OlMap extends MvuElement {
 		this._map.on('pointerdrag', () => {
 			setBeingDragged(true);
 		});
+
+		this._map.on('loadstart', () => setFetching(true));
+		this._map.on('loadend', () => setFetching(false));
 
 		this._mapHandler.forEach(handler => {
 			handler.register(this._map);

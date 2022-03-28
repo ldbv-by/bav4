@@ -20,6 +20,7 @@ import { Group as LayerGroup, Layer } from 'ol/layer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getDefaultLayerOptions } from '../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { networkReducer } from '../../../../../src/store/network/network.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -139,7 +140,8 @@ describe('OlMap', () => {
 			pointer: pointerReducer,
 			position: positionReducer,
 			layers: layersReducer,
-			measurement: measurementReducer
+			measurement: measurementReducer,
+			network: networkReducer
 		});
 
 
@@ -215,6 +217,21 @@ describe('OlMap', () => {
 	});
 
 
+	describe('map load events', () => {
+
+		it('updates the \'fetching\' property in network store', async () => {
+			const element = await setup();
+
+			simulateMapEvent(element._map, MapEventType.LOADSTART);
+
+			expect(store.getState().network.fetching).toBeTrue();
+
+			simulateMapEvent(element._map, MapEventType.LOADEND);
+
+			expect(store.getState().network.fetching).toBeFalse();
+		});
+	});
+
 	describe('map move events', () => {
 		describe('movestart', () => {
 
@@ -225,6 +242,7 @@ describe('OlMap', () => {
 
 				expect(store.getState().map.moveStart.payload).toBe('movestart');
 			});
+
 			it('updates the \'beingMoved\' property in pointer store', async () => {
 				const element = await setup();
 
