@@ -62,7 +62,7 @@ describe('ImportToolContent', () => {
 
 	describe('checks touch layout', () => {
 
-		it('layouts for disabled touch', async () => {
+		it('layouts for non-touch devices', async () => {
 			const element = await setup();
 
 			const splitText = element.shadowRoot.querySelector('.ba-tool-container__split-text');
@@ -72,7 +72,7 @@ describe('ImportToolContent', () => {
 			expect(window.getComputedStyle(dragDropPreview).display).toBe('block');
 		});
 
-		it('layouts for active touch', async () => {
+		it('layouts for touch devices', async () => {
 			const touchConfig = {
 				embed: false,
 				isTouch: true
