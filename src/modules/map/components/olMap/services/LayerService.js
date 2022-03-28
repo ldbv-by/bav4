@@ -4,7 +4,6 @@ import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
-import { setFetching } from '../../../../../store/network/network.action';
 
 /**
  * Converts a geoResource to an ol layer.
@@ -42,8 +41,6 @@ export class LayerService {
 						...geoResource.extraParams
 					}
 				});
-				imageWmsSource.on('imageloadstart', () => setFetching(true));
-				imageWmsSource.on(['imageloadend', 'imageloaderror'], () => setFetching(false));
 
 				return new ImageLayer({
 					id: id,
@@ -59,8 +56,6 @@ export class LayerService {
 				const xyZsource = new XYZSource({
 					url: geoResource.url
 				});
-				xyZsource.on('tileloadstart', () => setFetching(true));
-				xyZsource.on(['tileloadend', 'tileloaderror'], () => setFetching(false));
 
 				return new TileLayer({
 					id: id,
