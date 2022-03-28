@@ -191,9 +191,9 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(3);
-				expect(store.getState().layers.active[0].id).toBe('some0');
-				expect(store.getState().layers.active[1].id).toBe('some1');
-				expect(store.getState().layers.active[2].id).toBe('some2');
+				expect(store.getState().layers.active[0].id).toContain('some0_');
+				expect(store.getState().layers.active[1].id).toContain('some1_');
+				expect(store.getState().layers.active[2].id).toContain('some2_');
 			});
 
 			it('adds layers for existing geoResources considering visibility', () => {
@@ -213,9 +213,9 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toBe('some0');
+				expect(store.getState().layers.active[0].id).toContain('some0_');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toBe('some1');
+				expect(store.getState().layers.active[1].id).toContain('some1_');
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
@@ -236,9 +236,9 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toBe('some0');
+				expect(store.getState().layers.active[0].id).toContain('some0_');
 				expect(store.getState().layers.active[0].visible).toBeTrue();
-				expect(store.getState().layers.active[1].id).toBe('some1');
+				expect(store.getState().layers.active[1].id).toContain('some1_');
 				expect(store.getState().layers.active[1].visible).toBeTrue();
 			});
 
@@ -259,9 +259,9 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toBe('some0');
+				expect(store.getState().layers.active[0].id).toContain('some0_');
 				expect(store.getState().layers.active[0].opacity).toBe(0.8);
-				expect(store.getState().layers.active[1].id).toBe('some1');
+				expect(store.getState().layers.active[1].id).toContain('some1_');
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
@@ -282,9 +282,9 @@ describe('LayersPlugin', () => {
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 
 				expect(store.getState().layers.active.length).toBe(2);
-				expect(store.getState().layers.active[0].id).toBe('some0');
+				expect(store.getState().layers.active[0].id).toContain('some0_');
 				expect(store.getState().layers.active[0].opacity).toBe(1);
-				expect(store.getState().layers.active[1].id).toBe('some1');
+				expect(store.getState().layers.active[1].id).toContain('some1_');
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
