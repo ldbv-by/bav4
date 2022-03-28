@@ -250,7 +250,7 @@
 .header__search {
 	background: var(--secondary-bg-color);
 	border: none;
-	border-radius: 1.5em 0 0 1.5em;
+	border-radius: 1.5em;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 	text-indent: 1.8em;
 	background-repeat: no-repeat;
@@ -272,9 +272,9 @@ input[type="search"]::-webkit-search-results-decoration {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	width: 1.3em;
-	height: 1.3em;
-	right: 3.2em;
+	width: 2em;
+	height: 2em;
+	right: .4em;
 	cursor: pointer;
 	justify-content: center;
 	align-items: center;
