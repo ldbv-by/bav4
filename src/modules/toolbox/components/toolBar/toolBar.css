@@ -196,3 +196,20 @@
 	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
 	font-size: .6rem;
 }
+.arrowright {
+	display: block;
+	height: 2em;
+	width: 2em;
+	margin: 1.3em 0;
+	padding: 0;
+	background: var(--text2);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/arrowbarright.svg');
+	-webkit-mask-image: url('assets/arrowbarright.svg');
+}
+
+.is-portrait .arrowright , .is-tablet .arrowright{
+	transform:rotate(90deg)
+}
+
