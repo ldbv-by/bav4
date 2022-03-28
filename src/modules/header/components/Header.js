@@ -199,7 +199,7 @@ export class Header extends MvuElement {
 							<input id='input' id='input' placeholder='${translate('header_search_placeholder')}' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${showModalInfo}" class="header__modal-button" title="modal">
+							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
 							&nbsp;
 							</button>
 						</div>
