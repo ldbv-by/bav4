@@ -60,6 +60,33 @@ describe('ImportToolContent', () => {
 		});
 	});
 
+	describe('checks touch layout', () => {
+
+		it('layouts for disabled touch', async () => {
+			const element = await setup();
+
+			const splitText = element.shadowRoot.querySelector('.ba-tool-container__split-text');
+			expect(window.getComputedStyle(splitText).display).toBe('block');
+
+			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
+			expect(window.getComputedStyle(dragDropPreview).display).toBe('block');
+		});
+
+		it('layouts for active touch', async () => {
+			const touchConfig = {
+				embed: false,
+				isTouch: true
+			};
+			const element = await setup(touchConfig);
+
+			const splitText = element.shadowRoot.querySelector('.ba-tool-container__split-text');
+			expect(window.getComputedStyle(splitText).display).toBe('none');
+
+			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
+			expect(window.getComputedStyle(dragDropPreview).display).toBe('none');
+		});
+	});
+
 	describe('when instantiated', () => {
 
 		it('has a model with default values', async () => {
