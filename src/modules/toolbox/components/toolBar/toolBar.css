@@ -29,16 +29,13 @@
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);    
 	z-index: 1;
 }
-
 .is-desktop .tool-bar__button {
-
 	display: inline-block;
 	cursor: pointer;
 	background: var(--header-button-color);
 	opacity: .9;
 	padding: .2em .4em .4em;
 	font-size: .9em;
-
 }
 .tool-bar > * {
 	border: 0;
