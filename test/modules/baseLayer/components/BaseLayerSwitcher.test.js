@@ -30,7 +30,8 @@ describe('BaseLayerSwitcher', () => {
 
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('TopicsService', topicsServiceMock);
+			.registerSingleton('TopicsService', topicsServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(BaseLayerSwitcher.tag);
 	};
@@ -90,6 +91,8 @@ describe('BaseLayerSwitcher', () => {
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
 			expect(buttons[1].children[0].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
+
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('baselayer_switcher_header');
 		});
 	});
 

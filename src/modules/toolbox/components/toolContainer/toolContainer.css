@@ -15,16 +15,16 @@
 }
 .tool-container__close-button {
 	margin: 0;
-	width: 2.5em;
-	height: 2.5em;
-	border-radius: 2.5em;
+	width: 3em;
+	height: 3em;
+	border-radius: 1.5em;
 	border: 0;
 	background: var(--primary-bg-color);
 	font-weight: bold;
 	cursor: pointer;
 	position: relative;
 	display: block;
-	padding: .5em;
+	padding: .7em;
 }
 .tool-container__close-button:hover {
 	background: var(--header-background-color)

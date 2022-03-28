@@ -30,7 +30,7 @@ export class Footer extends BaElement {
 
 	createView(state) {
 
-		const { open, portrait } = state;
+		const { open, portrait, minWidth } = state;
 
 		const getOverlayClass = () => {
 			return (open && !portrait) ? 'is-open' : '';
@@ -40,17 +40,19 @@ export class Footer extends BaElement {
 			return portrait ? 'is-portrait' : 'is-landscape';
 		};
 
+		const getMinWidthClass = () => {
+			return minWidth ? 'is-desktop' : 'is-tablet';
+		};
 
 		return html`
 			<style>${css}</style>
-			<div class="preload">
-				<div class="${getOrientationClass()}">
+			<div  class="preload">
+				<div class="${getOrientationClass()} ${getMinWidthClass()}">
 					<div class="footer ${getOverlayClass()}">
 						<div class="scale"></div>
-							<ba-attribution-info></ba-attribution-info>
-							<div class="content">	
-								${this.createChildrenView()}
-							</div>
+						<ba-attribution-info></ba-attribution-info>
+						<div class="content">	
+							${this.createChildrenView()}
 						</div>
 					</div>
 				</div>
@@ -69,10 +71,9 @@ export class Footer extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open }, media: { portrait } } = globalState;
-		return { open, portrait };
+		const { mainMenu: { open }, media: { portrait, minWidth } } = globalState;
+		return { open, portrait, minWidth };
 	}
-
 
 	static get tag() {
 		return 'ba-footer';

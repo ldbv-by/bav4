@@ -77,6 +77,10 @@
 	right: 0;
 	padding: .5em .5em .5em 1.2em;
 }
+.header input::placeholder {
+	color: var(--text2);
+}
+
 .header__button-container {
 	position: absolute;
 	display: flex
@@ -94,6 +98,7 @@
 	font-weight: bold;
 	position: relative;
 	z-index: 1;
+	min-width: 6.5em;
 }
 .header__button-container span {
 	color: var(--text3);
@@ -337,6 +342,9 @@ input[type="search"]::-webkit-search-results-decoration {
 	display: none;
 }
 .is-tablet .header__logo {
+	display: none;
+}
+.is-tablet .header__emblem {
 	display: none;
 }
 .is-tablet .header {

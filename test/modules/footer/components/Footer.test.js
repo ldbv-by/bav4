@@ -19,7 +19,8 @@ describe('Footer', () => {
 				open: true
 			},
 			media: {
-				portrait: false
+				portrait: false,
+				minWidth: false
 			},
 			...state
 		};
@@ -37,10 +38,17 @@ describe('Footer', () => {
 		it('layouts with open main menu for landscape mode', async () => {
 			const state = {
 				media: {
-					portrait: false
+					portrait: false,
+					minWidth: true
 				}
 			};
 			const element = await setup(state);
+
+
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
@@ -51,13 +59,40 @@ describe('Footer', () => {
 		it('layouts with open main menu for portrait mode', async () => {
 			const state = {
 				media: {
-					portrait: true
+					portrait: true,
+					minWidth: false
 				}
 			};
 
 			const element = await setup(state);
 
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+
 			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);
+		});
+
+		it('layouts with open main menu for tablet mode', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+
+			expect(element.shadowRoot.querySelectorAll('.footer.is-open')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
 			expect(element.shadowRoot.querySelectorAll('ba-map-info')).toHaveSize(1);

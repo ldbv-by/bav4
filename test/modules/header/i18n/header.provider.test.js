@@ -9,12 +9,13 @@ describe('i18n for header module', () => {
 
 		expect(map.header_tab_topics_button).toBe('Themen');
 		expect(map.header_tab_topics_title).toBe('Themen öffnen');
-		expect(map.header_tab_maps_button).toBe('Ebenenverwaltung');
-		expect(map.header_tab_maps_title).toBe('Ebenenverwaltung öffnen');
+		expect(map.header_tab_maps_button).toBe('Karte');
+		expect(map.header_tab_maps_title).toBe('Kartenverwaltung öffnen');
 		expect(map.header_tab_misc_button).toBe('Mehr...');
 		expect(map.header_tab_misc_title).toBe('Mehr anzeigen');
 		expect(map.header_close_button_title).toBe('Menü schließen');
 		expect(map.header_logo_badge).toBe('Beta');
+		expect(map.header_search_placeholder).toBe('Suchen');
 	});
 
 	it('provides translation for en', () => {
@@ -23,16 +24,17 @@ describe('i18n for header module', () => {
 
 		expect(map.header_tab_topics_button).toBe('Topics');
 		expect(map.header_tab_topics_title).toBe('Open topics');
-		expect(map.header_tab_maps_button).toBe('Layers configuration');
-		expect(map.header_tab_maps_title).toBe('Open layers configuration');
+		expect(map.header_tab_maps_button).toBe('Map');
+		expect(map.header_tab_maps_title).toBe('Open map configuration');
 		expect(map.header_tab_misc_button).toBe('More...');
 		expect(map.header_tab_misc_title).toBe('Show more');
 		expect(map.header_close_button_title).toBe('Close menu');
 		expect(map.header_logo_badge).toBe('Beta');
+		expect(map.header_search_placeholder).toBe('Search');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 9;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

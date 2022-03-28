@@ -51,7 +51,7 @@ export class ShareDialogContent extends MvuElement {
 
 			return html`
 			<style>${css}</style>
-			<div class='toggle' style="display: flex;justify-content: flex-start;">
+			<div class='toggle'>
 			<ba-toggle id='toggle' .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 			<span class='share_copy'>${translate('toolbox_measureTool_share_link')}</span>
 			</div>

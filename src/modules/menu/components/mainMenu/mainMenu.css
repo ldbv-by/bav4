@@ -20,6 +20,7 @@
 	height: auto;
 	position: absolute;
 	width: 100%;
+	overscroll-behavior: contain;
 }
 .main-menu__close-button {
 	position: absolute;
@@ -102,7 +103,7 @@
 	top: 8.5em;
 }
 .is-tablet .main-menu__close-button {
-	top: 2em;
+	top: .8em;
 }
 
 /*portrait */
@@ -124,13 +125,14 @@
 	position: absolute;
 	top: unset;
 	left: 50%;
-	bottom: 0em;
+	bottom: -2em;
 	right: 0em;
-	border-radius: 2em 2em 0 0;
+	border-radius: 2em;
 	width: 4em;
 	margin-left: -2em;
-	height: 2.5em;
-	background: var(--secondary-color);
+	height: 4em;
+	background: var(--header-background-color);
+	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 .is-portrait .main-menu__close-button-text {
 	display: none;
@@ -390,7 +392,6 @@ input[type="range"]:focus {
 }
 
 .resize-icon {
-	background: var(--secondary-color);
 	background: var(--text2);
 	display: block;
 	height: 2em;
@@ -405,7 +406,22 @@ input[type="range"]:focus {
 .is-portrait .resize-icon {
 	transform: rotate(270deg);
 	position: relative;
-	top: .1em;
+	top: -.1em;
 	left: -.1em;
-	background: var(--primary-bg-color);
+	background: var(--primary-color);
+	mask: url('assets/chevron-right-small.svg');
+	-webkit-mask: url('assets/chevron-right-small.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.is-desktop .resize-icon, .is-landscape .is-tablet .resize-icon {
+	background: var(--primary-color);
+	display: block;
+	width: 2em;
+	margin: .2em 0;
+	mask: url('assets/list.svg');
+	-webkit-mask: url('assets/list.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
 }

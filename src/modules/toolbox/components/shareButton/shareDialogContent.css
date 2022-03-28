@@ -13,3 +13,8 @@
 .share_api , .share_copy {
 	margin-left: 1em;
 }
+.toggle {
+	display: flex;
+	justify-content: flex-start;
+	margin: 1em 0;
+}

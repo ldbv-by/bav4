@@ -68,8 +68,8 @@ export class Modal extends MvuElement {
         		<style>${css}</style>
 				<div class='modal__container modal_show ${getOrientationClass()}'>
 					<div class='modal '>
-						<div class='modal__title' @click="${hide}">
-							<span class="ba-list-item__pre back-icon" >
+						<div class='modal__title'>
+							<span class="ba-list-item__pre back-icon" @click="${hide}">
 								<ba-icon id='back_button' data-test-id .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
 							</span>	
 							<span class='modal__title-text'>${title}</span>

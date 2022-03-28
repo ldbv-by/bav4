@@ -21,6 +21,10 @@
 	left: -1em;
 }
 
+ba-spinner {
+	margin: .8em 1.2em;
+}
+
 svg {
 	fill: var(--text1);
 	height: 2em;
