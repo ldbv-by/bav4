@@ -13,7 +13,6 @@ import { MvuElement } from '../../../MvuElement';
 import { VanillaSwipe } from 'vanilla-swipe';
 
 
-const Update_After_First_Render = 'update_after_first_render';
 const Update_Active_Tab = 'update_active_tab';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -34,8 +33,8 @@ export class MainMenu extends MvuElement {
 			open: false,
 			portrait: false,
 			minWidth: false,
-			observeResponsiveParameter: false,
-			afterFirstRender: false });
+			observeResponsiveParameter: false
+		});
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
@@ -49,11 +48,6 @@ export class MainMenu extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_After_First_Render:
-				return {
-					...model,
-					afterFirstRender: data
-				};
 			case Update_Active_Tab:
 				return {
 					...model,
@@ -83,10 +77,10 @@ export class MainMenu extends MvuElement {
 	/**
 	* @override
 	*/
-	onAfterRender() {
+	onAfterRender(firsttime) {
 		this._activateTab(this._activeTab);
-		const { firstTime } = this.getModel();
-		if (firstTime) {
+
+		if (firsttime) {
 
 			const delta = 50;
 
@@ -105,7 +99,6 @@ export class MainMenu extends MvuElement {
 			});
 
 			swipe.init();
-			this.signal(Update_After_First_Render, true);
 		}
 	}
 
