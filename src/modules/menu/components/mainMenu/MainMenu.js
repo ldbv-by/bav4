@@ -10,8 +10,10 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { MvuElement } from '../../../MvuElement';
+import { VanillaSwipe } from 'vanilla-swipe';
 
 
+const Update_After_First_Render = 'update_after_first_render';
 const Update_Active_Tab = 'update_active_tab';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -32,7 +34,8 @@ export class MainMenu extends MvuElement {
 			open: false,
 			portrait: false,
 			minWidth: false,
-			observeResponsiveParameter: false });
+			observeResponsiveParameter: false,
+			afterFirstRender: false });
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
@@ -46,6 +49,11 @@ export class MainMenu extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
+			case Update_After_First_Render:
+				return {
+					...model,
+					afterFirstRender: data
+				};
 			case Update_Active_Tab:
 				return {
 					...model,
@@ -77,6 +85,28 @@ export class MainMenu extends MvuElement {
 	*/
 	onAfterRender() {
 		this._activateTab(this._activeTab);
+		const { firstTime } = this.getModel();
+		if (firstTime) {
+
+			const delta = 50;
+
+			const handler = (event, data) => {
+				if (event.type === 'touchmove' && data.directionY === 'TOP' && data.absY > delta) {
+					toggle();
+				}
+			};
+
+			const swipe = new VanillaSwipe({
+				element: this.shadowRoot.getElementById('toggle'),
+				onSwipeStart: handler,
+				delta: delta,
+				// onSwiped: handler,
+				mouseTrackingEnabled: true
+			});
+
+			swipe.init();
+			this.signal(Update_After_First_Render, true);
+		}
 	}
 
 	/**
