@@ -49,6 +49,22 @@ describe('MainMenu', () => {
 		return TestUtils.render(MainMenu.tag);
 	};
 
+	describe('when instantiated', () => {
+
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new MainMenu().getModel();
+			expect(model).toEqual({
+				activeTab: null,
+				tab: null,
+				open: false,
+				portrait: false,
+				minWidth: false,
+				observeResponsiveParameter: false
+			});
+		});
+	});
+
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape and width >= 80em', async () => {
