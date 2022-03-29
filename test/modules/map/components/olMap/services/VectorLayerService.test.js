@@ -71,19 +71,20 @@ describe('VectorLayerService', () => {
 		describe('createVectorLayer', () => {
 
 			it('returns an ol vector layer for an data based VectorGeoResource', () => {
-				const id = 'someId';
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const sourceAsString = 'kml';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
 				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
 
-				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 
@@ -93,12 +94,13 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an data based VectorGeoResource containing optional properties', () => {
-				const id = 'someId';
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const sourceAsString = 'kml';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
+				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -106,9 +108,9 @@ describe('VectorLayerService', () => {
 				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
 
-				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.getOpacity()).toBe(.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);
@@ -118,18 +120,19 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an URL based VectorGeoResource', () => {
-				const id = 'someId';
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
+				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar');
 				spyOn(instanceUnderTest, '_vectorSourceForUrl').withArgs(vectorGeoresource).and.returnValue(olSource);
 				const applyStylesSyp = spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
 
-				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(olVectorLayer.getMaxZoom()).toBePositiveInfinity();
 				expect(olVectorLayer.constructor.name).toBe('VectorLayer');
@@ -139,11 +142,12 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an URL based VectorGeoResource containing optional properties', () => {
-				const id = 'someId';
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(id, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar')
+				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setUrl('http://foo.bar')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -151,9 +155,9 @@ describe('VectorLayerService', () => {
 				const applyStylesSyp = spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForDataSpy = spyOn(instanceUnderTest, '_vectorSourceForData');
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
 
-				expect(olVectorLayer.get('id')).toBe('someId');
+				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.getOpacity()).toBe(.5);
 				expect(olVectorLayer.getMinZoom()).toBe(5);
 				expect(olVectorLayer.getMaxZoom()).toBe(19);
