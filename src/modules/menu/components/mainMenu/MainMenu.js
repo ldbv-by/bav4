@@ -1,5 +1,4 @@
 import { html, nothing } from 'lit-html';
-import { BaElement, renderTagOf } from '../../../BaElement';
 import css from './mainMenu.css';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
@@ -10,22 +9,62 @@ import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPan
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
+import { MvuElement } from '../../../MvuElement';
 
+
+const Update_Active_Tab = 'update_active_tab';
+const Update_Main_Menu = 'update_main_menu';
+const Update_Media = 'update_media';
 
 /**
  *
  * @class
  * @author alsturm
  * @author taulinger
+ * @author thiloSchlemmer
  */
-export class MainMenu extends BaElement {
+export class MainMenu extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			activeTab: null,
+			tab: null,
+			open: false,
+			portrait: false,
+			minWidth: false,
+			observeResponsiveParameter: false });
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._activeTab = null;
+	}
+
+	onInitialize() {
+		this.observe(state => state.mainMenu, data => this.signal(Update_Main_Menu, data));
+		this.observe(state => state.media, data => this.signal(Update_Media, data));
+	}
+
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Active_Tab:
+				return {
+					...model,
+					activeTab: data
+				};
+			case Update_Main_Menu:
+				return {
+					...model,
+					open: data.open,
+					tab: data.tab
+				};
+			case Update_Media:
+				return {
+					...model,
+					portrait: data.portrait,
+					minWidth: data.minWidth,
+					observeResponsiveParameter: data.observeResponsiveParameter
+				};
+		}
 	}
 
 	_activateTab(key) {
@@ -43,9 +82,9 @@ export class MainMenu extends BaElement {
 	/**
 	 * @override
 	 */
-	createView(state) {
+	createView(model) {
 
-		const { open, tab, portrait, minWidth, observeResponsiveParameter } = state;
+		const { open, tab, portrait, minWidth, observeResponsiveParameter } = model;
 
 		this._activeTab = tab;
 
@@ -108,7 +147,7 @@ export class MainMenu extends BaElement {
 						</div>
 					</div>		
 					<div>
-						${renderTagOf(DevInfo)}	
+						${this._getDevInfo()}	
 					</div>	
 				</div>			
 			</div>			
@@ -132,6 +171,10 @@ export class MainMenu extends BaElement {
 		}
 	}
 
+	_getDevInfo() {
+		return html`${unsafeHTML(`<${DevInfo.tag}/>`)}`;
+	}
+
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
 	}
@@ -140,10 +183,6 @@ export class MainMenu extends BaElement {
 	 * @override
 	 * @param {Object} globalState
 	 */
-	extractState(globalState) {
-		const { mainMenu: { open, tab }, media: { portrait, minWidth, observeResponsiveParameter } } = globalState;
-		return { open, tab, portrait, minWidth, observeResponsiveParameter };
-	}
 
 	static get tag() {
 		return 'ba-main-menu';
