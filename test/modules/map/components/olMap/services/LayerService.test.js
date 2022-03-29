@@ -1,10 +1,9 @@
 import { $injector } from '../../../../../../src/injection';
 import { AggregateGeoResource, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
 import { LayerService } from '../../../../../../src/modules/map/components/olMap/services/LayerService';
-import { TestUtils } from '../../../../../test-utils';
-import { networkReducer } from '../../../../../../src/store/network/network.reducer';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
+import { TestUtils } from '../../../../../test-utils';
 
 
 describe('LayerService', () => {
@@ -17,13 +16,10 @@ describe('LayerService', () => {
 	};
 
 	let instanceUnderTest;
-	let store;
 
 
 	beforeEach(() => {
-		store = TestUtils.setupStoreAndDi({}, {
-			network: networkReducer
-		});
+		TestUtils.setupStoreAndDi({});
 		$injector
 			.registerSingleton('VectorLayerService', vectorLayerService)
 			.registerSingleton('GeoResourceService', georesourceService);
@@ -104,20 +100,6 @@ describe('LayerService', () => {
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 				expect(wmsSource.getParams().STYLES).toBe('some');
 			});
-
-			it('registers load listerners', () => {
-				const wmsGeoresource = new WmsGeoResource('someId', 'Label', 'https://some.url', 'layer', 'image/png');
-
-				const wmsSource = instanceUnderTest.toOlLayer(wmsGeoresource).getSource();
-
-				wmsSource.dispatchEvent('imageloadstart');
-				expect(store.getState().network.fetching).toBeTrue();
-				wmsSource.dispatchEvent('imageloadend');
-				expect(store.getState().network.fetching).toBeFalse();
-				wmsSource.dispatchEvent('imageloadstart');
-				wmsSource.dispatchEvent('imageloaderror');
-				expect(store.getState().network.fetching).toBeFalse();
-			});
 		});
 
 		describe('WmtsGeoresource', () => {
@@ -155,22 +137,7 @@ describe('LayerService', () => {
 				expect(wmtsSource.constructor.name).toBe('XYZ');
 				expect(wmtsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 			});
-
-			it('registers load listerners', () => {
-				const wmtsGeoresource = new WMTSGeoResource('someId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-
-				const wmtsSource = instanceUnderTest.toOlLayer(wmtsGeoresource).getSource();
-
-				wmtsSource.dispatchEvent('tileloadstart');
-				expect(store.getState().network.fetching).toBeTrue();
-				wmtsSource.dispatchEvent('tileloadend');
-				expect(store.getState().network.fetching).toBeFalse();
-				wmtsSource.dispatchEvent('tileloadstart');
-				wmtsSource.dispatchEvent('tileloaderror');
-				expect(store.getState().network.fetching).toBeFalse();
-			});
 		});
-
 
 		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
 

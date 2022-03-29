@@ -4,6 +4,7 @@ import { QueryParameters } from '../services/domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, modifyLayer, setReady } from '../store/layers/layers.action';
 import { provide as provider } from './i18n/layersPlugin.provider';
+import { createUniqueId } from '../utils/numberUtils';
 
 /**
  * @class
@@ -29,10 +30,10 @@ export class LayersPlugin extends BaPlugin {
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
 			return layer
-				.map((layerId, index) => {
-					if (layerId) {
-
-						const geoResource = geoResourceService.byId(layerId) ?? geoResourceService.asyncById(layerId);
+				.map((id, index) => {
+					if (id) {
+						const geoResource = geoResourceService.byId(id) ?? geoResourceService.asyncById(id);
+						const layerId = `${id}_${createUniqueId()}`;
 
 						if (geoResource) {
 							//if we have a GeoResource future, we update the label property after we know it
@@ -42,7 +43,7 @@ export class LayersPlugin extends BaPlugin {
 								});
 							}
 
-							const layerProperties = {};
+							const layerProperties = { geoResourceId: geoResource.id };
 							layerProperties.label = geoResource.label;
 
 							if (layerVisibility[index] === 'false') {

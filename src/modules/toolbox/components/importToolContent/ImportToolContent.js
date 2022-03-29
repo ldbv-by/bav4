@@ -17,7 +17,8 @@ export class ImportToolContent extends AbstractToolContent {
 			mode: null
 		});
 
-		const { TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'SourceTypeService');
+		const { EnvironmentService: environmentService, TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'EnvironmentService', 'TranslationService', 'SourceTypeService');
+		this._environmentService = environmentService;
 		this._translationService = TranslationService;
 		this._sourceTypeService = SourceTypeService;
 	}
@@ -51,6 +52,11 @@ export class ImportToolContent extends AbstractToolContent {
 				handleFiles(files);
 			}
 		};
+
+		const getIsTouchHide = () => {
+			return this._environmentService.isTouch() ? 'hide' : '';
+		};
+
 		return html`
         <style>${css}</style>
             <div class="ba-tool-container">
@@ -60,7 +66,7 @@ export class ImportToolContent extends AbstractToolContent {
 						${translate('toolbox_import_data_subheader')}								
 					</span>
 				</div>
-				<div class='ba-tool-container__split-text'>
+				<div class='ba-tool-container__split-text ${getIsTouchHide()}'>
 					${translate('toolbox_import_data_seperator')}		
 				</div>
 				<div class="ba-tool-container__content divider" >                						     				
@@ -74,7 +80,7 @@ export class ImportToolContent extends AbstractToolContent {
 							<input id='fileupload' type='file' @change=${onUpload}></input>
 						</label>
 					</div>
-					<div  class='drag-drop-preview'>
+					<div  class='drag-drop-preview ${getIsTouchHide()}'>
 						<div class='text-to-search'>
 							${translate('toolbox_import_data_draganddrop')}								
 						</div>
