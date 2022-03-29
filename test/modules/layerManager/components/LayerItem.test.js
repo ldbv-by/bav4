@@ -395,13 +395,18 @@ describe('LayerItem', () => {
 				setup();
 				const element = await TestUtils.render(LayerItem.tag);
 
-				element.layer = { ...layer, collapsed: false };
+				element.layer = { ...layer }; // collapsed = true is initialized
 				element.onCollapse = jasmine.createSpy();
 				const collapseButton = element.shadowRoot.querySelector('button');
+
+				collapseButton.click();
+
+				expect(element.getModel().layer.collapsed).toBeFalse();
+
 				collapseButton.click();
 
 				expect(element.getModel().layer.collapsed).toBeTrue();
-				expect(element._onCollapse).toHaveBeenCalled();
+				expect(element._onCollapse).toHaveBeenCalledTimes(2);
 			});
 
 		});
