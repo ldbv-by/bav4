@@ -17,7 +17,7 @@ export class LayerService {
 	 * @param {string} id layerId
 	 * @param {GeoResourceTypes} geoResource
 	 * @param {Map} olMap
-	 * @returns
+	 * @returns ol layer
 	 */
 	toOlLayer(id, geoResource, olMap) {
 
