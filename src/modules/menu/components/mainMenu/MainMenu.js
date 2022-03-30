@@ -10,7 +10,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { MvuElement } from '../../../MvuElement';
-import { VanillaSwipe } from 'vanilla-swipe';
+import VanillaSwipe from 'vanilla-swipe';
 
 
 const Update_Active_Tab = 'update_active_tab';
