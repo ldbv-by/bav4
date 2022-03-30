@@ -344,9 +344,9 @@ describe('LayerItem', () => {
 			const copyButton = element.shadowRoot.querySelector('#copy');
 			copyButton.click();
 
-			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[0].id).toBe(layer0.id);
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
-			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId0');
+			expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
 			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
 		});
 
