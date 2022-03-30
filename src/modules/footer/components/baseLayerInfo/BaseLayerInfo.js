@@ -18,20 +18,18 @@ export class BaseLayerInfo extends BaElement {
 
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = state;
 
-		const geoResource = active[0] ? this._georesourceService.byId(active[0].id) : null;
-
+		const geoResource = active[0] ? this._georesourceService.byId(active[0].geoResourceId) : null;
 		if (!geoResource) {
 			return nothing;
 		}
 
 		const description = geoResource.getAttribution(zoom)[0].description;
-
 		const label = description ? description : geoResource.label;
 
 		label ? this._content = label : this._content = translate('map_baseLayerInfo_fallback');
