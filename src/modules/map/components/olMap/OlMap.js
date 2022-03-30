@@ -86,6 +86,7 @@ export class OlMap extends MvuElement {
 		//observe global state (position, active layers)
 		this.observe(state => state.position, data => this.signal(Update_Position, data));
 		this.observe(state => state.layers.active, data => this.signal(Update_Layers, data));
+		this.observe(state => state.media.portrait, () => this._map.updateSize(), false);
 
 		const { zoom, center, rotation } = this.getModel();
 

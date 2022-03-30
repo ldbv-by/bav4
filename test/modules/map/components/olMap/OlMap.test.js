@@ -21,6 +21,7 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { getDefaultLayerOptions } from '../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -132,6 +133,8 @@ describe('OlMap', () => {
 				center: initialCenter,
 				rotation: initialRotationValue,
 				fitRequest: null
+			}, media: {
+				portrait: false
 			}
 		};
 		const combinedState = {
@@ -145,7 +148,8 @@ describe('OlMap', () => {
 			position: positionReducer,
 			layers: layersReducer,
 			measurement: measurementReducer,
-			network: networkReducer
+			network: networkReducer,
+			media: createNoInitialStateMediaReducer()
 		});
 
 
