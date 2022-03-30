@@ -55,7 +55,6 @@ describe('MainMenu', () => {
 			await setup();
 			const model = new MainMenu().getModel();
 			expect(model).toEqual({
-				activeTab: null,
 				tab: null,
 				open: false,
 				portrait: false,
