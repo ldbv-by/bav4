@@ -9,6 +9,7 @@
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@playwright/test": "^1.20.0",
+    "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^7.1.0",
     "es-check": "^6.2.1",
@@ -18,7 +19,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "^5.0.0",
-    "favicons-webpack-plugin": "^5.0.2",
     "fucazu-minami": "^1.1.7",
     "html-webpack-plugin": "^5.5.0",
     "jasmine": "^4.0.2",
