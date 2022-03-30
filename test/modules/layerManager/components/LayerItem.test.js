@@ -52,6 +52,12 @@ describe('LayerItem', () => {
 			return element;
 		};
 
+		it('displays nothing for null', async () => {
+			const element = await setup(null);
+
+			expect(element.innerHTML).toBe('');
+		});
+
 		it('displays label-property in label', async () => {
 			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
 			const label = element.shadowRoot.querySelector('.ba-list-item__text');
@@ -340,6 +346,7 @@ describe('LayerItem', () => {
 
 			expect(store.getState().layers.active[0].id).toBe('id0');
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
+			expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId0');
 			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
 		});
 

@@ -53,9 +53,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 					...model,
 					layer: {
 						...data,
-						visible: data.visible != null ? data.visible : true,
-						collapsed: data.collapsed != null ? data.collapsed : true,
-						opacity: data.opacity != null ? data.opacity : 1
+						visible: data && data.visible != null ? data.visible : true,
+						collapsed: data && data.collapsed != null ? data.collapsed : true,
+						opacity: data && data.opacity != null ? data.opacity : 1
 					}
 				};
 			case Update_Layer_Collapsed:
@@ -98,7 +98,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const translate = (key) => this._translationService.translate(key);
 		const { layer } = model;
 
-		if (layer == null) {
+		if (!layer) {
 			return nothing;
 		}
 		const currentLabel = layer.label === '' ? layer.id : layer.label;
