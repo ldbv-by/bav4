@@ -18,6 +18,12 @@ test.describe('page', () => {
 			expect(lang).toBe(templateParameters.lang);
 		});
 
+		test('should contain favicon related link tag', async ({ page }) => {
+			expect(await page.$('head > link[href=\'/assets/favicon.ico\']')).toBeTruthy();
+			expect(await page.$('head > link[type=\'image/svg+xml\']')).toBeTruthy();
+			expect(await page.$('head > link[rel=\'apple-touch-icon\']')).toBeTruthy();
+		});
+
 		test('should contain correct translate attribute', async ({ page }) => {
 			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
