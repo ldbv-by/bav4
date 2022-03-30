@@ -21,8 +21,8 @@ export class AttributionInfo extends BaElement {
 
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	createView(state) {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = state;
@@ -34,7 +34,7 @@ export class AttributionInfo extends BaElement {
 				continue;
 			}
 
-			const geoResource = this._georesourceService.byId(layer.id);
+			const geoResource = this._georesourceService.byId(layer.geoResourceId);
 
 			if (!geoResource) {
 				continue;
@@ -55,7 +55,7 @@ export class AttributionInfo extends BaElement {
 		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case
 		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);
 
-		const attributionCopyright = [] ;
+		const attributionCopyright = [];
 
 		attributions.forEach((attribution, index) => {
 			// we have to check if 'attribution' is an array, otherwise the 'forEach'-function throws an error

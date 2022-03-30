@@ -52,6 +52,12 @@ describe('LayerItem', () => {
 			return element;
 		};
 
+		it('displays nothing for null', async () => {
+			const element = await setup(null);
+
+			expect(element.innerHTML).toBe('');
+		});
+
 		it('displays label-property in label', async () => {
 			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
 			const label = element.shadowRoot.querySelector('.ba-list-item__text');
@@ -132,6 +138,17 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
 			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+		});
+
+		it('uses geoResourceId for a InfoPanel ', async () => {
+			const layer = { id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
+
+			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
 		});
 
 	});
@@ -338,8 +355,9 @@ describe('LayerItem', () => {
 			const copyButton = element.shadowRoot.querySelector('#copy');
 			copyButton.click();
 
-			expect(store.getState().layers.active[0].id).toBe('id0');
+			expect(store.getState().layers.active[0].id).toBe(layer0.id);
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
+			expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
 			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
 		});
 
@@ -395,13 +413,18 @@ describe('LayerItem', () => {
 				setup();
 				const element = await TestUtils.render(LayerItem.tag);
 
-				element.layer = { ...layer, collapsed: false };
+				element.layer = { ...layer }; // collapsed = true is initialized
 				element.onCollapse = jasmine.createSpy();
 				const collapseButton = element.shadowRoot.querySelector('button');
+
+				collapseButton.click();
+
+				expect(element.getModel().layer.collapsed).toBeFalse();
+
 				collapseButton.click();
 
 				expect(element.getModel().layer.collapsed).toBeTrue();
-				expect(element._onCollapse).toHaveBeenCalled();
+				expect(element._onCollapse).toHaveBeenCalledTimes(2);
 			});
 
 		});

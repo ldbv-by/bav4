@@ -31,7 +31,7 @@ describe('AttributionInfo', () => {
 
 	describe('when initialized', () => {
 		it('renders AttributionInfo component', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -45,7 +45,7 @@ describe('AttributionInfo', () => {
 			const attribution = [42, 21];
 			wmts.setAttribution(attribution);
 
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const element = await setup(state);
 
@@ -53,7 +53,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label: ' + attribution);
 			expect(element.shadowRoot.querySelector('.collapse-button')).toBeTruthy();
 
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
 		it('renders no content when no layers are set', async () => {
@@ -70,23 +70,23 @@ describe('AttributionInfo', () => {
 		});
 
 		it('renders no content when geo resource could not be fetched', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
 				}
 			};
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(null);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		it('renders no content when no attribution provided', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -97,7 +97,7 @@ describe('AttributionInfo', () => {
 			};
 
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const getAttrMock = spyOn(wmts, 'getAttribution').and.returnValue(null);
 
@@ -105,13 +105,13 @@ describe('AttributionInfo', () => {
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 
-			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		it('renders no content when no visible layers are available', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: false };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: false };
 			const state = {
 				layers: {
 					active: [layer]
@@ -122,20 +122,20 @@ describe('AttributionInfo', () => {
 			};
 
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
 
-			expect(geoServiceMock).not.toHaveBeenCalledOnceWith(layer.id);
+			expect(geoServiceMock).not.toHaveBeenCalledOnceWith(layer.geoResourceId);
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		it('updates AttributionInfo component on layer action', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -154,8 +154,8 @@ describe('AttributionInfo', () => {
 			wmts2.setAttribution(arrayAttribution2);
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
-			geoServiceMock.withArgs(layer2.id).and.returnValue(wmts2);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer2.geoResourceId).and.returnValue(wmts2);
 
 			const element = await setup(state);
 
@@ -183,13 +183,13 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
-			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer2.geoResourceId);
 		});
 
 		it('does not show duplicate attribution', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1', label: 'label1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer, layer2]
@@ -205,20 +205,20 @@ describe('AttributionInfo', () => {
 			wmts.setAttribution(arrayAttribution);
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
-			geoServiceMock.withArgs(layer2.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer2.geoResourceId).and.returnValue(wmts);
 
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label: ' + arrayAttribution);
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
-			expect(geoServiceMock).toHaveBeenCalledWith(layer2.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer2.geoResourceId);
 		});
 
 		it('updates AttributionInfo component on zoom change', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -231,7 +231,7 @@ describe('AttributionInfo', () => {
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const attribution1 = getMinimalAttribution('Ref42');
 			const attribution2 = getMinimalAttribution('LDBV');
@@ -257,13 +257,13 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('baz');
 			expect(element.shadowRoot.querySelector('.attribution-container').innerHTML).toContain('foo');
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledWith(11);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
 		});
 
 		it('renders link when attribution.url parameter provided', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -276,7 +276,7 @@ describe('AttributionInfo', () => {
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const attribution = { copyright: { label: 'Ref42', url: 'https://ima/link' } };
 
@@ -289,12 +289,12 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('a').innerText).toEqual(attribution.copyright.label);
 			expect(element.shadowRoot.querySelector('a').href).toEqual(attribution.copyright.url);
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
 		});
 
 		it('renders text when attribution.url parameter is not provided', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -307,7 +307,7 @@ describe('AttributionInfo', () => {
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const getAttrMock = spyOn(wmts, 'getAttribution');
 			getAttrMock.withArgs(12).and.returnValue([getMinimalAttribution('Ref42')]);
@@ -317,12 +317,12 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('a')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain('Ref42');
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
 		});
 
 		it('renders link and label', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]
@@ -335,7 +335,7 @@ describe('AttributionInfo', () => {
 			const wmts = new WMTSGeoResource('someId', 'someLabel', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.id).and.returnValue(wmts);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const attribution1 = { copyright: { label: 'Ref42', url: 'https://ima/link' } };
 			const attribution2 = getMinimalAttribution('LDBV');
@@ -352,13 +352,13 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelector('.attribution-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain(attribution2.copyright.label);
 
-			expect(geoServiceMock).toHaveBeenCalledWith(layer.id);
+			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledWith(12);
 
 		});
 
 		it('show and hide collapse on click', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
 			const state = {
 				layers: {
 					active: [layer]
