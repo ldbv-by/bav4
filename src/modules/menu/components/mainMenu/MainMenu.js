@@ -32,7 +32,8 @@ export class MainMenu extends MvuElement {
 			open: false,
 			portrait: false,
 			minWidth: false,
-			observeResponsiveParameter: false });
+			observeResponsiveParameter: false
+		});
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
@@ -76,7 +77,8 @@ export class MainMenu extends MvuElement {
 	* @override
 	*/
 	onAfterRender() {
-		this._activateTab(this._activeTab);
+		const { activeTab } = this.getModel();
+		this._activateTab(activeTab);
 	}
 
 	/**
@@ -86,7 +88,7 @@ export class MainMenu extends MvuElement {
 
 		const { open, tab, portrait, minWidth, observeResponsiveParameter } = model;
 
-		this._activeTab = tab;
+		this.signal(Update_Active_Tab, tab);
 
 		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
 
