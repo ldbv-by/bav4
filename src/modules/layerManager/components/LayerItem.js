@@ -48,6 +48,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	 */
 	update(type, data, model) {
 		switch (type) {
+
 			case Update_Layer:
 				return {
 					...model,
@@ -65,8 +66,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 
 	/**
-	* @override
-	*/
+* @override
+*/
 	onAfterRender(firsttime) {
 		if (firsttime) {
 			/* grab sliders on page */
@@ -92,8 +93,8 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	/**
-	 * @override
-	 */
+ * @override
+ */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { layer } = model;
@@ -181,8 +182,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const openGeoResourceInfoPanel = async () => {
-			const content = html`<ba-georesourceinfo-panel .geoResourceId=${layer.geoResourceId}></ba-georesourceinfo-panel>`;
-			openModal(layer.label, content);
+			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
 		return html`
@@ -215,6 +215,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 					</div>                                                                                              
             </div>
         </div>`;
+	}
+
+	_getInfoPanelFor(georesourceId) {
+		return html`<ba-georesourceinfo-panel .geoResourceId=${georesourceId}></ba-georesourceinfo-panel>`;
 	}
 
 	set layer(value) {

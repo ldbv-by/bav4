@@ -140,6 +140,17 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
+		it('uses geoResourceId for a InfoPanel ', async () => {
+			const layer = { id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
+
+			const infoButton = element.shadowRoot.querySelector('#info');
+			infoButton.click();
+
+			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
+		});
+
 	});
 
 	describe('when user interacts with layer item', () => {
