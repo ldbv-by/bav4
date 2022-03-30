@@ -71,14 +71,25 @@ export class MainMenu extends MvuElement {
 	* @override
 	*/
 	onAfterRender(firsttime) {
-		const { tab } = this.getModel();
+		const { tab, portrait } = this.getModel();
 		this._activateTab(tab);
 		if (firsttime) {
 
 			const delta = 50;
+			const getSwipeMatcher = (orientation) => {
+				if (orientation === 'is-portrait') {
+					return (event, swipeData) => {
+						return event.type === 'touchmove' && swipeData.directionY === 'TOP' && swipeData.absY > delta;
+					};
+				}
+				return (event, swipeData) => {
+					return event.type === 'touchmove' && swipeData.directionX === 'LEFT' && swipeData.absX > delta;
+				};
+			};
 
 			const handler = (event, data) => {
-				if (event.type === 'touchmove' && data.directionY === 'TOP' && data.absY > delta) {
+				const swipeMatched = getSwipeMatcher(portrait);
+				if (swipeMatched(event, data)) {
 					toggle();
 				}
 			};
