@@ -13,6 +13,7 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
 		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
+		expect(defaultLayerProperties.constraints.cloneable).toBeFalse();
 	});
 });
 
@@ -30,9 +31,10 @@ describe('createDefaultLayer', () => {
 		expect(layer.zIndex).toBe(-1);
 		expect(layer.constraints.alwaysTop).toBeFalse();
 		expect(layer.constraints.hidden).toBeFalse();
+		expect(layer.constraints.cloneable).toBeFalse();
 	});
 
-	it('returns a layer object with default properties and values for giveb id and geoResourceId', () => {
+	it('returns a layer object with default properties and values for given id and geoResourceId', () => {
 
 		const layer = createDefaultLayer('foo', 'bar');
 
@@ -44,6 +46,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.zIndex).toBe(-1);
 		expect(layer.constraints.alwaysTop).toBeFalse();
 		expect(layer.constraints.hidden).toBeFalse();
+		expect(layer.constraints.cloneable).toBeFalse();
 	});
 });
 

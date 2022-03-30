@@ -64,7 +64,7 @@ export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
-	constraints: { alwaysTop: false, hidden: false }
+	constraints: { alwaysTop: false, hidden: false, cloneable: false }
 });
 
 const addLayer = (state, payload) => {
