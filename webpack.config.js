@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
+const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
@@ -35,7 +36,7 @@ module.exports = {
 				]
 			},
 			{
-				test: /\.(woff2|svg|webp)$/,
+				test: /\.(woff2|svg|webp|png)$/,
 				type: 'asset/inline'
 			}
 		]
@@ -45,11 +46,20 @@ module.exports = {
 			template: 'src/index.html',
 			templateParameters: templateParameters
 		}),
-		new FaviconsWebpackPlugin({
-			logo: './src/assets/logo.svg',
-			favicons: {
-				appName: 'BayernAtlas'
-			}
+		new WebpackPwaManifest({
+			name: 'BayernAtlas',
+			icons: [
+				{ src: path.resolve('./src/assets/favicon/icon-192.png'), sizes: '192x192', destination: 'assets' },
+				{ src: path.resolve('./src/assets/favicon/icon-512.png'), sizes: '512x512', destination: 'assets' }
+			],
+			publicPath: '/',
+			filename: 'assets/manifest.json',
+			fingerprints: false
+		}),
+		new CopyPlugin({
+			patterns: [
+				{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') }
+			]
 		}),
 		new Dotenv()
 	],
