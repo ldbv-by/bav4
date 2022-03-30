@@ -12,7 +12,6 @@ import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { MvuElement } from '../../../MvuElement';
 
 
-const Update_Active_Tab = 'update_active_tab';
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
 
@@ -27,30 +26,25 @@ export class MainMenu extends MvuElement {
 
 	constructor() {
 		super({
-			activeTab: null,
 			tab: null,
 			open: false,
 			portrait: false,
 			minWidth: false,
-			observeResponsiveParameter: false });
+			observeResponsiveParameter: false
+		});
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject('EnvironmentService', 'TranslationService');
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 	}
 
 	onInitialize() {
-		this.observe(state => state.mainMenu, data => this.signal(Update_Main_Menu, data));
-		this.observe(state => state.media, data => this.signal(Update_Media, data));
+		this.observe(state => state.mainMenu, data => this.signal(Update_Main_Menu, data), true);
+		this.observe(state => state.media, data => this.signal(Update_Media, data), true);
 	}
 
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Active_Tab:
-				return {
-					...model,
-					activeTab: data
-				};
 			case Update_Main_Menu:
 				return {
 					...model,
@@ -76,7 +70,8 @@ export class MainMenu extends MvuElement {
 	* @override
 	*/
 	onAfterRender() {
-		this._activateTab(this._activeTab);
+		const { tab } = this.getModel();
+		this._activateTab(tab);
 	}
 
 	/**
@@ -85,8 +80,6 @@ export class MainMenu extends MvuElement {
 	createView(model) {
 
 		const { open, tab, portrait, minWidth, observeResponsiveParameter } = model;
-
-		this._activeTab = tab;
 
 		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
 
