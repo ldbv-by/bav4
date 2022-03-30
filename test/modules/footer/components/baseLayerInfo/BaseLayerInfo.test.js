@@ -103,7 +103,7 @@ describe('BaseLayerInfo', () => {
 					zoom: 12
 				}
 			};
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(null);
 
 			const element = await setup(state);
 
@@ -123,7 +123,7 @@ describe('BaseLayerInfo', () => {
 			};
 
 			const wmts = new WMTSGeoResource('someId', null, 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(wmts);
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
 
 			const element = await setup(state);
 
