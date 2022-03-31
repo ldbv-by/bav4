@@ -1,22 +1,21 @@
 {
-    "icons": [
-      {
-        "src": "icon_512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      },
-      {
-        "src": "icon_192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      }
-    ],
-    "name": "BayernAtlas",
-    "short_name": "BayernAtlas",
-    "orientation": "portrait",
-    "display": "standalone",
-    "start_url": "/",
-    "background_color": "#2f6a94",
-    "theme_color": "#2f6a94"
-  }
-  
+  "icons": [
+    {
+      "src": "icon_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "name": "BayernAtlas",
+  "short_name": "BayernAtlas",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#2f6a94",
+  "theme_color": "#2f6a94"
+}
