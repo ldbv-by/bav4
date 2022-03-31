@@ -59,42 +59,48 @@ describe('LayerItem', () => {
 		});
 
 		it('displays label-property in label', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 			const label = element.shadowRoot.querySelector('.ba-list-item__text');
 
 			expect(label.innerText).toBe('label0');
 		});
 
 		it('displays id-property when label is empty in label', async () => {
-			const element = await setup({ id: 'id0', label: '', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: '', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 			const label = element.shadowRoot.querySelector('.ba-list-item__text');
 
 			expect(label.innerText).toBe('id0');
 		});
 
 		it('use layer.label property in checkbox-title ', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
 
 			expect(toggle.title).toBe('label0 - layerManager_change_visibility');
 		});
 
 		it('use layer.opacity-property in slider ', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 0.55, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 0.55, collapsed: true };
+			const element = await setup(layer);
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
 			expect(slider.value).toBe('55');
 		});
 
 		it('use layer.visible-property in checkbox ', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: false, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: false, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 			const toggle = element.shadowRoot.querySelector('ba-checkbox');
 
 			expect(toggle.checked).toBe(false);
 		});
 
 		it('use layer.collapsed-property in element style ', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: false });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: false };
+			const element = await setup(layer);
 			const layerBody = element.shadowRoot.querySelector('.collapse-content');
 			const collapseButton = element.shadowRoot.querySelector('.ba-list-item button');
 
@@ -107,7 +113,8 @@ describe('LayerItem', () => {
 		});
 
 		it('slider-elements stops dragstart-event propagation ', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: false });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: false };
+			const element = await setup(layer);
 
 			const slider = element.shadowRoot.querySelector('.opacity-slider');
 			const sliderContainer = element.shadowRoot.querySelector('.slider-container');
@@ -128,12 +135,14 @@ describe('LayerItem', () => {
 		});
 
 		it('displays info button', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
 		});
 
 		it('contains test-id attributes', async () => {
-			const element = await setup({ id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true });
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
 			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
@@ -141,7 +150,7 @@ describe('LayerItem', () => {
 		});
 
 		it('uses geoResourceId for a InfoPanel ', async () => {
-			const layer = { id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const layer = {	...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
 

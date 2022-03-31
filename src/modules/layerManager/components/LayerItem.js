@@ -185,7 +185,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
-		const isCloneable = layer.constraints.cloneable;
+		const isCloneable = layer.constraints?.cloneable;
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>
