@@ -25,6 +25,13 @@ test.describe('page', () => {
 			expect(await page.$('head > link[rel=\'apple-touch-icon\']')).toBeTruthy();
 		});
 
+		test('should contain theme-color meta tags', async ({ page }) => {
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'name')).toBe('theme-color');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#2c5a93');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'name')).toBe('theme-color');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2c5a93');
+		});
+
 		test('should contain correct translate attribute', async ({ page }) => {
 			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
@@ -32,7 +39,7 @@ test.describe('page', () => {
 		test('should contain google specific translate meta tag', async ({ page }) => {
 			const content = await page.getAttribute('head > meta[name=\'google\']', 'content');
 
-			expect(content).toContain('notranslate');
+			expect(content).toBe('notranslate');
 		});
 
 		test('should contain a title tag', async ({ page }) => {
