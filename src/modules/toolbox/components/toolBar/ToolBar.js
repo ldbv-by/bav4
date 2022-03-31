@@ -20,7 +20,7 @@ export class ToolBar extends MvuElement {
 
 	constructor() {
 		super({
-			isOpen: false,
+			isOpen: true,
 			isFetching: false,
 			isPortrait: false,
 			hasMinWidth: false
@@ -52,6 +52,10 @@ export class ToolBar extends MvuElement {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.tools.current, current => this._toolId = current);
+
+		if (this.getModel().isPortrait) {
+			this.signal(Update_IsOpen, false);
+		}
 	}
 
 	/**
@@ -74,7 +78,7 @@ export class ToolBar extends MvuElement {
 		};
 
 		const getButtonClass = () => {
-			return isOpen ? '' : 'showButton';
+			return isOpen ? 'showButton' : '';
 		};
 
 		const toggleTool = (id) => {
@@ -95,7 +99,11 @@ export class ToolBar extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button id='action-button' data-test-id class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+					<div class="wrench">													
+					</div>
+				</button>
+				<button id='action-button' data-test-id class="action-button" >
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 					</div>
 					<div class="action-button__icon">
@@ -105,10 +113,6 @@ export class ToolBar extends MvuElement {
 					<div class='toolbar__logo-badge'>										
 						${translate('toolbox_toolbar_logo_badge')}
 					</div>	
-				</button>
-				<button class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
-					<div class="wrench">													
-					</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
 					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">

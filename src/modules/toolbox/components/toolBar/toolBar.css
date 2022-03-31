@@ -8,6 +8,14 @@
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);   
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
+.tool-bar > * {
+	border: 0;
+	border-right: 1px dotted var(--header-background-color);
+}
+.tool-bar > *:last-child {
+	border-right: none;
+}
+
 .tool-bar__tools-nav {
 	position: absolute;
 	top: 0rem;
@@ -36,13 +44,6 @@
 	opacity: .9;
 	padding: .2em .4em .4em;
 	font-size: .9em;
-}
-.tool-bar > * {
-	border: 0;
-	border-right: 1px dotted var(--header-background-color);
-}
-.tool-bar > *:last-child {
-	border-right: none;
 }
 .tool-bar__button:hover {
 	opacity: 1;
@@ -76,6 +77,18 @@
 	-webkit-mask-image: url('assets/measure.svg');
 }
 
+.wrench{
+	mask-image: url('assets/wrench.svg');
+	-webkit-mask-image: url('assets/wrench.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	height:3em;
+	width:3em;
+	background: var(--primary-color);
+	margin:.5em;
+	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
+}
+
 .tool-bar__button-text {
 	font-size: .8rem; 
 	text-align: center;
@@ -83,13 +96,11 @@
 .tool-bar__tools {
 	display: none;
 }
-.is-open {
-	transform: translate(-21em,0);
-}
+
 .action-button {
 	font-size: .8em;
 	position: fixed;
-	z-index: calc(var(--z-toolbox) + 10);
+	z-index: calc(var(--z-toolbox) - 10 + var(--z-map));
 	right: .6em;
 	bottom: .5em;
 	height: 6em;
@@ -99,22 +110,26 @@
 	border: none
 }
 
-/* tablet */
+
 .is-tablet .tool-bar {
 	bottom: -20em;	
 	right: 0;
 }
-/* desktop */
-.is-desktop .is-open {
-	transform: translate(0 ,0);
-}
+
+/* .is-tablet .tool-bar {
+    right: 0.5em;
+    padding: .2em;
+    bottom: -19.5em;
+} */
+
+
 .is-desktop .action-button {
 	display: none; 
 }
 .is-desktop .tool-bar {
 	font-size: .9rem;
 	max-width: none;
-	right: 1em;
+	right:-25.5em ;
 	bottom: .8em;
 	padding: 0em;
 }
@@ -128,6 +143,9 @@
 	width: auto;
 	max-width: unset;
 }     
+.is-desktop .is-open {
+	transform: translate(-27em ,0);
+}
 .is-portrait .is-open, .is-tablet .is-open {
 	transform: translate(0,-20em);
 }
@@ -136,7 +154,7 @@
 	width: 100%;
 	height: auto;
 }
-.is-portrait .tool-container__item button {
+.is-portrait .tool-container__item button, .is-tablet .tool-container__item button {
 	margin: .8rem .8rem .3rem .8rem;
 }
 .action-button__border {
@@ -212,10 +230,8 @@
 
 
 /* _______________________________________________________ neu */
-.is-desktop .is-open {
-	transform: translate(25em ,0);
-}
-.is-tablet .tool-bar__button {
+
+/* .is-tablet .tool-bar__button {
 
 	display: inline-block;
 	cursor: pointer;
@@ -224,9 +240,8 @@
 	padding: .2em .4em .4em;
 	font-size: .9em;
 
-}
+} */
 .close {
-	display: none;
 	height: 2em;
 	width: 2em;
 	margin: 1.3em .2em;
@@ -234,27 +249,17 @@
 	background: var(--text2);
 	mask-size: cover;
 	-webkit-mask-size: cover;
-	mask-image: url('assets/close.svg');
-	-webkit-mask-image: url('assets/close.svg');
+	mask-image: url('assets/arrowbarright.svg');
+	-webkit-mask-image: url('assets/arrowbarright.svg');
 }
-.toolbar__button-tools {
-    z-index: calc(var(--z-toolbox) - 10);
-	display: block;
-	background: var(--primary-bg-color);
-	width: 4em;
-	height: 4em;
-	border-radius: 2em;
-	position: fixed;
-    bottom: 1.2em;
-    right: .9em;
-    border: 0;
-	box-shadow: 2px 2px 2px rgb(0 0 0 / 20%);
-	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
-	transition-delay: var(--animation-duration-large-open);
+
+
+.toolbar__button-tools:hover, .toolbar__button-tools:focus{
+	cursor: pointer;
 }
-.is-tablet .toolbar__button-tools {
-    right: 5.7em;
-    bottom: .5em;
+
+.toolbar__button-tools:focus{
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
 .showButton{
@@ -262,34 +267,19 @@
 	transform: translate(+5em,0);
 }
 
-.is-tablet .showButton, .is-portrait .showButton{
+.is-portrait .showButton, .is-tablet .showButton{
 	transform: translate(0,0);
 }
 
-
-.is-portrait .toolbar__button-tools, .is-tablet .tossolbar__button-tools  {
-	display: block;
-	z-index: calc(var(--z-toolbox) - 10);
-	background: var(--primary-bg-color);
-	width: 3.4em;
-	height: 3.4em;
-	border-radius: 2em;
-	position: absolute;
-	bottom: .5em;
-	right: 5.8em;
-	border: 0;
-}    
-
-
-
 .toolbar__button-tools {
-    z-index: calc(var(--z-toolbox) - 10);
 	display: block;
+	position: fixed;
+    z-index: calc(var(--z-toolbox) - 10);
+	background: var(--primary-color);
 	background: var(--primary-bg-color);
 	width: 4em;
 	height: 4em;
 	border-radius: 2em;
-	position: fixed;
     bottom: 1.2em;
     right: .9em;
     border: 0;
@@ -297,52 +287,45 @@
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
 	transition-delay: var(--animation-duration-large-open);
 }
-.is-tablet .toolbar__button-tools {
-    right: 5.7em;
-    bottom: .5em;
-}
 
 .showButton{
 	right:-5em;
 	transform: translate(+5em,0);
 }
 
-.is-tablet .showButton, .is-portrait .showButton{
+.is-portrait .showButton, .is-tablet .showButton{
 	transform: translate(0,0);
 }
 
-
-.is-portrait .toolbar__button-tools, .is-tablet .tossolbar__button-tools  {
-	display: block;
-	z-index: calc(var(--z-toolbox) - 10);
-	background: var(--primary-bg-color);
-	width: 3.4em;
-	height: 3.4em;
-	border-radius: 2em;
-	position: absolute;
-	bottom: .5em;
-	right: 5.8em;
-	border: 0;
-}    
-
-.is-portrait .tool-bar__button-close{
-	/* position: absolute;
-	right: 2em; */
-
+.is-portrait .toolbar__button-tools, .is-tablet .toolbar__button-tools {
+    display: block;
+    z-index: calc(var(--z-toolbox) - 10);
+    background: var(--primary-bg-color);
+    background: var(--primary-color);
+    width: 3.4em;
+    height: 3.4em;
+    border-radius: 2em;
     position: absolute;
-    right: 0;
-    background: var(--secondary-bg-color);
-    background: var(--header-background-color);
-    width: 6em;
-    top: 0;
-    bottom: 0;
-    padding: 1em 2em;
+    bottom: 6.5em;
+    right: 1.2em;
+    border: 0;
+    transform: scale(1.1);
+}    
 
+.is-portrait .tool-bar__button-close, .is-tablet .tool-bar__button-close{
+	display:none;
 }
 
 
 .is-portrait .wrench , .is-tablet .wrench{
+	background: var(--text3);
 	height: 3em;
 	width: 3em;
 	margin: .2em;
+}
+
+.is-portrait .showButton .wrench , .is-tablet .showButton .wrench{
+	mask-image: url('assets/close.svg');
+	-webkit-mask-image: url('assets/close.svg');
+	transform: rotate(90deg);
 }
