@@ -110,7 +110,7 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			// we expect two kinds of attribution: a span conataing a plain string and an anchor element
+			// we expect two kinds of attribution: a <span> containing a plain string and an <a> element
 			expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId0 + ','); //should contain also a separator
 
