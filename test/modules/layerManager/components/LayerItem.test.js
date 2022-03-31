@@ -140,6 +140,14 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
 		});
 
+		it('displays disabled copy button', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelector('#copy')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#copy').disabled).toBeTruthy();
+		});
+
 		it('contains test-id attributes', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
