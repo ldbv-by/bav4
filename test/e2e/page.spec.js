@@ -21,8 +21,8 @@ test.describe('page', () => {
 		test('should contain favicon related link tag', async ({ page }) => {
 			expect(await page.$('head > link[href=\'assets/favicon.ico\']')).toBeTruthy();
 			expect(await page.$('head > link[href=\'assets/manifest.json\']')).toBeTruthy();
-			expect(await page.$('head > link[type=\'image/svg+xml\']')).toBeTruthy();
-			expect(await page.$('head > link[rel=\'apple-touch-icon\']')).toBeTruthy();
+			expect(await page.$('head > link[href=\'assets/icon.svg\']')).toBeTruthy();
+			expect(await page.$('head > link[href=\'assets/apple-touch-icon.png\']')).toBeTruthy();
 		});
 
 		test('should contain theme-color meta tags', async ({ page }) => {
