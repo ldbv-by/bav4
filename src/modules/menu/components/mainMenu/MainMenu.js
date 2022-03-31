@@ -158,7 +158,7 @@ export class MainMenu extends MvuElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
-					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
+					<button id='toggle' @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<i class='resize-icon'></i>	
 					</button>	

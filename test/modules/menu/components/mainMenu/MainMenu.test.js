@@ -297,6 +297,37 @@ describe('MainMenu', () => {
 		});
 	});
 
+	/* describe('when close button swiped', () => {
+		const simulateTouchEvent = (type, eventSource = document, x, y) => {
+
+			const eventType = type;
+			const touch = new Touch({ identifier: 0, target: eventSource, screenX: x, screenY: y });
+			const event = new TouchEvent(eventType, { touches: [touch] });
+
+			eventSource.dispatchEvent(event);
+		};
+
+		fit('closes the main menu', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			// Touch-path upwards
+			simulateTouchEvent('touchstart', closeButton, 0, 0);
+			simulateTouchEvent('touchmove', closeButton, 0, 2);
+			simulateTouchEvent('touchend', closeButton, 0, 6);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+		});
+	}); */
+
 	describe('when responsive parameter observation state changes', () => {
 
 		it('adds or removes the prevent-transition css class', async () => {
