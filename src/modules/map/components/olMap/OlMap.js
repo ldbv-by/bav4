@@ -83,7 +83,7 @@ export class OlMap extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		//observe global state (position, active layers)
+		//observe global state (position, active layers, orientation)
 		this.observe(state => state.position, data => this.signal(Update_Position, data));
 		this.observe(state => state.layers.active, data => this.signal(Update_Layers, data));
 		this.observe(state => state.media.portrait, () => this._map.updateSize(), false);
