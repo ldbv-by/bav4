@@ -283,7 +283,6 @@
     bottom: 1.2em;
     right: .9em;
     border: 0;
-	box-shadow: 2px 2px 2px rgb(0 0 0 / 20%);
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
 	transition-delay: var(--animation-duration-large-open);
 }
