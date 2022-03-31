@@ -15,5 +15,7 @@
     "short_name": "BayernAtlas",
     "orientation": "portrait",
     "display": "standalone",
-    "start_url": "."
+    "start_url": ".",
+    "background_color": "#2c5a93",
+    "theme_color": "#2c5a93"
   }
