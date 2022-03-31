@@ -121,19 +121,50 @@
 	width: 28em !important;   
 }
 
+/* .is-portrait .main-menu__close-button {
+    position: absolute;
+    top: unset;
+    left: 0%;
+    bottom: 0;
+    right: 0em;
+    border-radius: 50% 50% 0 0;
+    width: 100%;
+    height: 3em;
+    background: var(--header-background-color);
+    /* background: var(--primary-color); */
+    /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);*/
+    /* box-shadow: inset 0px -1px 3px rgb(0 0 0 / 25%);  
+
+	border-top:1px solid var(--secondary-bg-color);
+} */
+
+/* .is-portrait .main-menu__close-button {
+position: absolute;
+top: unset;
+left: 25%;
+bottom: -1.5em;
+right: 0em;
+border-radius: 70% 70% 70% 70%;
+width: 50%;
+height: 3em;
+background: var(--header-background-color);
+box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+
+} */
 .is-portrait .main-menu__close-button {
-	position: absolute;
-	top: unset;
-	left: 50%;
-	bottom: -2em;
-	right: 0em;
-	border-radius: 2em;
-	width: 4em;
-	margin-left: -2em;
-	height: 4em;
-	background: var(--header-background-color);
-	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: unset;
+    left: 0;
+    bottom: 0;
+    right: 0em;
+    width: 100%;
+    height: 3em;
+    background: var(--header-background-color);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+	border-radius:  0;
+
 }
+
 .is-portrait .main-menu__close-button-text {
 	display: none;
 }
@@ -395,8 +426,8 @@ input[type="range"]:focus {
 	background: var(--text2);
 	display: block;
 	height: 2em;
-	width: 2.1em;
-	margin: .2em;
+	width: 1em;
+	margin: 0em;
 	mask: url('assets/arrowBarRight.svg');
 	-webkit-mask: url('assets/arrowBarRight.svg');
 	mask-size: cover;
@@ -406,11 +437,13 @@ input[type="range"]:focus {
 .is-portrait .resize-icon {
 	transform: rotate(270deg);
 	position: relative;
+	height:1.5em;
 	top: -.1em;
-	left: -.1em;
+	left: 50%;
+	margin-left:-.5em;
 	background: var(--primary-color);
-	mask: url('assets/chevron-right-small.svg');
-	-webkit-mask: url('assets/chevron-right-small.svg');
+	mask: url('assets/chevron-right.svg');
+	-webkit-mask: url('assets/chevron-right.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
