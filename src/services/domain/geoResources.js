@@ -119,6 +119,11 @@ export class GeoResource {
 		return this;
 	}
 
+	/**
+	 * Sets the attribution for this GeoResource.
+	 * @param {Attribution|string|null} attribution
+	 * @returns `this` for chaining
+	 */
 	setAttribution(attribution) {
 		this._attribution = attribution;
 		return this;
