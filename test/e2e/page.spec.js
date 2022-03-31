@@ -27,9 +27,9 @@ test.describe('page', () => {
 
 		test('should contain theme-color meta tags', async ({ page }) => {
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'name')).toBe('theme-color');
-			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#2c5a93');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#2f6a94');
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'name')).toBe('theme-color');
-			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2c5a93');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2f6a94');
 		});
 
 		test('should contain correct translate attribute', async ({ page }) => {
