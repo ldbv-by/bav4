@@ -8,6 +8,7 @@ import css from './attributionInfo.css';
  * a class for displaying the attribution of the basemap
  * @class
  * @author bakir_en
+ * @author taulinger
  */
 export class AttributionInfo extends BaElement {
 
@@ -19,6 +20,18 @@ export class AttributionInfo extends BaElement {
 		this._isOpen = false;
 	}
 
+	_getAttributions(activeLayers, zoomLevel) {
+		const rawAttributions = activeLayers
+			.filter(l => l.visible)
+			.map(l => this._georesourceService.byId(l.geoResourceId)?.getAttribution(zoomLevel))
+			//remove null 'attr'
+			.filter(attr => !!attr)
+			.flat();
+
+		// make attributions unique by 'label'
+		const labels = rawAttributions.map(a => a?.copyright?.label); //attr.copyright.label should be guaranteed
+		return rawAttributions.filter(({ copyright: { label } }, index) => !labels.includes(label, index + 1));
+	}
 
 	/**
 	 * @override
@@ -27,21 +40,13 @@ export class AttributionInfo extends BaElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { active, zoom } = state;
 
-		const attributionsRaw = new Array();
-
-		for (const layer of active) {
-			if (!layer.visible) {
-				continue;
-			}
-
-			const geoResource = this._georesourceService.byId(layer.geoResourceId);
-
-			if (!geoResource) {
-				continue;
-			}
-
-			attributionsRaw.push(geoResource.getAttribution(zoom));
-		}
+		const attributionTemplates =
+			this._getAttributions(active, zoom).map((attribution, index, array) => {
+				const separator = index === array.length - 1 ? '' : ',';
+				return attribution.copyright.url
+					? html`<a class='attribution attribution-link' target='_blank' href=${attribution.copyright.url}>${attribution.copyright.label}${separator}</a>`
+					: html`<span class='attribution'>${attribution.copyright.label}${separator}</span>`;
+			});
 
 		const toggleOpen = () => {
 			this._isOpen = !this._isOpen;
@@ -52,25 +57,8 @@ export class AttributionInfo extends BaElement {
 			isopen: this._isOpen
 		};
 
-		// eliminate duplicates, without stringify Set() doesn't detect duplicates in this case
-		const attributions = Array.from(new Set(attributionsRaw.map(JSON.stringify)), JSON.parse);
-
-		const attributionCopyright = [];
-
-		attributions.forEach((attribution, index) => {
-			// we have to check if 'attribution' is an array, otherwise the 'forEach'-function throws an error
-			if (Array.isArray(attributions[0])) {
-				attribution.forEach((element) => {
-					const separator = index === attributions.length - 1 ? '' : ',';
-					attributionCopyright.push(element.copyright.url != null ?
-						html`<a class='attribution attribution-link' target='new' href=${element.copyright.url} >  ${element.copyright.label}${separator}</a>` :
-						html`<span class='attribution' > ${element.copyright.label}${separator}</span>`);
-				});
-			}
-		});
-
 		const getCollapseClass = () => {
-			return (attributionCopyright.length > 1 || this._isOpen) ? 'is-collapse' : '';
+			return (attributionTemplates.length > 1 || this._isOpen) ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {
@@ -81,7 +69,7 @@ export class AttributionInfo extends BaElement {
 			<style>${css}</style>
             <div class='attribution-container ${classMap(classes)}'>
 				© ${translate('map_attributionInfo_label')}: 
-				${attributionCopyright} 
+				${attributionTemplates} 
 				<div @click=${toggleOpen} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
 				<i class="icon chevron  "></i>
 				</div>
