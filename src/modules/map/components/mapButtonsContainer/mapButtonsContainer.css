@@ -10,3 +10,13 @@
 .map-buttons-container > * {
 	margin: .2em 0; 
 }
+.is-portrait ba-zoom-buttons, .is-portrait ba-extent-button, .is-tablet ba-zoom-buttons, .is-tablet ba-extent-button{
+	display: none;
+} 
+.is-portrait > *, .is-tablet > * {
+	transform: scale(1.5);
+	margin: 0 0 1.4em 0;
+}
+.map-buttons-container.is-portrait, .map-buttons-container.is-tablet{
+	bottom: 10.2em;
+}
