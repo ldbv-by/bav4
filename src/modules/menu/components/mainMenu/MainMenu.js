@@ -71,13 +71,15 @@ export class MainMenu extends MvuElement {
 	* @override
 	*/
 	onAfterRender(firsttime) {
-		const { tab, portrait } = this.getModel();
+		const { tab } = this.getModel();
 		this._activateTab(tab);
 		if (firsttime) {
-
+			const log = () => console.log(...arguments);
 			const delta = 50;
-			const getSwipeMatcher = (orientation) => {
-				if (orientation === 'is-portrait') {
+			const getSwipeMatcher = (isPortrait, minWidth) => {
+				console.log('isPortrait:', isPortrait);
+				console.log('minWidth:', minWidth);
+				if (isPortrait || minWidth) {
 					return (event, swipeData) => {
 						return event.type === 'touchmove' && swipeData.directionY === 'TOP' && swipeData.absY > delta;
 					};
@@ -88,7 +90,8 @@ export class MainMenu extends MvuElement {
 			};
 
 			const handler = (event, data) => {
-				const swipeMatched = getSwipeMatcher(portrait);
+				const { portrait, minWidth } = this.getModel();
+				const swipeMatched = getSwipeMatcher(portrait, minWidth);
 				if (swipeMatched(event, data)) {
 					toggle();
 				}
@@ -98,7 +101,8 @@ export class MainMenu extends MvuElement {
 				element: this.shadowRoot.getElementById('toggle'),
 				onSwipeStart: handler,
 				delta: delta,
-				// onSwiped: handler,
+				onSwiping: log,
+				onSwiped: log,
 				mouseTrackingEnabled: true
 			});
 

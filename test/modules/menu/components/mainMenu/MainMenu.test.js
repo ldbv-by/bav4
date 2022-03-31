@@ -297,12 +297,15 @@ describe('MainMenu', () => {
 		});
 	});
 
-	/* describe('when close button swiped', () => {
+	describe('when close button swiped', () => {
 		const simulateTouchEvent = (type, eventSource = document, x, y) => {
 
 			const eventType = type;
-			const touch = new Touch({ identifier: 0, target: eventSource, screenX: x, screenY: y });
-			const event = new TouchEvent(eventType, { touches: [touch] });
+			const event = new Event(eventType);
+			const touchList = [{ screenX: x, screenY: y }];
+			event.changedTouches = touchList;
+			event.targetTouches = touchList;
+			event.touches = touchList;
 
 			eventSource.dispatchEvent(event);
 		};
@@ -314,19 +317,21 @@ describe('MainMenu', () => {
 					minWidth: false
 				}
 			};
+			window.TouchEvent = jasmine.createSpy().and.returnValue(true);
+
 
 			const element = await setup(state);
 			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
 
 			// Touch-path upwards
 			simulateTouchEvent('touchstart', closeButton, 0, 0);
-			simulateTouchEvent('touchmove', closeButton, 0, 2);
-			simulateTouchEvent('touchend', closeButton, 0, 6);
+			simulateTouchEvent('touchmove', closeButton, 0, 52);
+			simulateTouchEvent('touchend', closeButton, 0, 56);
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
 		});
-	}); */
+	});
 
 	describe('when responsive parameter observation state changes', () => {
 
