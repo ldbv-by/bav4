@@ -5,7 +5,7 @@ import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import { OlHighlightLayerHandler } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/OlHighlightLayerHandler';
-import { highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
+import { highlightAnimatedCoordinateFeatureStyleFunction, highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../../../src/modules/map/components/olMap/handler/highlight/styleUtils';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Point } from 'ol/geom';
@@ -210,14 +210,17 @@ describe('OlHighlightLayerHandler', () => {
 			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.DEFAULT };
 			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.TEMPORARY };
 			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.ANIMATED };
+			const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.FEATURE_INFO_SUCCESS };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
 			const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
 			handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
+			const styledFeature3 = handler._appendStyle(highlightCoordinateFeature3, new Feature(new Point([5, 10])));
 
 			expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
 			expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
 			expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
+			expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
 		});
 
 		it('sets the correct style features containing a HighlightGeometry', () => {

@@ -100,6 +100,9 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 					break;
 				case HighlightFeatureTypes.ANIMATED:
 					this._animatePointFeature(olFeature);
+					break;
+				case HighlightFeatureTypes.FEATURE_INFO_SUCCESS:
+					olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
 			}
 		}
 		else {
