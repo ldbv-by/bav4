@@ -21,8 +21,15 @@ test.describe('page', () => {
 		test('should contain favicon related link tag', async ({ page }) => {
 			expect(await page.$('head > link[href=\'assets/favicon.ico\']')).toBeTruthy();
 			expect(await page.$('head > link[href=\'assets/manifest.json\']')).toBeTruthy();
-			expect(await page.$('head > link[type=\'image/svg+xml\']')).toBeTruthy();
-			expect(await page.$('head > link[rel=\'apple-touch-icon\']')).toBeTruthy();
+			expect(await page.$('head > link[href=\'assets/icon.svg\']')).toBeTruthy();
+			expect(await page.$('head > link[href=\'assets/apple-touch-icon.png\']')).toBeTruthy();
+		});
+
+		test('should contain theme-color meta tags', async ({ page }) => {
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'name')).toBe('theme-color');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#2f6a94');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'name')).toBe('theme-color');
+			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2f6a94');
 		});
 
 		test('should contain correct translate attribute', async ({ page }) => {
@@ -32,7 +39,7 @@ test.describe('page', () => {
 		test('should contain google specific translate meta tag', async ({ page }) => {
 			const content = await page.getAttribute('head > meta[name=\'google\']', 'content');
 
-			expect(content).toContain('notranslate');
+			expect(content).toBe('notranslate');
 		});
 
 		test('should contain a title tag', async ({ page }) => {
