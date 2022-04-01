@@ -11,7 +11,7 @@ import { createDefaultLayer, layersReducer } from '../../../../../../../src/stor
 import { getBvvFeatureInfo } from '../../../../../../../src/modules/map/components/olMap/handler/featureInfo/featureInfoItem.provider';
 import { modifyLayer } from '../../../../../../../src/store/layers/layers.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../../../src/injection';
 import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
@@ -158,8 +158,8 @@ describe('OlFeatureInfoHandler', () => {
 			const handler = setup({
 				highlight: {
 					features: [
-						{ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureTypes.DEFAULT, data: [21, 42] },
-						{ id: 'foo', type: HighlightFeatureTypes.DEFAULT, data: [5, 55] }
+						{ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureType.DEFAULT, data: [21, 42] },
+						{ id: 'foo', type: HighlightFeatureType.DEFAULT, data: [5, 55] }
 					]
 				}
 			}, mockFeatureInfoProvider);
@@ -232,12 +232,12 @@ describe('OlFeatureInfoHandler', () => {
 					expect(store.getState().highlight.features).toHaveSize(2);
 					expect(store.getState().highlight.features[0]).toEqual({
 						id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureTypes.DEFAULT,
+						type: HighlightFeatureType.DEFAULT,
 						data: expectedHighlightFeatureGeometry
 					});
 					expect(store.getState().highlight.features[1]).toEqual({
 						id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureTypes.DEFAULT,
+						type: HighlightFeatureType.DEFAULT,
 						data: expectedHighlightFeatureGeometry
 					});
 

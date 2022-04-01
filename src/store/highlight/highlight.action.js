@@ -28,7 +28,7 @@ import { $injector } from '../../injection';
  * @property {HighlightFeatureGeometryTypes} geometryType the type of the geometry
  */
 
-export const HighlightFeatureTypes = Object.freeze({
+export const HighlightFeatureType = Object.freeze({
 	DEFAULT: 0,
 	TEMPORARY: 1,
 	FEATURE_INFO_RUNNING: 2,

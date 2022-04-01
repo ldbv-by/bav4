@@ -7,7 +7,7 @@ import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highl
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
+import { HighlightFeatureType, HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
@@ -92,26 +92,26 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 
 			switch (feature.type) {
 
-				case HighlightFeatureTypes.DEFAULT:
+				case HighlightFeatureType.DEFAULT:
 					olFeature.setStyle(highlightCoordinateFeatureStyleFunction);
 					break;
-				case HighlightFeatureTypes.TEMPORARY:
+				case HighlightFeatureType.TEMPORARY:
 					olFeature.setStyle(highlightTemporaryCoordinateFeatureStyleFunction);
 					break;
-				case HighlightFeatureTypes.FEATURE_INFO_RUNNING:
+				case HighlightFeatureType.FEATURE_INFO_RUNNING:
 					this._animatePointFeature(olFeature);
 					break;
-				case HighlightFeatureTypes.FEATURE_INFO_SUCCESS:
+				case HighlightFeatureType.FEATURE_INFO_SUCCESS:
 					olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
 			}
 		}
 		else {
 			switch (feature.type) {
 
-				case HighlightFeatureTypes.DEFAULT:
+				case HighlightFeatureType.DEFAULT:
 					olFeature.setStyle(highlightGeometryFeatureStyleFunction);
 					break;
-				case HighlightFeatureTypes.TEMPORARY:
+				case HighlightFeatureType.TEMPORARY:
 					olFeature.setStyle(highlightTemporaryGeometryFeatureStyleFunction);
 					break;
 			}

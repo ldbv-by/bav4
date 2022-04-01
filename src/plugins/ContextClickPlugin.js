@@ -5,7 +5,7 @@ import { close, open } from '../store/mapContextMenu/mapContextMenu.action';
 import { emitFixedNotification, clearFixedNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
-import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 
 
 /**
@@ -31,7 +31,7 @@ export class ContextClickPlugin extends BaPlugin {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
 				addHighlightFeatures(
-					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.DEFAULT }
+					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.DEFAULT }
 				);
 				emitFixedNotification(content);
 			}
