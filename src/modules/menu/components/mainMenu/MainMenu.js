@@ -93,14 +93,18 @@ export class MainMenu extends MvuElement {
 					toggle();
 				}
 			};
-
-			const swipe = new VanillaSwipe({
-				element: this.shadowRoot.getElementById('toggle'),
-				onSwipeStart: handler,
-				delta: delta,
-				// onSwiped: handler,
-				mouseTrackingEnabled: true
-			});
+			const swipe = VanillaSwipe.isTouchEventsSupported() ?
+				new VanillaSwipe({
+					element: this.shadowRoot.getElementById('toggle'),
+					onSwipeStart: handler,
+					delta: delta,
+					// onSwiped: handler,
+					mouseTrackingEnabled: true
+				}) : {
+					init: () => {
+						console.warn('no touch support, swipe is not activated');
+					}
+				};
 
 			swipe.init();
 		}

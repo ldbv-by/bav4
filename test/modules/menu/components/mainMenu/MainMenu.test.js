@@ -297,12 +297,18 @@ describe('MainMenu', () => {
 		});
 	});
 
-	/* describe('when close button swiped', () => {
-		const simulateTouchEvent = (type, eventSource = document, x, y) => {
+	/* 	describe('when close button swiped', () => {
+		const repeat = (toRepeat, amount) => {
+			return Array(amount).fill(toRepeat);
+		};
+
+		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
 
 			const eventType = type;
-			const touch = new Touch({ identifier: 0, target: eventSource, screenX: x, screenY: y });
-			const event = new TouchEvent(eventType, { touches: [touch] });
+			const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
+			const event = new Event(eventType);
+			event.touches = [...touches];
+			event.changedTouches = [...touches];
 
 			eventSource.dispatchEvent(event);
 		};
@@ -319,9 +325,9 @@ describe('MainMenu', () => {
 			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
 
 			// Touch-path upwards
-			simulateTouchEvent('touchstart', closeButton, 0, 0);
-			simulateTouchEvent('touchmove', closeButton, 0, 2);
-			simulateTouchEvent('touchend', closeButton, 0, 6);
+			simulateTouchEvent('touchstart', closeButton, 0, 0, 2);
+			simulateTouchEvent('touchmove', closeButton, 0, 54, 2);
+			simulateTouchEvent('touchend', closeButton, 0, 56);
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
