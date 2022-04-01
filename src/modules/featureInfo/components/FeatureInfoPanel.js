@@ -7,7 +7,7 @@ import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
-import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryTypes, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { isTemplateResult } from '../../../utils/checks';
 
@@ -69,7 +69,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				addHighlightFeatures({
 					id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
 					type: HighlightFeatureType.TEMPORARY,
-					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryTypes.GEOJSON }
+					data: { geometry: featureInfoGeometry.data, geometryType: HighlightGeometryType.GEOJSON }
 				});
 			}
 		};

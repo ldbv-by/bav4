@@ -39,7 +39,7 @@ export const HighlightFeatureType = Object.freeze({
  * Type of a {@link HighlightGeometry}
  * @enum
  */
-export const HighlightGeometryTypes = Object.freeze({
+export const HighlightGeometryType = Object.freeze({
 	GEOJSON: 0,
 	WKT: 1
 });

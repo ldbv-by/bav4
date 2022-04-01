@@ -1,4 +1,4 @@
-import { HighlightFeatureType, HighlightGeometryTypes } from '../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType, HighlightGeometryType } from '../../../src/store/highlight/highlight.action';
 
 describe('highlightAction', () => {
 
@@ -11,8 +11,8 @@ describe('highlightAction', () => {
 	});
 
 	it('exports a enum for HighlightGeometryTypes', () => {
-		expect(Object.keys(HighlightGeometryTypes).length).toBe(2);
-		expect(HighlightGeometryTypes.GEOJSON).toBe(0);
-		expect(HighlightGeometryTypes.WKT).toBe(1);
+		expect(Object.keys(HighlightGeometryType).length).toBe(2);
+		expect(HighlightGeometryType.GEOJSON).toBe(0);
+		expect(HighlightGeometryType.WKT).toBe(1);
 	});
 });

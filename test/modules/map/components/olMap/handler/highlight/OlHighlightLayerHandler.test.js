@@ -1,6 +1,6 @@
 import { TestUtils } from '../../../../../../test-utils';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType, HighlightGeometryTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType, HighlightGeometryType } from '../../../../../../../src/store/highlight/highlight.action';
 import Map from 'ol/Map';
 import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
@@ -181,8 +181,8 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const highlightGeometryWktFeature = { data: { geometry: new WKT().writeGeometry(new Point([21, 42])), geometryType: HighlightGeometryTypes.WKT } };
-			const highlightGeometryGeoJsonFeature = { data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryTypes.GEOJSON } };
+			const highlightGeometryWktFeature = { data: { geometry: new WKT().writeGeometry(new Point([21, 42])), geometryType: HighlightGeometryType.WKT } };
+			const highlightGeometryGeoJsonFeature = { data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryType.GEOJSON } };
 
 			expect(handler._toOlFeature(highlightGeometryWktFeature).getGeometry().getCoordinates()).toEqual([21, 42]);
 			expect(handler._toOlFeature(highlightGeometryGeoJsonFeature).getGeometry().getCoordinates()).toEqual([5, 10]);
@@ -228,11 +228,11 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const highlightGeometryGeoJsonFeature0 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON },
+				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
 				type: HighlightFeatureType.DEFAULT
 			};
 			const highlightGeometryGeoJsonFeature1 = {
-				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryTypes.GEOJSON },
+				data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
 				type: HighlightFeatureType.TEMPORARY
 			};
 

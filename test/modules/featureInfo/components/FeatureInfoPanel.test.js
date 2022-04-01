@@ -7,7 +7,7 @@ import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components
 import { html } from 'lit-html';
 import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureType, HighlightGeometryTypes } from '../../../../src/store/highlight/highlight.action.js';
+import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
@@ -201,7 +201,7 @@ describe('FeatureInfoPanel', () => {
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.geometry).toBe(geoJson);
-				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryTypes.GEOJSON);
+				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 			});
@@ -236,7 +236,7 @@ describe('FeatureInfoPanel', () => {
 						}]
 					},
 					highlight: {
-						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryTypes.GEOJSON } }]
+						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON } }]
 					}
 				});
 

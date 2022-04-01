@@ -7,7 +7,7 @@ import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highl
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Point } from 'ol/geom';
-import { HighlightFeatureType, HighlightGeometryTypes } from '../../../../../../store/highlight/highlight.action';
+import { HighlightFeatureType, HighlightGeometryType } from '../../../../../../store/highlight/highlight.action';
 import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import { unByKey } from 'ol/Observable';
@@ -69,9 +69,9 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 		//we have a HighlightGeometry
 		switch (data.geometryType) {
 
-			case HighlightGeometryTypes.WKT:
+			case HighlightGeometryType.WKT:
 				return this._appendStyle(feature, new WKT().readFeature(data.geometry));
-			case HighlightGeometryTypes.GEOJSON:
+			case HighlightGeometryType.GEOJSON:
 				return this._appendStyle(feature, new GeoJSON().readFeature(data.geometry));
 		}
 		return null;
