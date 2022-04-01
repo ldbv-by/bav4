@@ -88,7 +88,7 @@ export class MainMenu extends MvuElement {
 			};
 
 			const handler = (event, data) => {
-				console.log(data);
+				// console.log(data);
 				const swipeMatched = getSwipeMatcher(portrait);
 				if (swipeMatched(event, data)) {
 					toggle();

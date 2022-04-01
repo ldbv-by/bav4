@@ -331,13 +331,12 @@ describe('MainMenu', () => {
 			const mouseEventType = translateToMouseEventType(type);
 			if (mouseEventType) {
 				const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
-				console.log(event);
 				eventSource.dispatchEvent(event);
 			}
 
 		};
 
-		fit('closes the main menu', async () => {
+		xit('closes the main menu', async () => {
 			const state = {
 				media: {
 					portrait: true,
