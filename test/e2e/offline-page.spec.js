@@ -7,7 +7,6 @@ test.describe('page', () => {
 	test.beforeEach(async ({ page }) => {
 		// Go to the starting url before each test.
 		await page.goto(`${BASE_URL}/offline.html`);
-
 	});
 
 	test.describe('when loaded', () => {
