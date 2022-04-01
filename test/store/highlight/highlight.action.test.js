@@ -3,11 +3,11 @@ import { HighlightFeatureTypes, HighlightGeometryTypes } from '../../../src/stor
 describe('highlightAction', () => {
 
 	it('exports a enum for HighlightFeatureTypes', () => {
-		expect(Object.keys(HighlightFeatureTypes).length).toBe(3);
+		expect(Object.keys(HighlightFeatureTypes).length).toBe(4);
 		expect(HighlightFeatureTypes.DEFAULT).toBe(0);
 		expect(HighlightFeatureTypes.TEMPORARY).toBe(1);
 		expect(HighlightFeatureTypes.ANIMATED).toBe(2);
-		expect(HighlightFeatureTypes.FEATURE_INFO_SUCCESS).toBe(4);
+		expect(HighlightFeatureTypes.FEATURE_INFO_SUCCESS).toBe(3);
 	});
 
 	it('exports a enum for HighlightGeometryTypes', () => {
