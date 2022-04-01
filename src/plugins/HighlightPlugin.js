@@ -56,7 +56,10 @@ export class HighlightPlugin extends BaPlugin {
 			if (tab !== TabId.FEATUREINFO) {
 				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
 			}
-			if (tab !== TabId.SEARCH) {
+		};
+
+		const onQueryChanged = (query) => {
+			if (!query.payload) {
 				removeHighlightFeaturesById([SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
@@ -74,6 +77,7 @@ export class HighlightPlugin extends BaPlugin {
 		observe(store, state => state.highlight.active, onChange);
 		observe(store, state => state.pointer.click, onPointerClick);
 		observe(store, store => store.mainMenu.tab, onTabChanged, false);
+		observe(store, store => store.search.query, onQueryChanged);
 		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChange);
 	}
 }
