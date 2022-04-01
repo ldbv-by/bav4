@@ -1,7 +1,7 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabId } from '../store/mainMenu/mainMenu.action';
 import { createUniqueId } from '../utils/numberUtils';
 
@@ -15,6 +15,11 @@ export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
  *ID for FeatureInfo related highlight features
  */
 export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId';
+
+/**
+ *ID for FeatureInfo related highlight features
+ */
+export const FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID = 'featureInfoSuccessHighlightFeatureId';
 /**
  *ID for SearchResult related highlight features
  */
@@ -54,7 +59,7 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabId.FEATUREINFO) {
-				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById([FEATURE_INFO_HIGHLIGHT_FEATURE_ID, FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
 
@@ -67,10 +72,15 @@ export class HighlightPlugin extends BaPlugin {
 		const onFeatureInfoQueryingChange = (querying, state) => {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
-				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.ANIMATED });
+				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.FEATURE_INFO_RUNNING });
+				removeHighlightFeaturesById(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
 			}
 			else {
+				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
+				if (state.featureInfo.current.length > 0) {
+					addHighlightFeatures({ id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.FEATURE_INFO_SUCCESS });
+				}
 			}
 		};
 

@@ -28,17 +28,18 @@ import { $injector } from '../../injection';
  * @property {HighlightFeatureGeometryTypes} geometryType the type of the geometry
  */
 
-export const HighlightFeatureTypes = Object.freeze({
+export const HighlightFeatureType = Object.freeze({
 	DEFAULT: 0,
 	TEMPORARY: 1,
-	ANIMATED: 2
+	FEATURE_INFO_RUNNING: 2,
+	FEATURE_INFO_SUCCESS: 3
 });
 
 /**
  * Type of a {@link HighlightGeometry}
  * @enum
  */
-export const HighlightGeometryTypes = Object.freeze({
+export const HighlightGeometryType = Object.freeze({
 	GEOJSON: 0,
 	WKT: 1
 });
