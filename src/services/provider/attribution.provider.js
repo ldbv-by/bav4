@@ -7,6 +7,7 @@
  */
 
 import { $injector } from '../../injection';
+import { isString } from '../../utils/checks';
 import { GeoResourceTypes } from '../domain/geoResources';
 
 /**
@@ -52,8 +53,9 @@ export const getBvvAttribution = (georesource, level = 0) => {
  * @returns {Attribution}
  */
 export const getDefaultAttribution = (georesource) => {
-	const attribution = georesource.attribution || '';
-	return getMinimalAttribution(attribution.toString());
+	return georesource.attribution
+		? (isString(georesource.attribution) ? getMinimalAttribution(georesource.attribution) : georesource.attribution)
+		: getMinimalAttribution('');
 };
 
 /**

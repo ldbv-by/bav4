@@ -5,7 +5,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
-import duplicate from './assets/clone.svg';
+import clone from './assets/clone.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -137,7 +137,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			}
 		};
 
-		const duplicateLayer = () => {
+		const cloneLayer = () => {
 			//state store change -> implicit call of #render()
 			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, geoResourceId: layer.geoResourceId, label: `${layer.label} (${translate('layerManager_layer_copy')})`, zIndex: layer.zIndex + 1 });
 		};
@@ -185,6 +185,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
+		const isCloneable = layer.constraints?.cloneable;
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>
@@ -205,7 +206,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='copy' .icon='${duplicate}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${duplicateLayer}></ba-icon>                                
+						<ba-icon id='copy' .disabled=${!isCloneable} .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='info' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 

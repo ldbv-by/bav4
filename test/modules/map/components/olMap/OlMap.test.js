@@ -21,6 +21,8 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { getDefaultLayerOptions } from '../../../../../src/modules/map/components/olMap/handler/OlLayerHandler';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { setIsPortrait } from '../../../../../src/store/media/media.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -132,6 +134,9 @@ describe('OlMap', () => {
 				center: initialCenter,
 				rotation: initialRotationValue,
 				fitRequest: null
+			}, media: {
+				portrait: false,
+				observeResponsiveParameter: true
 			}
 		};
 		const combinedState = {
@@ -145,7 +150,8 @@ describe('OlMap', () => {
 			position: positionReducer,
 			layers: layersReducer,
 			measurement: measurementReducer,
-			network: networkReducer
+			network: networkReducer,
+			media: createNoInitialStateMediaReducer()
 		});
 
 
@@ -202,6 +208,19 @@ describe('OlMap', () => {
 		});
 	});
 
+	describe('when orientation changes', () => {
+
+		it('updates the map size', async () => {
+			const element = await setup();
+			const map = element._map;
+			const spy = spyOn(map, 'updateSize');
+
+			setIsPortrait(true);
+
+			expect(spy).toHaveBeenCalled();
+		});
+	});
+
 	describe('view events', () => {
 
 		describe('rotation:change', () => {
@@ -219,7 +238,6 @@ describe('OlMap', () => {
 			});
 		});
 	});
-
 
 	describe('map load events', () => {
 
