@@ -15,6 +15,11 @@ export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
  *ID for FeatureInfo related highlight features
  */
 export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId';
+
+/**
+ *ID for FeatureInfo related highlight features
+ */
+export const FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID = 'featureInfoSuccessHighlightFeatureId';
 /**
  *ID for SearchResult related highlight features
  */
@@ -54,7 +59,7 @@ export class HighlightPlugin extends BaPlugin {
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabId.FEATUREINFO) {
-				removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById([FEATURE_INFO_HIGHLIGHT_FEATURE_ID, FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
 
@@ -68,9 +73,14 @@ export class HighlightPlugin extends BaPlugin {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.ANIMATED });
+				removeHighlightFeaturesById(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
 			}
 			else {
+				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
+				if (state.featureInfo.current.length > 0) {
+					addHighlightFeatures({ id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureTypes.FEATURE_INFO_SUCCESS });
+				}
 			}
 		};
 

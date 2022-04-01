@@ -1,4 +1,4 @@
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureTypes } from '../../src/store/highlight/highlight.action';
@@ -8,7 +8,7 @@ import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/ma
 import { setTab, TabId } from '../../src/store/mainMenu/mainMenu.action';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
+import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
 import { searchReducer } from '../../src/store/search/search.reducer';
 import { EventLike } from '../../src/utils/storeUtils';
 import { setQuery } from '../../src/store/search/search.action';
@@ -87,13 +87,14 @@ describe('HighlightPlugin', () => {
 		it('clears all featureInfo related highlight items (also initially)', async () => {
 			const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
+			const highlightFeature2 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const store = setup({
 				mainMenu: {
 					tab: TabId.TOPICS,
 					open: false
 				},
 				highlight: {
-					features: [highlightFeature0, highlightFeature1]
+					features: [highlightFeature0, highlightFeature1, highlightFeature2]
 				}
 			});
 			const instanceUnderTest = new HighlightPlugin();
@@ -105,7 +106,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
-			addHighlightFeatures([highlightFeature0, highlightFeature1]);
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index
 			setTab(TabId.MAPS);
@@ -114,12 +115,12 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).toBe('foo');
 
 			clearHighlightFeatures();
-			addHighlightFeatures([highlightFeature0, highlightFeature1]);
+			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index to the FeatureInfo tab
 			setTab(TabId.FEATUREINFO);
 
-			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().highlight.features).toHaveSize(3);
 		});
 	});
 
@@ -165,7 +166,7 @@ describe('HighlightPlugin', () => {
 		});
 	});
 
-	describe('whenfeatureInfo.querying property changes', () => {
+	describe('when featureInfo.querying property changes', () => {
 
 		it('adds and removes an animated highlight feature', async () => {
 			const coordinate = [21, 42];
@@ -184,6 +185,47 @@ describe('HighlightPlugin', () => {
 			resolveQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+
+		it('removes an existing success highlight feature', async () => {
+			const coordinate = [21, 42];
+			const highlightFeature = { type: HighlightFeatureTypes.FEATURE_INFO_SUCCESS, data: { coordinate: coordinate }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const store = setup({
+				mainMenu: {
+					open: true,
+					tab: TabId.FEATUREINFO
+				},
+				highlight: {
+					features: [highlightFeature]
+				}
+			});
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().highlight.features[0].id).toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features).toHaveSize(1);
+
+			startRequest(coordinate);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).not.toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+		});
+
+		it('adds a success highlight feature', async () => {
+			const coordinate = [21, 42];
+			const store = setup();
+			const queryId = 'foo';
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			startRequest(coordinate);
+			registerQuery(queryId);
+			// add a result
+			addFeatureInfoItems({ title: 'title0', content: 'content0' });
+			resolveQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
 		});
 	});
 });
