@@ -297,20 +297,44 @@ describe('MainMenu', () => {
 		});
 	});
 
-	/* 	describe('when close button swiped', () => {
+	describe('when close button swiped', () => {
 		const repeat = (toRepeat, amount) => {
 			return Array(amount).fill(toRepeat);
 		};
 
 		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
+			const touchEventSupported = () => window.TouchEvent ? true : false;
 
-			const eventType = type;
-			const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
-			const event = new Event(eventType);
-			event.touches = [...touches];
-			event.changedTouches = [...touches];
 
-			eventSource.dispatchEvent(event);
+
+			if (touchEventSupported()) {
+				const eventType = type;
+				const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
+				const event = new Event(eventType);
+				event.touches = [...touches];
+				event.changedTouches = [...touches];
+
+				eventSource.dispatchEvent(event);
+			}
+			const translateToMouseEventType = (touchEventType) => {
+				switch (touchEventType) {
+					case 'touchstart':
+						return 'mousedown';
+					case 'touchmove':
+						return 'mousemove';
+					case 'touchend':
+						return 'mouseup';
+				}
+				return null;
+			};
+
+			const mouseEventType = translateToMouseEventType(type);
+			if (mouseEventType) {
+				const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
+				console.log(event);
+				eventSource.dispatchEvent(event);
+			}
+
 		};
 
 		fit('closes the main menu', async () => {
@@ -332,7 +356,7 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
 		});
-	}); */
+	});
 
 	describe('when responsive parameter observation state changes', () => {
 

@@ -88,23 +88,19 @@ export class MainMenu extends MvuElement {
 			};
 
 			const handler = (event, data) => {
+				console.log(data);
 				const swipeMatched = getSwipeMatcher(portrait);
 				if (swipeMatched(event, data)) {
 					toggle();
 				}
 			};
-			const swipe = VanillaSwipe.isTouchEventsSupported() ?
-				new VanillaSwipe({
-					element: this.shadowRoot.getElementById('toggle'),
-					onSwipeStart: handler,
-					delta: delta,
-					// onSwiped: handler,
-					mouseTrackingEnabled: true
-				}) : {
-					init: () => {
-						console.warn('no touch support, swipe is not activated');
-					}
-				};
+			const swipe = new VanillaSwipe({
+				element: this.shadowRoot.getElementById('toggle'),
+				onSwipeStart: handler,
+				delta: delta,
+				// onSwiped: handler,
+				mouseTrackingEnabled: true
+			});
 
 			swipe.init();
 		}
