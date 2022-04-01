@@ -725,10 +725,33 @@ describe('OlMeasurementHandler', () => {
 			setTimeout(() => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
+				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 				done();
 			});
 
 		});
+
+		it('adds non-cloneable layer', (done) => {
+			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
+			const store = setup(state);
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const feature = createFeature();
+			spyOn(interactionStorageServiceMock, 'getStorageId').and.returnValue('f_ooBarId');
+
+			classUnderTest.activate(map);
+			expect(classUnderTest._vectorLayer).toBeTruthy();
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest.deactivate(map);
+
+			setTimeout(() => {
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
+				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
+				done();
+			});
+		});
+
 
 		it('adds no layer when empty', (done) => {
 			const store = setup();
