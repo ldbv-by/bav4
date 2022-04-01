@@ -85,6 +85,7 @@ describe('Attribution provider', () => {
 			expect(getDefaultAttribution(new GeoResourceImpl(null))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl(undefined))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl('foo'))).toEqual(getMinimalAttribution('foo'));
+			expect(getDefaultAttribution(new GeoResourceImpl(getMinimalAttribution('foo')))).toEqual(getMinimalAttribution('foo'));
 		});
 	});
 });
