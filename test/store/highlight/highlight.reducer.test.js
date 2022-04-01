@@ -1,5 +1,5 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, HighlightFeatureTypes, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
+import { clearHighlightFeatures, HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
 
@@ -18,7 +18,7 @@ describe('highlightReducer', () => {
 
 	it('changes the \'features\' and \'active\' property by adding features', () => {
 		const store = setup();
-		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: 'id' };
+		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'id' };
 
 		addHighlightFeatures([]);
 
@@ -53,7 +53,7 @@ describe('highlightReducer', () => {
 
 	it('changes the \'features\' and \'active\' property by clearing all features', () => {
 		const store = setup();
-		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } };
 
 		addHighlightFeatures(highlightFeature);
 
@@ -68,7 +68,7 @@ describe('highlightReducer', () => {
 
 	it('sets an feature id if missing', () => {
 		const store = setup();
-		const highlightFeature = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } };
+		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } };
 
 		addHighlightFeatures(highlightFeature);
 
@@ -84,9 +84,9 @@ describe('highlightReducer', () => {
 	it('changes the \'features\' and \'active\' property by removing a features by id', () => {
 		const id = 'foo';
 		const store = setup();
-		const highlightFeature0 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] }, id: id };
+		const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: id };
 		//a second feature with the same id
-		const highlightFeature1 = { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [44, 55] }, id: id };
+		const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [44, 55] }, id: id };
 
 		addHighlightFeatures(highlightFeature0);
 
@@ -96,7 +96,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.active).toBeFalse();
 
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
-		addHighlightFeatures({ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } });
+		addHighlightFeatures({ type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } });
 
 		removeHighlightFeaturesById(id);
 
@@ -106,7 +106,7 @@ describe('highlightReducer', () => {
 
 		clearHighlightFeatures();
 		addHighlightFeatures([highlightFeature0, highlightFeature1]);
-		addHighlightFeatures({ id: 'bar', type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } });
+		addHighlightFeatures({ id: 'bar', type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } });
 
 		removeHighlightFeaturesById([id, 'bar']);
 

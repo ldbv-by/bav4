@@ -661,7 +661,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label });
+		addLayer(id, { label: label, constraints: { cloneable: false } });
 	}
 
 	static get Debounce_Delay() {
