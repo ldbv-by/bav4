@@ -30,3 +30,14 @@ import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
 import './modules/dndImport';
+
+if ('serviceWorker' in navigator) {
+
+	(async () => {
+		await navigator
+			.serviceWorker
+			.register('sw.js');
+		// eslint-disable-next-line no-console
+		console.log('SW registration successful');
+	})();
+}
