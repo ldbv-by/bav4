@@ -6,7 +6,7 @@ describe('highlightAction', () => {
 		expect(Object.keys(HighlightFeatureTypes).length).toBe(4);
 		expect(HighlightFeatureTypes.DEFAULT).toBe(0);
 		expect(HighlightFeatureTypes.TEMPORARY).toBe(1);
-		expect(HighlightFeatureTypes.ANIMATED).toBe(2);
+		expect(HighlightFeatureTypes.FEATURE_INFO_RUNNING).toBe(2);
 		expect(HighlightFeatureTypes.FEATURE_INFO_SUCCESS).toBe(3);
 	});
 

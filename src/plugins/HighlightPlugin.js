@@ -72,7 +72,7 @@ export class HighlightPlugin extends BaPlugin {
 		const onFeatureInfoQueryingChange = (querying, state) => {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
-				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.ANIMATED });
+				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureTypes.FEATURE_INFO_RUNNING });
 				removeHighlightFeaturesById(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
 			}
 			else {

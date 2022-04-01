@@ -31,7 +31,7 @@ import { $injector } from '../../injection';
 export const HighlightFeatureTypes = Object.freeze({
 	DEFAULT: 0,
 	TEMPORARY: 1,
-	ANIMATED: 2,
+	FEATURE_INFO_RUNNING: 2,
 	FEATURE_INFO_SUCCESS: 3
 });
 

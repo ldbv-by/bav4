@@ -168,7 +168,7 @@ describe('HighlightPlugin', () => {
 
 	describe('when featureInfo.querying property changes', () => {
 
-		it('adds and removes an animated highlight feature', async () => {
+		it('adds and removes a featureinfo highlight feature', async () => {
 			const coordinate = [21, 42];
 			const queryId = 'foo';
 			const store = setup();
@@ -180,7 +180,7 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.ANIMATED);
+			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.FEATURE_INFO_RUNNING);
 
 			resolveQuery(queryId);
 

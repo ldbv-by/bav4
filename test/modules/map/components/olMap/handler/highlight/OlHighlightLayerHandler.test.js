@@ -85,7 +85,7 @@ describe('OlHighlightLayerHandler', () => {
 			it('adds ol features', () => {
 				const highlightFeatures = [{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [1, 0] } }, { type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [2, 1] } }];
 				const temporaryFeatures = [{ type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [3, 4] } }];
-				const animatedFeatures = [{ type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [5, 55] } }];
+				const animatedFeatures = [{ type: HighlightFeatureTypes.FEATURE_INFO_RUNNING, data: { coordinate: [5, 55] } }];
 				const state = { ...initialState, active: true, features: [...highlightFeatures, ...temporaryFeatures, ...animatedFeatures] };
 				const map = setupMap();
 				setup(state);
@@ -110,7 +110,7 @@ describe('OlHighlightLayerHandler', () => {
 				addHighlightFeatures([
 					{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [21, 42] } },
 					{ type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [38, 57] } },
-					{ type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [5, 55] } }
+					{ type: HighlightFeatureTypes.FEATURE_INFO_RUNNING, data: { coordinate: [5, 55] } }
 				]);
 
 				const olFeatures = olLayer.getSource().getFeatures();
@@ -122,7 +122,7 @@ describe('OlHighlightLayerHandler', () => {
 		describe('and highlight features are removed', () => {
 
 			it('removes ol features', () => {
-				const highlightFeature = { type: HighlightFeatureTypes.ANIMATED, data: { coordinate: [1, 0] } };
+				const highlightFeature = { type: HighlightFeatureTypes.FEATURE_INFO_RUNNING, data: { coordinate: [1, 0] } };
 				const state = { ...initialState, active: true, features: [highlightFeature], temporaryFeatures: [] };
 				const map = setupMap();
 				setup(state);
@@ -209,7 +209,7 @@ describe('OlHighlightLayerHandler', () => {
 			const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
 			const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.DEFAULT };
 			const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.TEMPORARY };
-			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.ANIMATED };
+			const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.FEATURE_INFO_RUNNING };
 			const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureTypes.FEATURE_INFO_SUCCESS };
 
 			const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
