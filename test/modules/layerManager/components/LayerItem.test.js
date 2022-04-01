@@ -145,7 +145,7 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelector('#copy')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#copy').disabled).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#copy').disabled).toBeTrue();
 		});
 
 		it('contains test-id attributes', async () => {
@@ -158,7 +158,7 @@ describe('LayerItem', () => {
 		});
 
 		it('uses geoResourceId for a InfoPanel ', async () => {
-			const layer = {	...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
 

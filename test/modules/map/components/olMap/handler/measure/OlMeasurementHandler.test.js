@@ -750,7 +750,6 @@ describe('OlMeasurementHandler', () => {
 				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 				done();
 			});
-
 		});
 
 

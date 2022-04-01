@@ -1098,7 +1098,6 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 				done();
 			});
-
 		});
 
 		it('adds non-cloneable layer', (done) => {
@@ -1872,6 +1871,3 @@ describe('OlDrawHandler', () => {
 	});
 
 });
-
-
-
