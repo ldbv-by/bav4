@@ -180,7 +180,7 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.FEATURE_INFO_RUNNING);
+			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_RUNNING);
 
 			resolveQuery(queryId);
 
