@@ -1,4 +1,4 @@
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID, FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
@@ -65,7 +65,7 @@ describe('HighlightPlugin', () => {
 
 		it('clears all featureInfo related highlight items', async () => {
 			const coordinate = [11, 22];
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				highlight: {
@@ -85,9 +85,9 @@ describe('HighlightPlugin', () => {
 	describe('when mainMenu.tab changes', () => {
 
 		it('clears all featureInfo related highlight items (also initially)', async () => {
-			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
-			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const store = setup({
 				mainMenu: {
 					tab: TabId.TOPICS,
@@ -189,7 +189,7 @@ describe('HighlightPlugin', () => {
 
 		it('removes an existing success highlight feature', async () => {
 			const coordinate = [21, 42];
-			const highlightFeature = { type: HighlightFeatureType.QUERY_SUCCESS, data: { coordinate: coordinate }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature = { type: HighlightFeatureType.QUERY_SUCCESS, data: { coordinate: coordinate }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const store = setup({
 				mainMenu: {
 					open: true,
@@ -202,13 +202,13 @@ describe('HighlightPlugin', () => {
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().highlight.features[0].id).toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
 			expect(store.getState().highlight.features).toHaveSize(1);
 
 			startRequest(coordinate);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).not.toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
 		});
 
 		it('adds a success highlight feature', async () => {
@@ -225,7 +225,7 @@ describe('HighlightPlugin', () => {
 			resolveQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
-			expect(store.getState().highlight.features[0].id).toBe(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
 		});
 	});
 });

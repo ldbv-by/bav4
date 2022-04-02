@@ -14,7 +14,7 @@ import { highlightReducer } from '../../../../../../../src/store/highlight/highl
 import { HighlightFeatureType, HighlightGeometryType } from '../../../../../../../src/store/highlight/highlight.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../../../src/injection';
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
+import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 
@@ -158,7 +158,7 @@ describe('OlFeatureInfoHandler', () => {
 			const handler = setup({
 				highlight: {
 					features: [
-						{ id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureType.DEFAULT, data: [21, 42] },
+						{ id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureType.DEFAULT, data: [21, 42] },
 						{ id: 'foo', type: HighlightFeatureType.DEFAULT, data: [5, 55] }
 					]
 				}
@@ -231,12 +231,12 @@ describe('OlFeatureInfoHandler', () => {
 					});
 					expect(store.getState().highlight.features).toHaveSize(2);
 					expect(store.getState().highlight.features[0]).toEqual({
-						id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
+						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
 						type: HighlightFeatureType.DEFAULT,
 						data: expectedHighlightFeatureGeometry
 					});
 					expect(store.getState().highlight.features[1]).toEqual({
-						id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
+						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
 						type: HighlightFeatureType.DEFAULT,
 						data: expectedHighlightFeatureGeometry
 					});

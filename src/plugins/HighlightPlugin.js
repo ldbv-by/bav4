@@ -12,14 +12,14 @@ import { createUniqueId } from '../utils/numberUtils';
 export const HIGHLIGHT_LAYER_ID = 'highlight_layer';
 
 /**
- *ID for FeatureInfo related highlight features
+ *ID for a highlight feature a query is running
  */
-export const FEATURE_INFO_HIGHLIGHT_FEATURE_ID = 'featureInfoHighlightFeatureId';
+export const QUERY_RUNNING_HIGHLIGHT_FEATURE_ID = 'queryRunningHighlightFeatureId';
 
 /**
- *ID for FeatureInfo related highlight features
+ *ID for a highlight feature a query was successful
  */
-export const FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID = 'featureInfoSuccessHighlightFeatureId';
+export const QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID = 'querySuccessHighlightFeatureId';
 /**
  *ID for SearchResult related highlight features
  */
@@ -54,12 +54,12 @@ export class HighlightPlugin extends BaPlugin {
 		};
 
 		const onPointerClick = () => {
-			removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesById(QUERY_RUNNING_HIGHLIGHT_FEATURE_ID);
 		};
 
 		const onTabChanged = (tab) => {
 			if (tab !== TabId.FEATUREINFO) {
-				removeHighlightFeaturesById([FEATURE_INFO_HIGHLIGHT_FEATURE_ID, FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID]);
+				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID]);
 			}
 		};
 
@@ -73,13 +73,13 @@ export class HighlightPlugin extends BaPlugin {
 			if (querying) {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
-				removeHighlightFeaturesById(FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID);
+				removeHighlightFeaturesById(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
 			}
 			else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
 				if (state.featureInfo.current.length > 0) {
-					addHighlightFeatures({ id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
+					addHighlightFeatures({ id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
 				}
 			}
 		};
