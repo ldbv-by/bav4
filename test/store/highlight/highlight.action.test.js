@@ -7,7 +7,7 @@ describe('highlightAction', () => {
 		expect(HighlightFeatureType.DEFAULT).toBe(0);
 		expect(HighlightFeatureType.TEMPORARY).toBe(1);
 		expect(HighlightFeatureType.QUERY_RUNNING).toBe(2);
-		expect(HighlightFeatureType.FEATURE_INFO_SUCCESS).toBe(3);
+		expect(HighlightFeatureType.QUERY_SUCCESS).toBe(3);
 	});
 
 	it('exports a enum for HighlightGeometryTypes', () => {

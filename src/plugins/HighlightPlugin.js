@@ -79,7 +79,7 @@ export class HighlightPlugin extends BaPlugin {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
 				if (state.featureInfo.current.length > 0) {
-					addHighlightFeatures({ id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.FEATURE_INFO_SUCCESS });
+					addHighlightFeatures({ id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
 				}
 			}
 		};

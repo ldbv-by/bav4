@@ -189,7 +189,7 @@ describe('HighlightPlugin', () => {
 
 		it('removes an existing success highlight feature', async () => {
 			const coordinate = [21, 42];
-			const highlightFeature = { type: HighlightFeatureType.FEATURE_INFO_SUCCESS, data: { coordinate: coordinate }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature = { type: HighlightFeatureType.QUERY_SUCCESS, data: { coordinate: coordinate }, id: FEATURE_INFO_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const store = setup({
 				mainMenu: {
 					open: true,
