@@ -644,6 +644,14 @@ describe('DrawToolContent', () => {
 				isTouch: true
 			};
 
+			it('shows the drawing sub-text for mode:null', async () => {
+				const element = await setup({ ...drawDefaultState, mode: null }, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('toolbox_drawTool_draw_init');
+			});
+
 			it('shows the drawing sub-text for mode:active', async () => {
 				const element = await setup({ ...drawDefaultState, mode: 'active' }, touchConfig);
 				const subTextElement = element.shadowRoot.querySelector('.sub-text');
