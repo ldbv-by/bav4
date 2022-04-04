@@ -1,3 +1,4 @@
+import { QueryParameters } from './services/domain/queryParameters';
 import globalCss from './main.css';
 
 //import global css
@@ -32,3 +33,4 @@ import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
 import './modules/dndImport';
+
