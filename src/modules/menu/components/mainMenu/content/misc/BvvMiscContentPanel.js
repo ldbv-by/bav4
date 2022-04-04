@@ -58,7 +58,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				</span>
 				<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_Contact')}</span>
 			</a>  
-			<a class="ba-list-item"  href='https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html' target='_blank'>
+			<a class="ba-list-item"  href='https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon checklist">					
 					</span>
