@@ -13,7 +13,7 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.zIndex).toBe(-1);
 		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
 		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
-		expect(defaultLayerProperties.constraints.cloneable).toBeFalse();
+		expect(defaultLayerProperties.constraints.cloneable).toBeTrue();
 	});
 });
 
@@ -31,7 +31,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.zIndex).toBe(-1);
 		expect(layer.constraints.alwaysTop).toBeFalse();
 		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeFalse();
+		expect(layer.constraints.cloneable).toBeTrue();
 	});
 
 	it('returns a layer object with default properties and values for given id and geoResourceId', () => {
@@ -46,7 +46,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.zIndex).toBe(-1);
 		expect(layer.constraints.alwaysTop).toBeFalse();
 		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeFalse();
+		expect(layer.constraints.cloneable).toBeTrue();
 	});
 });
 

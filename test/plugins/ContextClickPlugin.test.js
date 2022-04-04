@@ -9,7 +9,7 @@ import { isTemplateResult } from '../../src/utils/checks.js';
 import { $injector } from '../../src/injection/index.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
-import { HighlightFeatureTypes } from '../../src/store/highlight/highlight.action.js';
+import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
 
 describe('ContextClickPlugin', () => {
 
@@ -48,14 +48,14 @@ describe('ContextClickPlugin', () => {
 
 				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
 
 				//let's call it again
 				setContextClick({ coordinate: [21210, 42420], screenCoordinate: [210, 420] });
 
 				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureTypes.DEFAULT);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
 			});
 
 			describe('when move-start state changed', () => {

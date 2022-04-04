@@ -1,7 +1,7 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { CpResultItem } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultItem';
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
-import { HighlightFeatureTypes } from '../../../../../../../src/store/highlight/highlight.action';
+import { HighlightFeatureType } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
@@ -74,7 +74,7 @@ describe('CpResultItem', () => {
 
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.TEMPORARY);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 			});
 		});
@@ -139,7 +139,7 @@ describe('CpResultItem', () => {
 					expect(store.getState().highlight.features).toHaveSize(1);
 					expect(store.getState().highlight.features[0].id).toEqual(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 					expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
-					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureTypes.DEFAULT);
+					expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.DEFAULT);
 				});
 
 				it('fits the map by a coordinate', async () => {
