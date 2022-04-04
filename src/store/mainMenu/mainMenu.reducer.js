@@ -51,7 +51,7 @@ export const createMainMenuReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		tab: TabId.TOPICS
+		tab: null
 	};
 
 	return (state = initialState, action) => mainMenuReducer(state, action);
