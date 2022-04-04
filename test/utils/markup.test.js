@@ -1,7 +1,6 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
-import { QueryParameters } from '../../src/services/domain/queryParameters';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
 
@@ -87,13 +86,13 @@ describe('markup utils', () => {
 		});
 
 		afterEach(() => {
-			window.history.replaceState({}, '', '?');
+			window.ba_enableTestIds = undefined;
 		});
 
 		describe('generateTestIds for MvuElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
-				window.history.pushState({}, '', `?${QueryParameters.T_ENABLE_TEST_IDS}=true`);
+				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
 
@@ -128,7 +127,7 @@ describe('markup utils', () => {
 		describe('generateTestIds for BaElements', () => {
 
 			it('provides the correct test id for MvuElements', async () => {
-				window.history.pushState({}, '', `?${QueryParameters.T_ENABLE_TEST_IDS}=true`);
+				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
 				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
 
