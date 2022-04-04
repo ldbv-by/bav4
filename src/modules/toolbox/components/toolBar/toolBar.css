@@ -220,23 +220,11 @@
 	mask-image: url('assets/arrowbarright.svg');
 	-webkit-mask-image: url('assets/arrowbarright.svg');
 }
-.showButton {
-	right: -5em;
-	transform: translate(+5em,0);
-}
 .is-portrait .wrench , .is-tablet .wrench {
 	background: var(--text3);
 	height: 3em;
 	width: 3em;
 	margin: .2em;
-}
-.is-portrait .showButton, .is-tablet .showButton {
-	transform: translate(0,0);
-}
-.is-portrait .showButton .wrench , .is-tablet .showButton .wrench {
-	mask-image: url('assets/close.svg');
-	-webkit-mask-image: url('assets/close.svg');
-	transform: rotate(90deg);
 }
 .is-portrait .tool-bar__button-close, .is-tablet .tool-bar__button-close {
 	display: none;
@@ -275,4 +263,16 @@
 }
 .toolbar__button-tools:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+.showButton {
+	right: -5em;
+	transform: translate(+5em,0);
+}
+.is-portrait .showButton, .is-tablet .showButton {
+	transform: translate(0,0);
+}
+.is-portrait .showButton .wrench , .is-tablet .showButton .wrench {
+	mask-image: url('assets/close.svg');
+	-webkit-mask-image: url('assets/close.svg');
+	transform: rotate(90deg);
 }
