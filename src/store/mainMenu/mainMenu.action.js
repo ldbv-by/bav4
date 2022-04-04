@@ -63,11 +63,11 @@ export const TabId = Object.freeze({
 			case 1:
 				return TabId.MAPS;
 			case 2:
-				return TabId.MISC;
+				return TabId.SEARCH;
 			case 3:
 				return TabId.ROUTING;
 			case 4:
-				return TabId.SEARCH;
+				return TabId.MISC;
 			case 5:
 				return TabId.FEATUREINFO;
 		}
