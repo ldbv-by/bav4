@@ -48,14 +48,14 @@ describe('ContextClickPlugin', () => {
 
 				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 
 				//let's call it again
 				setContextClick({ coordinate: [21210, 42420], screenCoordinate: [210, 420] });
 
 				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
-				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
+				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 			});
 
 			describe('when move-start state changed', () => {

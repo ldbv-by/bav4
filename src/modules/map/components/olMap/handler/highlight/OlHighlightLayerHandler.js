@@ -98,10 +98,10 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 				case HighlightFeatureType.TEMPORARY:
 					olFeature.setStyle(highlightTemporaryCoordinateFeatureStyleFunction);
 					break;
-				case HighlightFeatureType.FEATURE_INFO_RUNNING:
+				case HighlightFeatureType.QUERY_RUNNING:
 					this._animatePointFeature(olFeature);
 					break;
-				case HighlightFeatureType.FEATURE_INFO_SUCCESS:
+				case HighlightFeatureType.QUERY_SUCCESS:
 					olFeature.setStyle(highlightAnimatedCoordinateFeatureStyleFunction);
 			}
 		}

@@ -5,7 +5,7 @@ import { getLayerById } from '../../olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
 import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
-import { FEATURE_INFO_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
+import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { createUniqueId } from '../../../../../../utils/numberUtils';
 
 /**
@@ -48,7 +48,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		observe(this._storeService.getStore(), state => state.featureInfo.coordinate, (coordinate, state) => {
 
 			//remove previous HighlightFeature items
-			removeHighlightFeaturesById(FEATURE_INFO_HIGHLIGHT_FEATURE_ID);
+			removeHighlightFeaturesById(QUERY_RUNNING_HIGHLIGHT_FEATURE_ID);
 			registerQuery(queryId);
 
 			const featureInfoItems = [...state.layers.active]
@@ -76,7 +76,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 			const highlightFeatures = featureInfoItems
 				.filter(featureInfo => featureInfo.geometry)
 				.map(featureInfo => ({
-					id: FEATURE_INFO_HIGHLIGHT_FEATURE_ID,
+					id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
 					type: HighlightFeatureType.DEFAULT,
 					data: { geometry: featureInfo.geometry.data, geometryType: HighlightGeometryType.GEOJSON }
 				}));

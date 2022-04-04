@@ -1,6 +1,5 @@
 import { BaElement } from '../modules/BaElement';
 import { MvuElement } from '../modules/MvuElement';
-import { QueryParameters } from '../services/domain/queryParameters';
 
 export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
 
@@ -15,9 +14,9 @@ export const generateTestIds = (element) => {
 
 	/**
 	 * We cannot use a service here, it's a low-level function for MvuElements, other services than the store service are not available.
-	 * So we get the 'T_ENABLE_TEST_IDS' query param directly from the window object.
+	 * So we use a global window property for switching on id generation.
 	 */
-	if (new URLSearchParams(window.location.search).get(QueryParameters.T_ENABLE_TEST_IDS) === 'true') {
+	if (window.ba_enableTestIds) {
 
 		/**
 		* Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
