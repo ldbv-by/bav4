@@ -1,5 +1,3 @@
-import { TabId } from './mainMenu.action';
-
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
 const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
