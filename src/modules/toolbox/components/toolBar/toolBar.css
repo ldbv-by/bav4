@@ -15,7 +15,6 @@
 .tool-bar > *:last-child {
 	border-right: none;
 }
-
 .tool-bar__tools-nav {
 	position: absolute;
 	top: 0rem;
@@ -66,17 +65,14 @@
 	mask-image: url('assets/upload.svg');
 	-webkit-mask-image: url('assets/upload.svg');
 }
-
 .pencil {
 	mask-image: url('assets/pencil.svg');
 	-webkit-mask-image: url('assets/pencil.svg');
 }
-
 .measure {
 	mask-image: url('assets/measure.svg');
 	-webkit-mask-image: url('assets/measure.svg');
 }
-
 .wrench {
 	mask-image: url('assets/wrench.svg');
 	-webkit-mask-image: url('assets/wrench.svg');
@@ -88,7 +84,6 @@
 	margin: .5em;
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
 }
-
 .tool-bar__button-text {
 	font-size: .8rem; 
 	text-align: center;
@@ -96,7 +91,6 @@
 .tool-bar__tools {
 	display: none;
 }
-
 .action-button {
 	font-size: .8em;
 	position: fixed;
@@ -109,18 +103,10 @@
 	background-color: var(--primary-bg-color);
 	border: none
 }
-
 .is-tablet .tool-bar {
 	bottom: -20em;	
 	right: 0;
 }
-
-/* .is-tablet .tool-bar {
-    right: 0.5em;
-    padding: .2em;
-    bottom: -19.5em;
-} */
-
 .is-desktop .action-button {
 	display: none; 
 }
@@ -131,7 +117,6 @@
 	bottom: .8em;
 	padding: 0em;
 }
-/* portrait */
 .is-portrait .tool-bar {
 	font-size: 1rem;
 	flex-direction: row ;
@@ -221,13 +206,9 @@
 	mask-image: url('assets/arrowbarright.svg');
 	-webkit-mask-image: url('assets/arrowbarright.svg');
 }
-
 .is-portrait .arrowright , .is-tablet .arrowright {
 	transform: rotate(90deg)
 }
-
-/* _______________________________________________________ neu */
-
 .close {
 	height: 2em;
 	width: 2em;
@@ -239,24 +220,27 @@
 	mask-image: url('assets/arrowbarright.svg');
 	-webkit-mask-image: url('assets/arrowbarright.svg');
 }
-
-.toolbar__button-tools:hover, .toolbar__button-tools:focus {
-	cursor: pointer;
-}
-
-.toolbar__button-tools:focus {
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
-}
-
 .showButton {
 	right: -5em;
 	transform: translate(+5em,0);
 }
-
+.is-portrait .wrench , .is-tablet .wrench {
+	background: var(--text3);
+	height: 3em;
+	width: 3em;
+	margin: .2em;
+}
 .is-portrait .showButton, .is-tablet .showButton {
 	transform: translate(0,0);
 }
-
+.is-portrait .showButton .wrench , .is-tablet .showButton .wrench {
+	mask-image: url('assets/close.svg');
+	-webkit-mask-image: url('assets/close.svg');
+	transform: rotate(90deg);
+}
+.is-portrait .tool-bar__button-close, .is-tablet .tool-bar__button-close {
+	display: none;
+}
 .toolbar__button-tools {
 	display: block;
 	position: fixed;
@@ -272,16 +256,6 @@
 	transition: transform var(--animation-duration-medium-open) var(--animation-easing-open);   
 	transition-delay: var(--animation-duration-large-open);
 }
-
-.showButton {
-	right: -5em;
-	transform: translate(+5em,0);
-}
-
-.is-portrait .showButton, .is-tablet .showButton {
-	transform: translate(0,0);
-}
-
 .is-portrait .toolbar__button-tools, .is-tablet .toolbar__button-tools {
 	display: block;
 	z-index: calc(var(--z-toolbox) - 10);
@@ -296,20 +270,9 @@
 	border: 0;
 	transform: scale(1.1);
 }    
-
-.is-portrait .tool-bar__button-close, .is-tablet .tool-bar__button-close {
-	display: none;
+.toolbar__button-tools:hover {
+	cursor: pointer;
 }
-
-.is-portrait .wrench , .is-tablet .wrench {
-	background: var(--text3);
-	height: 3em;
-	width: 3em;
-	margin: .2em;
-}
-
-.is-portrait .showButton .wrench , .is-tablet .showButton .wrench {
-	mask-image: url('assets/close.svg');
-	-webkit-mask-image: url('assets/close.svg');
-	transform: rotate(90deg);
+.toolbar__button-tools:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
