@@ -143,7 +143,7 @@ export class ToolBar extends MvuElement {
 							${translate('toolbox_toolbar_share_button')}
 						</div>  
 					</button> 
-					<button  class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+					<button  id="close-button" class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 						<div class="tool-bar__button_icon close arrowright">							
 						</div>						
 					</button>  	 				               				               				 				           					 				               				               				 				            				               				               				 				           
