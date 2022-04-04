@@ -31,7 +31,7 @@ export class ContextClickPlugin extends BaPlugin {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
 				addHighlightFeatures(
-					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.DEFAULT }
+					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS }
 				);
 				emitFixedNotification(content);
 			}
