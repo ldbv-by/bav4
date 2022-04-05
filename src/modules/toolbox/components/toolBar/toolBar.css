@@ -245,17 +245,13 @@
 	transition-delay: var(--animation-duration-large-open);
 }
 .is-portrait .toolbar__button-tools, .is-tablet .toolbar__button-tools {
-	display: block;
-	z-index: calc(var(--z-toolbox) - 10);
+	position: absolute;
 	background: var(--primary-bg-color);
 	background: var(--primary-color);
 	width: 3.4em;
 	height: 3.4em;
-	border-radius: 2em;
-	position: absolute;
 	bottom: 6.5em;
 	right: 1.2em;
-	border: 0;
 	transform: scale(1.1);
 }    
 .toolbar__button-tools:hover {
