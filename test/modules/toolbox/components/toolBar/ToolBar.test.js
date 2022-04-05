@@ -80,6 +80,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.share')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.import')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.close')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -104,14 +105,17 @@ describe('ToolBarElement', () => {
 			const toolBarButton = element.shadowRoot.querySelector('.toolbar__button-tools');
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(0);
 
 			toolBarButton.click();
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
 
 			toolBarButton.click();
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(0);
 		});
 
 		it('open or closes the Toolbar in desktop orientation', async () => {
@@ -119,7 +123,7 @@ describe('ToolBarElement', () => {
 			const state = {
 				media: {
 					portrait: false,
-					minWidth: false
+					minWidth: true
 				}
 			};
 
@@ -127,14 +131,17 @@ describe('ToolBarElement', () => {
 			const toolBarButton = element.shadowRoot.querySelector('.tool-bar__button-close');
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
 
 			toolBarButton.click();
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(0);
 
 			toolBarButton.click();
 
 			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
 		});
 	});
 
@@ -225,6 +232,8 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(1);
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
 		});
 
@@ -241,6 +250,8 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
 		});
 
@@ -257,6 +268,8 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('none');
 		});
 
@@ -273,6 +286,8 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.tool-bar.is-open')).toHaveSize(0);
+
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.action-button')).display).toBe('block');
 		});
 	});

@@ -264,14 +264,14 @@
 .toolbar__button-tools:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
-.showButton {
+.hide-button {
 	right: -5em;
 	transform: translate(+5em,0);
 }
-.is-portrait .showButton, .is-tablet .showButton {
+.is-portrait .hide-button, .is-tablet .hide-button {
 	transform: translate(0,0);
 }
-.is-portrait .showButton .wrench , .is-tablet .showButton .wrench {
+.is-portrait .hide-button .wrench , .is-tablet .hide-button .wrench {
 	mask-image: url('assets/close.svg');
 	-webkit-mask-image: url('assets/close.svg');
 	transform: rotate(90deg);

@@ -53,7 +53,7 @@ export class ToolBar extends MvuElement {
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.tools.current, current => this._toolId = current);
 
-		if (this.getModel().isPortrait) {
+		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
 		}
 	}
@@ -78,7 +78,7 @@ export class ToolBar extends MvuElement {
 		};
 
 		const getButtonClass = () => {
-			return isOpen ? 'showButton' : '';
+			return isOpen ? 'hide-button' : '';
 		};
 
 		const toggleTool = (id) => {
