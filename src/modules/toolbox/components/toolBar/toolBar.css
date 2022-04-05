@@ -269,7 +269,7 @@
 	transform: translate(+5em,0);
 }
 .is-portrait .hide-button, .is-tablet .hide-button {
-	transform: translate(0,0);
+	transform: translate(0,0) scale(1.1);
 }
 .is-portrait .hide-button .wrench , .is-tablet .hide-button .wrench {
 	mask-image: url('assets/close.svg');
