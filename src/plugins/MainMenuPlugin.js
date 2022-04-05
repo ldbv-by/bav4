@@ -23,7 +23,7 @@ export class MainMenuPlugin extends BaPlugin {
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		// check if we have a query parameter defining the tab id
-		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID)));
+		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
 		if (tabId) {
 			setTab(tabId);
 		}
