@@ -25,7 +25,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeFalse();
-				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+				expect(store.getState().mainMenu.tab).toBeNull();
 			});
 
 			it('initiales the store by media query for ORIENTATION \'landscape\'', () => {
@@ -34,7 +34,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer(windowMock));
 
 				expect(store.getState().mainMenu.open).toBeTrue();
-				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+				expect(store.getState().mainMenu.tab).toBeNull();
 			});
 
 			it('uses the real window as default argument', () => {
@@ -42,7 +42,7 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer());
 
 				expect(store.getState().mainMenu.open).toMatch(/true|false/);
-				expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+				expect(store.getState().mainMenu.tab).toBeNull();
 			});
 		});
 	});

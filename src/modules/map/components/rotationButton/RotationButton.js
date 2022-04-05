@@ -50,7 +50,7 @@ export class RotationButton extends MvuElement {
 		 * In order to avoid a flickering icon, we delay hiding the icon.
 		 */
 		this.observe(store => store.position.liveRotation, liveRotation => {
-			if (Math.abs(liveRotation) >= this._mapService.getMinimalRotation()) {
+			if (Math.abs(liveRotation) >= 0.1) {
 				if (this._timeoutId) {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;

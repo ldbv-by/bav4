@@ -100,7 +100,7 @@ export class GeoResourceResultItem extends MvuElement {
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)} 
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}>
 						<span class="ba-list-item__pre ">
-							<span class="ba-list-item__icon-info">
+							<span class="ba-list-item__icon">
 							</span>
 						</span>
 						<span class="ba-list-item__text ">
