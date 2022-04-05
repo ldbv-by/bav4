@@ -94,7 +94,7 @@ export class LocationResultItem extends MvuElement {
 					@mouseenter=${() => onMouseEnter(locationSearchResult)} 
 					@mouseleave=${() => onMouseLeave(locationSearchResult)}>
 					<span class="ba-list-item__pre ">
-						<span class="ba-list-item__icon-info">
+						<span class="ba-list-item__icon">
 						</span>
 					</span>
 					<span class="ba-list-item__text ">

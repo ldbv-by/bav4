@@ -94,7 +94,7 @@ export class CpResultItem extends MvuElement {
 					@mouseenter=${() => onMouseEnter(cpSearchResult)} 
 					@mouseleave=${() => onMouseLeave(cpSearchResult)}>
 					<span class="ba-list-item__pre ">
-						<span class="ba-list-item__icon-info">
+						<span class="ba-list-item__icon">
 						</span>
 					</span>
 					<span class="ba-list-item__text ">

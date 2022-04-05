@@ -31,14 +31,21 @@
 	display: flex;
 	margin: 0 0 0 1em;
 }
-.ba-list-item__icon-info {
-	background-repeat: no-repeat;
-	background-image: url('../../assets/geofill.svg');
+.ba-list-item__icon {
+	mask: url('../../assets/geofill.svg');
+	-webkit-mask-image: url('../../assets/geofill.svg');
+	-webkit-mask-repeat: no-repeat;
+	mask-size: cover;
+	-webkit-mask-size: cover;
 	margin: auto;
-	height: 100%;
-	width: 2em;
-	background-position: .5em;
+	height: 1.2em;
+	width: 1.2em;
 	font-size: 1rem;
+	background: var(--text2);
+	margin-right: .5em
+}
+.ba-list-item:hover .ba-list-item__icon {
+	background: var(--primary-color);
 }
 .ba-list-item__text {
 	flex-grow: 1;
