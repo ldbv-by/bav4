@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './cpResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
 import { setFit } from '../../../../../../store/position/position.action';
-import { addHighlightFeatures, HighlightFeatureTypes, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
 
@@ -58,7 +58,7 @@ export class CpResultItem extends MvuElement {
 		const onMouseEnter = (result) => {
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureTypes.TEMPORARY, data: { coordinate: [...result.center] }
+				type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...result.center] }
 			});
 		};
 		const onMouseLeave = () => {
@@ -72,7 +72,7 @@ export class CpResultItem extends MvuElement {
 			if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureTypes.DEFAULT, data: { coordinate: [...result.center] }
+					type: HighlightFeatureType.DEFAULT, data: { coordinate: [...result.center] }
 				});
 			}
 			else {

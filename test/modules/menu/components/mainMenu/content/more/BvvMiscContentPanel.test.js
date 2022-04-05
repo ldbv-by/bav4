@@ -43,7 +43,7 @@ describe('MiscContentPanel', () => {
 
 			const links = element.shadowRoot.querySelectorAll('a');
 
-			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe.html');
+			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe-v4.html');
 			expect(links[0].target).toEqual('_blank');
 			expect(links[0].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_help');
 
@@ -51,7 +51,7 @@ describe('MiscContentPanel', () => {
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
-			expect(links[2].href).toEqual('https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html');
+			expect(links[2].href).toEqual('https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf');
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 

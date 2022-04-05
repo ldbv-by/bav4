@@ -197,7 +197,7 @@ export class DrawToolContent extends AbstractToolContent {
 		const { mode } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
-		const getDrawModeMessage = (mode) => getTranslatedSpan('toolbox_drawTool_draw_' + mode);
+		const getDrawModeMessage = (mode) => mode ? getTranslatedSpan('toolbox_drawTool_draw_' + mode) : getTranslatedSpan('toolbox_drawTool_draw_init');
 		return this._environmentService.isTouch() ? getDrawModeMessage(mode) : nothing;
 	}
 
