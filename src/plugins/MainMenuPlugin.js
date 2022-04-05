@@ -21,23 +21,14 @@ export class MainMenuPlugin extends BaPlugin {
 		const { EnvironmentService: environmentService }
 			= $injector.inject('EnvironmentService');
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
-		const defaultTabId = TabId.TOPICS;
 
-		// check if we have query params
-		if (queryParams.has(QueryParameters.MENU_ID)) {
-			const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID)));
-			if (tabId) {
-				setTab(tabId);
-			}
-			else {
-
-				// set default tab id
-				setTab(defaultTabId);
-			}
+		// check if we have a query parameter defining the tab id
+		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID)));
+		if (tabId) {
+			setTab(tabId);
 		}
-		else {
-			// set default tab id
-			setTab(defaultTabId);
+		else { // set default tab id
+			setTab(TabId.TOPICS);
 		}
 	}
 
