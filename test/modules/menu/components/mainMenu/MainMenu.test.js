@@ -350,13 +350,8 @@ describe('MainMenu', () => {
 			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
 
 			// Touch-path upwards
-<<<<<<< HEAD
-			simulateTouchEvent('touchstart', closeButton, 0, 0);
-			simulateTouchEvent('touchmove', closeButton, 0, 52);
-=======
 			simulateTouchEvent('touchstart', closeButton, 0, 0, 2);
 			simulateTouchEvent('touchmove', closeButton, 0, 54, 2);
->>>>>>> 02e1fb0f414ecc21350a4a7816a64dd3daef0064
 			simulateTouchEvent('touchend', closeButton, 0, 56);
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
