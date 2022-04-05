@@ -96,7 +96,6 @@ export class MainMenu extends MvuElement {
 					toggle();
 				}
 			};
-
 			const swipe = new VanillaSwipe({
 				element: this.shadowRoot.getElementById('toggle'),
 				onSwipeStart: handler,

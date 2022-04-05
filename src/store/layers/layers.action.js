@@ -29,6 +29,7 @@ import { $injector } from '../../injection';
   * @typedef {Object} Constraints
   * @property {boolean} [hidden=false] Layer is not displayed in UI
   * @property {boolean} [alwaysTop=false] Layer always on top
+  * @property {boolean} [cloneable=true] Layer is allowed to be cloned
   */
 
 /**
