@@ -20,3 +20,6 @@
 .map-buttons-container.is-portrait, .map-buttons-container.is-tablet {
 	bottom: 10.2em;
 }
+.is-portrait ba-rotation-button, .is-tablet ba-rotation-button {
+	margin-bottom: 2.2em;
+}
