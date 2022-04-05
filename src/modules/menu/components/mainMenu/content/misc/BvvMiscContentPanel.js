@@ -44,7 +44,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_information')}</span>
 				</span>
 			</div>		
-			<a class="ba-list-item" href='https://www.ldbv.bayern.de/hilfe.html' target='_blank'>
+			<a class="ba-list-item" href='https://www.ldbv.bayern.de/hilfe-v4.html' target='_blank'>
 				<span class="ba-list-item__pre">
 					<span class="ba-list-item__icon icon help">				
 					</span>

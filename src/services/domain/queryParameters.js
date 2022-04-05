@@ -11,6 +11,7 @@ export const QueryParameters = Object.freeze({
 	LAYER_VISIBILITY: 'l_v',
 	LAYER_OPACITY: 'l_o',
 	TOPIC: 't',
+	MENU_ID: 'mid',
 	// technical parameters
 	T_ENABLE_TEST_IDS: 't_enable-test-ids',
 	T_DISABLE_INITIAL_UI_HINTS: 't_disable-initial-ui-hints'

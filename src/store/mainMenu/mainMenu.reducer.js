@@ -1,5 +1,3 @@
-import { TabId } from './mainMenu.action';
-
 export const OPEN_CLOSED_CHANGED = 'components/menu/mainMenu/open';
 export const TAB_CHANGED = 'components/menu/mainMenu/tabChanged';
 const ORIENTATION_MEDIA_QUERY = '(orientation: portrait)';
@@ -51,7 +49,7 @@ export const createMainMenuReducer = (_window = window) => {
 		/**
 		 * @property {number}
 		 */
-		tab: TabId.TOPICS
+		tab: null
 	};
 
 	return (state = initialState, action) => mainMenuReducer(state, action);

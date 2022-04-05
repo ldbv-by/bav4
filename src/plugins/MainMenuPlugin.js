@@ -1,6 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
+import { $injector } from '../injection';
+import { QueryParameters } from '../services/domain/queryParameters';
 
 
 /**
@@ -15,11 +17,27 @@ export class MainMenuPlugin extends BaPlugin {
 		this._open = null;
 	}
 
+	_init() {
+		const { EnvironmentService: environmentService }
+			= $injector.inject('EnvironmentService');
+		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+
+		// check if we have a query parameter defining the tab id
+		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
+		if (tabId) {
+			setTab(tabId);
+		}
+		else { // set default tab id
+			setTab(TabId.TOPICS);
+		}
+	}
+
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
+		this._init();
 
 		this._open = store.getState().mainMenu.open;
 		this._previousTab = store.getState().mainMenu.tab;
