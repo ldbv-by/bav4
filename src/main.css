@@ -72,12 +72,6 @@
 
 }
 
-@media (min-width:135em) {
-	:root {
-		font-size: 1em;
-	}
-}
-
 .light-theme {
 	/* brand */
 	--primary-color: var(--brand-light);
