@@ -20,7 +20,7 @@ export class ToolBar extends MvuElement {
 
 	constructor() {
 		super({
-			isOpen: false,
+			isOpen: true,
 			isFetching: false,
 			isPortrait: false,
 			hasMinWidth: false
@@ -52,6 +52,10 @@ export class ToolBar extends MvuElement {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
 		this.observe(state => state.tools.current, current => this._toolId = current);
+
+		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
+			this.signal(Update_IsOpen, false);
+		}
 	}
 
 	/**
@@ -73,6 +77,10 @@ export class ToolBar extends MvuElement {
 			return isOpen ? 'is-open' : '';
 		};
 
+		const getButtonClass = () => {
+			return isOpen ? 'hide-button' : '';
+		};
+
 		const toggleTool = (id) => {
 			if (this._toolId === id) {
 				setCurrentTool(null);
@@ -91,7 +99,11 @@ export class ToolBar extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button id='action-button' data-test-id class="action-button" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+					<div class="wrench">													
+					</div>
+				</button>
+				<button id='action-button' data-test-id class="action-button" >
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 					</div>
 					<div class="action-button__icon">
@@ -130,7 +142,11 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_share_button')}
 						</div>  
-					</button>  				               				               				 				           					 				               				               				 				            				               				               				 				           
+					</button> 
+					<button  id="close-button" class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+						<div class="tool-bar__button_icon close arrowright">							
+						</div>						
+					</button>  	 				               				               				 				           					 				               				               				 				            				               				               				 				           
 				</div>		
 			</div>		
 		`;
