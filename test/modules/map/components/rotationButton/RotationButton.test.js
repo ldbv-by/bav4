@@ -6,15 +6,10 @@ import { changeLiveRotation } from '../../../../../src/store/position/position.a
 window.customElements.define(RotationButton.tag, RotationButton);
 
 
-describe('GeolocationButton', () => {
+describe('RotationButton', () => {
 	let store;
 	const defaultState = {
 		liveRotation: 0
-	};
-	const mapServiceStub = {
-		getMinimalRotation() {
-			return .05;
-		}
 	};
 
 	const setup = async (positionState = defaultState) => {
@@ -25,7 +20,6 @@ describe('GeolocationButton', () => {
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
-			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 
@@ -37,7 +31,8 @@ describe('GeolocationButton', () => {
 		it('defines constant values', async () => {
 
 			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
-			expect(RotationButton.THROTTLE_DELAY_MS).toBe(100);
+			expect(RotationButton.THROTTLE_DELAY_MS).toBe(10);
+			expect(RotationButton.VISIBILITY_THRESHOLD_RAD).toBe(.1);
 		});
 	});
 
@@ -54,8 +49,8 @@ describe('GeolocationButton', () => {
 
 		describe('liveRotation < threshold value', () => {
 
-			it('renders a geolocation button', async () => {
-				const liveRotationValue = mapServiceStub.getMinimalRotation() - .01;
+			it('renders a rotation button', async () => {
+				const liveRotationValue = RotationButton.VISIBILITY_THRESHOLD_RAD - .01;
 				const element = await setup({ liveRotation: liveRotationValue });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -64,7 +59,7 @@ describe('GeolocationButton', () => {
 
 		describe('liveRotation > threshold value', () => {
 
-			it('renders a geolocation button', async () => {
+			it('renders a rotation button', async () => {
 				const liveRotationValue = .5;
 				const element = await setup({ rotation: .5, liveRotation: liveRotationValue });
 				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
@@ -102,7 +97,7 @@ describe('GeolocationButton', () => {
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation: mapServiceStub.getMinimalRotation() - .01 });
+			const element = await setup({ liveRotation: RotationButton.VISIBILITY_THRESHOLD_RAD - .01 });
 
 			changeLiveRotation();
 
