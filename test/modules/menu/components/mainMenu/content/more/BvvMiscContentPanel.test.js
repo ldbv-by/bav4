@@ -43,7 +43,7 @@ describe('MiscContentPanel', () => {
 
 			const links = element.shadowRoot.querySelectorAll('a');
 
-			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe.html');
+			expect(links[0].href).toEqual('https://www.ldbv.bayern.de/hilfe-v4.html');
 			expect(links[0].target).toEqual('_blank');
 			expect(links[0].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_help');
 
