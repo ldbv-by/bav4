@@ -74,34 +74,19 @@ export class MainMenu extends MvuElement {
 		const { tab } = this.getModel();
 		this._activateTab(tab);
 		if (firsttime) {
-			const log = () => console.log(...arguments);
 			const delta = 50;
-			const getSwipeMatcher = (isPortrait, minWidth) => {
-				console.log('isPortrait:', isPortrait);
-				console.log('minWidth:', minWidth);
-				if (isPortrait || minWidth) {
-					return (event, swipeData) => {
-						return event.type === 'touchmove' && swipeData.directionY === 'TOP' && swipeData.absY > delta;
-					};
-				}
-				return (event, swipeData) => {
-					return event.type === 'touchmove' && swipeData.directionX === 'LEFT' && swipeData.absX > delta;
-				};
-			};
 
 			const handler = (event, data) => {
-				const { portrait, minWidth } = this.getModel();
-				const swipeMatched = getSwipeMatcher(portrait, minWidth);
-				if (swipeMatched(event, data)) {
+				if (event.type === 'touchmove' || 'mousemove' && data.directionY === 'TOP' && data.absY > delta) {
 					toggle();
 				}
 			};
+			const swipeElement = this.shadowRoot.getElementById('toggle');
+
 			const swipe = new VanillaSwipe({
-				element: this.shadowRoot.getElementById('toggle'),
+				element: swipeElement,
 				onSwipeStart: handler,
 				delta: delta,
-				onSwiping: log,
-				onSwiped: log,
 				mouseTrackingEnabled: true
 			});
 

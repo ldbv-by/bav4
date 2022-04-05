@@ -302,10 +302,13 @@ describe('MainMenu', () => {
 			return Array(amount).fill(toRepeat);
 		};
 
+		const getCenter = (element) => {
+			const rect = element.getBoundingClientRect();
+			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
+		};
+
 		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
 			const touchEventSupported = () => window.TouchEvent ? true : false;
-
-
 
 			if (touchEventSupported()) {
 				const eventType = type;
@@ -336,7 +339,11 @@ describe('MainMenu', () => {
 
 		};
 
-		xit('closes the main menu', async () => {
+		/**
+		 * currently we can only test for mouseevents, due to the fact that firefox
+		 * do not provide support for TouchEvent in HeadlessFirefox for now
+		 */
+		it('closes the main menu', async () => {
 			const state = {
 				media: {
 					portrait: true,
@@ -349,10 +356,12 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
 
+			const center = getCenter(closeButton);
+
 			// Touch-path upwards
-			simulateTouchEvent('touchstart', closeButton, 0, 0, 2);
-			simulateTouchEvent('touchmove', closeButton, 0, 54, 2);
-			simulateTouchEvent('touchend', closeButton, 0, 56);
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
