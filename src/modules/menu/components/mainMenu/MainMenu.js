@@ -77,7 +77,7 @@ export class MainMenu extends MvuElement {
 			const delta = 50;
 
 			const handler = (event, data) => {
-				if (event.type === 'touchmove' || 'mousemove' && data.directionY === 'TOP' && data.absY > delta) {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > delta) {
 					toggle();
 				}
 			};
