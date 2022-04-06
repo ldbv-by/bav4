@@ -627,7 +627,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const styleFunction = this._getStyleFunctionFrom(feature);
 			const newStyles = styleFunction(feature);
 
-			feature.setStyle([newStyles[0], ...feature.getStyle()]);
+			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
 			this._setSelected(feature);
 		}
 
