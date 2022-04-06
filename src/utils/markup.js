@@ -50,7 +50,7 @@ export const generateTestIds = (element) => {
 		//Provide all child elements (except for MvuElements) with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
 			.forEach(el => {
-				// MvuElement/BaElement instances handled on their own
+				// MvuElement/BaElement instances are handled on their own
 				if (!(el instanceof BaElement || el instanceof MvuElement)) {
 
 					//priority: id -> css-classes
