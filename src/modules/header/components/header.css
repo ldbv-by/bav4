@@ -196,7 +196,7 @@
 }
 .action-button {
 	position: fixed;
-	z-index: calc(var(--z-toolbox) + 10);
+	z-index: calc(var(--z-toolbox) + var(--z-map) + 10);
 	left: .6em;
 	top: .9em;
 	height: 6em;
