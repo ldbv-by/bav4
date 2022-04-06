@@ -253,10 +253,6 @@ describe('Header', () => {
 	});
 
 	describe('when close button is swiped', () => {
-		/**
-		 * currently we can only test for mouseevents in all browsers, due to the fact that firefox
-		 * do not provide support for TouchEvent in FirefoxHeadless for now
-		 */
 		const repeat = (toRepeat, amount) => {
 			return Array(amount).fill(toRepeat);
 		};
@@ -266,11 +262,14 @@ describe('Header', () => {
 			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
 		};
 
+		/**
+		 * currently we can only test for mouseevents in firefox browser, due to the fact that FirefoxHeadless
+		 * do not provide support for TouchEvent for now
+		 */
 		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
 			const touchEventSupported = () => window.TouchEvent ? true : false;
 
 			if (touchEventSupported()) {
-				console.warn('using TouchEvent');
 				const eventType = type;
 				const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
 				const event = new Event(eventType);
@@ -296,7 +295,6 @@ describe('Header', () => {
 				const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
 				eventSource.dispatchEvent(event);
 			}
-
 		};
 
 		it('hides the header on swiped left', async () => {
