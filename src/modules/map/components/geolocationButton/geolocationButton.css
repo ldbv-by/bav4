@@ -1,6 +1,6 @@
 .geolocation-icon {
-	mask: url("./assets/circleFill.svg");
-	-webkit-mask-image: url("./assets/circleFill.svg");
+	mask: url("./assets/geolocation.svg");
+	-webkit-mask-image: url("./assets/geolocation.svg");
 	background: var(--text3);
 }
 .icon {
@@ -8,14 +8,14 @@
 	-webkit-mask-size: cover;
 	cursor: pointer;
 	display: inline-block;
-	height: 1.5em;
-	width: 1.5em;
+	height: 1.6em;
+	width: 1.6em;
 }
 .inactive {
 	background: var(--text3);
 }
 .active {
-	background: var(--warning-color) !important;
+	background: var(--error-color) !important;
 }
 
 .active .geolocation-icon {
@@ -56,7 +56,7 @@
 	border-radius: 50%;
 	border: none;
 	outline: none;
-	padding-top: 0.25em;
+	padding-top: 0.2em;
 }
 .geolocation-button:hover , .geolocation-button:focus {
 	transform: scale(1.1);

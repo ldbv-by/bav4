@@ -7,7 +7,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = firstStepsProvide('en');
 
-		expect(map.help_firstSteps_button).toBe('Help');
+		expect(map.help_firstSteps_button).toBe('First steps');
 		expect(map.help_firstSteps_notification_header).toBe('First steps');
 		expect(map.help_firstSteps_notification_text).toBe('Need help recording?');
 		expect(map.help_firstSteps_notification_close).toBe('No thanks');
@@ -19,7 +19,7 @@ describe('i18n for coordinate select', () => {
 
 		const map = firstStepsProvide('de');
 
-		expect(map.help_firstSteps_button).toBe('Hilfe');
+		expect(map.help_firstSteps_button).toBe('Erste Schritte');
 		expect(map.help_firstSteps_notification_header).toBe('Erste Schritte');
 		expect(map.help_firstSteps_notification_text).toBe('Sie brauchen Hilfe bei der Erfassung?');
 		expect(map.help_firstSteps_notification_close).toBe('Nein Danke');

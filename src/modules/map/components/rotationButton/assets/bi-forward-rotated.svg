@@ -1,4 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-forward" viewBox="0 0 16 16"><!--MIT License-->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- MIT License -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="16"
+   height="16"
+   fill="currentColor"
+   class="bi bi-forward"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg846">
+  <metadata
+     id="metadata852">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs850" />
+  <!--MIT License-->
   <path
-     d="m 4.9633225,7.1483225 a 0.144,0.144 0 0 0 0.134,0.202 h 1.003 a 0.5,0.5 0 0 1 0.5,0.5 v 6.3000005 h 2.9 V 7.8503225 a 0.5,0.5 0 0 1 0.5000005,-0.5 h 1.003 c 0.108,0 0.176,-0.11 0.134,-0.202 l -2.9330005,-3.984 a 0.51,0.51 0 0 1 -0.028,-0.042 0.147,0.147 0 0 0 -0.252,0 0.51,0.51 0 0 1 -0.028,0.042 z m 0.134,1.202 a 1.144,1.144 0 0 1 -0.96,-1.767 l 2.94,-3.994 a 1.147,1.147 0 0 1 1.946,0 l 2.9400005,3.994 a 1.144,1.144 0 0 1 -0.96,1.767 h -0.503 v 6.3000005 a 0.5,0.5 0 0 1 -0.5,0.5 H 6.1003225 a 0.5,0.5 0 0 1 -0.5,-0.5 V 8.3503225 Z" />
+     style="fill-rule:evenodd;stroke-width:1.31005192"
+     d="m 0.67682458,7.5823985 c -0.88510716,0.017501 -0.85814963,1.3104161 0.0269575,1.2929149 H 3.3568584 V 7.5823985 H 0.70378223 c -0.008978,-1.778e-4 -0.0179734,-1.778e-4 -0.0269576,0 z m 12.03881042,0 v 1.2929149 h 2.590175 c 0.885107,0 0.885107,-1.2929149 0,-1.2929149 z M 7.3398423,12.83719 v 2.502697 c 0,0.861943 1.3276615,0.861943 1.3276615,0 V 12.83719 Z"
+     id="path1515-3" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:7.4388175px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.18597041px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="5.180768"
+     y="10.797398"
+     id="text2713"><tspan
+       id="tspan2711"
+       x="5.180768"
+       y="10.797398"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Vemana2000;-inkscape-font-specification:Vemana2000;stroke-width:0.18597041px">N</tspan></text>
+  <path
+     d="M 7.6579337,0.14469548 6.1400989,2.7450279 c -0.1791268,0.306955 -0.033551,0.787075 0.2383088,0.787075 H 9.4140762 A 0.31647921,0.4744268 0 0 0 9.6523851,2.7450279 L 8.1345512,0.14516989 a 0.31647921,0.4744268 0 0 0 -0.4766175,0 z"
+     id="path923-6"
+     style="stroke-width:0.38748702" />
 </svg>

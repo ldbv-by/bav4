@@ -19,8 +19,7 @@ export class RotationButton extends MvuElement {
 	constructor() {
 		super({ liveRotation: 0 });
 
-		const { MapService: mapService, TranslationService: translationService } = $injector.inject('MapService', 'TranslationService');
-		this._mapService = mapService;
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
 		this._timeoutId = null;
 	}
@@ -50,7 +49,7 @@ export class RotationButton extends MvuElement {
 		 * In order to avoid a flickering icon, we delay hiding the icon.
 		 */
 		this.observe(store => store.position.liveRotation, liveRotation => {
-			if (Math.abs(liveRotation) >= this._mapService.getMinimalRotation()) {
+			if (Math.abs(liveRotation) >= RotationButton.VISIBILITY_THRESHOLD_RAD) {
 				if (this._timeoutId) {
 					clearTimeout(this._timeoutId);
 					this._timeoutId = null;
@@ -105,6 +104,10 @@ export class RotationButton extends MvuElement {
 	}
 
 	static get THROTTLE_DELAY_MS() {
-		return 100;
+		return 10;
+	}
+
+	static get VISIBILITY_THRESHOLD_RAD() {
+		return .1;
 	}
 }
