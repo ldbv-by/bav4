@@ -242,6 +242,101 @@ describe('Header', () => {
 		});
 	});
 
+	describe('when close button is clicked', () => {
+		it('hides the header', async () => {
+			const element = await setup();
+
+			element.shadowRoot.querySelector('.close-menu').click();
+
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeNull();
+		});
+	});
+
+	describe('when close button is swiped', () => {
+		/**
+		 * currently we can only test for mouseevents in all browsers, due to the fact that firefox
+		 * do not provide support for TouchEvent in FirefoxHeadless for now
+		 */
+		const repeat = (toRepeat, amount) => {
+			return Array(amount).fill(toRepeat);
+		};
+
+		const getCenter = (element) => {
+			const rect = element.getBoundingClientRect();
+			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
+		};
+
+		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
+			const touchEventSupported = () => window.TouchEvent ? true : false;
+
+			if (touchEventSupported()) {
+				console.warn('using TouchEvent');
+				const eventType = type;
+				const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
+				const event = new Event(eventType);
+				event.touches = [...touches];
+				event.changedTouches = [...touches];
+
+				eventSource.dispatchEvent(event);
+			}
+			const translateToMouseEventType = (touchEventType) => {
+				switch (touchEventType) {
+					case 'touchstart':
+						return 'mousedown';
+					case 'touchmove':
+						return 'mousemove';
+					case 'touchend':
+						return 'mouseup';
+				}
+				return null;
+			};
+
+			const mouseEventType = translateToMouseEventType(type);
+			if (mouseEventType) {
+				const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
+				eventSource.dispatchEvent(event);
+			}
+
+		};
+
+		it('hides the header on swiped left', async () => {
+			const element = await setup();
+
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe left
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeNull();
+		});
+
+		it('does NOT hides the header on swiped right, upwards and downwards', async () => {
+			const element = await setup();
+
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe right
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+
+			// Touch-path swipe upwards
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			// Touch-path downwards
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
+		});
+	});
+
 	describe('when modal button is clicked', () => {
 
 		it('shows a modal window with the showcase', async () => {

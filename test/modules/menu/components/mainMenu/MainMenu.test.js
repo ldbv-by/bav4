@@ -298,6 +298,10 @@ describe('MainMenu', () => {
 	});
 
 	describe('when close button swiped', () => {
+		/**
+		 * currently we can only test for mouseevents in all browsers, due to the fact that firefox
+		 * do not provide support for TouchEvent in FirefoxHeadless for now
+		 */
 		const repeat = (toRepeat, amount) => {
 			return Array(amount).fill(toRepeat);
 		};
@@ -311,6 +315,7 @@ describe('MainMenu', () => {
 			const touchEventSupported = () => window.TouchEvent ? true : false;
 
 			if (touchEventSupported()) {
+				console.warn('using TouchEvent');
 				const eventType = type;
 				const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
 				const event = new Event(eventType);
@@ -339,19 +344,14 @@ describe('MainMenu', () => {
 
 		};
 
-		/**
-		 * currently we can only test for mouseevents, due to the fact that firefox
-		 * do not provide support for TouchEvent in HeadlessFirefox for now
-		 */
-		it('closes the main menu', async () => {
+
+		it('closes the main menu on swipe upward', async () => {
 			const state = {
 				media: {
 					portrait: true,
 					minWidth: false
 				}
 			};
-			window.TouchEvent = jasmine.createSpy().and.returnValue(true);
-
 
 			const element = await setup(state);
 			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
@@ -364,7 +364,38 @@ describe('MainMenu', () => {
 			simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
-			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+		});
+
+		it('does NOT closes the main menu on swipe downwards, left or right', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			const center = getCenter(closeButton);
+
+			// Touch-path downwards
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+
+			// Touch-path left
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+
+
+			// Touch-path right
+			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 		});
 	});
 
