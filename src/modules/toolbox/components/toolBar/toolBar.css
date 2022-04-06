@@ -272,17 +272,17 @@
 	-webkit-mask-image: url('assets/close.svg');
 	transform: rotate(90deg);
 }
-.toolbar__close-fullscreen-button{
+.toolbar__close-fullscreen-button {
 	z-index: calc( var(--z-map) + 10 );	
 	position: fixed;
-	top:0;
+	top: 0;
 	left: 0;
-	height:4em;
-	width:4em;
-	margin:1em;
+	height: 4em;
+	width: 4em;
+	margin: 1em;
 	background: var(--primary-bg-color-05);
 	border-radius: 2em;
-	border:0;
+	border: 0;
 	transition: rotate(270);
 	opacity: calc( var(--z-map) - 600 );	
 }
@@ -290,11 +290,11 @@
 .toolbar__close-fullscreen-button:hover {
 	background: var(--primary-bg-color);
 }
-.toolbar__close-fullscreen-button:focus{
+.toolbar__close-fullscreen-button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 
-.toolbar__close-fullscreen-button-icon{
+.toolbar__close-fullscreen-button-icon {
 	display: inline-block;
 	mask-image: url('assets/arrowLeftShort.svg');
 	-webkit-mask-image: url('assets/arrowLeftShort.svg');
