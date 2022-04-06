@@ -121,6 +121,7 @@ export class VectorLayerService {
 		const { minZoom, maxZoom, opacity } = vectorGeoResource;
 		const vectorLayer = new VectorLayer({
 			id: id,
+			geoResourceId: vectorGeoResource.id,
 			opacity: opacity,
 			minZoom: minZoom ?? undefined,
 			maxZoom: maxZoom ?? undefined
