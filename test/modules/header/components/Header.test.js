@@ -79,6 +79,10 @@ describe('Header', () => {
 				hasSearchTerm: false
 			});
 		});
+
+		it('has static constants', async () => {
+			expect(Header.SWIPE_DELTA_PX).toBe(50);
+		});
 	});
 
 	describe('responsive layout ', () => {
@@ -190,7 +194,7 @@ describe('Header', () => {
 
 		it('adds a close button', async () => {
 			const element = await setup();
-
+			expect(element.shadowRoot.querySelector('button.close-menu').id).toBe('header_toggle');
 			expect(element.shadowRoot.querySelector('button.close-menu').title).toBe('header_close_button_title');
 		});
 
@@ -253,48 +257,9 @@ describe('Header', () => {
 	});
 
 	describe('when close button is swiped', () => {
-		const repeat = (toRepeat, amount) => {
-			return Array(amount).fill(toRepeat);
-		};
-
 		const getCenter = (element) => {
 			const rect = element.getBoundingClientRect();
 			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
-		};
-
-		/**
-		 * currently we can only test for mouseevents in firefox browser, due to the fact that FirefoxHeadless
-		 * do not provide support for TouchEvent for now
-		 */
-		const simulateTouchEvent = (type, eventSource = document, x, y, touchCount = 1) => {
-			const touchEventSupported = () => window.TouchEvent ? true : false;
-
-			if (touchEventSupported()) {
-				const eventType = type;
-				const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
-				const event = new Event(eventType);
-				event.touches = [...touches];
-				event.changedTouches = [...touches];
-
-				eventSource.dispatchEvent(event);
-			}
-			const translateToMouseEventType = (touchEventType) => {
-				switch (touchEventType) {
-					case 'touchstart':
-						return 'mousedown';
-					case 'touchmove':
-						return 'mousemove';
-					case 'touchend':
-						return 'mouseup';
-				}
-				return null;
-			};
-
-			const mouseEventType = translateToMouseEventType(type);
-			if (mouseEventType) {
-				const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
-				eventSource.dispatchEvent(event);
-			}
 		};
 
 		it('hides the header on swiped left', async () => {
@@ -304,9 +269,9 @@ describe('Header', () => {
 			const center = getCenter(closeButton);
 
 			// Touch-path swipe left
-			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
-			simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
-			simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
 			expect(element.shadowRoot.querySelector('.header.is-open')).toBeNull();
 		});
 
@@ -317,19 +282,19 @@ describe('Header', () => {
 			const center = getCenter(closeButton);
 
 			// Touch-path swipe right
-			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
-			simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
-			simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
 
 			// Touch-path swipe upwards
-			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
-			simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
-			simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
 
 			// Touch-path downwards
-			simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
-			simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
-			simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
 			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
 		});

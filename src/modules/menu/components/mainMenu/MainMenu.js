@@ -74,10 +74,9 @@ export class MainMenu extends MvuElement {
 		const { tab } = this.getModel();
 		this._activateTab(tab);
 		if (firsttime) {
-			const delta = 50;
 
 			const handler = (event, data) => {
-				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > delta) {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > MainMenu.SWIPE_DELTA_PX) {
 					toggle();
 				}
 			};
@@ -86,7 +85,7 @@ export class MainMenu extends MvuElement {
 			const swipe = new VanillaSwipe({
 				element: swipeElement,
 				onSwipeStart: handler,
-				delta: delta,
+				delta: MainMenu.SWIPE_DELTA_PX,
 				mouseTrackingEnabled: true
 			});
 
@@ -191,6 +190,10 @@ export class MainMenu extends MvuElement {
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
+	}
+
+	static get SWIPE_DELTA_PX() {
+		return 50;
 	}
 
 	/**

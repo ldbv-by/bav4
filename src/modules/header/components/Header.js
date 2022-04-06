@@ -69,10 +69,9 @@ export class Header extends MvuElement {
 
 	onAfterRender(firsttime) {
 		if (firsttime) {
-			const delta = 50;
 
 			const handler = (event, data) => {
-				if (['touchmove', 'mousemove'].includes(event.type) && data.directionX === 'LEFT' && data.absX > delta) {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionX === 'LEFT' && data.absX > Header.SWIPE_DELTA_PX) {
 					toggle();
 				}
 			};
@@ -81,7 +80,7 @@ export class Header extends MvuElement {
 			const swipe = new VanillaSwipe({
 				element: swipeElement,
 				onSwipeStart: handler,
-				delta: delta,
+				delta: Header.SWIPE_DELTA_PX,
 				mouseTrackingEnabled: true
 			});
 
@@ -250,6 +249,10 @@ export class Header extends MvuElement {
 				</div>
             </div>
 		`;
+	}
+
+	static get SWIPE_DELTA_PX() {
+		return 50;
 	}
 
 	static get tag() {
