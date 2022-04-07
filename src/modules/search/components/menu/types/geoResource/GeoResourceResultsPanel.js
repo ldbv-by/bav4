@@ -111,7 +111,7 @@ export class GeoResouceResultsPanel extends MvuElement {
 					<ul class="georesource-items">	
 						${results
 		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
+		.map((result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`)}
 					</ul>
 					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
 					${translate('search_menu_showAll_label')}

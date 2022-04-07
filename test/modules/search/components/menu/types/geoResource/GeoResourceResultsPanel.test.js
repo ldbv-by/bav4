@@ -3,6 +3,7 @@ import { GeoResouceResultsPanel } from '../../../../../../../src/modules/search/
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
 import { EventLike } from '../../../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../../../test-utils.js';
 
@@ -109,6 +110,7 @@ describe('GeoResouceResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.georesource-label__text').textContent).toBe('search_menu_geoResourceResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.georesource-label__collapse')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.georesource-items').childElementCount).toBe(GeoResouceResultsPanel.Default_Result_Item_Length);
+				expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-georesource-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
