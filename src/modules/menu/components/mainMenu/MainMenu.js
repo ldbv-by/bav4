@@ -10,6 +10,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { MvuElement } from '../../../MvuElement';
+import VanillaSwipe from 'vanilla-swipe';
 
 
 const Update_Main_Menu = 'update_main_menu';
@@ -69,9 +70,28 @@ export class MainMenu extends MvuElement {
 	/**
 	* @override
 	*/
-	onAfterRender() {
+	onAfterRender(firsttime) {
 		const { tab } = this.getModel();
 		this._activateTab(tab);
+		if (firsttime) {
+
+			const handler = (event, data) => {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > MainMenu.SWIPE_DELTA_PX) {
+					toggle();
+				}
+			};
+			const swipeElement = this.shadowRoot.getElementById('toggle');
+
+			const swipe = new VanillaSwipe({
+				element: swipeElement,
+				onSwipeStart: handler,
+				delta: MainMenu.SWIPE_DELTA_PX,
+				mouseTrackingEnabled: true
+			});
+
+			swipe.init();
+		}
+
 	}
 
 	/**
@@ -125,7 +145,7 @@ export class MainMenu extends MvuElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
-					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
+					<button id='toggle' @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<i class='resize-icon'></i>	
 					</button>	
@@ -170,6 +190,10 @@ export class MainMenu extends MvuElement {
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
+	}
+
+	static get SWIPE_DELTA_PX() {
+		return 50;
 	}
 
 	/**

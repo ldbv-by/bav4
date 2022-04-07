@@ -62,6 +62,12 @@ describe('MainMenu', () => {
 				observeResponsiveParameter: false
 			});
 		});
+
+		it('has static constants', async () => {
+			expect(MainMenu.SWIPE_DELTA_PX).toBe(50);
+		});
+
+
 	});
 
 	describe('responsive layout ', () => {
@@ -135,6 +141,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button').id).toBe('toggle');
 			expect(element.shadowRoot.querySelector('.main-menu__close-button').title).toBe('menu_main_open_button');
 			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_open_button');
 		});
@@ -294,6 +301,65 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+		});
+	});
+
+	describe('when close button swiped', () => {
+		const getCenter = (element) => {
+			const rect = element.getBoundingClientRect();
+			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
+		};
+
+		it('closes the main menu on swipe upward', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			const center = getCenter(closeButton);
+
+			// Touch-path upwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
+		});
+
+		it('does NOT closes the main menu on swipe downwards, left or right', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			const center = getCenter(closeButton);
+
+			// Touch-path downwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+
+			// Touch-path left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+
+			// Touch-path right
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 		});
 	});
 
