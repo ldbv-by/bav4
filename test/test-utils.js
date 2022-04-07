@@ -140,9 +140,9 @@ export class TestUtils {
 	}
 
 	/**
-	 * Fires a new {@see TouchEvent} on the specified eventSource-element. If TouchEvent is not supported,
-	 * MouseEvents is used instead.This happens currently in firefox browsers, due to the fact that FirefoxHeadless
-	 * does not provide support for TouchEvents for now
+	 * Fires a new {@see TouchEvent} on the specified event source element. If TouchEvents are not supported,
+	 * MouseEvents are used instead. This currently affects Firefox only, due to the fact that FirefoxHeadless
+	 * does not provide support for TouchEvents for now.
 	 *
 	 * @param {'touchstart'|'touchmove'|'touchend'} type the specified TouchEvent-Type
 	 * @param {HTMLElement} eventSource the element which should dispatch the event
