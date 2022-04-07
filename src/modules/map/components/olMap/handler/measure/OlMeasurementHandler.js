@@ -91,7 +91,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) => {
-				const id = layer.getKeys().includes('geoResourceId') ? layer.get('geoResourceId') : layer.get('id');
+				const id = layer.get('geoResourceId');
 				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
 			};
 			return map.getLayers().getArray().find(isOldLayer);
