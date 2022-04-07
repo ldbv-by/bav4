@@ -42,21 +42,25 @@ export const generateTestIds = (element) => {
 
 		const basePath = pathElements.reverse().join('_');
 
-		//Give the current MvuElement only a test id if it has no parent MvuElement and requests it
-		if (element.hasAttribute(TEST_ID_ATTRIBUTE_NAME) && pathElements.length === 1) {
+		//Give the current MvuElement only a test id if it requests it
+		if (element.hasAttribute(TEST_ID_ATTRIBUTE_NAME)) {
 			element.setAttribute(TEST_ID_ATTRIBUTE_NAME, basePath);
 		}
 
-		//Provide all child elements  with test ids if requested
+		//Provide all child elements (except for MvuElements) with test ids if requested
 		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
 			.forEach(el => {
-				//priority: id -> css-classes
-				const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
-				if (qualifier) {
-					el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${qualifier.replace(' ', '-')}`);
-				}
-				else {
-					console.warn(`No data-test-id qualifier found for: ${basePath} -> ${el.tagName.toLocaleLowerCase()}. Please add either an id or a class attribute.`);
+				// MvuElement/BaElement instances are handled on their own
+				if (!(el instanceof BaElement || el instanceof MvuElement)) {
+
+					//priority: id -> css-classes
+					const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
+					if (qualifier) {
+						el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${qualifier.replace(' ', '-')}`);
+					}
+					else {
+						console.warn(`No data-test-id qualifier found for: ${basePath} -> ${el.tagName.toLocaleLowerCase()}. Please add either an id or a class attribute.`);
+					}
 				}
 			});
 	}
