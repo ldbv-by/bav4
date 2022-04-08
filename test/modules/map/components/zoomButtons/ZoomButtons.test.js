@@ -10,12 +10,9 @@ let store;
 
 describe('ZoomButtons', () => {
 
-	const initialZoomLevel = 10;
-	const minZoomLevel = 3;
-	const maxZoomLevel = 20;
 	const mapServiceMock = {
-		getMinZoomLevel: () => minZoomLevel,
-		getMaxZoomLevel: () => maxZoomLevel
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {}
 	};
 	let element;
 
@@ -23,7 +20,7 @@ describe('ZoomButtons', () => {
 
 		const state = {
 			position: {
-				zoom: initialZoomLevel
+				zoom: 10
 			}
 		};
 
