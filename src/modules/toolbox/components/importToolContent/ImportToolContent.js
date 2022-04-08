@@ -27,10 +27,13 @@ export class ImportToolContent extends AbstractToolContent {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
+		const onClear = () => {
+			const inputElement = this._root.querySelector('input');
+			inputElement.value = null;
+		};
 		const onUpload = () => {
 			const inputElement = this._root.querySelector('input');
 			const files = inputElement?.files;
-
 			const importData = async (blob, sourceType) => {
 				const text = await blob.text();
 				setData(text, sourceType);
@@ -77,7 +80,7 @@ export class ImportToolContent extends AbstractToolContent {
 							<div class="tool-container__button-text" >
 								${translate('toolbox_import_data_button')}							
 							</div>
-							<input id='fileupload' type='file' @change=${onUpload}></input>
+							<input id='fileupload' type='file' @change=${onUpload} @click=${onClear} ></input>
 						</label>
 					</div>
 					<div  class='drag-drop-preview ${getIsTouchHide()}'>
