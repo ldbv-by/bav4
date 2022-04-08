@@ -126,7 +126,8 @@ describe('store utils', () => {
 		});
 
 		it('compares arrays and objects deeply', () => {
-			expect(equals({ some: 42 }, { some: 42 })).toBeTrue();
+			expect(equals({ some: 42, thing: 21 }, { some: 42, thing: 21 })).toBeTrue();
+			expect(equals({ some: 42, thing: 21 }, { thing: 21, some: 42 })).toBeTrue();
 			expect(equals(['some', 'foo'], ['some', 'foo'])).toBeTrue();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 42 }, 'some'])).toBeTrue();
 
