@@ -1,15 +1,15 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import css from './zoomButtons.css';
 import { $injector } from '../../../../injection';
 import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
+import { MvuElement } from '../../../MvuElement';
 
 /**
- * Buttons which change the zoom level of the map.
+ * Buttons that changes the zoom level of the map.
  * @class
  * @author taulinger
  */
-export class ZoomButtons extends BaElement {
+export class ZoomButtons extends MvuElement {
 
 	constructor() {
 		super();
