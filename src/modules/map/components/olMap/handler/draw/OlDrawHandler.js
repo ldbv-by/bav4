@@ -206,7 +206,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
-
 			clickAction(selectableFeatures);
 		};
 
@@ -693,7 +692,16 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_setSelection(ids = []) {
-		if (this._select) {
+		// Todo: abstract check for array equality (flat array) could be extracted to utils
+		const arrayEquals = (a, b) => {
+			return Array.isArray(a) &&
+				Array.isArray(b) &&
+				a.length === b.length &&
+				a.every((val, index) => val === b[index]);
+		};
+		const currentSelectedId = this._select.getFeatures().getArray().map(f => f.getId());
+		const newSelection = !arrayEquals(ids, currentSelectedId);
+		if (this._select && newSelection) {
 			const selectionSize = this._select.getFeatures().getLength();
 			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._setSelected(null);
