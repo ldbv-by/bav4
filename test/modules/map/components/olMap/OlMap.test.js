@@ -33,6 +33,7 @@ describe('OlMap', () => {
 	const initialZoomLevel = 10;
 	const initialRotationValue = .5;
 	const longPressDelay = 300;
+	const minZoomLevel = 5;
 	const maxZoomLevel = 21;
 	const id0 = 'id0';
 	const id1 = 'id1';
@@ -42,6 +43,9 @@ describe('OlMap', () => {
 	const mapServiceStub = {
 		getMinimalRotation() {
 			return .05;
+		},
+		getMinZoomLevel() {
+			return minZoomLevel;
 		},
 		getMaxZoomLevel() {
 			return maxZoomLevel;
@@ -180,6 +184,7 @@ describe('OlMap', () => {
 			expect(element._view.getZoom()).toBe(initialZoomLevel);
 			expect(element._view.getCenter()).toEqual(initialCenter);
 			expect(element._view.getRotation()).toBe(initialRotationValue);
+			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
 			expect(element.shadowRoot.querySelector('#ol-map')).toBeTruthy();
 			//all default controls are removed, ScaleLine control added

@@ -94,6 +94,7 @@ export class OlMap extends MvuElement {
 			center: center,
 			zoom: zoom,
 			rotation: rotation,
+			minZoom: this._mapService.getMinZoomLevel(),
 			maxZoom: this._mapService.getMaxZoomLevel()
 		});
 
