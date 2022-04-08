@@ -1,19 +1,29 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
 import { changeCenter, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
+import { $injector } from '../../../src/injection';
 
 
 describe('positionReducer', () => {
+	const initialZoomLevel = 12;
+	const minZoomLevel = 3;
+	const maxZoomLevel = 20;
+	const mapServiceMock = {
+		getMinZoomLevel: () => minZoomLevel,
+		getMaxZoomLevel: () => maxZoomLevel
+	};
 
 	const setup = (state) => {
-		return TestUtils.setupStoreAndDi(state, {
+		const store = TestUtils.setupStoreAndDi(state, {
 			position: positionReducer
 		});
+		$injector.registerSingleton('MapService', mapServiceMock);
+		return store;
 	};
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().position.zoom).toBe(12);
+		expect(store.getState().position.zoom).toBe(initialZoomLevel);
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.rotation).toBe(0);
 		expect(store.getState().position.liveRotation).toBe(0);
@@ -26,6 +36,22 @@ describe('positionReducer', () => {
 		changeZoom(10);
 
 		expect(store.getState().position.zoom).toBe(10);
+
+		changeZoom(minZoomLevel);
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+
+		changeZoom(maxZoomLevel);
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+
+		changeZoom(minZoomLevel - 1);
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+
+		changeZoom(maxZoomLevel + 1);
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
 	});
 
 	it('changes the \'center\' property', () => {
@@ -59,6 +85,26 @@ describe('positionReducer', () => {
 
 		expect(store.getState().position.zoom).toBe(10);
 		expect(store.getState().position.center).toEqual([21, 42]);
+
+		changeZoomAndCenter({ zoom: minZoomLevel, center: [21, 42] });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+
+		changeZoomAndCenter({ zoom: maxZoomLevel, center: [21, 42] });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+
+		changeZoomAndCenter({ zoom: minZoomLevel - 1, center: [21, 42] });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+
+		changeZoomAndCenter({ zoom: maxZoomLevel + 1, center: [21, 42] });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
 	});
 
 	it('changes \'zoom\',  \'center\' and  \'rotation\' property', () => {
@@ -69,18 +115,48 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(10);
 		expect(store.getState().position.center).toEqual([21, 42]);
 		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomCenterAndRotation({ zoom: minZoomLevel, center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomCenterAndRotation({ zoom: maxZoomLevel, center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomCenterAndRotation({ zoom: minZoomLevel - 1, center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomCenterAndRotation({ zoom: maxZoomLevel + 1, center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
 	});
 
 	it('increases the \'zoom\' property by plus one', () => {
 		const store = setup({
 			position: {
-				zoom: 5
+				zoom: 18
 			}
 		});
 
 		increaseZoom();
 
-		expect(store.getState().position.zoom).toBe(6);
+		expect(store.getState().position.zoom).toBe(19);
+
+		increaseZoom();
+		increaseZoom();
+		increaseZoom();
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
 	});
 
 	it('decreases the \'zoom\' property by minus one', () => {
@@ -93,6 +169,12 @@ describe('positionReducer', () => {
 		decreaseZoom();
 
 		expect(store.getState().position.zoom).toBe(4);
+
+		decreaseZoom();
+		decreaseZoom();
+		decreaseZoom();
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
 	});
 
 	it('places a \'fitRequest\' property', () => {

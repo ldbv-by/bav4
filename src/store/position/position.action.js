@@ -39,40 +39,60 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
+const getMapService = () => {
+	const { MapService: mapService } = $injector.inject('MapService');
+	return mapService;
+};
+
+const getValidZoomLevel = zoom => {
+	if (zoom > getMapService().getMaxZoomLevel()) {
+		return getMapService().getMaxZoomLevel();
+	}
+	if (zoom < getMapService().getMinZoomLevel()) {
+		return getMapService().getMinZoomLevel();
+	}
+	return zoom;
+};
+
 /**
- * Changes zoom level and the position.
+ * Changes the zoom level and the position.
  * @param {ZoomCenter} zoomCenter zoom and center
  * @function
  */
 export const changeZoomAndCenter = (zoomCenter) => {
+	const { zoom } = zoomCenter;
+
+	zoomCenter = { ...zoomCenter, zoom: zoom };
 	getStore().dispatch({
 		type: ZOOM_CENTER_CHANGED,
-		payload: zoomCenter
+		payload: { ...zoomCenter, zoom: getValidZoomLevel(zoom) }
 	});
 };
 
 /**
- * Changes zoom level, position and rotation
+ * Changes the zoom level, position and rotation
  * @param {ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
  * @function
  */
 export const changeZoomCenterAndRotation = (zoomCenterRotation) => {
+	const { zoom } = zoomCenterRotation;
+
 	getStore().dispatch({
 		type: ZOOM_CENTER_ROTATION_CHANGED,
-		payload: zoomCenterRotation
+		payload: { ...zoomCenterRotation, zoom: getValidZoomLevel(zoom) }
 	});
 };
 
 /**
- * Changes zoom level.
+ * Changes the zoom level.
  * @param {number} zoom zoom level
  * @function
  */
 export const changeZoom = (zoom) => {
+
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom
-
+		payload: getValidZoomLevel(zoom)
 	});
 };
 
@@ -111,7 +131,7 @@ export const increaseZoom = () => {
 	const { position: { zoom } } = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom + 1
+		payload: getValidZoomLevel(zoom + 1)
 
 	});
 };
@@ -125,7 +145,7 @@ export const decreaseZoom = () => {
 	const { position: { zoom } } = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom - 1
+		payload: getValidZoomLevel(zoom - 1)
 
 	});
 };
