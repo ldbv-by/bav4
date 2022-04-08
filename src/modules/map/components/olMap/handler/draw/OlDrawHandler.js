@@ -8,7 +8,7 @@ import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolF
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { observe } from '../../../../../../utils/storeUtils';
+import { equals, observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
@@ -208,7 +208,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
-
 			clickAction(selectableFeatures);
 		};
 
@@ -695,7 +694,9 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_setSelection(ids = []) {
-		if (this._select) {
+		const currentSelectedId = this._select.getFeatures().getArray().map(f => f.getId());
+		const isNewSelection = !equals(ids, currentSelectedId);
+		if (this._select && isNewSelection) {
 			const selectionSize = this._select.getFeatures().getLength();
 			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._setSelected(null);
