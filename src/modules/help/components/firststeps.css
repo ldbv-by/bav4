@@ -94,3 +94,8 @@ a.first_steps__notification-link:hover {
 	background-color: var(--primary-color);
 	color: var(--text3);
 }
+.first_steps__iframe{
+    height: 50em;
+    min-width: 57em;
+    border: 0;
+}
