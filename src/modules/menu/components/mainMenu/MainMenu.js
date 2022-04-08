@@ -170,15 +170,15 @@ export class MainMenu extends MvuElement {
 	_getContentPanel(index) {
 		switch (index) {
 			case TabId.MAPS:
-				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${MapsContentPanel.tag} data-test-id />`)}`;
 			case TabId.MISC:
-				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag} data-test-id />`)}`;
 			case TabId.SEARCH:
-				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${SearchResultsPanel.tag} data-test-id />`)}`;
 			case TabId.TOPICS:
-				return html`${unsafeHTML(`<${TopicsContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabId.FEATUREINFO:
-				return html`${unsafeHTML(`<${FeatureInfoPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
 			default:
 				return nothing;
 		}
