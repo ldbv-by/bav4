@@ -43,10 +43,17 @@ export const equals = (value0, value1) => {
 	}
 
 	if (
+		typeof value0 === 'function' &&
+		typeof value1 === 'function'
+	) {
+		return value0.toString() === value1.toString();
+	}
+
+	if (
 		typeof value0 !== 'object' ||
 		typeof value1 !== 'object' ||
-		value0 == null ||
-		value1 == null
+		!value0 ||
+		!value1
 	) {
 		return false;
 	}
@@ -69,20 +76,7 @@ export const equals = (value0, value1) => {
 		if (!keys1.includes(key)) {
 			return false;
 		}
-
-		if (
-			typeof value0[key] === 'function' ||
-			typeof value1[key] === 'function'
-		) {
-			if (value0[key].toString() !== value1[key].toString()) {
-				return false;
-			}
-		}
-
-		if (!equals(value0[key], value1[key])) {
-			return false;
-		}
-		return true;
+		return equals(value0[key], value1[key]);
 	});
 };
 
