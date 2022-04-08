@@ -9,19 +9,28 @@ window.customElements.define(ZoomButtons.tag, ZoomButtons);
 let store;
 
 describe('ZoomButtons', () => {
+
+	const initialZoomLevel = 10;
+	const minZoomLevel = 3;
+	const maxZoomLevel = 20;
+	const mapServiceMock = {
+		getMinZoomLevel: () => minZoomLevel,
+		getMaxZoomLevel: () => maxZoomLevel
+	};
 	let element;
 
 	beforeEach(async () => {
 
 		const state = {
 			position: {
-				zoom: 10
+				zoom: initialZoomLevel
 			}
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('MapService', mapServiceMock);
 
 		element = await TestUtils.render(ZoomButtons.tag);
 	});
