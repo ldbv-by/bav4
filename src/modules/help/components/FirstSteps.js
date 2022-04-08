@@ -137,10 +137,10 @@ export class FirstSteps extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='first_steps__button ${getOverlayClass()}'>				
+				<button class='first_steps__button ${getOverlayClass()}'  @click=${contentAvailable ? openModalFirstSteps : openModalShowCase} >				
 					<i class='first_steps__button-icon'></i>
-					<span class="first_steps__button-text" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_firstSteps_button')}</span>					
-				</div>		
+					<span class="first_steps__button-text">${translate('help_firstSteps_button')}</span>					
+				</button>		
 			</div>		
 
 		` ;
