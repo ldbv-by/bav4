@@ -4,8 +4,10 @@ import { QueryParameters } from './domain/queryParameters';
 
 export class ShareService {
 
-	constructor(_window = window) {
-		this._window = _window;
+	constructor() {
+		const { EnvironmentService: environmentService }
+			= $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
 	/**
@@ -14,8 +16,8 @@ export class ShareService {
 	 * @returns {Promise<undefined> | Promise.reject}
 	 */
 	async copyToClipboard(textToCopy) {
-		if (this._window.isSecureContext) {
-			return this._window.navigator.clipboard.writeText(textToCopy);
+		if (this._environmentService.getWindow().isSecureContext) {
+			return this._environmentService.getWindow().navigator.clipboard.writeText(textToCopy);
 		}
 		throw new Error('Clipboard API is not available');
 	}
@@ -56,7 +58,8 @@ export class ShareService {
 		);
 
 		const searchParams = new URLSearchParams(extractedState);
-		return window.location.href + '?' + decodeURIComponent(searchParams.toString());
+		const location = this._environmentService.getWindow().location;
+		return `${location.protocol}//${location.host}${location.pathname}` + '?' + decodeURIComponent(searchParams.toString());
 	}
 
 	/**

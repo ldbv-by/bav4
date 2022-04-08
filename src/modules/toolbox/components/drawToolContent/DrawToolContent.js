@@ -240,7 +240,7 @@ export class DrawToolContent extends AbstractToolContent {
 					const getSymbolSrc = () => {
 						const { IconService: iconService } = $injector.inject('IconService');
 						const iconResult = iconService.getIconResult(style.symbolSrc);
-						return iconResult.getUrl(hexToRgb(e.target.value));
+						return iconResult?.getUrl(hexToRgb(e.target.value));
 					};
 
 					return { ...style, symbolSrc: getSymbolSrc(), color: e.target.value };
