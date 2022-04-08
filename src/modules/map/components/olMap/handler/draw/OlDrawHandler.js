@@ -109,9 +109,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			return map.getLayers().getArray().find(l => l.get('id') && (
-				this._storageHandler.isStorageId(l.get('id')) ||
-				l.get('id') === Temp_Session_Id));
+			const isOldLayer = (layer) => {
+				const id = layer.get('geoResourceId');
+				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
+			};
+			return map.getLayers().getArray().find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -127,10 +129,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 
-				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
+				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
 				if (vgr) {
 
-					this._storageHandler.setStorageId(oldLayer.get('id'));
+					this._storageHandler.setStorageId(oldLayer.get('geoResourceId'));
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
