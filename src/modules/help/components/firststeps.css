@@ -11,9 +11,9 @@
 	background: var(--info-color);
 	background: var(--primary-bg-color);
 	cursor: pointer;
-	border:0;
+	border: 0;
 }
-.first_steps__button:focus{
+.first_steps__button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 .first_steps__link {
@@ -54,7 +54,7 @@
 }
 .first_steps__notification-section {
 	display: flex;
-	margin-bottom:1em;
+	margin-bottom: 1em;
 
 }
 .first_steps__notification-icon {
