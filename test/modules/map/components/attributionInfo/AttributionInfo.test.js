@@ -16,6 +16,10 @@ describe('AttributionInfo', () => {
 	const geoResourceServiceMock = {
 		byId: () => { }
 	};
+	const mapServiceMock = {
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {}
+	};
 
 	const setup = (state) => {
 		TestUtils.setupStoreAndDi(state, {
@@ -23,9 +27,10 @@ describe('AttributionInfo', () => {
 			position: positionReducer
 		});
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
+			.registerSingleton('MapService', mapServiceMock);
+
 		return TestUtils.render(AttributionInfo.tag);
 	};
 
