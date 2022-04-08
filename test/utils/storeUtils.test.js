@@ -117,12 +117,18 @@ describe('store utils', () => {
 			expect(equals(sym, sym)).toBeTrue();
 			const someF = () => { };
 			expect(equals(someF, someF)).toBeTrue();
+			expect(equals(undefined, null)).toBeFalse();
+			expect(equals(undefined, {})).toBeFalse();
+			expect(equals(null, {})).toBeFalse();
 
 			expect(equals(1, 2)).toBeFalse();
 			expect(equals(true, false)).toBeFalse();
 			expect(equals('some', 'Some')).toBeFalse();
 			expect(equals(Symbol('foo'), Symbol('foo'))).toBeFalse();
 			expect(equals(() => { }, () => { })).toBeFalse();
+			expect(equals([], [])).toBeTrue();
+			expect(equals(null, null)).toBeTrue();
+			expect(equals(undefined, undefined)).toBeTrue();
 		});
 
 		it('compares arrays and objects deeply', () => {
@@ -134,6 +140,8 @@ describe('store utils', () => {
 			expect(equals({ some: 42 }, { some: 21 })).toBeFalse();
 			expect(equals(['some', 'foo'], ['foo', 'some'])).toBeFalse();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBeFalse();
+			expect(equals([], {})).toBeFalse();
+			expect(equals({}, [])).toBeFalse();
 		});
 	});
 

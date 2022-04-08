@@ -51,6 +51,13 @@ export const equals = (value0, value1) => {
 		return false;
 	}
 
+	if (
+		(Array.isArray(value0) && !Array.isArray(value1)) ||
+		(!Array.isArray(value0) && Array.isArray(value1))
+	) {
+		return false;
+	}
+
 	const keys0 = Object.keys(value0);
 	const keys1 = Object.keys(value1);
 
