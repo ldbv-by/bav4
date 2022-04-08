@@ -108,7 +108,7 @@ export class LocationResultsPanel extends MvuElement {
 				<ul class="location-items">	
 					${results
 		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-location-item .data=${result}></<ba-search-content-panel-location-item>`)}
+		.map((result) => html`<ba-search-content-panel-location-item data-test-id .data=${result}></<ba-search-content-panel-location-item>`)}
 				</ul>
 				<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
 				${translate('search_menu_showAll_label')}

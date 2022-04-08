@@ -8,7 +8,7 @@ import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolF
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { observe } from '../../../../../../utils/storeUtils';
+import { equals, observe } from '../../../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
@@ -109,9 +109,11 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			return map.getLayers().getArray().find(l => l.get('id') && (
-				this._storageHandler.isStorageId(l.get('id')) ||
-				l.get('id') === Temp_Session_Id));
+			const isOldLayer = (layer) => {
+				const id = layer.get('geoResourceId');
+				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
+			};
+			return map.getLayers().getArray().find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -127,10 +129,10 @@ export class OlDrawHandler extends OlLayerHandler {
 		const addOldFeatures = async (layer, oldLayer) => {
 			if (oldLayer) {
 
-				const vgr = this._geoResourceService.byId(oldLayer.get('id'));
+				const vgr = this._geoResourceService.byId(oldLayer.get('geoResourceId'));
 				if (vgr) {
 
-					this._storageHandler.setStorageId(oldLayer.get('id'));
+					this._storageHandler.setStorageId(oldLayer.get('geoResourceId'));
 					/**
 					 * Note: vgr.data does not return a Promise anymore.
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
@@ -206,7 +208,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
-
 			clickAction(selectableFeatures);
 		};
 
@@ -627,7 +628,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const styleFunction = this._getStyleFunctionFrom(feature);
 			const newStyles = styleFunction(feature);
 
-			feature.setStyle([newStyles[0], ...feature.getStyle()]);
+			feature.setStyle([newStyles[0], ...feature.getStyle().slice(1)]);
 			this._setSelected(feature);
 		}
 
@@ -693,7 +694,9 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_setSelection(ids = []) {
-		if (this._select) {
+		const currentSelectedId = this._select.getFeatures().getArray().map(f => f.getId());
+		const isNewSelection = !equals(ids, currentSelectedId);
+		if (this._select && isNewSelection) {
 			const selectionSize = this._select.getFeatures().getLength();
 			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
 				this._setSelected(null);

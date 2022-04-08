@@ -3,6 +3,7 @@ import { CpResultsPanel } from '../../../../../../../src/modules/search/componen
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
 import { EventLike } from '../../../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../../../test-utils.js';
 
@@ -75,6 +76,7 @@ describe('CpResultsPanel', () => {
 				expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
 				expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
 				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+				expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
 				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();

@@ -6,6 +6,7 @@ import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';
 import { openModal } from '../../../store/modal/modal.action';
+import VanillaSwipe from 'vanilla-swipe';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -64,6 +65,27 @@ export class Header extends MvuElement {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active.filter(l => l.constraints.hidden === false)));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
+	}
+
+	onAfterRender(firsttime) {
+		if (firsttime) {
+
+			const handler = (event, data) => {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionX === 'LEFT' && data.absX > Header.SWIPE_DELTA_PX) {
+					toggle();
+				}
+			};
+			const swipeElement = this.shadowRoot.getElementById('header_toggle');
+
+			const swipe = new VanillaSwipe({
+				element: swipeElement,
+				onSwipeStart: handler,
+				delta: Header.SWIPE_DELTA_PX,
+				mouseTrackingEnabled: true
+			});
+
+			swipe.init();
+		}
 	}
 
 	onWindowLoad() {
@@ -190,13 +212,13 @@ export class Header extends MvuElement {
 					<div class='header__emblem'>
 					</div>
 					<div  class="header ${getOverlayClass()}">  
-						<button class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
+						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
 						</button> 
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
-							<input id='input' id='input' placeholder='${translate('header_search_placeholder')}' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
+							<input id='input' data-test-id placeholder='${translate('header_search_placeholder')}' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
 							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
@@ -227,6 +249,10 @@ export class Header extends MvuElement {
 				</div>
             </div>
 		`;
+	}
+
+	static get SWIPE_DELTA_PX() {
+		return 50;
 	}
 
 	static get tag() {

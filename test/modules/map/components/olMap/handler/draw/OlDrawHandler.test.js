@@ -756,8 +756,22 @@ describe('OlDrawHandler', () => {
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
+
+				const oldStyle1 = new Style(new Stroke({
+					color: [0, 0, 0, 1],
+					width: 3
+				}));
+				const oldStyle2 = new Style(new Stroke({
+					color: [42, 0, 0, 1],
+					width: 3
+				}));
+				const newStyle = new Style(new Stroke({
+					color: [255, 255, 255, 1],
+					width: 12
+				}));
+				spyOn(classUnderTest, '_getStyleFunctionFrom').withArgs(feature).and.callFake(() => () => [newStyle]);
 				feature.setId('draw_Symbol_1234');
-				feature.setStyle([new Style(), new Style()]);
+				feature.setStyle([oldStyle1, oldStyle2]);
 				const drawStateFake = {
 					type: InteractionStateType.MODIFY
 				};
@@ -770,6 +784,7 @@ describe('OlDrawHandler', () => {
 				setStyle(style);
 
 				expect(styleSpy).toHaveBeenCalledTimes(1);
+				expect(styleSpy).toHaveBeenCalledWith([newStyle, oldStyle2]);
 			});
 
 
@@ -832,7 +847,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('temp_measure_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'temp_measure_id' }] });
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ getKeys: () => ['id'], get: () => 'temp_measure_id' }] });
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 

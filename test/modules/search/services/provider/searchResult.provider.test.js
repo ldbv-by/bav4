@@ -26,10 +26,11 @@ describe('SearchResult provider', () => {
 			{ 'id': '9d0e3859-be17-4a40-b439-1ba19b45fbb8', 'attrs': { 'detail': 'Landschaftsprägende Denkmale sind solche Bau- und Bodendenkmale oder Ensembles, deren optische und/oder funktionale Wirkung in einen größeren, als Landschaft zu beschreibenden Raum hinausgeht. Damit ist ihre Umgebung für ihr Erscheinungsbild, Wesen und Wirkung von hoher Bedeutung. Eine Veränderung ihrer Umgebung durch neue bauliche Anlagen berührt damit das Denkmal und ist so nach Art 6. (1) 2 und Art. 7 (4)  DSchG erlaubnispflichtig. Raumwirksame Planungen, insbesondere im Energie-,  Gewerbe- und Verkehrssektor berühren häufig landschaftsprägende Denkmale. Die Stellungnahme der Denkmalpflege als Träger öffentlicher Belange ist in diesen Fällen einzuholen.', 'layer': '9d0e3859-be17-4a40-b439-1ba19b45fbb8', 'label': '<b>Landschaftsprägendes</b> Denkmal' } }
 		];
 
-		it('loads SearchResults for georesources', async () => {
-			const term = 'term';
+		it('loads SearchResults for geoResources', async () => {
+			const term = 'term?/foo';
+			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${term}`;
+			const expectedArgs0 = `${backendUrl}/search/type/layers/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
@@ -108,9 +109,10 @@ describe('SearchResult provider', () => {
 
 		it('loads SearchResults for locations', async () => {
 
-			const term = 'term';
+			const term = 'term?/foo';
+			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${term}`;
+			const expectedArgs0 = `${backendUrl}/search/type/locations/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
@@ -192,9 +194,10 @@ describe('SearchResult provider', () => {
 
 		it('loads SearchResults for cadastial parcels', async () => {
 
-			const term = 'term';
+			const term = 'term?/foo';
+			const termReplacedAndEncoded = 'term%3F%20foo';
 			const backendUrl = 'https://backend.url';
-			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${term}`;
+			const expectedArgs0 = `${backendUrl}/search/type/cp/searchText/${termReplacedAndEncoded}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(

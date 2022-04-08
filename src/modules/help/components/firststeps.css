@@ -11,16 +11,18 @@
 	background: var(--info-color);
 	background: var(--primary-bg-color);
 	cursor: pointer;
+	border:0;
+}
+.first_steps__button:focus{
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
 .first_steps__link {
 	font-size: .9rem;
 	text-decoration: none;
 }
-
 .is-tablet .first_steps__button {
 	margin-left: -1.5em;
 }
-
 .is-portrait .first_steps__button {
 	display: none;
 }
@@ -47,18 +49,19 @@
 	-webkit-mask-size: cover;
 	left: 0.7em;	
 }
-
 .first_steps__notification {
 	height: 10em;
 }
 .first_steps__notification-section {
-	display: flex
+	display: flex;
+	margin-bottom:1em;
+
 }
 .first_steps__notification-icon {
 	display: inline-block;
 	margin: auto;
-	height: 5em;
-	width: 10em;
+	height: 4em;
+	width: 6.8em;
 	background: #fff;
 	background: var(--primary-color);
 	mask: url('assets/chatdots.svg');
@@ -78,7 +81,6 @@
 .space-evenly {
 	justify-content: space-evenly;
 }
-
 a.first_steps__notification-link {
 	color: var(--primary-color);
 	cursor: pointer;
@@ -89,7 +91,6 @@ a.first_steps__notification-link {
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
 	text-decoration: none;
 }
-
 a.first_steps__notification-link:hover {
 	background-color: var(--primary-color);
 	color: var(--text3);
