@@ -10,7 +10,9 @@ describe('PositionPlugin', () => {
 	const mapServiceMock = {
 		getDefaultMapExtent() { },
 		getDefaultGeodeticSrid() {},
-		getSrid() {}
+		getSrid() {},
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 
 	const coordinateServiceMock = {
