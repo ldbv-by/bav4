@@ -115,24 +115,47 @@ describe('store utils', () => {
 			expect(equals('some', 'some')).toBeTrue();
 			const sym = Symbol('foo');
 			expect(equals(sym, sym)).toBeTrue();
-			const someF = () => { };
-			expect(equals(someF, someF)).toBeTrue();
+			expect(equals(undefined, null)).toBeFalse();
+			expect(equals(undefined, {})).toBeFalse();
+			expect(equals(null, {})).toBeFalse();
 
 			expect(equals(1, 2)).toBeFalse();
 			expect(equals(true, false)).toBeFalse();
 			expect(equals('some', 'Some')).toBeFalse();
 			expect(equals(Symbol('foo'), Symbol('foo'))).toBeFalse();
-			expect(equals(() => { }, () => { })).toBeFalse();
+			expect(equals([], [])).toBeTrue();
+			expect(equals(null, null)).toBeTrue();
+			expect(equals(undefined, undefined)).toBeTrue();
+		});
+
+		it('compares functions', () => {
+
+			const someF = () => { };
+			const someOtherF = () => {
+				return;
+			};
+			expect(equals(someF, someF)).toBeTrue();
+			expect(equals(someF, someOtherF)).toBeFalse();
 		});
 
 		it('compares arrays and objects deeply', () => {
-			expect(equals({ some: 42 }, { some: 42 })).toBeTrue();
+			expect(equals({ some: 42, thing: 21 }, { some: 42, thing: 21 })).toBeTrue();
+			expect(equals({ some: 42, thing: 21 }, { thing: 21, some: 42 })).toBeTrue();
 			expect(equals(['some', 'foo'], ['some', 'foo'])).toBeTrue();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 42 }, 'some'])).toBeTrue();
 
 			expect(equals({ some: 42 }, { some: 21 })).toBeFalse();
+			expect(equals({ some: 42 }, { thing: 42 })).toBeFalse();
+			expect(equals({ some: () => { } }, { some: () => { } })).toBeTrue();
+			expect(equals({ some: () => { } }, {
+				some: () => {
+					return;
+				}
+			})).toBeFalse();
 			expect(equals(['some', 'foo'], ['foo', 'some'])).toBeFalse();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBeFalse();
+			expect(equals([], {})).toBeFalse();
+			expect(equals({}, [])).toBeFalse();
 		});
 	});
 

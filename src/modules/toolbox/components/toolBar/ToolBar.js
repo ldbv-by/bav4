@@ -99,7 +99,7 @@ export class ToolBar extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+				<button id='tools-button' data-test-id class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 					<div class="wrench">													
 					</div>
 				</button>
