@@ -69,7 +69,10 @@
 	--animation-easing-open: cubic-bezier(0.0, 0.0, 0.2, 1);
 	--animation-easing-close: cubic-bezier(0.4, 0.0, 1, 1);
 	--animation-easing-linea: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
 
+body {
+	overscroll-behavior: contain;
 }
 
 .light-theme {
