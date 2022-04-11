@@ -258,6 +258,10 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
+			const hideDefaultText = (text) => {
+				return text === 'New Text' ? '' : text;
+			};
+
 			const onChangeDescription = (e) => {
 				setDescription(e.target.value);
 			};
@@ -271,7 +275,6 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const selectTemplate = (sizes, selectedSize) => {
-				console.warn(selectedSize);
 				return sizes.map((size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)} </option>)}`);
 			};
 
@@ -341,7 +344,6 @@ export class DrawToolContent extends AbstractToolContent {
 				`;
 			};
 
-
 			// todo: refactor to specific toolStyleContent-Components or factory
 			if (type && style) {
 				switch (type) {
@@ -358,7 +360,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${hideDefaultText(style.text)} @input=${onChangeText}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
@@ -415,7 +417,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${hideDefaultText(style.text)} @input=${onChangeText}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						

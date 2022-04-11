@@ -437,6 +437,17 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.scale).toBe(newScale);
 		});
 
+		it('displays empty text input, when state value is default-value', async () => {
+			const style = { ...StyleOptionTemplate, text: 'New Text' };
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('');
+		});
+
 		it('sets the style, after text changes in text-input', async () => {
 			const style = { ...StyleOptionTemplate, text: 'foo' };
 			const newText = 'bar';
