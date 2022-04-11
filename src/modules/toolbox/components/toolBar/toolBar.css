@@ -245,7 +245,7 @@
 	transition-delay: var(--animation-duration-large-open);
 }
 .is-portrait .toolbar__button-tools, .is-tablet .toolbar__button-tools {
-	position: absolute;
+	position: fixed;
 	background: var(--primary-bg-color);
 	background: var(--primary-color);
 	width: 3.4em;
