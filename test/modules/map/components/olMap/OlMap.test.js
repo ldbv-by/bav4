@@ -630,7 +630,7 @@ describe('OlMap', () => {
 				zoom: 5,
 				center: fromLonLat([11, 48]),
 				rotation: initialRotationValue,
-				duration: 500
+				duration: 200
 			});
 		});
 
@@ -645,7 +645,7 @@ describe('OlMap', () => {
 				zoom: initialZoomLevel,
 				center: initialCenter,
 				rotation: 1,
-				duration: 500
+				duration: 200
 			});
 		});
 
