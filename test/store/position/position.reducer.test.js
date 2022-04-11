@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
+import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -54,12 +54,50 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(maxZoomLevel);
 	});
 
+	it('changes \'zoom\' and  \'rotation\' property', () => {
+		const store = setup();
+
+		changeZoomAndRotation({ zoom: 10, rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(10);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomAndCenter({ zoom: minZoomLevel, rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomAndCenter({ zoom: maxZoomLevel, rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomAndCenter({ zoom: minZoomLevel - 1, rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.rotation).toBe(.5);
+
+		changeZoomAndCenter({ zoom: maxZoomLevel + 1, rotation: .5 });
+
+		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.rotation).toBe(.5);
+	});
+
 	it('changes the \'center\' property', () => {
 		const store = setup();
 
 		changeCenter([21, 42]);
 
 		expect(store.getState().position.center).toEqual([21, 42]);
+	});
+
+	it('changes the \'center\'  \'rotation\' property', () => {
+		const store = setup();
+
+		changeCenterAndRotation({ center: [21, 42], rotation: .5 });
+
+		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.rotation).toBe(.5);
 	});
 
 	it('changes the \'rotation\' property', () => {
