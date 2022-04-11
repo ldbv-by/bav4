@@ -6,6 +6,7 @@ import { $injector } from '../../../../injection';
 import markerIcon from './assets/marker.svg';
 import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
+import { isString } from '../../../../utils/checks';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -20,6 +21,8 @@ export const AssetSourceType = Object.freeze({
 	REMOTE: 'remote',
 	UNKNOWN: 'unknown'
 });
+
+export const DEFAULT_TEXT = 'new text';
 
 const getTextStyle = (text, color, scale) => {
 	const strokeWidth = 1;
@@ -264,7 +267,7 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 
 export const textStyleFunction = (styleOption = { color: false, scale: false, text: false }) => {
 	const strokeColor = styleOption.color ? styleOption.color : '#ff0000';
-	const textContent = styleOption.text ? styleOption.text : 'New Text';
+	const textContent = isString(styleOption.text) ? styleOption.text : DEFAULT_TEXT;
 
 	const textScale = getTextScale(styleOption.scale);
 

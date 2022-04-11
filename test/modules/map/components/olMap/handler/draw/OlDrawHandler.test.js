@@ -687,7 +687,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const drawStateFake = {
 					type: InteractionStateType.ACTIVE
 				};
@@ -708,7 +708,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
 
 				feature.setStyle([new Style(), new Style()]);
@@ -754,7 +754,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 
 				const oldStyle1 = new Style(new Stroke({

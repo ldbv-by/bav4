@@ -437,17 +437,6 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.scale).toBe(newScale);
 		});
 
-		it('displays empty text input, when state value is default-value', async () => {
-			const style = { ...StyleOptionTemplate, text: 'New Text' };
-			const element = await setup({ ...drawDefaultState, style });
-
-			setType('text');
-			const textInput = element.shadowRoot.querySelector('#style_text');
-
-			expect(textInput).toBeTruthy();
-			expect(textInput.value).toBe('');
-		});
-
 		it('sets the style, after text changes in text-input', async () => {
 			const style = { ...StyleOptionTemplate, text: 'foo' };
 			const newText = 'bar';
@@ -460,6 +449,46 @@ describe('DrawToolContent', () => {
 
 			textInput.value = newText;
 			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+		});
+
+		it('resets the style, after empty text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = '';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBeNull();
+		});
+
+		it('does NOT resets the style, after valid text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
 		});

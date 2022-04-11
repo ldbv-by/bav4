@@ -28,6 +28,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../../../store/draw/draw.reducer';
+import { isString } from '../../../../../../utils/checks';
 
 
 
@@ -549,12 +550,21 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		if (this._storeService.getStore().getState().draw.style === INITIAL_STYLE) {
+		const getDefaultText = () => {
+			const translate = (key) => this._translationService.translate(key);
+			return translate('map_olMap_handler_draw_new_text');
+		};
+
+		const style = this._storeService.getStore().getState().draw.style;
+		if (equals(style, INITIAL_STYLE)) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
-			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc });
-
+			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultText() });
 		}
+		else if (!isString(style.text)) {
+			setStyle({ ...style, text: getDefaultText() });
+		}
+
 		return this._storeService.getStore().getState().draw.style;
 	}
 

@@ -87,9 +87,9 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
 			activate: () => {
-				setType('marker');
 				clearText();
 				clearDescription();
+				setType('marker');
 			}
 		}, {
 			id: 2,
@@ -98,9 +98,10 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
 			activate: () => {
-				setType('text');
 				clearText();
 				clearDescription();
+				setType('text');
+
 			}
 		}, {
 			id: 3,
@@ -109,9 +110,9 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
 			activate: () => {
-				setType('line');
 				clearText();
 				clearDescription();
+				setType('line');
 			}
 		}, {
 			id: 4,
@@ -120,9 +121,9 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
 			activate: () => {
-				setType('polygon');
 				clearText();
 				clearDescription();
+				setType('polygon');
 			}
 		}];
 	}
@@ -258,8 +259,10 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
-			const hideDefaultText = (text) => {
-				return text === 'New Text' ? '' : text;
+			const preventEmptyString = (e) => {
+				if (e.target.value === '') {
+					clearText();
+				}
 			};
 
 			const onChangeDescription = (e) => {
@@ -360,7 +363,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${hideDefaultText(style.text)} @input=${onChangeText}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}  @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
@@ -417,7 +420,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${hideDefaultText(style.text)} @input=${onChangeText}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText} @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
