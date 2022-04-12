@@ -94,6 +94,7 @@ export class OlMap extends MvuElement {
 			center: center,
 			zoom: zoom,
 			rotation: rotation,
+			minZoom: this._mapService.getMinZoomLevel(),
 			maxZoom: this._mapService.getMaxZoomLevel()
 		});
 
@@ -231,7 +232,7 @@ export class OlMap extends MvuElement {
 				zoom: zoom,
 				center: center,
 				rotation: rotation,
-				duration: 500
+				duration: 200
 			});
 		}
 	}

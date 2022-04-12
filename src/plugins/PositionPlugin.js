@@ -1,7 +1,8 @@
 import { $injector } from '../injection';
 import { QueryParameters } from '../services/domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { changeZoomCenterAndRotation, setFit } from '../store/position/position.action';
+import { changeCenterAndRotation, changeZoomAndRotation, changeZoomCenterAndRotation, setFit } from '../store/position/position.action';
+import { isCoordinate, isNumber } from '../utils/checks';
 
 /**
  * @class
@@ -22,35 +23,44 @@ export class PositionPlugin extends BaPlugin {
 		};
 
 		const parseCenter = (centerValue) => {
-			const center = centerValue.split(',');
-			if (center.length === 2 && isFinite(center[0]) && isFinite(center[1])) {
-				const coordinate = center.map(v => parseFloat(v));
-				return coordinateService.transform(coordinate, detectSrid(coordinate), mapService.getSrid());
+			if (centerValue) {
+				const center = centerValue.split(',');
+				if (center.length === 2 && isFinite(center[0]) && isFinite(center[1])) {
+					const coordinate = center.map(v => parseFloat(v));
+					return coordinateService.transform(coordinate, detectSrid(coordinate), mapService.getSrid());
+				}
 			}
 
-			return;
+			return null;
 		};
 
 		const parseZoom = (zoomValue) => {
 			if (zoomValue && isFinite(zoomValue)) {
 				return parseFloat(zoomValue);
 			}
-			return;
+			return null;
 		};
 
 		const parseRotation = (rotationValue) => {
 			if (rotationValue && isFinite(rotationValue)) {
 				return parseFloat(rotationValue);
 			}
-			return;
+			return null;
 		};
 
 		const center = parseCenter(queryParams.get(QueryParameters.CENTER));
 		const zoom = parseZoom(queryParams.get(QueryParameters.ZOOM));
 		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION));
 
-		if (center && zoom) {
-			changeZoomCenterAndRotation({ zoom: zoom, center: center, rotation: rotation || 0 });
+
+		if (isCoordinate(center) && isNumber(zoom)) {
+			changeZoomCenterAndRotation({ zoom: zoom, center: center, rotation: isNumber(rotation) ? rotation : 0 });
+		}
+		else if (isCoordinate(center) && !isNumber(zoom)) {
+			changeCenterAndRotation({ center, rotation: isNumber(rotation) ? rotation : 0 });
+		}
+		else if (!isCoordinate(center) && isNumber(zoom)) {
+			changeZoomAndRotation({ zoom: zoom, rotation: isNumber(rotation) ? rotation : 0 });
 		}
 		//fallback
 		else {
@@ -76,7 +86,7 @@ export class PositionPlugin extends BaPlugin {
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		//from query params
-		if (queryParams.has(QueryParameters.CENTER) && queryParams.has(QueryParameters.ZOOM)) {
+		if (queryParams.has(QueryParameters.CENTER) || queryParams.has(QueryParameters.ZOOM)) {
 			this._setPositionFromQueryParams(queryParams);
 		}
 		//from config

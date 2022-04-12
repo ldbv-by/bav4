@@ -2,7 +2,7 @@
  * Action creators to change/update the properties concerning the zoom level and center of a map.
  * @module position/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED, ZOOM_ROTATION_CHANGED, CENTER_ROTATION_CHANGED } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -26,6 +26,20 @@ import { EventLike } from '../../utils/storeUtils';
 * @property {number} zoom zoom level
 * @property {Coordinate} coordinate coordinate in map projection
 */
+
+/**
+* A combination of zoom and rotation.
+* @typedef {Object} ZoomRotation
+* @property {number} zoom zoom level
+* @property {number} rotation rotation in radians
+*/
+/**
+* A combination of center and rotation.
+* @typedef {Object} CenterRotation
+* @property {Coordinate} coordinate coordinate in map projection
+* @property {number} rotation rotation in radians
+*/
+
 /**
 * A combination of zoom and center.
 * @typedef {Object} ZoomCenterRotation
@@ -39,40 +53,86 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
+const getMapService = () => {
+	const { MapService: mapService } = $injector.inject('MapService');
+	return mapService;
+};
+
+const getValidZoomLevel = zoom => {
+	if (zoom > getMapService().getMaxZoomLevel()) {
+		return getMapService().getMaxZoomLevel();
+	}
+	if (zoom < getMapService().getMinZoomLevel()) {
+		return getMapService().getMinZoomLevel();
+	}
+	return zoom;
+};
+
 /**
- * Changes zoom level and the position.
+ * Changes the zoom level and the position.
  * @param {ZoomCenter} zoomCenter zoom and center
  * @function
  */
 export const changeZoomAndCenter = (zoomCenter) => {
+	const { zoom } = zoomCenter;
+
 	getStore().dispatch({
 		type: ZOOM_CENTER_CHANGED,
-		payload: zoomCenter
+		payload: { ...zoomCenter, zoom: getValidZoomLevel(zoom) }
 	});
 };
 
 /**
- * Changes zoom level, position and rotation
+ * Changes the zoom level and the rotation.
+ * @param {ZoomRotation} zoomRotation zoom and rotation
+ * @function
+ */
+export const changeZoomAndRotation = (zoomRotation) => {
+	const { zoom } = zoomRotation;
+
+	getStore().dispatch({
+		type: ZOOM_ROTATION_CHANGED,
+		payload: { ...zoomRotation, zoom: getValidZoomLevel(zoom) }
+	});
+};
+
+/**
+ * Changes the center and the rotation.
+ * @param {CenterRotation} centerRotation center and rotation
+ * @function
+ */
+export const changeCenterAndRotation = (centerRotation) => {
+	getStore().dispatch({
+		type: CENTER_ROTATION_CHANGED,
+		payload: centerRotation
+	});
+};
+
+
+/**
+ * Changes the zoom level, center and rotation
  * @param {ZoomCenterRotation} zoomCenterRotation zoom, center and rotation
  * @function
  */
 export const changeZoomCenterAndRotation = (zoomCenterRotation) => {
+	const { zoom } = zoomCenterRotation;
+
 	getStore().dispatch({
 		type: ZOOM_CENTER_ROTATION_CHANGED,
-		payload: zoomCenterRotation
+		payload: { ...zoomCenterRotation, zoom: getValidZoomLevel(zoom) }
 	});
 };
 
 /**
- * Changes zoom level.
+ * Changes the zoom level.
  * @param {number} zoom zoom level
  * @function
  */
 export const changeZoom = (zoom) => {
+
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom
-
+		payload: getValidZoomLevel(zoom)
 	});
 };
 
@@ -111,7 +171,7 @@ export const increaseZoom = () => {
 	const { position: { zoom } } = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom + 1
+		payload: getValidZoomLevel(zoom + 1)
 
 	});
 };
@@ -125,7 +185,7 @@ export const decreaseZoom = () => {
 	const { position: { zoom } } = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
-		payload: zoom - 1
+		payload: getValidZoomLevel(zoom - 1)
 
 	});
 };
