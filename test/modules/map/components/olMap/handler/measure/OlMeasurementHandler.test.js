@@ -1505,7 +1505,8 @@ describe('OlMeasurementHandler', () => {
 		describe('drags overlays', () => {
 
 			it('change overlay-property on pointerdown', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1524,7 +1525,8 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('changes position of overlay on pointermove', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1556,7 +1558,8 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('triggers overlay as dragable', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
