@@ -228,9 +228,9 @@ describe('ImportToolContent', () => {
 
 			const valueSpy = spyOnProperty(fileUploadInput, 'value', 'set').and.callThrough();
 
-			fileUploadInput.dispatchEvent(new Event('click'));
+			fileUploadInput.dispatchEvent(new Event('focus'));
 
-			expect(valueSpy).toHaveBeenCalledWith(null);
+			expect(valueSpy).toHaveBeenCalledWith('');
 		});
 	});
 });

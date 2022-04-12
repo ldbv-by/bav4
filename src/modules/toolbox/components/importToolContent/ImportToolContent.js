@@ -29,7 +29,7 @@ export class ImportToolContent extends AbstractToolContent {
 
 		const onClear = () => {
 			const inputElement = this._root.querySelector('input');
-			inputElement.value = null;
+			inputElement.value = '';
 		};
 		const onUpload = () => {
 			const inputElement = this._root.querySelector('input');
@@ -80,7 +80,7 @@ export class ImportToolContent extends AbstractToolContent {
 							<div class="tool-container__button-text" >
 								${translate('toolbox_import_data_button')}							
 							</div>
-							<input id='fileupload' type='file' @change=${onUpload} @click=${onClear} ></input>
+							<input id='fileupload' type='file' @change=${onUpload} @focus=${onClear} ></input>
 						</label>
 					</div>
 					<div  class='drag-drop-preview ${getIsTouchHide()}'>
