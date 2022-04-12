@@ -198,6 +198,28 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
 		});
 
+		it('adds a keyup-EventListener to the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'addEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
+		it('removes a keyup-EventListener from the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
+
 		describe('when not TermsOfUseAcknowledged', () => {
 			it('emits a notification', (done) => {
 				const store = setup();
