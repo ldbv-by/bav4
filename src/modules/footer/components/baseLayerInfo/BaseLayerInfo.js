@@ -29,13 +29,15 @@ export class BaseLayerInfo extends BaElement {
 			return nothing;
 		}
 
-		const description = geoResource.getAttribution(zoom)[0].description;
+		const description = geoResource.getAttribution(zoom)
+			.map(a => a.description)
+			.filter(d => !!d).join(', ');
 		const label = description ? description : geoResource.label;
 
-		label ? this._content = label : this._content = translate('map_baseLayerInfo_fallback');
+		const content = label ?? translate('map_baseLayerInfo_fallback');
 
 		return html`
-            <div>${translate('map_baseLayerInfo_label')}: ${this._content} </div>
+            <div>${translate('map_baseLayerInfo_label')}: ${content} </div>
 			`;
 	}
 
