@@ -5,6 +5,7 @@ import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
 
 
 
@@ -13,8 +14,18 @@ register(proj4);
 
 describe('MeasurementOverlayStyle', () => {
 	const environmentServiceMock = { isTouch: () => false };
-	const setup = () => {
-		TestUtils.setupStoreAndDi({});
+	const initialState = {
+		active: false,
+		statistic: { length: 0, area: 0 },
+		selection: [],
+		reset: null,
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
+	};
+	const setup = (state = initialState) => {
+		const measurementState = {
+			measurement: state
+		};
+		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
