@@ -221,5 +221,16 @@ describe('ImportToolContent', () => {
 				done();
 			});
 		});
+
+		it('clears the file-value on input-click', async () => {
+			const element = await setup();
+			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
+
+			const valueSpy = spyOnProperty(fileUploadInput, 'value', 'set').and.callThrough();
+
+			fileUploadInput.dispatchEvent(new Event('focus'));
+
+			expect(valueSpy).toHaveBeenCalledWith('');
+		});
 	});
 });
