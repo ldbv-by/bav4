@@ -38,11 +38,46 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
  * @returns {boolean} true if both values are equal
  */
 export const equals = (value0, value1) => {
-	if (typeof value0 === 'object' && typeof value1 === 'object') {
-		// maybe we should use Lo.isEqual later, but for now it does the job
-		return JSON.stringify(value0) === JSON.stringify(value1);
+	if (value0 === value1) {
+		return true;
 	}
-	return value0 === value1;
+
+	if (
+		typeof value0 === 'function' &&
+		typeof value1 === 'function'
+	) {
+		return value0.toString() === value1.toString();
+	}
+
+	if (
+		typeof value0 !== 'object' ||
+		typeof value1 !== 'object' ||
+		!value0 ||
+		!value1
+	) {
+		return false;
+	}
+
+	if (
+		(Array.isArray(value0) && !Array.isArray(value1)) ||
+		(!Array.isArray(value0) && Array.isArray(value1))
+	) {
+		return false;
+	}
+
+	const keys0 = Object.keys(value0);
+	const keys1 = Object.keys(value1);
+
+	if (keys0.length !== keys1.length) {
+		return false;
+	}
+
+	return keys0.every((key) => {
+		if (!keys1.includes(key)) {
+			return false;
+		}
+		return equals(value0[key], value1[key]);
+	});
 };
 
 /**
