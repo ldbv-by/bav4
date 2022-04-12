@@ -38,9 +38,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	constructor() {
 		super();
-		const { MapService, EnvironmentService } = $injector.inject('MapService', 'EnvironmentService');
+		const { MapService, EnvironmentService, StoreService } = $injector.inject('MapService', 'EnvironmentService', 'StoreService');
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
+		this._storeService = StoreService;
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 	}
 
@@ -122,9 +123,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		olFeature.set('overlays', []);
 	}
 
+	_isActiveMeasurement() {
+		const { measurement } = this._storeService.getStore().getState();
+		return measurement.active;
+	}
+
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
-			const isDraggable = !this._environmentService.isTouch();
+			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
 			olFeature.set('measurement', overlay);
 			this._add(overlay, olFeature, olMap);
