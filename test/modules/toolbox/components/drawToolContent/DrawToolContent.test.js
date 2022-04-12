@@ -453,6 +453,46 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
+		it('resets the style, after empty text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = '';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBeNull();
+		});
+
+		it('does NOT resets the style, after valid text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+		});
+
 		it('sets the style, after symbol changes in iconSelect', async (done) => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
