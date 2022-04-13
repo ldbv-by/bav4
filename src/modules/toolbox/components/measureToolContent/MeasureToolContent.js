@@ -8,6 +8,7 @@ import { finish, remove, reset } from '../../../../store/measurement/measurement
 import css from './measureToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { decodeHtmlEntities } from '../../../../utils/markup';
 
 const Update = 'update';
 const Update_FileSaveResult = 'update_fileSaveResult';
@@ -73,15 +74,10 @@ export class MeasureToolContent extends AbstractToolContent {
 		const formattedDistancePackage = buildPackage(formattedDistance);
 		const formattedAreaPackage = buildPackage(formattedArea);
 
-		// unit-strings could contain encoded special characters (i.e. [²]->[&sup2;]), to copy these
-		// characters to clipboard, we must use the decoded version.
-		// TODO: extract to stringUtils
-		const decodeHTML = (htmlValue) => {
-			const document = new DOMParser().parseFromString(htmlValue, 'text/html');
-			return document.documentElement.textContent;
-		};
-		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(decodeHTML(formattedDistance), 'distance');
-		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(decodeHTML(formattedArea), 'area');
+		// unit-strings could contain encoded special characters (i.e. [²]->[&sup2;]); to copy these
+		// characters to clipboard, we must use the decoded values
+		const onCopyDistanceToClipboard = async () => this._copyValueToClipboard(decodeHtmlEntities(formattedDistance), 'distance');
+		const onCopyAreaToClipboard = async () => this._copyValueToClipboard(decodeHtmlEntities(formattedArea), 'area');
 
 		return html`
         <style>${css}</style>
