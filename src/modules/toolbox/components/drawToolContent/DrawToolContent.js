@@ -87,6 +87,7 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
 			activate: () => {
+				reset();
 				clearText();
 				clearDescription();
 				setType('marker');
@@ -98,6 +99,7 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
 			activate: () => {
+				reset();
 				clearText();
 				clearDescription();
 				setType('text');
@@ -110,6 +112,7 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
 			activate: () => {
+				reset();
 				clearText();
 				clearDescription();
 				setType('line');
@@ -121,6 +124,7 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
 			activate: () => {
+				reset();
 				clearText();
 				clearDescription();
 				setType('polygon');
@@ -363,7 +367,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}  @blur=${preventEmptyString}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
