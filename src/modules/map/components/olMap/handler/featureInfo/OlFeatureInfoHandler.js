@@ -55,7 +55,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				.filter(layerFilter)
 				//map layerProperties to olLayer (wrapper)
 				.map(layerProperties => {
-					return { olLayer: getLayerById(map, layerProperties.geoResourceId), layerProperties: layerProperties };
+					return { olLayer: getLayerById(map, layerProperties.id), layerProperties: layerProperties };
 				})
 				//map olLayer to olFeature (wrapper)
 				.map(olLayerContainer => {
