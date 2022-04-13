@@ -64,4 +64,16 @@ export const generateTestIds = (element) => {
 				}
 			});
 	}
+
+
+};
+
+/**
+ * Decodes the given htmlValue
+ * @param {string} htmlValue the encoded html
+ * @returns {string} the decoded htmlValue
+ */
+export const decodeHtmlEntities = (htmlValue) => {
+	const document = new DOMParser().parseFromString(htmlValue, 'text/html');
+	return document.documentElement.textContent;
 };
