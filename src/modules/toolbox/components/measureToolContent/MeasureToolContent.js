@@ -74,17 +74,17 @@ export class MeasureToolContent extends AbstractToolContent {
 		const formattedAreaPackage = buildPackage(formattedArea);
 
 		// unit-strings could contain encoded special characters (i.e. [²]->[&sup2;]), to copy these
-		// characters to clipboard, we must use the decoded version. The simplest solution
-		// is to use the already rendered (and decoded) textContent of the html-element.
+		// characters to clipboard, we must use the decoded version.
+		// TODO: extract to stringUtils
+		const htmlDecode = (htmlValue) => {
+			const document = new DOMParser().parseFromString(htmlValue, 'text/html');
+			return document.documentElement.textContent;
+		};
 		const onCopyDistanceToClipboard = async () => {
-			const value = this._root.querySelector('#span-distance-value').textContent;
-			const unit = this._root.querySelector('#span-distance-unit').textContent;
-			this._copyValueToClipboard(`${value} ${unit}`, 'distance');
+			this._copyValueToClipboard(htmlDecode(formattedDistance), 'distance');
 		};
 		const onCopyAreaToClipboard = async () => {
-			const value = this._root.querySelector('#span-area-value').textContent;
-			const unit = this._root.querySelector('#span-area-unit').textContent;
-			this._copyValueToClipboard(`${value} ${unit}`, 'area');
+			this._copyValueToClipboard(htmlDecode(formattedArea), 'area');
 		};
 
 		return html`
