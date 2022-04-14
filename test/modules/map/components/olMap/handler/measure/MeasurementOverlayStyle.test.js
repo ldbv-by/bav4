@@ -284,7 +284,7 @@ describe('MeasurementOverlayStyle', () => {
 		geometry.setCoordinates([[0, 0], [12345, 0]]);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get('partitions').length).toBe(1);
 	});
 
 	it('removes area overlay after change from polygon to line', () => {

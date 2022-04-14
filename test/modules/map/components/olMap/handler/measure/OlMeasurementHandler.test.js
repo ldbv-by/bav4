@@ -821,7 +821,7 @@ describe('OlMeasurementHandler', () => {
 		it('removes partition tooltips after zoom out', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap(15);
+			const map = setupMap(16);
 			const geometry = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry: geometry });
 
