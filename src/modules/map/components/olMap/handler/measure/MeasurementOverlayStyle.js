@@ -147,7 +147,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (olFeature.getGeometry() instanceof Polygon) {
 
 			if (olFeature.getGeometry().getArea()) {
-				const isDraggable = !this._environmentService.isTouch();
+				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 
 				if (!areaOverlay) {
 					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
