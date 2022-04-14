@@ -222,13 +222,13 @@ describe('ImportToolContent', () => {
 			});
 		});
 
-		it('clears the file-value on input-click', async () => {
+		it('clears the file-value on focus of label-element', async () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-
+			const inputLabel = fileUploadInput.closest('label');
 			const valueSpy = spyOnProperty(fileUploadInput, 'value', 'set').and.callThrough();
 
-			fileUploadInput.dispatchEvent(new Event('focus'));
+			inputLabel.dispatchEvent(new Event('focus'));
 
 			expect(valueSpy).toHaveBeenCalledWith('');
 		});
