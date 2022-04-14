@@ -74,13 +74,13 @@ export class ImportToolContent extends AbstractToolContent {
 				</div>
 				<div class="ba-tool-container__content divider" >                						     				
 					<div class="tool-container__buttons">      
-						<label for='fileupload' class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" > 	                              
+						<label for='fileupload' class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" @focus=${onClear}> 	                              
 							<div class="tool-container__background"></div>
 							<div class="tool-container__icon data"></div>  
 							<div class="tool-container__button-text" >
 								${translate('toolbox_import_data_button')}							
 							</div>
-							<input id='fileupload' type='file' @change=${onUpload} @focus=${onClear} ></input>
+							<input id='fileupload' type='file' @change=${onUpload}></input>
 						</label>
 					</div>
 					<div  class='drag-drop-preview ${getIsTouchHide()}'>
