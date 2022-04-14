@@ -27,7 +27,7 @@ export class ImportToolContent extends AbstractToolContent {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
-		const onClear = () => {
+		const clearInput = () => {
 			const inputElement = this._root.querySelector('input');
 			inputElement.value = '';
 		};
@@ -74,7 +74,7 @@ export class ImportToolContent extends AbstractToolContent {
 				</div>
 				<div class="ba-tool-container__content divider" >                						     				
 					<div class="tool-container__buttons">      
-						<label for='fileupload' class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" @focus=${onClear}> 	                              
+						<label for='fileupload' class="tool-container__button" role="button" tabindex="0" target="_blank" id="share-api" title="upload" @focus=${clearInput}> 	                              
 							<div class="tool-container__background"></div>
 							<div class="tool-container__icon data"></div>  
 							<div class="tool-container__button-text" >

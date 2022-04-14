@@ -222,7 +222,7 @@ describe('ImportToolContent', () => {
 			});
 		});
 
-		it('clears the file-value on focus on label', async () => {
+		it('clears the file-value on focus of label-element', async () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
 			const inputLabel = fileUploadInput.closest('label');
