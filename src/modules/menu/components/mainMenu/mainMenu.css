@@ -33,7 +33,7 @@
 	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 	text-align: left;
 	border-radius: 2em;
-	padding: 0 .8em;
+	/* padding: 0 .8em; */
 	transition-property: left;
 	transition-duration: var(--animation-duration-large-open);
 	transition-delay: var(--animation-duration-large-open);
@@ -393,11 +393,21 @@ input[type="range"]:focus {
 .resize-icon {
 	background: var(--text2);
 	display: block;
-	height: 2em;
-	width: 2.1em;
-	margin: .2em;
+	margin: auto;
 	mask: url('assets/arrowBarRight.svg');
 	-webkit-mask: url('assets/arrowBarRight.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.is-desktop .resize-icon, .is-tablet .resize-icon {
+	background: var(--primary-color);
+	display: block;
+	height: 2em;
+	width: 2.1em;
+	margin: auto;
+	mask: url('assets/list.svg');
+	-webkit-mask: url('assets/list.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
@@ -405,22 +415,11 @@ input[type="range"]:focus {
 .is-portrait .resize-icon {
 	transform: rotate(270deg);
 	position: relative;
-	top: -.1em;
-	left: -.1em;
+	height: 2em;
+	width: 1.2em;
 	background: var(--primary-color);
-	mask: url('assets/chevron-right-small.svg');
-	-webkit-mask: url('assets/chevron-right-small.svg');
-	mask-size: cover;
-	-webkit-mask-size: cover;
-}
-
-.is-desktop .resize-icon, .is-landscape .is-tablet .resize-icon {
-	background: var(--primary-color);
-	display: block;
-	width: 2em;
-	margin: .2em 0;
-	mask: url('assets/list.svg');
-	-webkit-mask: url('assets/list.svg');
+	mask: url('assets/chevron-right.svg');
+	-webkit-mask: url('assets/chevron-right.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
