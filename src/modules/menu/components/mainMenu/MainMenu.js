@@ -121,6 +121,11 @@ export class MainMenu extends MvuElement {
 			container.style.width = parseInt(event.target.value) + 'em';
 		};
 
+		const getValue = () => {
+			const container = this.shadowRoot.getElementById('mainmenu');
+			return (container && container.style.width !== '') ? parseInt(container.style.width) : 28;
+		};
+
 		const getSlider = () => {
 
 			const onPreventDragging = (e) => {
@@ -130,10 +135,11 @@ export class MainMenu extends MvuElement {
 
 			return html`<div class='slider-container'>
 				<input  
+					id='rangeslider'
 					type="range" 
 					min="28" 
 					max="100" 
-					value="28" 
+					value="${getValue()}"  
 					draggable='true' 
 					@input=${changeWidth} 
 					@dragstart=${onPreventDragging}
