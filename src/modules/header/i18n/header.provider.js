@@ -9,7 +9,7 @@ export const provide = (lang) => {
 				header_tab_maps_button: 'Map',
 				header_tab_maps_title: 'Open map configuration',
 				header_tab_misc_button: 'More...',
-				header_tab_misc_title: 'Show more',
+				header_tab_misc_title: 'Additional settings and information',
 				header_close_button_title: 'Close menu',
 				header_logo_badge: '4.0',
 				header_search_placeholder: 'Search'
@@ -23,7 +23,7 @@ export const provide = (lang) => {
 				header_tab_maps_button: 'Karte',
 				header_tab_maps_title: 'Kartenverwaltung öffnen',
 				header_tab_misc_button: 'Mehr...',
-				header_tab_misc_title: 'Mehr anzeigen',
+				header_tab_misc_title: 'Weitere Einstellungen und Informationen',
 				header_close_button_title: 'Menü schließen',
 				header_logo_badge: '4.0',
 				header_search_placeholder: 'Suchen'
