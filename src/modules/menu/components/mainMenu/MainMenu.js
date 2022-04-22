@@ -123,7 +123,7 @@ export class MainMenu extends MvuElement {
 
 		const getValue = () => {
 			const container = this.shadowRoot.getElementById('mainmenu');
-			return (container && container.style.width !== '') ? parseInt(container.style.width) : 28;
+			return (container && container.style.width !== '') ? parseInt(container.style.width) : MainMenu.INITIAL_WIDTH_EM;
 		};
 
 		const getSlider = () => {
@@ -137,8 +137,8 @@ export class MainMenu extends MvuElement {
 				<input  
 					id='rangeslider'
 					type="range" 
-					min="28" 
-					max="100" 
+					min="${MainMenu.MIN_WIDTH_EM}" 
+					max="${MainMenu.MAX_WIDTH_EM}" 
 					value="${getValue()}"  
 					draggable='true' 
 					@input=${changeWidth} 
@@ -200,6 +200,18 @@ export class MainMenu extends MvuElement {
 
 	static get SWIPE_DELTA_PX() {
 		return 50;
+	}
+
+	static get INITIAL_WIDTH_EM() {
+		return 28;
+	}
+
+	static get MIN_WIDTH_EM() {
+		return 28;
+	}
+
+	static get MAX_WIDTH_EM() {
+		return 100;
 	}
 
 	/**

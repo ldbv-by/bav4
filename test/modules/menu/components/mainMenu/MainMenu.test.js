@@ -66,6 +66,9 @@ describe('MainMenu', () => {
 
 		it('has static constants', async () => {
 			expect(MainMenu.SWIPE_DELTA_PX).toBe(50);
+			expect(MainMenu.INITIAL_WIDTH_EM).toBe(28);
+			expect(MainMenu.MIN_WIDTH_EM).toBe(28);
+			expect(MainMenu.MAX_WIDTH_EM).toBe(100);
 		});
 	});
 
