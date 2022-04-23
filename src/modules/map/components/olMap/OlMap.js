@@ -75,7 +75,7 @@ export class OlMap extends MvuElement {
 	createView() {
 		return html`
 			<style>${olCss + css}</style>
-			<div data-test-id id="ol-map"></div>
+			<div data-test-id id="ol-map" tabindex="0"></div>
 		`;
 	}
 
@@ -104,7 +104,6 @@ export class OlMap extends MvuElement {
 
 		this._map = new MapOl({
 			layers: [],
-			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
 				attribution: false,
