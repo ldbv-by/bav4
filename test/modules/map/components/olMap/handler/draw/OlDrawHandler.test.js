@@ -229,6 +229,27 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
 		});
 
+		it('adds a keyup-EventListener to the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'addEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
+		it('removes a keyup-EventListener from the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
 		describe('when not TermsOfUseAcknowledged', () => {
 			it('emits a notification', (done) => {
 				const store = setup();
@@ -683,11 +704,92 @@ describe('OlDrawHandler', () => {
 				expect(classUnderTest._draw).toBeNull();
 			});
 
+			it('inits the drawing and sets the store with defaultText for line', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('line');
+
+				expect(store.getState().draw.style.text).toBeNull();
+			});
+
+			it('inits the drawing and sets the store with defaultText for marker', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('marker');
+
+				expect(store.getState().draw.style.text).toBe('');
+			});
+
+			it('inits the drawing and sets the store with defaultText for marker', () => {
+				const store = setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('text');
+
+				expect(store.getState().draw.style.text).toBe('map_olMap_handler_draw_new_text');
+			});
+
+			it('re-inits the drawing and sets the store with defaultText for marker', () => {
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
+				const state = { ...initialState, style: style };
+
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('marker');
+
+				expect(store.getState().draw.style.text).toBe('');
+			});
+
+			it('re-inits the drawing and sets the store with defaultText for text', () => {
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
+				const state = { ...initialState, style: style };
+
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const drawStateFake = {
+					type: InteractionStateType.ACTIVE
+				};
+
+				classUnderTest.activate(map);
+				classUnderTest._drawState = drawStateFake;
+				setType('text');
+
+				expect(store.getState().draw.style.text).toBe('map_olMap_handler_draw_new_text');
+			});
+
 			it('re-inits the drawing with new style, when store changes', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const drawStateFake = {
 					type: InteractionStateType.ACTIVE
 				};
@@ -708,7 +810,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
 
 				feature.setStyle([new Style(), new Style()]);
@@ -754,7 +856,7 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
+				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 
 				const oldStyle1 = new Style(new Stroke({

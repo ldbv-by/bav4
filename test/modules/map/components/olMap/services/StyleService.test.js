@@ -7,11 +7,18 @@ import { Polygon, Point } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { Icon, Style, Text } from 'ol/style';
+import { measurementReducer } from '../../../../../../src/store/measurement/measurement.reducer';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 describe('StyleService', () => {
-
+	const initialState = {
+		active: false,
+		statistic: { length: 0, area: 0 },
+		selection: [],
+		reset: null,
+		fileSaveResult: { adminId: 'init', fileId: 'init' }
+	};
 	const mapServiceMock = { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 };
 
 	const environmentServiceMock = {
@@ -35,7 +42,10 @@ describe('StyleService', () => {
 
 
 	beforeAll(() => {
-		TestUtils.setupStoreAndDi();
+		const measurementState = {
+			measurement: initialState
+		};
+		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('EnvironmentService', environmentServiceMock)

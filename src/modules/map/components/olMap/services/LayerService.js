@@ -40,6 +40,7 @@ export class LayerService {
 				const imageWmsSource = new ImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
+					ratio: 1,
 					params: {
 						'LAYERS': geoResource.layers,
 						'FORMAT': geoResource.format,

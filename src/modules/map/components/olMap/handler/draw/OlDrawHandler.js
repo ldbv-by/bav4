@@ -28,6 +28,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../../../store/draw/draw.reducer';
+import { isString } from '../../../../../../utils/checks';
 
 
 
@@ -42,7 +43,7 @@ const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
-	text: '' // used by Text
+	text: null // used by Text, Symbol
 };
 
 /**
@@ -76,7 +77,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
-		this._listeners = [];
+		this._mapListeners = [];
+		this._keyUpListener = (e) => this._removeLast(e) ;
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -171,9 +173,9 @@ export class OlDrawHandler extends OlLayerHandler {
 				}
 				this._save();
 			};
-			this._listeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
+			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
+			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
 			return layer;
 		};
 
@@ -246,10 +248,12 @@ export class OlDrawHandler extends OlLayerHandler {
 					}
 				});
 			}
-			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
-			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
-			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
-			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
+
+
+			document.addEventListener('keyup', this._keyUpListener);
 		}
 		this._registeredObservers = this._register(this._storeService.getStore());
 		this._map.addInteraction(this._select);
@@ -279,7 +283,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			map.getInteractions().getArray().filter(i => i instanceof Draw).forEach(d => map.removeInteraction(d));
 
 		};
-		this._unreg(this._listeners);
+		this._unreg(this._mapListeners);
 		setStyle(INITIAL_STYLE);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
@@ -292,6 +296,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._unreg(this._drawStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
+		document.removeEventListener('keyup', this._keyUpListener);
 
 		setSelection([]);
 		this._convertToPermanentLayer();
@@ -338,6 +343,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
+		const styleOption = this._getStyleOption();
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
@@ -346,7 +352,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		this._select.getFeatures().clear();
-		this._draw = this._createDrawByType(type, this._getStyleOption());
+		this._draw = this._createDrawByType(type, styleOption);
 
 		// we deactivate the modify-interaction only,
 		// if the given drawType results in a valid draw-interaction
@@ -360,7 +366,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 		if (this._draw) {
-
 			this._draw.on('drawstart', event => {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
@@ -549,12 +554,36 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_getStyleOption() {
-		if (this._storeService.getStore().getState().draw.style === INITIAL_STYLE) {
+		const getDefaultText = () => {
+			const translate = (key) => this._translationService.translate(key);
+			return translate('map_olMap_handler_draw_new_text');
+		};
+
+		const getDefaultTextByType = (type) => {
+			switch (type) {
+				case StyleTypes.TEXT:
+					return getDefaultText();
+				case StyleTypes.MARKER:
+					return '';
+				default:
+					return null;
+			}
+		};
+
+		const style = this._storeService.getStore().getState().draw.style;
+		const type = this._storeService.getStore().getState().draw.type;
+		if (equals(style, INITIAL_STYLE)) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
-			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc });
-
+			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultTextByType(type) });
 		}
+		else if (type === StyleTypes.TEXT && !isString(style.text)) {
+			setStyle({ ...style, text: getDefaultText() });
+		}
+		else if (type === StyleTypes.MARKER && !isString(style.text)) {
+			setStyle({ ...style, text: '' });
+		}
+
 		return this._storeService.getStore().getState().draw.style;
 	}
 
@@ -619,7 +648,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	_updateStyle() {
 		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
 			const currenType = this._storeService.getStore().getState().draw.type;
-			this._init(currenType);
+			if (this._draw && !this._draw.active) {
+				// Prevent a second initialization, while the draw-interaction is building up.
+				// This can happen, when a draw-interaction for a TEXT- or MARKER-Draw is selected,
+				// where the DefaultText must be set as style-property in the store
+				this._init(currenType);
+			}
+
 		}
 
 		if (this._drawState.type === InteractionStateType.MODIFY) {

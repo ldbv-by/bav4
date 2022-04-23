@@ -75,6 +75,7 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
 				expect(wmsSource.constructor.name).toBe('ImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
+				expect(wmsSource.ratio_).toBe(1);
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');

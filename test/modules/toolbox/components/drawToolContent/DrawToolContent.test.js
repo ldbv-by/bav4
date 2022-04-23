@@ -136,7 +136,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('line');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#line-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -149,7 +152,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('marker');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#marker-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -162,7 +168,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('text');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#text-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -175,7 +184,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('polygon');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#polygon-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -449,6 +461,46 @@ describe('DrawToolContent', () => {
 
 			textInput.value = newText;
 			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+		});
+
+		it('resets the style, after empty text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = '';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBeNull();
+		});
+
+		it('does NOT resets the style, after valid text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
 		});

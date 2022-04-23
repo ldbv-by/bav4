@@ -9,6 +9,11 @@ window.customElements.define(ZoomButtons.tag, ZoomButtons);
 let store;
 
 describe('ZoomButtons', () => {
+
+	const mapServiceMock = {
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {}
+	};
 	let element;
 
 	beforeEach(async () => {
@@ -21,7 +26,8 @@ describe('ZoomButtons', () => {
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
 		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('MapService', mapServiceMock);
 
 		element = await TestUtils.render(ZoomButtons.tag);
 	});

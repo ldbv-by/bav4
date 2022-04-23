@@ -87,9 +87,10 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_symbol'),
 			icon: 'symbol',
 			activate: () => {
-				setType('marker');
+				reset();
 				clearText();
 				clearDescription();
+				setType('marker');
 			}
 		}, {
 			id: 2,
@@ -98,9 +99,11 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_text'),
 			icon: 'text',
 			activate: () => {
-				setType('text');
+				reset();
 				clearText();
 				clearDescription();
+				setType('text');
+
 			}
 		}, {
 			id: 3,
@@ -109,9 +112,10 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_line'),
 			icon: 'line',
 			activate: () => {
-				setType('line');
+				reset();
 				clearText();
 				clearDescription();
+				setType('line');
 			}
 		}, {
 			id: 4,
@@ -120,9 +124,10 @@ export class DrawToolContent extends AbstractToolContent {
 			title: translate('toolbox_drawTool_polygon'),
 			icon: 'polygon',
 			activate: () => {
-				setType('polygon');
+				reset();
 				clearText();
 				clearDescription();
+				setType('polygon');
 			}
 		}];
 	}
@@ -258,6 +263,12 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 
+			const preventEmptyString = (e) => {
+				if (e.target.value === '') {
+					clearText();
+				}
+			};
+
 			const onChangeDescription = (e) => {
 				setDescription(e.target.value);
 			};
@@ -271,7 +282,6 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const selectTemplate = (sizes, selectedSize) => {
-				console.warn(selectedSize);
 				return sizes.map((size) => html`<option value=${size} ?selected=${size === selectedSize}>${translate('toolbox_drawTool_style_size_' + size)} </option>)}`);
 			};
 
@@ -340,7 +350,6 @@ export class DrawToolContent extends AbstractToolContent {
 				</div>
 				`;
 			};
-
 
 			// todo: refactor to specific toolStyleContent-Components or factory
 			if (type && style) {
@@ -415,7 +424,7 @@ export class DrawToolContent extends AbstractToolContent {
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
 									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText} @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 									</div>
 									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						

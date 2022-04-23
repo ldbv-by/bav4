@@ -47,7 +47,7 @@ table , tr, td, th {
 }
 
 a {
-	word-break: break-all;
+	word-break: break-word;
 }
 
 table {
@@ -73,7 +73,7 @@ th, td {
 
 }
 
-.is-portrait table , .is-portrait tr, .is-portrait td, .is-portrait th {
+.is-portrait table , .is-portrait tr, .is-portrait th {
 	display: flex;
 	flex-direction: column;
 }

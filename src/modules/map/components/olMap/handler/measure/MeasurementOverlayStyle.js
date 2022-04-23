@@ -38,9 +38,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	constructor() {
 		super();
-		const { MapService, EnvironmentService } = $injector.inject('MapService', 'EnvironmentService');
+		const { MapService, EnvironmentService, StoreService } = $injector.inject('MapService', 'EnvironmentService', 'StoreService');
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
+		this._storeService = StoreService;
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 	}
 
@@ -122,9 +123,14 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		olFeature.set('overlays', []);
 	}
 
+	_isActiveMeasurement() {
+		const { measurement } = this._storeService.getStore().getState();
+		return measurement.active;
+	}
+
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
-			const isDraggable = !this._environmentService.isTouch();
+			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
 			olFeature.set('measurement', overlay);
 			this._add(overlay, olFeature, olMap);
@@ -141,7 +147,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (olFeature.getGeometry() instanceof Polygon) {
 
 			if (olFeature.getGeometry().getArea()) {
-				const isDraggable = !this._environmentService.isTouch();
+				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 
 				if (!areaOverlay) {
 					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
@@ -184,13 +190,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const resolution = olMap.getView().getResolution();
-		let delta;
-		if (partitions.length === 0) {
-			delta = parseFloat(olFeature.get('partition_delta')) || getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
-		}
-		else {
-			delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
-		}
+		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
@@ -201,7 +202,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 			this._updateOlOverlay(partition, simplifiedGeometry, i);
 		}
-
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 				const removablePartition = partitions[j];

@@ -23,6 +23,7 @@ describe('MapService', () => {
 				defaultSridForView: 4326,
 				sridDefinitionsForView: () => [{ label: 'WGS88', code: 4326 }, { label: 'Something', code: 9999 }],
 				defaultGeodeticSrid: 9999,
+				minZoomLevel: 5,
 				maxZoomLevel: 21
 			};
 		};
@@ -84,6 +85,12 @@ describe('MapService', () => {
 		const instanceUnderTest = setup();
 
 		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(9999);
+	});
+
+	it('provides the min zoom level', () => {
+		const instanceUnderTest = setup();
+
+		expect(instanceUnderTest.getMinZoomLevel()).toBe(5);
 	});
 
 	it('provides the max zoom level', () => {

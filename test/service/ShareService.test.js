@@ -18,7 +18,9 @@ describe('ShareService', () => {
 	const mapService = {
 		getSridDefinitionsForView: () => { },
 		getDefaultSridForView: () => { },
-		getSrid: () => { }
+		getSrid: () => { },
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 	const geoResourceService = {
 		byId: () => { }

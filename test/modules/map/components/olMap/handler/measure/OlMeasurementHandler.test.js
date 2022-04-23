@@ -198,6 +198,28 @@ describe('OlMeasurementHandler', () => {
 			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
 		});
 
+		it('adds a keyup-EventListener to the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'addEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
+		it('removes a keyup-EventListener from the document', () => {
+			setup();
+			const documentSpy = spyOn(document, 'removeEventListener').and.callThrough();
+			const map = setupMap();
+			const classUnderTest = new OlMeasurementHandler();
+			classUnderTest.activate(map);
+			classUnderTest.deactivate(map);
+
+			expect(documentSpy).toHaveBeenCalledWith('keyup', jasmine.any(Function));
+		});
+
+
 		describe('when not TermsOfUseAcknowledged', () => {
 			it('emits a notification', (done) => {
 				const store = setup();
@@ -799,7 +821,7 @@ describe('OlMeasurementHandler', () => {
 		it('removes partition tooltips after zoom out', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap(15);
+			const map = setupMap(16);
 			const geometry = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry: geometry });
 
@@ -1483,7 +1505,8 @@ describe('OlMeasurementHandler', () => {
 		describe('drags overlays', () => {
 
 			it('change overlay-property on pointerdown', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1502,7 +1525,8 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('changes position of overlay on pointermove', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
@@ -1534,7 +1558,8 @@ describe('OlMeasurementHandler', () => {
 			});
 
 			it('triggers overlay as dragable', () => {
-				setup();
+				const state = { ...initialState, active: true };
+				setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);

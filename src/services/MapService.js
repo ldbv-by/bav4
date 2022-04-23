@@ -78,7 +78,15 @@ export class MapService {
 	}
 
 	/**
-	 * Return the max. zoom level the map supports
+	 * Return the minimal zoom level the map supports
+	 * @returns {Number} zoom level
+	 */
+	getMinZoomLevel() {
+		return this._definitions.minZoomLevel;
+	}
+
+	/**
+	 * Return the maximal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
 	getMaxZoomLevel() {

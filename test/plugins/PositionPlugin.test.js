@@ -9,12 +9,14 @@ describe('PositionPlugin', () => {
 
 	const mapServiceMock = {
 		getDefaultMapExtent() { },
-		getDefaultGeodeticSrid() {},
-		getSrid() {}
+		getDefaultGeodeticSrid() { },
+		getSrid() { },
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 
 	const coordinateServiceMock = {
-		transform() {}
+		transform() { }
 	};
 
 	const windowMock = {
@@ -53,34 +55,42 @@ describe('PositionPlugin', () => {
 
 		describe('_init', () => {
 
-			it('sets position by calling #_setPositionFromConfig', () => {
-				setup();
-				const instanceUnderTest = new PositionPlugin();
-				const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
-				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
+			describe('no suitable query param available', () => {
 
-				instanceUnderTest._init();
-
-				expect(setPositionFromConfigSpy).toHaveBeenCalledTimes(1);
-				expect(setPositionFromQueryParamsSpy).not.toHaveBeenCalled();
-			});
-
-			it('sets position by calling #_setPositionFromQueryParams', () => {
-				setup();
-				const queryParam = `${QueryParameters.CENTER}=21,42&${QueryParameters.ZOOM}=5`;
-				const instanceUnderTest = new PositionPlugin();
-				const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
-				const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
-
-				instanceUnderTest._init();
-
-				expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(1);
-				expect(setPositionFromConfigSpy).not.toHaveBeenCalled();
-			});
-
-			describe('zoom query param missing', () => {
 				it('sets position by calling #_setPositionFromConfig', () => {
+					setup();
+					const instanceUnderTest = new PositionPlugin();
+					const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
+					const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
+
+					instanceUnderTest._init();
+
+					expect(setPositionFromConfigSpy).toHaveBeenCalledTimes(1);
+					expect(setPositionFromQueryParamsSpy).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('both CENTER and ZOOM query params available', () => {
+
+				it('sets position by calling #_setPositionFromQueryParams', () => {
+					setup();
+					const queryParam = `${QueryParameters.CENTER}=21,42&${QueryParameters.ZOOM}=5`;
+					const instanceUnderTest = new PositionPlugin();
+					const setPositionFromConfigSpy = spyOn(instanceUnderTest, '_setPositionFromConfig');
+					const setPositionFromQueryParamsSpy = spyOn(instanceUnderTest, '_setPositionFromQueryParams');
+					spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+
+					instanceUnderTest._init();
+
+					expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+					expect(setPositionFromConfigSpy).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('CENTER query param available', () => {
+
+
+				it('sets position by calling #_setPositionFromQueryParams (only center)', () => {
 					setup();
 					const queryParam = `${QueryParameters.CENTER}=21,42`;
 					const instanceUnderTest = new PositionPlugin();
@@ -90,13 +100,14 @@ describe('PositionPlugin', () => {
 
 					instanceUnderTest._init();
 
-					expect(setPositionFromConfigSpy).toHaveBeenCalledTimes(1);
-					expect(setPositionFromQueryParamsSpy).not.toHaveBeenCalled();
+					expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+					expect(setPositionFromConfigSpy).not.toHaveBeenCalled();
 				});
 			});
 
-			describe('center query param missing', () => {
-				it('sets position by calling #_setPositionFromConfig', () => {
+			describe('ZOOM query param available', () => {
+
+				it('sets position by calling #_setPositionFromQueryParams (only zoom available)', () => {
 					setup();
 					const queryParam = `${QueryParameters.ZOOM}=5`;
 					const instanceUnderTest = new PositionPlugin();
@@ -106,11 +117,10 @@ describe('PositionPlugin', () => {
 
 					instanceUnderTest._init();
 
-					expect(setPositionFromConfigSpy).toHaveBeenCalledTimes(1);
-					expect(setPositionFromQueryParamsSpy).not.toHaveBeenCalled();
+					expect(setPositionFromQueryParamsSpy).toHaveBeenCalledTimes(1);
+					expect(setPositionFromConfigSpy).not.toHaveBeenCalled();
 				});
 			});
-
 		});
 
 		describe('_setPositionFromConfig', () => {
@@ -192,6 +202,66 @@ describe('PositionPlugin', () => {
 				expect(store.getState().position.center).toEqual(expectedCoordinate);
 				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+			});
+
+			it('sets position based on coordinate and rotation value', () => {
+				const store = setup();
+				const instanceUnderTest = new PositionPlugin();
+				const wgs84Coordinate = [11, 48];
+				const expectedCoordinate = [11111, 22222];
+				const expectedRotationValue = .5;
+				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				spyOn(coordinateServiceMock, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+
+				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().position.center).toEqual(expectedCoordinate);
+				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+			});
+
+			it('sets position based on coordinate', () => {
+				const store = setup();
+				const instanceUnderTest = new PositionPlugin();
+				const wgs84Coordinate = [11, 48];
+				const expectedCoordinate = [11111, 22222];
+				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}`;
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				spyOn(coordinateServiceMock, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
+
+				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().position.center).toEqual(expectedCoordinate);
+			});
+
+			it('sets position based on zoomlevel and rotation value', () => {
+				const store = setup();
+				const instanceUnderTest = new PositionPlugin();
+				const expectedZoomLevel = 5;
+				const expectedRotationValue = .5;
+				const queryParam = `${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+
+				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
+				expect(store.getState().position.rotation).toBe(expectedRotationValue);
+			});
+
+			it('sets position based on zoomlevel', () => {
+				const store = setup();
+				const instanceUnderTest = new PositionPlugin();
+				const expectedZoomLevel = 5;
+				const queryParam = `${QueryParameters.ZOOM}=${expectedZoomLevel}`;
+				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+
+				instanceUnderTest._setPositionFromQueryParams(new URLSearchParams(queryParam));
+
+				expect(store.getState().position.zoom).toBe(expectedZoomLevel);
 			});
 
 			it('sets position by calling #_setPositionFromConfig as fallback', () => {

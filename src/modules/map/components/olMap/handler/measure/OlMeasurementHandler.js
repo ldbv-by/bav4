@@ -58,7 +58,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._storedContent = null;
 
 		this._sketchHandler = new OlSketchHandler();
-		this._listeners = [];
+		this._mapListeners = [];
+		this._keyUpListener = (e) => this._removeLast(e) ;
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -159,10 +160,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				}
 				this._save();
 			};
-			this._listeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
-			this._listeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
-			this._listeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
-			this._listeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
+			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
+			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
+			this._mapListeners.push(layer.getSource().on('removefeature', () => saveDebounced()));
+			this._mapListeners.push(this._map.getView().on('change:resolution', () => onResolutionChange(layer)));
 			return layer;
 		};
 
@@ -246,11 +247,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				});
 			}
 
-			this._listeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
-			this._listeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
-			this._listeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
-			this._listeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
-			this._listeners.push(document.addEventListener('keyup', (e) => this._removeLast(e)));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
+			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
+			document.addEventListener('keyup', this._keyUpListener);
 			this._registeredObservers = this._register(this._storeService.getStore());
 
 			olMap.addInteraction(this._select);
@@ -281,9 +282,10 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._helpTooltip.deactivate();
 
-		this._unreg(this._listeners);
+		this._unreg(this._mapListeners);
 		this._unreg(this._measureStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
+		document.removeEventListener('keyup', this._keyUpListener);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));

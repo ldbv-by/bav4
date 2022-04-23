@@ -66,6 +66,9 @@ describe('MainMenu', () => {
 
 		it('has static constants', async () => {
 			expect(MainMenu.SWIPE_DELTA_PX).toBe(50);
+			expect(MainMenu.INITIAL_WIDTH_EM).toBe(28);
+			expect(MainMenu.MIN_WIDTH_EM).toBe(28);
+			expect(MainMenu.MAX_WIDTH_EM).toBe(100);
 		});
 	});
 
@@ -425,6 +428,9 @@ describe('MainMenu', () => {
 			const slider = element.shadowRoot.querySelector('.slider-container input');
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
+			//check initial value
+			expect(slider.value).toBe('28');
+
 			//open FeatureInfo panel and adjust width
 			setTab(TabId.FEATUREINFO);
 			slider.value = value;
@@ -440,6 +446,7 @@ describe('MainMenu', () => {
 			setTab(TabId.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+			expect(slider.value).toBe('50');
 		});
 
 		it('prevents default event handling and stops its propagation', async () => {
