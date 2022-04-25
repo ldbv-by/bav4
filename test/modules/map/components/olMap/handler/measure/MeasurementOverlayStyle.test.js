@@ -6,6 +6,7 @@ import { $injector } from '../../../../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
+import { DragPan } from 'ol/interaction';
 
 
 
@@ -577,5 +578,87 @@ describe('MeasurementOverlayStyle', () => {
 
 		expect(actualPosition).toBeUndefined();
 		expect(actualProperty).toEqual({ key: '', value: null });
+	});
+
+	describe('_createDragOn', () => {
+
+		const getOverlay = () => {
+			const element = document.createElement('div');
+			return { getElement: () => element, set: () => { } };
+		};
+
+
+		const getMapMock = (interaction) => {
+			return {
+				getInteractions: () => {
+					return { getArray: () => [interaction] };
+				}
+			};
+		};
+
+		it('change overlay-property on pointerdown', () => {
+			setup();
+			const overlay = getOverlay();
+			const draggingSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const interactionSpy = spyOn(dragPan, 'setActive');
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new Event('pointerdown'));
+
+			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
+			expect(interactionSpy).toHaveBeenCalledWith(false);
+		});
+
+		it('change overlay-property on pointerup', () => {
+			setup();
+			const overlay = getOverlay();
+			const draggingSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const interactionSpy = spyOn(dragPan, 'setActive');
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new Event('pointerup'));
+
+			expect(draggingSpy).toHaveBeenCalledWith('dragging', false);
+			expect(interactionSpy).toHaveBeenCalledWith(true);
+		});
+
+		it('change overlay-property on mouseenter', () => {
+			setup();
+			const overlay = getOverlay();
+			const dragableSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new MouseEvent('mouseenter'));
+
+			expect(dragableSpy).toHaveBeenCalledWith('dragable', true);
+		});
+
+		it('change overlay-property on mouseleave', () => {
+			setup();
+			const overlay = getOverlay();
+			const dragableSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new MouseEvent('mouseleave'));
+
+			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
+		});
+
 	});
 });

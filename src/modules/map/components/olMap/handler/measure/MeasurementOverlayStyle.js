@@ -290,6 +290,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				overlay.set('dragging', true);
 			};
 
+			const handleMouseUp = () => {
+				dragPanInteraction.setActive(true);
+				overlay.set('dragging', false);
+			};
+
 			const handleMouseEnter = () => {
 				overlay.set('dragable', true);
 			};
@@ -298,6 +303,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				overlay.set('dragable', false);
 			};
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+			element.addEventListener(MapBrowserEventType.POINTERUP, handleMouseUp);
 			element.addEventListener('mouseenter', handleMouseEnter);
 			element.addEventListener('mouseleave', handleMouseLeave);
 		}
