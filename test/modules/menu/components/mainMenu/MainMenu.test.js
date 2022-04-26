@@ -375,22 +375,6 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 		});
 
-		it('focused menue-button loses the focus after swipe', async () => {
-			const element = await setup();
-			const mapButton = element.shadowRoot.querySelector('.header__button-container').children[1];
-			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
-			const center = getCenter(closeButton);
-
-			mapButton.focus();
-			expect(mapButton.matches(':focus')).toBeTrue();
-
-			// Touch-path upwards
-			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
-			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
-			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
-
-			expect(mapButton.matches(':focus')).toBeFalse();
-		});
 	});
 
 	describe('when responsive parameter observation state changes', () => {
