@@ -23,6 +23,8 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { networkReducer } from '../../../../../src/store/network/network.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../../src/store/media/media.action';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -155,7 +157,8 @@ describe('OlMap', () => {
 			layers: layersReducer,
 			measurement: measurementReducer,
 			network: networkReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			notifications: notificationReducer
 		});
 
 
@@ -163,6 +166,7 @@ describe('OlMap', () => {
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
 			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('OlMeasurementHandler', measurementLayerHandlerMock)
 			.registerSingleton('OlDrawHandler', drawLayerHandlerMock)
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
@@ -858,6 +862,8 @@ describe('OlMap', () => {
 				expect(map.getLayers().getLength()).toBe(0);
 				expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 				expect(warnSpy).toHaveBeenCalledWith(message);
+				expect(store.getState().notifications.latest.payload.content).toBe(`map_olMap_layer_not_available '${geoResourceId0}'`);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				done();
 			});
 		});
@@ -878,6 +884,8 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
+			expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_layer_not_available \'unknown\'');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 		it('removes an olLayer', async () => {
