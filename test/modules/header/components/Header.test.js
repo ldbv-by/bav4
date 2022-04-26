@@ -299,6 +299,23 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
 		});
+
+		it('focused menue-button loses the focus after swipe', async () => {
+			const element = await setup();
+			const mapButton = element.shadowRoot.querySelector('.header__button-container').children[1];
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			mapButton.focus();
+			expect(mapButton.matches(':focus')).toBeTrue();
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+
+			expect(mapButton.matches(':focus')).toBeFalse();
+		});
 	});
 
 	describe('when modal button is clicked', () => {
