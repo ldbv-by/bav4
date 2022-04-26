@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { VectorGeoResource, VectorSourceType } from '../../src/services/domain/geoResources';
-import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/services/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
 import { addLayer } from '../../src/store/layers/layers.action';
@@ -95,10 +95,12 @@ describe('ImportVectorDataService', () => {
 					sourceType: VectorSourceType.KML
 				};
 				const data = 'data';
+				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
+				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
@@ -120,6 +122,8 @@ describe('ImportVectorDataService', () => {
 					label: 'label',
 					sourceType: VectorSourceType.KML
 				};
+				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
+				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
@@ -140,10 +144,8 @@ describe('ImportVectorDataService', () => {
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
 				const instanceUnderTest = setup();
-				const sourceType = new SourceType(SourceTypeName.GEOJSON, mediaType);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data, mediaType).and.returnValue(sourceType);
-				const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
-					.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
+				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
+				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
@@ -163,8 +165,6 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
-				expect(sourceTypeServiceSpy).toHaveBeenCalled();
-				expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 			});
 
 			it('throws an error when response is not ok', async (done) => {
@@ -200,7 +200,7 @@ describe('ImportVectorDataService', () => {
 					id: 'id',
 					label: 'label'
 				};
-				spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType').and.returnValue(null);
+				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
