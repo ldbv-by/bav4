@@ -67,8 +67,8 @@ export class ImportVectorDataService {
 			if (result.ok) {
 				const data = await result.text();
 				/**
-				 * Althought we think we already know the sourceType, we let the sourceTypeService analyze the data.
-				 * Maybe they are not what they seemed to be ...
+				 * Althought we think we already know the sourceType, we let the sourceTypeService analyze the data
+				 * and derive the final sourceType. They might not be what they pretended to be...
 				 **/
 				const resultingSourceType = this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 				if (resultingSourceType) {
