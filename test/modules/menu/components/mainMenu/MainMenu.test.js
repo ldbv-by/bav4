@@ -375,6 +375,25 @@ describe('MainMenu', () => {
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 		});
 
+		it('close-button get the focus after swipe', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			expect(closeButton.matches(':focus')).toBeTrue();
+		});
 	});
 
 	describe('when responsive parameter observation state changes', () => {
