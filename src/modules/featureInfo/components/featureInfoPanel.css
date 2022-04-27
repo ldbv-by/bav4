@@ -112,3 +112,7 @@ img {
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
 	color: var(--primary-color) .3;
 }
+
+sub{
+	font-size:.7em;
+}
