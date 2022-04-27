@@ -234,19 +234,19 @@ describe('ImportVectorDataService', () => {
 		});
 	});
 
-	describe('_mapSourceTypetoVectorSourceType', () => {
+	describe('_mapSourceTypeToVectorSourceType', () => {
 
 		it('maps a SourceType to a VectorSourceType', () => {
 			const instanceUnderTest = setup();
 
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType()).toBeNull();
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.KML)).toBe(VectorSourceType.KML);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.GPX)).toBe(VectorSourceType.GPX);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(VectorSourceType.GEOJSON)).toBe(VectorSourceType.GEOJSON);
-			expect(instanceUnderTest._mapSourceTypetoVectorSourceType(new SourceType('foo'))).toBeNull();
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType()).toBeNull();
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.KML)).toBe(VectorSourceType.KML);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.GPX)).toBe(VectorSourceType.GPX);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.GEOJSON)).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType('foo'))).toBeNull();
 		});
 	});
 
@@ -296,7 +296,7 @@ describe('ImportVectorDataService', () => {
 			const instanceUnderTest = setup();
 			const sourceType = new SourceType(SourceTypeName.GEOJSON);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
-			const _mapSourceTypetoVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypetoVectorSourceType')
+			const _mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
 				.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
 
 			const vgr = instanceUnderTest.forData(data);
@@ -309,7 +309,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(_mapSourceTypetoVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
+			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('updates the label property of a layer', async () => {
