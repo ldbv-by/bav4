@@ -37,8 +37,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 		super({
 			layer: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, FileStorageService } = $injector.inject('TranslationService', 'FileStorageService');
 		this._translationService = TranslationService;
+		this._fileStorageservice = FileStorageService;
 
 		this._onCollapse = () => { };
 	}
@@ -189,6 +190,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 			ishidden: !layer.constraints?.cloneable
 		};
 
+		const hasLayerInfoClass = {
+			// georesources based on files from file-storage provides no layerinfo at all
+			ishidden: this._fileStorageservice.isStorageId(layer.geoResourceId)
+		};
+
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>
@@ -212,7 +218,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<ba-icon id='copy' class='${classMap(cloneableClass)}' .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='info' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
+						<ba-icon id='info' class='${classMap(hasLayerInfoClass)}' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               

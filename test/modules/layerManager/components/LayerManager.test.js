@@ -23,6 +23,7 @@ describe('LayerManager', () => {
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
+		$injector.registerSingleton('FileStorageService', { isStorageId: () => false });
 		return TestUtils.render(LayerManager.tag);
 	};
 
