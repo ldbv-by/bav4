@@ -209,7 +209,7 @@ export const changeCenter = (center) => {
  * @param {FitRequestOptions} options options for this fit request
  * @function
  */
-export const setFit = (extent, options = {}) => {
+export const fit = (extent, options = {}) => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
 		payload: new EventLike({ extent, options })

@@ -1,7 +1,7 @@
 import { observe } from '../utils/storeUtils';
 import { $injector } from '../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from '../store/geolocation/geolocation.action';
-import { changeCenter, setFit } from '../store/position/position.action';
+import { changeCenter, fit } from '../store/position/position.action';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { provide as provider } from './i18n/geolocationPlugin.provider';
@@ -65,7 +65,7 @@ export class GeolocationPlugin extends BaPlugin {
 			mapService.getDefaultGeodeticSrid(),
 			mapService.getSrid()
 		);
-		setFit(extent, { maxZoom: 16 });
+		fit(extent, { maxZoom: 16 });
 	}
 
 	_handlePositionAndUpdateStore(position) {
