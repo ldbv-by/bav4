@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { $injector } from '../../src/injection';
-import { BvvFileStorageService, FileStorageServiceDataTypes } from '../../src/services/FileStorageService';
+import { BvvFileStorageService, FileStorageServiceDataTypes, TEMP_STORAGE_ID } from '../../src/services/FileStorageService';
 
 describe('BvvFileStorageService', () => {
 
@@ -211,7 +211,7 @@ describe('BvvFileStorageService', () => {
 			expect(instanceUnderTest.isStorageId('a_foo')).toBeTrue();
 			expect(instanceUnderTest.isStorageId('foo')).toBeFalse();
 			expect(instanceUnderTest.isStorageId('f_foo')).toBeTrue();
-			expect(instanceUnderTest.isStorageId('temp_storage_id')).toBeTrue();
+			expect(instanceUnderTest.isStorageId(TEMP_STORAGE_ID)).toBeTrue();
 		});
 	});
 
