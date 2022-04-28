@@ -19,8 +19,8 @@ import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResou
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
 export const FALLBACK_GEORESOURCE_ID_1 = 'atkis_sw';
-export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Layer 1';
-export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Layer 2';
+export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Map 1';
+export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Map 2';
 
 /**
  * Service for managing {@link GeoResource}s.
