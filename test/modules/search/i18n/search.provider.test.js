@@ -9,7 +9,7 @@ describe('i18n for search module', () => {
 
 		expect(map.search_menu_locationResultsPanel_label).toBe('Orte');
 		expect(map.search_menu_geoResourceResultsPanel_label).toBe('Daten');
-		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstück');
+		expect(map.search_menu_cpResultsPanel_label).toBe('Flurstücke');
 		expect(map.search_menu_showAll_label).toBe('Mehr...');
 	});
 
