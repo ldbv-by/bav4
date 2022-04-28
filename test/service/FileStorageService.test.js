@@ -201,6 +201,20 @@ describe('BvvFileStorageService', () => {
 		});
 	});
 
+	describe('iStorageId', () => {
+
+		it('checks if a string represents an StorageId', async () => {
+
+			const instanceUnderTest = new BvvFileStorageService();
+
+			expect(instanceUnderTest.isStorageId('foo')).toBeFalse();
+			expect(instanceUnderTest.isStorageId('a_foo')).toBeTrue();
+			expect(instanceUnderTest.isStorageId('foo')).toBeFalse();
+			expect(instanceUnderTest.isStorageId('f_foo')).toBeTrue();
+			expect(instanceUnderTest.isStorageId('temp_storage_id')).toBeTrue();
+		});
+	});
+
 	describe('getFileId', () => {
 
 		it('loads a fileId file by an adminId', async () => {
