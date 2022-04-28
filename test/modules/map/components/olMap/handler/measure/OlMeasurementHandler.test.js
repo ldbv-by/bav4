@@ -21,7 +21,7 @@ import { layersReducer } from '../../../../../../../src/store/layers/layers.redu
 import { finish, remove, reset } from '../../../../../../../src/store/measurement/measurement.action';
 import { OverlayService } from '../../../../../../../src/modules/map/components/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
-import { FileStorageServiceDataTypes } from '../../../../../../../src/services/FileStorageService';
+import { FileStorageServiceDataTypes, TEMP_STORAGE_ID } from '../../../../../../../src/services/FileStorageService';
 import { InteractionSnapType, InteractionStateType } from '../../../../../../../src/modules/map/components/olMap/olInteractionUtils';
 import VectorSource from 'ol/source/Vector';
 import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
@@ -488,9 +488,9 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
-			const vectorGeoResource = new VectorGeoResource('temp_measure_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+			const vectorGeoResource = new VectorGeoResource(TEMP_STORAGE_ID, 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'temp_measure_id' }] });
+			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => TEMP_STORAGE_ID }] });
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
 			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 
@@ -498,7 +498,7 @@ describe('OlMeasurementHandler', () => {
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			setTimeout(() => {
-				expect(spy).toHaveBeenCalledWith('temp_measure_id');
+				expect(spy).toHaveBeenCalledWith(TEMP_STORAGE_ID);
 				expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 				done();
 			});
@@ -746,7 +746,7 @@ describe('OlMeasurementHandler', () => {
 
 			setTimeout(() => {
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
+				expect(store.getState().layers.active[0].id).toBe(TEMP_STORAGE_ID);
 				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 				done();
 			});

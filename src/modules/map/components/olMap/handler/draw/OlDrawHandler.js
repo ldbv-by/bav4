@@ -15,7 +15,7 @@ import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { HelpTooltip } from '../../HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
+import { FileStorageServiceDataTypes, TEMP_STORAGE_ID } from '../../../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../../../services/domain/geoResources';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { debounced } from '../../../../../../utils/timer';
@@ -35,9 +35,6 @@ import { isString } from '../../../../../../utils/checks';
 export const MAX_SELECTION_SIZE = 1;
 
 const Debounce_Delay = 1000;
-
-const Temp_Session_Id = 'temp_measure_id';
-
 
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
@@ -113,7 +110,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) => {
 				const id = layer.get('geoResourceId');
-				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
+				return id && (this._storageHandler.isStorageId(id) || id === TEMP_STORAGE_ID);
 			};
 			return map.getLayers().getArray().find(isOldLayer);
 		};
@@ -790,7 +787,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			// TODO: offline-support is needed to properly working with temporary ids
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
-			return Temp_Session_Id;
+			return TEMP_STORAGE_ID;
 		};
 
 		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();

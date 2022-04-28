@@ -19,7 +19,7 @@ import { VectorGeoResource, VectorSourceType } from '../../../../../../services/
 import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
 import { getOverlays } from '../../OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
-import { FileStorageServiceDataTypes } from '../../../../../../services/FileStorageService';
+import { FileStorageServiceDataTypes, TEMP_STORAGE_ID } from '../../../../../../services/FileStorageService';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
 import { emitNotification, LevelTypes } from '../../../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
@@ -30,8 +30,6 @@ import { setCurrentTool, ToolId } from '../../../../../../store/tools/tools.acti
 import { setSelection as setDrawSelection } from '../../../../../../store/draw/draw.action';
 
 const Debounce_Delay = 1000;
-
-const Temp_Session_Id = 'temp_measure_id';
 
 /**
  * Handler for measurement-interaction with the map.
@@ -93,7 +91,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) => {
 				const id = layer.get('geoResourceId');
-				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
+				return id && (this._storageHandler.isStorageId(id) || id === TEMP_STORAGE_ID);
 			};
 			return map.getLayers().getArray().find(isOldLayer);
 		};
@@ -650,7 +648,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			// TODO: offline-support is needed to properly working with temporary ids
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
-			return Temp_Session_Id;
+			return TEMP_STORAGE_ID;
 		};
 
 		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
