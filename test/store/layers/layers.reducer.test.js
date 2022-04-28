@@ -23,6 +23,7 @@ describe('createDefaultLayersConstraints', () => {
 		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
 		expect(defaultLayerConstraints.hidden).toBeFalse();
 		expect(defaultLayerConstraints.cloneable).toBeTrue();
+		expect(defaultLayerConstraints.metaData).toBeTrue();
 	});
 });
 
@@ -38,9 +39,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.label).toBe('');
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
-		expect(layer.constraints.alwaysTop).toBeFalse();
-		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeTrue();
+		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 
 	it('returns a layer object with default properties and values for given id and geoResourceId', () => {
@@ -53,9 +52,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.label).toBe('');
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
-		expect(layer.constraints.alwaysTop).toBeFalse();
-		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeTrue();
+		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 });
 
@@ -134,17 +131,14 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[0].geoResourceId).toBe('id0');
 		expect(store.getState().layers.active[0].label).toBe('');
 		expect(store.getState().layers.active[0].zIndex).toBe(0);
-		expect(store.getState().layers.active[0].constraints.hidden).toBeFalse();
-		expect(store.getState().layers.active[0].constraints.alwaysTop).toBeFalse();
-		expect(store.getState().layers.active[0].constraints.cloneable).toBeTrue();
+		expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
 
 		expect(store.getState().layers.active[1].id).toBe('id1');
 		expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 		expect(store.getState().layers.active[1].label).toBe('label1');
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
 		expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
-		expect(store.getState().layers.active[1].constraints.alwaysTop).toBeFalse();
-		expect(store.getState().layers.active[1].constraints.cloneable).toBeFalse();
+		expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(4);
 	});
 
 	it('adds layers regarding a \'z-index\' property of 0', () => {
