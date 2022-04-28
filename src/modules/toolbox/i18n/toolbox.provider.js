@@ -65,7 +65,7 @@ export const provide = (lang) => {
 				toolbox_import_data_draganddrop_target: 'into the Map',
 				toolbox_import_data_sucess_notification: 'Data transferred succeeded',
 				toolbox_import_url_header: 'URL Import',
-				toolbox_import_url_subheader: 'WMS, KML, GPX, GeoJSON',
+				toolbox_import_url_subheader: 'KML, GPX, GeoJSON',
 				toolbox_import_url_search_before: 'Please enter the Url into the ',
 				toolbox_import_url_search: 'Search Bar',
 				toolbox_import_url_search_after: 'the data will automatically transferred',

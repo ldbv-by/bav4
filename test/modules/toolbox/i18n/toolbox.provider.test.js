@@ -79,7 +79,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop_target).toBe('in die Karte');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Daten konnten erfolgreich geladen werden');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
-		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_subheader).toBe('KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
 		expect(map.toolbox_import_url_search).toBe('Suchfeld');
 		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
@@ -166,7 +166,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop_target).toBe('into the Map');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Data transferred succeeded');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
-		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_subheader).toBe('KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
 		expect(map.toolbox_import_url_search).toBe('Search Bar');
 		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
