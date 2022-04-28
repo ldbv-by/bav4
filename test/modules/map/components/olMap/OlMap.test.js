@@ -9,7 +9,7 @@ import { $injector } from '../../../../../src/injection';
 import { layersReducer } from '../../../../../src/store/layers/layers.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, setFit } from '../../../../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter, fit } from '../../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from './mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
@@ -663,7 +663,7 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			setFit(extent);
+			fit(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
@@ -689,7 +689,7 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			setFit(extent, { maxZoom: maxZoom });
+			fit(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
