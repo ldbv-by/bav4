@@ -153,7 +153,7 @@ export const provide = (lang) => {
 				toolbox_import_data_draganddrop_target: 'in die Karte',
 				toolbox_import_data_sucess_notification: 'Daten konnten erfolgreich geladen werden',
 				toolbox_import_url_header: 'URL Import',
-				toolbox_import_url_subheader: 'WMS, KML, GPX, GeoJSON',
+				toolbox_import_url_subheader: 'KML, GPX, GeoJSON',
 				toolbox_import_url_search_before: 'Bitte geben Sie die URL in das ',
 				toolbox_import_url_search: 'Suchfeld',
 				toolbox_import_url_search_after: 'ein. Die Daten werden automatisch geladen.',
