@@ -114,6 +114,7 @@ img {
 	color: var(--primary-color) .3;
 }
 
+/* just for grundsteuer release, should be removed later */
 .grundsteuer p {
 	padding: 0 0 .8em 0;
 }
