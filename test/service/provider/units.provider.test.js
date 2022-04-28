@@ -53,9 +53,9 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1.000 km&sup2;');
 		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1.230 km&sup2;');
 		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1.230 km&sup2;');
-		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100000 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12345 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12345 m&sup2;');
+		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100,000 m&sup2;');
+		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12,345 m&sup2;');
+		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12,345 m&sup2;');
 		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10.000 km&sup2;');
 	});
 });
