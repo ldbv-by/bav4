@@ -654,7 +654,7 @@ describe('OlMap', () => {
 			});
 		});
 
-		it('fits to an extent', async (done) => {
+		it('fits to an extent', async () => {
 			const element = await setup();
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
@@ -669,17 +669,14 @@ describe('OlMap', () => {
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();
 
-			setTimeout(function () {
-				//check if flag is reset
-				expect(element._viewSyncBlocked).toBeFalse();
-				//and store is in sync with view
-				expect(spy).toHaveBeenCalled();
-				done();
-
-			});
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
 		});
 
-		it('fits to an extent with custom maxZoom option', async (done) => {
+		it('fits to an extent with custom maxZoom option', async () => {
 			const element = await setup();
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
@@ -694,14 +691,11 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
 			expect(element._viewSyncBlocked).toBeTrue();
-			setTimeout(function () {
-				//check if flag is reset
-				expect(element._viewSyncBlocked).toBeFalse();
-				//and store is in sync with view
-				expect(spy).toHaveBeenCalled();
-				done();
-
-			});
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
@@ -745,7 +739,7 @@ describe('OlMap', () => {
 			expect(layer0.get('id')).toBe(id0);
 		});
 
-		it('adds an olLayer resolving a GeoResourceFuture', async (done) => {
+		it('adds an olLayer resolving a GeoResourceFuture', async () => {
 			const element = await setup();
 			const map = element._map;
 			const geoResource = new WmsGeoResource(geoResourceId0, 'Label2', 'https://something0.url', 'layer2', 'image/png');
@@ -763,20 +757,18 @@ describe('OlMap', () => {
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			expect(map.getLayers().getLength()).toBe(1);
-			const layer = map.getLayers().item(0);
+			let layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe(id0);
 			expect(layer).toEqual(olPlaceHolderLayer);
 
-			setTimeout(() => {
-				const layer = map.getLayers().item(0);
-				expect(layer.get('id')).toBe(id0);
-				expect(map.getLayers().getLength()).toBe(1);
-				expect(layer).toEqual(olRealLayer);
-				done();
-			});
+			await TestUtils.timeout();
+			layer = map.getLayers().item(0);
+			expect(layer.get('id')).toBe(id0);
+			expect(map.getLayers().getLength()).toBe(1);
+			expect(layer).toEqual(olRealLayer);
 		});
 
-		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async (done) => {
+		it('adds an olLayer resolving a GeoResourceFuture with custom settings', async () => {
 			const element = await setup();
 			const map = element._map;
 			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
@@ -793,18 +785,16 @@ describe('OlMap', () => {
 
 			addLayer(id0, { visible: false, opacity: .5, geoResourceId: geoResourceId0 });
 
-			setTimeout(() => {
-				const layer = map.getLayers().item(0);
-				expect(map.getLayers().getLength()).toBe(1);
-				expect(layer).toEqual(olRealLayer);
-				expect(layer.get('id')).toBe(id0);
-				expect(layer.getOpacity()).toBe(.5);
-				expect(layer.getVisible()).toBeFalse();
-				done();
-			});
+			await TestUtils.timeout();
+			const layer = map.getLayers().item(0);
+			expect(map.getLayers().getLength()).toBe(1);
+			expect(layer).toEqual(olRealLayer);
+			expect(layer.get('id')).toBe(id0);
+			expect(layer.getOpacity()).toBe(.5);
+			expect(layer.getVisible()).toBeFalse();
 		});
 
-		it('adds an olLayer resolving a GeoResourceFuture with custom index', async (done) => {
+		it('adds an olLayer resolving a GeoResourceFuture with custom index', async () => {
 			// for this test layer.id === geoResource.id
 			const element = await setup();
 			const map = element._map;
@@ -835,15 +825,13 @@ describe('OlMap', () => {
 			addLayer(nonAsyncLayerId);
 			addLayer(underTestLayerId, { zIndex: 0 });
 
-			setTimeout(() => {
-				expect(map.getLayers().getLength()).toBe(2);
-				expect(map.getLayers().item(0)).toEqual(olRealLayer);
-				expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(map.getLayers().getLength()).toBe(2);
+			expect(map.getLayers().item(0)).toEqual(olRealLayer);
+			expect(map.getLayers().item(1)).toEqual(nonAsyncOlLayer);
 		});
 
-		it('adds NO layer for an unresolveable GeoResourceFuture', async (done) => {
+		it('adds NO layer for an unresolveable GeoResourceFuture', async () => {
 			const element = await setup();
 			const map = element._map;
 			const message = 'error';
@@ -858,14 +846,12 @@ describe('OlMap', () => {
 			const layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe(id0);
 
-			setTimeout(() => {
-				expect(map.getLayers().getLength()).toBe(0);
-				expect(geoResourceServiceSpy).not.toHaveBeenCalled();
-				expect(warnSpy).toHaveBeenCalledWith(message);
-				expect(store.getState().notifications.latest.payload.content).toBe(`map_olMap_layer_not_available '${geoResourceId0}'`);
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(map.getLayers().getLength()).toBe(0);
+			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
+			expect(warnSpy).toHaveBeenCalledWith(message);
+			expect(store.getState().notifications.latest.payload.content).toBe(`map_olMap_layer_not_available '${geoResourceId0}'`);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 
