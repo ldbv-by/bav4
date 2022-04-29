@@ -49,7 +49,7 @@ describe('GeoResourceInfoPanel', () => {
 			expect(spinner.length).toBe(1);
 		});
 
-		it('should show a geoResourceInfo on the panel', async (done) => {
+		it('should show a geoResourceInfo on the panel', async () => {
 
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
@@ -58,16 +58,14 @@ describe('GeoResourceInfoPanel', () => {
 
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-			setTimeout(() => {
-				const divs = element.shadowRoot.querySelectorAll('div');
+			await TestUtils.timeout();
+			const divs = element.shadowRoot.querySelectorAll('div');
 
-				expect(divs.length).toBe(2);
-				expect(divs[1].innerText).toBe('content');
-				done();
-			});
+			expect(divs.length).toBe(2);
+			expect(divs[1].innerText).toBe('content');
 		});
 
-		it('should return an info text when response is null ', async (done) => {
+		it('should return an info text when response is null ', async () => {
 
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(null);
 
@@ -75,16 +73,14 @@ describe('GeoResourceInfoPanel', () => {
 
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-			setTimeout(() => {
-				const divs = element.shadowRoot.querySelectorAll('div');
+			await TestUtils.timeout();
+			const divs = element.shadowRoot.querySelectorAll('div');
 
-				expect(divs.length).toBe(2);
-				expect(divs[1].innerText).toBe('geoResourceInfo_empty_geoResourceInfo');
-				done();
-			});
+			expect(divs.length).toBe(2);
+			expect(divs[1].innerText).toBe('geoResourceInfo_empty_geoResourceInfo');
 		});
 
-		it('fires a notification and logs a warn statement when GeoResourceInfoService is not available', async (done) => {
+		it('fires a notification and logs a warn statement when GeoResourceInfoService is not available', async () => {
 
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788')
 				.and.returnValue(Promise.reject('geoResourceInfo error object'));
@@ -93,15 +89,13 @@ describe('GeoResourceInfoPanel', () => {
 			const element = await setup();
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('geoResourceInfo_geoResourceInfo_response_error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				expect(warnSpy).toHaveBeenCalledWith('geoResourceInfo error object');
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('geoResourceInfo_geoResourceInfo_response_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(warnSpy).toHaveBeenCalledWith('geoResourceInfo error object');
 
-				const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
-				expect(spinner.length).toBe(1);
-				done();
-			});
+			const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
+			expect(spinner.length).toBe(1);
 		});
 	});
 
