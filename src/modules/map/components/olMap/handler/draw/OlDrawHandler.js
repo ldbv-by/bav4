@@ -38,7 +38,6 @@ const Debounce_Delay = 1000;
 
 const Temp_Session_Id = 'temp_measure_id';
 
-
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
@@ -78,7 +77,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e) ;
+		this._keyUpListener = (e) => this._removeLast(e);
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -788,6 +787,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const createTempIdAndWarn = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
+			// to simplify the code in OlDrawHandler and OlMeasurementHandler
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
@@ -805,6 +806,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label, constraints: { cloneable: false } });
+		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 }

@@ -725,9 +725,10 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
 			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
+			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
-		it('adds non-cloneable layer', async () => {
+		it('adds layer with specific contrainsts', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
 			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
@@ -744,6 +745,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
 			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
+			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
 
