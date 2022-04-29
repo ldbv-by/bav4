@@ -1379,7 +1379,7 @@ describe('OlDrawHandler', () => {
 			expect(startNewSpy).toHaveBeenCalled();
 		});
 
-		it('removes drawn feature if keypressed', (done) => {
+		it('removes drawn feature if keypressed', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
@@ -1404,10 +1404,8 @@ describe('OlDrawHandler', () => {
 			spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
 			simulateKeyEvent(deleteKeyCode);
 
-			setTimeout(() => {
-				expect(sourceSpy).toHaveBeenCalledWith(feature);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(sourceSpy).toHaveBeenCalledWith(feature);
 		});
 
 	});
