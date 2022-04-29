@@ -37,9 +37,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 		super({
 			layer: null
 		});
-		const { TranslationService, FileStorageService } = $injector.inject('TranslationService', 'FileStorageService');
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._fileStorageservice = FileStorageService;
+
 
 		this._onCollapse = () => { };
 	}
@@ -191,8 +191,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const hasLayerInfoClass = {
-			// georesources based on files from file-storage provides no layerinfo at all
-			ishidden: this._fileStorageservice.isStorageId(layer.geoResourceId)
+			ishidden: !layer.constraints?.metaData
 		};
 
 		return html`

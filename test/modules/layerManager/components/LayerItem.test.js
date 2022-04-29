@@ -47,7 +47,6 @@ describe('LayerItem', () => {
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, { layers: layersReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
-			$injector.registerSingleton('FileStorageService', { isStorageId: () => true });
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = layer;
 			return element;
@@ -186,7 +185,6 @@ describe('LayerItem', () => {
 			};
 			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
-			$injector.registerSingleton('FileStorageService', { isStorageId: () => true });
 			return store;
 		};
 
@@ -248,7 +246,6 @@ describe('LayerItem', () => {
 		const setup = (state) => {
 			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
-			$injector.registerSingleton('FileStorageService', { isStorageId: () => true });
 			return store;
 		};
 
@@ -425,7 +422,6 @@ describe('LayerItem', () => {
 
 			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
-			$injector.registerSingleton('FileStorageService', { isStorageId: () => true });
 			return store;
 		};
 		describe('on collapse', () => {

@@ -114,10 +114,6 @@ export class BvvFileStorageService {
 		return id.startsWith('f_');
 	}
 
-	isStorageId(id) {
-		return /^[f,a]_|temp_storage_id/.test(id);
-	}
-
 	async getFileId(possibleAdminId) {
 		if (this.isFileId(possibleAdminId)) {
 			return possibleAdminId;
