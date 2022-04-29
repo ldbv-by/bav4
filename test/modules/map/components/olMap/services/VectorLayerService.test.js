@@ -6,6 +6,7 @@ import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';
 import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
 import VectorLayer from 'ol/layer/Vector';
+import { TestUtils } from '../../../../../test-utils';
 
 
 describe('VectorLayerService', () => {
@@ -189,7 +190,7 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
 			});
 
-			it('updates the label of an internal VectorGeoresource if possible', (done) => {
+			it('updates the label of an internal VectorGeoresource if possible', async () => {
 				const srid = 3857;
 				const kmlName = 'kmlName';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -199,10 +200,8 @@ describe('VectorLayerService', () => {
 
 				instanceUnderTest._vectorSourceForData(vectorGeoresource);
 
-				setTimeout(() => {
-					expect(vectorGeoresource.label).toBe(kmlName);
-					done();
-				});
+				await TestUtils.timeout();
+				expect(vectorGeoresource.label).toBe(kmlName);
 			});
 		});
 
