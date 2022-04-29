@@ -148,6 +148,14 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelector('#copy').matches('.ishidden')).toBeTrue();
 		});
 
+		it('hides inactive copy button', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { metaData: false } };
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#info').matches('.ishidden')).toBeTrue();
+		});
+
 		it('contains test-id attributes', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);

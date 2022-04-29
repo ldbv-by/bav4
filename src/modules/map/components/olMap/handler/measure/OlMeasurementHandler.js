@@ -57,7 +57,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e) ;
+		this._keyUpListener = (e) => this._removeLast(e);
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -663,7 +663,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label, constraints: { cloneable: false } });
+		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 
 	static get Debounce_Delay() {
