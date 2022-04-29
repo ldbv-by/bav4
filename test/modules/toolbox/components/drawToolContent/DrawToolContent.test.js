@@ -505,7 +505,7 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
-		it('sets the style, after symbol changes in iconSelect', async (done) => {
+		it('sets the style, after symbol changes in iconSelect', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
 			const element = await setup({ ...drawDefaultState, style });
@@ -514,18 +514,15 @@ describe('DrawToolContent', () => {
 			const iconSelect = element.shadowRoot.querySelector('ba-iconselect');
 			expect(iconSelect).toBeTruthy();
 			// wait to get icons loaded....
-			setTimeout(() => {
-				// ..then perform ui-actions
-				const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
-				iconButton.click();
+			await TestUtils.timeout();
+			// ..then perform ui-actions
+			const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
+			iconButton.click();
 
-				const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
-				selectableIcon.click();
+			const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
+			selectableIcon.click();
 
-				expect(store.getState().draw.style.symbolSrc).toBeTruthy();
-				done();
-			});
-
+			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
 		});
 
 		it('sets the description, after description changes in textarea', async () => {
