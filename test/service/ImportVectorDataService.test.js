@@ -167,7 +167,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.srid).toBe(4326);
 			});
 
-			it('throws an error when response is not ok', async (done) => {
+			it('throws an error when response is not ok', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
 				const status = 404;
@@ -188,11 +188,10 @@ describe('ImportVectorDataService', () => {
 				}
 				catch (error) {
 					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: Http-Status ${status}`);
-					done();
 				}
 			});
 
-			it('throws an error when sourceType is not available', async (done) => {
+			it('throws an error when sourceType is not available', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
 				const data = 'data';
@@ -213,7 +212,6 @@ describe('ImportVectorDataService', () => {
 				}
 				catch (error) {
 					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
-					done();
 				}
 			});
 
