@@ -123,12 +123,11 @@ describe('FeatureInfoPlugin', () => {
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
 				expect(store.getState().featureInfo.querying).toBeTrue();
-				setTimeout(() => {
-					expect(store.getState().featureInfo.current).toHaveSize(1);
-					expect(store.getState().featureInfo.current[0].content).toBe('content');
-					expect(store.getState().featureInfo.current[0].title).toBe('title');
-					expect(store.getState().featureInfo.querying).toBeFalse();
-				});
+				await TestUtils.timeout();
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.current[0].content).toBe('content');
+				expect(store.getState().featureInfo.current[0].title).toBe('title');
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 
 			it('adds FeatureInfo items taking layerProperties\' label as title', async () => {
@@ -153,11 +152,10 @@ describe('FeatureInfoPlugin', () => {
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
-				setTimeout(() => {
-					expect(store.getState().featureInfo.current).toHaveSize(1);
-					expect(store.getState().featureInfo.current[0].content).toBe('content');
-					expect(store.getState().featureInfo.current[0].title).toBe(layerLabel0);
-				});
+				await TestUtils.timeout();
+				expect(store.getState().featureInfo.current).toHaveSize(1);
+				expect(store.getState().featureInfo.current[0].content).toBe('content');
+				expect(store.getState().featureInfo.current[0].title).toBe(layerLabel0);
 			});
 
 			it('adds NO FeatureInfo items when layer is invisible or hidden', async () => {
@@ -211,10 +209,9 @@ describe('FeatureInfoPlugin', () => {
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
 				expect(store.getState().featureInfo.querying).toBeTrue();
-				setTimeout(() => {
-					expect(store.getState().featureInfo.current).toHaveSize(0);
-					expect(store.getState().featureInfo.querying).toBeFalse();
-				});
+				await TestUtils.timeout();
+				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 
 			it('emits a notification and logs a warning when service throws exception', async () => {
