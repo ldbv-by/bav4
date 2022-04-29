@@ -217,7 +217,7 @@ describe('FeatureInfoPlugin', () => {
 				});
 			});
 
-			it('emits a notification and logs a warning when service throws exception', async (done) => {
+			it('emits a notification and logs a warning when service throws exception', async () => {
 				const layerId0 = 'id0';
 				const layerLabel0 = 'label0';
 				const coordinate = [11, 22];
@@ -241,14 +241,12 @@ describe('FeatureInfoPlugin', () => {
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
 
 				expect(store.getState().featureInfo.querying).toBeTrue();
-				setTimeout(() => {
-					expect(store.getState().featureInfo.current).toHaveSize(0);
-					expect(store.getState().notifications.latest.payload.content).toBe(`${layerLabel0}: featureInfoPlugin_featureInfoService_exception`);
-					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
-					expect(warnSpy).toHaveBeenCalledWith(errorMessage);
-					expect(store.getState().featureInfo.querying).toBeFalse();
-					done();
-				});
+				await TestUtils.timeout();
+				expect(store.getState().featureInfo.current).toHaveSize(0);
+				expect(store.getState().notifications.latest.payload.content).toBe(`${layerLabel0}: featureInfoPlugin_featureInfoService_exception`);
+				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
+				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});
 	});
