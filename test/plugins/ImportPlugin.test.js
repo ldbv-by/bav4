@@ -190,10 +190,9 @@ describe('ImportPlugin', () => {
 
 			setData('<kml some=thing></kml>', MediaType.KML);
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-			});
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 });
