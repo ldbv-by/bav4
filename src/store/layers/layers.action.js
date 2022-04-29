@@ -30,6 +30,7 @@ import { $injector } from '../../injection';
   * @property {boolean} [hidden=false] Layer is not displayed in UI
   * @property {boolean} [alwaysTop=false] Layer always on top
   * @property {boolean} [cloneable=true] Layer is allowed to be cloned
+  * @property {boolean} [metaData=true] Layer references meta data that can be viewed
   */
 
 /**

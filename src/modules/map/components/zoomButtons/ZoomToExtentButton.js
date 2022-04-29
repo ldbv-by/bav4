@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './zoomToExtentButton.css';
 import { $injector } from '../../../../injection';
-import { setFit } from '../../../../store/position/position.action';
+import { fit } from '../../../../store/position/position.action';
 
 /**
  * Button that zooms map to extent
@@ -27,7 +27,7 @@ export class ZoomToExtentButton extends BaElement {
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
 
 		const zoomToExtent = () => {
-			setFit(getDefaultMapExtent());
+			fit(getDefaultMapExtent());
 		};
 
 		return html`

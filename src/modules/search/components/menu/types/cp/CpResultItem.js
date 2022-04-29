@@ -2,7 +2,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './cpResultItem.css';
 import { close as closeMainMenu } from '../../../../../../store/mainMenu/mainMenu.action';
-import { setFit } from '../../../../../../store/position/position.action';
+import { fit } from '../../../../../../store/position/position.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../../../store/highlight/highlight.action';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../plugins/HighlightPlugin';
 import { MvuElement } from '../../../../../MvuElement';
@@ -68,7 +68,7 @@ export class CpResultItem extends MvuElement {
 
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
-			setFit(extent, { maxZoom: CpResultItem._maxZoomLevel });
+			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
 			if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
