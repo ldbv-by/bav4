@@ -59,7 +59,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e) ;
+		this._keyUpListener = (e) => this._removeLast(e);
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -648,6 +648,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		const createTempIdAndWarn = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
+			// to simplify the code in OlDrawHandler and OlMeasurementHandler
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
@@ -665,7 +667,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label, constraints: { cloneable: false } });
+		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 
 	static get Debounce_Delay() {
