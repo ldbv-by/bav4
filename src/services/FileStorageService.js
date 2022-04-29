@@ -82,8 +82,6 @@ export const FileStorageServiceDataTypes = Object.freeze({
 	KML: 'application/vnd.google-earth.kml+xml'
 });
 
-export const TEMP_STORAGE_ID = 'temp_storage_id';
-
 /**
  * BVV service for persisting and loading ASCII based geodata using a RESTful endpoint.
  * @class
