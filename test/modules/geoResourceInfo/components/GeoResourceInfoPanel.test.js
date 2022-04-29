@@ -113,9 +113,8 @@ describe('GeoResourceInfoPanel', () => {
 			const element = await setup(state);
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			});
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 		});
 
 		it('layouts for portrait', async () => {
@@ -130,9 +129,8 @@ describe('GeoResourceInfoPanel', () => {
 			const element = await setup(state);
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			});
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 		});
 
 	});
