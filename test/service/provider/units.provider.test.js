@@ -33,15 +33,15 @@ describe('Units provider', () => {
 
 		expect(bvvDistanceUnitsProvider(0, 0)).toBe('0 m');
 		expect(bvvDistanceUnitsProvider(0, 2)).toBe('0 m');
-		expect(bvvDistanceUnitsProvider(42, 0)).toBe('42.0 m');
-		expect(bvvDistanceUnitsProvider(42, 2)).toBe('42.0 m');
-		expect(bvvDistanceUnitsProvider(999, 0)).toBe('999.0 m');
-		expect(bvvDistanceUnitsProvider(1000, 0)).toBe('1.0 km');
-		expect(bvvDistanceUnitsProvider(1000, 2)).toBe('1.0 km');
-		expect(bvvDistanceUnitsProvider(1234, 0)).toBe('1.2 km');
-		expect(bvvDistanceUnitsProvider(1234, 2)).toBe('1.2 km');
-		expect(bvvDistanceUnitsProvider(10000, 0)).toBe('10.0 km');
-		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.0 km');
+		expect(bvvDistanceUnitsProvider(42, 0)).toMatch('^42[,/.]0 m$');
+		expect(bvvDistanceUnitsProvider(42, 2)).toMatch('^42[,/.]0 m$');
+		expect(bvvDistanceUnitsProvider(999, 0)).toMatch('^999[,/.]0 m$');
+		expect(bvvDistanceUnitsProvider(1000, 0)).toMatch('^1[,/.]0 km$');
+		expect(bvvDistanceUnitsProvider(1000, 2)).toMatch('^1[,/.]0 km$');
+		expect(bvvDistanceUnitsProvider(1234, 0)).toMatch('^1[,/.]2 km$');
+		expect(bvvDistanceUnitsProvider(1234, 2)).toMatch('^1[,/.]2 km$');
+		expect(bvvDistanceUnitsProvider(10000, 0)).toMatch('^10[,/.]0 km$');
+		expect(bvvDistanceUnitsProvider(10000, 2)).toMatch('^10[,/.]0 km$');
 	});
 
 	it('provides formatted area for bvv-metric system', () => {
@@ -50,12 +50,12 @@ describe('Units provider', () => {
 		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
 		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m&sup2;');
 		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m&sup2;');
-		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1.000 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1.230 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1.230 km&sup2;');
-		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100,000 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12,345 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12,345 m&sup2;');
-		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10.000 km&sup2;');
+		expect(bvvAreaUnitsProvider(1000000, 0)).toMatch('^1[,/.]000 km&sup2;$');
+		expect(bvvAreaUnitsProvider(1234567, 0)).toMatch('^1[,/.]230 km&sup2;$');
+		expect(bvvAreaUnitsProvider(1234567, 2)).toMatch('^1[,/.]230 km&sup2;$');
+		expect(bvvAreaUnitsProvider(100000, 0)).toMatch('^100[,/.]000 m&sup2;$');
+		expect(bvvAreaUnitsProvider(12345, 0)).toMatch('^12[,/.]345 m&sup2;$');
+		expect(bvvAreaUnitsProvider(12345, 2)).toMatch('^12[,/.]345 m&sup2;$');
+		expect(bvvAreaUnitsProvider(10000000, 0)).toMatch('^10[,/.]000 km&sup2;$');
 	});
 });
