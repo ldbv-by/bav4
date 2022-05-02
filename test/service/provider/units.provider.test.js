@@ -4,7 +4,7 @@ import { bvvDistanceUnitsProvider, bvvAreaUnitsProvider, distanceUnitsProvider, 
 
 describe('Units provider', () => {
 	const configService = {
-		getValue: (value, defaultValue) => defaultValue
+		getValue: (key, defaultValue) => defaultValue
 	};
 
 	beforeAll(() => {

@@ -1,12 +1,20 @@
+import { $injector } from '../../src/injection';
 import { UnitsService } from '../../src/services/UnitsService';
 
 
 describe('UnitsService', () => {
+	const configService = {
+		getValue: (key, defaultValue) => defaultValue
+	};
 
+	beforeAll(() => {
+		$injector
+			.registerSingleton('ConfigService', configService);
+	});
 
 	it('provides default formatted distance', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatDistance(42.00)).toMatch('^42[,/.]0 m$');
+		expect(instanceUnderTest.formatDistance(42.00)).toBe('42.0 m');
 	});
 
 	it('provides default formatted area', () => {
