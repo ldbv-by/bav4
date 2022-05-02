@@ -1,4 +1,4 @@
-import { GeoResouceResultsPanel } from '../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
+import { GeoResourceResultsPanel } from '../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
 import { LocationResultsPanel } from '../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TestUtils } from '../../../../test-utils.js';
@@ -32,7 +32,7 @@ describe('SearchResultsPanel', () => {
 
 			expect(element.shadowRoot.querySelector('.search-results-panel')).toBeTruthy();
 			expect(element.shadowRoot.querySelector(LocationResultsPanel.tag)).toBeTruthy();
-			expect(element.shadowRoot.querySelector(GeoResouceResultsPanel.tag)).toBeTruthy();
+			expect(element.shadowRoot.querySelector(GeoResourceResultsPanel.tag)).toBeTruthy();
 			expect(element.shadowRoot.querySelector(CpResultsPanel.tag)).toBeTruthy();
 		});
 	});
