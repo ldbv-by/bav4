@@ -66,6 +66,9 @@ describe('MainMenu', () => {
 
 		it('has static constants', async () => {
 			expect(MainMenu.SWIPE_DELTA_PX).toBe(50);
+			expect(MainMenu.INITIAL_WIDTH_EM).toBe(28);
+			expect(MainMenu.MIN_WIDTH_EM).toBe(28);
+			expect(MainMenu.MAX_WIDTH_EM).toBe(100);
 		});
 	});
 
@@ -371,6 +374,26 @@ describe('MainMenu', () => {
 
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 		});
+
+		it('close-button get the focus after swipe', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			expect(closeButton.matches(':focus')).toBeTrue();
+		});
 	});
 
 	describe('when responsive parameter observation state changes', () => {
@@ -425,6 +448,9 @@ describe('MainMenu', () => {
 			const slider = element.shadowRoot.querySelector('.slider-container input');
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
+			//check initial value
+			expect(slider.value).toBe('28');
+
 			//open FeatureInfo panel and adjust width
 			setTab(TabId.FEATUREINFO);
 			slider.value = value;
@@ -440,6 +466,7 @@ describe('MainMenu', () => {
 			setTab(TabId.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+			expect(slider.value).toBe('50');
 		});
 
 		it('prevents default event handling and stops its propagation', async () => {

@@ -53,7 +53,7 @@ describe('ShareButton', () => {
 			expect(shareButton).toBeFalsy();
 		});
 
-		it('opens the modal with shortened share-urls on click', async (done) => {
+		it('opens the modal with shortened share-urls on click', async () => {
 			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 			const element = await setup();
@@ -62,15 +62,13 @@ describe('ShareButton', () => {
 			const shareButton = element.shadowRoot.querySelector('#share');
 			shareButton.click();
 
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(store.getState().modal.data.title).toBe('toolbox_measureTool_share');
-				done();
-			});
+			await TestUtils.timeout();
+			expect(shareButton).toBeTruthy();
+			expect(shortenerSpy).toHaveBeenCalledTimes(2);
+			expect(store.getState().modal.data.title).toBe('toolbox_measureTool_share');
 		});
 
-		it('logs a warning, when shortener fails', async (done) => {
+		it('logs a warning, when shortener fails', async () => {
 			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
 
 			const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
@@ -81,14 +79,11 @@ describe('ShareButton', () => {
 			const shareButton = element.shadowRoot.querySelector('#share');
 			shareButton.click();
 
-			setTimeout(() => {
-				expect(shareButton).toBeTruthy();
-				expect(shortenerSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledTimes(2);
-				expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
-				done();
-			});
-
+			await TestUtils.timeout();
+			expect(shareButton).toBeTruthy();
+			expect(shortenerSpy).toHaveBeenCalledTimes(2);
+			expect(warnSpy).toHaveBeenCalledTimes(2);
+			expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
 		});
 
 		it('contains test-id attributes', async () => {

@@ -38,12 +38,11 @@ const Debounce_Delay = 1000;
 
 const Temp_Session_Id = 'temp_measure_id';
 
-
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
 	color: '#FF0000', // used by Symbol, Text, Line, Polygon
-	text: '' // used by Text
+	text: null // used by Text, Symbol
 };
 
 /**
@@ -78,7 +77,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e) ;
+		this._keyUpListener = (e) => this._removeLast(e);
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -343,6 +342,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_init(type) {
+		const styleOption = this._getStyleOption();
 		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
@@ -351,7 +351,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 		this._select.getFeatures().clear();
-		this._draw = this._createDrawByType(type, this._getStyleOption());
+		this._draw = this._createDrawByType(type, styleOption);
 
 		// we deactivate the modify-interaction only,
 		// if the given drawType results in a valid draw-interaction
@@ -365,7 +365,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 
 		if (this._draw) {
-
 			this._draw.on('drawstart', event => {
 				const onFeatureChange = (event) => {
 					const geometry = event.target.getGeometry();
@@ -559,14 +558,29 @@ export class OlDrawHandler extends OlLayerHandler {
 			return translate('map_olMap_handler_draw_new_text');
 		};
 
+		const getDefaultTextByType = (type) => {
+			switch (type) {
+				case StyleTypes.TEXT:
+					return getDefaultText();
+				case StyleTypes.MARKER:
+					return '';
+				default:
+					return null;
+			}
+		};
+
 		const style = this._storeService.getStore().getState().draw.style;
+		const type = this._storeService.getStore().getState().draw.type;
 		if (equals(style, INITIAL_STYLE)) {
 			const defaultSymbolUrl = this._iconService.getDefault().getUrl(hexToRgb(defaultStyleOption.color));
 			const defaultSymbolSrc = defaultSymbolUrl ? defaultSymbolUrl : this._iconService.getDefault().base64;
-			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultText() });
+			setStyle({ ...defaultStyleOption, symbolSrc: defaultSymbolSrc, text: getDefaultTextByType(type) });
 		}
-		else if (!isString(style.text)) {
+		else if (type === StyleTypes.TEXT && !isString(style.text)) {
 			setStyle({ ...style, text: getDefaultText() });
+		}
+		else if (type === StyleTypes.MARKER && !isString(style.text)) {
+			setStyle({ ...style, text: '' });
 		}
 
 		return this._storeService.getStore().getState().draw.style;
@@ -633,7 +647,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	_updateStyle() {
 		if (this._drawState.type === InteractionStateType.ACTIVE || this._drawState.type === InteractionStateType.SELECT) {
 			const currenType = this._storeService.getStore().getState().draw.type;
-			this._init(currenType);
+			if (this._draw && !this._draw.active) {
+				// Prevent a second initialization, while the draw-interaction is building up.
+				// This can happen, when a draw-interaction for a TEXT- or MARKER-Draw is selected,
+				// where the DefaultText must be set as style-property in the store
+				this._init(currenType);
+			}
+
 		}
 
 		if (this._drawState.type === InteractionStateType.MODIFY) {
@@ -767,6 +787,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const createTempIdAndWarn = () => {
 			// TODO: offline-support is needed to properly working with temporary ids
+			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
+			// to simplify the code in OlDrawHandler and OlMeasurementHandler
 			console.warn('Could not store layer-data. The data will get lost after this session.');
 			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
@@ -784,6 +806,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		//register georesource
 		this._geoResourceService.addOrReplace(vgr);
 		//add a layer that displays the georesource in the map
-		addLayer(id, { label: label, constraints: { cloneable: false } });
+		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 }

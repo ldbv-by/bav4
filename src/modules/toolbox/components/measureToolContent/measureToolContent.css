@@ -10,6 +10,7 @@
 	font-size: 2.2em;
 	flex-grow: 1;
 	text-align: right;
+	margin-left: .5em;
 	margin-right: .5em;
 	line-height: .9;
 }

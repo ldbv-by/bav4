@@ -62,7 +62,7 @@ describe('TopicsContentPanel', () => {
 
 	describe('topic changes', () => {
 
-		it('renders the component exactly twice', async (done) => {
+		it('renders the component exactly twice', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
@@ -78,23 +78,20 @@ describe('TopicsContentPanel', () => {
 
 			setCurrent(topicId);
 
-			window.requestAnimationFrame(() => {
+			await TestUtils.timeout();
 
-				expect(renderSpy).toHaveBeenCalledTimes(2);
+			expect(renderSpy).toHaveBeenCalledTimes(2);
 
-				//shoud not cause further calls of #render
-				setCurrent(topicId);
-				setCurrent(topicId);
-				setCurrent(topicId);
+			//shoud not cause further calls of #render
+			setCurrent(topicId);
+			setCurrent(topicId);
+			setCurrent(topicId);
 
-				window.requestAnimationFrame(() => {
-					expect(renderSpy).toHaveBeenCalledTimes(2);
-					done();
-				});
-			});
+			await TestUtils.timeout();
+			expect(renderSpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('shows or hides the component', async (done) => {
+		it('shows or hides the component', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
@@ -110,22 +107,19 @@ describe('TopicsContentPanel', () => {
 			setCurrent(topicId);
 
 			//wait for elements
-			window.requestAnimationFrame(() => {
-				expect(element.style.display).toBe('inline');
+			await TestUtils.timeout();
+			expect(element.style.display).toBe('inline');
 
-				setCurrent('doesNotMatchTopicId');
+			setCurrent('doesNotMatchTopicId');
 
-				window.requestAnimationFrame(() => {
-					expect(element.style.display).toBe('none');
-					done();
-				});
-			});
+			await TestUtils.timeout();
+			expect(element.style.display).toBe('none');
 		});
 	});
 
 	describe('and currentTopic matches', () => {
 
-		it('renders the catalog panel', async (done) => {
+		it('renders the catalog panel', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
@@ -146,35 +140,33 @@ describe('TopicsContentPanel', () => {
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 
 			//wait for elements
-			window.requestAnimationFrame(() => {
-				expect(spy).toHaveBeenCalledOnceWith(topicId);
+			await TestUtils.timeout();
+			expect(spy).toHaveBeenCalledOnceWith(topicId);
 
 
-				//test correct rendering of the style -tags
-				expect(element.shadowRoot.styleSheets).toHaveSize(3);
+			//test correct rendering of the style -tags
+			expect(element.shadowRoot.styleSheets).toHaveSize(3);
 
-				expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__icon')).toHaveSize(1);
 
-				// //test existence of important css classes
-				expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.back-icon')).toHaveSize(1);
-				expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
-				expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
-				// //no style present for current topic
-				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(0);
-				// //test i18n
-				expect(element.shadowRoot.querySelector('.ba-list-item__header').title).toBe('topics_catalog_panel_change_topic');
-				//the example catalog returns one node and one leaf object on the top level
-				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
-				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
-				done();
-			});
+			// //test existence of important css classes
+			expect(element.shadowRoot.querySelectorAll('.catalog-content-panel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__main-text')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.back-icon')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.ba-list-item__main-text').textContent).toBe(topicLabel);
+			expect(element.shadowRoot.querySelectorAll('.topic.ba-list-item.ba-list-inline.ba-list-item__header')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.ba-list-item__pre')).toHaveSize(1);
+			// //no style present for current topic
+			expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(0);
+			// //test i18n
+			expect(element.shadowRoot.querySelector('.ba-list-item__header').title).toBe('topics_catalog_panel_change_topic');
+			//the example catalog returns one node and one leaf object on the top level
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 		});
 
-		it('renders the topic style', async (done) => {
+		it('renders the topic style', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
@@ -190,16 +182,14 @@ describe('TopicsContentPanel', () => {
 			setCurrent(topicId);
 
 			//wait for elements
-			window.requestAnimationFrame(() => {
+			await TestUtils.timeout();
 
-				expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
-				done();
-			});
+			expect(element.shadowRoot.querySelectorAll('.svg-icon').length).toBe(1);
 		});
 
 		describe('currentTopic does NOT match', () => {
 
-			it('renders nothing', async (done) => {
+			it('renders nothing', async () => {
 				const topicId = 'foo';
 				const element = await setup();
 				//assign data
@@ -208,17 +198,15 @@ describe('TopicsContentPanel', () => {
 				setCurrent(topicId);
 
 				//wait for elements
-				window.requestAnimationFrame(() => {
-					expect(element.shadowRoot.children.length).toBe(0);
-					done();
-				});
+				await TestUtils.timeout();
+				expect(element.shadowRoot.children.length).toBe(0);
 			});
 		});
 	});
 
 	describe('and CatalogService cannot fulfill', () => {
 
-		it('logs a warn statement and renders nothing', async (done) => {
+		it('logs a warn statement and renders nothing', async () => {
 
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
@@ -232,20 +220,18 @@ describe('TopicsContentPanel', () => {
 
 			setCurrent(topicId);
 
-			setTimeout(() => {
-				expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
-				expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(0);
-				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(warnSpy).toHaveBeenCalledWith('Something got wrong');
+			expect(element.shadowRoot.querySelectorAll(CatalogLeaf.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(CatalogNode.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 		});
 	});
 
 
 	describe('change topic button clicked', () => {
 
-		it('changes the index', async (done) => {
+		it('changes the index', async () => {
 
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
@@ -263,12 +249,10 @@ describe('TopicsContentPanel', () => {
 			setCurrent(topicId);
 
 			//wait for elements
-			window.requestAnimationFrame(() => {
-				expect(element.shadowRoot.querySelector('.ba-list-item')).toBeTruthy();
-				element.shadowRoot.querySelector('.ba-list-item').click();
-				expect(store.getState().topicsContentPanel.index).toBe(TopicsContentPanelIndex.TOPICS);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelector('.ba-list-item')).toBeTruthy();
+			element.shadowRoot.querySelector('.ba-list-item').click();
+			expect(store.getState().topicsContentPanel.index).toBe(TopicsContentPanelIndex.TOPICS);
 		});
 	});
 });

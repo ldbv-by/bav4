@@ -47,12 +47,13 @@ table , tr, td, th {
 }
 
 a {
-	word-break: break-all;
+	word-break: break-word;
 }
 
 table {
 	margin-bottom: 3em;
 	position: relative;
+	border-collapse: collapse;
 }
 
 table:not(:only-of-type):not(:last-child):after {
@@ -70,10 +71,9 @@ tr {
 
 th, td {
 	padding: .8em 1em;
-
 }
 
-.is-portrait table , .is-portrait tr, .is-portrait td, .is-portrait th {
+.is-portrait table , .is-portrait tr, .is-portrait th {
 	display: flex;
 	flex-direction: column;
 }
@@ -83,10 +83,11 @@ td:nth-last-child(2):first-child {
 	font-size: .9rem;
 	font-weight: bold;
 	color: var(--text1);
-	min-width: 16em;
+	min-width: 11em;
 	max-width: 22em;
 	width: auto;
 	vertical-align: top;
+	padding-top: .9em;
 }
 
 .collapse-content b {
@@ -111,4 +112,9 @@ img {
 
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
 	color: var(--primary-color) .3;
+}
+
+/* just for grundsteuer release, should be removed later */
+.grundsteuer p {
+	padding: 0 0 .8em 0;
 }

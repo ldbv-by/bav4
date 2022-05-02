@@ -21,17 +21,15 @@ describe('MeasurementPlugin', () => {
 	};
 
 	describe('when toolId changes', () => {
-		it('updates the active property (I)', async (done) => {
+		it('updates the active property (I)', async () => {
 			const store = setup();
 			const instanceUnderTest = new MeasurementPlugin();
 			await instanceUnderTest.register(store);
 
 			setCurrentTool(ToolId.MEASURING);
 
-			setTimeout(() => {
-				expect(store.getState().measurement.active).toBeTrue();
-				done();
-			});
+			await TestUtils.timeout();
+			expect(store.getState().measurement.active).toBeTrue();
 		});
 
 		it('updates the active property (II)', async () => {

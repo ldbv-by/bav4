@@ -15,6 +15,7 @@ import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
 import { GeoResourceTypes } from '../../../../services/domain/geoResources';
 import { setFetching } from '../../../../store/network/network.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Position = 'update_position';
 const Update_Layers = 'update_layers';
@@ -40,18 +41,20 @@ export class OlMap extends MvuElement {
 			GeoResourceService: georesourceService,
 			LayerService: layerService,
 			EnvironmentService: environmentService,
+			TranslationService: translationService,
 			OlMeasurementHandler: measurementHandler,
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler,
 			OlFeatureInfoHandler: olFeatureInfoHandler
-		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService',
+		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'TranslationService',
 			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
 		this._layerService = layerService;
 		this._environmentService = environmentService;
+		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
 		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
@@ -75,7 +78,7 @@ export class OlMap extends MvuElement {
 	createView() {
 		return html`
 			<style>${olCss + css}</style>
-			<div data-test-id id="ol-map"></div>
+			<div data-test-id id="ol-map" tabindex="0"></div>
 		`;
 	}
 
@@ -104,7 +107,6 @@ export class OlMap extends MvuElement {
 
 		this._map = new MapOl({
 			layers: [],
-			// target: 'ol-map',
 			view: this._view,
 			controls: defaultControls({
 				attribution: false,
@@ -238,6 +240,7 @@ export class OlMap extends MvuElement {
 	}
 
 	_syncLayers() {
+		const translate = (key) => this._translationService.translate(key);
 		const { layers } = this.getModel();
 
 		const updatedIds = layers.map(layer => layer.id);
@@ -285,8 +288,8 @@ export class OlMap extends MvuElement {
 					this._map.getLayers().insertAt(layer.zIndex, olLayer);
 				}
 				else {
-					console.warn('Could not add an olLayer for id \'' + id + '\'');
-					//Todo: we should also inform the user by a notification
+					console.warn(`Could not add an olLayer for id '${id}'`);
+					emitNotification(`${translate('map_olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
@@ -309,7 +312,7 @@ export class OlMap extends MvuElement {
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.catch(error => {
 						console.warn(error);
-						//Todo: we should also inform the user by a notification
+						emitNotification(`${translate('map_olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
 						removeLayer(id);
 					});
 			}

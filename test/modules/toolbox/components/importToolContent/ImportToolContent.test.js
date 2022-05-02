@@ -100,7 +100,7 @@ describe('ImportToolContent', () => {
 	});
 
 	describe('when uploading a file', () => {
-		it('updates the import-store with a kml-file', async (done) => {
+		it('updates the import-store with a kml-file', async () => {
 			const filesMock = [TestUtils.newBlob('<kml>foo</kml>', MediaType.KML)];
 			const sourceTypeKml = new SourceType(SourceTypeName.KML);
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeKml };
@@ -113,15 +113,13 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
-				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
-				expect(store.getState().import.latest.payload.url).toBeNull();
-				done();
-			});
+			await TestUtils.timeout();
+			expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
+			expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
+			expect(store.getState().import.latest.payload.url).toBeNull();
 		});
 
-		it('emits a notification for a unsupported file', async (done) => {
+		it('emits a notification for a unsupported file', async () => {
 			const htmlFileMock = [TestUtils.newBlob('foo', MediaType.TEXT_HTML)];
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.UNSUPPORTED_TYPE, sourceType: null };
 			spyOn(sourceTypeService, 'forBlob').and.resolveTo(sourceTypeResultMock);
@@ -133,16 +131,13 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_unsupported');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				expect(store.getState().import.latest).toBeNull();
-				done();
-			});
-
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_unsupported');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().import.latest).toBeNull();
 		});
 
-		it('emits a notification for a too large file', async (done) => {
+		it('emits a notification for a too large file', async () => {
 			const bigFileMock = TestUtils.newBlob('foo', MediaType.KML, SourceTypeMaxFileSize + 1);
 
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.MAX_SIZE_EXCEEDED, sourceType: null };
@@ -154,16 +149,13 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_max_size_exceeded');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				expect(store.getState().import.latest).toBeNull();
-				done();
-			});
-
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_max_size_exceeded');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().import.latest).toBeNull();
 		});
 
-		it('emits a notification for a unknown file', async (done) => {
+		it('emits a notification for a unknown file', async () => {
 			const unknownFileMock = TestUtils.newBlob('foo', '');
 
 			const sourceTypeResultMock = { status: SourceTypeResultStatus.OTHER, sourceType: null };
@@ -176,16 +168,13 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_unknown');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-				expect(store.getState().import.latest).toBeNull();
-				done();
-			});
-
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_unknown');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(store.getState().import.latest).toBeNull();
 		});
 
-		it('emits a notification for a unreadable file', async (done) => {
+		it('emits a notification for a unreadable file', async () => {
 			const fileMock = {
 				type: MediaType.KML, text: () => {
 					throw new Error('some');
@@ -199,15 +188,13 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_file_error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-				expect(store.getState().import.latest).toBeNull();
-				done();
-			});
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_file_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(store.getState().import.latest).toBeNull();
 		});
 
-		it('does nothing when no file is selected', async (done) => {
+		it('does nothing when no file is selected', async () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
 			spyOnProperty(fileUploadInput, 'files').and.returnValue([]);
@@ -215,20 +202,18 @@ describe('ImportToolContent', () => {
 			fileUploadInput.dispatchEvent(new Event('change'));
 			expect(fileUploadInput).toBeTruthy();
 
-			setTimeout(() => {
-				expect(store.getState().notifications.latest).toBeNull();
-				expect(store.getState().import.latest).toBeNull();
-				done();
-			});
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest).toBeNull();
+			expect(store.getState().import.latest).toBeNull();
 		});
 
-		it('clears the file-value on input-click', async () => {
+		it('clears the file-value on focus of label-element', async () => {
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
-
+			const inputLabel = fileUploadInput.closest('label');
 			const valueSpy = spyOnProperty(fileUploadInput, 'value', 'set').and.callThrough();
 
-			fileUploadInput.dispatchEvent(new Event('focus'));
+			inputLabel.dispatchEvent(new Event('focus'));
 
 			expect(valueSpy).toHaveBeenCalledWith('');
 		});

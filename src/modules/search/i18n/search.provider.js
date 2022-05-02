@@ -16,7 +16,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				search_menu_locationResultsPanel_label: 'Orte',
 				search_menu_geoResourceResultsPanel_label: 'Daten',
-				search_menu_cpResultsPanel_label: 'Flurstück',
+				search_menu_cpResultsPanel_label: 'Flurstücke',
 				search_menu_showAll_label: 'Mehr...'
 			};
 

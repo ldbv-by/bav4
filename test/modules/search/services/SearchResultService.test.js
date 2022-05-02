@@ -65,12 +65,12 @@ describe('SearchResultService', () => {
 			expect(results).toHaveSize(2);
 			expect(results[0].id).toBe('atkis');
 			expect(results[0].layerId).toContain('atkis_');
-			expect(results[0].label).toBe('Base Layer 1');
-			expect(results[0].labelFormated).toBe('Base Layer 1');
+			expect(results[0].label).toBe('Base Map 1');
+			expect(results[0].labelFormated).toBe('Base Map 1');
 			expect(results[1].id).toBe('atkis_sw');
 			expect(results[1].layerId).toContain('atkis_sw_');
-			expect(results[1].label).toBe('Base Layer 2');
-			expect(results[1].labelFormated).toBe('Base Layer 2');
+			expect(results[1].label).toBe('Base Map 2');
+			expect(results[1].labelFormated).toBe('Base Map 2');
 		});
 	});
 

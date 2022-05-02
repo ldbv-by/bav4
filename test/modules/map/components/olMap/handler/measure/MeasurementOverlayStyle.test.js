@@ -6,6 +6,7 @@ import { $injector } from '../../../../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../../../../src/store/measurement/measurement.reducer';
+import { DragPan } from 'ol/interaction';
 
 
 
@@ -42,9 +43,6 @@ describe('MeasurementOverlayStyle', () => {
 
 	};
 
-	beforeEach(() => {
-		setup();
-	});
 	const createFeature = () => {
 		const feature = new Feature();
 		feature.set('measurement', {});
@@ -54,7 +52,14 @@ describe('MeasurementOverlayStyle', () => {
 		return feature;
 	};
 
+	const getPartition = (feature) => {
+		const partitionOverlays = feature.get('partitions');
+		const overlay = partitionOverlays[0];
+		return overlay.getElement();
+	};
+
 	it('removes all overlays from feature', () => {
+		setup();
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
@@ -69,6 +74,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('removes no overlays from feature with unsyncronized overlays', () => {
+		setup();
 		const removeSpy = jasmine.createSpy();
 		const mapMock = { removeOverlay: removeSpy };
 		const feature = createFeature();
@@ -84,6 +90,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('creates overlay content for line', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -102,7 +109,148 @@ describe('MeasurementOverlayStyle', () => {
 		expect(baOverlay.outerHTML).toBe('<ba-measure-overlay></ba-measure-overlay>');
 	});
 
+	it('create draggable measurement tooltip ', () => {
+		const state = { ...initialState, active: true };
+		setup(state);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createDistanceOverlay(feature, mapMock);
+		expect(feature.get('measurement').getElement().isDraggable).toBeTrue();
+	});
+
+	it('creates non-draggable measurement tooltips for touch-environment', () => {
+		const state = { ...initialState, active: true };
+		setup(state);
+		spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createDistanceOverlay(feature, mapMock);
+		expect(feature.get('measurement').getElement().isDraggable).toBeFalse();
+	});
+
+	it('creates non-draggable measurement tooltips while no active measurement-session', () => {
+		const state = { ...initialState, active: false };
+		setup(state);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createDistanceOverlay(feature, mapMock);
+		expect(feature.get('measurement').getElement().isDraggable).toBeFalse();
+	});
+
+	it('creates draggable area tooltips ', () => {
+		const state = { ...initialState, active: true };
+		setup(state);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
+		expect(feature.get('area').getElement().isDraggable).toBeTrue();
+	});
+
+	it('creates non-draggable area tooltips for touch-environment', () => {
+		const state = { ...initialState, active: true };
+		setup(state);
+		spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
+		expect(feature.get('area').getElement().isDraggable).toBeFalse();
+	});
+
+	it('creates non-draggable area tooltips while no active measurement-session', () => {
+		const state = { ...initialState, active: false };
+		setup(state);
+		const addOverlaySpy = jasmine.createSpy();
+
+		const mapMock = {
+			addOverlay: addOverlaySpy,
+			getInteractions() {
+				return { getArray: () => [] };
+			},
+			getView() {
+				return { getResolution: () => 50 };
+			}
+		};
+
+		const classUnderTest = new MeasurementOverlayStyle();
+		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const feature = new Feature({ geometry: geometry });
+
+		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
+		expect(feature.get('area').getElement().isDraggable).toBeFalse();
+	});
+
 	it('creates partition tooltips for line small zoom', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -123,13 +271,10 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('partitions').length).toBe(1);
 	});
 
-	const getPartition = (feature) => {
-		const partitionOverlays = feature.get('partitions');
-		const overlay = partitionOverlays[0];
-		return overlay.getElement();
-	};
+
 
 	it('creates partition tooltips for line in right-sector', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -153,6 +298,7 @@ describe('MeasurementOverlayStyle', () => {
 
 
 	it('creates partition tooltips for line in left-sector', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -175,6 +321,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('creates partition tooltips for line in bottom-sector', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -197,6 +344,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('creates partition tooltips for line in top-sector', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -219,6 +367,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('creates partition tooltips for line big zoom', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -240,6 +389,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('creates partition tooltips for not closed polygon', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const mapMock = {
 			addOverlay: addOverlaySpy,
@@ -261,6 +411,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('removes partition tooltips after shrinking very long line', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const removeOverlaySpy = jasmine.createSpy();
 		const mapMock = {
@@ -284,10 +435,11 @@ describe('MeasurementOverlayStyle', () => {
 		geometry.setCoordinates([[0, 0], [12345, 0]]);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
-		expect(feature.get('partitions').length).toBe(12);
+		expect(feature.get('partitions').length).toBe(1);
 	});
 
 	it('removes area overlay after change from polygon to line', () => {
+		setup();
 		const addOverlaySpy = jasmine.createSpy();
 		const removeOverlaySpy = jasmine.createSpy();
 		const mapMock = {
@@ -316,6 +468,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('writes manual overlay-position to the related feature', () => {
+		setup();
 		const draggedOverlayMock = {
 			getPosition: () => [42, 21], get(property) {
 				return property === 'manualPositioning';
@@ -345,6 +498,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('writes no manual overlay-position to the related feature, when not needed', () => {
+		setup();
 		const draggedOverlayMock = {
 			getPosition: () => [42, 21], get() {
 				return false;
@@ -376,6 +530,7 @@ describe('MeasurementOverlayStyle', () => {
 
 
 	it('restore manual overlay-position from the related feature', () => {
+		setup();
 		let actualPosition;
 		const actualProperty = { key: '', value: null };
 		const overlayMock = {
@@ -401,6 +556,7 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	it('cannot restore manual overlay-position from the related feature', () => {
+		setup();
 		let actualPosition;
 		const actualProperty = { key: '', value: null };
 		const overlayMock = {
@@ -422,5 +578,87 @@ describe('MeasurementOverlayStyle', () => {
 
 		expect(actualPosition).toBeUndefined();
 		expect(actualProperty).toEqual({ key: '', value: null });
+	});
+
+	describe('_createDragOn', () => {
+
+		const getOverlay = () => {
+			const element = document.createElement('div');
+			return { getElement: () => element, set: () => { } };
+		};
+
+
+		const getMapMock = (interaction) => {
+			return {
+				getInteractions: () => {
+					return { getArray: () => [interaction] };
+				}
+			};
+		};
+
+		it('change overlay-property on pointerdown', () => {
+			setup();
+			const overlay = getOverlay();
+			const draggingSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const interactionSpy = spyOn(dragPan, 'setActive');
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new Event('pointerdown'));
+
+			expect(draggingSpy).toHaveBeenCalledWith('dragging', true);
+			expect(interactionSpy).toHaveBeenCalledWith(false);
+		});
+
+		it('change overlay-property on pointerup', () => {
+			setup();
+			const overlay = getOverlay();
+			const draggingSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const interactionSpy = spyOn(dragPan, 'setActive');
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new Event('pointerup'));
+
+			expect(draggingSpy).toHaveBeenCalledWith('dragging', false);
+			expect(interactionSpy).toHaveBeenCalledWith(true);
+		});
+
+		it('change overlay-property on mouseenter', () => {
+			setup();
+			const overlay = getOverlay();
+			const dragableSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new MouseEvent('mouseenter'));
+
+			expect(dragableSpy).toHaveBeenCalledWith('dragable', true);
+		});
+
+		it('change overlay-property on mouseleave', () => {
+			setup();
+			const overlay = getOverlay();
+			const dragableSpy = spyOn(overlay, 'set');
+			const dragPan = new DragPan();
+			const mapMock = getMapMock(dragPan);
+			const element = overlay.getElement();
+			const classUnderTest = new MeasurementOverlayStyle();
+
+			classUnderTest._createDragOn(overlay, mapMock);
+			element.dispatchEvent(new MouseEvent('mouseleave'));
+
+			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
+		});
+
 	});
 });

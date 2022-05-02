@@ -147,7 +147,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		if (olFeature.getGeometry() instanceof Polygon) {
 
 			if (olFeature.getGeometry().getArea()) {
-				const isDraggable = !this._environmentService.isTouch();
+				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 
 				if (!areaOverlay) {
 					areaOverlay = this._createOlOverlay(olMap, { positioning: 'top-center' }, MeasurementOverlayTypes.AREA, this._projectionHints, isDraggable);
@@ -190,13 +190,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const resolution = olMap.getView().getResolution();
-		let delta;
-		if (partitions.length === 0) {
-			delta = parseFloat(olFeature.get('partition_delta')) || getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
-		}
-		else {
-			delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
-		}
+		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
@@ -207,7 +202,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			}
 			this._updateOlOverlay(partition, simplifiedGeometry, i);
 		}
-
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
 				const removablePartition = partitions[j];
@@ -296,6 +290,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				overlay.set('dragging', true);
 			};
 
+			const handleMouseUp = () => {
+				dragPanInteraction.setActive(true);
+				overlay.set('dragging', false);
+			};
+
 			const handleMouseEnter = () => {
 				overlay.set('dragable', true);
 			};
@@ -304,6 +303,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				overlay.set('dragable', false);
 			};
 			element.addEventListener(MapBrowserEventType.POINTERDOWN, handleMouseDown);
+			element.addEventListener(MapBrowserEventType.POINTERUP, handleMouseUp);
 			element.addEventListener('mouseenter', handleMouseEnter);
 			element.addEventListener('mouseleave', handleMouseLeave);
 		}

@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, setFit } from '../../../src/store/position/position.action';
+import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -218,7 +218,7 @@ describe('positionReducer', () => {
 	it('places a \'fitRequest\' property', () => {
 		const store = setup();
 
-		setFit([21, 21, 42, 42], { maxZoom: 42 });
+		fit([21, 21, 42, 42], { maxZoom: 42 });
 
 		expect(store.getState().position.fitRequest.payload.extent).toEqual([21, 21, 42, 42]);
 		expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(42);

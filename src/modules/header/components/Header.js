@@ -72,6 +72,7 @@ export class Header extends MvuElement {
 
 			const handler = (event, data) => {
 				if (['touchmove', 'mousemove'].includes(event.type) && data.directionX === 'LEFT' && data.absX > Header.SWIPE_DELTA_PX) {
+					swipeElement.focus();
 					toggle();
 				}
 			};

@@ -92,7 +92,7 @@ describe('ShareToolContent', () => {
 
 			describe('on share button click', () => {
 
-				it('initializes share api button', async (done) => {
+				it('initializes share api button', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockShareData = {
 						title: 'toolbox_shareTool_title',
@@ -111,13 +111,11 @@ describe('ShareToolContent', () => {
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
-					setTimeout(() => {
-						expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
-						done();
-					});
+					await TestUtils.timeout();
+					expect(windowShareSpy).toHaveBeenCalledWith(mockShareData);
 				});
 
-				it('logs a warn statement on share api reject', async (done) => {
+				it('logs a warn statement on share api reject', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
@@ -134,10 +132,8 @@ describe('ShareToolContent', () => {
 
 					shareButton.click();
 
-					setTimeout(() => {
-						expect(warnSpy).toHaveBeenCalledWith('ShareAPI not available: Error: ' + mockErrorMsg);
-						done();
-					});
+					await TestUtils.timeout();
+					expect(warnSpy).toHaveBeenCalledWith('ShareAPI not available: Error: ' + mockErrorMsg);
 				});
 			});
 		});
@@ -189,7 +185,7 @@ describe('ShareToolContent', () => {
 
 			describe('on share button click', () => {
 
-				it('opens the modal', async (done) => {
+				it('opens the modal', async () => {
 					const windowMock = {
 						navigator: {
 						}
@@ -200,16 +196,14 @@ describe('ShareToolContent', () => {
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[0].click();
 
-					setTimeout(() => {
-						expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
-						done();
-					});
+					await TestUtils.timeout();
+					expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
 				});
 			});
 
 			describe('on mail and qr button click', () => {
 
-				it('opens a window', async (done) => {
+				it('opens a window', async () => {
 					const mockShortUrl = 'https://short.foo/url';
 					const mailUrl = 'mailto:?body=' + mockShortUrl;
 					const qrUrl = 'https://qrCode.foo?url=' + mockShortUrl;
@@ -225,20 +219,16 @@ describe('ShareToolContent', () => {
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
-					setTimeout(() => {
-						expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
-						done();
-					});
+					await TestUtils.timeout();
+					expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[2].click();
 
-					setTimeout(() => {
-						expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
-						done();
-					});
+					await TestUtils.timeout();
+					expect(windowOpenSpy).toHaveBeenCalledWith(qrUrl);
 				});
 
-				it('throws error if window could not be opened', async (done) => {
+				it('throws error if window could not be opened', async () => {
 					const mockShortUrl = 'https://short.foo/url';
 					const mailUrl = 'mailto:?body=' + mockShortUrl;
 					const windowMock = {
@@ -253,11 +243,9 @@ describe('ShareToolContent', () => {
 
 					element.shadowRoot.querySelectorAll('.tool-container__button')[1].click();
 
-					setTimeout(() => {
-						expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
-						expect(warnSpy).toHaveBeenCalledWith('Could not share content: Error: Could not open window');
-						done();
-					});
+					await TestUtils.timeout();
+					expect(windowOpenSpy).toHaveBeenCalledWith(mailUrl);
+					expect(warnSpy).toHaveBeenCalledWith('Could not share content: Error: Could not open window');
 				});
 			});
 		});

@@ -183,4 +183,13 @@ export class TestUtils {
 		}
 	}
 
+	/**
+	 * Sets a timeout timer and returns a Promise which will be resolved after the timeout function was executed.
+	 * @param {number} ms timeout in ms (default is 0)
+	 * @returns {Promise}
+	 */
+	static async timeout(ms = 0) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 }
