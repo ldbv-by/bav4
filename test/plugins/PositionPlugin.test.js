@@ -125,7 +125,7 @@ describe('PositionPlugin', () => {
 
 		describe('_setPositionFromConfig', () => {
 
-			it('sets position by zooming to configured extent', (done) => {
+			it('sets position by zooming to configured extent', async () => {
 				const store = setup();
 				const initialFitRequest = store.getState().position.fitRequest;
 
@@ -136,11 +136,9 @@ describe('PositionPlugin', () => {
 
 				instanceUnderTest._setPositionFromConfig();
 
-				setTimeout(() => {
-					expect(mapServiceSpy).toHaveBeenCalledTimes(1);
-					expect(store.getState().position.fitRequest).not.toEqual(initialFitRequest);
-					done();
-				});
+				await TestUtils.timeout();
+				expect(mapServiceSpy).toHaveBeenCalledTimes(1);
+				expect(store.getState().position.fitRequest).not.toEqual(initialFitRequest);
 			});
 		});
 

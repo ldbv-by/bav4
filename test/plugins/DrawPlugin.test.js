@@ -20,17 +20,15 @@ describe('DrawPlugin', () => {
 	};
 
 	describe('when toolId changes', () => {
-		it('updates the active property (I)', async (done) => {
+		it('updates the active property (I)', async () => {
 			const store = setup();
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
 			setCurrentTool(ToolId.DRAWING);
 
-			setTimeout(() => {
-				expect(store.getState().draw.active).toBeTrue();
-				done();
-			});
+			await TestUtils.timeout();
+			expect(store.getState().draw.active).toBeTrue();
 		});
 
 		it('updates the active property (II)', async () => {

@@ -26,6 +26,7 @@ describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 describe('OlFeatureInfoHandler', () => {
 
 	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 100;
+	const RenderCompleteDelay = 100;
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
@@ -97,7 +98,7 @@ describe('OlFeatureInfoHandler', () => {
 			vectorLayer1 = new VectorLayer({ properties: { id: layerId1 } });
 		});
 
-		it('registers and resolves a query', (done) => {
+		it('registers and resolves a query', async () => {
 			const handler = setup({}, mockFeatureInfoProvider);
 			const map = setupMap();
 			handler.register(map);
@@ -106,13 +107,11 @@ describe('OlFeatureInfoHandler', () => {
 
 			expect(store.getState().featureInfo.querying).toBeTrue();
 
-			setTimeout(() => {
-				expect(store.getState().featureInfo.querying).toBeFalse();
-				done();
-			}, TestDelay);
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.querying).toBeFalse();
 		});
 
-		it('adds exactly one FeatureInfo and HighlightFeature per layer', (done) => {
+		it('adds exactly one FeatureInfo and HighlightFeature per layer', async () => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -136,27 +135,24 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('rendercomplete', () => {
-				// safe to call map.getPixelFromCoordinate from now on
-				startRequest(matchingCoordinate);
+			await TestUtils.timeout(RenderCompleteDelay);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(matchingCoordinate);
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().featureInfo.current).toHaveSize(1);
 
-				setTimeout(() => {
+			await TestUtils.timeout(TestDelay);
 
-					expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveSize(1);
 
-					abortOrReset();
-					startRequest(notMatchingCoordinate);
+			abortOrReset();
+			startRequest(notMatchingCoordinate);
 
-					expect(store.getState().featureInfo.current).toHaveSize(0);
-					expect(store.getState().highlight.features).toHaveSize(0);
-					done();
-				}, TestDelay);
-			});
+			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 
-		it('removes outdated HighlightFeature items', (done) => {
+		it('removes outdated HighlightFeature items', async () => {
 			const handler = setup({
 				highlight: {
 					features: [
@@ -168,21 +164,18 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			handler.register(map);
 
-			map.once('rendercomplete', () => {
-				// safe to call map.getPixelFromCoordinate from now on
-				startRequest(notMatchingCoordinate);
+			await TestUtils.timeout(RenderCompleteDelay);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(notMatchingCoordinate);
 
-				setTimeout(() => {
+			await TestUtils.timeout(TestDelay);
 
-					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().highlight.features[0].id).toBe('foo');
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].id).toBe('foo');
 
-					done();
-				}, TestDelay);
-			});
 		});
 
-		it('adds one FeatureInfo and HighlightFeature from each suitable layer', (done) => {
+		it('adds one FeatureInfo and HighlightFeature from each suitable layer', async () => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -213,76 +206,70 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('rendercomplete', () => {
-				// safe to call map.getPixelFromCoordinate from now on
-				startRequest(matchingCoordinate);
+			await TestUtils.timeout(RenderCompleteDelay);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(matchingCoordinate);
 
-				//must be called within a timeout function cause implementation delays call of 'resolveQuery'
-				setTimeout(() => {
-					expect(store.getState().featureInfo.current).toHaveSize(2);
-					// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
-					expect(store.getState().featureInfo.current[0]).toEqual({
-						title: 'name1-layerId1',
-						content: 'description1',
-						geometry: expectedFeatureInfoGeometry
-					});
-					expect(store.getState().featureInfo.current[1]).toEqual({
-						title: 'name0-layerId0',
-						content: 'description0',
-						geometry: expectedFeatureInfoGeometry
-					});
-					expect(store.getState().highlight.features).toHaveSize(2);
-					expect(store.getState().highlight.features[0]).toEqual({
-						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureType.DEFAULT,
-						data: expectedHighlightFeatureGeometry
-					});
-					expect(store.getState().highlight.features[1]).toEqual({
-						id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
-						type: HighlightFeatureType.DEFAULT,
-						data: expectedHighlightFeatureGeometry
-					});
-
-					//we update with non matching coordinates
-					abortOrReset();
-					startRequest(notMatchingCoordinate);
-
-					expect(store.getState().featureInfo.current).toHaveSize(0);
-					expect(store.getState().highlight.features).toHaveSize(0);
-
-					startRequest(matchingCoordinate);
-
-					setTimeout(() => {
-						expect(store.getState().featureInfo.current).toHaveSize(2);
-						expect(store.getState().highlight.features).toHaveSize(2);
-
-						// we modify the first layer so that it is not queryable anymore
-						modifyLayer(layerId0, { visible: false });
-						abortOrReset();
-						startRequest(matchingCoordinate);
-
-						setTimeout(() => {
-							expect(store.getState().featureInfo.current).toHaveSize(1);
-							expect(store.getState().highlight.features).toHaveSize(1);
-
-							//we modify the second layer so that it is not queryable anymore
-							modifyLayer(layerId1, { constraints: { hidden: true } });
-							abortOrReset();
-							startRequest(matchingCoordinate);
-
-							setTimeout(() => {
-								expect(store.getState().featureInfo.current).toHaveSize(0);
-								expect(store.getState().highlight.features).toHaveSize(0);
-
-								done();
-							}, TestDelay);
-						}, TestDelay);
-					}, TestDelay);
-				}, TestDelay);
+			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
+			// ensure correct order of LayerInfo items -> must correspond to layers.active ordering
+			expect(store.getState().featureInfo.current[0]).toEqual({
+				title: 'name1-layerId1',
+				content: 'description1',
+				geometry: expectedFeatureInfoGeometry
 			});
+			expect(store.getState().featureInfo.current[1]).toEqual({
+				title: 'name0-layerId0',
+				content: 'description0',
+				geometry: expectedFeatureInfoGeometry
+			});
+			expect(store.getState().highlight.features).toHaveSize(2);
+			expect(store.getState().highlight.features[0]).toEqual({
+				id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.DEFAULT,
+				data: expectedHighlightFeatureGeometry
+			});
+			expect(store.getState().highlight.features[1]).toEqual({
+				id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+				type: HighlightFeatureType.DEFAULT,
+				data: expectedHighlightFeatureGeometry
+			});
+
+			//we update with non matching coordinates
+			abortOrReset();
+			startRequest(notMatchingCoordinate);
+
+			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(0);
+
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().highlight.features).toHaveSize(2);
+
+			// we modify the first layer so that it is not queryable anymore
+			modifyLayer(layerId0, { visible: false });
+			abortOrReset();
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveSize(1);
+
+			//we modify the second layer so that it is not queryable anymore
+			modifyLayer(layerId1, { constraints: { hidden: true } });
+			abortOrReset();
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(0);
+
 		});
 
-		it('adds \'Not_Available\' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null', (done) => {
+		it('adds \'Not_Available\' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null', async () => {
 			const handler = setup({
 				layers: {
 					active: [
@@ -310,17 +297,15 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			map.once('rendercomplete', () => {
-				// safe to call map.getPixelFromCoordinate from now on
-				startRequest(matchingCoordinate);
+			await TestUtils.timeout(RenderCompleteDelay);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(matchingCoordinate);
 
-				expect(store.getState().featureInfo.current).toHaveSize(2);
-				expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
-				expect(store.getState().featureInfo.current[1]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
-				expect(store.getState().highlight.features).toHaveSize(0);
+			expect(store.getState().featureInfo.current).toHaveSize(2);
+			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
+			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
+			expect(store.getState().highlight.features).toHaveSize(0);
 
-				done();
-			});
 		});
 	});
 });

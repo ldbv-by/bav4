@@ -239,7 +239,7 @@ describe('GeolocationPlugin', () => {
 
 	describe('_watchPosition', () => {
 
-		it('watches position successfully ', (done) => {
+		it('watches position successfully ', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
@@ -248,14 +248,11 @@ describe('GeolocationPlugin', () => {
 
 			instanceUnderTest._watchPosition(store.getState);
 
-			setTimeout(() => {
-				expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position);
-				done();
-
-			});
+			await TestUtils.timeout();
+			expect(handlePositionAndUpdateStoreSpy).toHaveBeenCalledOnceWith(position);
 		});
 
-		it('watches position unsuccessfully ', (done) => {
+		it('watches position unsuccessfully ', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const errorMessage = 'some error';
@@ -264,10 +261,8 @@ describe('GeolocationPlugin', () => {
 
 			instanceUnderTest._watchPosition(store.getState);
 
-			setTimeout(() => {
-				expect(handlePositionErrorSpy).toHaveBeenCalledOnceWith(errorMessage);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(handlePositionErrorSpy).toHaveBeenCalledOnceWith(errorMessage);
 		});
 	});
 
