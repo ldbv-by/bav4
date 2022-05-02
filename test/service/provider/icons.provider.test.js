@@ -41,6 +41,7 @@ describe('Icons provider', () => {
 		expect(fooIconResult1.matches('foo1')).toBeTrue();
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
 		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult1.matches(null)).toBeFalse();
 		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1');
 	});
 
@@ -80,7 +81,6 @@ describe('Icons provider', () => {
 		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/some-foo1')).toBeFalse();
-
 	});
 
 	it('warns when backend does not have icons', async () => {
@@ -98,7 +98,6 @@ describe('Icons provider', () => {
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(warnSpy).toHaveBeenCalledWith('The backend provides no icons');
 		expect(icons.length).toBe(0);
-
 	});
 
 

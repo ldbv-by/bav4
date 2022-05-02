@@ -17,7 +17,7 @@ describe('IconsService', () => {
 	});
 
 	const getMatcher = (id) => {
-		return (idOrUrl) => idOrUrl === id || idOrUrl.endsWith(id);
+		return (idOrUrl) => idOrUrl === id || idOrUrl?.endsWith(id);
 	};
 	const iconResult1 = new IconResult('foo1', 'bar1', getMatcher('foo1'), () => 'http://some.url/foo1');
 	const iconResult2 = new IconResult('foo2', 'bar2', getMatcher('foo2'), () => 'http://some.url/foo2');
@@ -149,6 +149,15 @@ describe('IconsService', () => {
 			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(instanceUnderTest.getIconResult(defaultIcon.base64)).toBe(defaultIcon);
+		});
+
+		it('does NOT provide a IconResult for NULL or invalid', async () => {
+			const instanceUnderTest = setup();
+			await instanceUnderTest.all();
+
+			expect(instanceUnderTest.getIconResult(null)).toBeUndefined();
+			expect(instanceUnderTest.getIconResult(undefined)).toBeUndefined();
+			expect(instanceUnderTest.getIconResult('some')).toBeUndefined();
 		});
 	});
 
