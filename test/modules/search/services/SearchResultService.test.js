@@ -55,7 +55,7 @@ describe('SearchResultService', () => {
 		});
 	});
 
-	describe('_newFallbackGeoResouceSearchResults', () => {
+	describe('_newFallbackGeoResourceSearchResults', () => {
 
 		it('provides fallback search results for geoResources', () => {
 			const instanceUnderTest = setup();
