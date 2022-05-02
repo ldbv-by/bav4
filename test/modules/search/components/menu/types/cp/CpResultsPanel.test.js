@@ -41,24 +41,22 @@ describe('CpResultsPanel', () => {
 
 	describe('when initialized', () => {
 
-		it('renders the view', async (done) => {
+		it('renders the view', async () => {
 
 			const element = await setup();
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-				done();
-			}, CpResultsPanel.Debounce_Delay + 100);
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 
-		it('renders the view based on a current query with "Default_Result_Item_Length" results', async (done) => {
+		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
 			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
 			const query = 'foo';
 			const initialState = {
@@ -72,22 +70,20 @@ describe('CpResultsPanel', () => {
 			const element = await setup(initialState);
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-				expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-cp-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 
-				expect(getCpSearchResultProvider).toHaveBeenCalled();
-				done();
-			}, CpResultsPanel.Debounce_Delay + 100);
+			expect(getCpSearchResultProvider).toHaveBeenCalled();
 		});
 
-		it('renders the view based on a current query with more than "maxShow" results', async (done) => {
+		it('renders the view based on a current query with more than "maxShow" results', async () => {
 			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
 			const query = 'foo';
 			const initialState = {
@@ -101,24 +97,22 @@ describe('CpResultsPanel', () => {
 			const element = await setup(initialState);
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
-				expect(getCpSearchResultProvider).toHaveBeenCalled();
-				done();
-			}, CpResultsPanel.Debounce_Delay + 100);
+			expect(getCpSearchResultProvider).toHaveBeenCalled();
 		});
 	});
 
 	describe('when query changes', () => {
 
-		it('updates the view based on a current query', async (done) => {
+		it('updates the view based on a current query', async () => {
 			const query = 'foo';
 			const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
 				.and.resolveTo([new SearchResult('cp', 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL)]);
@@ -127,30 +121,26 @@ describe('CpResultsPanel', () => {
 			setQuery(query);
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-				expect(getCpSearchResultProvider).toHaveBeenCalled();
+			expect(getCpSearchResultProvider).toHaveBeenCalled();
 
-				setQuery(null);
+			setQuery(null);
 
-				setTimeout(() => {
-					expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
-					expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-					done();
-
-				}, CpResultsPanel.Debounce_Delay + 100);
-			}, CpResultsPanel.Debounce_Delay + 100);
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.cp-label__text').textContent).toBe('search_menu_cpResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 	});
 
@@ -158,7 +148,7 @@ describe('CpResultsPanel', () => {
 
 		describe('when items are available', () => {
 
-			it('toggles the list of item', async (done) => {
+			it('toggles the list of item', async () => {
 				const query = 'foo';
 				const initialState = {
 					search: {
@@ -171,64 +161,58 @@ describe('CpResultsPanel', () => {
 				const element = await setup(initialState);
 
 				//wait for elements
-				setTimeout(() => {
-					expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+				expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 
-					const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
+				const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					expect(getCpSearchResultProvider).toHaveBeenCalled();
-					done();
-
-				}, CpResultsPanel.Debounce_Delay + 100);
+				expect(getCpSearchResultProvider).toHaveBeenCalled();
 			});
 		});
 
 		describe('items are NOT available', () => {
 
-			it('disables the collapse button', async (done) => {
+			it('disables the collapse button', async () => {
 				const element = await setup();
 
 				//wait for elements
-				setTimeout(() => {
+				await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
 
-					expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.cp-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(0);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 
-					const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
+				const collapseButton = element.shadowRoot.querySelector('.cp-label__collapse');
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-					done();
-
-				}, CpResultsPanel.Debounce_Delay + 100);
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 			});
 		});
 	});
 
 	describe('show-all button', () => {
 
-		it('displays all results on click', async (done) => {
+		it('displays all results on click', async () => {
 			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
 			const query = 'foo';
 			const initialState = {
@@ -242,17 +226,14 @@ describe('CpResultsPanel', () => {
 			const element = await setup(initialState);
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			await TestUtils.timeout(CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
-				element.shadowRoot.querySelector('.show-all').click();
+			element.shadowRoot.querySelector('.show-all').click();
 
-				expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-				done();
-
-			}, CpResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.cp-items').childElementCount).toBe(CpResultsPanel.Default_Result_Item_Length + 1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 	});
 });

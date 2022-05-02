@@ -50,7 +50,7 @@ describe('ShareToolDialog', () => {
 		expect(element.shadowRoot.querySelectorAll('.share_item').length).toBe(1);
 	});
 
-	it('copies the https url to the clipboard, when click', async (done) => {
+	it('copies the https url to the clipboard, when click', async () => {
 		const url = 'https://mock.url';
 
 		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(url).and.returnValue(Promise.resolve());
@@ -59,15 +59,13 @@ describe('ShareToolDialog', () => {
 
 		expect(copyButton).toBeTruthy();
 		expect(copyToClipboardMock).toHaveBeenCalledWith(url);
-		setTimeout(() => {
-			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_link_notification_text toolbox_clipboard_success');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-			done();
-		});
+		await TestUtils.timeout();
+		//check notification
+		expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_link_notification_text toolbox_clipboard_success');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 	});
 
-	it('logs a warning when copyToClipboard fails using http ', async (done) => {
+	it('logs a warning when copyToClipboard fails using http ', async () => {
 		const url = 'https://mock.url';
 
 		const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').withArgs(url).and.returnValue(Promise.reject());
@@ -77,12 +75,10 @@ describe('ShareToolDialog', () => {
 
 		expect(copyButton).toBeTruthy();
 		expect(copyToClipboardMock).toHaveBeenCalledWith(url);
-		setTimeout(() => {
-			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-			done();
-		});
+		await TestUtils.timeout();
+		//check notification
+		expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 	});
 });
