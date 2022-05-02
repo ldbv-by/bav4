@@ -126,7 +126,7 @@ export class GeoResourceService {
 	/**
 	 * Adds a {@link GeoResource} to the internal cache.
 	 * An existing GeoResource will be replaced by the new one.
-	 * The replacement is done based on the id of the GeoResoure.
+	 * The replacement is done based on the id of the GeoResource.
 	 * @param {GeoResource} georesource
 	 */
 	addOrReplace(georesource) {
