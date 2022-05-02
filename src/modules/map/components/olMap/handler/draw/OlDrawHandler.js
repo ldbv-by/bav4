@@ -728,8 +728,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	_setSelection(ids = []) {
-		const currentSelectedId = this._select.getFeatures().getArray().map(f => f.getId());
-		const isNewSelection = !equals(ids, currentSelectedId);
+		const getSelectedId = () => this._select ? this._select.getFeatures().getArray()?.map(f => f.getId()) : null;
+		const isNewSelection = !equals(ids, getSelectedId());
 		if (this._select && isNewSelection) {
 			const selectionSize = this._select.getFeatures().getLength();
 			if (MAX_SELECTION_SIZE <= selectionSize || ids.length === 0) {
