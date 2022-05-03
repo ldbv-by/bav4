@@ -71,8 +71,9 @@ export class IconService {
 	}
 
 	/**
-	  *
-	  * @param {*} idOrUrlOrBase64
+	  * Returns the {@see IconResult} specified by ID, Url or a base64 encoded content-string
+	  * @param {string} idOrUrlOrBase64
+	  * @returns {IconResult|null}
 	*/
 	getIconResult(idOrUrlOrBase64) {
 		if (idOrUrlOrBase64 === this._default.base64) {
@@ -86,9 +87,9 @@ export class IconService {
 	}
 
 	/**
- *
-   * @param {string} url
-  */
+ 	 *
+     * @param {string} url
+    */
 	decodeColor(url) {
 		return this._iconColorProvider(url);
 	}
