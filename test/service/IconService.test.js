@@ -151,13 +151,14 @@ describe('IconsService', () => {
 			expect(instanceUnderTest.getIconResult(defaultIcon.base64)).toBe(defaultIcon);
 		});
 
-		it('does NOT provide a IconResult for NULL or invalid', async () => {
+		it('does NOT provide a IconResult for NULL, invalid or unknown', async () => {
 			const instanceUnderTest = setup();
 			await instanceUnderTest.all();
 
-			expect(instanceUnderTest.getIconResult(null)).toBeUndefined();
-			expect(instanceUnderTest.getIconResult(undefined)).toBeUndefined();
-			expect(instanceUnderTest.getIconResult('some')).toBeUndefined();
+			expect(instanceUnderTest.getIconResult(null)).toBeNull();
+			expect(instanceUnderTest.getIconResult(undefined)).toBeNull();
+			expect(instanceUnderTest.getIconResult('unknownId')).toBeNull();
+			expect(instanceUnderTest.getIconResult('data:image/svg+xml;base64,unknownBase64')).toBeNull();
 		});
 	});
 
