@@ -1,8 +1,16 @@
+import { $injector } from '../../src/injection';
 import { UnitsService } from '../../src/services/UnitsService';
 
 
 describe('UnitsService', () => {
+	const configService = {
+		getValue: (key, defaultValue) => defaultValue
+	};
 
+	beforeAll(() => {
+		$injector
+			.registerSingleton('ConfigService', configService);
+	});
 
 	it('provides default formatted distance', () => {
 		const instanceUnderTest = new UnitsService();
