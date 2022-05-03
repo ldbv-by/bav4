@@ -86,7 +86,7 @@ describe('ImportVectorDataService', () => {
 
 		describe('GeoResourceFuture loader', () => {
 
-			it('loads the data and returns a VectorGeoresouce', async () => {
+			it('loads the data and returns a VectorGeoresource', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
 				const options = {
@@ -139,7 +139,7 @@ describe('ImportVectorDataService', () => {
 				expect(store.getState().layers.active[0].label).toBe(changedLabel);
 			});
 
-			it('loads the data and returns a VectorGeoresouce automatically setting id, label and sourceType', async () => {
+			it('loads the data and returns a VectorGeoresource automatically setting id, label and sourceType', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;

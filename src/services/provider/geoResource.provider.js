@@ -78,7 +78,7 @@ export const loadBvvGeoResources = async () => {
 
 /**
  * Helper function to parse BVV attributions.
- * @param {object} definition BVV geoResouce definition
+ * @param {object} definition BVV GeoResource definition
  * @returns  {Array<Attribution>|null} an array of attributions or `null`
  */
 export const _parseBvvAttributionDefinition = (definition) => {

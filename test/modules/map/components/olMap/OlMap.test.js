@@ -805,7 +805,7 @@ describe('OlMap', () => {
 			const olRealLayer = new VectorLayer({ id: underTestLayerId });
 			const future = new GeoResourceFuture(underTestLayerId, async () => geoResource);
 			const nonAsyncOlLayer = new VectorLayer({ id: nonAsyncLayerId });
-			const nonAsyncGeoResouce = new VectorGeoResource(nonAsyncLayerId, 'label', VectorSourceType.GEOJSON);
+			const nonAsyncGeoResource = new VectorGeoResource(nonAsyncLayerId, 'label', VectorSourceType.GEOJSON);
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake((id, geoResource) => {
 				if (id === underTestLayerId) {
 					if (geoResource instanceof GeoResourceFuture) {
@@ -819,7 +819,7 @@ describe('OlMap', () => {
 				if (id === underTestLayerId) {
 					return future;
 				}
-				return nonAsyncGeoResouce;
+				return nonAsyncGeoResource;
 			});
 
 			addLayer(nonAsyncLayerId);
