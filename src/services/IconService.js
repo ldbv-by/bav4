@@ -26,7 +26,7 @@ export class IconService {
 
 	_createDefault() {
 		const matcher = (idOrUrl) => {
-			return idOrUrl === Svg_Marker_Name || idOrUrl.endsWith(`/${Svg_Marker_Name}`);
+			return idOrUrl === Svg_Marker_Name || !!(idOrUrl?.endsWith(`/${Svg_Marker_Name}`));
 		};
 		const urlFactoryFunction = () => {
 			const { ConfigService: configService } = $injector.inject('ConfigService');
@@ -71,26 +71,31 @@ export class IconService {
 	}
 
 	/**
-	  *
-	  * @param {*} idOrUrlOrBase64
+	  * Returns the {@see IconResult} specified by ID, Url or a base64 encoded content-string
+	  * @param {string} idOrUrlOrBase64
+	  * @returns {IconResult|null}
 	*/
 	getIconResult(idOrUrlOrBase64) {
 		if (idOrUrlOrBase64 === this._default.base64) {
 			return this._icons.find(iconResult => iconResult.matches(Svg_Marker_Name));
 		}
-		return this.isLocal(idOrUrlOrBase64) ? this._icons.find(iconResult => iconResult.base64 === idOrUrlOrBase64) : this._icons.find(iconResult => iconResult.matches(idOrUrlOrBase64));
+
+		const findLocal = (base64) => this._icons.find(iconResult => iconResult.base64 === base64) ?? null;
+		const findRemote = (idOrUrl) => this._icons.find(iconResult => iconResult.matches(idOrUrl)) ?? null;
+
+		return this.isLocal(idOrUrlOrBase64) ? findLocal(idOrUrlOrBase64) :	findRemote(idOrUrlOrBase64);
 	}
 
 	/**
- *
-   * @param {string} url
-  */
+ 	 *
+     * @param {string} url
+    */
 	decodeColor(url) {
 		return this._iconColorProvider(url);
 	}
 
 	isLocal(iconCandidate) {
-		return iconCandidate.startsWith(Svg_Encoding_B64_Flag);
+		return !!iconCandidate?.startsWith(Svg_Encoding_B64_Flag);
 	}
 
 	getDefault() {

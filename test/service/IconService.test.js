@@ -17,7 +17,7 @@ describe('IconsService', () => {
 	});
 
 	const getMatcher = (id) => {
-		return (idOrUrl) => idOrUrl === id || idOrUrl.endsWith(id);
+		return (idOrUrl) => idOrUrl === id || idOrUrl?.endsWith(id);
 	};
 	const iconResult1 = new IconResult('foo1', 'bar1', getMatcher('foo1'), () => 'http://some.url/foo1');
 	const iconResult2 = new IconResult('foo2', 'bar2', getMatcher('foo2'), () => 'http://some.url/foo2');
@@ -149,6 +149,16 @@ describe('IconsService', () => {
 			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(instanceUnderTest.getIconResult(defaultIcon.base64)).toBe(defaultIcon);
+		});
+
+		it('does NOT provide a IconResult for NULL, invalid or unknown', async () => {
+			const instanceUnderTest = setup();
+			await instanceUnderTest.all();
+
+			expect(instanceUnderTest.getIconResult(null)).toBeNull();
+			expect(instanceUnderTest.getIconResult(undefined)).toBeNull();
+			expect(instanceUnderTest.getIconResult('unknownId')).toBeNull();
+			expect(instanceUnderTest.getIconResult('data:image/svg+xml;base64,unknownBase64')).toBeNull();
 		});
 	});
 
