@@ -2,6 +2,7 @@ import { $injector } from '../../injection';
 
 const Kilometer_In_Meters = 1000;
 const Squaredkilometer_In_Squaredmeters = 1000000;
+const Locales_Fallback_Lang = 'en';
 
 /**
 * Appends the metric unit of distance to the specified number with bvv defined decimals
@@ -11,12 +12,12 @@ const Squaredkilometer_In_Squaredmeters = 1000000;
 export const bvvDistanceUnitsProvider = (distance) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 
-	const locale = configService.getValue('DEFAULT_LANG', 'en');
+	const locales = [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
 	const asKilometer = (distanceValue) => {
-		return (Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + 'km';
+		return (Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + 'km';
 	};
 	const asMeter = (distanceValue) => {
-		return distance !== 0 ? (Math.round(distanceValue * 100) / 100).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + 'm' : '0 m';
+		return distance !== 0 ? (Math.round(distanceValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + 'm' : '0 m';
 	};
 	return distance > Kilometer_In_Meters - 1 ? asKilometer(distance) : asMeter(distance);
 };
@@ -29,12 +30,12 @@ export const bvvDistanceUnitsProvider = (distance) => {
 */
 export const bvvAreaUnitsProvider = (area) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
-	const locale = configService.getValue('DEFAULT_LANG', 'en');
+	const locales = [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
 	const asSquaredKilometer = (areaValue) => {
-		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' ' + 'km&sup2;';
+		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' ' + 'km&sup2;';
 	};
 	const asSquaredMeter = (areaValue) => {
-		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ' + 'm&sup2;' : '1 m&sup2;';
+		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ' + 'm&sup2;' : '1 m&sup2;';
 	};
 	if (area < 0.5) {
 		return '0 m&sup2;';
