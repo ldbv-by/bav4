@@ -80,8 +80,8 @@ export class IconService {
 			return this._icons.find(iconResult => iconResult.matches(Svg_Marker_Name));
 		}
 
-		const findLocal = (base64) => this._icons.find(iconResult => iconResult.base64 === base64) || null;
-		const findRemote = (idOrUrl) => this._icons.find(iconResult => iconResult.matches(idOrUrl)) || null;
+		const findLocal = (base64) => this._icons.find(iconResult => iconResult.base64 === base64) ?? null;
+		const findRemote = (idOrUrl) => this._icons.find(iconResult => iconResult.matches(idOrUrl)) ?? null;
 
 		return this.isLocal(idOrUrlOrBase64) ? findLocal(idOrUrlOrBase64) :	findRemote(idOrUrlOrBase64);
 	}
