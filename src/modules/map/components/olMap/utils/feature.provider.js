@@ -19,11 +19,13 @@ export const load = async function (extent, resolution, targetProj) {
 	});
 	if (result.ok) {
 		const raw = await result.text();
-		const features = vectorSource.getFormat().readFeatures(raw);
-		//we have to transform the features!
-		features.forEach(f => {
-			f.getGeometry().transform('EPSG:4326', targetProj);
-		});
+		const features = vectorSource.getFormat().readFeatures(raw)
+			.filter(f => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
+			.map(f => {
+				// we have to transform the features!
+				f.getGeometry().transform('EPSG:4326', targetProj);
+				return f;
+			});
 		vectorSource.addFeatures(features);
 	}
 	else {
