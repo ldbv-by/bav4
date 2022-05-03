@@ -4,15 +4,19 @@ const Kilometer_In_Meters = 1000;
 const Squaredkilometer_In_Squaredmeters = 1000000;
 const Locales_Fallback_Lang = 'en';
 
+const getLocales = () => {
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+
+	return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
+};
+
 /**
 * Appends the metric unit of distance to the specified number with bvv defined decimals
 * @param {number} distance the distance value
 * @returns {String} the formatted value
 */
 export const bvvDistanceUnitsProvider = (distance) => {
-	const { ConfigService: configService } = $injector.inject('ConfigService');
-
-	const locales = [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
+	const locales = getLocales();
 	const asKilometer = (distanceValue) => {
 		return (Math.round((distanceValue / Kilometer_In_Meters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + 'km';
 	};
@@ -29,8 +33,7 @@ export const bvvDistanceUnitsProvider = (distance) => {
 * @returns {String} the formatted value
 */
 export const bvvAreaUnitsProvider = (area) => {
-	const { ConfigService: configService } = $injector.inject('ConfigService');
-	const locales = [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
+	const locales = getLocales();
 	const asSquaredKilometer = (areaValue) => {
 		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' ' + 'km&sup2;';
 	};
