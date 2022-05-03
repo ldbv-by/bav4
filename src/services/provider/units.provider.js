@@ -2,12 +2,12 @@ import { $injector } from '../../injection';
 
 const Kilometer_In_Meters = 1000;
 const Squaredkilometer_In_Squaredmeters = 1000000;
-const Locales_Fallback_Lang = 'en';
+const Locales_Fallback = 'en';
 
 const getLocales = () => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 
-	return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback_Lang];
+	return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
 };
 
 /**

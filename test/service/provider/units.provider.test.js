@@ -70,7 +70,7 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted distance for bvv-metric system with de-locales', () => {
-		spyOn(configService, 'getValue').and.returnValue('de');
+		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('de');
 		expect(bvvDistanceUnitsProvider(0, 0)).toBe('0 m');
 		expect(bvvDistanceUnitsProvider(0, 2)).toBe('0 m');
 		expect(bvvDistanceUnitsProvider(42, 0)).toBe('42,0 m');
@@ -85,7 +85,7 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted area for bvv-metric system with de-locales', () => {
-		spyOn(configService, 'getValue').and.returnValue('de');
+		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('de');
 		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m&sup2;');
 		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m&sup2;');
 		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
@@ -102,12 +102,12 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
-		spyOn(configService, 'getValue').and.returnValue('xx');
+		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('xx');
 		expect(bvvDistanceUnitsProvider(10000, 2)).toBe('10.0 km');
 	});
 
 	it('provides formatted area for bvv-metric system with fallback-locales (en)', () => {
-		spyOn(configService, 'getValue').and.returnValue('xx');
+		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('xx');
 		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km&sup2;');
 	});
 });
