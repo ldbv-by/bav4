@@ -61,7 +61,8 @@ describe('ToolBarElement', () => {
 				isOpen: true,
 				isFetching: false,
 				isPortrait: false,
-				hasMinWidth: false
+				hasMinWidth: false,
+				toolId: null
 			});
 		});
 	});
@@ -169,22 +170,30 @@ describe('ToolBarElement', () => {
 
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
+			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[3].click();
 			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[3].click();
+			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeFalse();
 
 			expect(element.getModel().isOpen).toBeTrue();
 			toolButtons[4].click();
