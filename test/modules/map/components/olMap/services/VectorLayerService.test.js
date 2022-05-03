@@ -190,6 +190,21 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
 			});
 
+			it('filters out features without a geometry', () => {
+				const srid = 3857;
+				const geoResourceLabel = 'geoResourceLabel';
+				spyOn(mapService, 'getSrid').and.returnValue(srid);
+				// contains one valid and one invalid placemark
+				const sourceAsString = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>Invalid Placemarks</name><Placemark id="Line_valid"><description></description><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark><Placemark id="Point_invalid"><description>This is a invalid Point-Placemark</description><Point><coordinates>..</coordinates></Point></Placemark></Document></kml>';
+				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+
+				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoresource);
+
+				expect(olVectorSource.constructor.name).toBe('VectorSource');
+				expect(olVectorSource.getFeatures().length).toBe(1);
+				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
+			});
+
 			it('updates the label of an internal VectorGeoresource if possible', async () => {
 				const srid = 3857;
 				const kmlName = 'kmlName';
