@@ -31,7 +31,7 @@ export const loadExampleCatalog = async (topicId) => {
 };
 
 export const loadFallbackCatalog = () => {
-	//for geoResouceIds: see fallback GeoResources in GeoResourceService
+	//for geoResourceIds: see fallback GeoResources in GeoResourceService
 	return [
 		{
 			label: 'Subtopic 1',

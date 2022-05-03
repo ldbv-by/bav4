@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { LocationResultsPanel } from './types/location/LocationResultsPanel';
-import { GeoResouceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
+import { GeoResourceResultsPanel } from './types/geoResource/GeoResourceResultsPanel';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { CpResultsPanel } from './types/cp/CpResultsPanel';
 
@@ -20,7 +20,7 @@ export class SearchResultsPanel extends AbstractMvuContentPanel {
 		return html`
 		<div class="search-results-panel">
 		${unsafeHTML(`<${LocationResultsPanel.tag}/>`)}
-		${unsafeHTML(`<${GeoResouceResultsPanel.tag}/>`)}
+		${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)}
 		${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
 		</div>
         `;
