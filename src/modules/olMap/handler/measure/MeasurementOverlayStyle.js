@@ -1,5 +1,5 @@
 import { $injector } from '../../../../injection';
-import { OverlayStyle } from '../../OverlayStyle';
+import { OverlayStyle } from '../../overlayStyle/OverlayStyle';
 import { MeasurementOverlayTypes } from './MeasurementOverlay';
 import { getAzimuth, getLineString, getPartitionDelta } from '../../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';

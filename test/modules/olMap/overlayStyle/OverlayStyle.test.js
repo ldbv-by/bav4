@@ -1,6 +1,6 @@
 import { Feature } from 'ol';
-import { getOverlays, OverlayStyle } from '../../../src/modules/olMap/OverlayStyle';
-import { TestUtils } from '../../test-utils.js';
+import { getOverlays, OverlayStyle } from '../../../../src/modules/olMap/overlayStyle/OverlayStyle';
+import { TestUtils } from '../../../test-utils.js';
 
 describe('OverlayStyle', () => {
 	const setup = () => {

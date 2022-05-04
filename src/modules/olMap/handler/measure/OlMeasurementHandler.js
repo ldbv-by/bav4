@@ -17,7 +17,7 @@ import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../utils/timer';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
 import { saveManualOverlayPosition } from './MeasurementOverlayStyle';
-import { getOverlays } from '../../OverlayStyle';
+import { getOverlays } from '../../overlayStyle/OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../utils/olInteractionUtils';

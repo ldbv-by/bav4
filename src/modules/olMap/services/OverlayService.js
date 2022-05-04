@@ -1,5 +1,5 @@
 import { MeasurementOverlayStyle } from '../handler/measure/MeasurementOverlayStyle';
-import { OverlayStyle } from '../OverlayStyle';
+import { OverlayStyle } from '../overlayStyle/OverlayStyle';
 import { StyleTypes } from './StyleService';
 /**
  * Adds or removes overlays to ol.feature.
