@@ -22,7 +22,7 @@ export const provide = (interactionState) => {
 			return appendDeleteLastPoint(translate('olMap_handler_measure_snap_first_point'));
 		}
 		if (interactionState.snap === InteractionSnapType.LASTPOINT) {
-			return appendDeleteLastPoint(translate('map_olMap_handler_measure_snap_last_point'));
+			return appendDeleteLastPoint(translate('olMap_handler_measure_snap_last_point'));
 		}
 
 		return appendDeleteLastPoint(translate('map_olMap_handler_draw_continue_line'));
