@@ -1,7 +1,7 @@
 
 import { Point } from 'ol/geom';
-import { BaOverlay, BaOverlayTypes } from '../../../src/modules/olMap/BaOverlay';
-import { TestUtils } from '../../test-utils.js';
+import { BaOverlay, BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
+import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(BaOverlay.tag, BaOverlay);
 

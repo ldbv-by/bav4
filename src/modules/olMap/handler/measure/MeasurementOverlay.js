@@ -5,7 +5,7 @@ import css from './measure.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../../olGeometryUtils';
 import { Polygon } from 'ol/geom';
-import { BaOverlay } from '../../BaOverlay';
+import { BaOverlay } from '../../components/BaOverlay';
 
 export const MeasurementOverlayTypes = {
 	TEXT: 'text',

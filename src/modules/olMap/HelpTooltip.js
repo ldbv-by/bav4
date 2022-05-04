@@ -1,5 +1,5 @@
 
-import { BaOverlay, BaOverlayTypes } from './BaOverlay';
+import { BaOverlay, BaOverlayTypes } from './components/BaOverlay';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../injection';
 

@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { BaElement } from '../BaElement';
+import { BaElement } from '../../BaElement';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
