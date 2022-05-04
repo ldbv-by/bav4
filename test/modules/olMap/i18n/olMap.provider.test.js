@@ -20,7 +20,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
 		expect(map.olMap_handler_delete_last_point).toBe('Letzter Punkt löschen: ENTF Taste');
 		expect(map.olMap_handler_measure_select).toBe('bestehende Messung auswählen oder neue Messung beginnen');
-		expect(map.map_olMap_handler_measure_layer_label).toBe('Messung');
+		expect(map.olMap_handler_measure_layer_label).toBe('Messung');
 		expect(map.map_olMap_handler_draw_start).toBe('Klicken, um die Zeichnung zu beginnen');
 		expect(map.map_olMap_handler_draw_layer_label).toBe('Zeichnung');
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)');
@@ -48,7 +48,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Press DEL to delete the drawing');
 		expect(map.olMap_handler_delete_last_point).toBe('Press DEL to remove the last point drawn');
 		expect(map.olMap_handler_measure_select).toBe('Select existing or start new measurement');
-		expect(map.map_olMap_handler_measure_layer_label).toBe('Measurement');
+		expect(map.olMap_handler_measure_layer_label).toBe('Measurement');
 		expect(map.map_olMap_handler_draw_start).toBe('Click to start drawing');
 		expect(map.map_olMap_handler_draw_layer_label).toBe('Drawing');
 		expect(map.map_olMap_handler_draw_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
