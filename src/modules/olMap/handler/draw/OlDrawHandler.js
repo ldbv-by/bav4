@@ -790,7 +790,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
 			// to simplify the code in OlDrawHandler and OlMeasurementHandler
 			console.warn('Could not store layer-data. The data will get lost after this session.');
-			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
+			emitNotification(translate('olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
 		};
 
