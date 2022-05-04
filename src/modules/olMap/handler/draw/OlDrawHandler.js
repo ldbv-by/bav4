@@ -13,7 +13,7 @@ import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, 
 import { unByKey } from 'ol/Observable';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../olInteractionUtils';
-import { HelpTooltip } from '../../HelpTooltip';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
 import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';

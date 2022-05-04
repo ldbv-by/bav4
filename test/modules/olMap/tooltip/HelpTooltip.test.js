@@ -1,9 +1,9 @@
 import { Overlay } from 'ol';
-import { $injector } from '../../../src/injection';
-import { HelpTooltip } from '../../../src/modules/olMap/HelpTooltip';
-import { InteractionSnapType, InteractionStateType } from '../../../src/modules/olMap/olInteractionUtils';
-import { TestUtils } from '../../test-utils.js';
-import { provide as measureProvide } from '../../../src/modules/olMap/handler/measure/tooltipMessage.provider';
+import { $injector } from '../../../../src/injection';
+import { HelpTooltip } from '../../../../src/modules/olMap/tooltip/HelpTooltip';
+import { InteractionSnapType, InteractionStateType } from '../../../../src/modules/olMap/olInteractionUtils';
+import { TestUtils } from '../../../test-utils.js';
+import { provide as measureProvide } from '../../../../src/modules/olMap/handler/measure/tooltipMessage.provider';
 
 
 TestUtils.setupStoreAndDi({});

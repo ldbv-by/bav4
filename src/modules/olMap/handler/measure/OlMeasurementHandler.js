@@ -11,7 +11,7 @@ import { createSketchStyleFunction, selectStyleFunction } from '../../olStyleUti
 import { getStats } from '../../olGeometryUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
-import { HelpTooltip } from '../../HelpTooltip';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../utils/timer';
