@@ -56,10 +56,6 @@
 	border-bottom-color: var(--secondary-color);
 }
 
-.is-active .tool-bar__button_icon {
-	background: var(--secondary-color);
-}
-
 .tool-bar__button:hover {
 	opacity: 1;
 	background: var(--header-background-color);
@@ -73,6 +69,10 @@
 	background: var(--primary-color);
 	mask-size: cover;
 	-webkit-mask-size: cover;
+}
+
+.is-active .tool-bar__button_icon {
+	background: var(--secondary-color);
 }
 
 .share {
