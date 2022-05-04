@@ -1,7 +1,7 @@
-import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../../src/modules/olMap/handler/measure/MeasurementOverlay';
+import { MeasurementOverlay, MeasurementOverlayTypes } from '../../../../src/modules/olMap/components/MeasurementOverlay';
 import { LineString, Polygon } from 'ol/geom';
-import { $injector } from '../../../../../src/injection';
-import { TestUtils } from '../../../../test-utils.js';
+import { $injector } from '../../../../src/injection';
+import { TestUtils } from '../../../test-utils.js';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';

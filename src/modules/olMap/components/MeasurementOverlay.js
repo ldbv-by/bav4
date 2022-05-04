@@ -1,11 +1,11 @@
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../../injection';
-import css from './measure.css';
+import { $injector } from '../../../injection';
+import css from './measurementOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../../utils/olGeometryUtils';
+import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
-import { BaOverlay } from '../../components/BaOverlay';
+import { BaOverlay } from './BaOverlay';
 
 export const MeasurementOverlayTypes = {
 	TEXT: 'text',

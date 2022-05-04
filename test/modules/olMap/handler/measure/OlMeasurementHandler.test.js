@@ -33,11 +33,12 @@ import { simulateMapBrowserEvent } from '../../mapTestUtils';
 import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
+import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-
+window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 
 
 describe('OlMeasurementHandler', () => {
