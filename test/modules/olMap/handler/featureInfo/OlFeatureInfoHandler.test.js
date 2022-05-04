@@ -302,8 +302,8 @@ describe('OlFeatureInfoHandler', () => {
 			startRequest(matchingCoordinate);
 
 			expect(store.getState().featureInfo.current).toHaveSize(2);
-			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
-			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'map_olMap_handler_featureInfo_not_available', content: '' });
+			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'olMap_handler_featureInfo_not_available', content: '' });
+			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'olMap_handler_featureInfo_not_available', content: '' });
 			expect(store.getState().highlight.features).toHaveSize(0);
 
 		});

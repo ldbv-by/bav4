@@ -66,7 +66,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 				//map olFeature to FeatureInfo item
 				.map(olFeatureContainer => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layerProperties))
 				// .filter(featureInfo => !!featureInfo)
-				.map(featureInfo => featureInfo ? featureInfo : { title: translate('map_olMap_handler_featureInfo_not_available'), content: '' })
+				.map(featureInfo => featureInfo ? featureInfo : { title: translate('olMap_handler_featureInfo_not_available'), content: '' })
 				//display FeatureInfo items in the same order as layers
 				.reverse();
 
