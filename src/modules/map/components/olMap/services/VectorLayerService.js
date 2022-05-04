@@ -174,7 +174,7 @@ export class VectorLayerService {
 
 	/**
 	 *
-	 * Builds an ol VectorSource from an  VectorGeoResource
+	 * Builds an ol VectorSource from a VectorGeoResource.
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
