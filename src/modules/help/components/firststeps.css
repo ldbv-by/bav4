@@ -95,3 +95,16 @@ a.first_steps__notification-link:hover {
 	background-color: var(--primary-color);
 	color: var(--text3);
 }
+
+iframe {
+	min-height: 50em;
+	border: 0;
+	width: 100%;
+	min-width: 60em;
+}
+
+.is-portrait iframe {
+	height: 92em;
+	width: 100%;
+	min-width: auto;
+}
