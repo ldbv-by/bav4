@@ -71,6 +71,7 @@ tr {
 
 th, td {
 	padding: .8em 1em;
+	width: auto;
 }
 
 .is-portrait table , .is-portrait tr, .is-portrait th {
