@@ -36,7 +36,7 @@ export const provide = (interactionState) => {
 		if (interactionState.snap === InteractionSnapType.EDGE) {
 			return translate('olMap_handler_measure_modify_click_new_point');
 		}
-		return translate('map_olMap_handler_measure_modify_key_for_delete');
+		return translate('olMap_handler_measure_modify_key_for_delete');
 	}
 
 	if (interactionState.type === InteractionStateType.SELECT) {
