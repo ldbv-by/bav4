@@ -6,7 +6,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				olMap_layer_not_available: 'Failed to add a layer for id',
 				olMap_handler_measure_start: 'Click to start measurement',
-				map_olMap_handler_measure_continue_line: 'Click to continue drawing the line (double-click to finish)',
+				olMap_handler_measure_continue_line: 'Click to continue drawing the line (double-click to finish)',
 				map_olMap_handler_measure_continue_polygon: 'Click to continue drawing the polygon (double-click to finish)',
 				map_olMap_handler_measure_snap_first_point: 'Click to close the surface',
 				map_olMap_handler_measure_snap_last_point: 'Click to finish the line',
@@ -33,7 +33,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				olMap_layer_not_available: 'Ebene konnt nicht geladen werden:',
 				olMap_handler_measure_start: 'Klicken, um die Messung zu beginnen',
-				map_olMap_handler_measure_continue_line: 'Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)',
+				olMap_handler_measure_continue_line: 'Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)',
 				map_olMap_handler_measure_continue_polygon: 'Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)',
 				map_olMap_handler_measure_snap_first_point: 'Klicke, um die Fläche zu schliessen',
 				map_olMap_handler_measure_snap_last_point: 'Klicke, um die Messung abzuschliessen',
