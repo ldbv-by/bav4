@@ -8,7 +8,7 @@ describe('i18n for map module', () => {
 		const map = provide('de');
 
 		expect(map.olMap_layer_not_available).toBe('Ebene konnt nicht geladen werden:');
-		expect(map.map_olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
+		expect(map.olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.map_olMap_handler_measure_snap_first_point).toBe('Klicke, um die Fläche zu schliessen');
@@ -36,7 +36,7 @@ describe('i18n for map module', () => {
 		const map = provide('en');
 
 		expect(map.olMap_layer_not_available).toBe('Failed to add a layer for id');
-		expect(map.map_olMap_handler_measure_start).toBe('Click to start measurement');
+		expect(map.olMap_handler_measure_start).toBe('Click to start measurement');
 		expect(map.map_olMap_handler_measure_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
 		expect(map.map_olMap_handler_measure_continue_polygon).toBe('Click to continue drawing the polygon (double-click to finish)');
 		expect(map.map_olMap_handler_measure_snap_first_point).toBe('Click to close the surface');

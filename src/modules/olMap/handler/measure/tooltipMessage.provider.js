@@ -5,7 +5,7 @@ export const provide = (interactionState) => {
 	const { TranslationService } = $injector.inject('TranslationService');
 	const translate = (key) => TranslationService.translate(key);
 	if (interactionState.type === InteractionStateType.ACTIVE) {
-		return translate('map_olMap_handler_measure_start');
+		return translate('olMap_handler_measure_start');
 	}
 
 	if (interactionState.type === InteractionStateType.DRAW) {

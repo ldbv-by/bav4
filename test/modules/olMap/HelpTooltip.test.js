@@ -101,7 +101,7 @@ describe('HelpTooltip', () => {
 
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify(measureState);
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_start');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_start');
 		});
 
 		it('with interactionstate \'draw\' create overlay text', () => {
