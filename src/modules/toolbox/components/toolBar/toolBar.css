@@ -1,5 +1,6 @@
 .tool-bar {
 	position: fixed;
+	display: flex;
 	z-index: var(--z-toolbox);
 	bottom: .5em;
 	right: 0em;
@@ -40,7 +41,6 @@
 	opacity: .9;
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 	z-index: 1;
-	border-bottom: .3em transparent solid;
 }
 
 .is-desktop .tool-bar__button {
@@ -52,13 +52,16 @@
 	font-size: .9em;
 }
 
-.is-active {
-	border-bottom-color: var(--secondary-color);
+.is-active.tool-bar__button {
+	background-color: var(--primary-color);
 }
 
 .tool-bar__button:hover {
 	opacity: 1;
 	background: var(--header-background-color);
+}
+.is-active.tool-bar__button:hover {
+	background-color: var(--primary-color);
 }
 
 .tool-bar__button_icon {
@@ -72,7 +75,7 @@
 }
 
 .is-active .tool-bar__button_icon {
-	background: var(--secondary-color);
+	background: var(--primary-bg-color);
 }
 
 .share {
@@ -110,6 +113,10 @@
 .tool-bar__button-text {
 	font-size: .8rem;
 	text-align: center;
+}
+
+.is-active  .tool-bar__button-text {
+	color: var(--primary-bg-color);
 }
 
 .tool-bar__tools {
