@@ -555,7 +555,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	_getStyleOption() {
 		const getDefaultText = () => {
 			const translate = (key) => this._translationService.translate(key);
-			return translate('map_olMap_handler_draw_new_text');
+			return translate('olMap_handler_draw_new_text');
 		};
 
 		const getDefaultTextByType = (type) => {

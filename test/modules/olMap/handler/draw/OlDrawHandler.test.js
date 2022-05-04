@@ -740,7 +740,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._drawState = drawStateFake;
 				setType('text');
 
-				expect(store.getState().draw.style.text).toBe('map_olMap_handler_draw_new_text');
+				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
 			});
 
 			it('re-inits the drawing and sets the store with defaultText for marker', () => {
@@ -776,7 +776,7 @@ describe('OlDrawHandler', () => {
 				classUnderTest._drawState = drawStateFake;
 				setType('text');
 
-				expect(store.getState().draw.style.text).toBe('map_olMap_handler_draw_new_text');
+				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
 			});
 
 			it('re-inits the drawing with new style, when store changes', () => {
