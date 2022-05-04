@@ -40,7 +40,7 @@ export const provide = (interactionState) => {
 	}
 
 	if (interactionState.type === InteractionStateType.SELECT) {
-		return translate('map_olMap_handler_measure_select');
+		return translate('olMap_handler_measure_select');
 	}
 
 	if (interactionState.type === InteractionStateType.OVERLAY) {
