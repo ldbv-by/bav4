@@ -1,6 +1,6 @@
 import { isVertexOfGeometry } from './olGeometryUtils';
 import { modifyStyleFunction } from './olStyleUtils';
-import { $injector } from '../../injection';
+import { $injector } from '../../../injection';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 
 export const InteractionStateType = Object.freeze({

@@ -2,10 +2,10 @@ import { MapBrowserEvent } from 'ol';
 import { Point } from 'ol/geom';
 import MapBrowserEventType from 'ol/src/MapBrowserEventType';
 import Style from 'ol/style/Style';
-import { $injector } from '../../../src/injection';
-import { getFeatureSnapOption, getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../../src/modules/olMap/olInteractionUtils';
-import { modifyStyleFunction } from '../../../src/modules/olMap/olStyleUtils';
-import { TestUtils } from '../../test-utils';
+import { $injector } from '../../../../src/injection';
+import { getFeatureSnapOption, getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../../../src/modules/olMap/utils/olInteractionUtils';
+import { modifyStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
+import { TestUtils } from '../../../test-utils';
 
 const environmentService = {
 	isStandalone: () => false,

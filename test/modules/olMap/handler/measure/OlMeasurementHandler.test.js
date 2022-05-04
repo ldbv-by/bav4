@@ -22,7 +22,7 @@ import { finish, remove, reset } from '../../../../../src/store/measurement/meas
 import { OverlayService } from '../../../../../src/modules/olMap/services/OverlayService';
 import { Stroke, Style } from 'ol/style';
 import { FileStorageServiceDataTypes } from '../../../../../src/services/FileStorageService';
-import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/olInteractionUtils';
+import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
 import VectorSource from 'ol/source/Vector';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';

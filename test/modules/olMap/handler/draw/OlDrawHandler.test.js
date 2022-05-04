@@ -18,7 +18,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { LineString, Point, Polygon } from 'ol/geom';
 import { Collection, Feature, MapBrowserEvent } from 'ol';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
-import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/olInteractionUtils';
+import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
 import { VectorGeoResource, VectorSourceType } from '../../../../../src/services/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../../../src/services/FileStorageService';
 import VectorSource from 'ol/source/Vector';

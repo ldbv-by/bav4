@@ -4,7 +4,7 @@ import { Icon, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { KML } from 'ol/format';
 import { $injector } from '../../../injection';
-import { AssetSourceType, getAssetSource } from '../olStyleUtils';
+import { AssetSourceType, getAssetSource } from '../utils/olStyleUtils';
 
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 

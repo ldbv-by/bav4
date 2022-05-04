@@ -1,7 +1,7 @@
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../utils/storeUtils';
-import { getLayerById } from '../../olMapUtils';
+import { getLayerById } from '../../utils/olMapUtils';
 import { OlMapHandler } from '../OlMapHandler';
 import { getBvvFeatureInfo } from './featureInfoItem.provider';
 import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';

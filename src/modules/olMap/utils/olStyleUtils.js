@@ -2,11 +2,11 @@ import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSe
 import { toContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
-import { $injector } from '../../injection';
-import markerIcon from './assets/marker.svg';
-import locationIcon from './assets/location.svg';
-import tempLocationIcon from './assets/temporaryLocation.svg';
-import { isString } from '../../utils/checks';
+import { $injector } from '../../../injection';
+import markerIcon from '../assets/marker.svg';
+import locationIcon from '../assets/location.svg';
+import tempLocationIcon from '../assets/temporaryLocation.svg';
+import { isString } from '../../../utils/checks';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];

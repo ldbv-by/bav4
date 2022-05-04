@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/olInteractionUtils';
+import { InteractionSnapType, InteractionStateType } from '../../../../../src/modules/olMap/utils/olInteractionUtils';
 import { TestUtils } from '../../../../test-utils.js';
 import { provide as measureProvide } from '../../../../../src/modules/olMap/handler/measure/tooltipMessage.provider';
 

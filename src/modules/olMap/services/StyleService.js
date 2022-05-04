@@ -1,6 +1,6 @@
 import { getUid } from 'ol';
 import { $injector } from '../../../injection';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction, defaultStyleFunction } from '../olStyleUtils';
+import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, rgbToHex, markerScaleToKeyword, getStyleArray, geojsonStyleFunction, defaultStyleFunction } from '../utils/olStyleUtils';
 
 
 

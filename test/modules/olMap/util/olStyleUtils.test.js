@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction, DEFAULT_TEXT } from '../../../src/modules/olMap/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, rgbToHex, getColorFrom, hexToRgb, lineStyleFunction, rgbToHsv, hsvToRgb, getContrastColorFrom, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction, DEFAULT_TEXT } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -6,10 +6,10 @@ import { register } from 'ol/proj/proj4';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
-import markerIcon from '../../../src/modules/olMap/assets/marker.svg';
+import markerIcon from '../../../../src/modules/olMap/assets/marker.svg';
 import { Fill, Icon, Stroke, Style, Text, Text as TextStyle } from 'ol/style';
-import { TestUtils } from '../../test-utils';
-import { $injector } from '../../../src/injection';
+import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../src/injection';
 import CircleStyle from 'ol/style/Circle';
 
 const Rgb_White = [255, 255, 255];

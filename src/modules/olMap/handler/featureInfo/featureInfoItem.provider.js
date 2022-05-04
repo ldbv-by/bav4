@@ -1,6 +1,6 @@
 import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
-import { getStats } from '../../olGeometryUtils';
+import { getStats } from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';

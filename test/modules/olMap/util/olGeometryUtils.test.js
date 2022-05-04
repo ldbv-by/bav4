@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats } from '../../../src/modules/olMap/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';

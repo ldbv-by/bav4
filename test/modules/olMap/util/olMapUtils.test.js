@@ -1,8 +1,8 @@
 import BaseLayer from 'ol/layer/Base';
 import { Map } from 'ol';
-import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../src/modules/olMap/olMapUtils';
+import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOlLayer } from '../../../../src/modules/olMap/utils/olMapUtils';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
-import { simulateMapBrowserEvent } from './mapTestUtils';
+import { simulateMapBrowserEvent } from '../mapTestUtils';
 
 
 describe('olMapUtils', () => {

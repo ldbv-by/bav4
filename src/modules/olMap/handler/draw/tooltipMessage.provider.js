@@ -1,4 +1,4 @@
-import { InteractionSnapType, InteractionStateType } from '../../olInteractionUtils';
+import { InteractionSnapType, InteractionStateType } from '../../utils/olInteractionUtils';
 import { $injector } from '../../../../injection';
 
 export const provide = (interactionState) => {
