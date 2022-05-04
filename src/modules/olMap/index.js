@@ -1,3 +1,4 @@
+import './i18n';
 import { OlMap } from './OlMap';
 import { BaOverlay } from './BaOverlay';
 if (!window.customElements.get(OlMap.tag)) {

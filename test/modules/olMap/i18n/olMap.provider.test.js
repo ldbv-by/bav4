@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/map/i18n/olMap.provider';
+import { provide } from '../../../../src/modules/olMap/i18n/olMap.provider';
 
 
 describe('i18n for map module', () => {
