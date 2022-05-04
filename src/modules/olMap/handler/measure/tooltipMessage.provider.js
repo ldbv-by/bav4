@@ -31,7 +31,7 @@ export const provide = (interactionState) => {
 	if (interactionState.type === InteractionStateType.MODIFY) {
 
 		if (interactionState.snap === InteractionSnapType.VERTEX) {
-			return translate('map_olMap_handler_measure_modify_click_or_drag');
+			return translate('olMap_handler_measure_modify_click_or_drag');
 		}
 		if (interactionState.snap === InteractionSnapType.EDGE) {
 			return translate('olMap_handler_measure_modify_click_new_point');
