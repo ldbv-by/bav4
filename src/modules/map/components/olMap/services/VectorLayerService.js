@@ -150,7 +150,14 @@ export class VectorLayerService {
 
 		const data = geoResource.data;
 		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
-		const features = format.readFeatures(data);
+		const features = format.readFeatures(data)
+			.filter(f => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
+			.map(f => {
+				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid);
+				f.set('srid', destinationSrid, true);
+				return f;
+			});
+		vectorSource.addFeatures(features);
 
 		/**
 		 * If we know a better name for the geoResource now, we update the geoResource's label.
@@ -162,17 +169,12 @@ export class VectorLayerService {
 				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
 				break;
 		}
-		features.forEach(f => {
-			f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid);
-			f.set('srid', destinationSrid, true);
-		});
-		vectorSource.addFeatures(features);
 		return vectorSource;
 	}
 
 	/**
 	 *
-	 * Builds an ol VectorSource from an  VectorGeoResource
+	 * Builds an ol VectorSource from a VectorGeoResource.
 	 * @param {VectorGeoResource} vectorGeoResource
 	 * @param {ol.Map} map
 	 * @returns olVectorSource
