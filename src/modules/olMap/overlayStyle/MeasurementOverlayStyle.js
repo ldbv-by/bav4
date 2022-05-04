@@ -1,12 +1,12 @@
-import { $injector } from '../../../../injection';
-import { OverlayStyle } from '../../overlayStyle/OverlayStyle';
-import { MeasurementOverlayTypes } from '../../components/MeasurementOverlay';
-import { getAzimuth, getLineString, getPartitionDelta } from '../../utils/olGeometryUtils';
+import { $injector } from '../../../injection';
+import { OverlayStyle } from './OverlayStyle';
+import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
+import { getAzimuth, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { DragPan } from 'ol/interaction';
-import { MeasurementOverlay } from '../../components/MeasurementOverlay';
+import { MeasurementOverlay } from '../components/MeasurementOverlay';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];

@@ -1,11 +1,11 @@
 import { Feature } from 'ol';
-import { MeasurementOverlayStyle, saveManualOverlayPosition } from '../../../../../src/modules/olMap/handler/measure/MeasurementOverlayStyle';
-import { TestUtils } from '../../../../test-utils.js';
+import { MeasurementOverlayStyle, saveManualOverlayPosition } from '../../../../src/modules/olMap/overlayStyle/MeasurementOverlayStyle';
+import { TestUtils } from '../../../test-utils.js';
 import { LineString, Polygon } from 'ol/geom';
-import { $injector } from '../../../../../src/injection';
+import { $injector } from '../../../../src/injection';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
-import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
+import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import { DragPan } from 'ol/interaction';
 
 

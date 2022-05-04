@@ -1,4 +1,4 @@
-import { MeasurementOverlayStyle } from '../handler/measure/MeasurementOverlayStyle';
+import { MeasurementOverlayStyle } from '../overlayStyle/MeasurementOverlayStyle';
 import { OverlayStyle } from '../overlayStyle/OverlayStyle';
 import { StyleTypes } from './StyleService';
 /**
