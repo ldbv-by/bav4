@@ -8,6 +8,7 @@ import { MvuElement } from '../../../MvuElement';
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_ToolId = 'update_toolid';
 
 /**
  *
@@ -23,7 +24,8 @@ export class ToolBar extends MvuElement {
 			isOpen: true,
 			isFetching: false,
 			isPortrait: false,
-			hasMinWidth: false
+			hasMinWidth: false,
+			toolId: null
 		});
 
 		const {
@@ -34,7 +36,6 @@ export class ToolBar extends MvuElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
-		this._toolId = null;
 	}
 
 	update(type, data, model) {
@@ -45,13 +46,15 @@ export class ToolBar extends MvuElement {
 				return { ...model, isFetching: data };
 			case Update_IsPortrait_HasMinWidth:
 				return { ...model, ...data };
+			case Update_ToolId:
+				return { ...model, toolId: data };
 		}
 	}
 
 	onInitialize() {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.tools.current, current => this._toolId = current);
+		this.observe(state => state.tools.current, current => this.signal(Update_ToolId, current));
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -63,7 +66,7 @@ export class ToolBar extends MvuElement {
 	 */
 	createView(model) {
 
-		const { isFetching, isPortrait, hasMinWidth, isOpen } = model;
+		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -81,13 +84,14 @@ export class ToolBar extends MvuElement {
 			return isOpen ? 'hide-button' : '';
 		};
 
+		const getActiveClass = (id) => {
+			return toolId === id ? 'is-active' : '';
+		};
+
 		const toggleTool = (id) => {
-			if (this._toolId === id) {
-				setCurrentTool(null);
-			}
-			else {
-				setCurrentTool(id);
-			}
+			const nextToolId = toolId === id ? null : id;
+
+			setCurrentTool(nextToolId);
 		};
 
 		const getAnimatedBorderClass = () => {
@@ -115,28 +119,28 @@ export class ToolBar extends MvuElement {
 					</div>	
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">    	
-					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button">
+					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button ${getActiveClass(ToolId.MEASURING)}">
 						<div class="tool-bar__button_icon measure">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_measure_button')}
 						</div>  
 					</button>  	
-					<button id="draw-button" data-test-id @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button">
+					<button id="draw-button" data-test-id @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button ${getActiveClass(ToolId.DRAWING)}">
 						<div class="tool-bar__button_icon pencil">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_draw_button')}
 						</div>  					
 					</button>  				               
-					<button  id="import-button" data-test-id @click="${() => toggleTool(ToolId.IMPORT)}" class="tool-bar__button">
+					<button  id="import-button" data-test-id @click="${() => toggleTool(ToolId.IMPORT)}" class="tool-bar__button ${getActiveClass(ToolId.IMPORT)}">
 						<div class="tool-bar__button_icon import">							
 						</div>
 						<div class="tool-bar__button-text">
 						${translate('toolbox_toolbar_import_button')}							
 						</div>  					
 					</button>  				               
-					<button  id="share-button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button">
+					<button  id="share-button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button ${getActiveClass(ToolId.SHARING)}">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
