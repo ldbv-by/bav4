@@ -25,7 +25,7 @@ export const provide = (interactionState) => {
 			return appendDeleteLastPoint(translate('olMap_handler_measure_snap_last_point'));
 		}
 
-		return appendDeleteLastPoint(translate('map_olMap_handler_draw_continue_line'));
+		return appendDeleteLastPoint(translate('olMap_handler_draw_continue_line'));
 	}
 
 	if (interactionState.type === InteractionStateType.MODIFY) {
