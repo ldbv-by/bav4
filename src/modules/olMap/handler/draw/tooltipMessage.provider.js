@@ -44,6 +44,6 @@ export const provide = (interactionState) => {
 	}
 
 	if (interactionState.type === InteractionStateType.OVERLAY) {
-		return translate('map_olMap_handler_measure_modify_click_drag_overlay');
+		return translate('olMap_handler_measure_modify_click_drag_overlay');
 	}
 };

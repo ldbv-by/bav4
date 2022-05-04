@@ -143,7 +143,7 @@ describe('HelpTooltip', () => {
 			classUnderTest.activate(mapStub);
 			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.OVERLAY });
 
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'map_olMap_handler_measure_modify_click_drag_overlay');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_modify_click_drag_overlay');
 		});
 
 		it('with interactionstate \'dragging\' hide overlay', () => {

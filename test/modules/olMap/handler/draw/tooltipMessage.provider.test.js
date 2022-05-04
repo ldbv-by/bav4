@@ -24,6 +24,6 @@ describe('Measure tooltipMessageProvider', () => {
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY })).toBe('map_olMap_handler_draw_modify_key_for_delete');
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX })).toBe('olMap_handler_measure_modify_click_or_drag');
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE })).toBe('olMap_handler_measure_modify_click_new_point');
-		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.OVERLAY })).toBe('map_olMap_handler_measure_modify_click_drag_overlay');
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.OVERLAY })).toBe('olMap_handler_measure_modify_click_drag_overlay');
 	});
 });
