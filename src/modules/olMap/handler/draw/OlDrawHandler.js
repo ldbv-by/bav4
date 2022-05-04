@@ -103,7 +103,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		const translate = (key) => this._translationService.translate(key);
 		if (!this._storeService.getStore().getState().shared.termsOfUseAcknowledged && !this._environmentService.isStandalone()) {
-			const termsOfUse = translate('map_olMap_handler_termsOfUse');
+			const termsOfUse = translate('olMap_handler_termsOfUse');
 			if (termsOfUse) {
 				emitNotification(unsafeHTML(termsOfUse), LevelTypes.INFO);
 			}
