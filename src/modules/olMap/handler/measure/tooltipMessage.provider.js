@@ -19,7 +19,7 @@ export const provide = (interactionState) => {
 		};
 
 		if (interactionState.snap === InteractionSnapType.FIRSTPOINT) {
-			return appendDeleteLastPoint(translate('map_olMap_handler_measure_snap_first_point'));
+			return appendDeleteLastPoint(translate('olMap_handler_measure_snap_first_point'));
 		}
 		if (interactionState.snap === InteractionSnapType.LASTPOINT) {
 			return appendDeleteLastPoint(translate('map_olMap_handler_measure_snap_last_point'));
