@@ -12,7 +12,7 @@ import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
 import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
-import { mapModule } from '../modules/map/injection';
+import { mapModule } from '../modules/olMap/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
