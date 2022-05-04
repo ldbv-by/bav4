@@ -115,9 +115,9 @@ describe('HelpTooltip', () => {
 			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT });
 			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT });
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_continue_line');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_continue_line<br/>map_olMap_handler_delete_last_point');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_first_point<br/>map_olMap_handler_delete_last_point');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point');
 		});
 
 		it('with interactionstate \'modify\' create overlay text', () => {

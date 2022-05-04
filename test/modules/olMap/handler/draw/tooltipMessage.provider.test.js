@@ -18,9 +18,9 @@ describe('Measure tooltipMessageProvider', () => {
 
 	it('provides tooltip-messages', () => {
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW, pointCount: 1 })).toBe('map_olMap_handler_draw_continue_line');
-		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW })).toBe('map_olMap_handler_draw_continue_line<br/>map_olMap_handler_delete_last_point');
-		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT })).toBe('olMap_handler_measure_snap_first_point<br/>map_olMap_handler_delete_last_point');
-		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT })).toBe('olMap_handler_measure_snap_last_point<br/>map_olMap_handler_delete_last_point');
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW })).toBe('map_olMap_handler_draw_continue_line<br/>olMap_handler_delete_last_point');
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT })).toBe('olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point');
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT })).toBe('olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point');
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY })).toBe('olMap_handler_draw_modify_key_for_delete');
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX })).toBe('olMap_handler_measure_modify_click_or_drag');
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE })).toBe('olMap_handler_measure_modify_click_new_point');

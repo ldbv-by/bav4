@@ -11,7 +11,7 @@ export const provide = (interactionState) => {
 	if (interactionState.type === InteractionStateType.DRAW) {
 		const appendDeleteLastPoint = (message) => {
 			if (interactionState.pointCount > 2) {
-				return message + '<br/>' + translate('map_olMap_handler_delete_last_point');
+				return message + '<br/>' + translate('olMap_handler_delete_last_point');
 			}
 			else {
 				return message;
