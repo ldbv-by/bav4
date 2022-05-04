@@ -850,7 +850,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(0);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith(message);
-			expect(store.getState().notifications.latest.payload.content).toBe(`map_olMap_layer_not_available '${geoResourceId0}'`);
+			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -870,7 +870,7 @@ describe('OlMap', () => {
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
-			expect(store.getState().notifications.latest.payload.content).toBe('map_olMap_layer_not_available \'unknown\'');
+			expect(store.getState().notifications.latest.payload.content).toBe('olMap_layer_not_available \'unknown\'');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 

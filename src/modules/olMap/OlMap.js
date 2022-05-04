@@ -289,7 +289,7 @@ export class OlMap extends MvuElement {
 				}
 				else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
-					emitNotification(`${translate('map_olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
+					emitNotification(`${translate('olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
@@ -312,7 +312,7 @@ export class OlMap extends MvuElement {
 					// eslint-disable-next-line promise/prefer-await-to-then
 					.catch(error => {
 						console.warn(error);
-						emitNotification(`${translate('map_olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
+						emitNotification(`${translate('olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
 						removeLayer(id);
 					});
 			}
