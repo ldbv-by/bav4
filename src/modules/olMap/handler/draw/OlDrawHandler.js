@@ -123,7 +123,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			const layer = new VectorLayer({
 				source: source
 			});
-			layer.label = translate('map_olMap_handler_draw_layer_label');
+			layer.label = translate('olMap_handler_draw_layer_label');
 			return layer;
 		};
 
@@ -772,7 +772,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
-		const label = translate('map_olMap_handler_draw_layer_label');
+		const label = translate('olMap_handler_draw_layer_label');
 
 		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
 		if (isEmpty) {

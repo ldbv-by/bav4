@@ -195,7 +195,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			classUnderTest.activate(map);
 
-			expect(classUnderTest._vectorLayer.label).toBe('map_olMap_handler_draw_layer_label');
+			expect(classUnderTest._vectorLayer.label).toBe('olMap_handler_draw_layer_label');
 		});
 
 		it('adds a keyup-EventListener to the document', () => {
@@ -705,7 +705,7 @@ describe('OlMeasurementHandler', () => {
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 			expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
 				id: 'f_ooBarId',
-				label: 'map_olMap_handler_draw_layer_label'
+				label: 'olMap_handler_draw_layer_label'
 			}));
 		});
 
