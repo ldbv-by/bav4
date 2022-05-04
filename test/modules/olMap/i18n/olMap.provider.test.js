@@ -24,7 +24,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_start).toBe('Klicken, um die Zeichnung zu beginnen');
 		expect(map.olMap_handler_draw_layer_label).toBe('Zeichnung');
 		expect(map.olMap_handler_draw_continue_line).toBe('Klicken, um die Linie zu zeichnen (Doppelklick zum Beenden)');
-		expect(map.map_olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
+		expect(map.olMap_handler_draw_select).toBe('bestehende Zeichnung auswählen oder neue Zeichnung beginnen');
 		expect(map.map_olMap_handler_draw_new_text).toBe('Neuer Text');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
@@ -52,7 +52,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_draw_start).toBe('Click to start drawing');
 		expect(map.olMap_handler_draw_layer_label).toBe('Drawing');
 		expect(map.olMap_handler_draw_continue_line).toBe('Click to continue drawing the line (double-click to finish)');
-		expect(map.map_olMap_handler_draw_select).toBe('Select existing or start new drawing');
+		expect(map.olMap_handler_draw_select).toBe('Select existing or start new drawing');
 		expect(map.map_olMap_handler_draw_new_text).toBe('new text');
 		expect(map.map_olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
 		expect(map.map_olMap_handler_featureInfo_not_available).toBe('Object Information not available');
