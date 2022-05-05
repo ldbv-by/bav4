@@ -23,5 +23,9 @@ describe('searchReducer', () => {
 		setQuery(query);
 
 		expect(store.getState().search.query.payload).toBe(query.trim());
+
+		setQuery(null);
+
+		expect(store.getState().search.query.payload).toBeNull();
 	});
 });

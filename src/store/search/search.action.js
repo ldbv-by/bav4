@@ -20,6 +20,6 @@ const getStore = () => {
 export const setQuery = (term) => {
 	getStore().dispatch({
 		type: QUERY_CHANGED,
-		payload: new EventLike(term?.trim())
+		payload: new EventLike(term?.trim() ?? null)
 	});
 };
