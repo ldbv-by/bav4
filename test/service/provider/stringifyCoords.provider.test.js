@@ -37,10 +37,11 @@ describe('StringifyCoord provider', () => {
 		it('stringifies a 4326 coordinate', () => {
 
 			const coord4326 = [11.57245, 48.14021];
+			const coord4326_3d = [11.57245, 48.14021, 42];
 
-			const formatedString = bvvStringifyFunction(4326)(coord4326, { digits: 3 });
+			expect(bvvStringifyFunction(4326)(coord4326, { digits: 3 })).toBe('48.140, 11.572');
+			expect(bvvStringifyFunction(4326)(coord4326_3d, { digits: 3 })).toBe('48.140, 11.572');
 
-			expect(formatedString).toBe('48.140, 11.572');
 		});
 
 
