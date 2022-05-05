@@ -105,7 +105,7 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackLocationSearchResults();
 		}
-		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+		else if (!isHttpUrl(term) && term.length < MAX_QUERY_TERM_LENGTH) {
 			return this._locationResultProvider(term);
 		}
 		return [];
@@ -122,7 +122,7 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackCadastralParcelSearchResults();
 		}
-		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+		else if (!isHttpUrl(term) && term.length < MAX_QUERY_TERM_LENGTH) {
 			return this._cadastralParcelResultProvider(term);
 		}
 		return [];

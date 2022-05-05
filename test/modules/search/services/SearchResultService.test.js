@@ -268,6 +268,16 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(0);
 		});
+
+		it('provides an empty array as results when term is a URL', async () => {
+			const term = 'http://foo.bar';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.locationsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
 	});
 
 	describe('cadastralParcelsByTerm', () => {
@@ -298,6 +308,16 @@ describe('SearchResultService', () => {
 
 		it('provides an empty array as results when max query length is exceeded', async () => {
 			const term = 't'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides an empty array as results when term is a URL', async () => {
+			const term = 'http://foo.bar';
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const instanceUnderTest = setup();
 
