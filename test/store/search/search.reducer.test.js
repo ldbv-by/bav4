@@ -18,10 +18,10 @@ describe('searchReducer', () => {
 
 	it('changes the \'query\' property', () => {
 		const store = setup();
-		const query = 'foo';
+		const query = ' foo ';
 
 		setQuery(query);
 
-		expect(store.getState().search.query.payload).toBe(query);
+		expect(store.getState().search.query.payload).toBe(query.trim());
 	});
 });

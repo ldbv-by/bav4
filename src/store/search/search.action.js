@@ -15,11 +15,11 @@ const getStore = () => {
 /**
   * Sets the current query.
   * @function
-  * @param {string|null} term
+  * @param {string|null} term (will be trimmed)
   */
 export const setQuery = (term) => {
 	getStore().dispatch({
 		type: QUERY_CHANGED,
-		payload: new EventLike(term)
+		payload: new EventLike(term?.trim())
 	});
 };
