@@ -37,11 +37,12 @@ export const bvvStringifyFunction = (srid, options = {}) => {
 /**
  * A function that returns a function specific for the representation of geographic
  * point location according to {@link https://en.wikipedia.org/wiki/ISO_6709|ISO 6709}.
- * Switching [X,Y,(Z)] to [Y,X,(Z)]
+ * Switching [X,Y,(Z,M)] to [Y,X].
+ * Possible Z-, M-values are currently ignored. This may change in future implementations.
  * @param {number} digits
  */
 const createStringLatLong = (digits) => {
-	return (coordinate) => createStringXY(digits)([...coordinate.slice(0, 2).reverse(), ...coordinate.slice(2)]);
+	return (coordinate) => createStringXY(digits)(coordinate.slice(0, 2).reverse());
 };
 
 const createStringUTM = (srid, digits) => {
