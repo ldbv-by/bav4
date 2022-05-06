@@ -81,7 +81,7 @@ describe('OlDrawHandler', () => {
 		},
 		setStorageId() { },
 		getStorageId() {
-			return null;
+			return 'f_some';
 		}
 	};
 
@@ -930,27 +930,6 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).not.toHaveBeenCalled();
 		});
 
-		it('looks for temporary drawing-layer and adds the feature to session-layer', async () => {
-			const state = { ...initialState, fileSaveResult: null };
-			setup(state);
-			const classUnderTest = new OlDrawHandler();
-			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
-			const map = setupMap();
-			const vectorGeoResource = new VectorGeoResource('temp_measure_id', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
-
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ getKeys: () => ['id'], get: () => 'temp_measure_id' }] });
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
-			const spy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-
-			classUnderTest.activate(map);
-			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
-
-			await TestUtils.timeout();
-			expect(spy).toHaveBeenCalledWith('temp_measure_id');
-			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
-		});
-
-
 		it('adds style on old features', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1173,25 +1152,6 @@ describe('OlDrawHandler', () => {
 				id: 'f_ooBarId',
 				label: 'olMap_handler_draw_layer_label'
 			}));
-		});
-
-		it('adds layer with temporaryId while persisting layer failed', async () => {
-			const state = { ...initialState, fileSaveResult: null };
-			const store = setup(state);
-			const classUnderTest = new OlDrawHandler();
-			const map = setupMap();
-			const feature = createFeature();
-
-			classUnderTest.activate(map);
-			expect(classUnderTest._vectorLayer).toBeTruthy();
-			classUnderTest._vectorLayer.getSource().addFeature(feature);
-			classUnderTest.deactivate(map);
-
-			await TestUtils.timeout();
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('temp_measure_id');
-			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
-			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
 		it('adds layer with specific contraints', async () => {

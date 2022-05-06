@@ -31,8 +31,6 @@ import { setSelection as setDrawSelection } from '../../../../store/draw/draw.ac
 
 const Debounce_Delay = 1000;
 
-const Temp_Session_Id = 'temp_measure_id';
-
 /**
  * Handler for measurement-interaction with the map.
  *
@@ -91,10 +89,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			const isOldLayer = (layer) => {
-				const id = layer.get('geoResourceId');
-				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
-			};
+			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
 			return map.getLayers().getArray().find(isOldLayer);
 		};
 
@@ -116,9 +111,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 					this._storageHandler.setStorageId(oldLayer.get('geoResourceId'));
 					/**
-					 * Note: vgr.data does not return a Promise anymore.
-					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
-					 */
+				 * Note: vgr.data does not return a Promise anymore.
+				 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
+				 */
 					const data = await vgr.data;
 					const oldFeatures = readFeatures(data);
 					const onFeatureChange = (event) => {
@@ -268,9 +263,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 *  @override
-	 *  @param {Map} olMap
-	 */
+ *  @override
+ *  @param {Map} olMap
+ */
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
 		//olLayer currently undefined, will be fixed later
@@ -646,17 +641,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const createTempIdAndWarn = () => {
-			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
-			// to simplify the code in OlDrawHandler and OlMeasurementHandler
-			console.warn('Could not store layer-data. The data will get lost after this session.');
-			emitNotification(translate('olMap_handler_storage_offline'), LevelTypes.WARN);
-			return Temp_Session_Id;
-		};
-
-		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
-
+		const id = this._storageHandler.getStorageId();
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
 			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
@@ -664,9 +649,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const vgr = getOrCreateVectorGeoResource();
 		vgr.setSource(this._storedContent, 4326);
 
-		//register georesource
+		// register the stored data as new georesource
 		this._geoResourceService.addOrReplace(vgr);
-		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 

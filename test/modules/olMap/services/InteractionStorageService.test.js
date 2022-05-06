@@ -55,16 +55,16 @@ describe('InteractionStorageService', () => {
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 	});
 
-	it('returns valid Id or null', () => {
+	it('returns valid Id or temp_session_id', () => {
 		const store = setup();
 		const classUnderTest = new InteractionStorageService();
 
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
-		expect(classUnderTest.getStorageId()).toBeNull();
+		expect(classUnderTest.getStorageId()).toBe('temp_session_id');
 		setFileSaveResult(null);
-		expect(classUnderTest.getStorageId()).toBeNull();
+		expect(classUnderTest.getStorageId()).toBe('temp_session_id');
 	});
 
 	it('recognize storageIds', () => {
