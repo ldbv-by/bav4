@@ -36,8 +36,6 @@ export const MAX_SELECTION_SIZE = 1;
 
 const Debounce_Delay = 1000;
 
-const Temp_Session_Id = 'temp_measure_id';
-
 const defaultStyleOption = {
 	symbolSrc: null, // used by: Symbol
 	scale: StyleSizeTypes.MEDIUM, // used by Symbol
@@ -110,10 +108,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			acknowledgeTermsOfUse();
 		}
 		const getOldLayer = (map) => {
-			const isOldLayer = (layer) => {
-				const id = layer.get('geoResourceId');
-				return id && (this._storageHandler.isStorageId(id) || id === Temp_Session_Id);
-			};
+			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
 			return map.getLayers().getArray().find(isOldLayer);
 		};
 
@@ -785,17 +780,7 @@ export class OlDrawHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const createTempIdAndWarn = () => {
-			// TODO: offline-support is needed to properly working with temporary ids
-			// TODO: extract this behavior and the Temp_Session_Id to InteractionStorageService
-			// to simplify the code in OlDrawHandler and OlMeasurementHandler
-			console.warn('Could not store layer-data. The data will get lost after this session.');
-			emitNotification(translate('olMap_handler_storage_offline'), LevelTypes.WARN);
-			return Temp_Session_Id;
-		};
-
-		const id = this._storageHandler.getStorageId() ? this._storageHandler.getStorageId() : createTempIdAndWarn();
-
+		const id = this._storageHandler.getStorageId();
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
 			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
@@ -803,9 +788,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		const vgr = getOrCreateVectorGeoResource();
 		vgr.setSource(this._storedContent, 4326);
 
-		//register georesource
+		// register the stored data as new georesource
 		this._geoResourceService.addOrReplace(vgr);
-		//add a layer that displays the georesource in the map
 		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
 	}
 }

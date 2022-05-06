@@ -1,7 +1,8 @@
 import { $injector } from '../../../injection';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { setFileSaveResult as setSharedFileSaveResult } from '../../../store/shared/shared.action';
 
-
+const Temp_Session_Id = 'temp_session_id';
 /**
  * Facade for FileStorageService and StoreService,
  * to provide interaction-based LayerHandlers a simplified access for storage-functionality
@@ -28,14 +29,20 @@ export class InteractionStorageService {
 	}
 
 	/**
-	 * @returns {string|null} the storageId
+	 * @returns {string} the storageId
 	 */
 	getStorageId() {
 		const fileSaveResult = this._getLastFileSaveResult();
-		if (this._isValidFileSaveResult(fileSaveResult)) {
-			return fileSaveResult.fileId;
-		}
-		return null;
+
+		const createTempIdAndWarn = () => {
+			const { TranslationService } = $injector.inject('TranslationService');
+			const translate = (key) => TranslationService.translate(key);
+			console.warn('Could not store layer-data. The data will get lost after this session.');
+			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
+			return Temp_Session_Id;
+		};
+
+		return this._isValidFileSaveResult(fileSaveResult) ? fileSaveResult.fileId : createTempIdAndWarn();
 	}
 
 	/**
@@ -45,7 +52,7 @@ export class InteractionStorageService {
 	 */
 	isStorageId(candidate) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
-		return candidate == null ? false : fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate);
+		return candidate == null ? false : fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate) || candidate === Temp_Session_Id;
 	}
 
 	/**
