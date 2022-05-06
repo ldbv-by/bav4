@@ -7,7 +7,7 @@ import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
 import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { AssetSourceType, getAssetSource, hexToRgb } from '../../../map/components/olMap/olStyleUtils';
+import { AssetSourceType, getAssetSource, hexToRgb } from '../../../olMap/utils/olStyleUtils';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
