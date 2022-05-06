@@ -691,7 +691,6 @@ describe('Header', () => {
 	describe('when search query state changes', () => {
 
 		it('takes the query term over to the input field', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('');
