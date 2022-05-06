@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, getTextFrom, hexToRgb, selectStyleFunction } from '../../utils/olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -29,6 +29,7 @@ import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
+import { hexToRgb } from '../../../../utils/colors';
 
 
 
