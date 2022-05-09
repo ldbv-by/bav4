@@ -219,7 +219,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('2');
 		});
 
-		it('takes the query term over to the input field', async () => {
+		it('adopts the states query term', async () => {
 			const term = 'foo';
 			const state = {
 				search: {
@@ -690,7 +690,7 @@ describe('Header', () => {
 
 	describe('when search query state changes', () => {
 
-		it('takes the query term over to the input field', async () => {
+		it('adopts the states query term', async () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('');
