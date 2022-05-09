@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const ZOOM_CHANGED = 'position/zoom';
 export const ZOOM_ROTATION_CHANGED = 'position/zoom_rotation';
 export const CENTER_CHANGED = 'position/center';
@@ -15,8 +17,8 @@ export const initialState = {
 	center: [1288239.2412306187, 6130212.561641981],
 	rotation: 0,
 	liveRotation: 0,
-	fitRequest: null,
-	fitLayerRequest: null
+	fitRequest: new EventLike(null),
+	fitLayerRequest: new EventLike(null)
 };
 
 export const positionReducer = (state = initialState, action) => {
