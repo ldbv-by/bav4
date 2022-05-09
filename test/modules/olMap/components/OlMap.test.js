@@ -9,7 +9,7 @@ import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/services/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, fit } from '../../../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter, fit, fitLayer } from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -139,7 +139,8 @@ describe('OlMap', () => {
 				zoom: initialZoomLevel,
 				center: initialCenter,
 				rotation: initialRotationValue,
-				fitRequest: null
+				fitRequest: null,
+				fitLayerRequest: null
 			}, media: {
 				portrait: false,
 				observeResponsiveParameter: true
@@ -696,6 +697,80 @@ describe('OlMap', () => {
 			expect(element._viewSyncBlocked).toBeFalse();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to an layers extent', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to an layers extent custom maxZoom option', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const olVectorSource = new VectorSource();
+			const maxZoom = 10;
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0, { maxZoom: maxZoom });
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('does nothing when source can\'t provide an extent', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(undefined);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 	});
 
