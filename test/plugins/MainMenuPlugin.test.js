@@ -95,8 +95,6 @@ describe('MainMenuPlugin', () => {
 				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
 			});
 		});
-
-
 	});
 
 	describe('register', () => {
@@ -117,7 +115,6 @@ describe('MainMenuPlugin', () => {
 			expect(instanceUnderTest._previousTab).toBe(defaultTabId);
 			expect(initSpy).toHaveBeenCalled();
 		});
-
 
 		it('opens the search panel when query is available', async () => {
 			const store = setup({
