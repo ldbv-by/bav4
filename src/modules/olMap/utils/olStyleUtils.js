@@ -8,6 +8,7 @@ import locationIcon from '../assets/location.svg';
 import tempLocationIcon from '../assets/temporaryLocation.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
+import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -15,13 +16,13 @@ const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
-const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
+// const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
 
-export const AssetSourceType = Object.freeze({
-	LOCAL: 'local',
-	REMOTE: 'remote',
-	UNKNOWN: 'unknown'
-});
+// export const AssetSourceType = Object.freeze({
+// 	LOCAL: 'local',
+// 	REMOTE: 'remote',
+// 	UNKNOWN: 'unknown'
+// });
 
 export const DEFAULT_TEXT = 'new text';
 
@@ -90,16 +91,16 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 	}
 };
 
-export const getAssetSource = (asset) => {
-	if (asset.startsWith(Asset_Svg_B64_Flag)) {
-		return AssetSourceType.LOCAL;
-	}
+// export const getAssetSource = (asset) => {
+// 	if (asset.startsWith(Asset_Svg_B64_Flag)) {
+// 		return AssetSourceType.LOCAL;
+// 	}
 
-	if (asset.startsWith('http://') || asset.startsWith('https://')) {
-		return AssetSourceType.REMOTE;
-	}
-	return AssetSourceType.UNKNOWN;
-};
+// 	if (asset.startsWith('http://') || asset.startsWith('https://')) {
+// 		return AssetSourceType.REMOTE;
+// 	}
+// 	return AssetSourceType.UNKNOWN;
+// };
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {

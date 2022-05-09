@@ -1,0 +1,18 @@
+const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
+
+export const AssetSourceType = Object.freeze({
+	LOCAL: 'local',
+	REMOTE: 'remote',
+	UNKNOWN: 'unknown'
+});
+
+export const getAssetSource = (asset) => {
+	if (asset?.startsWith(Asset_Svg_B64_Flag)) {
+		return AssetSourceType.LOCAL;
+	}
+
+	if (asset?.startsWith('http://') || asset?.startsWith('https://')) {
+		return AssetSourceType.REMOTE;
+	}
+	return AssetSourceType.UNKNOWN;
+};
