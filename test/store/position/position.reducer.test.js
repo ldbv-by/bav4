@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit } from '../../../src/store/position/position.action';
+import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit, fitLayer } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -28,6 +28,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.rotation).toBe(0);
 		expect(store.getState().position.liveRotation).toBe(0);
 		expect(store.getState().position.fitRequest).toBeNull();
+		expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 	});
 
 	it('changes the \'zoom\' property', () => {
@@ -222,5 +223,24 @@ describe('positionReducer', () => {
 
 		expect(store.getState().position.fitRequest.payload.extent).toEqual([21, 21, 42, 42]);
 		expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(42);
+
+		fit([22, 22, 43, 43]);
+
+		expect(store.getState().position.fitRequest.payload.extent).toEqual([22, 22, 43, 43]);
+		expect(store.getState().position.fitRequest.payload.options).toEqual({});
+	});
+
+	it('places a \'fitLayerRequest\' property', () => {
+		const store = setup();
+
+		fitLayer('foo', { maxZoom: 42 });
+
+		expect(store.getState().position.fitLayerRequest.payload.id).toBe('foo');
+		expect(store.getState().position.fitLayerRequest.payload.options.maxZoom).toBe(42);
+
+		fitLayer('bar');
+
+		expect(store.getState().position.fitLayerRequest.payload.id).toBe('bar');
+		expect(store.getState().position.fitLayerRequest.payload.options).toEqual({});
 	});
 });
