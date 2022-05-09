@@ -6,6 +6,11 @@ export const AssetSourceType = Object.freeze({
 	UNKNOWN: 'unknown'
 });
 
+/***
+ * Determines the AssetSourceType of the specified asset source
+ * @param {string} asset the asset source
+ * @returns {AssetSourceType} the {@see AssetSourceType}
+ */
 export const getAssetSource = (asset) => {
 	if (asset?.startsWith(Asset_Svg_B64_Flag)) {
 		return AssetSourceType.LOCAL;
