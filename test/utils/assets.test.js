@@ -12,9 +12,10 @@ describe('util-methods for assets', () => {
 		});
 
 		it('should detect unknown asset-source', () => {
-			const unknownAsset = 'some';
-
-			expect(getAssetSource(unknownAsset)).toBe(AssetSourceType.UNKNOWN);
+			const localUnknownAsset = 'data:image/png;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
+			expect(getAssetSource(localUnknownAsset)).toBe(AssetSourceType.UNKNOWN);
+			expect(getAssetSource('file://some.url/remote.asset')).toBe(AssetSourceType.UNKNOWN);
+			expect(getAssetSource('some')).toBe(AssetSourceType.UNKNOWN);
 			expect(getAssetSource(null)).toBe(AssetSourceType.UNKNOWN);
 			expect(getAssetSource(undefined)).toBe(AssetSourceType.UNKNOWN);
 			expect(getAssetSource()).toBe(AssetSourceType.UNKNOWN);
