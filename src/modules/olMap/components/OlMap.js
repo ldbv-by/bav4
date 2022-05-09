@@ -204,7 +204,7 @@ export class OlMap extends MvuElement {
 		//sync layers
 		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
-		this.observeModel(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
+		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
 	}
 
 	/**
