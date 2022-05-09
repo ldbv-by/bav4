@@ -179,6 +179,23 @@ describe('OlMap', () => {
 		return TestUtils.render(OlMap.tag);
 	};
 
+	describe('when instantiated', () => {
+
+		it('contains a model with default values', async () => {
+			await setup();
+			const model = new OlMap().getModel();
+
+			expect(model).toEqual({
+				zoom: null,
+				center: null,
+				rotation: null,
+				fitRequest: null,
+				fitLayerRequest: null,
+				layers: []
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 
 		it('configures the map and adds a div which contains the ol-map', async () => {
