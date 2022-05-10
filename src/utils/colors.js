@@ -1,18 +1,29 @@
+import { isString } from './checks';
+
+const Min_Color_Components_Count = 3;
+const isRGBColor = (rgbCandidate) => {
+	const rgb_min = 0;
+	const rgb_max = 255;
+	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter(c => rgb_min <= c && c <= rgb_max).length;
+};
+
+const isHSVColor = (hsvCandidate) => {
+	const hsv_min = 0;
+	const h_max = 360;
+	const sv_max = 1;
+
+	const isInMax = () => hsvCandidate[0] <= h_max && hsvCandidate[1] <= sv_max && hsvCandidate[2] <= sv_max;
+
+	return Array.isArray(hsvCandidate) && Min_Color_Components_Count <= hsvCandidate.filter(c => hsv_min <= c).length && isInMax() ;
+};
+
 /**
- * Converts an array of numeric RGB-values to a the hexadecimal String-Represenation or null.
+ * Converts an array of numeric RGB values to a hexadecimal String representation or NULL.
  * @param {Array<Number>} rgb
  * @returns {String|null}
  */
 export const rgbToHex = (rgb) => {
-	const rgb_min = 0;
-	const rgb_max = 255;
-	const rgb_component_count = 3;
-
-	if (!Array.isArray(rgb)) {
-		return null;
-	}
-
-	if (rgb.filter(c => rgb_min <= c && c <= rgb_max).length < rgb_component_count) {
+	if (!isRGBColor(rgb)) {
 		return null;
 	}
 
@@ -25,13 +36,13 @@ export const rgbToHex = (rgb) => {
 };
 
 /**
- * Converts the hexadecimal String-Represenation of a color to an array of numeric RGB-values or null.
- * based on from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+ * Converts the hexadecimal String representation of color to an array of numeric RGB values or NULL
+ * (based on https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb).
  * @param {string} rgb
  * @returns {Array<Number>|null}
  */
 export const hexToRgb = (hex) => {
-	if (hex == null) {
+	if (!isString(hex)) {
 		return null;
 	}
 
@@ -46,16 +57,13 @@ export const hexToRgb = (hex) => {
 };
 
 /**
- * Converts a color from RGB- to HSV-colorspace
- * based on accepted answer from https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620
+ * Converts a color from RGB to HSV colorspace (based on the accepted answer from
+ * https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript/54070620#54070620).
  * @param {Array<number>} rgb the rgb-color array with numbers expect to be 0 <= r, g, b <= 255
  * @returns {Array<number>} the return hsv-color array with numbers (0 <= h, s, v <= 1)
  */
 export const rgbToHsv = (rgb) => {
-	if (rgb == null) {
-		return null;
-	}
-	if (rgb.length !== 3) {
+	if (!isRGBColor(rgb)) {
 		return null;
 	}
 	const r = rgb[0] / 255;
@@ -68,16 +76,13 @@ export const rgbToHsv = (rgb) => {
 };
 
 /**
- * Converts a color from HSV- to RGB-colorspace
- * based on accepted answer from https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
+ * Converts a color from HSV to RGB colorspace (based on the accepted answer from
+ * https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately).
  * @param {Array<number>} hsv the hsv-color array with numbers expect to be 0 <= h <= 360 and 0 <= s, v <= 1
  * @returns {Array<number>} the return rgb-color array with numbers(rounded) 0 <= r, g, b <= 255
  */
 export const hsvToRgb = (hsv) => {
-	if (hsv == null) {
-		return null;
-	}
-	if (hsv.length !== 3) {
+	if (!isHSVColor(hsv)) {
 		return null;
 	}
 	const h = hsv[0] / 360;
@@ -117,13 +122,17 @@ export const hsvToRgb = (hsv) => {
 
 
 /**
- * creates a ligther or darker version of the specified basecolor
+ * Creates a lighter or darker version of the specified base color.
  * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
 	const HSV_Brightness_Limit = .7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
+
+	if (!isRGBColor(baseColor)) {
+		return null;
+	}
 
 	// only Black & White
 	const lighter = (hsv) => [hsv[0], 0, 1];

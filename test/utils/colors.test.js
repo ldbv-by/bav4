@@ -29,7 +29,10 @@ describe('rgbToHex', () => {
 
 describe('hexToRgb', () => {
 	it('should convert a color hex-representation to a rgb-array', () => {
+		expect(hexToRgb()).toBeNull();
+		expect(hexToRgb(undefined)).toBeNull();
 		expect(hexToRgb(null)).toBeNull();
+		expect(hexToRgb(42)).toBeNull();
 		expect(hexToRgb('#foo')).toBeNull();
 		expect(hexToRgb('#000')).toEqual([0, 0, 0]);
 		expect(hexToRgb('#000000')).toEqual([0, 0, 0]);
@@ -45,6 +48,8 @@ describe('rgbToHsv', () => {
 
 	it('should convert a rgb-color array to a hsv-color-array', () => {
 		const tooShortArray = [0, 0];
+		expect(rgbToHsv()).toBeNull();
+		expect(rgbToHsv(undefined)).toBeNull();
 		expect(rgbToHsv(null)).toBeNull();
 		expect(rgbToHsv(tooShortArray)).toBeNull();
 		expect(rgbToHsv(Rgb_Red)).toEqual(Hsv_Red);
@@ -60,21 +65,8 @@ describe('hsvToRgb', () => {
 
 	it('should convert a hsv-color array to a rgb-color-array', () => {
 		const tooShortArray = [0, 0];
-		expect(hsvToRgb(null)).toBeNull();
-		expect(hsvToRgb(tooShortArray)).toBeNull();
-		expect(hsvToRgb(Hsv_Red)).toEqual(Rgb_Red);
-		expect(hsvToRgb(Hsv_Green)).toEqual(Rgb_Green);
-		expect(hsvToRgb(Hsv_Blue)).toEqual(Rgb_Blue);
-		expect(hsvToRgb(Hsv_Cyan)).toEqual(Rgb_Cyan);
-		expect(hsvToRgb(Hsv_Magenta)).toEqual(Rgb_Magenta);
-		expect(hsvToRgb(Hsv_Yellow)).toEqual(Rgb_Yellow);
-	});
-});
-
-describe('hsvToRgb', () => {
-
-	it('should convert a hsv-color array to a rgb-color-array', () => {
-		const tooShortArray = [0, 0];
+		expect(hsvToRgb()).toBeNull();
+		expect(hsvToRgb(undefined)).toBeNull();
 		expect(hsvToRgb(null)).toBeNull();
 		expect(hsvToRgb(tooShortArray)).toBeNull();
 		expect(hsvToRgb(Hsv_Red)).toEqual(Rgb_Red);
@@ -92,6 +84,9 @@ describe('getContrastColorFrom', () => {
 	it('should find a color with best contrast', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightBlue = [36, 3, 185];
+		expect(getContrastColorFrom()).toBeNull();
+		expect(getContrastColorFrom(undefined)).toBeNull();
+		expect(getContrastColorFrom(null)).toBeNull();
 		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_Black);
 		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
