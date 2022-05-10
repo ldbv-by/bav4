@@ -198,7 +198,7 @@ export class OlMap extends MvuElement {
 			if (extent) {
 				this._viewSyncBlocked = true;
 				const maxZoom = eventLike.payload.options.maxZoom || this._view.getMaxZoom();
-				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit }); // Todo: fit with padding parameter retrieved from mapService#calculatePadding
+				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit }); // Todo: fit map with padding parameter by calling mapService#calculatePadding
 			}
 		});
 		//sync layers
