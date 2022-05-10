@@ -16,13 +16,6 @@ const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
 const Default_Symbol = 'marker';
-// const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
-
-// export const AssetSourceType = Object.freeze({
-// 	LOCAL: 'local',
-// 	REMOTE: 'remote',
-// 	UNKNOWN: 'unknown'
-// });
 
 export const DEFAULT_TEXT = 'new text';
 
@@ -91,16 +84,6 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 	}
 };
 
-// export const getAssetSource = (asset) => {
-// 	if (asset.startsWith(Asset_Svg_B64_Flag)) {
-// 		return AssetSourceType.LOCAL;
-// 	}
-
-// 	if (asset.startsWith('http://') || asset.startsWith('https://')) {
-// 		return AssetSourceType.REMOTE;
-// 	}
-// 	return AssetSourceType.UNKNOWN;
-// };
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {
@@ -674,25 +657,6 @@ export const getTextFrom = (feature) => {
 	}
 	return null;
 };
-
-// /**
-//  * creates a ligther or darker version of the specified basecolor
-//  * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
-//  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
-//  */
-// export const getContrastColorFrom = (baseColor) => {
-// 	const HSV_Brightness_Limit = .7;
-// 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
-
-// 	// only Black & White
-// 	const lighter = (hsv) => [hsv[0], 0, 1];
-// 	const darker = (hsv) => [hsv[0], 0, 0];
-
-// 	const hsv = rgbToHsv(baseColor);
-// 	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
-
-// 	return hsvToRgb(contrastHsv);
-// };
 
 /***
  * Returns the drawingtype of a feature. If the featue is created with the application itself,
