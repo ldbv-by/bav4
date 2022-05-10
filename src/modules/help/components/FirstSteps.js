@@ -93,7 +93,7 @@ export class FirstSteps extends MvuElement {
 
 
 		const openModalFirstSteps = () => {
-			openModal(translate('help_firstSteps_notification_first_steps'), html`<style>${css}</style><iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} ></iframe`);
+			openModal(translate('help_firstSteps_notification_first_steps'), html`<style>${css}</style><iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe`);
 		};
 
 		const openModalShowCase = () => {
