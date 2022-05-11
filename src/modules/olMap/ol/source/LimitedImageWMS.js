@@ -3,12 +3,12 @@ import { getWidth, getHeight } from 'ol/extent';
 
 /**
  * @typedef {Object} Options
- * @property {Array<number>} [maxSize=[2000, 2000]] max. width and height of the requested image in px. Default is 2000*2000.
+ * @property {Array<number>} [maxSize=[2000, 2000]] maximum width and height of the requested image in px. Default is 2000*2000.
  */
 
 /**
  * Source for WMS servers providing single, untiled images.
- * The requested max. width and height of the image is limited to a configurable size.
+ * The requested maximum width and height of the image is limited to a configurable size.
  * @class
  * @author taulinger
  */
@@ -33,7 +33,7 @@ export class LimitedImageWMS extends ImageWMS {
 	getImage(extent, resolution, pixelRatio, projection) {
 
 		/**
-		 * If the current extent would result in a dimension greater than max. size,
+		 * If the current extent would result in a dimension greater than the configured maximum size,
 		 * we calculate a cropped extent.
 		 */
 		const imageResolution = resolution / pixelRatio;
