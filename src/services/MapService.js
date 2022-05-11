@@ -127,4 +127,15 @@ export class MapService {
 		const element = document.querySelector('ba-footer')?.shadowRoot.querySelector('.scale');
 		return element ?? null;
 	}
+
+	getPadding() {
+		const floatRegExp = /[^\d.]/g;
+		const removeUnits = (raw) => raw.replace(floatRegExp, '');
+
+		const style = getComputedStyle(document.body);
+		const fontSize = style.fontSize;
+		const mainMenuWidth = style.getPropertyValue('--width-mainmenu');
+
+		return Number(removeUnits(fontSize)) * Number(removeUnits(mainMenuWidth));
+	}
 }
