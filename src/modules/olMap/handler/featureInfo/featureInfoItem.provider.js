@@ -16,14 +16,14 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
-	const { MapService: mapService } = $injector.inject('MapService');
+	const { MapService: mapService, SecurityService: securityService } = $injector.inject('MapService', 'SecurityService');
 	const stats = getStats(olFeature.getGeometry(), { fromProjection: 'EPSG:' + mapService.getSrid(), toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid() });
 
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
 		const geometryContent = html`<ba-geometry-info .statistics=${stats}></ba-geometry-info>`;
 
-		return descContent ? html`${unsafeHTML(descContent)}${geometryContent}` : html`${geometryContent}`;
+		return descContent ? html`${unsafeHTML(securityService.sanitizeHtml(descContent))}${geometryContent}` : html`${geometryContent}`;
 	};
 
 
