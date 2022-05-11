@@ -1,12 +1,12 @@
-import { domPurifySanitizeHtmlProvider } from './provider/domPurifySanitizeHtml.provider';
+import { domPurifySanitizeHtml } from './provider/domPurifySanitizeHtml.provider';
 
 export class SecurityService {
 
-	constructor(sanitizeHtmlProvider = domPurifySanitizeHtmlProvider) {
+	constructor(sanitizeHtmlProvider = domPurifySanitizeHtml) {
 		this._sanitizeHtmlProvider = sanitizeHtmlProvider;
 	}
 
 	sanitizeHtml(html) {
-		this._sanitizeHtmlProvider(html);
+		return this._sanitizeHtmlProvider(html);
 	}
 }
