@@ -17,6 +17,7 @@ const Rgb_Black = [0, 0, 0];
 
 describe('rgbToHex', () => {
 	it('should convert a rgb-array to hex-representation', () => {
+		expect(rgbToHex(undefined)).toBeNull();
 		expect(rgbToHex(null)).toBeNull();
 		expect(rgbToHex('foo')).toBeNull();
 		expect(rgbToHex([-1, -1, -1])).toBeNull();
@@ -29,7 +30,6 @@ describe('rgbToHex', () => {
 
 describe('hexToRgb', () => {
 	it('should convert a color hex-representation to a rgb-array', () => {
-		expect(hexToRgb()).toBeNull();
 		expect(hexToRgb(undefined)).toBeNull();
 		expect(hexToRgb(null)).toBeNull();
 		expect(hexToRgb(42)).toBeNull();
@@ -48,7 +48,6 @@ describe('rgbToHsv', () => {
 
 	it('should convert a rgb-color array to a hsv-color-array', () => {
 		const tooShortArray = [0, 0];
-		expect(rgbToHsv()).toBeNull();
 		expect(rgbToHsv(undefined)).toBeNull();
 		expect(rgbToHsv(null)).toBeNull();
 		expect(rgbToHsv(tooShortArray)).toBeNull();
@@ -63,9 +62,8 @@ describe('rgbToHsv', () => {
 
 describe('hsvToRgb', () => {
 
-	it('should convert a hsv-color array to a rgb-color-array', () => {
+	it('should convert a hsv-color array to a rgb-color array', () => {
 		const tooShortArray = [0, 0];
-		expect(hsvToRgb()).toBeNull();
 		expect(hsvToRgb(undefined)).toBeNull();
 		expect(hsvToRgb(null)).toBeNull();
 		expect(hsvToRgb(tooShortArray)).toBeNull();
@@ -84,7 +82,6 @@ describe('getContrastColorFrom', () => {
 	it('should find a color with best contrast', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightBlue = [36, 3, 185];
-		expect(getContrastColorFrom()).toBeNull();
 		expect(getContrastColorFrom(undefined)).toBeNull();
 		expect(getContrastColorFrom(null)).toBeNull();
 		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_Black);
