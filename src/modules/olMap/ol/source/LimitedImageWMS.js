@@ -33,7 +33,7 @@ export class LimitedImageWMS extends ImageWMS {
 	getImage(extent, resolution, pixelRatio, projection) {
 
 		/**
-		 *If the current extent would result in a dimension greater than max. size,
+		 * If the current extent would result in a dimension greater than max. size,
 		 * we calculate a cropped extent.
 		 */
 		const imageResolution = resolution / pixelRatio;
