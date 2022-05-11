@@ -128,6 +128,10 @@ export class MapService {
 		return element ?? null;
 	}
 
+	/**
+	 * Returns a padding for the map, to avoid the main menue overlapping important map-content.
+	 * @returns {Array<number>} the padding (in pixels);order of the values is top, right, bottom, left
+	 */
 	getPadding() {
 		const floatRegExp = /[^\d.]/g;
 		const removeUnits = (raw) => raw.replace(floatRegExp, '');
@@ -136,6 +140,6 @@ export class MapService {
 		const fontSize = style.fontSize;
 		const mainMenuWidth = style.getPropertyValue('--width-mainmenu');
 
-		return Number(removeUnits(fontSize)) * Number(removeUnits(mainMenuWidth));
+		return [0, 0, 0, Number(removeUnits(fontSize)) * Number(removeUnits(mainMenuWidth))];
 	}
 }
