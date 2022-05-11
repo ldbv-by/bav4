@@ -34,6 +34,7 @@ import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoR
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
+import { SecurityService } from '../services/SecurityService';
 
 
 $injector
@@ -58,6 +59,7 @@ $injector
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
+	.register('SecurityService', SecurityService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
