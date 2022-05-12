@@ -1,4 +1,4 @@
-import { domPurifySanitizeHtml } from '../../src/services/provider/domPurifySanitizeHtml.provider';
+import { domPurifySanitizeHtml } from '../../src/services/provider/sanitizeHtml.provider';
 import { SecurityService } from '../../src/services/SecurityService';
 
 describe('SecurityService', () => {
