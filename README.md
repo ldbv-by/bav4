@@ -28,6 +28,7 @@ Next-generation web-map viewer based on web standards.
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
+  - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
   - [webpack](https://webpack.js.org): Bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
   - [playwright](https://playwright.dev/) E2E Tests
