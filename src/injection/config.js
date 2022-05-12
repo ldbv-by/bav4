@@ -59,7 +59,7 @@ $injector
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
-	.register('SecurityService', SecurityService)
+	.registerSingleton('SecurityService', new SecurityService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
