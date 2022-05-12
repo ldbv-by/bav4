@@ -133,6 +133,20 @@ describe('FeatureInfo provider', () => {
 
 				expect(sanitizeSpy).toHaveBeenCalled();
 			});
+
+			it('should sanitize name content', () => {
+				const target = document.createElement('div');
+				const layerProperties = { ...createDefaultLayerProperties(), label: 'foo' };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('name', 'name');
+				const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
+				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				expect(sanitizeSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });
