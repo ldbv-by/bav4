@@ -1,4 +1,4 @@
-import { domPurifySanitizeHtml } from '../../../src/services/provider/domPurifySanitizeHtml.provider';
+import { domPurifySanitizeHtml } from '../../../src/services/provider/sanitizeHtml.provider';
 
 describe('DOMPurify sanitize HTML provider', () => {
 

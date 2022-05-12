@@ -1,4 +1,4 @@
-import { domPurifySanitizeHtml } from './provider/domPurifySanitizeHtml.provider';
+import { domPurifySanitizeHtml } from './provider/sanitizeHtml.provider';
 
 export class SecurityService {
 
