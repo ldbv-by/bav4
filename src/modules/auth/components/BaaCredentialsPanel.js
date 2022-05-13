@@ -1,27 +1,23 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
 import css from './baacredentialspanel.css';
 
 const Update_ID = 'update_id';
 const Update_Username = 'update_username';
 const Update_Password = 'update_password';
-const Update_Credential_Status = 'update_credential_status';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 
 
-export const CredentialStatusTypes = Object.freeze({
-	UNKNOWN: 'unknown',
-	RESOLVED: 'resolved',
-	REJECTED: 'rejected'
-});
+
+const Empty_Credentials = { username: null, password: null };
 
 export class BaaCredentialsPanel extends MvuElement {
 	constructor() {
 		super({
 			id: null,
-			credentials: { username: null, password: null },
-			status: CredentialStatusTypes.UNKNOWN
+			credentials: Empty_Credentials
 		});
 
 
@@ -32,6 +28,7 @@ export class BaaCredentialsPanel extends MvuElement {
 
 	onInitialize() {
 		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+		this.observe(state => state.modal, modal => this._resolveBeforeClosing(modal));
 	}
 
 	update(type, data, model) {
@@ -43,8 +40,6 @@ export class BaaCredentialsPanel extends MvuElement {
 				return { ...model, credentials: { ...model.credentials, username: data } };
 			case Update_Password:
 				return { ...model, credentials: { ...model.credentials, password: data } };
-			case Update_Credential_Status:
-				return { ...model, status: data };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
 		}
@@ -65,12 +60,17 @@ export class BaaCredentialsPanel extends MvuElement {
 		};
 
 		const onChangePassword = (e) => {
-			this.signal(Update_Username, e.target.value);
+			this.signal(Update_Password, e.target.value);
 		};
 
 		const checkCredentials = async () => {
-			const credentialCheck = await this._onCheck(id, credentials);
-			this.signal(Update_Credential_Status, credentialCheck ? CredentialStatusTypes.RESOLVED : CredentialStatusTypes.REJECTED);
+			const credentialsValid = await this._onCheck(id, credentials);
+			if (credentialsValid) {
+				this.onResolved(credentials);
+			}
+			else {
+				emitNotification(translate('auth_baaCredentialsPanel_credentials_rejected'), LevelTypes.WARN);
+			}
 		};
 
 		return html`
@@ -81,23 +81,28 @@ export class BaaCredentialsPanel extends MvuElement {
             	<span class='value_id'>${id}</span>
             </div>
             <div class='credentials_form'>
-				<div class="fieldset" title="${translate('auth_baaCredentialsPanel_username')}">								
-					<input required="required"  type="text" id="credentials_username" placeholder="${translate('auth_baaCredentialsPanel_credentials_password')}" @input=${onChangeUserName} >
+				<div class="fieldset" title="${translate('auth_baaCredentialsPanel_credentials_username')}">								
+					<input required="required"  type="text" id="credentials_username"  @input=${onChangeUserName} >
 					<label for="credentials_username" class="control-label">${translate('auth_baaCredentialsPanel_credentials_username')}</label><i class="bar"></i>
 				</div>
-				<div class="fieldset" title="${translate('auth_baaCredentialsPanel_password')}"">								
-					<input required="required"  type="password" id="credentials_password" placeholder="${translate('auth_baaCredentialsPanel_credentials_password')}" @input=${onChangePassword}>
+				<div class="fieldset" title="${translate('auth_baaCredentialsPanel_credentials_password')}"">								
+					<input required="required"  type="password" id="credentials_password"  @input=${onChangePassword}>
 					<label for="credentials_password" class="control-label">${translate('auth_baaCredentialsPanel_credentials_password')}</label><i class="bar"></i>
 				</div>
 			</div>
 			<div class='credentials_footer'>
-				<button id='check-credentials-button'
-                class="credentials_footer__button" 
-                title="${translate('auth_baaCredentialsPanel_submit')}"
-                @click=${checkCredentials}>
+				<ba-button id='check-credentials-button'
+                class="credentials_footer__button" .label=${translate('auth_baaCredentialsPanel_submit')} .type=${'primary'}                
+                @click=${checkCredentials} ></ba-button>
             </div>
 		</div>
 		`;
+	}
+
+	_resolveBeforeClosing(modal) {
+		if (!modal.data) {
+			this.onResolved(null);
+		}
 	}
 
 	static get tag() {
@@ -112,11 +117,23 @@ export class BaaCredentialsPanel extends MvuElement {
 		return this.getModel().id;
 	}
 
+	get status() {
+		return this.getModel().status;
+	}
+
 	set onCheck(callback) {
 		this._onCheck = callback;
 	}
 
 	get onCheck() {
 		return this._onCheck;
+	}
+
+	set onResolved(callback) {
+		this._onResolved = callback;
+	}
+
+	get onResolved() {
+		return this._onResolved;
 	}
 }

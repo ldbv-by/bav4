@@ -5,8 +5,9 @@ import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';
-import { openModal } from '../../../store/modal/modal.action';
+import { closeModal, openModal } from '../../../store/modal/modal.action';
 import VanillaSwipe from 'vanilla-swipe';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -103,8 +104,32 @@ export class Header extends MvuElement {
 
 		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, hasSearchTerm } = model;
 
-		const showModalInfo = () => {
-			openModal('Showcase', html`<ba-showcase>`);
+		// const showModalInfo = () => {
+		// 	openModal('Showcase', html`<ba-showcase>`);
+		// };
+
+		// fixme: only temporal, remove after established implementation of BaaCredentialsService
+		const showCredentialsPanel = () => {
+			const securedId = 'https://holymoly.awesome.com/your/super/secret/map/wms';
+			const receivedCredentials = { username: null, password: null };
+			const onCheck = (id, credentials) => {
+				if (id === securedId && credentials?.username === 'foo' && credentials?.password === 'bar') {
+					receivedCredentials.username = credentials.username;
+					receivedCredentials.password = credentials.password;
+					console.warn('using credentials:', receivedCredentials);
+					return true;
+				}
+				return false;
+			};
+
+			const onResolved = (credentials) => {
+				if (credentials) {
+					console.warn('resolved credentials:', credentials);
+					closeModal();
+				}
+				emitNotification('Authentication aborted', LevelTypes.WARN);
+			};
+			openModal('Mit geschützten WMS verbinden...', html`<ba-auth-baa-credentials-panel .id=${securedId} .onCheck=${onCheck} .onResolved=${onResolved}>`);
 		};
 
 		const getOrientationClass = () => {
@@ -141,6 +166,7 @@ export class Header extends MvuElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
@@ -222,7 +248,7 @@ export class Header extends MvuElement {
 							<input id='input' data-test-id placeholder='${translate('header_search_placeholder')}' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
+							<button @click="${showCredentialsPanel}" class="header__modal-button" title="modal">
 							&nbsp;
 							</button>
 						</div>
