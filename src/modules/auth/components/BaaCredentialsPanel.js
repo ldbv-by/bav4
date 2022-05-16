@@ -32,7 +32,7 @@ export class BaaCredentialsPanel extends MvuElement {
 
 	onInitialize() {
 		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
-		this.observe(state => state.modal, modal => this._resolveBeforeClosing(modal));
+		this.observe(state => state.modal, modal => this._resolveBeforeClosing(modal), false);
 	}
 
 	update(type, data, model) {
@@ -81,7 +81,7 @@ export class BaaCredentialsPanel extends MvuElement {
 		<style>${css}</style>
 		<div class='credentials__container ${getOrientationClass()}'>
 			<div class='credentials_header'>
-            	<span class='tile_id'>${translate('auth_baaCredentialsPanel_title')}</span>
+            	<span class='title_id'>${translate('auth_baaCredentialsPanel_title')}</span>
             	<span class='value_id'>${id}</span>
             </div>
             <div class='credentials_form'>
