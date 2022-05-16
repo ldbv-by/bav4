@@ -175,7 +175,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('block');
 
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
