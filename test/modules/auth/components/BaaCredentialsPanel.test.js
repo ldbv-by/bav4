@@ -72,7 +72,7 @@ describe('BaaCredentialsPanel', () => {
 			expect(checkCallback).toHaveBeenCalled();
 		});
 
-		it('resolves credentials', async () => {
+		it('resolves credentials on successfull credentials-check', async () => {
 			const checkCallback = jasmine.createSpy().and.resolveTo(true);
 			const resolveCallback = () => { };
 			const element = await setup();
@@ -80,7 +80,7 @@ describe('BaaCredentialsPanel', () => {
 			element.onCheck = checkCallback;
 			element.onResolved = resolveCallback;
 
-			const spy = spyOnProperty(element, 'onResolved').and.callThrough();
+			const spy = spyOn(element, 'onResolved').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
 
 			submitButton.click();
