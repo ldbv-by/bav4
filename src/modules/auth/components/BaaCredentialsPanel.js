@@ -68,7 +68,7 @@ export class BaaCredentialsPanel extends MvuElement {
 		};
 
 		const checkCredentials = async () => {
-			const credentialsValid = await this._onCheck(id, credentials);
+			const credentialsValid = await this.onCheck(id, credentials);
 			if (credentialsValid) {
 				this.onResolved(credentials);
 			}
@@ -119,10 +119,6 @@ export class BaaCredentialsPanel extends MvuElement {
 
 	get id() {
 		return this.getModel().id;
-	}
-
-	get status() {
-		return this.getModel().status;
 	}
 
 	set onCheck(callback) {
