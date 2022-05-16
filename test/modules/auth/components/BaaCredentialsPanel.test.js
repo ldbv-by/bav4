@@ -44,6 +44,8 @@ describe('BaaCredentialsPanel', () => {
 				credentials: { username: null, password: null }
 			});
 		});
+
+
 	});
 
 	describe('when panel is rendered', () => {
@@ -129,6 +131,24 @@ describe('BaaCredentialsPanel', () => {
 			openModal('', 'some');
 			await TestUtils.timeout();
 			expect(spy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('properties', () => {
+		it('provides default properties', async () => {
+			await setup();
+			const baaCredentialsPanel = new BaaCredentialsPanel();
+
+			expect(baaCredentialsPanel.id).toBeNull();
+		});
+
+		it('provides set methods and getters', async () => {
+			await setup();
+			const baaCredentialsPanel = new BaaCredentialsPanel();
+
+			baaCredentialsPanel.id = 'someId';
+
+			expect(baaCredentialsPanel.id).toBe('someId');
 		});
 	});
 
