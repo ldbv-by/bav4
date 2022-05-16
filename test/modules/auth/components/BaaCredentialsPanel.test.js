@@ -17,8 +17,7 @@ describe('BaaCredentialsPanel', () => {
 				notification: null
 			},
 			media: {
-				portrait: false,
-				minWidth: true
+				portrait: false
 			},
 			modal: {
 				data: null
@@ -49,6 +48,7 @@ describe('BaaCredentialsPanel', () => {
 	});
 
 	describe('when panel is rendered', () => {
+
 		it('displays the id', async () => {
 			const element = await setup();
 			element.id = 'foo';
@@ -149,6 +149,33 @@ describe('BaaCredentialsPanel', () => {
 			baaCredentialsPanel.id = 'someId';
 
 			expect(baaCredentialsPanel.id).toBe('someId');
+		});
+	});
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape desktop', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
+		});
+
+		it('layouts for portrait desktop', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 		});
 	});
 
