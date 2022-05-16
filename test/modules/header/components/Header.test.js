@@ -175,7 +175,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('none');
 
 			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
@@ -318,30 +318,16 @@ describe('Header', () => {
 		});
 	});
 
-	// describe('when modal button is clicked', () => {
-
-	// 	it('shows a modal window with the showcase', async () => {
-	// 		const element = await setup();
-
-	// 		element.shadowRoot.querySelector('.header__modal-button').click();
-
-	// 		expect(store.getState().modal.data.title).toBe('Showcase');
-	// 		//we expect a lit-html TemplateResult as content
-	// 		expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
-	// 	});
-	// });
-
-	// fixme: only temporal, remove after established implementation of BaaCredentialsService
 	describe('when modal button is clicked', () => {
 
-		it('shows a modal window with the BaaCredentialsPanel', async () => {
+		it('shows a modal window with the showcase', async () => {
 			const element = await setup();
 
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
-			expect(store.getState().modal.data.title).toBe('Mit geschützten WMS verbinden...');
+			expect(store.getState().modal.data.title).toBe('Showcase');
 			//we expect a lit-html TemplateResult as content
-			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-auth-baa-credentials-panel .id=');
+			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
 		});
 	});
 
