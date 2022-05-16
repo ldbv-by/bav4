@@ -14,6 +14,34 @@ const Empty_Credentials = { username: null, password: null };
 
 /**
  * Panel to enter credentials for basic access authentication.
+ *
+ * usage:
+ *  <pre>
+ *  const securedId = 'https://my.secure.id/for/wms';
+ * 	const onCheck = async (id, credentials) => {
+ * 		await sleep(3000);
+ * 		if (id === securedId && credentials?.username === 'foo' && credentials?.password === 'bar') {
+ * 			receivedCredentials.username = credentials.username;
+ * 			receivedCredentials.password = credentials.password;
+ * 			return true;
+ * 		}
+ * 		return false;
+ *	};
+ *	const onResolved = (credentials) => {
+ *		if (credentials) {
+ *			closeModal();
+ *		}
+ * 		emitNotification('Authentication aborted', LevelTypes.WARN);
+ * };
+ *
+ * const getCredentialsPanel = () => {
+ * 		return html`<ba-auth-baa-credentials-panel
+ * 				.id=${securedId}
+ * 				.onCheck=${onCheck}
+ * 				.onResolved=${onResolved}>`;
+ * };
+ * openModal('Connect with secured WMS...', getCredentialsPanel());
+ * </pre>
  * @class
  * @author thiloSchlemmer
  */
