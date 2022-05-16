@@ -40,7 +40,8 @@ describe('BaaCredentialsPanel', () => {
 
 			expect(model).toEqual({
 				id: null,
-				credentials: { username: null, password: null }
+				credentials: { username: null, password: null },
+				checkIsRunning: false
 			});
 		});
 
@@ -131,6 +132,27 @@ describe('BaaCredentialsPanel', () => {
 			openModal('', 'some');
 			await TestUtils.timeout();
 			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('displays spinner-button while check is running', async () => {
+			const checkDelay = 200;
+			const checkCallback = async () => {
+				await TestUtils.timeout(checkDelay);
+				return true;
+			};
+			const resolveCallback = () => { };
+			const element = await setup();
+			element.id = 'someId';
+			element.onCheck = checkCallback;
+			element.onResolved = resolveCallback;
+
+
+			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
+			submitButton.click();
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelector('#check-spinner-button')).toBeTruthy();
+			await TestUtils.timeout(checkDelay);
+			expect(element.shadowRoot.querySelector('#check-credentials-button')).toBeTruthy();
 		});
 	});
 

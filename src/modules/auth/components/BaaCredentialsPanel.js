@@ -8,6 +8,7 @@ const Update_ID = 'update_id';
 const Update_Username = 'update_username';
 const Update_Password = 'update_password';
 const Update_IsPortrait_Value = 'update_isportrait_value';
+const Update_Check_Is_Running = 'update_check_is_running';
 
 const Empty_Credentials = { username: null, password: null };
 
@@ -20,7 +21,8 @@ export class BaaCredentialsPanel extends MvuElement {
 	constructor() {
 		super({
 			id: null,
-			credentials: Empty_Credentials
+			credentials: Empty_Credentials,
+			checkIsRunning: false
 		});
 
 
@@ -46,6 +48,8 @@ export class BaaCredentialsPanel extends MvuElement {
 				return { ...model, credentials: { ...model.credentials, password: data } };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
+			case Update_Check_Is_Running:
+				return { ...model, checkIsRunning: data };
 		}
 	}
 
@@ -53,7 +57,7 @@ export class BaaCredentialsPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, id, credentials } = model;
+		const { portrait, id } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -65,16 +69,6 @@ export class BaaCredentialsPanel extends MvuElement {
 
 		const onChangePassword = (e) => {
 			this.signal(Update_Password, e.target.value);
-		};
-
-		const checkCredentials = async () => {
-			const credentialsValid = await this.onCheck(id, credentials);
-			if (credentialsValid) {
-				this.onResolved(credentials);
-			}
-			else {
-				emitNotification(translate('auth_baaCredentialsPanel_credentials_rejected'), LevelTypes.WARN);
-			}
 		};
 
 		return html`
@@ -95,12 +89,40 @@ export class BaaCredentialsPanel extends MvuElement {
 				</div>
 			</div>
 			<div class='credentials_footer'>
-				<ba-button id='check-credentials-button'
-                class="credentials_footer__button" .label=${translate('auth_baaCredentialsPanel_submit')} .type=${'primary'}                
-                @click=${checkCredentials} ></ba-button>
+			${this._getSubmitOrSpinner(model)}
             </div>
 		</div>
 		`;
+	}
+
+	_getSubmitOrSpinner(model) {
+		const { id, credentials, checkIsRunning } = model;
+		const translate = (key) => this._translationService.translate(key);
+
+		const getSubmitButton = () => {
+			const checkCredentials = async () => {
+				this.signal(Update_Check_Is_Running, true);
+				const credentialsValid = await this.onCheck(id, credentials);
+				if (credentialsValid) {
+					this.onResolved(credentials);
+				}
+				else {
+					emitNotification(translate('auth_baaCredentialsPanel_credentials_rejected'), LevelTypes.WARN);
+				}
+				this.signal(Update_Check_Is_Running, false);
+			};
+			return html`<ba-button id='check-credentials-button'
+			class="credentials_footer__button" .label=${translate('auth_baaCredentialsPanel_submit')} .type=${'primary'}                
+			@click=${checkCredentials} ></ba-button>`;
+		};
+
+		const getSpinnerButton = () => {
+			return html`<ba-button id='check-spinner-button' .disabled=${true}
+			class="credentials_footer__button" .label=${translate('auth_baaCredentialsPanel_authenticate')} .type=${'primary'}              
+			></ba-button>`;
+		};
+		return checkIsRunning ? getSpinnerButton() : getSubmitButton();
+
 	}
 
 	_resolveBeforeClosing(modal) {

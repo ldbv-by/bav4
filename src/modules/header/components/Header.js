@@ -8,6 +8,7 @@ import { MvuElement } from '../../MvuElement';
 import { closeModal, openModal } from '../../../store/modal/modal.action';
 import VanillaSwipe from 'vanilla-swipe';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { sleep } from '../../../utils/sleep';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -112,11 +113,11 @@ export class Header extends MvuElement {
 		const showCredentialsPanel = () => {
 			const securedId = 'https://holymoly.awesome.com/your/super/secret/map/wms';
 			const receivedCredentials = { username: null, password: null };
-			const onCheck = (id, credentials) => {
+			const onCheck = async (id, credentials) => {
+				await sleep(3000);
 				if (id === securedId && credentials?.username === 'foo' && credentials?.password === 'bar') {
 					receivedCredentials.username = credentials.username;
 					receivedCredentials.password = credentials.password;
-					console.warn('using credentials:', receivedCredentials);
 					return true;
 				}
 				return false;
@@ -124,7 +125,6 @@ export class Header extends MvuElement {
 
 			const onResolved = (credentials) => {
 				if (credentials) {
-					console.warn('resolved credentials:', credentials);
 					closeModal();
 				}
 				emitNotification('Authentication aborted', LevelTypes.WARN);
