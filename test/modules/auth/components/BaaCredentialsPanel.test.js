@@ -2,6 +2,7 @@ import { $injector } from '../../../../src/injection';
 import { BaaCredentialsPanel } from '../../../../src/modules/auth/components/BaaCredentialsPanel';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -86,7 +87,7 @@ describe('BaaCredentialsPanel', () => {
 			submitButton.click();
 			await TestUtils.timeout();
 			expect(checkCallback).toHaveBeenCalled();
-			expect(spy).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith({ username: null, password: null });
 		});
 
 
@@ -102,6 +103,32 @@ describe('BaaCredentialsPanel', () => {
 			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('auth_baaCredentialsPanel_credentials_rejected');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		});
+
+		it('calls resolve-callback after closing modal', async () => {
+			const resolveCallback = () => { };
+			const element = await setup();
+			element.id = 'someId';
+			element.onResolved = resolveCallback;
+
+			const spy = spyOn(element, 'onResolved').and.callThrough();
+
+			closeModal();
+			await TestUtils.timeout();
+			expect(spy).toHaveBeenCalledWith(null);
+		});
+
+		it('calls not resolve-callback after open modal', async () => {
+			const resolveCallback = () => { };
+			const element = await setup();
+			element.id = 'someId';
+			element.onResolved = resolveCallback;
+
+			const spy = spyOn(element, 'onResolved').and.callThrough();
+
+			openModal('', 'some');
+			await TestUtils.timeout();
+			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 
