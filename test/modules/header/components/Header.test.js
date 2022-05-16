@@ -318,16 +318,30 @@ describe('Header', () => {
 		});
 	});
 
+	// describe('when modal button is clicked', () => {
+
+	// 	it('shows a modal window with the showcase', async () => {
+	// 		const element = await setup();
+
+	// 		element.shadowRoot.querySelector('.header__modal-button').click();
+
+	// 		expect(store.getState().modal.data.title).toBe('Showcase');
+	// 		//we expect a lit-html TemplateResult as content
+	// 		expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
+	// 	});
+	// });
+
+	// fixme: only temporal, remove after established implementation of BaaCredentialsService
 	describe('when modal button is clicked', () => {
 
-		it('shows a modal window with the showcase', async () => {
+		it('shows a modal window with the BaaCredentialsPanel', async () => {
 			const element = await setup();
 
 			element.shadowRoot.querySelector('.header__modal-button').click();
 
-			expect(store.getState().modal.data.title).toBe('Showcase');
+			expect(store.getState().modal.data.title).toBe('Mit geschützten WMS verbinden...');
 			//we expect a lit-html TemplateResult as content
-			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
+			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-auth-baa-credentials-panel .id=');
 		});
 	});
 

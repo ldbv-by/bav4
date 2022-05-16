@@ -9,10 +9,13 @@ const Update_Username = 'update_username';
 const Update_Password = 'update_password';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 
-
-
 const Empty_Credentials = { username: null, password: null };
 
+/**
+ * Panel to enter credentials for basic access authentication.
+ * @class
+ * @author thiloSchlemmer
+ */
 export class BaaCredentialsPanel extends MvuElement {
 	constructor() {
 		super({
@@ -24,6 +27,7 @@ export class BaaCredentialsPanel extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._onCheck = () => false;
+		this._onResolved = () => { };
 	}
 
 	onInitialize() {
