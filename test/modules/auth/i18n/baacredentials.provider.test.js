@@ -12,6 +12,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_baaCredentialsPanel_credentials_password).toBe('Passwort');
 		expect(map.auth_baaCredentialsPanel_submit).toBe('verbinden');
 		expect(map.auth_baaCredentialsPanel_credentials_rejected).toBe('Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!');
+		expect(map.auth_baaCredentialsPanel_authenticate).toBe('authentifiziere...');
 	});
 
 	it('provides translation for en', () => {
@@ -23,10 +24,11 @@ describe('i18n for header module', () => {
 		expect(map.auth_baaCredentialsPanel_credentials_password).toBe('Password');
 		expect(map.auth_baaCredentialsPanel_submit).toBe('connect');
 		expect(map.auth_baaCredentialsPanel_credentials_rejected).toBe('Authentication failed. Invalid username or password!');
+		expect(map.auth_baaCredentialsPanel_authenticate).toBe('authenticate...');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 5;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
