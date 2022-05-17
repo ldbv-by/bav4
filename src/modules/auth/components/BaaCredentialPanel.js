@@ -38,29 +38,29 @@ const Empty_Credential = { username: null, password: null };
  *
  * usage:
  *  <pre>
- *  const restrictedId = 'https://my.restricted.id/for/wms';
- *  const receivedCredential = {};
+ * const restrictedId = 'https://my.restricted.id/for/wms';
+ * const receivedCredential = {};
  *
- *  // the check-callback provides the implementation of the authentication of id and credential
- * 	const onCheck = async (id, credential) => {
- * 		await sleep(3000);
- * 		if (id === restrictedId && credential?.username === 'foo' && credential?.password === 'bar') {
- * 			receivedCredential.username = credential.username;
- * 			receivedCredential.password = credential.password;
- * 			return true;
- * 		}
- * 		return false;
- *	};
+ * // the check-callback provides the implementation of the authentication of id and credential
+ * const onCheck = async (id, credential) => {
+ *    await sleep(3000);
+ *    if (id === restrictedId && credential?.username === 'foo' && credential?.password === 'bar') {
+ *       receivedCredential.username = credential.username;
+ *       receivedCredential.password = credential.password;
+ *       return true;
+ *    }
+ *    return false;
+ * };
  *
- *  // resolved-callback is called with valid credential or NULL
- *	const onResolved = (credential) => {
- *		const resolveAction = credential ? closeModal : () => emitNotification('Authentication aborted', LevelTypes.WARN);
- * 		resolveAction();
- * 	};
+ * // resolved-callback is called with valid a credential or NULL
+ * const onResolved = (credential) => {
+ *    const resolveAction = credential ? closeModal : () => emitNotification('Authentication aborted', LevelTypes.WARN);
+ *    resolveAction();
+ * };
  *
  * // create a BaaCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
- * 		return html`&lt;ba-auth-baa-credential-panel .id=${restrictedId} .onCheck=${onCheck} .onResolved=${onResolved}&gt;`;
+ * 	  return html`&lt;ba-auth-baa-credential-panel .id=${restrictedId} .onCheck=${onCheck} .onResolved=${onResolved}&gt;`;
  * };
  *
  * // using the panel as content for the modal
