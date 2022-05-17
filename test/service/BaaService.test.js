@@ -8,6 +8,7 @@ describe('BaaService', () => {
 	};
 
 	describe('constructor', () => {
+
 		it('initializes the service with default provider', async () => {
 			const service = new BaaService();
 
