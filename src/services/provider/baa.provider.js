@@ -41,7 +41,6 @@ export const baaCredentialFromUI = async (url) => {
  */
 export const bvvBaaCredentialVerify = async (url, credential) => {
 
-
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'verifyCredential';
 	const requestPayload = {
@@ -55,7 +54,6 @@ export const bvvBaaCredentialVerify = async (url, credential) => {
 	switch (status) {
 		case 200:
 			return Promise.resolve(credential);
-
 		default:
 			return Promise.reject(status);
 	}
