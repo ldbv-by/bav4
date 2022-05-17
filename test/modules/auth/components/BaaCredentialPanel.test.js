@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { BaaCredentialsPanel } from '../../../../src/modules/auth/components/BaaCredentialsPanel';
+import { BaaCredentialPanel } from '../../../../src/modules/auth/components/BaaCredentialPanel';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
@@ -7,9 +7,9 @@ import { LevelTypes } from '../../../../src/store/notifications/notifications.ac
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(BaaCredentialsPanel.tag, BaaCredentialsPanel);
+window.customElements.define(BaaCredentialPanel.tag, BaaCredentialPanel);
 
-describe('BaaCredentialsPanel', () => {
+describe('BaaCredentialPanel', () => {
 	let store;
 	const setup = async (state = {}) => {
 		const initialState = {
@@ -29,18 +29,18 @@ describe('BaaCredentialsPanel', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(BaaCredentialsPanel.tag);
+		return TestUtils.render(BaaCredentialPanel.tag);
 	};
 
 	describe('when instantiated', () => {
 
 		it('has a model containing default values', async () => {
 			await setup();
-			const model = new BaaCredentialsPanel().getModel();
+			const model = new BaaCredentialPanel().getModel();
 
 			expect(model).toEqual({
 				id: null,
-				credentials: { username: null, password: null },
+				credential: { username: null, password: null },
 				checkIsRunning: false
 			});
 		});
@@ -54,7 +54,7 @@ describe('BaaCredentialsPanel', () => {
 			const element = await setup();
 			element.id = 'foo';
 
-			expect(element.shadowRoot.querySelector('.title_id').textContent).toBe('auth_baaCredentialsPanel_title');
+			expect(element.shadowRoot.querySelector('.title_id').textContent).toBe('auth_baaCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_id').textContent).toBe('foo');
 		});
 
@@ -63,9 +63,9 @@ describe('BaaCredentialsPanel', () => {
 			const element = await setup();
 			element.id = 'someId';
 			element.onCheck = checkCallback;
-			const inputUsername = element.shadowRoot.querySelector('#credentials_username');
-			const inputPassword = element.shadowRoot.querySelector('#credentials_password');
-			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
 
 			inputUsername.value = 'foo';
 			inputUsername.dispatchEvent(new Event('input'));
@@ -76,7 +76,7 @@ describe('BaaCredentialsPanel', () => {
 			expect(checkCallback).toHaveBeenCalled();
 		});
 
-		it('resolves credentials on successfull credentials-check', async () => {
+		it('resolves credential on successfull credential-check', async () => {
 			const checkCallback = jasmine.createSpy().and.resolveTo(true);
 			const resolveCallback = () => { };
 			const element = await setup();
@@ -85,7 +85,7 @@ describe('BaaCredentialsPanel', () => {
 			element.onResolved = resolveCallback;
 
 			const spy = spyOn(element, 'onResolved').and.callThrough();
-			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
+			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
 
 			submitButton.click();
 			await TestUtils.timeout();
@@ -94,17 +94,17 @@ describe('BaaCredentialsPanel', () => {
 		});
 
 
-		it('emits notification on failed credentials-check', async () => {
+		it('emits notification on failed credential-check', async () => {
 			const checkCallback = jasmine.createSpy().and.resolveTo(false);
 			const element = await setup();
 			element.id = 'someId';
 			element.onCheck = checkCallback;
 
-			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
+			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
 
 			submitButton.click();
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('auth_baaCredentialsPanel_credentials_rejected');
+			expect(store.getState().notifications.latest.payload.content).toBe('auth_baaCredentialPanel_credential_rejected');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -147,30 +147,30 @@ describe('BaaCredentialsPanel', () => {
 			element.onResolved = resolveCallback;
 
 
-			const submitButton = element.shadowRoot.querySelector('#check-credentials-button');
+			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
 			submitButton.click();
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelector('#check-spinner-button')).toBeTruthy();
 			await TestUtils.timeout(checkDelay);
-			expect(element.shadowRoot.querySelector('#check-credentials-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#check-credential-button')).toBeTruthy();
 		});
 	});
 
 	describe('properties', () => {
 		it('provides default properties', async () => {
 			await setup();
-			const baaCredentialsPanel = new BaaCredentialsPanel();
+			const baaCredentialPanel = new BaaCredentialPanel();
 
-			expect(baaCredentialsPanel.id).toBeNull();
+			expect(baaCredentialPanel.id).toBeNull();
 		});
 
 		it('provides set methods and getters', async () => {
 			await setup();
-			const baaCredentialsPanel = new BaaCredentialsPanel();
+			const baaCredentialPanel = new BaaCredentialPanel();
 
-			baaCredentialsPanel.id = 'someId';
+			baaCredentialPanel.id = 'someId';
 
-			expect(baaCredentialsPanel.id).toBe('someId');
+			expect(baaCredentialPanel.id).toBe('someId');
 		});
 	});
 
