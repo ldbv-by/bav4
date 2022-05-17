@@ -6,26 +6,28 @@ import { baaCredentialFromUI, bvvBaaCredentialVerify } from './provider/baa.prov
  */
 export class BaaService {
 
-	constructor(baaCredentialProvider = baaCredentialFromUI, baaCredentialsVerifyProvider = bvvBaaCredentialVerify) {
+	constructor(baaCredentialProvider = baaCredentialFromUI, baaCredentialVerifyProvider = bvvBaaCredentialVerify) {
 		this._baaCredentialProvider = baaCredentialProvider;
-		this._baaCredentialVerifyProvider = baaCredentialsVerifyProvider;
+		this._baaCredentialVerifyProvider = baaCredentialVerifyProvider;
 	}
 
 	/**
-     * Provides basic access authentication credentials for a given URL.
+     * Returns a basic access authentication credential object for a URL.
+     * Will reject with no reason when no credential is available.
      * @param {string} url the URL
-     * @returns Credentials
+     * @returns {Credential|null} credential
      */
 	async get(url) {
 		return this._baaCredentialProvider(url);
 	}
 
 	/**
-     * Verifies given credentials for a given URL
+     * Checks if a credential object is accepted by a given URL.
+     * Will reject with the http status code when credential information was not accepted.
      * @param {string} url the URL
-     * @returns Credentials
+     * @returns  {Credential} credential
      */
-	async verify(url, credentials) {
-		return this._baaCredentialVerifyProvider(url, credentials);
+	async verify(url, credential) {
+		return this._baaCredentialVerifyProvider(url, credential);
 	}
 }
