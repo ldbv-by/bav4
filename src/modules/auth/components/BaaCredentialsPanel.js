@@ -13,11 +13,33 @@ const Update_Check_Is_Running = 'update_check_is_running';
 const Empty_Credentials = { username: null, password: null };
 
 /**
+ * @typedef Credentials
+ * @property {string} username the username
+ * @property {string} password the password
+ */
+
+/**
+ * This callback provides the implementation of the authentication of id and credentials.
+ * @callback BaaCredentialsPanel~onCheckCallback
+ * @param {string} id
+ * @param {Credentials} credentials
+ * @returns {true|false} whether or not the check with the id and the credentials was succesfull
+ */
+
+/**
+ * This callback is called after the authentication was successful or the panel was closed.
+ * @callback BaaCredentialsPanel~onResolvedCallback
+  * @param {Credentials|null} credentials the valid credentials or null, if the authentication was aborted.
+ */
+
+/**
  * Panel to enter credentials for basic access authentication.
  *
  * usage:
  *  <pre>
  *  const securedId = 'https://my.secure.id/for/wms';
+ *
+ *  // the check-callback provides the implementation of the authentication of id and credentials
  * 	const onCheck = async (id, credentials) => {
  * 		await sleep(3000);
  * 		if (id === securedId && credentials?.username === 'foo' && credentials?.password === 'bar') {
@@ -27,6 +49,8 @@ const Empty_Credentials = { username: null, password: null };
  * 		}
  * 		return false;
  *	};
+ *
+ *  // resolved-callback is called with valid credentials or NULL
  *	const onResolved = (credentials) => {
  *		if (credentials) {
  *			closeModal();
@@ -34,15 +58,18 @@ const Empty_Credentials = { username: null, password: null };
  * 		emitNotification('Authentication aborted', LevelTypes.WARN);
  * };
  *
+ * // create a BaaCredentialsPanel-element within a templateResult
  * const getCredentialsPanel = () => {
- * 		return html`<ba-auth-baa-credentials-panel
- * 				.id=${securedId}
- * 				.onCheck=${onCheck}
- * 				.onResolved=${onResolved}>`;
+ * 		return html`&lt;ba-auth-baa-credentials-panel .id=${securedId} .onCheck=${onCheck}	.onResolved=${onResolved}&gt;`;
  * };
+ *
+ * // using the panel as content for the modal
  * openModal('Connect with secured WMS...', getCredentialsPanel());
  * </pre>
  * @class
+ * @property {string} id the id, which needs credentials for basic access authentication
+ * @property {BaaCredentialsPanel~onCheckCallback} onCheck the onCheck callback
+ * @property {BaaCredentialsPanel~onResolvedCallback} onResolved the onResolved callback
  * @author thiloSchlemmer
  */
 export class BaaCredentialsPanel extends MvuElement {
