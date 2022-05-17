@@ -1,6 +1,7 @@
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
+import { mainMenuLandscapePaddingProvider } from './provider/padding.provider';
 
 /**
 * A function that provides map releated meta data
@@ -22,10 +23,11 @@ export class MapService {
 	 *
 	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
 	 */
-	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
+	constructor(mapDefinitionProvider = getBvvMapDefinitions, paddingProvider = mainMenuLandscapePaddingProvider) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
 		this._coordinateService = CoordinateService;
 		this._definitions = mapDefinitionProvider();
+		this._paddingProvider = paddingProvider;
 	}
 
 	/**
@@ -129,29 +131,10 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a padding for the map, to avoid the main menue overlapping important map-content.
+	 * Returns a padding for the map, to avoid overlapping important map-content by any other content.
 	 * @returns {Array<number>} the padding (in pixels);order of the values is top, right, bottom, left
 	 */
 	getPadding() {
-		const no_padding = 0;
-		const floatRegExp = /[^\d.]/g;
-		const removeUnits = (raw) => raw.replace(floatRegExp, '');
-
-		const { StoreService: storeService } = $injector.inject('StoreService');
-		const isLandscape = !storeService.getStore().getState().media.portrait;
-		const isMainMenuOpen = storeService.getStore().getState().mainMenu.open;
-
-		const getLeft = () => {
-			if (isLandscape && isMainMenuOpen) {
-				const style = getComputedStyle(document.body);
-				const fontSize = style.fontSize;
-				const mainMenuWidth = style.getPropertyValue('--width-mainmenu');
-				return Number(removeUnits(fontSize)) * Number(removeUnits(mainMenuWidth));
-			}
-			return no_padding;
-		};
-
-
-		return [no_padding, no_padding, no_padding, getLeft()];
+		return this._paddingProvider();
 	}
 }

@@ -27,7 +27,11 @@ describe('MapService', () => {
 				maxZoomLevel: 21
 			};
 		};
-		return new MapService(definitionsProvider);
+		const paddingProvider = () => {
+			// return padding for top, right, bottom and left of the map
+			return [0, 0, 0, 0];
+		};
+		return new MapService(definitionsProvider, paddingProvider);
 	};
 
 	describe('constructor', () => {
@@ -35,6 +39,7 @@ describe('MapService', () => {
 			const service = new MapService();
 
 			expect(service._definitions).toBeDefined();
+			expect(service._paddingProvider).toBeDefined();
 		});
 	});
 
@@ -185,6 +190,14 @@ describe('MapService', () => {
 
 			expect(document.querySelector).toHaveBeenCalled();
 			expect(element).toBeNull();
+		});
+	});
+
+	describe('getPadding', () => {
+		it('returns a map padding', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.getPadding()).toEqual([0, 0, 0, 0]);
 		});
 	});
 });
