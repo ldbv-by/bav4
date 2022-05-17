@@ -35,24 +35,60 @@ describe('BaaService', () => {
 				password: 'password'
 
 			};
-			const customProvider = jasmine.createSpy().withArgs(url).and.resolveTo(credential);
-			const service = new BaaService(customProvider);
+			const customBaaCredentialProvider = jasmine.createSpy().withArgs(url).and.resolveTo(credential);
+			const service = new BaaService(customBaaCredentialProvider);
 
 			expect(await service.get(url)).toEqual(credential);
 		});
 
 		it('rejects with no reason', async () => {
 			const url = 'foo';
-			const customProvider = jasmine.createSpy().withArgs(url).and.rejectWith(undefined);
-			const service = new BaaService(customProvider);
+			const customBaaCredentialProvider = jasmine.createSpy().withArgs(url).and.rejectWith(undefined);
+			const service = new BaaService(customBaaCredentialProvider);
 
 			try {
 				await service.get(url);
 				throw new Error('Promise should not be resolved');
 			}
 			catch (reason) {
-				expect(customProvider).toHaveBeenCalled();
+				expect(customBaaCredentialProvider).toHaveBeenCalled();
 				expect(reason).toBeUndefined;
+			}
+		});
+	});
+
+	describe('verify', () => {
+
+		it('resolves with a credential object', async () => {
+			const url = 'foo';
+			const credential = {
+				username: 'username',
+				password: 'password'
+
+			};
+			const customBaaCredentialVerifyProvider = jasmine.createSpy().withArgs(url, credential).and.resolveTo(credential);
+			const service = new BaaService(null, customBaaCredentialVerifyProvider);
+
+			expect(await service.verify(url, credential)).toEqual(credential);
+		});
+
+		it('rejects with http status', async () => {
+			const url = 'foo';
+			const credential = {
+				username: 'username',
+				password: 'password'
+
+			};
+			const httpStatus = 401;
+			const customBaaCredentialVerifyProvider = jasmine.createSpy().withArgs(url, credential).and.rejectWith(httpStatus);
+			const service = new BaaService(null, customBaaCredentialVerifyProvider);
+
+			try {
+				await service.verify(url, credential);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (reason) {
+				expect(reason).toBe(httpStatus);
 			}
 		});
 	});
