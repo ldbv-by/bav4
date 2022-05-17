@@ -41,10 +41,10 @@ describe('BaaCredentialPanel', () => {
 			expect(model).toEqual({
 				id: null,
 				credential: { username: null, password: null },
-				checkIsRunning: false
+				checkIsRunning: false,
+				subscription: null
 			});
 		});
-
 
 	});
 

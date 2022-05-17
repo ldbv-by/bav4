@@ -9,6 +9,7 @@ const Update_Username = 'update_username';
 const Update_Password = 'update_password';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 const Update_Check_Is_Running = 'update_check_is_running';
+const Update_Add_Subscription = 'update_add_subscription';
 
 const Empty_Credential = { username: null, password: null };
 
@@ -53,11 +54,9 @@ const Empty_Credential = { username: null, password: null };
  *
  *  // resolved-callback is called with valid credential or NULL
  *	const onResolved = (credential) => {
- *		if (credential) {
- *			closeModal();
- *		}
- * 		emitNotification('Authentication aborted', LevelTypes.WARN);
- * };
+ *		const resolveAction = credential ? closeModal : () => emitNotification('Authentication aborted', LevelTypes.WARN);
+ * 		resolveAction();
+ * 	};
  *
  * // create a BaaCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
@@ -78,7 +77,8 @@ export class BaaCredentialPanel extends MvuElement {
 		super({
 			id: null,
 			credential: Empty_Credential,
-			checkIsRunning: false
+			checkIsRunning: false,
+			subscription: null
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -89,7 +89,8 @@ export class BaaCredentialPanel extends MvuElement {
 
 	onInitialize() {
 		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
-		this.observe(state => state.modal, modal => this._resolveBeforeClosing(modal), false);
+		const subscription = this.observe(state => state.modal, modal => this._resolveBeforeClosing(modal), false);
+		this.signal(Update_Add_Subscription, subscription);
 	}
 
 	update(type, data, model) {
@@ -103,6 +104,8 @@ export class BaaCredentialPanel extends MvuElement {
 				return { ...model, credential: { ...model.credential, password: data } };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
+			case Update_Add_Subscription:
+				return { ...model, subscription: data };
 			case Update_Check_Is_Running:
 				return { ...model, checkIsRunning: data };
 		}
@@ -159,6 +162,7 @@ export class BaaCredentialPanel extends MvuElement {
 				this.signal(Update_Check_Is_Running, true);
 				const isValid = await this.onCheck(id, credential);
 				if (isValid) {
+					this._unsubscribe();
 					this.onResolved(credential);
 				}
 				else {
@@ -182,8 +186,14 @@ export class BaaCredentialPanel extends MvuElement {
 
 	_resolveBeforeClosing(modal) {
 		if (!modal.data) {
+			this._unsubscribe();
 			this.onResolved(null);
 		}
+	}
+
+	_unsubscribe() {
+		const { subscription: unsubscribe } = this.getModel();
+		unsubscribe();
 	}
 
 	static get tag() {
