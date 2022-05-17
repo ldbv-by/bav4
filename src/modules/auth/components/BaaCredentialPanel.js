@@ -37,12 +37,13 @@ const Empty_Credential = { username: null, password: null };
  *
  * usage:
  *  <pre>
- *  const securedId = 'https://my.secure.id/for/wms';
+ *  const restrictedId = 'https://my.restricted.id/for/wms';
+ *  const receivedCredential = {};
  *
  *  // the check-callback provides the implementation of the authentication of id and credential
  * 	const onCheck = async (id, credential) => {
  * 		await sleep(3000);
- * 		if (id === securedId && credential?.username === 'foo' && credential?.password === 'bar') {
+ * 		if (id === restrictedId && credential?.username === 'foo' && credential?.password === 'bar') {
  * 			receivedCredential.username = credential.username;
  * 			receivedCredential.password = credential.password;
  * 			return true;
@@ -60,11 +61,11 @@ const Empty_Credential = { username: null, password: null };
  *
  * // create a BaaCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
- * 		return html`&lt;ba-auth-baa-credential-panel .id=${securedId} .onCheck=${onCheck} .onResolved=${onResolved}&gt;`;
+ * 		return html`&lt;ba-auth-baa-credential-panel .id=${restrictedId} .onCheck=${onCheck} .onResolved=${onResolved}&gt;`;
  * };
  *
  * // using the panel as content for the modal
- * openModal('Connect with secured WMS...', getCredentialPanel());
+ * openModal('Connect with restricted WMS...', getCredentialPanel());
  * </pre>
  * @class
  * @property {string} id the id, which needs credential for basic access authentication
