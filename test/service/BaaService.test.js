@@ -29,7 +29,7 @@ describe('BaaService', () => {
 	describe('get', () => {
 
 		it('resolves with a credential object', async () => {
-			const url = 'foo';
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -42,8 +42,8 @@ describe('BaaService', () => {
 		});
 
 		it('rejects with no reason', async () => {
-			const url = 'foo';
-			const customBaaCredentialProvider = jasmine.createSpy().withArgs(url).and.rejectWith(undefined);
+			const url = 'http://foo.bar';
+			const customBaaCredentialProvider = jasmine.createSpy().withArgs(url).and.rejectWith();
 			const service = new BaaService(customBaaCredentialProvider);
 
 			try {
@@ -55,12 +55,29 @@ describe('BaaService', () => {
 				expect(reason).toBeUndefined;
 			}
 		});
+
+		it('rejects when parameter "url" is not valid', async () => {
+			const url = 'foo';
+			const customBaaCredentialProvider = jasmine.createSpy();
+			const service = new BaaService(customBaaCredentialProvider);
+			const warnSpy = spyOn(console, 'warn');
+
+			try {
+				await service.get(url);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (reason) {
+				expect(customBaaCredentialProvider).not.toHaveBeenCalled();
+				expect(reason).toBeUndefined;
+				expect(warnSpy).toHaveBeenCalledOnceWith(`${url} is not a valid HTTP URL`);
+			}
+		});
 	});
 
 	describe('verify', () => {
 
 		it('resolves with a credential object', async () => {
-			const url = 'foo';
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -73,7 +90,7 @@ describe('BaaService', () => {
 		});
 
 		it('rejects with http status', async () => {
-			const url = 'foo';
+			const url = 'http://foo.bar';
 			const credential = {
 				username: 'username',
 				password: 'password'
@@ -89,6 +106,29 @@ describe('BaaService', () => {
 			}
 			catch (reason) {
 				expect(reason).toBe(httpStatus);
+			}
+		});
+
+
+		it('rejects when parameter "url" is not valid', async () => {
+			const url = 'foo';
+			const credential = {
+				username: 'username',
+				password: 'password'
+
+			};
+			const customBaaCredentialVerifyProvider = jasmine.createSpy();
+			const service = new BaaService(null, customBaaCredentialVerifyProvider);
+			const warnSpy = spyOn(console, 'warn');
+
+			try {
+				await service.verify(url, credential);
+				throw new Error('Promise should not be resolved');
+			}
+			catch (reason) {
+				expect(customBaaCredentialVerifyProvider).not.toHaveBeenCalled();
+				expect(reason).toBeUndefined;
+				expect(warnSpy).toHaveBeenCalledOnceWith(`${url} is not a valid HTTP URL`);
 			}
 		});
 	});
