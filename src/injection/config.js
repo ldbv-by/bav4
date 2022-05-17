@@ -35,6 +35,7 @@ import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
+import { BaaService } from '../services/BaaService';
 
 
 $injector
@@ -60,6 +61,7 @@ $injector
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
 	.registerSingleton('SecurityService', new SecurityService())
+	.register('BaaService', BaaService)
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
