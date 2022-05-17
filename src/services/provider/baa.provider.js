@@ -28,7 +28,7 @@ export const baaCredentialFromUI = async (url) => {
 
 
 /**
- * A function that takes a url and credetials and returns a promise resolving with a {@link Credential} object.
+ * A function that takes a url and a credential object and returns a promise resolving with a {@link Credential} object.
  *
  * @typedef {function(string, Credential) : (Promise<Credential>)} baaCredentialVerifyProvider
  */
