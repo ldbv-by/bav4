@@ -72,7 +72,7 @@ const Empty_Credential = { username: null, password: null };
  * @property {BaaCredentialPanel~onResolvedCallback} onResolved the onResolved callback
  * @author thiloSchlemmer
  */
-export class BaaCredentialPanel extends MvuElement {
+export class BaaCredentialPanel extends MvuElement { // TODO: possible renaming to PasswordCredentialPanel
 	constructor() {
 		super({
 			id: null,
